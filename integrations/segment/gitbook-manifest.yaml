@@ -1,0 +1,5 @@
+name: segment
+title: Segment
+script: script.ts
+scopes:
+  - space:views

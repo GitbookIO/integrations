@@ -2,29 +2,29 @@ import * as esbuild from 'esbuild';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { readIntegrationManifest } from './manifest';
 import { getAPIClient } from './remote';
-import { readIntegrationSpecFile } from './spec';
 
 /**
  * Publish the integration to GitBook.
  * If it already exists, it'll update it.
  */
 export async function publishIntegration(filePath: string): Promise<void> {
-    const spec = await readIntegrationSpecFile(filePath);
+    const manifest = await readIntegrationManifest(filePath);
     const api = await getAPIClient(true);
 
     // Build the script
-    const script = await buildScript(resolveFile(filePath, spec.script));
+    const script = await buildScript(resolveFile(filePath, manifest.script));
 
     // Publish the integration.
-    const created = await api.integrations.publish(spec.name, {
-        title: spec.title,
-        icon: spec.icon ? await readIcon(resolveFile(filePath, spec.icon)) : undefined,
-        description: spec.description,
-        summary: spec.summary,
-        scopes: spec.scopes,
-        categories: spec.categories,
-        configurations: spec.configurations,
+    const created = await api.integrations.publish(manifest.name, {
+        title: manifest.title,
+        icon: manifest.icon ? await readIcon(resolveFile(filePath, manifest.icon)) : undefined,
+        description: manifest.description,
+        summary: manifest.summary,
+        scopes: manifest.scopes,
+        categories: manifest.categories,
+        configurations: manifest.configurations,
         script,
     });
 

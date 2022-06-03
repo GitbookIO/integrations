@@ -1,4 +1,8 @@
 {
-    "name": "@gitbook/integration-segment",
-    "private": true
+  "name": "@gitbook/integration-segment",
+  "private": true,
+  "devDependencies": {
+    "@gitbook/cli": "*",
+    "@gitbook/runtime": "*"
+  }
 }

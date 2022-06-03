@@ -7,9 +7,11 @@ import * as api from '@gitbook/api';
 // eslint-disable-next-line import/no-internal-modules
 import openAPISpec from '@gitbook/api/spec/openapi.dereference.json';
 
+export const DEFAULT_MANIFEST_FILE = 'gitbook-manifest.yaml';
+
 const ajv = new Ajv();
 
-export interface IntegrationConfigSpec {
+export interface IntegrationManifest {
     name: string;
     title: string;
     script: string;
@@ -21,7 +23,7 @@ export interface IntegrationConfigSpec {
     configurations?: api.IntegrationConfigurations;
 }
 
-const specSchema: Schema = {
+const manifestSchema: Schema = {
     type: 'object',
     properties: {
         name: {
@@ -52,33 +54,44 @@ const specSchema: Schema = {
             ...openAPISpec.components.schemas.Integration.properties.configurations,
         },
     },
-    required: ['name', 'title', 'description', 'script', 'scopes'],
+    required: ['name', 'title', 'script', 'scopes'],
     additionalProperties: false,
 };
 
-const validate = ajv.compile(specSchema);
+const validate = ajv.compile(manifestSchema);
 
 /**
  * Read, parse and validate the spec file.
  */
-export async function readIntegrationSpecFile(filePath: string): Promise<IntegrationConfigSpec> {
+export async function readIntegrationManifest(filePath: string): Promise<IntegrationManifest> {
     try {
         const content = await fs.promises.readFile(filePath, 'utf8');
         const doc = yaml.load(content);
-        return validateIntegrationSpec(doc);
+        return validateIntegrationManifest(doc);
     } catch (e) {
         throw new Error(`Failed to read integration spec from ${filePath}: ${e.message}`);
     }
 }
 
 /**
+ * Write a spec file.
+ */
+export async function writeIntegrationManifest(
+    filePath: string,
+    data: IntegrationManifest
+): Promise<void> {
+    const content = yaml.dump(validateIntegrationManifest(data));
+    await fs.promises.writeFile(filePath, content);
+}
+
+/**
  * Validate the spec file.
  */
-function validateIntegrationSpec(data: object): IntegrationConfigSpec {
+function validateIntegrationManifest(data: object): IntegrationManifest {
     const valid = validate(data);
     if (!valid) {
         throw new Error(ajv.errorsText(validate.errors));
     }
 
-    return data as IntegrationConfigSpec;
+    return data as IntegrationManifest;
 }

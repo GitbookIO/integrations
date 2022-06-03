@@ -1,10 +1,12 @@
 import { program } from 'commander';
+import { DEFAULT_MANIFEST_FILE } from 'manifest';
 import * as path from 'path';
 import prompts from 'prompts';
 
 import { GITBOOK_DEFAULT_ENDPOINT } from '@gitbook/api';
 
 import packageJSON from '../package.json';
+import { promptNewIntegration } from './init';
 import { publishIntegration } from './publish';
 import { authenticate, whoami } from './remote';
 
@@ -45,24 +47,12 @@ program
     .argument('[dir]', 'directory to initialize project in', './')
     .description('initialize a new project')
     .action(async (dirPath, options) => {
-        // const response = await prompts([
-        //     {
-        //         type: 'text',
-        //         name: 'title',
-        //         message: 'Title of the integration:',
-        //     },
-        //     {
-        //         type: 'text',
-        //         name: 'script',
-        //         initial: 'script.js',
-        //         message: 'Path to the JS/TS script (created if non-existant):',
-        //     },
-        // ]);
+        await promptNewIntegration(path.resolve(process.cwd(), dirPath));
     });
 
 program
     .command('publish')
-    .argument('[file]', 'integration definition file', './integration.yaml')
+    .argument('[file]', 'integration definition file', DEFAULT_MANIFEST_FILE)
     .description('publish a new version of the integration')
     .action(async (filePath, options) => {
         await publishIntegration(path.resolve(process.cwd(), filePath));
