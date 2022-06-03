@@ -1,0 +1,10 @@
+{
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "display": "Default",
+    "compilerOptions": {
+        "resolveJsonModule": true,
+        "lib": ["ES2021"]
+    },
+    "esModuleInterop": true,
+    "exclude": ["node_modules"]
+}

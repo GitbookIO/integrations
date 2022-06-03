@@ -1,0 +1,7 @@
+{
+    "name": "@gitbook/tsconfig",
+    "version": "0.0.0",
+    "dependencies": {
+        "@types/node": "^17.0.33"
+    }
+}

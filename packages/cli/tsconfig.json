@@ -1,0 +1,9 @@
+{
+    "extends": "@gitbook/tsconfig/base.json",
+    "include": ["src/**/*"],
+    "rootDir": "./src",
+    "compilerOptions": {
+        "baseUrl": "./src",
+        "lib": ["DOM"]
+    }
+}

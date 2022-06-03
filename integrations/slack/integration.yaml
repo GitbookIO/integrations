@@ -1,0 +1,26 @@
+name: slack
+title: Slack
+description: Notify a channel or individual in Slack with real-time events from GitBook.
+script: ./script.ts
+scopes:
+  - space:content
+summary: |
+    Configure the Slack integrations to be notified about events occuring on GitBook (content updated, comments, etc).
+    Using the /gitbook command, you can also search all your content right from your Slack workspace.
+configurations:
+  space:
+    properties:
+      oauth_credentials:
+        type: button
+        title: Connection
+        description: Authorization between Slack and GitBook.
+        button_text: Authorize
+        callback_url: /oauth
+      conversation:
+        type: string
+        title: Channel
+        description: Select a channel to post message to.
+        completion_url: /conversations
+    required:
+      - oauth_credentials
+      - conversation

@@ -1,0 +1,30 @@
+{
+    "name": "@gitbook/cli",
+    "version": "0.0.0",
+    "dependencies": {
+        "@gitbook/api": "*",
+        "ajv": "^8.11.0",
+        "commander": "^9.2.0",
+        "conf": "^10.1.2",
+        "esbuild": "^0.14.42",
+        "js-yaml": "^4.1.0",
+        "prompts": "^2.4.2"
+    },
+    "devDependencies": {
+        "@types/node": "^17.0.33",
+        "typescript": "^4.6.3",
+        "eslint": "^8.16.0",
+        "@gitbook/eslint-config": "*"
+    },
+    "scripts": {
+        "build": "./build.sh",
+        "lint": "eslint ./src/**/*.ts",
+        "typecheck": "tsc --noEmit"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "bin": {
+        "gitbook": "./dist/cli.js"
+    }
+}

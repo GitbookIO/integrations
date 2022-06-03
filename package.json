@@ -1,0 +1,24 @@
+{
+  "name": "@gitbook/integrations",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "integrations/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck"
+  },
+  "devDependencies": {
+    "turbo": "latest"
+  },
+  "engines": {
+    "npm": ">=7.0.0",
+    "node": ">=14.0.0"
+  },
+  "dependencies": {},
+  "packageManager": "npm@8.4.1"
+}

@@ -1,0 +1,7 @@
+{
+    "extends": "@gitbook/tsconfig/node.json",
+    "include": ["src/**/*"],
+    "compilerOptions": {
+        "baseUrl": "./src"
+    }
+}

@@ -1,0 +1,6 @@
+{
+    "extends": ["@gitbook/eslint-config"],
+    "rules": {
+        "no-console": "off"
+    }
+}
