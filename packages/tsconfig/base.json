@@ -3,6 +3,7 @@
     "display": "Default",
     "compilerOptions": {
         "resolveJsonModule": true,
+        "allowSyntheticDefaultImports": true,
         "lib": ["ES2021"]
     },
     "esModuleInterop": true,

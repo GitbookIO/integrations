@@ -14,6 +14,10 @@
         "querystring": "^0.2.1",
         "isolated-vm": "^4.4.1"
     },
+    "files": [
+        "index.js",
+        "CHANGELOG.md"
+    ],
     "scripts": {
         "build": "node -r esbuild-register ./build.ts"
     }

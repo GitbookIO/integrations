@@ -2,7 +2,8 @@
     "name": "@gitbook/runtime-v8-isolated",
     "version": "0.0.1",
     "private": true,
-    "main": "src/index.ts",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
     "dependencies": {
         "isolated-vm": "^4.4.1",
         "node-fetch": "^2.6.7",
@@ -16,6 +17,10 @@
         "eslint": "^8.16.0",
         "@gitbook/eslint-config": "*"
     },
+    "files": [
+        "dist/**/*",
+        "CHANGELOG.md"
+    ],
     "scripts": {
         "build": "./build.sh",
         "test": "node -r esbuild-register ./tests/index.ts",
