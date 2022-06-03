@@ -27,3 +27,6 @@
 - Clients
   - Browser / Node
 
+## CLI
+
+- [Reference](cli/README.md)
