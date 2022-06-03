@@ -1,7 +1,6 @@
 {
     "name": "@gitbook/runtime-v8-stdlib",
-    "version": "0.0.1",
-    "private": true,
+    "version": "0.0.2",
     "main": "index.ts",
     "dependencies": {},
     "devDependencies": {
