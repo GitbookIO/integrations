@@ -1,5 +1,6 @@
 {
     "name": "@gitbook/runtime-v8-isolated",
+    "version": "0.0.1",
     "private": true,
     "main": "src/index.ts",
     "dependencies": {
@@ -19,7 +20,8 @@
         "build": "./build.sh",
         "test": "node -r esbuild-register ./tests/index.ts",
         "lint": "eslint ./src/**/*.ts",
-        "typecheck": "tsc --noEmit"
+        "typecheck": "tsc --noEmit",
+        "publish": "npm publish"
     },
     "sideEffects": false
 }

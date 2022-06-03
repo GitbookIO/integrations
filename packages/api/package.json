@@ -1,6 +1,7 @@
 {
     "name": "@gitbook/api",
     "version": "0.0.0",
+    "private": true,
     "dependencies": {},
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",

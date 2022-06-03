@@ -15,8 +15,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npm run test
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm run test
   lint:
     runs-on: ubuntu-latest
     strategy:
@@ -28,5 +30,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npm run lint
+      - name: Install Dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run lint
