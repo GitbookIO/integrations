@@ -1,15 +1,25 @@
-import { api } from '@gitbook/runtime';
 
-addEventListener('installation:setup', async (event) => {
-    // Do something when the integration has been installed 
-});
+addEventListener('space:view', async (event) => {
+    const writeKey = environment.installation.configurations?.space?.write_key;
+    if (!writeKey) {
+        return;
+    }
 
-addEventListener('fetch', async (event) => {
-    // Do something when receiving an HTTP request
-    event.respondWith(new Response('Hello world!'));
-});
-
-addEventListener('space:content:updated', async (event) => {
-    // Depending on the scopes of your integration
-    // You can listen to different events related to user actions.
+    await fetch('https://api.segment.io/v1/track', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Basic ${btoa(`${writeKey}:`)}`
+        },
+        body: JSON.stringify({
+            "anonymousId": event.visitorId,
+            "event": "gitbook.space.view",
+            "properties": {
+                
+            },
+            "context": {
+                "ip": event.visitorIp
+            },
+        })
+    })
 });
