@@ -30,3 +30,7 @@ configurations:
     required:
       - oauth_credentials
       - conversation
+secrets:
+  # TOOD replace with {env.CLIENT_ID} to use an env
+  CLIENT_ID: '3085992729.3609034129490'
+  CLIENT_SECRET: 'd6d82b7a831d43b046950775b03c31b8'

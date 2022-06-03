@@ -12,8 +12,8 @@ const router = Router({
 router.get(
     '/oauth',
     createOAuthHandler({
-        clientId: '3085992729.3609034129490',
-        clientSecret: 'd6d82b7a831d43b046950775b03c31b8',
+        clientId: environment.secrets.CLIENT_ID,
+        clientSecret: environment.secrets.CLIENT_SECRET,
         authorizeURL: 'https://slack.com/oauth/v2/authorize?scope=chat:write%20channels:read',
         accessTokenURL: 'https://slack.com/api/oauth.v2.access',
     })

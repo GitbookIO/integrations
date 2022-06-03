@@ -21,6 +21,7 @@ export interface IntegrationManifest {
     scopes?: api.IntegrationScope[];
     categories?: api.IntegrationCategory[];
     configurations?: api.IntegrationConfigurations;
+    secrets: Record<string, string>;
 }
 
 const manifestSchema: Schema = {
@@ -52,6 +53,9 @@ const manifestSchema: Schema = {
         },
         configurations: {
             ...openAPISpec.components.schemas.Integration.properties.configurations,
+        },
+        secrets: {
+            ...openAPISpec.components.schemas.IntegrationSecrets,
         },
     },
     required: ['name', 'title', 'script', 'scopes'],
@@ -93,5 +97,21 @@ function validateIntegrationManifest(data: object): IntegrationManifest {
         throw new Error(ajv.errorsText(validate.errors));
     }
 
-    return data as IntegrationManifest;
+    const manifest = data as IntegrationManifest;
+
+    if (manifest.secrets) {
+        manifest.secrets = interpolateSecrets(manifest.secrets);
+    }
+
+    return manifest;
+}
+
+/**
+ * Interpolate secrets with environment variables.
+ */
+function interpolateSecrets(secrets: Record<string, string>): Record<string, string> {
+    return Object.keys(secrets).reduce((acc, key) => {
+        acc[key] = secrets[key].replace(/\${env.([^}]+)}/g, (_, envVar) => process.env[envVar]);
+        return acc;
+    }, {});
 }
