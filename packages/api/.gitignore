@@ -1,2 +1,3 @@
 dist/
+spec/
 src/client.ts

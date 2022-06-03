@@ -1,5 +1,6 @@
 name: slack
 title: Slack
+icon: ./icon.png
 description: Notify a channel or individual in Slack with real-time events from GitBook.
 script: ./script.ts
 scopes:
@@ -21,6 +22,11 @@ configurations:
         title: Channel
         description: Select a channel to post message to.
         completion_url: /conversations
+      notify_content_update:
+        type: boolean
+        title: Notify Content Update
+        description: Post a notification message every time the content of the space is updated.
+        default: true
     required:
       - oauth_credentials
       - conversation

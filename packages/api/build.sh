@@ -1,16 +1,23 @@
 #!/bin/bash
 
 rm -rf ./dist/
+rm -rf ./spec/
+mkdir ./spec
 
-OPENAPI_SOURCE=../../../gitbook-x/packages/api-client/src/openapi.yaml
 
 if [[ ! -z "${CI}" ]]; then
-    OPENAPI_SOURCE=https://api.gitbook.com/openapi.yaml
+    curl https://api.gitbook.com/openapi.yaml --output spec/openapi.yaml --silent 
+else
+    cp ../../../gitbook-x/packages/api-client/src/openapi.yaml spec/openapi.yaml
 fi
 
 # First we build the API client from the OpenAPI definition
 echo "Building API client from OpenAPI spec..."
-swagger-typescript-api --path $OPENAPI_SOURCE --output ./src/ --name client.ts --silent
+swagger-typescript-api --path ./spec/openapi.yaml --output ./src/ --name client.ts --silent
+
+# Then we bundle into an importable JSON module
+swagger-cli bundle ./spec/openapi.yaml --outfile ./spec/openapi.json --type json
+swagger-cli bundle ./spec/openapi.yaml --outfile ./spec/openapi.dereference.json --type json --dereference
 
 # Then we build the JS files
 echo "Bundling library from code..."

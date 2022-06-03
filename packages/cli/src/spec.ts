@@ -1,70 +1,55 @@
+import toJsonSchema from '@openapi-contrib/openapi-schema-to-json-schema';
 import Ajv, { Schema } from 'ajv';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 
 import * as api from '@gitbook/api';
+// eslint-disable-next-line import/no-internal-modules
+import openAPISpec from '@gitbook/api/spec/openapi.dereference.json';
 
 const ajv = new Ajv();
 
-const configurationSchema: Schema = {
-    type: 'object',
-    properties: {},
-    required: [],
-    additionalProperties: true,
-};
+export interface IntegrationConfigSpec {
+    name: string;
+    title: string;
+    script: string;
+    icon?: string;
+    description?: string;
+    summary?: string;
+    scopes?: api.IntegrationScope[];
+    categories?: api.IntegrationCategory[];
+    configurations?: api.IntegrationConfigurations;
+}
 
 const specSchema: Schema = {
     type: 'object',
     properties: {
         name: {
-            type: 'string',
-            minLength: 2,
-            maxLength: 30,
+            ...openAPISpec.components.schemas.Integration.properties.name,
         },
         title: {
-            type: 'string',
-            minLength: 2,
-            maxLength: 30,
+            ...openAPISpec.components.schemas.Integration.properties.title,
         },
         description: {
-            type: 'string',
-            maxLength: 100,
+            ...openAPISpec.components.schemas.Integration.properties.description,
         },
         summary: {
+            ...openAPISpec.components.schemas.Integration.properties.summary,
+        },
+        icon: {
             type: 'string',
-            maxLength: 400,
         },
         script: {
             type: 'string',
         },
         scopes: {
-            type: 'array',
-            items: {
-                type: 'string',
-                enum: [api.IntegrationScope.SpaceContent, api.IntegrationScope.SpaceViews],
-            },
+            ...toJsonSchema(openAPISpec.components.schemas.Integration.properties.scopes),
         },
         categories: {
-            type: 'array',
-            items: {
-                type: 'string',
-                enum: [
-                    api.IntegrationCategory.Analytics,
-                    api.IntegrationCategory.Collaboration,
-                    api.IntegrationCategory.Other,
-                ],
-            },
-        },
-        env: {
-            type: 'object',
-            additionalProperties: { type: 'string' },
+            ...toJsonSchema(openAPISpec.components.schemas.Integration.properties.categories),
         },
         configurations: {
-            type: 'object',
-            properties: {
-                space: configurationSchema,
-            },
-            additionalProperties: false,
+            ...openAPISpec.components.schemas.Integration.properties.configurations,
         },
     },
     required: ['name', 'title', 'description', 'script', 'scopes'],
@@ -76,7 +61,7 @@ const validate = ajv.compile(specSchema);
 /**
  * Read, parse and validate the spec file.
  */
-export async function readIntegrationSpecFile(filePath: string): Promise<api.Integration> {
+export async function readIntegrationSpecFile(filePath: string): Promise<IntegrationConfigSpec> {
     try {
         const content = await fs.promises.readFile(filePath, 'utf8');
         const doc = yaml.load(content);
@@ -89,11 +74,11 @@ export async function readIntegrationSpecFile(filePath: string): Promise<api.Int
 /**
  * Validate the spec file.
  */
-function validateIntegrationSpec(data: object): api.Integration {
+function validateIntegrationSpec(data: object): IntegrationConfigSpec {
     const valid = validate(data);
     if (!valid) {
         throw new Error(ajv.errorsText(validate.errors));
     }
 
-    return data as api.Integration;
+    return data as IntegrationConfigSpec;
 }

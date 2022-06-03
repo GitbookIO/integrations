@@ -4,6 +4,10 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "api#build": {
+      "cache": false,
+      "outputs": ["dist/**", "spec/**"]
+    },
     "test": {
       "dependsOn": ["build"]
     },

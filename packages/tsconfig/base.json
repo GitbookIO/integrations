@@ -4,8 +4,8 @@
     "compilerOptions": {
         "resolveJsonModule": true,
         "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
         "lib": ["ES2021"]
     },
-    "esModuleInterop": true,
     "exclude": ["node_modules"]
 }

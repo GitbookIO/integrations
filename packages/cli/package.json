@@ -1,5 +1,6 @@
 {
     "name": "@gitbook/cli",
+    "description": "CLI to build and publish integrations on GitBook.com",
     "version": "0.0.0",
     "private": true,
     "dependencies": {
@@ -9,7 +10,8 @@
         "conf": "^10.1.2",
         "esbuild": "^0.14.42",
         "js-yaml": "^4.1.0",
-        "prompts": "^2.4.2"
+        "prompts": "^2.4.2",
+        "@openapi-contrib/openapi-schema-to-json-schema": "^3.1.2"
     },
     "devDependencies": {
         "@types/node": "^17.0.33",
