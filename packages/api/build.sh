@@ -6,9 +6,9 @@ mkdir ./spec
 
 
 if [[ ! -z "${CI}" ]]; then
-    curl https://api.gitbook.com/openapi.yaml --output spec/openapi.yaml --silent 
+    curl https://api-getsquad-dev-samy.firebaseapp.com/openapi.yaml --output spec/openapi.yaml --silent 
 else
-    cp ../../../gitbook-x/packages/api-client/src/openapi.yaml spec/openapi.yaml
+    cp ../../../gitbook-x/packages/api-client/static/openapi.yaml spec/openapi.yaml
 fi
 
 # First we build the API client from the OpenAPI definition
