@@ -16,14 +16,14 @@
 
 - Overview
 - References
-  - Spaces
+  - [Spaces](api/references/spaces/README.md)
     - Content
     - Views
     - Change Requests
-  - Users
+  - [Users](api/references/users/README.md)
   - Organizations
-  - Integrations
-    - Installations
+  - [Integrations](api/references/integrations/README.md)
+    - [Installations](api/references/integrations/installations.md)
 - Clients
   - Browser / Node
 
