@@ -1,15 +1,14 @@
-import toJsonSchema from '@openapi-contrib/openapi-schema-to-json-schema';
 import Ajv, { Schema } from 'ajv';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
+import * as path from 'path';
 
 import * as api from '@gitbook/api';
-// eslint-disable-next-line import/no-internal-modules
-import openAPISpec from '@gitbook/api/spec/openapi.dereference.json';
+
+import { getAPISchema, getAPIJsonSchemaFor } from './api-spec';
+import { fileExists, prettyPath } from './files';
 
 export const DEFAULT_MANIFEST_FILE = 'gitbook-manifest.yaml';
-
-const ajv = new Ajv();
 
 export interface IntegrationManifest {
     name: string;
@@ -21,48 +20,26 @@ export interface IntegrationManifest {
     scopes?: api.IntegrationScope[];
     categories?: api.IntegrationCategory[];
     configurations?: api.IntegrationConfigurations;
-    secrets: Record<string, string>;
+    secrets: { [key: string]: string };
 }
 
-const manifestSchema: Schema = {
-    type: 'object',
-    properties: {
-        name: {
-            ...openAPISpec.components.schemas.Integration.properties.name,
-        },
-        title: {
-            ...openAPISpec.components.schemas.Integration.properties.title,
-        },
-        description: {
-            ...openAPISpec.components.schemas.Integration.properties.description,
-        },
-        summary: {
-            ...openAPISpec.components.schemas.Integration.properties.summary,
-        },
-        icon: {
-            type: 'string',
-        },
-        script: {
-            type: 'string',
-        },
-        scopes: {
-            ...toJsonSchema(openAPISpec.components.schemas.Integration.properties.scopes),
-        },
-        categories: {
-            ...toJsonSchema(openAPISpec.components.schemas.Integration.properties.categories),
-        },
-        configurations: {
-            ...openAPISpec.components.schemas.Integration.properties.configurations,
-        },
-        secrets: {
-            ...openAPISpec.components.schemas.IntegrationSecrets,
-        },
-    },
-    required: ['name', 'title', 'script', 'scopes'],
-    additionalProperties: false,
-};
+/**
+ * Resolve a user-inputed path into a real manifest file path.
+ */
+export async function resolveIntegrationManifestPath(inputPath: string): Promise<string> {
+    const fileType = await fileExists(inputPath);
 
-const validate = ajv.compile(manifestSchema);
+    if (fileType === 'file') {
+        return inputPath;
+    }
+
+    if (fileType === 'directory') {
+        const realPath = path.join(inputPath, DEFAULT_MANIFEST_FILE);
+        return resolveIntegrationManifestPath(realPath);
+    }
+
+    throw new Error(`Manifest file not found: ${prettyPath(inputPath)}`);
+}
 
 /**
  * Read, parse and validate the spec file.
@@ -73,7 +50,9 @@ export async function readIntegrationManifest(filePath: string): Promise<Integra
         const doc = yaml.load(content);
         return validateIntegrationManifest(doc);
     } catch (e) {
-        throw new Error(`Failed to read integration spec from ${filePath}: ${e.message}`);
+        throw new Error(
+            `Failed to read integration spec from ${prettyPath(filePath)}: ${e.message}`
+        );
     }
 }
 
@@ -84,14 +63,16 @@ export async function writeIntegrationManifest(
     filePath: string,
     data: IntegrationManifest
 ): Promise<void> {
-    const content = yaml.dump(validateIntegrationManifest(data));
+    const normalized = await validateIntegrationManifest(data);
+    const content = yaml.dump(normalized);
     await fs.promises.writeFile(filePath, content);
 }
 
 /**
  * Validate the spec file.
  */
-function validateIntegrationManifest(data: object): IntegrationManifest {
+async function validateIntegrationManifest(data: object): Promise<IntegrationManifest> {
+    const [validate, ajv] = await getManifestSchema();
     const valid = validate(data);
     if (!valid) {
         throw new Error(ajv.errorsText(validate.errors));
@@ -107,9 +88,79 @@ function validateIntegrationManifest(data: object): IntegrationManifest {
 }
 
 /**
+ * Create a schema to validate the manifest file.
+ */
+async function getManifestSchema() {
+    const ajv = new Ajv();
+
+    const openAPISpec = await getAPISchema();
+
+    const manifestSchema: Schema = {
+        type: 'object',
+        properties: {
+            name: {
+                ...getAPIJsonSchemaFor(
+                    openAPISpec,
+                    'components/schemas/Integration/properties/name'
+                ),
+            },
+            title: {
+                ...getAPIJsonSchemaFor(
+                    openAPISpec,
+                    'components/schemas/Integration/properties/title'
+                ),
+            },
+            description: {
+                ...getAPIJsonSchemaFor(
+                    openAPISpec,
+                    'components/schemas/Integration/properties/description'
+                ),
+            },
+            summary: {
+                ...getAPIJsonSchemaFor(
+                    openAPISpec,
+                    'components/schemas/Integration/properties/summary'
+                ),
+            },
+            icon: {
+                type: 'string',
+            },
+            script: {
+                type: 'string',
+            },
+            scopes: {
+                ...getAPIJsonSchemaFor(
+                    openAPISpec,
+                    'components/schemas/Integration/properties/scopes'
+                ),
+            },
+            categories: {
+                ...getAPIJsonSchemaFor(
+                    openAPISpec,
+                    'components/schemas/Integration/properties/categories'
+                ),
+            },
+            configurations: {
+                ...getAPIJsonSchemaFor(
+                    openAPISpec,
+                    'components/schemas/Integration/properties/configurations'
+                ),
+            },
+            secrets: {
+                ...getAPIJsonSchemaFor(openAPISpec, 'components/schemas/IntegrationSecrets'),
+            },
+        },
+        required: ['name', 'title', 'script', 'scopes'],
+        additionalProperties: false,
+    };
+
+    return [ajv.compile(manifestSchema), ajv] as const;
+}
+
+/**
  * Interpolate secrets with environment variables.
  */
-function interpolateSecrets(secrets: Record<string, string>): Record<string, string> {
+function interpolateSecrets(secrets: { [key: string]: string }): { [key: string]: string } {
     return Object.keys(secrets).reduce((acc, key) => {
         acc[key] = secrets[key].replace(/\${env.([^}]+)}/g, (_, envVar) => process.env[envVar]);
         return acc;

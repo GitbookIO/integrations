@@ -17,7 +17,6 @@ swagger-typescript-api --path ./spec/openapi.yaml --output ./src/ --name client.
 
 # Then we bundle into an importable JSON module
 swagger-cli bundle ./spec/openapi.yaml --outfile ./spec/openapi.json --type json
-swagger-cli bundle ./spec/openapi.yaml --outfile ./spec/openapi.dereference.json --type json --dereference
 
 # Then we build the JS files
 echo "Bundling library from code..."

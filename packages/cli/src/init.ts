@@ -6,6 +6,7 @@ import prompts from 'prompts';
 import { IntegrationScope } from '@gitbook/api';
 
 import packageJSON from '../package.json';
+import { fileExists } from './files';
 import { DEFAULT_MANIFEST_FILE, writeIntegrationManifest } from './manifest';
 
 /**
@@ -142,16 +143,4 @@ export function generateScript(): string {
             // You can listen to different events related to user actions.
         });
     `).trim();
-}
-
-/**
- * Check if a file exists.
- */
-async function fileExists(path: string): Promise<null | 'directory' | 'file'> {
-    try {
-        const stat = await fs.promises.stat(path);
-        return stat.isDirectory() ? 'directory' : 'file';
-    } catch {
-        return null;
-    }
 }

@@ -1,5 +1,4 @@
 import { program } from 'commander';
-import { DEFAULT_MANIFEST_FILE } from 'manifest';
 import * as path from 'path';
 import prompts from 'prompts';
 
@@ -7,6 +6,7 @@ import { GITBOOK_DEFAULT_ENDPOINT } from '@gitbook/api';
 
 import packageJSON from '../package.json';
 import { promptNewIntegration } from './init';
+import { DEFAULT_MANIFEST_FILE, resolveIntegrationManifestPath } from './manifest';
 import { publishIntegration } from './publish';
 import { authenticate, whoami } from './remote';
 
@@ -55,7 +55,9 @@ program
     .argument('[file]', 'integration definition file', DEFAULT_MANIFEST_FILE)
     .description('publish a new version of the integration')
     .action(async (filePath, options) => {
-        await publishIntegration(path.resolve(process.cwd(), filePath));
+        await publishIntegration(
+            await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath))
+        );
     });
 
 program.parseAsync().then(
