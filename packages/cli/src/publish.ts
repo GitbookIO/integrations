@@ -25,6 +25,7 @@ export async function publishIntegration(filePath: string): Promise<void> {
         scopes: manifest.scopes,
         categories: manifest.categories,
         configurations: manifest.configurations,
+        secrets: manifest.secrets,
         script,
     });
 
