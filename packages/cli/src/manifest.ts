@@ -20,6 +20,7 @@ export interface IntegrationManifest {
     scopes?: api.IntegrationScope[];
     categories?: api.IntegrationCategory[];
     configurations?: api.IntegrationConfigurations;
+    visibility?: api.IntegrationVisibility;
     secrets: { [key: string]: string };
 }
 
