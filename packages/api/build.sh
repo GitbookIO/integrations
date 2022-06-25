@@ -4,11 +4,18 @@ rm -rf ./dist/
 rm -rf ./spec/
 mkdir ./spec
 
+LOCAL_OPENAPI_FILE=../../../gitbook-x/packages/api-client/static/openapi.yaml
 
-if [[ ! -z "${CI}" ]]; then
-    curl https://api-getsquad-dev-samy.firebaseapp.com/openapi.yaml --output spec/openapi.yaml --silent 
+if [[ -z "${GITBOOK_OPENAPI_URL}" ]]; then
+  OPENAPI_URL="https://api.gitbook-staging.com/openapi.yaml"
 else
-    cp ../../../gitbook-x/packages/api-client/static/openapi.yaml spec/openapi.yaml
+  OPENAPI_URL="${GITBOOK_OPENAPI_URL}"
+fi
+
+if [ -f "$LOCAL_OPENAPI_FILE" ]; then
+    cp $LOCAL_OPENAPI_FILE spec/openapi.yaml
+else
+    curl $OPENAPI_URL --output spec/openapi.yaml --silent
 fi
 
 # First we build the API client from the OpenAPI definition
