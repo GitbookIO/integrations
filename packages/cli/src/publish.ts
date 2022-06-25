@@ -17,7 +17,7 @@ export async function publishIntegration(filePath: string): Promise<void> {
     const script = await buildScript(resolveFile(filePath, manifest.script));
 
     // Publish the integration.
-    const created = await api.integrations.publish(manifest.name, {
+    const created = await api.integrations.publishIntegration(manifest.name, {
         title: manifest.title,
         icon: manifest.icon ? await readIcon(resolveFile(filePath, manifest.icon)) : undefined,
         description: manifest.description,

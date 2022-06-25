@@ -11,6 +11,7 @@
         "@gitbook/tsconfig": "*"
     },
     "scripts": {
-        "lint": "eslint ./**/*.ts"
+        "lint": "eslint ./**/*.ts",
+        "publish-integrations": "gitbook publish ."
     }
 }

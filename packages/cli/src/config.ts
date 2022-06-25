@@ -17,6 +17,7 @@ export const config = new Conf<{
 }>({
     projectName: 'gitbook',
     defaults: {
-        endpoint: GITBOOK_DEFAULT_ENDPOINT,
+        endpoint: process.env.GITBOOK_ENDPOINT || GITBOOK_DEFAULT_ENDPOINT,
+        token: process.env.GITBOOK_TOKEN,
     },
 });

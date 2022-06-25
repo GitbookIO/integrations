@@ -33,3 +33,4 @@
 ## CLI
 
 * [Reference](cli/README.md)
+* [CI](cli/ci.md)
