@@ -4,5 +4,8 @@
   "devDependencies": {
     "@gitbook/cli": "*",
     "@gitbook/runtime": "*"
+  },
+  "scripts": {
+    "publish-integrations": "gitbook publish ."
   }
 }

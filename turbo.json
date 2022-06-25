@@ -18,6 +18,10 @@
     "typecheck": {
       "dependsOn": ["build"],
       "outputs": []
+    },
+    "publish-integrations": {
+      "dependsOn": ["build"],
+      "outputs": []
     }
   }
 }

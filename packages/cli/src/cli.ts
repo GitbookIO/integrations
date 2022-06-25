@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { program } from 'commander';
 import * as path from 'path';
 import prompts from 'prompts';
