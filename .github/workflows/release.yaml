@@ -51,7 +51,8 @@ jobs:
           npm ci
           npm run build
           npm ci
-      - name: Publish all integrations
+      - name: Publish all integrations to staging
         run: npm run publish-integrations
         env:
           GITBOOK_TOKEN: ${{ secrets.GITBOOK_STAGING_API_TOKEN }}
+          GITBOOK_ENDPOINT: https://api.gitbook-staging.com
