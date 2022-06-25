@@ -122,6 +122,12 @@ async function getManifestSchema() {
                     'components/schemas/Integration/properties/summary'
                 ),
             },
+            visibility: {
+                ...getAPIJsonSchemaFor(
+                    openAPISpec,
+                    'components/schemas/Integration/properties/visibility'
+                ),
+            },
             icon: {
                 type: 'string',
             },

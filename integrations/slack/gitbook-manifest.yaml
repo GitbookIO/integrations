@@ -2,6 +2,7 @@ name: slack
 title: Slack
 icon: ./icon.png
 description: Notify a channel or individual in Slack with real-time events from GitBook.
+visibility: public
 script: ./script.ts
 scopes:
   - space:content
