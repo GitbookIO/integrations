@@ -50,4 +50,4 @@ jobs:
       - name: Publish all integrations
         run: npm run publish-integrations
         env:
-          GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
+          GITBOOK_TOKEN: ${{ secrets.GITBOOK_STAGING_API_TOKEN }}
