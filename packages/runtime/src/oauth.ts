@@ -97,10 +97,8 @@ export function createOAuthHandler(
                 environment.integration.name,
                 environment.installation.id,
                 {
-                    configurations: {
-                        account: {
-                            [installationCredentialsKey]: extractCredentials(json),
-                        },
+                    configuration: {
+                        [installationCredentialsKey]: extractCredentials(json),
                     },
                 }
             );
