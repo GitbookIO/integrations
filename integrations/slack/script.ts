@@ -3,7 +3,7 @@ import { Router } from 'itty-router';
 import { api, createOAuthHandler } from '@gitbook/runtime';
 
 const router = Router({
-    base: `/hooks/integrations/${environment.integration.name}/installations/${environment.installation.id}`,
+    base: `/v1/integrations/${environment.integration.name}/installations/${environment.installation.id}`,
 });
 
 /*
@@ -49,7 +49,7 @@ addEventListener('fetch', (event, eventContext) => {
  * Handle content being updated: send a notification on Slack.
  */
 addEventListener('space:content:updated', async (event) => {
-    const conversation = environment.installation.configurations?.space?.conversation;
+    const conversation = environment.spaceInstallation.configuration.conversation;
     if (!conversation) {
         // Integration not yet configured.
         return;
@@ -71,8 +71,7 @@ async function executeSlackAPIRequest(
     apiMethod: string,
     payload: { [key: string]: any } = {}
 ) {
-    const accessToken =
-        environment.installation.configurations?.space?.oauth_credentials?.access_token;
+    const accessToken = environment.installation.configuration.oauth_credentials?.access_token;
     if (!accessToken) {
         throw new Error('Connection not ready');
     }

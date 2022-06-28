@@ -32,7 +32,7 @@ Edit the `gitbook-manifest.yaml` file to define the following configuration:
 ```yaml
 ...
 configurations:
-  space:
+  account:
     properties:
       oauth_credentials:
         type: button

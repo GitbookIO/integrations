@@ -1,6 +1,6 @@
 
 addEventListener('space:view', async (event) => {
-    const writeKey = environment.installation.configurations?.space?.write_key;
+    const writeKey = environment.spaceInstallation.configuration.write_key;
     if (!writeKey) {
         return;
     }
