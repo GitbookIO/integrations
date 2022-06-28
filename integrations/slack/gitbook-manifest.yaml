@@ -10,7 +10,7 @@ summary: |
     Configure the Slack integrations to be notified about events occuring on GitBook (content updated, comments, etc).
     Using the /gitbook command, you can also search all your content right from your Slack workspace.
 configurations:
-  space:
+  account:
     properties:
       oauth_credentials:
         type: button
@@ -18,6 +18,10 @@ configurations:
         description: Authorization between Slack and GitBook.
         button_text: Authorize
         callback_url: /oauth
+    required:
+      - oauth_credentials
+  space:
+    properties:
       conversation:
         type: string
         title: Channel
@@ -29,7 +33,6 @@ configurations:
         description: Post a notification message every time the content of the space is updated.
         default: true
     required:
-      - oauth_credentials
       - conversation
 secrets:
   # TOOD replace with {env.CLIENT_ID} to use an env
