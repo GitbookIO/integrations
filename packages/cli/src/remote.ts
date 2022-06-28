@@ -31,7 +31,7 @@ export async function authenticate(endpoint: string, authToken: string): Promise
         authToken,
     });
 
-    const { data: user } = await api.user.getAuthenticated();
+    const { data: user } = await api.user.getAuthenticatedUser();
 
     config.set('endpoint', endpoint);
     config.set('token', authToken);
@@ -48,7 +48,7 @@ export async function whoami(): Promise<void> {
 
     if (authToken) {
         const api = await getAPIClient();
-        const { data: user } = await api.user.getAuthenticated();
+        const { data: user } = await api.user.getAuthenticatedUser();
 
         console.log(`Authenticated as ${user.displayName} on ${endpoint}`);
     } else {
