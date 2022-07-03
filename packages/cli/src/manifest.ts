@@ -158,7 +158,10 @@ async function getManifestSchema() {
                 ...getAPIJsonSchemaFor(openAPISpec, 'components/schemas/IntegrationSecrets'),
             },
             organization: {
-                type: 'string',
+                ...getAPIJsonSchemaFor(
+                    openAPISpec,
+                    'components/schemas/requests/PublishIntegration/properties/organization'
+                ),
             },
         },
         required: ['name', 'title', 'script', 'scopes'],
