@@ -14,7 +14,7 @@ Pages will now include 2 properties:
 
 ### Breaking: `url` path parameter for page lookup by path
 
-Requests on page using an url will now require an URL encoded page's path.
+Requests on page using a URL will now require a URL encoded page's path.
 For example the previous request:
 
 ```
