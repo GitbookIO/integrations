@@ -160,7 +160,7 @@ async function getManifestSchema() {
             organization: {
                 ...getAPIJsonSchemaFor(
                     openAPISpec,
-                    'components/schemas/requests/PublishIntegration/properties/organization'
+                    'components/schemas/RequestPublishIntegration/properties/organization'
                 ),
             },
         },
