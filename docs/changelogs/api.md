@@ -4,6 +4,12 @@ All notable changes to the REST API will be documented in this page.
 
 ## 2022-06-30
 
+## Breaking: removing `/v1/owners/:id` endpoints
+
+Endpoint `/v1/owners/:id/spaces` has been removed and replaced by:
+- `/v1/orgs/:id/spaces` for an organization
+- `/v1/users/:id/spaces` for a user
+
 ## Breaking: `path` and `slug` properties in pages
 
 Page previously had only one `path` property representing the page slug in its direct page parent.
