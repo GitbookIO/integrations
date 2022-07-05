@@ -37,6 +37,6 @@
 
 ---
 
-* ChangeLogs
+* Changelogs
   * [API](changelogs/api.md)
   * [Integrations](changelogs/integrations.md)
