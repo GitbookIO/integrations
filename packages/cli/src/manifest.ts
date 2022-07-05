@@ -21,6 +21,7 @@ export interface IntegrationManifest {
     categories?: api.IntegrationCategory[];
     configurations?: api.IntegrationConfigurations;
     visibility?: api.IntegrationVisibility;
+    organization?: string;
     secrets: { [key: string]: string };
 }
 
@@ -155,6 +156,12 @@ async function getManifestSchema() {
             },
             secrets: {
                 ...getAPIJsonSchemaFor(openAPISpec, 'components/schemas/IntegrationSecrets'),
+            },
+            organization: {
+                ...getAPIJsonSchemaFor(
+                    openAPISpec,
+                    'components/schemas/requests/PublishIntegration/properties/organization'
+                ),
             },
         },
         required: ['name', 'title', 'script', 'scopes'],
