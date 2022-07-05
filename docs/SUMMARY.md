@@ -34,3 +34,9 @@
 
 * [Reference](cli/README.md)
 * [CI](cli/ci.md)
+
+---
+
+* Changelogs
+  * [API](changelogs/api.md)
+  * [Integrations](changelogs/integrations.md)
