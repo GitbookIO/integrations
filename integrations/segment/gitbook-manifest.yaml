@@ -1,15 +1,14 @@
 name: segment
 title: Segment
+icon: ./icon.png
 description: Send page views to any Destination in Segment.
 visibility: public
+script: ./script.ts
+scopes:
+  - space:views
 summary: |
     Configure the Segment integration to track an event for all page views in your space.
     The page views will be tracked as a `gitbook.space.view` event.
-
-script: script.ts
-icon: icon.png
-scopes:
-  - space:views
 categories:
   - analytics
 configurations:
