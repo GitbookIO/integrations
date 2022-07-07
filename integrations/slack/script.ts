@@ -55,11 +55,11 @@ addEventListener('space:content:updated', async (event) => {
         return;
     }
 
-    const space = await api.spaces.getSpace(event.spaceId);
+    const { data: space } = await api.spaces.getSpaceById(event.spaceId);
 
     await executeSlackAPIRequest('POST', 'chat.postMessage', {
         channel: conversation,
-        text: `Content in "${space.data.title}" has been updated`,
+        text: `Content in "${space.title}" has been updated`,
     });
 });
 
