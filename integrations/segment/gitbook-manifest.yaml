@@ -17,6 +17,6 @@ configurations:
       write_key:
         type: string
         title: Write Key
-        description: Key provided by Segment to present the destination.
+        description: Key provided by Segment to identify the data source.
     required:
       - write_key
