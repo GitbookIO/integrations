@@ -1,4 +1,3 @@
-
 addEventListener('space:view', async (event) => {
     const writeKey = environment.spaceInstallation.configuration.write_key;
     if (!writeKey) {
@@ -9,17 +8,15 @@ addEventListener('space:view', async (event) => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Basic ${btoa(`${writeKey}:`)}`
+            Authorization: `Basic ${btoa(`${writeKey}:`)}`,
         },
         body: JSON.stringify({
-            "anonymousId": event.visitorId,
-            "event": "gitbook.space.view",
-            "properties": {
-                
+            anonymousId: event.visitorId,
+            event: 'gitbook.space.view',
+            properties: {},
+            context: {
+                ip: event.visitorIp,
             },
-            "context": {
-                "ip": event.visitorIp
-            },
-        })
-    })
+        }),
+    });
 });
