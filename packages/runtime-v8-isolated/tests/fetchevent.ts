@@ -140,4 +140,34 @@ test('FetchEvent', async (t) => {
             returnValue: undefined,
         });
     });
+
+    await t.test('should accept a Uint8Array body', async () => {
+        const code = `
+            addEventListener('fetch', async (event) => {
+                const payload = await event.request.json();
+                return new Response('Hello ' + payload.name);
+            });
+            `;
+
+        const body = new TextEncoder().encode(JSON.stringify({ name: 'John' }));
+
+        const result = await runIsolatedEvent(code, {
+            type: 'fetch',
+            request: {
+                body,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            },
+        });
+
+        assert.deepEqual(result, {
+            logs: [],
+            returnValue: {
+                body: 'Hello John',
+                headers: {},
+                status: 200,
+            },
+        });
+    });
 });

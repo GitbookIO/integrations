@@ -75,7 +75,7 @@ export class BodyMixin implements Body {
             return this.bodySource;
         }
 
-        const arr = await this.arrayBuffer();
+        const arr = new Uint8Array(await this.arrayBuffer());
         return new TextDecoder('utf-8').decode(arr);
     }
 
@@ -116,23 +116,21 @@ export class BodyMixin implements Body {
 
 /** @hidden */
 function validateBodyType(owner: any, bodySource: any) {
-    // if (
-    //     bodySource instanceof Int8Array ||
-    //     bodySource instanceof Int16Array ||
-    //     bodySource instanceof Int32Array ||
-    //     bodySource instanceof Uint8Array ||
-    //     bodySource instanceof Uint16Array ||
-    //     bodySource instanceof Uint32Array ||
-    //     bodySource instanceof Uint8ClampedArray ||
-    //     bodySource instanceof Float32Array ||
-    //     bodySource instanceof Float64Array
-    // ) {
-    //     return true;
-    // } else if (bodySource instanceof ArrayBuffer) {
-    //     return true;
-    // } else
-
-    if (typeof bodySource === 'string') {
+    if (
+        bodySource instanceof Int8Array ||
+        bodySource instanceof Int16Array ||
+        bodySource instanceof Int32Array ||
+        bodySource instanceof Uint8Array ||
+        bodySource instanceof Uint16Array ||
+        bodySource instanceof Uint32Array ||
+        bodySource instanceof Uint8ClampedArray ||
+        bodySource instanceof Float32Array ||
+        bodySource instanceof Float64Array
+    ) {
+        return true;
+    } else if (bodySource instanceof ArrayBuffer) {
+        return true;
+    } else if (typeof bodySource === 'string') {
         return true;
     }
     // else if (bodySource instanceof ReadableStream) {
