@@ -1,5 +1,17 @@
 # @gitbook/runtime-v8-isolated
 
+## 0.0.4
+
+### Patch Changes
+
+- 84fae61:
+
+## 0.0.3
+
+### Patch Changes
+
+- 7a427a0: - Fix runtime-v8-isolated fetch event callback params
+
 ## 0.0.2
 
 ### Patch Changes
