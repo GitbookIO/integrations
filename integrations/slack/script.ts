@@ -3,7 +3,9 @@ import { Router } from 'itty-router';
 import { api, createOAuthHandler } from '@gitbook/runtime';
 
 const router = Router({
-    base: `/v1/integrations/${environment.integration.name}/installations/${environment.installation.id}`,
+    base: new URL(
+        environment.installation?.urls.publicEndpoint || environment.integration.urls.publicEndpoint
+    ).pathname,
 });
 
 /*
