@@ -1,5 +1,11 @@
 # @gitbook/runtime-v8-isolated
 
+## 0.0.4
+
+### Patch Changes
+
+- 84fae61:
+
 ## 0.0.3
 
 ### Patch Changes
