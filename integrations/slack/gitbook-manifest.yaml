@@ -37,8 +37,6 @@ configurations:
         title: Notify Content Update
         description: Post a notification message every time the content of the space is updated.
         default: true
-    required:
-      - conversation
 secrets:
   # TOOD replace with {env.CLIENT_ID} to use an env
   CLIENT_ID: '3085992729.3609034129490'
