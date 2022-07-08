@@ -93,7 +93,7 @@ export function createOAuthHandler(
             const json = await response.json();
 
             // Store the credentials in the installation configuration
-            await api.integrations.updateInstallation(
+            await api.integrations.updateIntegrationInstallation(
                 environment.integration.name,
                 environment.installation.id,
                 {

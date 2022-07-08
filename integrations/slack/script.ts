@@ -49,7 +49,9 @@ addEventListener('fetch', (event, eventContext) => {
  * Handle content being updated: send a notification on Slack.
  */
 addEventListener('space:content:updated', async (event) => {
-    const conversation = environment.spaceInstallation.configuration.conversation;
+    const conversation =
+        environment.spaceInstallation.configuration.conversation ||
+        environment.installation.configuration.default_conversation;
     if (!conversation) {
         // Integration not yet configured.
         return;

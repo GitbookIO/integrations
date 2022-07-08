@@ -18,6 +18,11 @@ configurations:
         description: Authorization between Slack and GitBook.
         button_text: Authorize
         callback_url: /oauth
+      default_conversation:
+        type: string
+        title: Default Channel
+        description: Select a channel to post messages to when none is configured for a specific space.
+        completion_url: /conversations
     required:
       - oauth_credentials
   space:
@@ -25,7 +30,7 @@ configurations:
       conversation:
         type: string
         title: Channel
-        description: Select a channel to post message to.
+        description: Select a channel to post messages related to this spaces to.
         completion_url: /conversations
       notify_content_update:
         type: boolean
