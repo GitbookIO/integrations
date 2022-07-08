@@ -9,7 +9,7 @@ features:
     - getsquad-dev-samy.firebaseapp.com
 oauth_config:
   redirect_urls:
-    - https://integrations-getsquad-dev-samy.firebaseapp.com/v1/integrations/slack/
+    - https://integrations-getsquad-dev-samy.firebaseapp.com/v1/integrations/slack/integration/
   scopes:
     bot:
       - chat:write
@@ -17,7 +17,7 @@ oauth_config:
       - links:write
 settings:
   event_subscriptions:
-    request_url: https://integrations-getsquad-dev-samy.firebaseapp.com/v1/integrations/slack/events
+    request_url: https://integrations-getsquad-dev-samy.firebaseapp.com/v1/integrations/slack/integration/events
     bot_events:
       - link_shared
   org_deploy_enabled: false
