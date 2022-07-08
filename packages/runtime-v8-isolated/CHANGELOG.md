@@ -1,5 +1,13 @@
 # @gitbook/runtime-v8-isolated
 
+## 0.0.5
+
+### Patch Changes
+
+- bb81a29: Add support for Uint8Array for fetch event request body
+- Updated dependencies [bb81a29]
+  - @gitbook/runtime-v8-stdlib@0.0.4
+
 ## 0.0.4
 
 ### Patch Changes
