@@ -34,7 +34,7 @@ export function addEventListener(type, eventHandler) {
             const fetchEvent = new FetchEvent(event.type, event, callback);
 
             try {
-                const result = await eventHandler(fetchEvent);
+                const result = await eventHandler(fetchEvent, context);
 
                 if (result && !this.respondWithEntered) {
                     fetchEvent.respondWith(result);
