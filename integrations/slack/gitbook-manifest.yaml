@@ -31,7 +31,7 @@ configurations:
       conversation:
         type: string
         title: Channel
-        description: Select a channel to post messages related to this spaces to.
+        description: Select a channel to post messages related to this space.
         completion_url: /conversations
       notify_content_update:
         type: boolean
