@@ -19,4 +19,20 @@ test('URL', async (t) => {
             },
         ]);
     });
+
+    await t.test('should correctly extract pathname', async () => {
+        const code = `
+        const url = new URL('https://integrations-getsquad-dev-samy.firebaseapp.com/v1/integrations/slack/integration');
+        console.log(url.pathname)
+    `;
+
+        const result = await runIsolatedEvent(code, { type: 'test' });
+
+        assert.deepEqual(result.logs, [
+            {
+                level: 'info',
+                message: '["/v1/integrations/slack/integration"]',
+            },
+        ]);
+    });
 });

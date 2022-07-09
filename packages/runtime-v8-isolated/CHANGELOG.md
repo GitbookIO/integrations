@@ -1,5 +1,28 @@
 # @gitbook/runtime-v8-isolated
 
+## 0.0.7
+
+### Patch Changes
+
+- 1a14122: Improve TextEncoder and TextDecoder by using a bridge function
+- Updated dependencies [1a14122]
+  - @gitbook/runtime-v8-stdlib@0.0.7
+
+## 0.0.6
+
+### Patch Changes
+
+- 320945d: Fix dependency on stdlib
+  - @gitbook/runtime-v8-stdlib@0.0.6
+
+## 0.0.5
+
+### Patch Changes
+
+- bb81a29: Add support for Uint8Array for fetch event request body
+- Updated dependencies [bb81a29]
+  - @gitbook/runtime-v8-stdlib@0.0.4
+
 ## 0.0.4
 
 ### Patch Changes

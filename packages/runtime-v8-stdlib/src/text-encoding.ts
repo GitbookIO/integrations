@@ -1,7 +1,8 @@
+import * as bridge from './bridge';
+
 export class TextEncoder {
     public encode(input) {
-        // TODO
-        return input;
+        return bridge._encodeStringToBuffer(input);
     }
 }
 
@@ -11,7 +12,6 @@ export class TextDecoder {
         this.encoding = encoding;
     }
     public decode(input) {
-        // TODO
-        return input;
+        return bridge._decodeBufferToString(input, this.encoding);
     }
 }

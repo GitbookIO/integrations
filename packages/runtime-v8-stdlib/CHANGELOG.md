@@ -1,5 +1,25 @@
 # @gitbook/runtime-v8-stdlib
 
+## 0.0.7
+
+### Patch Changes
+
+- 1a14122: Improve TextEncoder and TextDecoder by using a bridge function
+
+## 0.0.6
+
+## 0.0.4
+
+### Patch Changes
+
+- bb81a29: Add support for Uint8Array for fetch event request body
+
+## 0.0.3
+
+### Patch Changes
+
+- 028e46f:
+
 ## 0.0.2
 
 ### Patch Changes

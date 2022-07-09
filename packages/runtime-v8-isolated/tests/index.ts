@@ -4,3 +4,5 @@ import './environment';
 import './fetch';
 import './fetchevent';
 import './url';
+import './binary';
+import './text-encoding';

@@ -2,7 +2,9 @@
   "$schema": "https://unpkg.com/@changesets/config@2.0.0/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": false,
-  "fixed": [],
+  "fixed": [
+    ["@gitbook/runtime-v8-isolated", "@gitbook/runtime-v8-stdlib"]
+  ],
   "linked": [],
   "access": "public",
   "baseBranch": "main",
