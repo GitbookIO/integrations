@@ -1,5 +1,12 @@
 # @gitbook/runtime-v8-isolated
 
+## 0.0.6
+
+### Patch Changes
+
+- 320945d: Fix dependency on stdlib
+  - @gitbook/runtime-v8-stdlib@0.0.6
+
 ## 0.0.5
 
 ### Patch Changes
