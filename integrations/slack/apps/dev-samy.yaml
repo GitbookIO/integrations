@@ -9,9 +9,10 @@ features:
     - getsquad-dev-samy.firebaseapp.com
 oauth_config:
   redirect_urls:
-    - https://integrations-getsquad-dev-samy.firebaseapp.com/v1/integrations/slack/integration/
+    - https://integrations-getsquad-dev-samy.firebaseapp.com/v1/integrations/slack/
   scopes:
     bot:
+      - channels:read
       - chat:write
       - links:read
       - links:write

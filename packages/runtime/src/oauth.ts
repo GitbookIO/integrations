@@ -1,11 +1,8 @@
+import { RequestUpdateIntegrationInstallation } from '@gitbook/api';
+
 import { api } from './api';
 
 export interface OAuthConfig {
-    /**
-     * Key in the installation configuration to use for storing the oauth credentials.
-     */
-    installationCredentialsKey?: string;
-
     /**
      * ID of the client application in the OAuth provider.
      */
@@ -29,7 +26,9 @@ export interface OAuthConfig {
     /**
      * Extract the credentials from the code exchange response.
      */
-    extractCredentials?: (response: object) => Promise<any>;
+    extractCredentials?: (
+        response: object
+    ) => RequestUpdateIntegrationInstallation | Promise<RequestUpdateIntegrationInstallation>;
 }
 
 /**
@@ -42,8 +41,11 @@ export function createOAuthHandler(
     config: OAuthConfig
 ): (event: FetchEvent | Request) => Promise<Response> {
     const {
-        installationCredentialsKey = 'oauth_credentials',
-        extractCredentials = (response) => ({ access_token: response.access_token }),
+        extractCredentials = (response) => ({
+            configuration: {
+                oauth_credentials: { access_token: response.access_token },
+            },
+        }),
     } = config;
 
     return async (event) => {
@@ -96,11 +98,7 @@ export function createOAuthHandler(
             await api.integrations.updateIntegrationInstallation(
                 environment.integration.name,
                 environment.installation.id,
-                {
-                    configuration: {
-                        [installationCredentialsKey]: extractCredentials(json),
-                    },
-                }
+                await extractCredentials(json)
             );
 
             return new Response(

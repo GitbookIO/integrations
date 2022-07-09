@@ -7,12 +7,8 @@ export function createSlackEventsHandler(handlers: {
     [type: string]: (event: object) => Promise<any>;
 }): (request: Request) => Promise<Response> {
     return async (request) => {
-        const eventText = await request.text();
-
-        console.log('eventText', eventText);
-        return new Response(`got ${eventText}`, { status: 200 });
-
         const event = await request.json();
+        console.log('receive events', JSON.stringify(event, null, 2));
 
         if (!event.type) {
             return new Response(`Invalid event`, {
@@ -20,9 +16,10 @@ export function createSlackEventsHandler(handlers: {
             });
         }
 
-        const handler = handlers[event.type];
+        const eventType = event.event?.type || event.type;
+        const handler = handlers[eventType];
         if (!handler) {
-            return new Response(`No handler for event type "${event.type}"`, {
+            return new Response(`No handler for event type "${eventType}"`, {
                 status: 404,
             });
         }

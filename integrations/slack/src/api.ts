@@ -4,9 +4,14 @@
 export async function executeSlackAPIRequest(
     httpMethod: string,
     apiMethod: string,
-    payload: { [key: string]: any } = {}
+    payload: { [key: string]: any } = {},
+    options: {
+        accessToken?: string;
+    } = {}
 ) {
-    const accessToken = environment.installation.configuration.oauth_credentials?.access_token;
+    const accessToken =
+        options.accessToken ||
+        environment.installation.configuration.oauth_credentials?.access_token;
     if (!accessToken) {
         throw new Error('Connection not ready');
     }
@@ -14,26 +19,24 @@ export async function executeSlackAPIRequest(
     const url = new URL(`https://slack.com/api/${apiMethod}`);
 
     let body;
+    const headers = {};
 
     if (httpMethod === 'GET') {
         url.searchParams.set('token', accessToken);
     } else {
-        const params = new URLSearchParams();
-        params.set('token', accessToken);
-
-        Object.entries(payload).forEach(([key, value]) => {
-            params.set(key, value);
-        });
-
-        body = params.toString();
+        headers['Content-Type'] = 'application/json';
+        body = JSON.stringify({ ...payload, token: accessToken });
     }
 
+    console.log('executeSlackAPIRequest', url.toString(), {
+        method: httpMethod,
+        body,
+        headers,
+    });
     const response = await fetch(url.toString(), {
         method: httpMethod,
         body,
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
+        headers,
     });
 
     if (!response.ok) {
