@@ -1,5 +1,7 @@
 # @gitbook/runtime-v8-stdlib
 
+## 0.0.6
+
 ## 0.0.4
 
 ### Patch Changes
