@@ -141,7 +141,7 @@ test('FetchEvent', async (t) => {
         });
     });
 
-    await t.test('should accept a Uint8Array body', async () => {
+    await t.test('should accept a Uint8Array body (as json)', async () => {
         const code = `
             addEventListener('fetch', async (event) => {
                 const payload = await event.request.json();
@@ -165,6 +165,60 @@ test('FetchEvent', async (t) => {
             logs: [],
             returnValue: {
                 body: 'Hello John',
+                headers: {},
+                status: 200,
+            },
+        });
+    });
+
+    await t.test('should accept a Uint8Array body', async () => {
+        const code = `
+            addEventListener('fetch', async (event) => {
+                const buf = await event.request.arrayBuffer();
+                return new Response('Hello ' + buf.byteLength);
+            });
+            `;
+
+        const body = new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+
+        const result = await runIsolatedEvent(code, {
+            type: 'fetch',
+            request: {
+                body,
+            },
+        });
+
+        assert.deepEqual(result, {
+            logs: [],
+            returnValue: {
+                body: 'Hello 10',
+                headers: {},
+                status: 200,
+            },
+        });
+    });
+
+    await t.test('should accept a Uint8Array body (as text)', async () => {
+        const code = `
+            addEventListener('fetch', async (event) => {
+                const text = await event.request.text();
+                return new Response('Hello ' + text);
+            });
+            `;
+
+        const body = new TextEncoder().encode('John Doe');
+
+        const result = await runIsolatedEvent(code, {
+            type: 'fetch',
+            request: {
+                body,
+            },
+        });
+
+        assert.deepEqual(result, {
+            logs: [],
+            returnValue: {
+                body: 'Hello John Doe',
                 headers: {},
                 status: 200,
             },
