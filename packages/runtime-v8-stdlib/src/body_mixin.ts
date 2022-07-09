@@ -102,12 +102,14 @@ export class BodyMixin implements Body {
         } else if (typeof this.bodySource === 'string') {
             const enc = new TextEncoder();
             return enc.encode(this.bodySource).buffer as ArrayBuffer;
-        } else if (this.bodySource instanceof ReadableStream) {
-            return bufferFromStream(this.bodySource.getReader());
-        } else if (this.bodySource instanceof FormData) {
-            const enc = new TextEncoder();
-            return enc.encode(this.bodySource.toString()).buffer as ArrayBuffer;
-        } else if (!this.bodySource) {
+        }
+        // else if (this.bodySource instanceof ReadableStream) {
+        //     return bufferFromStream(this.bodySource.getReader());
+        // } else if (this.bodySource instanceof FormData) {
+        //     const enc = new TextEncoder();
+        //     return enc.encode(this.bodySource.toString()).buffer as ArrayBuffer;
+        // }
+        else if (!this.bodySource) {
             return new ArrayBuffer(0);
         }
         throw new Error(`Body type not yet implemented: ${this.bodySource.constructor.name}`);
@@ -144,38 +146,38 @@ function validateBodyType(owner: any, bodySource: any) {
     throw new Error(`Bad ${owner.constructor.name} body type: ${bodySource.constructor.name}`);
 }
 
-function bufferFromStream(stream: ReadableStreamReader): Promise<ArrayBuffer> {
-    return new Promise((resolve, reject) => {
-        const parts: Uint8Array[] = [];
-        const encoder = new TextEncoder();
-        // recurse
-        (function pump() {
-            stream
-                .read()
-                .then(({ done, value }) => {
-                    if (done) {
-                        return resolve(concatenate(...parts));
-                    }
+// function bufferFromStream(stream: ReadableStreamReader): Promise<ArrayBuffer> {
+//     return new Promise((resolve, reject) => {
+//         const parts: Uint8Array[] = [];
+//         const encoder = new TextEncoder();
+//         // recurse
+//         (function pump() {
+//             stream
+//                 .read()
+//                 .then(({ done, value }) => {
+//                     if (done) {
+//                         return resolve(concatenate(...parts));
+//                     }
 
-                    if (typeof value === 'string') {
-                        parts.push(encoder.encode(value));
-                    } else if (value instanceof ArrayBuffer) {
-                        parts.push(new Uint8Array(value));
-                    } else if (!value) {
-                        // noop for undefined
-                    } else {
-                        console.log('unhandled type on stream read:', value);
-                        reject('unhandled type on stream read');
-                    }
+//                     if (typeof value === 'string') {
+//                         parts.push(encoder.encode(value));
+//                     } else if (value instanceof ArrayBuffer) {
+//                         parts.push(new Uint8Array(value));
+//                     } else if (!value) {
+//                         // noop for undefined
+//                     } else {
+//                         console.log('unhandled type on stream read:', value);
+//                         reject('unhandled type on stream read');
+//                     }
 
-                    return pump();
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        })();
-    });
-}
+//                     return pump();
+//                 })
+//                 .catch((err) => {
+//                     reject(err);
+//                 });
+//         })();
+//     });
+// }
 
 /** @hidden */
 function concatenate(...arrays: Uint8Array[]): ArrayBuffer {

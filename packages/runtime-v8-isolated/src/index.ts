@@ -78,6 +78,18 @@ export async function runIsolatedEvent<EventType extends { type: string } = { ty
         })
     );
 
+    jail.setSync('__encodeStringToBuffer', (input: string) => {
+        const buffer = Buffer.from(input);
+        const result = createIsolatedBuffer(buffer);
+
+        return result;
+    });
+
+    jail.setSync('__decodeBufferToString', (input: Uint8Array, encoding: 'utf-8') => {
+        const buffer = Buffer.from(input);
+        return buffer.toString(encoding);
+    });
+
     jail.setSync('environment', new ivm.ExternalCopy(eventEnvironment).copyInto({ release: true }));
 
     jail.setSync('__fetch', (url, request, body, callback) => {
@@ -139,6 +151,21 @@ export async function runIsolatedEvent<EventType extends { type: string } = { ty
             ]);
         });
     });
+
+    return result;
+}
+
+/**
+ * To avoid any memory issue between the isolated context and te main context.
+ * We need to allocate fresh new memory.
+ */
+export function createIsolatedBuffer(rawBody: Buffer): Uint8Array {
+    const arrayBuffer = new ArrayBuffer(rawBody.length);
+    const result = new Uint8Array(arrayBuffer, 0, rawBody.length);
+
+    for (let index = 0; index < rawBody.length; index++) {
+        result[index] = rawBody[index];
+    }
 
     return result;
 }
