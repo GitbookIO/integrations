@@ -19,20 +19,18 @@ export async function executeSlackAPIRequest(
     const url = new URL(`https://slack.com/api/${apiMethod}`);
 
     let body;
-    const headers = {};
+    const headers: {
+        [key: string]: string;
+    } = {};
 
     if (httpMethod === 'GET') {
         url.searchParams.set('token', accessToken);
     } else {
+        headers.Authorization = `Bearer ${accessToken}`;
         headers['Content-Type'] = 'application/json';
-        body = JSON.stringify({ ...payload, token: accessToken });
+        body = JSON.stringify(payload);
     }
 
-    console.log('executeSlackAPIRequest', url.toString(), {
-        method: httpMethod,
-        body,
-        headers,
-    });
     const response = await fetch(url.toString(), {
         method: httpMethod,
         body,
