@@ -40,13 +40,7 @@ export async function unfurlLink(event: LinkSharedSlackEvent) {
     }
 
     // Authentify as the installation
-    const { data: installationToken } = await api.integrations.createIntegrationInstallationToken(
-        'slack',
-        installation.id
-    );
-    const installationApiClient = new gitbook.GitBookAPI({
-        authToken: installationToken.token,
-    });
+    const installationApiClient = await api.createInstallationClient('slack', installation.id);
 
     // Resolve links to their content
     const unfurls = {};
@@ -54,11 +48,11 @@ export async function unfurlLink(event: LinkSharedSlackEvent) {
         event.event.links.map(async (link) => {
             console.log('unfurl link', link.url, encodeURIComponent(link.url));
 
-            const { data: content } = await installationApiClient.urls.getContentByUrl({
+            const { data: content, url } = await installationApiClient.urls.getContentByUrl({
                 url: link.url,
             });
 
-            console.log('got', content);
+            console.log('got', url, content);
 
             if (!content) {
                 return;
@@ -105,7 +99,7 @@ function createBlocksForSpace(space: gitbook.Space) {
                 fields: [
                     {
                         type: 'mrkdwn',
-                        text: `*Visibility:*\${space.visibility}`,
+                        text: `*Visibility:*\n${space.visibility}`,
                     },
                     {
                         type: 'mrkdwn',
