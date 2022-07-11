@@ -1,13 +1,13 @@
 {
     "name": "@gitbook/runtime-v8-isolated",
-    "version": "0.0.7",
+    "version": "0.1.0",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "dependencies": {
         "isolated-vm": "^4.4.1",
         "node-fetch": "^2.6.7",
         "p-map": "^4.0.0",
-        "@gitbook/runtime-v8-stdlib": "0.0.7"
+        "@gitbook/runtime-v8-stdlib": "0.1.0"
     },
     "devDependencies": {
         "esbuild": "^0.14.42",
