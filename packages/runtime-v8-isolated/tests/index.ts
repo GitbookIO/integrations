@@ -6,3 +6,4 @@ import './fetchevent';
 import './url';
 import './binary';
 import './text-encoding';
+import './base64';
