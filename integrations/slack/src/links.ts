@@ -103,7 +103,9 @@ function createBlocksForSpace(space: gitbook.Space) {
                     },
                     {
                         type: 'mrkdwn',
-                        text: `*Last updated:*\n${space.updatedAt}`,
+                        text: `*Last updated:*\n<!date^${getUnixTimestamp(
+                            space.updatedAt
+                        )}^{date} at {time}|${space.updatedAt}>`,
                     },
                 ],
                 accessory: {
@@ -145,4 +147,8 @@ function createBlocksForCollection(collection: gitbook.Collection) {
             },
         ],
     };
+}
+
+function getUnixTimestamp(ISODateString: string) {
+    return Math.floor(new Date(ISODateString).getTime() / 1000);
 }
