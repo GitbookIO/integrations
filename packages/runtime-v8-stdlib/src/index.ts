@@ -16,8 +16,12 @@ import {
 } from './streams';
 import { TextEncoder, TextDecoder } from './text-encoding';
 import { URL, URLSearchParams } from './url';
+import { btoa, atob } from './base64';
 
 global.console = console;
+global.btoa = btoa;
+global.atob = atob;
+
 global.URL = URL;
 global.URLSearchParams = URLSearchParams;
 
