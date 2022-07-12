@@ -28,6 +28,12 @@ export async function publishIntegration(filePath: string): Promise<void> {
         secrets: manifest.secrets,
         visibility: manifest.visibility,
         organization: manifest.organization,
+        externalLinks: manifest.externalLinks,
+        previewImages: await Promise.all(
+            (manifest.previewImages || []).map(async (imageFilePath) =>
+                readIcon(resolveFile(filePath, imageFilePath), 1024 * 1024)
+            )
+        ),
         script,
     });
 
@@ -56,16 +62,18 @@ async function buildScript(filePath: string): Promise<string> {
 /**
  * Read and compile an icon.
  */
-export async function readIcon(filePath: string): Promise<string> {
+export async function readIcon(filePath: string, sizeLimit: number = 250 * 1024): Promise<string> {
     if (path.extname(filePath) !== '.png') {
         throw new Error(
-            `Invalid icon file extension for ${filePath}. Only PNG files are accepted.`
+            `Invalid image file extension for ${filePath}. Only PNG files are accepted.`
         );
     }
 
     const content = await fs.promises.readFile(filePath);
-    if (content.length > 250 * 1024) {
-        throw new Error(`Icon file ${filePath} is too large. Maximum size is 250KB.`);
+    if (content.length > sizeLimit) {
+        throw new Error(
+            `Image file ${filePath} is too large. Maximum size is ${sizeLimit / 1024}KB.`
+        );
     }
 
     return content.toString('base64');

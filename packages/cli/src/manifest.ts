@@ -1,4 +1,5 @@
 import Ajv, { Schema } from 'ajv';
+import addFormats from 'ajv-formats';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import * as path from 'path';
@@ -21,6 +22,8 @@ export interface IntegrationManifest {
     categories?: api.IntegrationCategory[];
     configurations?: api.IntegrationConfigurations;
     visibility?: api.IntegrationVisibility;
+    previewImages?: api.Integration['previewImages'];
+    externalLinks?: api.Integration['externalLinks'];
     organization?: string;
     secrets: { [key: string]: string };
 }
@@ -94,6 +97,7 @@ async function validateIntegrationManifest(data: object): Promise<IntegrationMan
  */
 async function getManifestSchema() {
     const ajv = new Ajv();
+    addFormats(ajv);
 
     const openAPISpec = await getAPISchema();
 
@@ -135,6 +139,18 @@ async function getManifestSchema() {
             },
             script: {
                 type: 'string',
+            },
+            previewImages: {
+                type: 'array',
+                items: {
+                    type: 'string',
+                },
+            },
+            externalLinks: {
+                ...getAPIJsonSchemaFor(
+                    openAPISpec,
+                    'components/schemas/Integration/properties/externalLinks'
+                ),
             },
             scopes: {
                 ...getAPIJsonSchemaFor(
