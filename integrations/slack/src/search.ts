@@ -1,9 +1,8 @@
-import * as gitbook from '@gitbook/api';
 import { api } from '@gitbook/runtime';
 
-import { executeSlackAPIRequest } from './api';
+import type { SlashEvent } from './commands';
 
-export async function searchInGitBook(slashEvent: object) {
+export async function searchInGitBook(slashEvent: SlashEvent) {
     const { team_id, channel_id, command, text } = slashEvent;
 
     // Lookup the concerned installations
@@ -28,5 +27,7 @@ export async function searchInGitBook(slashEvent: object) {
         installation.id
     );
 
-    // Search on all spaces of this installation
+    const {
+        data: { items },
+    } = await installationApiClient.search.searchContent({ query: text, limit: 10 });
 }
