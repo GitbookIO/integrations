@@ -19,7 +19,9 @@ export async function publishIntegration(filePath: string): Promise<void> {
     // Publish the integration.
     const created = await api.integrations.publishIntegration(manifest.name, {
         title: manifest.title,
-        icon: manifest.icon ? await readIcon(resolveFile(filePath, manifest.icon)) : undefined,
+        icon: manifest.icon
+            ? await readImage(resolveFile(filePath, manifest.icon), 'icon')
+            : undefined,
         description: manifest.description,
         summary: manifest.summary,
         scopes: manifest.scopes,
@@ -28,6 +30,12 @@ export async function publishIntegration(filePath: string): Promise<void> {
         secrets: manifest.secrets,
         visibility: manifest.visibility,
         organization: manifest.organization,
+        externalLinks: manifest.externalLinks,
+        previewImages: await Promise.all(
+            (manifest.previewImages || []).map(async (imageFilePath) =>
+                readImage(resolveFile(filePath, imageFilePath), 'preview')
+            )
+        ),
         script,
     });
 
@@ -56,16 +64,27 @@ async function buildScript(filePath: string): Promise<string> {
 /**
  * Read and compile an icon.
  */
-export async function readIcon(filePath: string): Promise<string> {
+async function readImage(filePath: string, type: 'icon' | 'preview'): Promise<string> {
+    const imageMaxSizes: {
+        [key in typeof type]: number;
+    } = {
+        icon: 250 * 1024,
+        preview: 1024 * 1024,
+    };
+
+    const sizeLimit = imageMaxSizes[type];
+
     if (path.extname(filePath) !== '.png') {
         throw new Error(
-            `Invalid icon file extension for ${filePath}. Only PNG files are accepted.`
+            `Invalid image file extension for ${filePath}. Only PNG files are accepted.`
         );
     }
 
     const content = await fs.promises.readFile(filePath);
-    if (content.length > 250 * 1024) {
-        throw new Error(`Icon file ${filePath} is too large. Maximum size is 250KB.`);
+    if (content.length > sizeLimit) {
+        throw new Error(
+            `Image file ${filePath} is too large. Maximum size is ${sizeLimit / 1024}KB.`
+        );
     }
 
     return content.toString('base64');

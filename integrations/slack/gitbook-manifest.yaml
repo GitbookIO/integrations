@@ -1,7 +1,12 @@
 name: slack
 title: Slack
-icon: ./icon.png
+icon: ./assets/icon.png
 description: Notify a channel or individual in Slack with real-time events from GitBook.
+previewImages:
+  - ./assets/preview.png
+externalLinks:
+  - label: Documentation
+    url: https://docs.gitbook.com/integrations/slack
 visibility: public
 script: ./script.ts
 scopes:
