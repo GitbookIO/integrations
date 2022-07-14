@@ -6,7 +6,7 @@ previewImages:
   - ./assets/preview.png
 externalLinks:
   - label: Documentation
-    url: https://docs.gitbook.com
+    url: https://docs.gitbook.com/integrations/slack
 visibility: public
 script: ./script.ts
 scopes:
