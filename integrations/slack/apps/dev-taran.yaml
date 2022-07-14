@@ -1,9 +1,9 @@
 display_information:
-  name: GitBook
+  name: GitBook (Taran)
   description: Get updates on Slack
 features:
   bot_user:
-    display_name: GitBook
+    display_name: GitBook (Taran)
     always_online: false
   slash_commands:
     - command: /gitbook
