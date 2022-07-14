@@ -2,7 +2,7 @@
  * Execute a Slack API request and return the result.
  */
 export async function executeSlackAPIRequest(
-    httpMethod: string,
+    httpMethod: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
     apiMethod: string,
     payload: { [key: string]: any } = {},
     options: {
@@ -18,17 +18,14 @@ export async function executeSlackAPIRequest(
 
     const url = new URL(`https://slack.com/api/${apiMethod}`);
 
-    let body;
-    const headers: {
-        [key: string]: string;
-    } = {};
+    let body = '';
+    const headers: Record<string, string> = {};
 
-    if (httpMethod === 'GET') {
-        url.searchParams.set('token', accessToken);
-    } else {
-        headers.Authorization = `Bearer ${accessToken}`;
-        headers['Content-Type'] = 'application/json';
+    headers.Authorization = `Bearer ${accessToken}`;
+
+    if (Object.keys(payload).length > 0) {
         body = JSON.stringify(payload);
+        headers['Content-Type'] = 'application/json';
     }
 
     const response = await fetch(url.toString(), {

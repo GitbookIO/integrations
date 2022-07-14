@@ -22,7 +22,7 @@ router.get(
         clientId: environment.secrets.CLIENT_ID,
         clientSecret: environment.secrets.CLIENT_SECRET,
         authorizeURL:
-            'https://slack.com/oauth/v2/authorize?scope=chat:write%20channels:read%20links:read%20links:write',
+            'https://slack.com/oauth/v2/authorize?scope=chat:write%20channels:read%20links:read%20links:write%20commands', // TODO: use the yaml as SoT for scopes
         accessTokenURL: 'https://slack.com/api/oauth.v2.access',
         extractCredentials: (response) => {
             return {

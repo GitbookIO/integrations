@@ -5,40 +5,40 @@ description: Notify a channel or individual in Slack with real-time events from 
 visibility: public
 script: ./src/index.ts
 scopes:
-  - space:content
+    - space:content
 summary: |
     Configure the Slack integrations to be notified about events occuring on GitBook (content updated, comments, etc).
     Using the /gitbook command, you can also search all your content right from your Slack workspace.
 configurations:
-  account:
-    properties:
-      oauth_credentials:
-        type: button
-        title: Connection
-        description: Authorization between Slack and GitBook.
-        button_text: Authorize
-        callback_url: /oauth
-      default_conversation:
-        type: string
-        title: Default Channel
-        description: Select a channel to post messages to when none is configured for a specific space.
-        completion_url: /conversations
-    required:
-      - oauth_credentials
-      - default_conversation
-  space:
-    properties:
-      conversation:
-        type: string
-        title: Channel
-        description: Select a channel to post messages related to this space.
-        completion_url: /conversations
-      notify_content_update:
-        type: boolean
-        title: Notify Content Update
-        description: Post a notification message every time the content of the space is updated.
-        default: true
+    account:
+        properties:
+            oauth_credentials:
+                type: button
+                title: Connection
+                description: Authorization between Slack and GitBook.
+                button_text: Authorize
+                callback_url: /oauth
+            default_conversation:
+                type: string
+                title: Default Channel
+                description: Select a channel to post messages to when none is configured for a specific space.
+                completion_url: /conversations
+        required:
+            - oauth_credentials
+            - default_conversation
+    space:
+        properties:
+            conversation:
+                type: string
+                title: Channel
+                description: Select a channel to post messages related to this space.
+                completion_url: /conversations
+            notify_content_update:
+                type: boolean
+                title: Notify Content Update
+                description: Post a notification message every time the content of the space is updated.
+                default: true
 secrets:
-  # TODO replace with {env.CLIENT_ID} to use an env
-  CLIENT_ID: '3085992729.3609034129490'
-  CLIENT_SECRET: 'd6d82b7a831d43b046950775b03c31b8'
+    # TODO replace with {env.CLIENT_ID} to use an env
+    CLIENT_ID: '3798773100627.3793380504454'
+    CLIENT_SECRET: '949f7cc392b2161cc432ce4f67214fc7'
