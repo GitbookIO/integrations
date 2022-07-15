@@ -1,16 +1,17 @@
 {
     "name": "@gitbook/runtime-v8-stdlib",
-    "version": "0.0.7",
+    "version": "0.1.0",
     "main": "index.ts",
     "dependencies": {},
     "devDependencies": {
+        "@web-std/form-data": "^3.0.2",
+        "abab": "^2.0.6",
+        "cookie": "^0.5.0",
         "esbuild": "^0.14.42",
         "esbuild-register": "^3.3.2",
-        "@web-std/form-data": "^3.0.2",
-        "cookie": "^0.5.0",
-        "web-streams-polyfill": "^3.2.1",
+        "isolated-vm": "^4.4.1",
         "querystring": "^0.2.1",
-        "isolated-vm": "^4.4.1"
+        "web-streams-polyfill": "^3.2.1"
     },
     "files": [
         "index.js",

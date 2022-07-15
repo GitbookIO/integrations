@@ -2,6 +2,9 @@ name: segment
 title: Segment
 icon: ./icon.png
 description: Send page views to any Destination in Segment.
+externalLinks:
+  - label: Documentation
+    url: https://docs.gitbook.com/integrations/segment
 visibility: public
 script: ./script.ts
 scopes:
