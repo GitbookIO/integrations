@@ -24,12 +24,13 @@ export interface SlashEvent {
 }
 
 export function createSlackCommandsHandler(handlers: {
-    [type: string]: (slashEvent: SlashEvent) => Promise<any>;
+    [type: string]: (event: SlashEvent) => Promise<any>;
 }): (request: Request) => Promise<Response> {
     return async (request) => {
-        const slashEvent = (await request.formData()) as SlashEvent;
-
-        console.log('received slash command', JSON.stringify(slashEvent, null, 2));
+        const slashEvent = {} as SlashEvent;
+        new URLSearchParams(await request.text()).forEach((value, key) => {
+            slashEvent[key] = value;
+        });
 
         if (!slashEvent.command) {
             return new Response(`Invalid slash command`, {
@@ -46,20 +47,10 @@ export function createSlackCommandsHandler(handlers: {
             });
         }
 
-        const data = await handler(slashEvent);
+        handler(slashEvent);
 
-        if (typeof data === 'string') {
-            return new Response(data, {
-                headers: {
-                    'Content-Type': 'text/plain',
-                },
-            });
-        }
-
-        return new Response(JSON.stringify(data), {
-            headers: {
-                'Content-Type': 'application/json',
-            },
+        return new Response(null, {
+            status: 200,
         });
     };
 }
