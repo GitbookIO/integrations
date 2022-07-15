@@ -31,7 +31,7 @@ export function addEventListener(type, eventHandler) {
         };
 
         if (event.type === 'fetch') {
-            const fetchEvent = new FetchEvent(event.type, event, callback);
+            const fetchEvent = new FetchEvent(event.eventId, event, callback);
 
             try {
                 const result = await eventHandler(fetchEvent, context);
