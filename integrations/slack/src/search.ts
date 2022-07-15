@@ -1,4 +1,4 @@
-import { SearchPageResult, SearchSectionResult, SearchSpaceResult } from '@gitbook/api';
+import type { SearchPageResult, SearchSectionResult, SearchSpaceResult } from '@gitbook/api';
 import { api } from '@gitbook/runtime';
 
 import { executeSlackAPIRequest } from './api';
@@ -46,16 +46,28 @@ export async function searchInGitBook(slashEvent: SlashEvent) {
     );
 }
 
-function buildSearchContentSlackBlocks(items: SearchSpaceResultt[]) {
-    const allPages = items.flatMap((space) => space.pages);
-    const blocks = allPages.reduce((acc, page) => {
-        const pageResultBlock = buildSearchPageBlock(page);
-        if (page.sections) {
-            const sectionBlocks = page.sections.map(buildSearchSectionBlock);
-            acc.push(...pageResultBlock, ...sectionBlocks);
-        }
-        return acc;
-    }, []);
+function buildSearchContentSlackBlocks(query: string, items: SearchSpaceResult[]) {
+    const queryBlock = {
+        type: 'section',
+        text: {
+            type: 'mrkdwn',
+            text: `Showing results for query: *${query}*'`,
+        },
+    };
+
+    const blocks = items
+        .flatMap((space) => space.pages)
+        .reduce<Array<any>>(
+            (acc, page) => {
+                const pageResultBlock = buildSearchPageBlock(page);
+                if (page.sections) {
+                    const sectionBlocks = page.sections.map(buildSearchSectionBlock);
+                    acc.push(...pageResultBlock, ...sectionBlocks);
+                }
+                return acc;
+            },
+            [queryBlock]
+        );
 
     return blocks.flat();
 }
@@ -63,22 +75,22 @@ function buildSearchContentSlackBlocks(items: SearchSpaceResultt[]) {
 function buildSearchPageBlock(page: SearchPageResult) {
     return [
         {
+            type: 'divider',
+        },
+        {
             type: 'section',
             text: {
                 type: 'mrkdwn',
                 text: `*<https://app.gitbook.com/${page.path}|${page.title}>*`,
             },
         },
-        {
-            type: 'divider',
-        },
     ];
 }
 
 function buildSearchSectionBlock(section: SearchSectionResult) {
-    const title = `*${section.title.replace(/"/g, '')}*`;
-    const body = `_${section.body.replace(/"/g, '').split('\n').join('').slice(0, 512)}_`;
-    const text = `${title} - ${body}`;
+    const title = section.title ? `*${section.title.replace(/"/g, '')}*` : null;
+    const body = ` - _${section.body.replace(/"/g, '').split('\n').join('').slice(0, 512)}_`;
+    const text = title ? `${title}${body}` : body;
     return [
         {
             type: 'section',
