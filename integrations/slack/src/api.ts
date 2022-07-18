@@ -21,15 +21,15 @@ export async function executeSlackAPIRequest(
     let body;
     const headers: {
         [key: string]: string;
-    } = {};
+    } = {
+        Authorization: `Bearer ${accessToken}`,
+    };
 
     if (httpMethod === 'GET') {
-        url.searchParams.set('token', accessToken);
         Object.entries(payload).forEach(([key, value]) => {
             url.searchParams.set(key, value);
         });
     } else {
-        headers.Authorization = `Bearer ${accessToken}`;
         headers['Content-Type'] = 'application/json';
         body = JSON.stringify(payload);
     }
