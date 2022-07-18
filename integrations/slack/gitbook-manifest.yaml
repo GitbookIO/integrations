@@ -31,7 +31,7 @@ configurations:
         completion_url: /channels
     required:
       - oauth_credentials
-      - default_conversation
+      - default_channel
   space:
     properties:
       channel:
