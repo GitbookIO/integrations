@@ -19,8 +19,8 @@ interface CliConfig {
 const config = new Conf<CliConfig>({
     projectName: 'gitbook',
     defaults: {
-        endpoint: process.env.GITBOOK_ENDPOINT || GITBOOK_DEFAULT_ENDPOINT,
-        token: process.env.GITBOOK_TOKEN,
+        endpoint: GITBOOK_DEFAULT_ENDPOINT,
+        token: undefined,
     },
 });
 
