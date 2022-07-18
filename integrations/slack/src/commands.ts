@@ -29,8 +29,6 @@ export function createSlackCommandsHandler(handlers: {
     return async (request) => {
         const slashEvent = (await request.formData()) as SlashEvent;
 
-        console.log('received slash command', JSON.stringify(slashEvent, null, 2));
-
         if (!slashEvent.command) {
             return new Response(`Invalid slash command`, {
                 status: 422,

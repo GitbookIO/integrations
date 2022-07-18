@@ -1,5 +1,6 @@
 {
     "name": "@gitbook/integration-slack",
+    "version": "0.0.0",
     "private": true,
     "dependencies": {
         "itty-router": "^2.6.1",
@@ -7,12 +8,12 @@
     },
     "devDependencies": {
         "@gitbook/cli": "*",
+        "@gitbook/api": "*",
         "@gitbook/eslint-config": "*",
         "@gitbook/tsconfig": "*"
     },
     "scripts": {
         "lint": "eslint ./**/*.ts",
         "publish-integrations": "gitbook publish ."
-    },
-    "version": null
+    }
 }

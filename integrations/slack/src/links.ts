@@ -32,8 +32,6 @@ export async function unfurlLink(event: LinkSharedSlackEvent) {
         externalId: event.team_id,
     });
 
-    console.log('found', installations.length, 'installations');
-
     const installation = installations[0];
     if (!installation) {
         return {};
@@ -46,13 +44,9 @@ export async function unfurlLink(event: LinkSharedSlackEvent) {
     const unfurls = {};
     await Promise.all(
         event.event.links.map(async (link) => {
-            console.log('unfurl link', link.url, encodeURIComponent(link.url));
-
-            const { data: content, url } = await installationApiClient.urls.getContentByUrl({
+            const { data: content } = await installationApiClient.urls.getContentByUrl({
                 url: link.url,
             });
-
-            console.log('got', url, content);
 
             if (!content) {
                 return;
