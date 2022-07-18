@@ -1,14 +1,13 @@
 import { Request } from 'itty-router';
 
 /**
- * //
+ * Handle an event from Slack.
  */
 export function createSlackEventsHandler(handlers: {
     [type: string]: (event: object) => Promise<any>;
 }): (request: Request) => Promise<Response> {
     return async (request) => {
         const event = await request.json();
-        console.log('receive events', JSON.stringify(event, null, 2));
 
         if (!event.type) {
             return new Response(`Invalid event`, {
