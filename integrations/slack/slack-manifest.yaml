@@ -16,6 +16,7 @@ features:
       usage_hint: "[search query]"
       should_escape: false
 oauth_config:
+<<<<<<< Updated upstream
   redirect_urls:
       # UPDATE url here to match your env
     - https://integrations.gitbook.com/v1/integrations/slack/
@@ -26,6 +27,20 @@ oauth_config:
       - links:read
       - links:write
       - commands
+=======
+    redirect_urls:
+        # UPDATE url here to match your env
+        - https://integrations.gitbook.com/v1/integrations/slack/
+    scopes:
+        bot:
+            - channels:join
+            - channels:read
+            - groups:read
+            - chat:write
+            - links:read
+            - links:write
+            - commands
+>>>>>>> Stashed changes
 settings:
   event_subscriptions:
     # UPDATE url here to match your env
