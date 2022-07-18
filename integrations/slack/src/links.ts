@@ -106,7 +106,7 @@ function createBlocksForSpace(space: gitbook.Space) {
                     type: 'button',
                     text: {
                         type: 'plain_text',
-                        text: 'Open in GitBook',
+                        text: 'View Space',
                         emoji: true,
                     },
                     value: 'open',
@@ -131,7 +131,7 @@ function createBlocksForCollection(collection: gitbook.Collection) {
                     type: 'button',
                     text: {
                         type: 'plain_text',
-                        text: 'Open in GitBook',
+                        text: 'View Collection',
                         emoji: true,
                     },
                     value: 'open',
