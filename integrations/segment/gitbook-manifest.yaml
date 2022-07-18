@@ -9,7 +9,7 @@ externalLinks:
 visibility: public
 script: ./script.ts
 scopes:
-  - space:views
+  - space:views:read
 summary: |
     Configure the Segment integration to track an event for all page views in your space.
     The page views will be tracked as a `gitbook.space.view` event.
