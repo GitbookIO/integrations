@@ -22,8 +22,9 @@ router.get(
     createOAuthHandler({
         clientId: environment.secrets.CLIENT_ID,
         clientSecret: environment.secrets.CLIENT_SECRET,
+        // TODO: use the yaml as SoT for scopes
         authorizeURL:
-            'https://slack.com/oauth/v2/authorize?scope=chat:write%20channels:read%20links:read%20links:write',
+            'https://slack.com/oauth/v2/authorize?scope=chat:write%20channels:read%20links:read%20links:write%20commands',
         accessTokenURL: 'https://slack.com/api/oauth.v2.access',
         extractCredentials: (response) => {
             return {
@@ -44,7 +45,7 @@ router.get('/channels', async () => {
     const result = await executeSlackAPIRequest('GET', 'conversations.list', {
         limit: 1000,
         exclude_archived: true,
-        types: 'public_channel,private_channel',
+        types: 'public_channel'
     });
 
     const completions = result?.channels.map((channel) => ({

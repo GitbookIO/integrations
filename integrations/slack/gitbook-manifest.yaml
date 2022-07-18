@@ -4,46 +4,46 @@ icon: ./assets/icon.png
 description: Notify a channel or individual in Slack with real-time events from GitBook.
 organization: gitbook
 previewImages:
-  - ./assets/preview.png
+    - ./assets/preview.png
 externalLinks:
-  - label: Documentation
-    url: https://docs.gitbook.com/integrations/slack
+    - label: Documentation
+      url: https://docs.gitbook.com/integrations/slack
 visibility: public
 script: ./src/index.ts
 scopes:
-  - space:content:read
+    - space:content:read
 summary: |
     Configure the Slack integrations to be notified about events occuring on GitBook (content updated, comments, etc).
     Using the /gitbook command, you can also search all your content right from your Slack workspace.
 configurations:
-  account:
-    properties:
-      oauth_credentials:
-        type: button
-        title: Connection
-        description: Authorization between Slack and GitBook.
-        button_text: Authorize
-        callback_url: /oauth
-      default_channel:
-        type: string
-        title: Default Channel
-        description: Select a channel to post messages to when none is configured for a specific space.
-        completion_url: /channels
-    required:
-      - oauth_credentials
-      - default_channel
-  space:
-    properties:
-      channel:
-        type: string
-        title: Channel
-        description: Select a channel to post messages related to this space.
-        completion_url: /channels
-      notify_content_update:
-        type: boolean
-        title: Notify Content Update
-        description: Post a notification message every time the content of the space is updated.
-        default: true
+    account:
+        properties:
+            oauth_credentials:
+                type: button
+                title: Connection
+                description: Authorization between Slack and GitBook.
+                button_text: Authorize
+                callback_url: /oauth
+            default_channel:
+                type: string
+                title: Default Channel
+                description: Select a channel to post messages to when none is configured for a specific space.
+                completion_url: /channels
+        required:
+            - oauth_credentials
+            - default_channel
+    space:
+        properties:
+            channel:
+                type: string
+                title: Channel
+                description: Select a channel to post messages related to this space.
+                completion_url: /channels
+            notify_content_update:
+                type: boolean
+                title: Notify Content Update
+                description: Post a notification message every time the content of the space is updated.
+                default: true
 secrets:
-  CLIENT_ID: ${{ env.SLACK_CLIENT_ID }}
-  CLIENT_SECRET: ${{ env.SLACK_CLIENT_SECRET }}
+    CLIENT_ID: ${{ env.SLACK_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.SLACK_CLIENT_SECRET }}

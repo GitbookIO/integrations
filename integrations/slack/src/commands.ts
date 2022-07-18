@@ -27,7 +27,10 @@ export function createSlackCommandsHandler(handlers: {
     [type: string]: (slashEvent: SlashEvent) => Promise<any>;
 }): (request: Request) => Promise<Response> {
     return async (request) => {
-        const slashEvent = (await request.formData()) as SlashEvent;
+        const slashEvent = {} as SlashEvent;
+        new URLSearchParams(await request.text()).forEach((value, key) => {
+            slashEvent[key] = value;
+        });
 
         if (!slashEvent.command) {
             return new Response(`Invalid slash command`, {
@@ -45,18 +48,11 @@ export function createSlackCommandsHandler(handlers: {
         }
 
         handler(slashEvent);
-
         /**
          * We need to send back a response to slack (under 3s) to let it know that we've handled the command.
          */
-        return new Response(
-            {},
-            {
-                status: 200,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            }
-        );
+        return new Response(null, {
+            status: 200,
+        });
     };
 }
