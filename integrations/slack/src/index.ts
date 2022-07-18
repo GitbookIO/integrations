@@ -105,6 +105,48 @@ addEventListener('space:content:updated', async (event) => {
 
     await executeSlackAPIRequest('POST', 'chat.postMessage', {
         channel: conversation,
-        text: `Content in "${space.title}" has been updated`,
+        blocks: [
+            {
+                type: 'section',
+                text: {
+                    type: 'mrkdwn',
+                    text: `The primary content of *<${space.urls.app}|${
+                        space.title ?? 'Space'
+                    }>* has been updated`,
+                },
+            },
+        ],
+    });
+});
+
+/*
+ * Handle content visibility being updated: send a notification on Slack.
+ */
+addEventListener('space_visibility_updated', async (event) => {
+    const conversation =
+        environment.spaceInstallation.configuration.conversation ||
+        environment.installation.configuration.default_conversation;
+    if (!conversation) {
+        // Integration not yet configured.
+        return;
+    }
+
+    const { spaceId, visibility } = event;
+
+    const { data: space } = await api.spaces.getSpaceById(spaceId);
+
+    await executeSlackAPIRequest('POST', 'chat.postMessage', {
+        channel: conversation,
+        blocks: [
+            {
+                type: 'section',
+                text: {
+                    type: 'mrkdwn',
+                    text: `The visibility of *<${space.urls.app}|${
+                        space.title ?? 'Space'
+                    }>* has been changed to: *${visibility}*`,
+                },
+            },
+        ],
     });
 });
