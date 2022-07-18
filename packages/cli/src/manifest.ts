@@ -1,4 +1,5 @@
 import Ajv, { Schema } from 'ajv';
+import addFormats from 'ajv-formats';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import * as path from 'path';
@@ -21,6 +22,8 @@ export interface IntegrationManifest {
     categories?: api.IntegrationCategory[];
     configurations?: api.IntegrationConfigurations;
     visibility?: api.IntegrationVisibility;
+    previewImages?: api.Integration['previewImages'];
+    externalLinks?: api.Integration['externalLinks'];
     organization?: string;
     secrets: { [key: string]: string };
 }
@@ -50,7 +53,13 @@ export async function readIntegrationManifest(filePath: string): Promise<Integra
     try {
         const content = await fs.promises.readFile(filePath, 'utf8');
         const doc = yaml.load(content);
-        return validateIntegrationManifest(doc);
+        const manifest = await validateIntegrationManifest(doc);
+
+        if (manifest.secrets) {
+            manifest.secrets = interpolateSecrets(manifest.secrets);
+        }
+
+        return manifest;
     } catch (e) {
         throw new Error(
             `Failed to read integration spec from ${prettyPath(filePath)}: ${e.message}`
@@ -81,11 +90,6 @@ async function validateIntegrationManifest(data: object): Promise<IntegrationMan
     }
 
     const manifest = data as IntegrationManifest;
-
-    if (manifest.secrets) {
-        manifest.secrets = interpolateSecrets(manifest.secrets);
-    }
-
     return manifest;
 }
 
@@ -94,6 +98,7 @@ async function validateIntegrationManifest(data: object): Promise<IntegrationMan
  */
 async function getManifestSchema() {
     const ajv = new Ajv();
+    addFormats(ajv);
 
     const openAPISpec = await getAPISchema();
 
@@ -136,6 +141,18 @@ async function getManifestSchema() {
             script: {
                 type: 'string',
             },
+            previewImages: {
+                type: 'array',
+                items: {
+                    type: 'string',
+                },
+            },
+            externalLinks: {
+                ...getAPIJsonSchemaFor(
+                    openAPISpec,
+                    'components/schemas/Integration/properties/externalLinks'
+                ),
+            },
             scopes: {
                 ...getAPIJsonSchemaFor(
                     openAPISpec,
@@ -176,7 +193,10 @@ async function getManifestSchema() {
  */
 function interpolateSecrets(secrets: { [key: string]: string }): { [key: string]: string } {
     return Object.keys(secrets).reduce((acc, key) => {
-        acc[key] = secrets[key].replace(/\${env.([^}]+)}/g, (_, envVar) => process.env[envVar]);
+        acc[key] = secrets[key].replace(
+            /\${{\s*env.([\S]+)\s*}}/g,
+            (_, envVar) => process.env[envVar]
+        );
         return acc;
     }, {});
 }

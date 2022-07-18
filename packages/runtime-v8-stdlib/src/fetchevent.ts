@@ -5,19 +5,23 @@ const invalidResponseType = new Error(
 );
 
 export class FetchEvent {
-    public type: 'string';
+    public id: string;
+    public type: string;
     public request: any;
     public callback: any;
     public respondWithEntered: boolean;
+    public auth?: object;
 
-    constructor(type, init, callback) {
-        this.type = type;
+    constructor(id, init, callback) {
+        this.id = id;
+        this.type = init.type;
         this.request = new Request(init.request.url, init.request);
         if (!this.request) {
             throw new Error('init.request is required.');
         }
         this.callback = callback;
         this.respondWithEntered = false;
+        this.auth = init.auth;
     }
 
     /**

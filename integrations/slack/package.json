@@ -13,5 +13,6 @@
     "scripts": {
         "lint": "eslint ./**/*.ts",
         "publish-integrations": "gitbook publish ."
-    }
+    },
+    "version": null
 }

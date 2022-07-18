@@ -1,0 +1,37 @@
+display_information:
+  name: GitBook
+  description: Documentation made easy
+  background_color: "#3884ff"
+features:
+  bot_user:
+    display_name: GitBook
+    always_online: false
+  unfurl_domains:
+    - app.gitbook.com
+  slash_commands:
+    - command: /gitbook
+      # UPDATE url here to match your env
+      url: https://integrations.gitbook.com/v1/integrations/slack/command
+      description: Search your documentation
+      usage_hint: "[search query]"
+      should_escape: false
+oauth_config:
+  redirect_urls:
+      # UPDATE url here to match your env
+    - https://integrations.gitbook.com/v1/integrations/slack/
+  scopes:
+    bot:
+      - channels:read
+      - chat:write
+      - links:read
+      - links:write
+      - commands
+settings:
+  event_subscriptions:
+    # UPDATE url here to match your env
+    request_url: https://integrations.gitbook.com/v1/integrations/slack/events
+    bot_events:
+      - link_shared
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false

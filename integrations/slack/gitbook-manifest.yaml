@@ -1,7 +1,13 @@
 name: slack
 title: Slack
-icon: ./icon.png
+icon: ./assets/icon.png
 description: Notify a channel or individual in Slack with real-time events from GitBook.
+organization: gitbook
+previewImages:
+  - ./assets/preview.png
+externalLinks:
+  - label: Documentation
+    url: https://docs.gitbook.com/integrations/slack
 visibility: public
 script: ./src/index.ts
 scopes:
@@ -39,6 +45,5 @@ configurations:
         description: Post a notification message every time the content of the space is updated.
         default: true
 secrets:
-  # TODO replace with {env.CLIENT_ID} to use an env
-  CLIENT_ID: '3085992729.3609034129490'
-  CLIENT_SECRET: 'd6d82b7a831d43b046950775b03c31b8'
+  CLIENT_ID: ${{ env.SLACK_CLIENT_ID }}
+  CLIENT_SECRET: ${{ env.SLACK_CLIENT_SECRET }}

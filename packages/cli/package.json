@@ -1,12 +1,13 @@
 {
     "name": "@gitbook/cli",
     "description": "CLI to build and publish integrations on GitBook.com",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "dependencies": {
         "@gitbook/api": "*",
         "@openapi-contrib/openapi-schema-to-json-schema": "^3.1.2",
         "@stoplight/json-ref-resolver": "^3.1.3",
         "ajv": "^8.11.0",
+        "ajv-formats": "^2.1.1",
         "commander": "^9.2.0",
         "conf": "^10.1.2",
         "dedent-js": "^1.0.1",
