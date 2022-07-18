@@ -39,7 +39,8 @@ export async function publishIntegration(filePath: string): Promise<void> {
         script,
     });
 
-    console.log(`Integration "${created.data.name}" published.`);
+    console.log(`Integration "${created.data.name}" published`);
+    console.log(`👉 ${created.data.urls.app}`);
 }
 
 /**
