@@ -45,7 +45,7 @@ router.get('/channels', async () => {
     const result = await executeSlackAPIRequest('GET', 'conversations.list', {
         limit: 1000,
         exclude_archived: true,
-        types: 'public_channel',
+        types: 'public_channel,private_channel',
     });
 
     const completions = result?.channels.map((channel) => ({
@@ -134,7 +134,7 @@ addEventListener('space_content_updated', async (event) => {
  * Handle content visibility being updated: send a notification on Slack.
  */
 addEventListener('space_visibility_updated', async (event) => {
-    const conversation =
+    const channel =
         environment.spaceInstallation.configuration.channel ||
         environment.installation.configuration.default_channel;
 
@@ -153,7 +153,7 @@ addEventListener('space_visibility_updated', async (event) => {
     const { data: space } = await api.spaces.getSpaceById(spaceId);
 
     await executeSlackAPIRequest('POST', 'chat.postMessage', {
-        channel: conversation,
+        channel,
         blocks: [
             {
                 type: 'section',
