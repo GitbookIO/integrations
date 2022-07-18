@@ -36,11 +36,15 @@ router.get(
 );
 
 /*
- * List the conversations the user can select in the configuration flow.
+ * List the channels the user can select in the configuration flow.
  */
-router.get('/conversations', async () => {
+router.get('/channels', async () => {
     // TODO: list from all pages
-    const result = await executeSlackAPIRequest('GET', 'conversations.list');
+    const result = await executeSlackAPIRequest('GET', 'conversations.list', {
+        limit: 1000,
+        exclude_archived: true,
+        types: 'public_channel,private_channel',
+    });
 
     const completions = result?.channels.map((channel) => ({
         label: channel.name,
@@ -92,10 +96,10 @@ addEventListener('fetch', (event, eventContext) => {
  * Handle content being updated: send a notification on Slack.
  */
 addEventListener('space:content:updated', async (event) => {
-    const conversation =
-        environment.spaceInstallation.configuration.conversation ||
-        environment.installation.configuration.default_conversation;
-    if (!conversation) {
+    const channel =
+        environment.spaceInstallation.configuration.channel ||
+        environment.installation.configuration.default_channel;
+    if (!channel) {
         // Integration not yet configured.
         return;
     }
@@ -103,7 +107,7 @@ addEventListener('space:content:updated', async (event) => {
     const { data: space } = await api.spaces.getSpaceById(event.spaceId);
 
     await executeSlackAPIRequest('POST', 'chat.postMessage', {
-        channel: conversation,
+        channel,
         text: `Content in "${space.title}" has been updated`,
     });
 });
