@@ -2,7 +2,6 @@ import type { SearchPageResult, SearchSectionResult, SearchSpaceResult } from '@
 import { api } from '@gitbook/runtime';
 
 import { executeSlackAPIRequest } from './api';
-
 import type { SlashEvent } from './commands';
 
 export async function searchInGitBook(slashEvent: SlashEvent) {
