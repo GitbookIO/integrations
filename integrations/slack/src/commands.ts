@@ -44,20 +44,19 @@ export function createSlackCommandsHandler(handlers: {
             });
         }
 
-        const data = await handler(slashEvent);
+        handler(slashEvent);
 
-        if (typeof data === 'string') {
-            return new Response(data, {
+        /**
+         * We need to send back a response to slack (under 3s) to let it know that we've handled the command.
+         */
+        return new Response(
+            {},
+            {
+                status: 200,
                 headers: {
-                    'Content-Type': 'text/plain',
+                    'Content-Type': 'application/json',
                 },
-            });
-        }
-
-        return new Response(JSON.stringify(data), {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+            }
+        );
     };
 }
