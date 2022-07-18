@@ -161,7 +161,7 @@ addEventListener('space_visibility_updated', async (event) => {
                     type: 'mrkdwn',
                     text: `The visibility of *<${space.urls.app}|${
                         space.title || 'Space'
-                    }>* has been changed from *${previousVisibility}* to: *${visibility}*`,
+                    }>* has been changed from *${previousVisibility}* to *${visibility}*`,
                 },
             },
         ],
