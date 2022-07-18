@@ -2,7 +2,7 @@ name: slack
 title: Slack
 icon: ./assets/icon.png
 description: Notify a channel or individual in Slack with real-time events from GitBook.
-organization: gitbook
+# organization: gitbook
 previewImages:
     - ./assets/preview.png
 externalLinks:
@@ -12,6 +12,7 @@ visibility: public
 script: ./src/index.ts
 scopes:
     - space:content:read
+    - space:metadata:read
 summary: |
     Configure the Slack integrations to be notified about events occuring on GitBook (content updated, comments, etc).
     Using the /gitbook command, you can also search all your content right from your Slack workspace.

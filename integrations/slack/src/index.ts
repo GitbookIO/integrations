@@ -107,7 +107,7 @@ addEventListener('space_content_updated', async (event) => {
         return;
     }
 
-    if (!environment.spaceInstallation.configuration.notify_content_update) {
+    if (environment.spaceInstallation.configuration.notify_content_update === false) {
         // Content updates are turned off
         return;
     }
@@ -143,7 +143,7 @@ addEventListener('space_visibility_updated', async (event) => {
         return;
     }
 
-    if (!environment.spaceInstallation.configuration.notify_visibility_update) {
+    if (environment.spaceInstallation.configuration.notify_visibility_update === false) {
         // Visibility updates are turned off
         return;
     }
