@@ -9,7 +9,7 @@ externalLinks:
   - label: Documentation
     url: https://docs.gitbook.com/integrations/slack
 visibility: public
-script: ./script.ts
+script: ./src/index.ts
 scopes:
   - space:content
 summary: |
@@ -24,21 +24,21 @@ configurations:
         description: Authorization between Slack and GitBook.
         button_text: Authorize
         callback_url: /oauth
-      default_conversation:
+      default_channel:
         type: string
         title: Default Channel
         description: Select a channel to post messages to when none is configured for a specific space.
-        completion_url: /conversations
+        completion_url: /channels
     required:
       - oauth_credentials
       - default_conversation
   space:
     properties:
-      conversation:
+      channel:
         type: string
         title: Channel
         description: Select a channel to post messages related to this space.
-        completion_url: /conversations
+        completion_url: /channels
       notify_content_update:
         type: boolean
         title: Notify Content Update

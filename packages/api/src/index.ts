@@ -19,6 +19,8 @@ class GitBookAPIError extends Error {
 export class GitBookAPI extends Api<{
     authToken?: string;
 }> {
+    private endpoint: string;
+
     constructor(
         options: {
             /**
@@ -50,6 +52,8 @@ export class GitBookAPI extends Api<{
             },
         });
 
+        this.endpoint = endpoint;
+
         const request = this.request;
         this.request = async (...args) => {
             try {
@@ -65,5 +69,24 @@ export class GitBookAPI extends Api<{
         };
 
         this.setSecurityData({ authToken });
+    }
+
+    /**
+     * Create a new API client, authenticated as an installation.
+     */
+    public async createInstallationClient(
+        integrationName: string,
+        installationId: string
+    ): Promise<GitBookAPI> {
+        const { data: installationToken } =
+            await this.integrations.createIntegrationInstallationToken(
+                integrationName,
+                installationId
+            );
+
+        return new GitBookAPI({
+            endpoint: this.endpoint,
+            authToken: installationToken.token,
+        });
     }
 }
