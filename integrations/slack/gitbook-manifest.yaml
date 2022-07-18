@@ -44,6 +44,11 @@ configurations:
                 title: Notify Content Update
                 description: Post a notification message every time the content of the space is updated.
                 default: true
+            notify_visibility_update:
+                type: boolean
+                title: Notify Visibility Update
+                description: Post a notification message every time the visibility of the space is updated.
+                default: true
 secrets:
     CLIENT_ID: ${{ env.SLACK_CLIENT_ID }}
     CLIENT_SECRET: ${{ env.SLACK_CLIENT_SECRET }}

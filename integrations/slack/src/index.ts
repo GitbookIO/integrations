@@ -101,8 +101,14 @@ addEventListener('space_content_updated', async (event) => {
     const channel =
         environment.spaceInstallation.configuration.channel ||
         environment.installation.configuration.default_channel;
+
     if (!channel) {
         // Integration not yet configured.
+        return;
+    }
+
+    if (!environment.spaceInstallation.configuration.notify_content_update) {
+        // Content updates are turned off
         return;
     }
 
@@ -131,8 +137,14 @@ addEventListener('space_visibility_updated', async (event) => {
     const conversation =
         environment.spaceInstallation.configuration.channel ||
         environment.installation.configuration.default_channel;
+
     if (!channel) {
-        // Integration not yet configured.
+        // Integration not yet configured on a channel
+        return;
+    }
+
+    if (!environment.spaceInstallation.configuration.notify_visibility_update) {
+        // Visibility updates are turned off
         return;
     }
 
