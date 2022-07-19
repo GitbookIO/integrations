@@ -8,7 +8,7 @@ export async function executeSlackAPIRequest(
     options: {
         accessToken?: string;
     } = {},
-    retriesLeft = 3
+    retriesLeft = 1
 ) {
     const accessToken =
         options.accessToken ||
