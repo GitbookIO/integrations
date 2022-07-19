@@ -121,7 +121,7 @@ addEventListener('space_content_updated', async (event) => {
                 type: 'section',
                 text: {
                     type: 'mrkdwn',
-                    text: `The primary content of *<${space.urls.app}|${
+                    text: `Content of *<${space.urls.app}|${
                         space.title || 'Space'
                     }>* has been updated`,
                 },
