@@ -7,10 +7,9 @@ function generateSegmentTrackEvent(event: api.SpaceViewEvent, page: api.Revision
     const visitedURL = new URL(url);
 
     return {
-        anonymousId: visitor.anonymousId,
         event: 'gitbook.space.view',
+        anonymousId: visitor.anonymousId,
         context: {
-            ip: visitor.ip,
             library: {
                 name: IntegrationInfo.name,
                 version: IntegrationInfo.version,
@@ -22,6 +21,9 @@ function generateSegmentTrackEvent(event: api.SpaceViewEvent, page: api.Revision
                 url,
                 referrer,
             },
+            userAgent: visitor.userAgent,
+            ip: visitor.ip,
+            cookies: visitor.cookies,
         },
     };
 }

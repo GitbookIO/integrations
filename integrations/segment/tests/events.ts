@@ -7,10 +7,9 @@ import { IntegrationInfo } from '../src/metadata';
 test('events', async (t) => {
     await t.test('generate the Segment Track Event successfully', async () => {
         const expectedSegmentEvent = {
-            anonymousId: 'anonymousId',
             event: 'gitbook.space.view',
+            anonymousId: 'anonymousId',
             context: {
-                ip: '127.0.0.1',
                 library: {
                     name: IntegrationInfo.name,
                     version: IntegrationInfo.version,
@@ -21,6 +20,11 @@ test('events', async (t) => {
                     path: '/integrations',
                     search: '?utm_source=gitbook',
                     url: 'https://docs.gitbook.com/integrations?utm_source=gitbook',
+                },
+                userAgent: 'fake-user-agent',
+                ip: '127.0.0.1',
+                cookies: {
+                    'fake-cookie': 'cookie',
                 },
             },
         };
