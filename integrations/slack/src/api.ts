@@ -7,7 +7,8 @@ export async function executeSlackAPIRequest(
     payload: { [key: string]: any } = {},
     options: {
         accessToken?: string;
-    } = {}
+    } = {},
+    retriesLeft = 1
 ) {
     const accessToken =
         options.accessToken ||
@@ -26,6 +27,7 @@ export async function executeSlackAPIRequest(
     };
 
     if (httpMethod === 'GET') {
+        headers['Content-Type'] = 'application/x-www-form-urlencoded';
         Object.entries(payload).forEach(([key, value]) => {
             url.searchParams.set(key, value);
         });
@@ -45,7 +47,32 @@ export async function executeSlackAPIRequest(
     }
 
     const result = await response.json();
+
     if (!result.ok) {
+        if (retriesLeft > 0) {
+            switch (result.error) {
+                case 'not_in_channel':
+                    /**
+                     * Join the channel/conversation first and then
+                     * try to send the message again.
+                     */
+                    await executeSlackAPIRequest(
+                        'POST',
+                        'conversations.join',
+                        { channel: payload.channel },
+                        { accessToken },
+                        0 // no retries
+                    );
+                    return executeSlackAPIRequest(
+                        httpMethod,
+                        apiMethod,
+                        payload,
+                        options,
+                        retriesLeft - 1
+                    );
+            }
+        }
+
         throw new Error(`${httpMethod} ${url.toString()}: ${result.error}`);
     }
 
