@@ -20,8 +20,15 @@
       "outputs": []
     },
     "publish-integrations": {
-      "dependsOn": ["build"],
-      "outputs": []
+      "dependsOn": [
+        "build",
+        "$GITBOOK_TOKEN",
+        "$GITBOOK_ENDPOINT",
+        "$SLACK_CLIENT_ID",
+        "$SLACK_CLIENT_SECRET"
+      ],
+      "outputs": [],
+      "cache": false
     }
   }
 }

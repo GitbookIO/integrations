@@ -4,11 +4,17 @@ export * from './client';
 
 export const GITBOOK_DEFAULT_ENDPOINT = 'https://api.gitbook.com';
 
+interface GitBookAPIErrorResponse {
+    error: { code: number; message: string };
+}
+
 class GitBookAPIError extends Error {
-    constructor(
-        public response: HttpResponse<null, { error?: { code: number; message: string } }>
-    ) {
-        super(response.error?.error.message || 'Unknown error');
+    public statusCode: number;
+
+    constructor(public response: HttpResponse<GitBookAPIErrorResponse, GitBookAPIErrorResponse>) {
+        const errorData = response.data || response.error;
+        super(errorData.error.message || 'Unknown error');
+        this.statusCode = errorData.error.code;
     }
 }
 
@@ -58,6 +64,11 @@ export class GitBookAPI extends Api<{
         this.request = async (...args) => {
             try {
                 const response = await request(...args);
+
+                if (!response.ok) {
+                    throw new GitBookAPIError(response);
+                }
+
                 return response;
             } catch (error) {
                 if (error instanceof Error) {
