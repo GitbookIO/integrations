@@ -2,15 +2,19 @@ import * as assert from 'assert';
 import test from 'node:test';
 
 import { generateSegmentTrackEvent } from '../src/events';
+import { IntegrationInfo } from '../src/metadata';
 
 test('events', async (t) => {
     await t.test('generate the Segment Track Event successfully', async () => {
         const expectedSegmentEvent = {
             anonymousId: 'anonymousId',
             event: 'gitbook.space.view',
-            properties: {},
             context: {
                 ip: '127.0.0.1',
+                library: {
+                    name: IntegrationInfo.name,
+                    version: IntegrationInfo.version,
+                },
             },
         };
         assert.deepEqual(
