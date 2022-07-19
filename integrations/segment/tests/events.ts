@@ -27,6 +27,10 @@ test('events', async (t) => {
                     'fake-cookie': 'cookie',
                 },
             },
+            properties: {
+                spaceId: 'fake-space-id',
+                pageId: 'fake-page-id',
+            },
         };
         const actualSegmentEvent = generateSegmentTrackEvent(
             {

@@ -3,7 +3,7 @@ import * as api from '@gitbook/api';
 import { IntegrationInfo } from './metadata';
 
 function generateSegmentTrackEvent(event: api.SpaceViewEvent, page: api.RevisionPageBase) {
-    const { visitor, referrer, url } = event;
+    const { visitor, referrer, url, spaceId, pageId } = event;
     const visitedURL = new URL(url);
 
     return {
@@ -24,6 +24,10 @@ function generateSegmentTrackEvent(event: api.SpaceViewEvent, page: api.Revision
             userAgent: visitor.userAgent,
             ip: visitor.ip,
             cookies: visitor.cookies,
+        },
+        properties: {
+            spaceId,
+            pageId,
         },
     };
 }
