@@ -1,6 +1,6 @@
 import { GitBookAPI } from '@gitbook/api';
 
-import { config } from './config';
+import { getConfigValue, setConfigValue } from './config';
 
 /**
  * Get an authenticated API client.
@@ -15,7 +15,7 @@ export async function getAPIClient(requireAuth: boolean = true): Promise<GitBook
     }
 
     return new GitBookAPI({
-        endpoint: config.get('endpoint'),
+        endpoint: getConfigValue('endpoint'),
         authToken,
     });
 }
@@ -33,8 +33,8 @@ export async function authenticate(endpoint: string, authToken: string): Promise
 
     const { data: user } = await api.user.getAuthenticatedUser();
 
-    config.set('endpoint', endpoint);
-    config.set('token', authToken);
+    setConfigValue('endpoint', endpoint);
+    setConfigValue('token', authToken);
 
     console.log(`You are now authenticated as ${user.displayName}.`);
 }
@@ -43,8 +43,8 @@ export async function authenticate(endpoint: string, authToken: string): Promise
  * Print authentication infos
  */
 export async function whoami(): Promise<void> {
-    const endpoint = config.get('endpoint');
-    const authToken = config.get('token');
+    const endpoint = getConfigValue('endpoint');
+    const authToken = getConfigValue('token');
 
     if (authToken) {
         const api = await getAPIClient();
@@ -65,7 +65,7 @@ function getAuthToken(): string | null {
         return process.env.GITBOOK_TOKEN;
     }
 
-    const token = config.get('token');
+    const token = getConfigValue('token');
 
     return token;
 }
