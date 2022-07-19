@@ -78,14 +78,14 @@ router.post(
 /**
  * Handle incoming slash commands from Slack.
  */
-router.post(
-    '/commands',
-    createSlackCommandsHandler({
-        '/gitbook': async (slashEvent) => {
-            return searchInGitBook(slashEvent);
-        },
-    })
-);
+// router.post(
+//     '/commands',
+//     createSlackCommandsHandler({
+//         '/gitbook': async (slashEvent) => {
+//             return searchInGitBook(slashEvent);
+//         },
+//     })
+// );
 
 /*
  * Bind these routes.

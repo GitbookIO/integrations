@@ -8,13 +8,13 @@ features:
         always_online: false
     unfurl_domains:
         - app.gitbook.com
-    slash_commands:
-        - command: /gitbook
-          # UPDATE url here to match your env
-          url: https://integrations.gitbook.com/v1/integrations/slack/commands
-          description: Search your documentation
-          usage_hint: '[search query]'
-          should_escape: false
+    # slash_commands:
+    #     - command: /gitbook
+    #       # UPDATE url here to match your env
+    #       url: https://integrations.gitbook.com/v1/integrations/slack/commands
+    #       description: Search your documentation
+    #       usage_hint: '[search query]'
+    #       should_escape: false
 oauth_config:
     redirect_urls:
         # UPDATE url here to match your env
