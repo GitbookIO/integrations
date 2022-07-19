@@ -15,10 +15,17 @@ test('events', async (t) => {
                     name: IntegrationInfo.name,
                     version: IntegrationInfo.version,
                 },
+                page: {
+                    title: 'GitBook Integrations',
+                    referrer: 'https://www.gitbook.com/',
+                    path: '/integrations',
+                    search: '?utm_source=gitbook',
+                    url: 'https://docs.gitbook.com/integrations?utm_source=gitbook',
+                },
             },
         };
-        assert.deepEqual(
-            generateSegmentTrackEvent({
+        const actualSegmentEvent = generateSegmentTrackEvent(
+            {
                 eventId: 'fake-event-id',
                 type: 'space_view',
                 spaceId: 'fake-space-id',
@@ -32,10 +39,14 @@ test('events', async (t) => {
                         'fake-cookie': 'cookie',
                     },
                 },
-                url: 'https://docs.gitbook.com/integrations',
+                url: 'https://docs.gitbook.com/integrations?utm_source=gitbook',
                 referrer: 'https://www.gitbook.com/',
-            }),
-            expectedSegmentEvent
+            },
+            {
+                id: 'fake-page-id',
+                title: 'GitBook Integrations',
+            }
         );
+        assert.deepEqual(expectedSegmentEvent, actualSegmentEvent);
     });
 });

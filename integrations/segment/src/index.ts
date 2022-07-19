@@ -1,11 +1,16 @@
-import { generateSegmentTrackEvent } from "./events";
+import * as gitbook from '@gitbook/api';
+import { api } from '@gitbook/runtime';
 
-addEventListener('space_view', async (event) => {
+import { generateSegmentTrackEvent } from './events';
+
+addEventListener('space_view', async (event: gitbook.SpaceViewEvent) => {
     const writeKey = environment.spaceInstallation.configuration.write_key;
     if (!writeKey) {
         return;
     }
-    const trackEvent = generateSegmentTrackEvent(event);
+
+    const { data: page } = await api.spaces.getPageById(event.spaceId, event.pageId);
+    const trackEvent = generateSegmentTrackEvent(event, page);
 
     await fetch('https://api.segment.io/v1/track', {
         method: 'POST',
