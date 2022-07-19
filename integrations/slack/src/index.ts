@@ -23,11 +23,7 @@ router.get(
         clientId: environment.secrets.CLIENT_ID,
         clientSecret: environment.secrets.CLIENT_SECRET,
         authorizeURL:
-<<<<<<< Updated upstream
-            'https://slack.com/oauth/v2/authorize?scope=chat:write%20channels:read%20links:read%20links:write',
-=======
             'https://slack.com/oauth/v2/authorize?scope=chat:write%20channels:join%20channels:read%20%20groups:read%20links:read%20links:write%20commands',
->>>>>>> Stashed changes
         accessTokenURL: 'https://slack.com/api/oauth.v2.access',
         extractCredentials: (response) => {
             return {
