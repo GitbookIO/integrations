@@ -47,10 +47,8 @@ export function createSlackCommandsHandler(handlers: {
             });
         }
 
-        handler(slashEvent);
-        /**
-         * We need to send back a response to slack (under 3s) to let it know that we've handled the command.
-         */
+        await handler(slashEvent);
+
         return new Response(null, {
             status: 200,
         });
