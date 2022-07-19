@@ -7,7 +7,7 @@ externalLinks:
   - label: Documentation
     url: https://docs.gitbook.com/integrations/segment
 visibility: public
-script: ./script.ts
+script: ./src/index.ts
 scopes:
   - space:views:read
 summary: |

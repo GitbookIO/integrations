@@ -2,10 +2,12 @@
   "name": "@gitbook/integration-segment",
   "private": true,
   "devDependencies": {
+    "@gitbook/api": "*",
     "@gitbook/cli": "*",
     "@gitbook/runtime": "*"
   },
   "scripts": {
-    "publish-integrations": "gitbook publish ."
+    "publish-integrations": "gitbook publish .",
+    "test": "node -r esbuild-register ./tests/index.ts"
   }
 }

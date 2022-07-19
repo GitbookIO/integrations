@@ -1,8 +1,11 @@
-addEventListener('space:view', async (event) => {
+import { generateSegmentTrackEvent } from "./events";
+
+addEventListener('space_view', async (event) => {
     const writeKey = environment.spaceInstallation.configuration.write_key;
     if (!writeKey) {
         return;
     }
+    const trackEvent = generateSegmentTrackEvent(event);
 
     await fetch('https://api.segment.io/v1/track', {
         method: 'POST',
@@ -10,13 +13,6 @@ addEventListener('space:view', async (event) => {
             'Content-Type': 'application/json',
             Authorization: `Basic ${btoa(`${writeKey}:`)}`,
         },
-        body: JSON.stringify({
-            anonymousId: event.visitorId,
-            event: 'gitbook.space.view',
-            properties: {},
-            context: {
-                ip: event.visitorIp,
-            },
-        }),
+        body: JSON.stringify(trackEvent),
     });
 });
