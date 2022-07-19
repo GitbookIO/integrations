@@ -2,13 +2,21 @@ import * as api from '@gitbook/api';
 
 import { IntegrationInfo } from './metadata';
 
+function getAnonynousId(event: api.SpaceViewEvent): string {
+    const { visitor } = event;
+    const cookies = visitor.cookies;
+
+    return cookies.ajs_anonymous_id || visitor.anonymousId;
+}
+
 function generateSegmentTrackEvent(event: api.SpaceViewEvent, page: api.RevisionPageBase) {
     const { visitor, referrer, url, spaceId, pageId } = event;
-    const visitedURL = new URL(url);
 
+    const anonymousId = getAnonynousId(event);
+    const visitedURL = new URL(url);
     return {
         event: 'gitbook.space.view',
-        anonymousId: visitor.anonymousId,
+        anonymousId,
         context: {
             library: {
                 name: IntegrationInfo.name,
