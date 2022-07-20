@@ -11,7 +11,7 @@ externalLinks:
     - label: Documentation
       url: https://docs.gitbook.com/integrations/slack
     - label: Slack App Directory
-      url: https://gitbook.slack.com/apps/A7DE1QCTD-gitbook?tab=more_info
+      url: https://slack.com/apps/A7DE1QCTD-gitbook?tab=more_info
 visibility: public
 script: ./src/index.ts
 scopes:
