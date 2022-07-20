@@ -1,11 +1,17 @@
 {
   "name": "@gitbook/integration-segment",
+  "version": "0.0.0",
   "private": true,
-  "devDependencies": {
-    "@gitbook/cli": "*",
+  "dependencies": {
+    "@gitbook/api": "*",
     "@gitbook/runtime": "*"
   },
+  "devDependencies": {
+    "@gitbook/cli": "*"
+  },
   "scripts": {
-    "publish-integrations": "gitbook publish ."
+    "lint": "eslint ./src/**/*.ts",
+    "publish-integrations": "gitbook publish .",
+    "test": "node -r esbuild-register ./tests/index.ts"
   }
 }
