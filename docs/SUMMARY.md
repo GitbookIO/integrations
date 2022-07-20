@@ -7,6 +7,9 @@
 
 * [Overview](api/overview.md)
 * [Authentication](api/authentication.md)
+* [Rate Limiting](api/rate-limiting.md)
+* [Errors](api/errors.md)
+* [Pagination](api/pagination.md)
 * [References](api/references/README.md)
   * [Spaces](api/references/spaces/README.md)
     * [Content](api/references/spaces/content.md)
