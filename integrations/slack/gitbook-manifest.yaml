@@ -3,11 +3,15 @@ title: Slack
 icon: ./assets/icon.png
 description: Notify a channel or individual in Slack with real-time events from GitBook.
 organization: gitbook
+categories:
+    - collaboration
 previewImages:
     - ./assets/preview.png
 externalLinks:
     - label: Documentation
       url: https://docs.gitbook.com/integrations/slack
+    - label: Slack App Directory
+      url: https://gitbook.slack.com/apps/A7DE1QCTD-gitbook?tab=more_info
 visibility: public
 script: ./src/index.ts
 scopes:

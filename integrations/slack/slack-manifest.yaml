@@ -1,7 +1,7 @@
 display_information:
     name: GitBook
     description: Documentation made easy
-    background_color: '#3884ff'
+    background_color: '#346DDB'
 features:
     bot_user:
         display_name: GitBook
