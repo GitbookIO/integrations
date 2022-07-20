@@ -1,5 +1,9 @@
 # Quickstart
 
+{% hint style="warning" %}
+The GitBook Integration Platform is currently in **alpha**. It's not opened to developers just yet.
+{% endhint %}
+
 ### Step 1: Install the GitBook CLI
 
 The GitBook Development CLI requires Node v18 or later. It can be installed from NPM using:

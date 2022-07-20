@@ -1,10 +1,14 @@
 # Usage in CI
 
+{% hint style="warning" %}
+The GitBook Integration Platform is currently in **alpha**. It's not opened to developers just yet.
+{% endhint %}
+
 The `gitbook` CLI can be used in a CI environment to publish the integrations for every commit.
 
 ## With GitHub Actions
 
-First store an API token created from [app.gitbook.com/account/developer](https://app.gitbook.com/account/developer) into your GitHub repsoitory secrets.
+First store an API token created from [app.gitbook.com/account/developer](https://app.gitbook.com/account/developer) into your GitHub repository secrets.
 
 Then in you workflow:
 
