@@ -1,5 +1,9 @@
 # Change Requests
 
+{% hint style="warning" %}
+The GitBook API is currently in **beta**. This means you should not rely on it's availability, and that it may change without prior warning.
+{% endhint %}
+
 ## Create, merge & update a Change Request
 
 {% swagger src="https://api.gitbook.com/openapi.yaml" path="/spaces/{spaceId}/change-requests" method="post" %}

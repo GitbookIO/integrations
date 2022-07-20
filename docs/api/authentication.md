@@ -1,5 +1,9 @@
 # Authentication
 
+{% hint style="warning" %}
+The GitBook API is currently in **beta**. This means you should not rely on it's availability, and that it may change without prior warning.
+{% endhint %}
+
 The GitBook API uses Personal access tokens to authenticate requests.
 
 You can view and manage your access tokens in the [Developer settings](https://app.gitbook.com/account/developer) of your GitBook user account.

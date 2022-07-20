@@ -1,5 +1,9 @@
 # Errors
 
+{% hint style="warning" %}
+The GitBook API is currently in **beta**. This means you should not rely on it's availability, and that it may change without prior warning.
+{% endhint %}
+
 GitBook uses conventional HTTP response codes to indicate the success or failure of an API request.
 
 As a general rule:
