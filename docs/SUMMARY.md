@@ -3,21 +3,10 @@
 * [Welcome](README.md)
 * [Quickstart](quickstart.md)
 
-## Integrations
-
-* [Overview](integrations/README.md)
-* [Configurations](integrations/configurations.md)
-* [Runtime](integrations/runtime/README.md)
-  * [Runtime APIs](integrations/runtime/apis.md)
-  * [Environment](integrations/runtime/environment.md)
-  * [HTTP Fetch](integrations/runtime/http-fetch.md)
-* [Examples](integrations/examples/README.md)
-  * [Segment](integrations/examples/segment.md)
-  * [Slack](integrations/examples/slack.md)
-
 ## API
 
 * [Overview](api/overview.md)
+* [Authentication](api/authentication.md)
 * [References](api/references/README.md)
   * [Spaces](api/references/spaces/README.md)
     * [Content](api/references/spaces/content.md)
@@ -29,6 +18,18 @@
     * [Installations](api/references/integrations/installations.md)
 * [Librairies](api/librairies/README.md)
   * [Browser / Node](api/librairies/browser-node.md)
+
+## Integrations
+
+* [Overview](integrations/README.md)
+* [Configurations](integrations/configurations.md)
+* [Runtime](integrations/runtime/README.md)
+  * [Runtime APIs](integrations/runtime/apis.md)
+  * [Environment](integrations/runtime/environment.md)
+  * [HTTP Fetch](integrations/runtime/http-fetch.md)
+* [Examples](integrations/examples/README.md)
+  * [Segment](integrations/examples/segment.md)
+  * [Slack](integrations/examples/slack.md)
 
 ## CLI
 
