@@ -26,3 +26,16 @@ curl https://api.gitbook.com/v1/
 |                                                                                                                                                   |                                                                                                                       |
 | ------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | <p><strong></strong><a href="errors.md"><strong>Errors</strong></a><br>Learn about API errors, how they're structured and how to handle them.</p> | <p><strong></strong><a href="pagination.md"><strong>Pagination</strong></a><br>Paginate through API List results.</p> |
+
+## Resources & Libraries
+
+|                                                                                                                                                                                            |                                                                                                                                     |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| <p><strong></strong><a href="resources/README.md"><strong>Resources Documentation</strong></a><br>Read the reference documentation for the exposed API resources and their operations.</p> | <p><strong></strong><a href="libraries/README.md"><strong>Libraries</strong></a><br>Use our libraries to interact with the API.</p> |
+
+
+## Changelog & Feedback
+
+|                                                                                                                                    |                                                                                                                                                                                                                                                                       |
+| ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <p><strong></strong><a href="../changelogs/api.md"><strong>API Changelog</strong></a><br>Read about what changed with the API.</p> | <p><strong></strong><a href="mailto:support@gitbook.com"><strong>Feedback</strong></a><br>Share your feedback to improve the API and ensure it fits your needs. Feel free to send your questions & feedback to [support@gitbook.com](mailto:support@gitbook.com).</p> |
