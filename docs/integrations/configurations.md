@@ -1,5 +1,9 @@
 # Configurations
 
+{% hint style="warning" %}
+The GitBook Integration Platform is currently in **alpha**. It's not opened to developers just yet.
+{% endhint %}
+
 ## Schema
 
 Integrations can define a schema for the configuration. The user will be prompted on filling in the configuration to activate the integration.

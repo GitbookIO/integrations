@@ -4,6 +4,10 @@ description: Tutorial to write a complete Slack integration from scratch.
 
 # Slack
 
+{% hint style="warning" %}
+The GitBook Integration Platform is currently in **alpha**. It's not opened to developers just yet.
+{% endhint %}
+
 This guide will show you how to build an integration in GitBook that can authenticate the user with OAuth and handle events from GitBook to trigger actions on the external service (Slack).
 
 For a complete code source reference, you can check out the official Slack integration's code: [https://github.com/GitbookIO/integrations/tree/main/integrations/slack](https://github.com/GitbookIO/integrations/tree/main/integrations/slack).
