@@ -1,4 +1,11 @@
 # Spaces
 
-{% swagger src="https://api-getsquad-dev-samy.firebaseapp.com/openapi.yaml" path="/spaces/{spaceId}" method="get" %}
+## Retrieve a Space
+
+{% swagger src="https://api.gitbook.com/openapi.yaml" path="/spaces/{spaceId}" method="get" %}
+{% endswagger %}
+
+## Search a Space
+
+{% swagger src="https://api.gitbook.com/openapi.yaml" path="/spaces/{spaceId}/search" method="get" %}
 {% endswagger %}
