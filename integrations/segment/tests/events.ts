@@ -27,7 +27,7 @@ const fakeSpaceViewEvent: api.SpaceViewEvent = {
 test('events', async (t) => {
     await t.test('should generate the Segment Track Event with expected properties', async () => {
         const expectedSegmentEvent = {
-            event: 'gitbook.space.view',
+            event: '[GitBook] space_view',
             anonymousId: 'gitbookAnonymousId',
             context: {
                 library: {
@@ -35,7 +35,6 @@ test('events', async (t) => {
                     version: IntegrationInfo.version,
                 },
                 page: {
-                    title: 'GitBook Integrations',
                     referrer: 'https://www.gitbook.com/',
                     path: '/integrations',
                     search: '?utm_source=gitbook',
@@ -43,19 +42,13 @@ test('events', async (t) => {
                 },
                 userAgent: 'fake-user-agent',
                 ip: '127.0.0.1',
-                cookies: {
-                    fake_cookie: 'cookie',
-                },
             },
             properties: {
                 spaceId: 'fake-space-id',
                 pageId: 'fake-page-id',
             },
         };
-        const actualSegmentEvent = generateSegmentTrackEvent(fakeSpaceViewEvent, {
-            id: 'fake-page-id',
-            title: 'GitBook Integrations',
-        });
+        const actualSegmentEvent = generateSegmentTrackEvent(fakeSpaceViewEvent);
         assert.deepEqual(expectedSegmentEvent, actualSegmentEvent);
     });
 
@@ -64,22 +57,16 @@ test('events', async (t) => {
         async () => {
             const { visitor, ...restSpaceViewEvent } = fakeSpaceViewEvent;
             const { cookies, ...restVisitor } = visitor;
-            const segmentEvent = generateSegmentTrackEvent(
-                {
-                    ...restSpaceViewEvent,
-                    visitor: {
-                        ...restVisitor,
-                        cookies: {
-                            ...cookies,
-                            ajs_anonymous_id: 'segmentAnonymousId',
-                        },
+            const segmentEvent = generateSegmentTrackEvent({
+                ...restSpaceViewEvent,
+                visitor: {
+                    ...restVisitor,
+                    cookies: {
+                        ...cookies,
+                        ajs_anonymous_id: 'segmentAnonymousId',
                     },
                 },
-                {
-                    id: 'fake-page-id',
-                    title: 'GitBook Integrations',
-                }
-            );
+            });
             assert.equal(segmentEvent.anonymousId, 'segmentAnonymousId');
         }
     );
@@ -87,10 +74,7 @@ test('events', async (t) => {
     await t.test(
         'should fallback to sending GitBook anonymousId value as anonymousId when ajs_anonymous_id is not present',
         async () => {
-            const segmentEvent = generateSegmentTrackEvent(fakeSpaceViewEvent, {
-                id: 'fake-page-id',
-                title: 'GitBook Integrations',
-            });
+            const segmentEvent = generateSegmentTrackEvent(fakeSpaceViewEvent);
             assert.equal(segmentEvent.anonymousId, 'gitbookAnonymousId');
         }
     );

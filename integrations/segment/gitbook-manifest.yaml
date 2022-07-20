@@ -2,25 +2,24 @@ name: segment
 title: Segment
 icon: ./icon.png
 description: Send page views to any Destination in Segment.
-organization: gitbook
 externalLinks:
-  - label: Documentation
-    url: https://docs.gitbook.com/integrations/segment
+    - label: Documentation
+      url: https://docs.gitbook.com/integrations/segment
 visibility: public
 script: ./src/index.ts
 scopes:
-  - space:views:read
+    - space:views:read
 summary: |
     Configure the Segment integration to track an event for all page views in your space.
     The page views will be tracked as a `gitbook.space.view` event.
 categories:
-  - analytics
+    - analytics
 configurations:
-  space:
-    properties:
-      write_key:
-        type: string
-        title: Write Key
-        description: Key provided by Segment to identify the data source.
-    required:
-      - write_key
+    space:
+        properties:
+            write_key:
+                type: string
+                title: Write Key
+                description: Key provided by Segment to identify the data source.
+        required:
+            - write_key
