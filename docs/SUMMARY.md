@@ -19,6 +19,7 @@
     * [Insights](api/resources/spaces/insights.md)
     * [Revisions](api/resources/spaces/revisions.md)
   * [Integrations](api/resources/integrations/README.md)
+  * [URLs](api/resources/urls/README.md)
 * [Librairies](api/librairies/README.md)
   * [Browser / Node](api/librairies/browser-node.md)
 
