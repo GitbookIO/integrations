@@ -2,7 +2,7 @@
 
 ## Create, merge & update a Change Request
 
-{% swagger src="https://api.gitbook.com/openapi.yaml" path="/spaces/{spaceId}/change-requests/" method="post" %}
+{% swagger src="https://api.gitbook.com/openapi.yaml" path="/spaces/{spaceId}/change-requests" method="post" %}
 {% endswagger %}
 
 {% swagger src="https://api.gitbook.com/openapi.yaml" path="/spaces/{spaceId}/change-requests/{changeRequestId}/merge" method="post" %}
