@@ -1,4 +1,6 @@
 # Integrations
 
-{% swagger src="https://api-getsquad-dev-samy.firebaseapp.com/openapi.yaml" path="/integrations/{integrationName}" method="post" %}
+## Publish an Integration
+
+{% swagger src="https://api.gitbook.com/openapi.yaml" path="/integrations/{integrationName}" method="get" %}
 {% endswagger %}

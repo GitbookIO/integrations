@@ -2,9 +2,9 @@
 
 ## Users
 
-|                                                                                                                                    |                                                                                                          |
-| ---------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| <p><strong></strong><a href="users/README.md"><strong>Authenticated User</strong></a><br>Retrieve the authenticated User info.</p> | <p><strong></strong><a href="users/README.md"><strong>User</strong></a><br>Retrieve a specific User.</p> |
+|                                                                                                                                                          |                                                                                                          |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| <p><strong></strong><a href="users/README.md"><strong>Authenticated User</strong></a><br>Retrieve info and search content of the authenticated User.</p> | <p><strong></strong><a href="users/README.md"><strong>User</strong></a><br>Retrieve a specific User.</p> |
 
 ## Collections
 
@@ -23,6 +23,12 @@
 
 |                                                                                                                                                        |                                                                                                                             |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| <p><strong></strong><a href="spaces/README.md"><strong>Space</strong></a><br>Retrieve a Space object</p>                                               | <p><strong></strong><a href="spaces/insights.md"><strong>Insights</strong></a><br>Retrieve Insights data for a Space.</p>   |
+| <p><strong></strong><a href="spaces/README.md"><strong>Space</strong></a><br>Retrieve a Space object.</p>                                              | <p><strong></strong><a href="spaces/insights.md"><strong>Insights</strong></a><br>Retrieve Insights data for a Space.</p>   |
 | <p><strong></strong><a href="spaces/change-requests.md"><strong>Change Requests</strong></a><br>Act on Change Requests and retrieve their content.</p> | <p><strong></strong><a href="spaces/content.md"><strong>Content</strong></a><br>Retrieve and import content to a Space.</p> |
 | <p><strong></strong><a href="spaces/revisions.md"><strong>Revisions</strong></a><br>Retrieve Revisions content.</p>                                    | <p><strong></strong><a href="spaces/README.md"><strong>Search</strong></a><br>Search content in a Space.</p>                |
+
+## Integrations
+
+|                                                                                                                      |     |
+| -------------------------------------------------------------------------------------------------------------------- | --- |
+| <p><strong></strong><a href="integrations/README.md"><strong>Integration</strong></a><br>Publish an Integration.</p> |     |
