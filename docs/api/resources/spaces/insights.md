@@ -1,4 +1,4 @@
-# Analytics
+# Insights
 
 {% swagger src="https://api.gitbook.com/openapi.yaml" path="/spaces/{spaceId}/analytics/content" method="get" %}
 {% endswagger %}
