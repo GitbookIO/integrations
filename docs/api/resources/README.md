@@ -1,5 +1,10 @@
 # Resources
 
+## Users
+
+|                                                                                                                                              |                                                                                                          |
+| -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| <p><strong></strong><a href="users/README.md"><strong>Authenticated User</strong></a><br>Retrieve the authenticated User and its Spaces.</p> | <p><strong></strong><a href="users/README.md"><strong>User</strong></a><br>Retrieve a specific User.</p> |
 
 ## Spaces
 
