@@ -11,7 +11,7 @@ export async function verifySlackRequest(req: Request) {
     const baseSignature = `v0:${timestamp}:${body}`;
 
     const computedSignature = `v0=${sha256.hmac
-        .create('6c4cfa4389178a9e7625612a544d5a2b')
+        .create(environment.secrets.SIGNING_SECRET)
         .update(baseSignature)
         .hex()}`;
 
