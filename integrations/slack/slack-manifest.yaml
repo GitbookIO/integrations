@@ -3,21 +3,21 @@ display_information:
     description: GitBook helps you publish beautiful docs for your users and centralize your teams' knowledge for advanced collaboration.
     background_color: '#346DDB'
     long_description: |
-        The GitBook and Slack integration empower your teams by connecting your GitBook knowledge bases with your Slack workspace.
+        The GitBook Slack integration connects your knowledge base on GitBook to your Slack workspace, empowering your teams.
 
         *Get notified of what's important:*
 
-        Receive real-time Slack notifications when important activities happen in GitBook around your content: content being updated, content being published, etc.
+        Receive real-time Slack notifications when something important happens to your content on GitBook. For example, when your content is updated, published, etc.
         
         Pick and choose what, where, and how you wish to be notified.
 
         *Searching made simple:*
 
-        Searching has never been easier than with the GitBook and Slack integration. Use Slack global shortcuts to search within your content: Type "/gitbook [search]".
+        Searching has never been easier. Use Slack global shortcuts to search within your content: Type "/gitbook [search]".
 
         *Improved links sharing:*
 
-        The GitBook and Slack integration will automatically generate a nice-looking preview for all GitBook links shared in Slack.
+        The GitBook Slack integration will automatically generate a nice-looking preview for all GitBook links shared in Slack.
 features:
     bot_user:
         display_name: GitBook
