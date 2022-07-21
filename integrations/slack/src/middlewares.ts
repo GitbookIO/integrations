@@ -1,14 +1,24 @@
 import { Request } from 'itty-router';
 import { sha256 } from 'js-sha256';
 
+/**
+ * Verify the authenticity of a Slack request.
+ * Reference - https://api.slack.com/authentication/verifying-requests-from-slack
+ */
 export async function verifySlackRequest(req: Request) {
     // @ts-ignore
     const slackSignature = req.headers.get('x-slack-signature');
     // @ts-ignore
-    const timestamp = req.headers.get('x-slack-request-timestamp');
+    const slackTimestamp = req.headers.get('x-slack-request-timestamp');
+
+    // Check for replay attacks
+    const now = Math.floor(Date.now() / 1000);
+    if (Math.abs(now - Number(slackTimestamp)) > 60 * 5) {
+        throw new Error('Stale request');
+    }
 
     const body = (await req.text()) as string;
-    const baseSignature = `v0:${timestamp}:${body}`;
+    const baseSignature = `v0:${slackTimestamp}:${body}`;
 
     const computedSignature = `v0=${sha256.hmac
         .create(environment.secrets.SIGNING_SECRET)
