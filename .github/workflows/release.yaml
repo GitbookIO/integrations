@@ -1,67 +1,69 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - main
+    push:
+        branches:
+            - main
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  release:
-    name: Release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
-        with:
-          # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
-          fetch-depth: 0
+    release:
+        name: Release
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Repo
+              uses: actions/checkout@v3
+              with:
+                  # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
+                  fetch-depth: 0
 
-      - name: Setup Node.js 18.x
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18.x
+            - name: Setup Node.js 18.x
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 18.x
 
-      - name: Install Dependencies
-        run: npm ci
+            - name: Install Dependencies
+              run: npm ci
 
-      - name: Create Release Pull Request or Publish to npm
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          publish: npm run release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-  
-  publish-integrations:
-    name: Publish Integrations
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
-      - name: Setup Node.js 18.x
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18.x
-      - name: Install Dependencies
-        # We need to build and then re-install so that the "bin" can be correctly linked
-        run: |
-          npm ci
-          npm run build
-          npm ci
-      - name: Publish all integrations to staging
-        run: npm run publish-integrations
-        env:
-          GITBOOK_TOKEN: ${{ secrets.GITBOOK_STAGING_API_TOKEN }}
-          GITBOOK_ENDPOINT: https://api.gitbook-staging.com
-          SLACK_CLIENT_ID: ${{ secrets.SLACK_STAGING_CLIENT_ID }}
-          SLACK_CLIENT_SECRET: ${{ secrets.SLACK_STAGING_CLIENT_SECRET }}
-      - name: Publish all integrations to production
-        run: npm run publish-integrations
-        env:
-          GITBOOK_TOKEN: ${{ secrets.GITBOOK_PROD_API_TOKEN }}
-          GITBOOK_ENDPOINT: https://api.gitbook.com
-          SLACK_CLIENT_ID: ${{ secrets.SLACK_PROD_CLIENT_ID }}
-          SLACK_CLIENT_SECRET: ${{ secrets.SLACK_PROD_CLIENT_SECRET }}
+            - name: Create Release Pull Request or Publish to npm
+              id: changesets
+              uses: changesets/action@v1
+              with:
+                  publish: npm run release
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    publish-integrations:
+        name: Publish Integrations
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Repo
+              uses: actions/checkout@v3
+            - name: Setup Node.js 18.x
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 18.x
+            - name: Install Dependencies
+              # We need to build and then re-install so that the "bin" can be correctly linked
+              run: |
+                  npm ci
+                  npm run build
+                  npm ci
+            - name: Publish all integrations to staging
+              run: npm run publish-integrations
+              env:
+                  GITBOOK_TOKEN: ${{ secrets.GITBOOK_STAGING_API_TOKEN }}
+                  GITBOOK_ENDPOINT: https://api.gitbook-staging.com
+                  SLACK_CLIENT_ID: ${{ secrets.SLACK_STAGING_CLIENT_ID }}
+                  SLACK_CLIENT_SECRET: ${{ secrets.SLACK_STAGING_CLIENT_SECRET }}
+                  SLACK_SIGNING_SECRET: ${{ secrets.SLACK_STAGING_SIGNING_SECRET }}
+            - name: Publish all integrations to production
+              run: npm run publish-integrations
+              env:
+                  GITBOOK_TOKEN: ${{ secrets.GITBOOK_PROD_API_TOKEN }}
+                  GITBOOK_ENDPOINT: https://api.gitbook.com
+                  SLACK_CLIENT_ID: ${{ secrets.SLACK_PROD_CLIENT_ID }}
+                  SLACK_CLIENT_SECRET: ${{ secrets.SLACK_PROD_CLIENT_SECRET }}
+                  SLACK_SIGNING_SECRET: ${{ secrets.SLACK_PROD_SIGNING_SECRET }}
