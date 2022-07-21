@@ -3,12 +3,13 @@
     "version": "0.0.0",
     "private": true,
     "dependencies": {
+        "@gitbook/runtime": "*",
         "itty-router": "^2.6.1",
-        "@gitbook/runtime": "*"
+        "js-sha256": "^0.9.0"
     },
     "devDependencies": {
-        "@gitbook/cli": "*",
         "@gitbook/api": "*",
+        "@gitbook/cli": "*",
         "@gitbook/eslint-config": "*",
         "@gitbook/tsconfig": "*"
     },
