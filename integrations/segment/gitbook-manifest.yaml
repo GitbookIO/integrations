@@ -11,7 +11,7 @@ script: ./src/index.ts
 scopes:
     - space:views:read
 summary: |
-    The GitBook and Segment integration empowers your teams by connecting your GitBook public documentations to your Segment pipeline.
+    The GitBook Segment integration empowers your teams by connecting your GitBook public documentations to your Segment pipeline.
 
     Automatic page view events on your public documentation:
     Each of your connected GitBook space will send a `[GitBook] space_view` event to the associated Segment source.
