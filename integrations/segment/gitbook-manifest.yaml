@@ -1,7 +1,7 @@
 name: segment
 title: Segment
 icon: ./icon.png
-description: Send page views to any Destination in Segment.
+description: Integrate your GitBook public documentations in your Segment pipeline.
 organization: gitbook
 externalLinks:
     - label: Documentation
@@ -11,8 +11,15 @@ script: ./src/index.ts
 scopes:
     - space:views:read
 summary: |
-    Configure the Segment integration to track an event for all page views in your space.
-    The page views will be tracked as a `gitbook.space.view` event.
+    The GitBook and Segment integration empowers your teams by connecting your GitBook public documentations to your Segment pipeline.
+
+    Automatic page view events on your public documentation:
+    Each of your connected GitBook space will send a `[GitBook] space_view` event to the associated Segment source.
+
+    Track your users' actions across all your company's websites:
+    Each `[GitBook] space_view` includes the `anonymousId` property.
+    If the active user has already visited one of your other company's websites, the `anonymousId` will match the one already set by Segment.
+    Otherwise, GitBook will associate a new `anonymousId` for the user matching Segment's format.
 categories:
     - analytics
 configurations:
