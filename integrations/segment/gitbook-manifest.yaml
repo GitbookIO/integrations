@@ -1,7 +1,7 @@
 name: segment
 title: Segment
 icon: ./icon.png
-description: Integrate your GitBook public documentations in your Segment pipeline.
+description: Integrate your GitBook public documentation with your Segment pipeline.
 organization: gitbook
 externalLinks:
     - label: Documentation
@@ -11,10 +11,10 @@ script: ./src/index.ts
 scopes:
     - space:views:read
 summary: |
-    The GitBook Segment integration empowers your teams by connecting your GitBook public documentations to your Segment pipeline.
+    The GitBook Segment integration connects your public documentation on GitBook to your Segment pipeline, empowering your teams.
 
     Automatic page view events on your public documentation:
-    Each of your connected GitBook space will send a `[GitBook] space_view` event to the associated Segment source.
+    Each of your connected GitBook spaces will send a `[GitBook] space_view` event to the associated Segment source.
 
     Track your users' actions across all your company's websites:
     Each `[GitBook] space_view` includes the `anonymousId` property.
