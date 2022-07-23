@@ -29,6 +29,13 @@
       ],
       "outputs": [],
       "cache": false
+    },
+    "publish-integrations-alpha": {
+      "dependsOn": [
+        "build"
+      ],
+      "outputs": [],
+      "cache": false
     }
   }
 }

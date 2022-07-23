@@ -1,0 +1,43 @@
+name: gitlab
+title: GitLab
+icon: ./assets/icon.png
+description: Synchronize GitBook with a GitLab repository.
+# organization: gitbook
+categories:
+    - collaboration
+externalLinks:
+    - label: Documentation
+      url: https://docs.gitbook.com/integrations/gitlab
+visibility: public
+script: ./src/index.ts
+scopes:
+    - space:content:read
+    - space:metadata:read
+    - space:content:write
+summary: Synchronize content with GitLab
+configurations:
+    space:
+        properties:
+            auth_token:
+                type: string
+                title: GitLab API token
+                description: Authorization between GitLab and GitBook.
+            endpoint:
+                type: string
+                title: GitLab Endpoint
+                description: URL of your custom GitLab instance.
+            repository:
+                type: string
+                title: Repository
+                description: Select a repository to sync this space with.
+                completion_url: /repositories
+            ref:
+                type: string
+                title: Branch
+                description: Select a Git branch to sync your content with.
+                completion_url: /repositories
+            fork_pr_preview:
+                type: boolean
+                title: Fork Pull-Request Preview
+                description: Allow Pull-Request preview from forked repositories.
+                default: true

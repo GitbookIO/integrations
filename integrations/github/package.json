@@ -1,0 +1,14 @@
+{
+    "name": "@gitbook/integration-github",
+    "private": true,
+    "devDependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/cli": "*",
+        "@gitbook/eslint-config": "*",
+        "@gitbook/tsconfig": "*"
+    },
+    "scripts": {
+        "lint": "eslint ./**/*.ts",
+        "publish-integrations-alpha": "gitbook publish ."
+    }
+}
