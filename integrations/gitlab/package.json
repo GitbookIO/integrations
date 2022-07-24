@@ -5,7 +5,8 @@
         "@gitbook/api": "*",
         "@gitbook/cli": "*",
         "@gitbook/eslint-config": "*",
-        "@gitbook/tsconfig": "*"
+        "@gitbook/tsconfig": "*",
+        "itty-router": "^2.6.1"
     },
     "scripts": {
         "lint": "eslint ./**/*.ts",

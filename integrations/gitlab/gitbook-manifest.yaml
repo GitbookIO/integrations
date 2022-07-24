@@ -1,5 +1,5 @@
 name: gitlab
-title: GitLab
+title: Gitlab
 icon: ./assets/icon.png
 description: Synchronize GitBook with a GitLab repository.
 # organization: gitbook
@@ -22,22 +22,26 @@ configurations:
                 type: string
                 title: GitLab API token
                 description: Authorization between GitLab and GitBook.
-            endpoint:
+            host:
                 type: string
-                title: GitLab Endpoint
+                title: GitLab Custom Instance
                 description: URL of your custom GitLab instance.
-            repository:
+            project:
                 type: string
-                title: Repository
-                description: Select a repository to sync this space with.
-                completion_url: /repositories
+                title: Project
+                description: Select a project to sync this space with.
+                completion_url: /projects
             ref:
                 type: string
                 title: Branch
                 description: Select a Git branch to sync your content with.
-                completion_url: /repositories
+                completion_url: /branches
             fork_pr_preview:
                 type: boolean
                 title: Fork Pull-Request Preview
                 description: Allow Pull-Request preview from forked repositories.
                 default: true
+        required:
+            - auth_token
+            - project
+            - ref
