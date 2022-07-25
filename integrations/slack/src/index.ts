@@ -3,7 +3,7 @@ import { Router } from 'itty-router';
 import { api, createOAuthHandler } from '@gitbook/runtime';
 
 import { executeSlackAPIRequest } from './api';
-import { createSlackEventsHandler } from './events';
+import { createSlackEventsHandler, acknowledgeSlackRequest } from './events';
 import { unfurlLink } from './links';
 import { verifySlackRequest } from './middlewares';
 
@@ -63,7 +63,7 @@ router.get('/channels', async () => {
  * Handle incoming webhooks from Slack.
  */
 router.post(
-    '/events',
+    '/events_task',
     verifySlackRequest,
     createSlackEventsHandler({
         url_verification: async (event) => {
@@ -75,6 +75,7 @@ router.post(
     })
 );
 
+router.post('/events', acknowledgeSlackRequest);
 /**
  * Handle incoming slash commands from Slack.
  */

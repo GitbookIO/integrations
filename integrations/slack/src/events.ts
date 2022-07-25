@@ -1,4 +1,22 @@
-import { Request } from 'itty-router';
+export async function acknowledgeSlackRequest(req: Request) {
+    /**
+     * We acknowledge the slack request immediately to avoid failures
+     * and "queue" the actual task to be executed in a subsequent request.
+     */
+    fetch(`${req.url}_task`, {
+        method: 'POST',
+        body: await req.text(),
+        headers: {
+            'content-type': req.headers.get('content-type'),
+            'x-slack-signature': req.headers.get('x-slack-signature'),
+            'x-slack-request-timestamp': req.headers.get('x-slack-request-timestamp'),
+        },
+    });
+
+    return new Response(JSON.stringify({ acknowledged: true }), {
+        'Content-Type': 'application/json',
+    });
+}
 
 /**
  * Handle an event from Slack.
