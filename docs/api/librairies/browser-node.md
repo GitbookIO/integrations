@@ -1,3 +1,7 @@
+{% hint style="warning" %}
+The GitBook API library is still in **alpha**. It's not available publicly just yet.
+{% endhint %}
+
 # Browser / Node
 
 GitBook provides an official Typescript/Javascript client for the HTTP API. This client can be used in a browser or Node.js environment.

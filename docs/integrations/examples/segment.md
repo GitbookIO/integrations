@@ -4,6 +4,10 @@ description: Tutorial to write a complete Segment integration from scratch.
 
 # Segment
 
+{% hint style="warning" %}
+The GitBook Integration Platform is currently in **alpha**. It's not opened to developers just yet.
+{% endhint %}
+
 This tutorial will guide you in creating an integration tracking specific events happening in GitBook into a [Segment.com](https://segment.com) destination.
 
 For a complete code reference, you can check out the official Segment.com integration: [https://github.com/GitbookIO/integrations/tree/main/integrations/segment](https://github.com/GitbookIO/integrations/tree/main/integrations/segment)

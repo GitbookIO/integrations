@@ -1,7 +1,27 @@
 # Table of contents
 
 * [Welcome](README.md)
-* [Quickstart](quickstart.md)
+
+## API
+
+* [Overview](api/overview.md)
+* [Authentication](api/authentication.md)
+* [Rate Limiting](api/rate-limiting.md)
+* [Errors](api/errors.md)
+* [Pagination](api/pagination.md)
+* [Resources](api/resources/README.md)
+  * [Users](api/resources/users/README.md)
+  * [Organizations](api/resources/organizations/README.md)
+  * [Collections](api/resources/collections/README.md)
+  * [Spaces](api/resources/spaces/README.md)
+    * [Change Requests](api/resources/spaces/change-requests.md)
+    * [Content](api/resources/spaces/content.md)
+    * [Insights](api/resources/spaces/insights.md)
+    * [Revisions](api/resources/spaces/revisions.md)
+  * [Integrations](api/resources/integrations/README.md)
+  * [URLs](api/resources/urls/README.md)
+* [Librairies](api/librairies/README.md)
+  * [Browser / Node](api/librairies/browser-node.md)
 
 ## Integrations
 
@@ -15,28 +35,12 @@
   * [Segment](integrations/examples/segment.md)
   * [Slack](integrations/examples/slack.md)
 
-## API
-
-* [Overview](api/overview.md)
-* [References](api/references/README.md)
-  * [Spaces](api/references/spaces/README.md)
-    * [Content](api/references/spaces/content.md)
-    * [Views](api/references/spaces/views.md)
-    * [Change Requests](api/references/spaces/change-requests.md)
-  * [Users](api/references/users/README.md)
-  * [Organizations](api/references/organizations.md)
-  * [Integrations](api/references/integrations/README.md)
-    * [Installations](api/references/integrations/installations.md)
-* [Librairies](api/librairies/README.md)
-  * [Browser / Node](api/librairies/browser-node.md)
-
 ## CLI
 
-* [Reference](cli/README.md)
+* [Quickstart](cli/quickstart.md)
+* [Reference](cli/reference.md)
 * [CI](cli/ci.md)
 
----
-
-* Changelogs
+## Changelogs
   * [API](changelogs/api.md)
   * [Integrations](changelogs/integrations.md)
