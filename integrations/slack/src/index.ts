@@ -3,9 +3,9 @@ import { Router } from 'itty-router';
 import { api, createOAuthHandler } from '@gitbook/runtime';
 
 import { executeSlackAPIRequest } from './api';
-import { createSlackEventsHandler, acknowledgeSlackRequest } from './events';
+import { createSlackEventsHandler } from './events';
 import { unfurlLink } from './links';
-import { verifySlackRequest } from './middlewares';
+import { verifySlackRequest, acknowledgeSlackRequest } from './middlewares';
 
 const router = Router({
     base: new URL(
