@@ -1,8 +1,10 @@
 name: segment
 title: Segment
-icon: ./icon.png
+icon: ./assets/icon.png
 description: Integrate your GitBook public documentations in your Segment pipeline.
 organization: gitbook
+previewImages:
+    - ./assets/preview.png
 externalLinks:
     - label: Documentation
       url: https://docs.gitbook.com/integrations/segment
