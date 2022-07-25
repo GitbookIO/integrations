@@ -9,7 +9,9 @@ import { verifySlackRequest, acknowledgeSlackRequest } from './middlewares';
 
 const router = Router({
     base: new URL(
-        environment.installation?.urls.publicEndpoint || environment.integration.urls.publicEndpoint
+        environment.spaceInstallation?.urls?.publicEndpoint ||
+            environment.installation?.urls.publicEndpoint ||
+            environment.integration.urls.publicEndpoint
     ).pathname,
 });
 
