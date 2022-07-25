@@ -30,11 +30,11 @@ export async function verifySlackRequest(req: Request) {
     }
 }
 
+/**
+ * We acknowledge the slack request immediately to avoid failures
+ * and "queue" the actual task to be executed in a subsequent request.
+ */
 export async function acknowledgeSlackRequest(req: Request) {
-    /**
-     * We acknowledge the slack request immediately to avoid failures
-     * and "queue" the actual task to be executed in a subsequent request.
-     */
     fetch(`${req.url}_task`, {
         method: 'POST',
         body: await req.text(),
