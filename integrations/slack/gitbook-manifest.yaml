@@ -18,7 +18,7 @@ scopes:
     - space:content:read
     - space:metadata:read
 summary: |
-    The GitBook Slack integration connects your knowledge base on GitBook to your Slack workspace, empowering your teams.
+    The GitBook Slack integration brings the power of GitBook to your Slack workspace. Your teams have instant access to your GitBook knowledge base, without leaving Slack.
 
     Get notified of what's important:
     Receive real-time Slack notifications when something important happens to your content on GitBook. For example, when your content is updated, published, etc.

@@ -3,7 +3,7 @@ display_information:
     description: GitBook helps you publish beautiful docs for your users and centralize your teams' knowledge for advanced collaboration.
     background_color: '#346DDB'
     long_description: |
-        The GitBook Slack integration connects your knowledge base on GitBook to your Slack workspace, empowering your teams.
+        The GitBook Slack integration brings the power of GitBook to your Slack workspace. Your teams have instant access to your GitBook knowledge base, without leaving Slack.
 
         *Get notified of what's important:*
 
