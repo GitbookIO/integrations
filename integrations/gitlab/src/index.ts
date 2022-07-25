@@ -1,4 +1,5 @@
 import { Router } from 'itty-router';
+import { api } from '@gitbook/runtime';
 
 import { executeGitlabAPIRequest } from './api';
 
@@ -58,8 +59,19 @@ router.get('/projects', async (request) => {
     });
 });
 
+/**
+ * Handler for the Gitlab's webhook.
+ */
+router.post('/webhook', async (request) => {
+    //
+});
+
 addEventListener('fetch', (event, eventContext) => {
     event.respondWith(router.handle(event.request, eventContext));
+});
+
+addEventListener('installation_setup', () => {
+    // Configure webhook
 });
 
 /*
@@ -67,5 +79,23 @@ addEventListener('fetch', (event, eventContext) => {
  */
 addEventListener('space_content_updated', async (event) => {
     // Start export
+    const apiClient = await api.createInstallationClient(
+        environment.integration.name,
+        environment.installation.id
+    );
+
+    await apiClient.exportToGitRepository(event.spaceId, {
+        /** URL of the Git repository to export to. It can contain basic auth credentials. */
+        // url: string;
+        // /** Git ref to push the commit to in the format "refs/heads/main" */
+        // ref: string;
+        // /** Unique identifier to use to cache the Git repository across multiple operations. */
+        // repoCacheID?: string;
+        // /** URL to use as a prefix for external file references. */
+        // repoTreeURL?: string;
+        // /** URL to use as a prefix for the commit URL. */
+        // repoCommitURL?: string;
+        // force?: boolean;
+    })
 });
 
