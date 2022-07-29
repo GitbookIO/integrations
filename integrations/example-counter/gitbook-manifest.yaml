@@ -1,0 +1,9 @@
+name: example-counter-block
+title: Example Counter Block
+description: Interactive custom block example
+visibility: public
+script: ./src/index.tsx
+scopes: []
+blocks:
+    - id: counter
+      title: Counter

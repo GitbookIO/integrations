@@ -1,0 +1,28 @@
+name: sentry
+title: Sentry
+description: Interactive embeds for Sentry issues
+organization: gitbook
+externalLinks:
+    - label: Documentation
+      url: https://docs.gitbook.com/integrations/sentry
+visibility: public
+script: ./src/index.ts
+
+blocks:
+    - type: sentry-issue
+      title: Sentry Issue
+      urlUnfurl:
+        - https://sentry.io/organizations/*/issues/*/
+categories:
+    - analytics
+configurations:
+    account:
+        properties:
+            oauth_credentials:
+                type: button
+                title: Connection
+                description: Authorization between Sentry and GitBook.
+                button_text: Authorize
+                callback_url: /oauth
+        required:
+            - oauth_credentials

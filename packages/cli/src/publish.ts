@@ -28,6 +28,7 @@ export async function publishIntegration(filePath: string): Promise<void> {
         categories: manifest.categories,
         configurations: manifest.configurations,
         secrets: manifest.secrets,
+        blocks: manifest.blocks,
         visibility: manifest.visibility,
         organization: manifest.organization,
         externalLinks: manifest.externalLinks,

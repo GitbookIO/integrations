@@ -159,6 +159,12 @@ async function getManifestSchema() {
                     'components/schemas/Integration/properties/scopes'
                 ),
             },
+            blocks: {
+                ...getAPIJsonSchemaFor(
+                    openAPISpec,
+                    'components/schemas/Integration/properties/blocks'
+                ),
+            },
             categories: {
                 ...getAPIJsonSchemaFor(
                     openAPISpec,
