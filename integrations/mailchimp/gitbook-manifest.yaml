@@ -1,0 +1,31 @@
+name: mailchimp
+title: Mailchimp
+description: Let readers subscribe to mailing list.
+icon: ./assets/icon.png
+visibility: public
+script: ./src/index.tsx
+scopes: []
+blocks:
+    - id: subscribe-form
+      title: Subsribe Form
+      description: Form component to allow readers to subscribe with their email.
+configurations:
+    account:
+        properties:
+            oauth_credentials:
+                type: button
+                title: Connection
+                description: Authorization between Mailchimp and GitBook.
+                button_text: Authorize
+                callback_url: /oauth
+            list:
+                type: string
+                title: List
+                description: Select a list to add contacts into. 
+                completion_url: /lists
+        required:
+            - oauth_credentials
+            - list
+secrets:
+    CLIENT_ID: '839266755395'
+    CLIENT_SECRET: f8294765e4d38acecd91ddd35b9547e8c48749e2f8108d448e

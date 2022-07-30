@@ -1,10 +1,11 @@
 {
-  "name": "@gitbook/integration-example-counter",
+  "name": "@gitbook/integration-mailchimp",
   "version": "0.0.0",
   "private": true,
   "dependencies": {
     "@gitbook/api": "*",
-    "@gitbook/runtime": "*"
+    "@gitbook/runtime": "*",
+    "itty-router": "^2.6.1"
   },
   "devDependencies": {
     "@gitbook/cli": "*"
