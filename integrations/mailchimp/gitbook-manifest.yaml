@@ -7,7 +7,7 @@ script: ./src/index.tsx
 scopes: []
 blocks:
     - id: subscribe-form
-      title: Subsribe Form
+      title: Mailchimp Subscribe Form
       description: Form component to allow readers to subscribe with their email.
 configurations:
     account:

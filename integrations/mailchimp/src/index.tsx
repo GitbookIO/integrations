@@ -73,7 +73,11 @@ addEventListener('fetch', (event, eventContext) => {
     event.respondWith(router.handle(event.request, eventContext));
 });
 
-createComponentCallback<{}, { email: string; subscribed: boolean }, { action: 'subscribe' }>({
+createComponentCallback<
+    {},
+    { email: string; subscribed: boolean },
+    { action: 'subscribe' } | { action: 'subscribe_again' }
+>({
     componentId: 'subscribe-form',
     initialState: {
         email: '',
@@ -96,6 +100,16 @@ createComponentCallback<{}, { email: string; subscribed: boolean }, { action: 's
                     ...previous.state,
                     email: '',
                     subscribed: true,
+                },
+            };
+        }
+
+        if (action.action === 'subscribe_again') {
+            return {
+                ...previous,
+                state: {
+                    ...previous.state,
+                    subscribed: false,
                 },
             };
         }
@@ -135,10 +149,35 @@ createComponentCallback<{}, { email: string; subscribed: boolean }, { action: 's
             );
         }
 
+        if (state.subscribed) {
+            return (
+                <block>
+                    <box style="card">
+                        <hstack align="center">
+                            <box>
+                                <vstack>
+                                    <box>
+                                        <text style="bold">Thank you for subscribing!</text>
+                                    </box>
+                                </vstack>
+                            </box>
+                            <spacer />
+                            <box>
+                                <button
+                                    label="Subscribe with another email"
+                                    action={{ action: 'subscribe_again' }}
+                                />
+                            </box>
+                        </hstack>
+                    </box>
+                </block>
+            );
+        }
+
         return (
             <block>
                 <box style="card">
-                    <hstack>
+                    <hstack align="center">
                         <box>
                             <vstack>
                                 <box>
