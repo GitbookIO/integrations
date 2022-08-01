@@ -156,7 +156,15 @@ createComponentCallback<{}, { email: string; subscribed: boolean }, { action: 's
                             <textinput id="email" placeholder="Email" />
                         </box>
                         <box>
-                            <button label="Subscribe" action={{ action: 'subscribe' }} />
+                            <button
+                                label="Subscribe"
+                                confirm={{
+                                    title: 'Subscribe to updates?',
+                                    text: 'You will receive emails from us. You can unsubscribe at any time.',
+                                    confirm: 'Subscribe',
+                                }}
+                                action={{ action: 'subscribe' }}
+                            />
                         </box>
                     </hstack>
                 </box>
