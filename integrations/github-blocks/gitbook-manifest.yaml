@@ -1,0 +1,13 @@
+name: github-blocks
+title: GitHub
+description: Blocks to insert files from GitHub.
+icon: ./assets/icon.png
+visibility: public
+script: ./src/index.tsx
+scopes: []
+blocks:
+    - id: snippet
+      title: GitHub Snippet
+      description: Snippet of a GitHub file.
+      urlUnfurl:
+        - https://github.com/

@@ -1,0 +1,11 @@
+name: mermaid
+title: Mermaid
+description: Diagram and flowchart from text in a similar manner as markdown.
+icon: ./assets/icon.png
+visibility: public
+script: ./src/index.tsx
+scopes: []
+blocks:
+    - id: diagram
+      title: Mermaid Diagram
+      description: Diagram and flowchart from text in a similar manner as markdown.
