@@ -6,7 +6,7 @@ This means you can bring your workflows and/or product into GitBook, making it e
 
 ## Example
 
-```ts
+```tsx
 import { createIntegration, createComponent } from '@gitbook/integration';
 
 const helloWorldBlock = createComponent({

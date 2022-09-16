@@ -8,6 +8,30 @@ If you want to learn more about the ContentKit itself, alongside the different t
 
 ### `block`
 
+{% tabs %}
+{% tab title="JSON" %}
+```json
+{
+    "type": "block",
+    "children": [
+        ...
+    ]
+}
+```
+{% endtab %}
+{% tab title="JSX" %}
+```tsx
+<block>
+    ...
+</block>
+```
+{% endtab %}
+{% endtabs %}
+
+| Props | Type | Description |
+| ----- | ---- | ----------- |
+| `children` | `Array<Block>` | (_Required_) Content to display in the block |
+
 ### `button`
 
 {% tabs %}
@@ -27,7 +51,47 @@ If you want to learn more about the ContentKit itself, alongside the different t
 {% endtab %}
 {% endtabs %}
 
+| Props | Type | Description |
+| ----- | ---- | ----------- |
+| `label` | `string` | (_Required_) Text displayed in the button |
+| `action` | `Action` | (_Required_) Action to trigger when the button is pressed |
+| `style` | `'primary' | 'secondary' | 'danger'` | Visual style for the button |
+| `tooltip` | `string` | Text displayed in an hovering tooltip |
+| `icon` | `Icon` | Visual icon to display on the start of the button |
+| `confirm` | `object` | Modal to display to ask the user to confirm the action before execution |
+| `confirm.title` | `string` | (_Required_) Title for the confirmation modal |
+| `confirm.text` | `string` | (_Required_) Content of the confirmation modal |
+| `confirm.confirm` | `string` | (_Required_) Label for the confirmation button |
+| `confirm.style` | `'primary' | 'danger'` | Content of the confirmation modal |
+
 ### `box`
+
+{% tabs %}
+{% tab title="JSON" %}
+```json
+{
+    "type": "box",
+    "style": "card",
+    "children": [
+        ...
+    ]
+}
+```
+{% endtab %}
+{% tab title="JSX" %}
+```tsx
+<box style="card">
+    ...
+</box>
+```
+{% endtab %}
+{% endtabs %}
+
+| Props | Type | Description |
+| ----- | ---- | ----------- |
+| `children` | `Array<Block> | Array<Inline>` | (_Required_) Content to display in the block |
+| `style` | `'card' | 'default'` | Visual style for the box |
+
 
 ### `stack`
 
