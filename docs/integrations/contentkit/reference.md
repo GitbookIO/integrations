@@ -93,7 +93,7 @@ Interactive pressable button, triggering a component action when clicked.
 
 | Props | Type | Description |
 | ----- | ---- | ----------- |
-| `children` | `Array<Block> | Array<Inline>` | (_Required_) Content to display in the block |
+| `children` | `Array<Block> \| Array<Inline>` | (_Required_) Content to display in the block |
 | `style` | `'card' | 'default'` | Visual style for the box |
 
 
@@ -160,13 +160,127 @@ Flex layout element to render an horizontal stack of elements. Use [`spacer`](#s
 
 ### `spacer`
 
+A flexible space that expands along the major axis of its containing stack layout, or on both axes if not contained in a stack.
+
+{% tabs %}
+{% tab title="JSON" %}
+```json
+{
+    "type": "spacer"
+}
+```
+{% endtab %}
+{% tab title="JSX" %}
+```tsx
+<spacer />
+```
+{% endtab %}
+{% endtabs %}
+
+
 ### `divider`
+
+A visual delimiter between 2 elements of a containing stack layout.
+
+{% tabs %}
+{% tab title="JSON" %}
+```json
+{
+    "type": "divider"
+}
+```
+{% endtab %}
+{% tab title="JSX" %}
+```tsx
+<divider />
+```
+{% endtab %}
+{% endtabs %}
 
 ### `text`
 
 ### `codeblock`
 
+Multi-lines code blocks with syntax highlighting.
+
+{% tabs %}
+{% tab title="JSON" %}
+```json
+{
+    "type": "codeblock",
+    "content": "const variable = 10",
+    "syntax": "javascript"
+}
+```
+{% endtab %}
+{% tab title="JSX" %}
+```tsx
+<codeblock content="const variable = 10" syntax="javascript" />
+```
+{% endtab %}
+{% endtabs %}
+
+| Props | Type | Description |
+| ----- | ---- | ----------- |
+| `content` | `string` | (_Required_) Text content for the codeblock |
+| `syntax` | `string` | Syntax to use for highlighting |
+| `lineNumbers` | `boolean \| number` | Control the display of the line numbers |
+| `buttons` | `Array<Button>` | Buttons to render as an overlay in top-right corner |
+
 ### `markdown`
 
+Rich-text formatting of Markdown content.
+
+{% tabs %}
+{% tab title="JSON" %}
+```json
+{
+    "type": "markdown",
+    "content": "Hello **world**"
+}
+```
+{% endtab %}
+{% tab title="JSX" %}
+```tsx
+<markdown content="Hello **world**" />
+```
+{% endtab %}
+{% endtabs %}
+
+| Props | Type | Description |
+| ----- | ---- | ----------- |
+| `content` | `string` | (_Required_) Markdown text content to render |
+
 ### `webframe`
+
+Block element to render an external URL.
+
+{% tabs %}
+{% tab title="JSON" %}
+```json
+{
+    "type": "webframe",
+    "source": {
+        "url": "https://www.gitbook.com"
+    },
+    "aspectRatio": 1.7
+}
+```
+{% endtab %}
+{% tab title="JSX" %}
+```tsx
+<webframe source={{ url: 'https://www.gitbook.com' }} aspectRatio={16 / 9} />
+```
+{% endtab %}
+{% endtabs %}
+
+| Props | Type | Description |
+| ----- | ---- | ----------- |
+| `source` | `object` | (_Required_) Content to load in the frame |
+| `source.url` | `string` | (_Required_) URL of the content to load |
+| `aspectRatio` | `number` | (_Required_) Aspect-ratio (width / height) for the block |
+| `buttons` | `Array<Button>` | Buttons to render as an overlay in top-right corner |
+
+### `textinput`
+
 
