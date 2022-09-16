@@ -7,7 +7,7 @@ This means you can bring your workflows and/or product into GitBook, making it e
 ## Example
 
 ```tsx
-import { createIntegration, createComponent } from '@gitbook/integration';
+import { createIntegration, createComponent } from '@gitbook/runtime';
 
 const helloWorldBlock = createComponent({
     componentId: 'hello-world',

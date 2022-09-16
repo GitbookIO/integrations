@@ -1,6 +1,6 @@
 import { Router } from 'itty-router';
 
-import { api, createOAuthHandler } from '@gitbook/runtime';
+import { api, createIntegration, createOAuthHandler, EventCallback } from '@gitbook/runtime';
 
 import { executeSlackAPIRequest } from './api';
 import { createSlackEventsHandler } from './events';
@@ -91,16 +91,9 @@ router.post('/events', acknowledgeSlackRequest);
 // );
 
 /*
- * Bind these routes.
- */
-addEventListener('fetch', (event, eventContext) => {
-    event.respondWith(router.handle(event.request, eventContext));
-});
-
-/*
  * Handle content being updated: send a notification on Slack.
  */
-addEventListener('space_content_updated', async (event) => {
+const handleSpaceContentUpdated: EventCallback<'space_content_updated'> = async (event) => {
     const channel =
         environment.spaceInstallation.configuration.channel ||
         environment.installation.configuration.default_channel;
@@ -131,12 +124,12 @@ addEventListener('space_content_updated', async (event) => {
             },
         ],
     });
-});
+};
 
 /*
  * Handle content visibility being updated: send a notification on Slack.
  */
-addEventListener('space_visibility_updated', async (event) => {
+const handleSpaceVisibilityUpdated: EventCallback<'space_visibility_updated'> = async (event) => {
     const channel =
         environment.spaceInstallation.configuration.channel ||
         environment.installation.configuration.default_channel;
@@ -169,4 +162,14 @@ addEventListener('space_visibility_updated', async (event) => {
             },
         ],
     });
+};
+
+export default createIntegration({
+    events: {
+        fetch: (event, eventContext) => {
+            event.respondWith(router.handle(event.request, eventContext));
+        },
+        space_content_updated: handleSpaceContentUpdated,
+        space_visibility_updated: handleSpaceVisibilityUpdated,
+    },
 });

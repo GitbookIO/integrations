@@ -16,5 +16,10 @@
     "scripts": {
         "lint": "eslint ./src/**/*.ts",
         "typecheck": "tsc --noEmit"
+    },
+    "exports": {
+        ".": "./src/index.ts",
+        "jsx-runtime": "./src/contentkit-jsx.ts",
+        "jsx-dev-runtime": "./src/contentkit-jsx.ts"
     }
 }

@@ -285,7 +285,7 @@ Rich-text formatting of Markdown content.
 
 ### `webframe`
 
-Element to render an external URL. The frame can receive update when states are updated by defining dependencies with `dependencies` (see [interactivity](./interactivity.md) for more details).
+Element to render an external URL. The frame can receive update when states are updated by defining dependencies with `data` (see [interactivity](./interactivity.md) for more details).
 
 {% tabs %}
 {% tab title="JSON" %}
@@ -315,7 +315,7 @@ Element to render an external URL. The frame can receive update when states are 
 | `source.url` | `string` | (_Required_) URL of the content to load |
 | `aspectRatio` | `number` | (_Required_) Aspect-ratio (width / height) for the block |
 | `buttons` | `Array<Button>` | Buttons to render as an overlay in top-right corner |
-| `dependencies` | `Array<string>` | States this webframe is depend on. Each state update will cause the webframe to receive a message. |
+| `data` | `Record<string, string \| DynamicBinding>` | States this webframe is depend on. Each state update will cause the webframe to receive a message. |
 
 ### `textinput`
 
@@ -353,3 +353,10 @@ When an action is being dispatched to the integration, the value of the input is
 | `label` | `string` | Label to display next to the input. |
 | `placeholder` | `string` | Text that appears in the form control when it has no value set |
 
+## Actions
+
+### `@ui.url.open`
+
+### `@ui.modal.open`
+
+### `@ui.modal.close`

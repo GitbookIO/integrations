@@ -1,4 +1,4 @@
-import { RequestUpdateIntegrationInstallation } from '@gitbook/api';
+import { FetchEvent, RequestUpdateIntegrationInstallation } from '@gitbook/api';
 
 import { api } from './api';
 

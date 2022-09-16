@@ -59,7 +59,12 @@ For example, we can update a webframe by binding directly to a textinput:
     <hstack>
         <textinput state="content" />
         <divider />
-        <webframe source={{ uri: '/iframe.html' }} dependencies={['content']} />
+        <webframe
+            source={{ uri: '/iframe.html' }}
+            data={{
+                content: { state: 'content' }
+            }}
+            />
     </hstack>
 </block>
 ```
@@ -73,3 +78,20 @@ window.addEventListener("message", (event) => {
     }
 });
 ```
+
+## Webframes and actions
+
+Webframes are powerful elements to integrate in GitBook external applications or complete UI. Passing data to the webframe can be done using the `data` prop.
+But the webframe also needs to be able to coomunicate data back to the top component. It can be achieved using the `window.postMessage`:
+
+```js
+window.parent.postMessage({
+    action: {
+        type: 'doSomething',
+    }
+}, '*');
+```
+
+## Modals
+
+## Opening urls
