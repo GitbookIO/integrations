@@ -21,7 +21,7 @@ The GitBook API is currently in **beta**. This means you should not rely on it's
 |                                                                                                                                    |                                                                                                                             |
 | ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | <p><strong></strong><a href="organizations/README.md"><strong>Spaces</strong></a><br>Retrieve the Spaces in an Organization.</p>   | <p><strong></strong><a href="organizations/README.md"><strong>Search</strong></a><br>Search content in an Organization.</p> |
-| <p><strong></strong><a href="organizations/README.md"><strong>SSO</strong></a><br>Set a member in an Organization as SSO User.</p> |
+| <p><strong></strong><a href="organizations/members.md"><strong>Members</strong></a><br>Invite, remove, and update members.</p> | <p><strong></strong><a href="organizations/teams.md"><strong>Teams</strong></a><br>Create, remove, and update teams.</p> |
 
 ## Spaces
 

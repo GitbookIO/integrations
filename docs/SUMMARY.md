@@ -12,6 +12,8 @@
 * [Resources](api/resources/README.md)
   * [Users](api/resources/users/README.md)
   * [Organizations](api/resources/organizations/README.md)
+    * [Members](api/resources/organizations/members.md)
+    * [Teams](api/resources/organizations/teams.md)
   * [Collections](api/resources/collections/README.md)
   * [Spaces](api/resources/spaces/README.md)
     * [Change Requests](api/resources/spaces/change-requests.md)
