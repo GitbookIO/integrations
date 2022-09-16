@@ -34,6 +34,7 @@
   * [Environment](integrations/runtime/environment.md)
   * [HTTP Fetch](integrations/runtime/http-fetch.md)
 * [ContentKit](integrations/contentkit/README.md)
+  * [Interactivity](integrations/contentkit/interactivity.md)
   * [Reference](integrations/contentkit/reference.md)
 * [Examples](integrations/examples/README.md)
   * [Segment](integrations/examples/segment.md)
