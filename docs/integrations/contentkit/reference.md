@@ -199,6 +199,38 @@ A visual delimiter between 2 elements of a containing stack layout.
 
 ### `text`
 
+The text element is used for rendering blocks of text with formatting.
+
+{% tabs %}
+{% tab title="JSON" %}
+```json
+{
+    "type": "text",
+    "children": [
+        "Hello ",
+        {
+            "type": "text",
+            "children": ["World"],
+            "style": "bold"
+        }
+    ]
+}
+```
+{% endtab %}
+{% tab title="JSX" %}
+```tsx
+<text>
+    Hello <text style="bold">World</text>
+</text>
+```
+{% endtab %}
+{% endtabs %}
+
+| Props | Type | Description |
+| ----- | ---- | ----------- |
+| `children` | `Array<string \| Text>` | (_Required_) Content of the text element. |
+| `style` | `"bold" \| "italic" \| "strikethrough" \| "code"` | (_Required_) Style to format the text with. |
+
 ### `codeblock`
 
 Multi-lines code blocks with syntax highlighting.
@@ -269,7 +301,10 @@ Block element to render an external URL.
 {% endtab %}
 {% tab title="JSX" %}
 ```tsx
-<webframe source={{ url: 'https://www.gitbook.com' }} aspectRatio={16 / 9} />
+<webframe
+    source={{ url: 'https://www.gitbook.com' }}
+    aspectRatio={16 / 9}
+    />
 ```
 {% endtab %}
 {% endtabs %}
@@ -283,4 +318,37 @@ Block element to render an external URL.
 
 ### `textinput`
 
+An input component is used to capture text input from the end user. 
+When an action is being dispatched to the integration, the value of the input is stored in the state value referenced by `id`. 
+
+{% tabs %}
+{% tab title="JSON" %}
+```json
+{
+    "type": "textinput",
+    "id": "name",
+    "label": "Name",
+    "initialValue": "John Doe",
+    "placeholder": "Enter a name"
+}
+```
+{% endtab %}
+{% tab title="JSX" %}
+```tsx
+<textinput
+    id="name"
+    label="Name"
+    initialValue="John Doe"
+    placeholder="Enter a name"
+    />
+```
+{% endtab %}
+{% endtabs %}
+
+| Props | Type | Description |
+| ----- | ---- | ----------- |
+| `id` | `string` | (_Required_) A unique identifier for the component. The value of the input will be stored as a property in the state named after this ID. |
+| `initialValue` | `string` | (_Required_) Initial value of the input. |
+| `label` | `string` | (_Required_) Label to display next to the input. |
+| `placeholder` | `string` | Text that appears in the form control when it has no value set |
 
