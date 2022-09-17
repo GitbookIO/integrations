@@ -6,16 +6,19 @@ const previewBlock = createComponent<{
     componentId: 'preview',
     initialState: {},
     async render({ props }) {
+        const { content } = props;
 
         return (
             <block>
                 <box>
                     <text>Hello world</text>
                 </box>
+                <box>
+                    <text>{content}</text>
+                </box>
             </block>
         )
 
-        const { content } = props;
         const parsed = JSON.parse(content);
         return <block>{parsed}</block>;
     }
