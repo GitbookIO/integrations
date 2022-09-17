@@ -8,19 +8,32 @@ const previewBlock = createComponent<{
     async render({ props }) {
         const { content } = props;
 
-        return (
-            <block>
-                <box>
-                    <text>Hello world</text>
-                </box>
-                <box>
-                    <text>{content}</text>
-                </box>
-            </block>
-        )
+        if (!content) {
+            return (
+                <block>
+                    <box>
+                        <text>No content</text>
+                    </box>
+                </block>
+            )
+        }
 
         const parsed = JSON.parse(content);
-        return <block>{parsed}</block>;
+        return (
+            <block>
+                <box style="card">
+                    <hstack>
+                        <box>
+                            <codeblock content={content} syntax="javascript" />
+                        </box>
+                        <divider />
+                        <box>
+                            {parsed}
+                        </box>
+                    </hstack>
+                </box>
+            </block>
+        );
     }
 })
 
