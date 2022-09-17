@@ -1,0 +1,15 @@
+name: mermaid
+title: Mermaid
+description: Diagramming and charting tool that uses Markdown-inspired text definitions
+# organization: gitbook
+visibility: public
+script: ./src/index.tsx
+scopes: []
+blocks:
+    - id: diagram
+      title: Mermaid
+      description: Diagram
+      markdown:
+        codeblock: mermaid
+        body: content
+
