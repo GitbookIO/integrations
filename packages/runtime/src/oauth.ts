@@ -1,6 +1,6 @@
 import { FetchEvent, RequestUpdateIntegrationInstallation } from '@gitbook/api';
 
-import { api } from './api';
+import { RuntimeCallback } from './context';
 
 export interface OAuthConfig {
     /**
@@ -39,7 +39,7 @@ export interface OAuthConfig {
  */
 export function createOAuthHandler(
     config: OAuthConfig
-): (event: FetchEvent | Request) => Promise<Response> {
+): RuntimeCallback<[FetchEvent | Request], Promise<Response>> {
     const {
         extractCredentials = (response) => ({
             configuration: {
@@ -48,7 +48,7 @@ export function createOAuthHandler(
         }),
     } = config;
 
-    return async (event) => {
+    return async (event, { api, environment }) => {
         const request = event.request ? event.request : event;
         const url = new URL(request.url);
         const code = url.searchParams.get('code');

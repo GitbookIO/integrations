@@ -1,6 +1,7 @@
 import { UIRenderEvent } from '@gitbook/api';
 
 import { ComponentDefinition } from './components';
+import { createContext } from './context';
 import { EventCallbackMap } from './events';
 
 interface IntegrationRuntimeDefinition {
@@ -19,9 +20,13 @@ interface IntegrationRuntimeDefinition {
  * Create and initialize an integration runtime.
  */
 export function createIntegration(definition: IntegrationRuntimeDefinition) {
+    // TODO: adapt the implementation to the new runtime (Cloudflare Workers)
+    // where we will listen to an incoming HTTP request and parse it.
+
     const { events = {}, components = [] } = definition;
 
-    // TODO: adapt to new runtime (Cloudflare Workers)
+    // @ts-ignore - `environment` is currently a global variable until we switch to Cloudflare Workers
+    const context = createContext(environment);
 
     if (components.length > 0) {
         addEventListener('ui_render', async (e) => {
@@ -32,15 +37,21 @@ export function createIntegration(definition: IntegrationRuntimeDefinition) {
             if (!component) {
                 return;
             }
-            return component.render(event);
+            return component.render(event, context);
         });
     }
 
     Object.entries(events).forEach(([type, callback]) => {
         if (Array.isArray(callback)) {
-            callback.forEach((cb) => addEventListener(type, cb));
+            callback.forEach((cb) =>
+                addEventListener(type, (event) => {
+                    return cb(event, context);
+                })
+            );
         } else {
-            addEventListener(type, callback);
+            addEventListener(type, (event) => {
+                return callback(event, context);
+            });
         }
     });
 }

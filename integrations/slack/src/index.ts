@@ -93,7 +93,10 @@ router.post('/events', acknowledgeSlackRequest);
 /*
  * Handle content being updated: send a notification on Slack.
  */
-const handleSpaceContentUpdated: EventCallback<'space_content_updated'> = async (event) => {
+const handleSpaceContentUpdated: EventCallback<'space_content_updated'> = async (
+    event,
+    { environment }
+) => {
     const channel =
         environment.spaceInstallation.configuration.channel ||
         environment.installation.configuration.default_channel;

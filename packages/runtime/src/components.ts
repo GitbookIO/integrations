@@ -1,5 +1,7 @@
 import { ContentKitBlock, UIRenderEvent, ContentKitRenderOutput } from '@gitbook/api';
 
+import { RuntimeCallback } from './context';
+
 export interface ComponentInstance<Props, State> {
     props: Props;
     state: State;
@@ -7,7 +9,7 @@ export interface ComponentInstance<Props, State> {
 
 export interface ComponentDefinition {
     componentId: string;
-    render: (event: UIRenderEvent) => Promise<ContentKitRenderOutput>;
+    render: RuntimeCallback<[UIRenderEvent], Promise<ContentKitRenderOutput>>;
 }
 
 /**
@@ -27,19 +29,19 @@ export function createComponent<Props = {}, State = {}, Action = void>(component
     /**
      * Callback to handle a dispatched action.
      */
-    action?: (
-        instance: ComponentInstance<Props, State>,
-        action: Action
-    ) => Promise<ComponentInstance<Props, State>>;
+    action?: RuntimeCallback<
+        [ComponentInstance<Props, State>, Action],
+        Promise<ComponentInstance<Props, State>>
+    >;
 
     /**
      * Callback to render the component.
      */
-    render: (instance: ComponentInstance<Props, State>) => Promise<ContentKitBlock>;
+    render: RuntimeCallback<[ComponentInstance<Props, State>], Promise<ContentKitBlock>>;
 }): ComponentDefinition {
     return {
         componentId: component.componentId,
-        render: async (event) => {
+        render: async (event, context) => {
             if (event.componentId !== component.componentId) {
                 return;
             }
@@ -51,10 +53,10 @@ export function createComponent<Props = {}, State = {}, Action = void>(component
             };
 
             if (action && component.action) {
-                instance = await component.action(instance, action);
+                instance = await component.action(instance, action, context);
             }
 
-            const element = await component.render(instance);
+            const element = await component.render(instance, context);
 
             return {
                 state: instance.state,
