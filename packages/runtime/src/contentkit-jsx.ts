@@ -8,11 +8,15 @@ export function Fragment() {
 /**
  * JSX factory function, to be exported from the JSX package entry point.
  */
-export function jsx(type: string, props: object) {
+export function jsx(type: string | typeof Fragment, props: object) {
     let { children } = props;
 
     if (typeof children !== 'undefined' && !Array.isArray(children)) {
         children = [children];
+    }
+
+    if (type === Fragment) {
+        return children;
     }
 
     return {

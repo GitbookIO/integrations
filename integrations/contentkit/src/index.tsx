@@ -2,11 +2,22 @@ import { createIntegration, createComponent } from "@gitbook/runtime";
 
 const previewBlock = createComponent<{
     content: string;
-}>({
+}, {
+    action: object
+}, object>({
     componentId: 'preview',
     initialState: {},
-    async render({ props }) {
+    async action(element, action) {
+        return {
+            ...element,
+            state: {
+                action: JSON.stringify(action),
+            }
+        }
+    },
+    async render({ props, state }) {
         const { content } = props;
+        const { action } = state;
 
         if (!content) {
             return (
@@ -22,15 +33,26 @@ const previewBlock = createComponent<{
         return (
             <block>
                 <box style="card">
+                    <vstack>
                     <hstack>
                         <box>
-                            <codeblock content={content} syntax="javascript" />
-                        </box>
-                        <divider />
-                        <box>
-                            {parsed}
-                        </box>
-                    </hstack>
+                                <codeblock content={content} syntax="javascript" />
+                            </box>
+                            <divider />
+                            <box>
+                                {parsed}
+                            </box>
+                        </hstack>
+                        {action ? (
+                            <>
+                                <divider />
+                                <box>
+                                    <box><text>action dispatched:</text></box>
+                                    <codeblock content={action} syntax="javascript" />
+                                </box>
+                            </>
+                        ) : null}
+                    </vstack>
                 </box>
             </block>
         );

@@ -8,7 +8,7 @@ This means you can bring your workflows and/or product into GitBook, making it e
 {
     "type": "button",
     "label": "Click me",
-    "action": { "type": "something" }
+    "action": { "action": "something" }
 }
 ```
 
