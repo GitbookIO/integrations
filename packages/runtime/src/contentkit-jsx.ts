@@ -14,6 +14,9 @@ export function jsx(type: string | typeof Fragment, props: object) {
     if (typeof children !== 'undefined' && !Array.isArray(children)) {
         children = [children];
     }
+    if (children) {
+        children = children.flat();
+    }
 
     if (type === Fragment) {
         return children;
