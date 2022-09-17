@@ -36,6 +36,8 @@
 * [ContentKit](integrations/contentkit/README.md)
   * [Interactivity](integrations/contentkit/interactivity.md)
   * [Reference](integrations/contentkit/reference.md)
+* [Blocks](integrations/blocks/README.md)
+  * [Working with Markdown](integrations/blocks/markdown.md)
 * [Examples](integrations/examples/README.md)
   * [Segment](integrations/examples/segment.md)
   * [Slack](integrations/examples/slack.md)

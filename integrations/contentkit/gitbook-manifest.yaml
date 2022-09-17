@@ -1,0 +1,15 @@
+name: contentkit
+title: ContentKit
+icon: ./assets/icon.png
+description: Preview and dev tools for ContentKit.
+organization: gitbook
+visibility: private
+script: ./src/index.ts
+blocks:
+    - id: preview
+      title: ContentKit Preview
+      description: Preview of a ContentKit element.
+      markdown:
+        codeblock: contentkit
+        body: content
+
