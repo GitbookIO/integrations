@@ -53,6 +53,17 @@ Interactive pressable button, triggering a component action when clicked.
 <button label="Click me" action={{ type: 'something' }} />
 ```
 {% endtab %}
+{% tab title="Examples" %}
+Basic button:
+
+```contentkit
+{
+    "type": "button",
+    "label": "Click me",
+    "action": { "type": "something" }
+}
+```
+{% endtab %}
 {% endtabs %}
 
 | Props | Type | Description |
