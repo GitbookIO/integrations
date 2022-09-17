@@ -18,7 +18,7 @@ function getAnonymousId(event: api.SpaceViewEvent): string {
     return cookies.ajs_anonymous_id || visitor.anonymousId;
 }
 
-function generateSegmentTrackEvent(event: api.SpaceViewEvent) {
+export function generateSegmentTrackEvent(event: api.SpaceViewEvent) {
     const { visitor, referrer, url, spaceId, pageId } = event;
 
     const anonymousId = getAnonymousId(event);
@@ -46,5 +46,3 @@ function generateSegmentTrackEvent(event: api.SpaceViewEvent) {
         },
     };
 }
-
-export { generateSegmentTrackEvent };
