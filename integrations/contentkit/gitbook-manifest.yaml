@@ -1,10 +1,10 @@
 name: contentkit
 title: ContentKit
-icon: ./assets/icon.png
 description: Preview and dev tools for ContentKit.
-organization: gitbook
-visibility: private
-script: ./src/index.ts
+# organization: gitbook
+visibility: public
+script: ./src/index.tsx
+scopes: []
 blocks:
     - id: preview
       title: ContentKit Preview

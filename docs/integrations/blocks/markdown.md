@@ -6,9 +6,11 @@ GitBook can synchronize user content with Git repositories with content being fo
 
 GitBook will automatically support formatting and parsing all integration blocks with Markdown. By default the Liquid syntax is used:
 
+{% raw %}
 ```markdown
 {% myintegration/block-name propA="A" %}
 ```
+{% endraw %}
 
 ## As a code block
 
@@ -31,12 +33,10 @@ In this scenario, a block with the properties `{ "content": "something" }` will 
     something
     ```
 
-In the scenario where the block also has other properties, those will be set on a wrapping Liquid block. For example with a block having the properties `{ "content": "something", "propA": "A" }`
+In the scenario where the block also has other properties, those will be set on the codeblock. For example with a block having the properties `{ "content": "something", "propA": "A" }`
 
-    {% myintegration/block-name propA="A" %}
-    ```blocksyntax
+    ```blocksyntax propA="A"
     something
     ```
-    {% endmyintegration/block-name %}
 
 

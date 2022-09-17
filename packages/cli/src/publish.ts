@@ -26,6 +26,7 @@ export async function publishIntegration(filePath: string): Promise<void> {
         summary: manifest.summary,
         scopes: manifest.scopes,
         categories: manifest.categories,
+        blocks: manifest.blocks,
         configurations: manifest.configurations,
         secrets: manifest.secrets,
         visibility: manifest.visibility,
@@ -57,6 +58,8 @@ async function buildScript(filePath: string): Promise<string> {
         mainFields: ['worker', 'browser', 'module', 'jsnext', 'main'],
         conditions: ['worker', 'browser', 'import', 'production'],
         define: {},
+        jsx: 'automatic',
+        jsxImportSource: '@gitbook/runtime',
     });
 
     return result.outputFiles[0].text;
