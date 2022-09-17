@@ -5,14 +5,23 @@ export function Fragment() {
     // TODO
 }
 
-export function jsx() {
-    // TODO
+/**
+ * JSX factory function, to be exported from the JSX package entry point.
+ */
+export function jsx(type: string, props: object) {
+    let { children } = props;
+
+    if (typeof children !== 'undefined' && !Array.isArray(children)) {
+        children = [children];
+    }
+
+    return {
+        type,
+        ...props,
+        children,
+    };
 }
 
-export function jsxs() {
-    // TODO
-}
+export const jsxs = jsx;
 
-export function jsxDEV() {
-    // TODO
-}
+export const jsxDEV = jsx;
