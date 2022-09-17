@@ -1,25 +1,27 @@
 import { UIRenderEvent } from '@gitbook/api';
 
 import { ComponentDefinition } from './components';
-import { createContext } from './context';
+import { createContext, RuntimeContext } from './context';
 import { EventCallbackMap } from './events';
 
-interface IntegrationRuntimeDefinition {
+interface IntegrationRuntimeDefinition<Context extends RuntimeContext = RuntimeContext> {
     /**
      * Handler for events.
      */
-    events?: EventCallbackMap;
+    events?: EventCallbackMap<Context>;
 
     /**
      * Components to bind in the runtime.
      */
-    components?: ComponentDefinition[];
+    components?: Array<ComponentDefinition<Context>>;
 }
 
 /**
  * Create and initialize an integration runtime.
  */
-export function createIntegration(definition: IntegrationRuntimeDefinition) {
+export function createIntegration<Context extends RuntimeContext = RuntimeContext>(
+    definition: IntegrationRuntimeDefinition<Context>
+) {
     // TODO: adapt the implementation to the new runtime (Cloudflare Workers)
     // where we will listen to an incoming HTTP request and parse it.
 

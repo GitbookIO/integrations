@@ -1,4 +1,6 @@
-import { Request } from 'itty-router';
+import { FetchEventCallback } from '@gitbook/runtime';
+
+import { SlackRuntimeContext } from './configuration';
 
 export interface SlashEvent {
     /** Slack App's unique ID */
@@ -24,9 +26,9 @@ export interface SlashEvent {
 }
 
 export function createSlackCommandsHandler(handlers: {
-    [type: string]: (slashEvent: SlashEvent) => Promise<any>;
-}): (request: Request) => Promise<Response> {
-    return async (request) => {
+    [type: string]: (slashEvent: SlashEvent, context: SlackRuntimeContext) => Promise<any>;
+}): FetchEventCallback {
+    return async (request, context) => {
         const slashEvent = {} as SlashEvent;
         new URLSearchParams(await request.text()).forEach((value, key) => {
             slashEvent[key] = value;
@@ -47,7 +49,7 @@ export function createSlackCommandsHandler(handlers: {
             });
         }
 
-        await handler(slashEvent);
+        await handler(slashEvent, context);
 
         return new Response(null, {
             status: 200,

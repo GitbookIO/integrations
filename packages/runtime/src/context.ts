@@ -1,10 +1,22 @@
 import { GitBookAPI, IntegrationEnvironment } from '@gitbook/api';
 
-export interface RuntimeContext {
+export interface RuntimeEnvironment<
+    InstallationConfiguration = {},
+    SpaceInstallationConfiguration = {}
+> extends IntegrationEnvironment {
+    installation?: IntegrationEnvironment['installation'] & {
+        configuration: InstallationConfiguration;
+    };
+    spaceInstallation?: IntegrationEnvironment['spaceInstallation'] & {
+        configuration: SpaceInstallationConfiguration;
+    };
+}
+
+export interface RuntimeContext<Environment extends RuntimeEnvironment = IntegrationEnvironment> {
     /**
      * Environment of the integration.
      */
-    environment: IntegrationEnvironment;
+    environment: Environment;
 
     /**
      * Authenticated client to the GitBook API.
@@ -15,9 +27,11 @@ export interface RuntimeContext {
 /**
  * Callback with the runtime context.
  */
-export type RuntimeCallback<Input extends Array<any>, Result> = (
-    ...args: [...Input, RuntimeContext]
-) => Result;
+export type RuntimeCallback<
+    Input extends Array<any>,
+    Result,
+    Context extends RuntimeContext = RuntimeContext
+> = (...args: [...Input, Context]) => Result;
 
 /**
  * Create a mnewew runtime context from an environment.
