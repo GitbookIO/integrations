@@ -12,12 +12,14 @@ export interface ComponentDefinition<Context extends RuntimeContext = RuntimeCon
     render: RuntimeCallback<[UIRenderEvent], Promise<ContentKitRenderOutput>, Context>;
 }
 
+type PlainObject = { [key: string]: number | string | boolean | PlainObject | undefined | null };
+
 /**
  * Create a component instance. The result should be bind to the integration using `blocks`.
  */
 export function createComponent<
-    Props = {},
-    State = {},
+    Props extends PlainObject = {},
+    State extends PlainObject = {},
     Action = void,
     Context extends RuntimeContext = RuntimeContext
 >(component: {
@@ -29,7 +31,7 @@ export function createComponent<
     /**
      * Initial state of the component.
      */
-    initialState: State;
+    initialState: State | ((props: Props) => State);
 
     /**
      * Callback to handle a dispatched action.
@@ -52,10 +54,17 @@ export function createComponent<
                 return;
             }
 
-            const { action } = event;
+            const action = event.action as Action | undefined;
+            const props = event.props as Props;
+            const state =
+                (event.state as State | undefined) ||
+                (typeof component.initialState === 'function'
+                    ? component.initialState(props)
+                    : component.initialState);
+
             let instance: ComponentInstance<Props, State> = {
-                state: (event.state || component.initialState) as State,
-                props: event.props as Props,
+                state,
+                props,
             };
 
             if (action && component.action) {
