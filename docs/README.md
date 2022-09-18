@@ -4,6 +4,8 @@ Welcome to GitBook Developer Documentation.
 
 This documentation provides the API reference and information you need to use our REST API.
 
+here is a mermaid test:
+
 ```mermaid
   graph TD;
       A-->B;
