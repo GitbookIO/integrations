@@ -371,3 +371,26 @@ When an action is being dispatched to the integration, the value of the input is
 ### `@ui.modal.open`
 
 ### `@ui.modal.close`
+
+### `@webframe.ready`
+
+```js
+{
+    "action": "@webframe.ready"
+}
+```
+
+Action to send as a message from a webframe to indicate that the webframe is ready to receive messages and updates.
+
+### `@webframe.resize`
+
+```js
+{
+    "action": "@webframe.resize",
+    "aspectRatio": 1.7,
+    "maxHeight": 400,
+    "maxWidth": 300
+}
+```
+
+Action to send as a message from a webframe to resize the container.

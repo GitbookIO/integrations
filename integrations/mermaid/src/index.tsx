@@ -47,31 +47,59 @@ export default createIntegration({
         fetch: async (event) => {
             return new Response(
                 `
-        
-    <body>
-        <div id="content" class="mermaid">
-        graph TD 
-        A[Client] --> B[Load Balancer] 
-        B --> C[Server01] 
-        B --> D[Server02]
-        </div>
-        <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-        <script>
-        const graphDefinition = 'graph TB\na-->b';
-        const cb = function (svgGraph) {
-           console.log(svgGraph);
-        };
-        mermaid.render('content', graphDefinition, cb);
-            mermaid.initialize({
-                startOnLoad: true,
-                callback: (id) => {
-                    const div = document.getElementById('content');
-                    console.log(div.clientHeight)
-                },
-            });
-        </script>
-    </body>
-        `,
+                <html>
+                <style>
+                * { margin: 0; padding: 0; }
+                </style>
+                <body>
+                    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+                    <script>
+                    console.log("iframe: initialize");
+                        mermaid.initialize({ startOnLoad: false });
+            
+                        function renderDiagram(content) {
+                            mermaid.render('output', content,  (svgGraph) => {
+                                document.getElementById('content').innerHTML = svgGraph;
+                                const svg = document.getElementById('content').querySelector('svg');
+                                const size = { width: svg.viewBox.baseVal.width, height: svg.viewBox.baseVal.height };
+                                console.log(size);
+
+                                sendAction({
+                                    action: '@webframe.resize',
+                                    size: {
+                                        aspectRatio: size.width / size.height,
+                                        maxHeight: size.height,
+                                        maxWidth: size.width,
+                                    }
+                                })
+                            }); 
+                        }
+
+                        function sendAction(action) {
+                            window.top.postMessage(
+                                {
+                                    action,
+                                },
+                                '*'
+                            );
+                        }
+            
+                        window.addEventListener("message", (event) => {
+                            console.log("iframe: Received message", event.data);
+                            if (event.data) {
+                                const content = event.data.state.content;
+                                renderDiagram(content)
+                            }
+                        });
+
+                        sendAction({
+                            action: '@webframe.ready'
+                        });
+                    </script>
+                    <div id="content"></div>
+                </body>
+            </html>
+                `,
                 {
                     headers: {
                         'Content-Type': 'text/html',
