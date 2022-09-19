@@ -105,7 +105,7 @@ Basic button:
 | Props | Type | Description |
 | ----- | ---- | ----------- |
 | `children` | `Array<Block> \| Array<Inline>` | (_Required_) Content to display in the block |
-| `style` | `'card' | 'default'` | Visual style for the box |
+| `style` | `'card' \| 'secondary' \| 'default'` | Visual style for the box. |
 
 
 ### `vstack`
@@ -208,6 +208,11 @@ A visual delimiter between 2 elements of a containing stack layout.
 {% endtab %}
 {% endtabs %}
 
+| Props | Type | Description |
+| ----- | ---- | ----------- |
+| `style` | `"default" \| "line"` | Visual style for the divider. |
+| `size` | `"medium" \| "small" \| "large"` | Spacing of the divider (default to `medium`). |
+
 ### `text`
 
 The text element is used for rendering blocks of text with formatting.
@@ -269,6 +274,8 @@ Multi-lines code blocks with syntax highlighting.
 | `syntax` | `string` | Syntax to use for highlighting |
 | `lineNumbers` | `boolean \| number` | Control the display of the line numbers |
 | `buttons` | `Array<Button>` | Buttons to render as an overlay in top-right corner |
+| `state` | `string` | Editable state binding. The value of the input will be stored as a property in the state named after this ID. Passing this property automatically makes the code-block editable. |
+| `editAction` | `Action` | Action dispatched when the user has edited the content of this code block. It only applies if a `state` is passed. Usually the action is dispatched when the user is no longer focusing the code-block. |
 
 ### `markdown`
 

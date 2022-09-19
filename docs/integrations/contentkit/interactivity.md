@@ -55,18 +55,28 @@ ContentKit provides a solution with dynamic binding, connecting multiple element
 For example, we can update a webframe by binding directly to a textinput:
 
 ```tsx
-<block>
-    <hstack>
-        <textinput state="content" />
-        <divider />
-        <webframe
-            source={{ uri: '/iframe.html' }}
-            data={{
-                content: { state: 'content' }
-            }}
-            />
-    </hstack>
-</block>
+createComponent({
+    componentId: 'demo',
+    initialState: {
+        content: ''
+    },
+    async render(element) {
+        return (
+            <block>
+                <hstack>
+                    <textinput state="content" />
+                    <divider />
+                    <webframe
+                        source={{ uri: '/iframe.html' }}
+                        data={{
+                            content: element.dynamicState('content')
+                        }}
+                        />
+                </hstack>
+            </block>
+        )
+    }
+})
 ```
 
 In the `iframe.html`, you can handle incoming events by listening to the `message` event coming from the parent window:

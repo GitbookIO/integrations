@@ -1,39 +1,52 @@
 import { createIntegration, createComponent } from "@gitbook/runtime";
 
+const defaultContent =`graph TD
+  Mermaid --> Diagram`;
+
 const diagramBlock = createComponent<{
+    content?: string;
+}, {
     content: string;
 }>({
     componentId: 'diagram',
-    initialState: {},
-    async render({ props, state }, { environment }) {
-        const { content } = props;
+    initialState: (props) => {
+        return {
+            content: props.content || defaultContent
+        };
+    },
+    async render(element, { environment }) {
+        const { editable } = element.context;
+        const { content } = element.state;
         
         return (
             <block>
-                <box style="card">
+                <box style="secondary">
                     <vstack>
+                        {editable ? (
+                            <>
+                                <codeblock
+                                    state="content"
+                                    content={content}
+                                    syntax="mermaid"
+                                    editAction={{
+                                        action: '@editor.node.updateProps',
+                                        props: {
+                                            content: element.dynamicState('content')
+                                        }
+                                    }}
+                                    />
+                                <divider />
+                            </>
+                        ) : null}
                         <webframe
                             source={{
                                 url: environment.integration.urls.publicEndpoint,
                             }}
                             aspectRatio={16 / 9}
                             data={{
-                                content,
+                                content: element.dynamicState('content'),
                             }}
-                            buttons={[
-                                <button
-                                    icon="edit"
-                                    label="Edit diagram"
-                                    action={{
-                                        action: '@ui.modal.open',
-                                        componentId: 'edit-modal',
-                                        props: {},
-                                    }}
-                                />,
-                            ]}
                         />
-                        <divider />
-                        <codeblock content={content} syntax="mermaid" />
                     </vstack>
                 </box>
             </block>
