@@ -4,6 +4,11 @@ import { RuntimeCallback } from './context';
 
 export interface OAuthConfig {
     /**
+     * Redirect URL to use. When the OAuth identity provider only accept a static one.
+     */
+    redirectURL?: string;
+
+    /**
      * ID of the client application in the OAuth provider.
      */
     clientId: string;
@@ -53,8 +58,12 @@ export function createOAuthHandler(
         const url = new URL(request.url);
         const code = url.searchParams.get('code');
 
-        const redirectUri = new URL(request.url);
-        redirectUri.search = '';
+        let redirectUri = config.redirectURL;
+        if (!redirectUri) {
+            const redirectUriObj = new URL(request.url);
+            redirectUriObj.search = '';
+            redirectUri = redirectUriObj.toString();
+        }
 
         //
         // Redirect to authorization
@@ -62,8 +71,9 @@ export function createOAuthHandler(
         if (!code) {
             const redirectTo = new URL(config.authorizeURL);
             redirectTo.searchParams.set('client_id', config.clientId);
-            redirectTo.searchParams.set('redirect_uri', redirectUri.toString());
+            redirectTo.searchParams.set('redirect_uri', redirectUri);
             redirectTo.searchParams.set('response_type', 'code');
+            redirectTo.searchParams.set('state', environment.installation.id);
 
             return Response.redirect(redirectTo.toString());
         }
@@ -73,12 +83,13 @@ export function createOAuthHandler(
         //
         else {
             const code = url.searchParams.get('code');
+            const installationId = url.searchParams.get('state');
 
             const params = new URLSearchParams();
             params.set('client_id', config.clientId);
             params.set('client_secret', config.clientSecret);
             params.set('code', code);
-            params.set('redirect_uri', redirectUri.toString());
+            params.set('redirect_uri', redirectUri);
             params.set('grant_type', 'authorization_code');
 
             const response = await fetch(config.accessTokenURL, {
@@ -97,7 +108,7 @@ export function createOAuthHandler(
             // Store the credentials in the installation configuration
             await api.integrations.updateIntegrationInstallation(
                 environment.integration.name,
-                environment.installation.id,
+                installationId,
                 await extractCredentials(json)
             );
 

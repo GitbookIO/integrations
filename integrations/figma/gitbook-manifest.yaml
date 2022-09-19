@@ -1,0 +1,25 @@
+name: figma
+title: Figma
+icon: ./assets/icon.png
+description: Embed Figma files into GitBook pages
+# organization: gitbook
+visibility: public
+script: ./src/index.tsx
+scopes: []
+blocks:
+    - id: embed
+      title: Figma
+      description: Preview of a Figma file
+      urlUnfurl:
+        - https://www.figma.com/file/
+configurations:
+    account:
+        properties:
+            oauth_credentials:
+                type: button
+                title: Connection
+                description: Authorization between Figma and GitBook.
+                button_text: Authorize
+                callback_url: /oauth
+        required:
+            - oauth_credentials
