@@ -373,13 +373,51 @@ When an action is being dispatched to the integration, the value of the input is
 
 ## Actions
 
+### `@editor.node.updateProps`
+
+Update the properties stored on the editor node binded to the current component.
+
+```js
+{
+    "action": "@editor.node.updateProps",
+    "props": {}
+}
+```
+
 ### `@ui.url.open`
+
+```js
+{
+    "action": "@ui.url.open",
+    "url": "https://www.gitbook.com"
+}
+```
 
 ### `@ui.modal.open`
 
+Open a component `componentId` with props `props` as an overlay modal.
+
+```js
+{
+    "action": "@ui.modal.open",
+    "componentId": "myModal",
+    "props": {}
+}
+```
+
 ### `@ui.modal.close`
 
+Close the current modal. This action should be called from within a modal component.
+
+```js
+{
+    "action": "@ui.modal.close"
+}
+```
+
 ### `@webframe.ready`
+
+Action to send as a message from a webframe to indicate that the webframe is ready to receive messages and updates.
 
 ```js
 {
@@ -387,9 +425,9 @@ When an action is being dispatched to the integration, the value of the input is
 }
 ```
 
-Action to send as a message from a webframe to indicate that the webframe is ready to receive messages and updates.
-
 ### `@webframe.resize`
+
+Action to send as a message from a webframe to resize the container.
 
 ```js
 {
@@ -399,5 +437,3 @@ Action to send as a message from a webframe to indicate that the webframe is rea
     "maxWidth": 300
 }
 ```
-
-Action to send as a message from a webframe to resize the container.
