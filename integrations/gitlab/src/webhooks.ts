@@ -1,7 +1,7 @@
+import { Request, RouteHandler } from 'itty-router';
+
 import { IntegrationEnvironment, RequestImportGitRepository } from '@gitbook/api';
 import { api } from '@gitbook/runtime';
-
-import { Request, RouteHandler } from 'itty-router';
 
 import { executeGitLabAPIRequest } from './api';
 import { GitLabConfiguration } from './types';
@@ -120,9 +120,8 @@ function sendIgnoreResponse() {
 
 function getRepoCacheID(environment: IntegrationEnvironment): string {
     const { spaceInstallation, installation } = environment;
-    const { configuration } = spaceInstallation;
 
-    return `${installation.id}-${spaceInstallation.space}-${configuration?.ref}`;
+    return `${installation.id}-${spaceInstallation.space}`;
 }
 
 /**
@@ -152,6 +151,17 @@ function getGitTreeURL(basePath: string, config: GitLabConfiguration): string {
 }
 
 /**
+ * Return the Git repo URL with creds.
+ */
+function getGitRepoAuthURL(gitURL: string, config: GitLabConfiguration): string {
+    const repoUrl = new URL(gitURL);
+    repoUrl.username = 'oauth2';
+    repoUrl.password = config.authToken;
+
+    return repoUrl.toString();
+}
+
+/**
  * Handle a Push Hook event from GitBook by triggering a Git sync import.
  */
 async function handleGitLabPushHookEvent(
@@ -177,7 +187,7 @@ async function handleGitLabPushHookEvent(
         gitlabHost: configuration?.gitlab_host,
     };
     const importRequest: RequestImportGitRepository = {
-        url: event.project.git_http_url,
+        url: getGitRepoAuthURL(event.project.git_http_url, gitlabConfig),
         ref: event.ref,
         repoCacheID: getRepoCacheID(environment),
         repoCommitURL: getGitCommitsURL(event.project.path_with_namespace, gitlabConfig),
@@ -232,7 +242,7 @@ async function handleGitLabMergeRequestEvent(
         gitlabHost: configuration?.gitlab_host,
     };
     const importRequest: RequestImportGitRepository = {
-        url: event.project.git_http_url,
+        url: getGitRepoAuthURL(event.project.git_http_url, gitlabConfig),
         ref: sourceRef,
         repoCacheID: getRepoCacheID(environment),
         repoCommitURL: getGitCommitsURL(event.project.path_with_namespace, gitlabConfig),

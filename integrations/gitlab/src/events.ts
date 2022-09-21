@@ -1,6 +1,6 @@
-import { api } from '@gitbook/runtime';
 import { IntegrationInstallationStatus, SpaceInstallationSetupEvent } from '@gitbook/api';
-import { installGitLabWebhook, uninstallGitLabWebhook } from './webhooks';
+
+import { installGitLabWebhook } from './webhooks';
 
 /**
  * Handle a space_installation_setup GitBook event.
