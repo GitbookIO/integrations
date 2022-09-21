@@ -1,6 +1,5 @@
 import { UIRenderEvent } from '@gitbook/api';
 
-import { ComponentDefinition } from './components';
 import { createContext, RuntimeContext } from './context';
 import { EventCallbackMap } from './events';
 
@@ -9,11 +8,6 @@ interface IntegrationRuntimeDefinition<Context extends RuntimeContext = RuntimeC
      * Handler for events.
      */
     events?: EventCallbackMap<Context>;
-
-    /**
-     * Components to bind in the runtime.
-     */
-    components?: Array<ComponentDefinition<Context>>;
 }
 
 /**
@@ -25,23 +19,10 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
     // TODO: adapt the implementation to the new runtime (Cloudflare Workers)
     // where we will listen to an incoming HTTP request and parse it.
 
-    const { events = {}, components = [] } = definition;
+    const { events = {} } = definition;
 
     // @ts-ignore - `environment` is currently a global variable until we switch to Cloudflare Workers
     const context = createContext(environment);
-
-    if (components.length > 0) {
-        addEventListener('ui_render', async (e) => {
-            // @ts-ignore
-            const event = e as UIRenderEvent;
-
-            const component = components.find((c) => c.componentId === event.componentId);
-            if (!component) {
-                return;
-            }
-            return component.render(event, context);
-        });
-    }
 
     Object.entries(events).forEach(([type, callback]) => {
         if (Array.isArray(callback)) {
