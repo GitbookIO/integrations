@@ -1,4 +1,4 @@
-import { Event } from '@gitbook/api';
+import { Event, FetchEvent } from '@gitbook/api';
 
 import { RuntimeCallback, RuntimeContext } from './context';
 
@@ -31,7 +31,7 @@ export type EventCallbackMap<Context extends RuntimeContext = RuntimeContext> = 
  * Callback for fetch events.
  */
 export type FetchEventCallback<Context extends RuntimeContext = RuntimeContext> = RuntimeCallback<
-    [Request],
+    [FetchEvent],
     Response | Promise<Response>,
     Context
 >;
