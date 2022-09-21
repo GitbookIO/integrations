@@ -1,5 +1,3 @@
-import { UIRenderEvent } from '@gitbook/api';
-
 import { createContext, RuntimeContext } from './context';
 import { EventCallbackMap } from './events';
 
