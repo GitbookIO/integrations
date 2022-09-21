@@ -1,7 +1,8 @@
 import { Router } from 'itty-router';
-import { handleSpaceInstallationSetupEvent } from './events';
 
+import { handleSpaceInstallationSetupEvent } from './events';
 import { listGitLabProjectBranches, listGitLabProjects } from './routes';
+import { createGitLabWebhookHandler } from './webhooks';
 
 const router = Router({
     base: new URL(
@@ -16,6 +17,7 @@ const router = Router({
  */
 router.get('/projects', listGitLabProjects);
 router.get('/branches', listGitLabProjectBranches);
+router.post('/webhook', createGitLabWebhookHandler(environment));
 
 addEventListener('fetch', (event, eventContext) => {
     event.respondWith(router.handle(event.request, eventContext));
