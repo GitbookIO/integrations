@@ -4,7 +4,6 @@ import test from 'node:test';
 import * as api from '@gitbook/api';
 
 import { generateSegmentTrackEvent } from '../src/events';
-import { IntegrationInfo } from '../src/metadata';
 
 const fakeSpaceViewEvent: api.SpaceViewEvent = {
     eventId: 'fake-event-id',
@@ -31,8 +30,8 @@ test('events', async (t) => {
             anonymousId: 'gitbookAnonymousId',
             context: {
                 library: {
-                    name: IntegrationInfo.name,
-                    version: IntegrationInfo.version,
+                    name: 'segment',
+                    version: '1.0.0',
                 },
                 page: {
                     referrer: 'https://www.gitbook.com/',
