@@ -193,9 +193,10 @@ async function handleGitLabPushHookEvent(
         repoCommitURL: getGitCommitsURL(event.project.path_with_namespace, gitlabConfig),
         repoTreeURL: getGitTreeURL(event.project.path_with_namespace, gitlabConfig),
     };
-    await api.spaces.importGitRepository(spaceInstallation.space, importRequest);
 
-    return new Response(JSON.stringify({ status: 'success', import: importRequest }), {
+    api.spaces.importGitRepository(spaceInstallation.space, importRequest);
+
+    return new Response(JSON.stringify({ status: 'success' }), {
         headers: {
             'Content-Type': 'application/json',
         },
@@ -250,9 +251,9 @@ async function handleGitLabMergeRequestEvent(
         standalone: true,
     };
 
-    await api.spaces.importGitRepository(spaceInstallation.space, importRequest);
+    api.spaces.importGitRepository(spaceInstallation.space, importRequest);
 
-    return new Response(JSON.stringify({ status: 'success', import: importRequest }), {
+    return new Response(JSON.stringify({ status: 'success' }), {
         headers: {
             'Content-Type': 'application/json',
         },
