@@ -20,7 +20,6 @@ export interface IntegrationManifest {
     summary?: string;
     scopes?: api.IntegrationScope[];
     categories?: api.IntegrationCategory[];
-    blocks?: api.IntegrationBlock[];
     configurations?: api.IntegrationConfigurations;
     visibility?: api.IntegrationVisibility;
     previewImages?: api.Integration['previewImages'];
@@ -87,7 +86,6 @@ async function validateIntegrationManifest(data: object): Promise<IntegrationMan
     const [validate, ajv] = await getManifestSchema();
     const valid = validate(data);
     if (!valid) {
-        console.log(validate.errors);
         throw new Error(ajv.errorsText(validate.errors));
     }
 
@@ -159,12 +157,6 @@ async function getManifestSchema() {
                 ...getAPIJsonSchemaFor(
                     openAPISpec,
                     'components/schemas/Integration/properties/scopes'
-                ),
-            },
-            blocks: {
-                ...getAPIJsonSchemaFor(
-                    openAPISpec,
-                    'components/schemas/Integration/properties/blocks'
                 ),
             },
             categories: {
