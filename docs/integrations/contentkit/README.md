@@ -4,7 +4,7 @@ The ContentKit framework allows you to build integrations that work from directl
 
 This means you can bring your workflows and/or product into GitBook, making it easy for teammates and customers to see information or take actions that aren't specifically to do with GitBook.
 
-```
+```contentkit
 {
     "type": "button",
     "label": "Click me",

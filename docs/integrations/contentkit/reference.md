@@ -59,14 +59,51 @@ Interactive pressable button, triggering a component action when clicked.
 {% tab title="Examples" %}
 Basic button:
 
-```
+```contentkit
 {
     "type": "button",
     "label": "Click me",
     "onPress": { "type": "something" }
 }
 ```
+
+With an icon:
+
+```contentkit
+{
+    "type": "button",
+    "label": "Click me",
+    "icon": "maximize",
+    "onPress": { "type": "something" }
+}
+```
 {% endtab %}
+
+With a tooltip:
+
+```contentkit
+{
+    "type": "button",
+    "label": "Click me",
+    "tooltip": "More text here",
+    "onPress": { "type": "something" }
+}
+```
+
+With a confirm modal:
+
+```contentkit
+{
+    "type": "button",
+    "label": "Click me",
+    "confirm": {
+        "title": "Confirm the action",
+        "text": "Help text here",
+        "confirm": "Ok"
+    },
+    "onPress": { "type": "something" }
+}
+```
 {% endtabs %}
 
 | Props             | Type                                   | Description                                                             |

@@ -40,6 +40,7 @@
 * [ContentKit](integrations/contentkit/README.md)
   * [Interactivity](integrations/contentkit/interactivity.md)
   * [Reference](integrations/contentkit/reference.md)
+  * [Internal design](integrations/contentkit/internal-design.md)
 * [Examples](integrations/examples/README.md)
   * [Segment](integrations/examples/segment.md)
   * [Slack](integrations/examples/slack.md)
