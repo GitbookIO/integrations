@@ -42,7 +42,7 @@ export function createComponent<
     /**
      * Initial state of the component.
      */
-    initialState: State | ((props: Props, renderContext: ContentKitContext) => State);
+    initialState?: State | ((props: Props, renderContext: ContentKitContext) => State);
 
     /**
      * Callback to handle a dispatched action.
@@ -65,13 +65,14 @@ export function createComponent<
                 return;
             }
 
+            // @ts-ignore
             const action = event.action as Action | undefined;
             const props = event.props as Props;
             const state =
                 (event.state as State | undefined) ||
                 (typeof component.initialState === 'function'
                     ? component.initialState(props, event.context)
-                    : component.initialState);
+                    : ((component.initialState || {}) as State));
 
             let instance: ComponentInstance<Props, State> = {
                 state,

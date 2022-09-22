@@ -10,7 +10,7 @@ The most common interactive elements are buttons. Buttons can be use to trigger 
 <button
     label="Click me"
     onPress={{
-        type: 'hello',
+        action: 'hello',
         anotherProperty: 'something'
     }}
     />
@@ -22,11 +22,10 @@ When the user presses the button, the `action` is dispatched to the integration 
 const helloWorldBlock = createComponent({
     ...
     action: async (previous, action) => {
-        switch (action.type) {
+        switch (action.action) {
             case 'hello':
-                return { newStateProperty: action.anotherProperty };
+                return { state: { newStateProperty: action.anotherProperty } };
             default:
-                return previous;
         }
     },
     ...

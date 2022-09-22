@@ -23,17 +23,15 @@ const helloWorldBlock = createComponent({
         message: 'Say hello!'
     },
     action: async (previous, action) => {
-        switch (action.type) {
+        switch (action.action) {
             case 'say':
-                return { message: 'Hello world' };
-            default:
-                return previous;
+                return { state: { message: 'Hello world' } };
         }
     },
     render: async ({ props, state }) => {
         return (
             <block>
-                <button label={state.message} onPress={{ type: 'say' }} />
+                <button label={state.message} onPress={{ action: 'say' }} />
             </block>
         );
     }
