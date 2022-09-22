@@ -1,10 +1,18 @@
-import { Request, RouteHandler } from 'itty-router';
+import { Request } from 'itty-router';
 
-import { IntegrationEnvironment, RequestImportGitRepository } from '@gitbook/api';
-import { api } from '@gitbook/runtime';
+import { RequestImportGitRepository } from '@gitbook/api';
 
-import { executeGitLabAPIRequest } from './api';
-import { GitLabConfiguration } from './types';
+import {
+    GitLabRuntimeContext,
+    GitLabRuntimeEnvironment,
+    GitLabSpaceInstallationConfiguration,
+} from './configuration';
+import {
+    executeGitLabAPIRequest,
+    getGitCommitsURL,
+    getGitRepoAuthURL,
+    getGitTreeURL,
+} from './gitlab';
 
 enum GitLabEventName {
     PUSH_HOOK = 'Push Hook',
@@ -84,19 +92,20 @@ interface GitLabMergeRequestEvent {
  * Create the GitLab Webhook event handler.
  */
 export function createGitLabWebhookHandler(
-    environment: IntegrationEnvironment
-): (request: Request) => Promise<RouteHandler<Request>> {
+    context: GitLabRuntimeContext
+): (request: Request) => Promise<Response> {
     return async (request: Request) => {
+        // @ts-ignore
         const eventName = request.headers.get('X-Gitlab-Event');
 
         try {
             switch (eventName) {
                 case GitLabEventName.PUSH_HOOK:
                     const pushHookEvent: GitLabPushEvent = await request.json();
-                    return await handleGitLabPushHookEvent(pushHookEvent, environment);
+                    return await handleGitLabPushHookEvent(pushHookEvent, context);
                 case GitLabEventName.MERGE_REQUEST_HOOK:
                     const mergeRequestEvent: GitLabMergeRequestEvent = await request.json();
-                    return await handleGitLabMergeRequestEvent(mergeRequestEvent, environment);
+                    return await handleGitLabMergeRequestEvent(mergeRequestEvent, context);
                 default:
                     return sendIgnoreResponse();
             }
@@ -118,47 +127,10 @@ function sendIgnoreResponse() {
     });
 }
 
-function getRepoCacheID(environment: IntegrationEnvironment): string {
+function getRepoCacheID(environment: GitLabRuntimeEnvironment): string {
     const { spaceInstallation, installation } = environment;
 
     return `${installation.id}-${spaceInstallation.space}`;
-}
-
-/**
- * Returns the base URL of a Git installation in the provider.
- */
-function getGitBaseURL(basePath: string, config: GitLabConfiguration): string {
-    const hostname = config.gitlabHost || 'https://gitlab.com';
-    return `${hostname}/${basePath}`;
-}
-
-/**
- * Returns the absolute URL for a commit.
- */
-function getGitCommitsURL(basePath: string, config: GitLabConfiguration): string {
-    const base = getGitBaseURL(basePath, config);
-    return `${base}/-/commit`;
-}
-
-/**
- * Return the base URL of the Git tree.
- */
-function getGitTreeURL(basePath: string, config: GitLabConfiguration): string {
-    const prettyRef = config.ref.replace('refs/', '').replace('heads/', '');
-    const base = getGitBaseURL(basePath, config);
-
-    return `${base}/-/blob/${prettyRef}`;
-}
-
-/**
- * Return the Git repo URL with creds.
- */
-function getGitRepoAuthURL(gitURL: string, config: GitLabConfiguration): string {
-    const repoUrl = new URL(gitURL);
-    repoUrl.username = 'oauth2';
-    repoUrl.password = config.authToken;
-
-    return repoUrl.toString();
 }
 
 /**
@@ -166,8 +138,9 @@ function getGitRepoAuthURL(gitURL: string, config: GitLabConfiguration): string 
  */
 async function handleGitLabPushHookEvent(
     event: GitLabPushEvent,
-    environment: IntegrationEnvironment
+    context: GitLabRuntimeContext
 ): Promise<Response> {
+    const { environment } = context;
     const { spaceInstallation } = environment;
 
     console.info(`Handling GitLab push event on ref "${event.ref}" of "${event.project.id}"`);
@@ -175,23 +148,17 @@ async function handleGitLabPushHookEvent(
     const { configuration } = spaceInstallation;
 
     // Ignore when the event ref doesn't match the ref configured for the Space installation.
-    if (event.ref !== configuration?.ref) {
+    if (event.ref !== configuration.ref) {
         return sendIgnoreResponse();
     }
 
     // Trigger a Git sync import.
-    const gitlabConfig = {
-        projectId: configuration?.project,
-        authToken: configuration?.auth_token,
-        ref: configuration?.ref,
-        gitlabHost: configuration?.gitlab_host,
-    };
     const importRequest: RequestImportGitRepository = {
-        url: getGitRepoAuthURL(event.project.git_http_url, gitlabConfig),
+        url: getGitRepoAuthURL(event.project.git_http_url, configuration),
         ref: event.ref,
         repoCacheID: getRepoCacheID(environment),
-        repoCommitURL: getGitCommitsURL(event.project.path_with_namespace, gitlabConfig),
-        repoTreeURL: getGitTreeURL(event.project.path_with_namespace, gitlabConfig),
+        repoCommitURL: getGitCommitsURL(event.project.path_with_namespace, configuration),
+        repoTreeURL: getGitTreeURL(event.project.path_with_namespace, configuration),
     };
 
     api.spaces.importGitRepository(spaceInstallation.space, importRequest);
@@ -208,8 +175,9 @@ async function handleGitLabPushHookEvent(
  */
 async function handleGitLabMergeRequestEvent(
     event: GitLabMergeRequestEvent,
-    environment: IntegrationEnvironment
+    context: GitLabRuntimeContext
 ): Promise<Response> {
+    const { environment } = context;
     const { spaceInstallation } = environment;
     const { configuration } = spaceInstallation;
 
@@ -219,7 +187,7 @@ async function handleGitLabMergeRequestEvent(
     }
 
     // Ignore when the Space installation doesn't have Fork PR preview enabled.
-    if (!configuration?.fork_pr_preview) {
+    if (!configuration.fork_pr_preview) {
         return sendIgnoreResponse();
     }
 
@@ -227,7 +195,7 @@ async function handleGitLabMergeRequestEvent(
     const sourceRef = `refs/heads/${event.object_attributes.source_branch}`;
 
     // Ignore when the target ref doesn't match the ref configured for the Space installation.
-    if (targetRef !== configuration?.ref) {
+    if (targetRef !== configuration.ref) {
         return sendIgnoreResponse();
     }
 
@@ -236,18 +204,12 @@ async function handleGitLabMergeRequestEvent(
     );
 
     // Trigger a Git sync standalone import.
-    const gitlabConfig = {
-        projectId: configuration?.project,
-        authToken: configuration?.auth_token,
-        ref: configuration?.ref,
-        gitlabHost: configuration?.gitlab_host,
-    };
     const importRequest: RequestImportGitRepository = {
-        url: getGitRepoAuthURL(event.project.git_http_url, gitlabConfig),
+        url: getGitRepoAuthURL(event.project.git_http_url, configuration),
         ref: sourceRef,
         repoCacheID: getRepoCacheID(environment),
-        repoCommitURL: getGitCommitsURL(event.project.path_with_namespace, gitlabConfig),
-        repoTreeURL: getGitTreeURL(event.project.path_with_namespace, gitlabConfig),
+        repoCommitURL: getGitCommitsURL(event.project.path_with_namespace, configuration),
+        repoTreeURL: getGitTreeURL(event.project.path_with_namespace, configuration),
         standalone: true,
     };
 
@@ -272,17 +234,17 @@ export function validateGitLabWebhookRequest(request) {
  */
 export async function installGitLabWebhook(
     webhookURL: string,
-    config: GitLabConfiguration
+    configuration: GitLabSpaceInstallationConfiguration
 ): Promise<number> {
     const data = await executeGitLabAPIRequest(
         'POST',
-        `projects/${config.projectId}/hooks`,
+        `projects/${configuration.project}/hooks`,
         {
             url: webhookURL,
             push_events: true,
             merge_requests_events: true,
         },
-        config
+        configuration
     );
 
     return data.id;
@@ -293,12 +255,12 @@ export async function installGitLabWebhook(
  */
 export async function uninstallGitLabWebhook(
     hookId: number,
-    config: GitLabConfiguration
+    configuration: GitLabSpaceInstallationConfiguration
 ): Promise<void> {
     await executeGitLabAPIRequest(
         'DELETE',
-        `projects/${config.projectId}/hooks/${hookId}`,
+        `projects/${configuration.project}/hooks/${hookId}`,
         {},
-        config
+        configuration
     );
 }

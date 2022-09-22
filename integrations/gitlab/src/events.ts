@@ -1,21 +1,20 @@
 import { IntegrationInstallationStatus, SpaceInstallationSetupEvent } from '@gitbook/api';
-import { api } from '@gitbook/runtime';
 
-import { GitLabConfiguration } from './types';
+import { GitLabRuntimeContext, GitLabSpaceInstallationConfiguration } from './configuration';
 import { installGitLabWebhook, uninstallGitLabWebhook } from './webhooks';
 
 /**
  * Check if we should update the webhook.
  */
 export function shouldUpdateGitLabWebHook(
-    previousConf: GitLabConfiguration,
-    newConf: GitLabConfiguration
+    previousConf: GitLabSpaceInstallationConfiguration,
+    newConf: GitLabSpaceInstallationConfiguration
 ) {
     return (
-        newConf.projectId !== previousConf.projectId ||
-        newConf.authToken !== previousConf.authToken ||
+        newConf.project !== previousConf.project ||
+        newConf.auth_token !== previousConf.auth_token ||
         newConf.ref !== previousConf.ref ||
-        newConf.gitlabHost !== previousConf.gitlabHost
+        newConf.gitlab_host !== previousConf.gitlab_host
     );
 }
 
@@ -23,7 +22,11 @@ export function shouldUpdateGitLabWebHook(
  * Handle a space_installation_setup GitBook event.
  * Install the GitLab webhook event handler and start an import/export depending on the priority.
  */
-export async function handleSpaceInstallationSetupEvent(event: SpaceInstallationSetupEvent) {
+export async function handleSpaceInstallationSetupEvent(
+    event: SpaceInstallationSetupEvent,
+    context: GitLabRuntimeContext
+) {
+    const { api, environment } = context;
     const { status, installationId, spaceId, previous } = event;
 
     if (status === IntegrationInstallationStatus.Pending) {
@@ -41,26 +44,13 @@ export async function handleSpaceInstallationSetupEvent(event: SpaceInstallation
                 `No GitLab project or auth token provided for Space installation ${spaceId}/${installationId}`
             );
         }
-        const newConfig = {
-            projectId: configuration.project,
-            authToken: configuration.auth_token,
-            ref: configuration.ref,
-            gitlabHost: configuration.gitlab_host,
-        };
-        const previousConfig = previous.configuration
-            ? {
-                  projectId: previous.configuration.project,
-                  authToken: previous.configuration.auth_token,
-                  ref: previous.configuration.ref,
-                  gitlabHost: previous.configuration.gitlab_host,
-              }
-            : null;
 
-        if (previousConfig && !shouldUpdateGitLabWebHook(previousConfig, newConfig)) {
+        const previousConfig = previous.configuration as GitLabSpaceInstallationConfiguration;
+        if (previousConfig && !shouldUpdateGitLabWebHook(previousConfig, configuration)) {
             return;
         }
 
-        const prevHookId = previous.configuration?.hookId;
+        const prevHookId = previous.configuration?.hook_id;
         if (previousConfig && prevHookId) {
             console.info(
                 `A webhook is already installed in GitLab project ${configuration.project} for Space installation ${spaceId}/${installationId}. Uninstalling.`
@@ -68,7 +58,10 @@ export async function handleSpaceInstallationSetupEvent(event: SpaceInstallation
             await uninstallGitLabWebhook(prevHookId, previousConfig);
         }
 
-        const newHookId = await installGitLabWebhook(`${urls.publicEndpoint}/webhook`, newConfig);
+        const newHookId = await installGitLabWebhook(
+            `${urls.publicEndpoint}/webhook`,
+            configuration
+        );
         await api.integrations.updateIntegrationSpaceInstallation(
             environment.integration.name,
             installationId,
@@ -76,7 +69,7 @@ export async function handleSpaceInstallationSetupEvent(event: SpaceInstallation
             {
                 configuration: {
                     ...configuration,
-                    hookId: newHookId,
+                    hook_id: newHookId,
                 },
             }
         );

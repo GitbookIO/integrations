@@ -1,29 +1,13 @@
-import { Router } from 'itty-router';
+import { createIntegration } from '@gitbook/runtime';
 
+import { GitLabRuntimeContext } from './configuration';
 import { handleSpaceInstallationSetupEvent } from './events';
-import { listGitLabProjectBranches, listGitLabProjects } from './routes';
-import { createGitLabWebhookHandler } from './webhooks';
+import { handleFetchEvent } from './router';
 
-const router = Router({
-    base: new URL(
-        environment.spaceInstallation?.urls.publicEndpoint ||
-            environment.installation?.urls.publicEndpoint ||
-            environment.integration.urls.publicEndpoint
-    ).pathname,
+export default createIntegration<GitLabRuntimeContext>({
+    fetch: handleFetchEvent,
+
+    events: {
+        space_installation_setup: handleSpaceInstallationSetupEvent,
+    },
 });
-
-/**
- * Bind the integration's routes.
- */
-router.get('/projects', listGitLabProjects);
-router.get('/branches', listGitLabProjectBranches);
-router.post('/webhook', createGitLabWebhookHandler(environment));
-
-addEventListener('fetch', (event, eventContext) => {
-    event.respondWith(router.handle(event.request, eventContext));
-});
-
-/**
- * Bind the integration's GitBook events handlers.
- */
-addEventListener('space_installation_setup', handleSpaceInstallationSetupEvent);
