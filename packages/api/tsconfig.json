@@ -3,6 +3,8 @@
     "include": ["src/**/*"],
     "rootDir": "./src",
     "compilerOptions": {
-        "baseUrl": "./src"
+        "baseUrl": "./src",
+        // kinda bad
+        "lib": ["dom"]
     }
 }
