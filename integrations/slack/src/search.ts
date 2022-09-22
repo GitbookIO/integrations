@@ -1,10 +1,14 @@
 import type { SearchPageResult, SearchSectionResult, SearchSpaceResult } from '@gitbook/api';
-import { api } from '@gitbook/runtime';
 
-import { executeSlackAPIRequest } from './api';
 import type { SlashEvent } from './commands';
+import { SlackInstallationConfiguration, SlackRuntimeContext } from './configuration';
+import { slackAPI } from './slack';
 
-export async function searchInGitBook(slashEvent: SlashEvent) {
+/**
+ * Search for a query in GitBook and post a message to Slack.
+ */
+export async function searchInGitBook(slashEvent: SlashEvent, context: SlackRuntimeContext) {
+    const { environment, api } = context;
     const { team_id, channel_id, text } = slashEvent;
 
     // Lookup the concerned installations
@@ -23,14 +27,18 @@ export async function searchInGitBook(slashEvent: SlashEvent) {
         return {};
     }
 
-    const accessToken = installation.configuration.oauth_credentials?.access_token;
+    const accessToken = (installation.configuration as SlackInstallationConfiguration)
+        .oauth_credentials?.access_token;
 
-    await executeSlackAPIRequest(
-        'POST',
-        'chat.postMessage',
+    await slackAPI(
+        context,
         {
-            channel: channel_id,
-            text: `_Searching for query: ${text}_`,
+            method: 'POST',
+            path: 'chat.postMessage',
+            payload: {
+                channel: channel_id,
+                text: `_Searching for query: ${text}_`,
+            },
         },
         {
             accessToken,
@@ -47,14 +55,17 @@ export async function searchInGitBook(slashEvent: SlashEvent) {
         data: { items },
     } = await installationApiClient.search.searchContent({ query: text, limit: 5 });
 
-    await executeSlackAPIRequest(
-        'POST',
-        'chat.postMessage',
+    await slackAPI(
+        context,
         {
-            channel: channel_id,
-            blocks: buildSearchContentBlocks(text, items),
-            unfurl_links: false,
-            unfurl_media: false,
+            method: 'POST',
+            path: 'chat.postMessage',
+            payload: {
+                channel: channel_id,
+                blocks: buildSearchContentBlocks(text, items),
+                unfurl_links: false,
+                unfurl_media: false,
+            },
         },
         {
             accessToken,

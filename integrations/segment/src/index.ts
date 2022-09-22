@@ -1,22 +1,35 @@
-import * as api from '@gitbook/api';
+import { createIntegration, RuntimeContext, RuntimeEnvironment } from '@gitbook/runtime';
 
 import { generateSegmentTrackEvent } from './events';
 
-addEventListener('space_view', async (event: api.SpaceViewEvent) => {
-    const writeKey = environment.spaceInstallation.configuration.write_key;
-    if (!writeKey) {
-        throw new Error(
-            `The Segment write key is missing from the Space (ID: ${event.spaceId}) installation.`
-        );
-    }
+type SegmentRuntimeContext = RuntimeContext<
+    RuntimeEnvironment<
+        {},
+        {
+            write_key?: string;
+        }
+    >
+>;
 
-    const trackEvent = generateSegmentTrackEvent(event);
-    await fetch('https://api.segment.io/v1/track', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Basic ${btoa(`${writeKey}:`)}`,
+export default createIntegration<SegmentRuntimeContext>({
+    events: {
+        space_view: async (event, { environment }) => {
+            const writeKey = environment.spaceInstallation.configuration.write_key;
+            if (!writeKey) {
+                throw new Error(
+                    `The Segment write key is missing from the Space (ID: ${event.spaceId}) installation.`
+                );
+            }
+
+            const trackEvent = generateSegmentTrackEvent(event);
+            await fetch('https://api.segment.io/v1/track', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Basic ${btoa(`${writeKey}:`)}`,
+                },
+                body: JSON.stringify(trackEvent),
+            });
         },
-        body: JSON.stringify(trackEvent),
-    });
+    },
 });

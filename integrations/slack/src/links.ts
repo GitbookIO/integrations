@@ -1,7 +1,7 @@
 import * as gitbook from '@gitbook/api';
-import { api } from '@gitbook/runtime';
 
-import { executeSlackAPIRequest } from './api';
+import { SlackRuntimeContext } from './configuration';
+import { slackAPI } from './slack';
 
 interface LinkSharedSlackEvent {
     team_id: string;
@@ -24,7 +24,9 @@ interface LinkSharedSlackEvent {
 /**
  * Unfurl a link on Slack with metadata from GitBook.
  */
-export async function unfurlLink(event: LinkSharedSlackEvent) {
+export async function unfurlLink(event: LinkSharedSlackEvent, context: SlackRuntimeContext) {
+    const { api } = context;
+
     // Lookup the concerned installations
     const {
         data: { items: installations },
@@ -62,14 +64,18 @@ export async function unfurlLink(event: LinkSharedSlackEvent) {
     );
 
     // Send the unfurls to Slack
-    await executeSlackAPIRequest(
-        'POST',
-        'chat.unfurl',
+    await slackAPI(
+        context,
         {
-            source: event.event.source,
-            unfurl_id: event.event.unfurl_id,
-            unfurls,
+            method: 'POST',
+            path: 'chat.unfurl',
+            payload: {
+                source: event.event.source,
+                unfurl_id: event.event.unfurl_id,
+                unfurls,
+            },
         },
+
         {
             accessToken: installation.configuration.oauth_credentials?.access_token,
         }
