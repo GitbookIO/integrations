@@ -172,6 +172,33 @@ Flex layout element to render a vertical stack of elements. Use [`spacer`](refer
 </vstack>
 ```
 {% endtab %}
+
+{% tab title="Examples" %}
+Basic vertical stack:
+
+```contentkit
+{
+    "type": "vstack",
+    "children": [
+        { "type": "box", "children": [ { "type": "text", "children": ["Hello"] } ] },
+        { "type": "box", "children": [ { "type": "text", "children": ["World"] } ] }
+    ]
+}
+```
+
+with `align`:
+
+```contentkit
+{
+    "type": "vstack",
+    "align": "center",
+    "children": [
+        { "type": "box", "children": [ { "type": "text", "children": ["Hello"] } ] },
+        { "type": "box", "children": [ { "type": "text", "children": ["And a long text"] } ] }
+    ]
+}
+```
+{% endtab %}
 {% endtabs %}
 
 | Props      | Type                           | Description                                       |
@@ -201,6 +228,33 @@ Flex layout element to render an horizontal stack of elements. Use [`spacer`](re
 <hstack style="start">
     ...
 </hstack>
+```
+{% endtab %}
+
+{% tab title="Examples" %}
+Basic horizontal stack:
+
+```contentkit
+{
+    "type": "hstack",
+    "children": [
+        { "type": "box", "children": [ { "type": "text", "children": ["Hello"] } ] },
+        { "type": "box", "children": [ { "type": "text", "children": ["World"] } ] }
+    ]
+}
+```
+
+with `align`:
+
+```contentkit
+{
+    "type": "hstack",
+    "align": "center",
+    "children": [
+        { "type": "box", "children": [ { "type": "text", "children": ["Hello"] } ] },
+        { "type": "box", "children": [ { "type": "text", "children": ["And a long text"] } ] }
+    ]
+}
 ```
 {% endtab %}
 {% endtabs %}
@@ -281,6 +335,33 @@ The text element is used for rendering blocks of text with formatting.
 <text>
     Hello <text style="bold">World</text>
 </text>
+```
+{% endtab %}
+
+{% tab title="Examples" %}
+Basic text:
+
+```contentkit
+{
+    "type": "text",
+    "children": ["Hello"]
+}
+```
+
+With nested formatting:
+
+```contentkit
+{
+    "type": "text",
+    "children": [
+        "Hello ",
+        {
+            "type": "text",
+            "style": "bold",
+            "children": "World"
+        }
+    ]
+}
 ```
 {% endtab %}
 {% endtabs %}
@@ -407,6 +488,21 @@ An input component is used to capture text input from the end user. When an acti
     placeholder="Enter a name"
     />
 ```
+{% endtab %}
+
+{% tab title="Examples" %}
+Basic textinput:
+
+```contentkit
+{
+    "type": "textinput",
+    "state": "name",
+    "label": "Name",
+    "initialValue": "John Doe",
+    "placeholder": "Enter a name"
+}
+```
+
 {% endtab %}
 {% endtabs %}
 
