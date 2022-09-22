@@ -15,7 +15,7 @@ export function jsx(type: string | typeof Fragment, props: object) {
         children = [children];
     }
     if (children) {
-        children = children.flat();
+        children = children.flat().filter((child) => child !== null);
     }
 
     if (type === Fragment) {
