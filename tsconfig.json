@@ -1,7 +1,0 @@
-{
-    "compilerOptions": {
-        "baseUrl": "./",
-        "resolveJsonModule": true,
-        "lib": ["ES2021"]
-    }
-}

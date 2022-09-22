@@ -54,7 +54,7 @@ export async function slackAPI(
         throw new Error(`${response.status} ${response.statusText}`);
     }
 
-    const result = await response.json();
+    const result = await response.json<SlackResponse>();
 
     if (!result.ok) {
         if (retriesLeft > 0) {
@@ -85,4 +85,9 @@ export async function slackAPI(
     }
 
     return result;
+}
+
+interface SlackResponse {
+    ok: boolean;
+    error?: string;
 }

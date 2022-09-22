@@ -3,6 +3,6 @@
     "display": "Integration",
     "extends": "./base.json",
     "compilerOptions": {
-        "types": []
+        "types": ["@cloudflare/workers-types"]
     }
 }

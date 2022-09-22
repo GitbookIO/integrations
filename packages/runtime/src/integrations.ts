@@ -1,9 +1,15 @@
 import { createContext, RuntimeContext } from './context';
-import { EventCallbackMap } from './events';
+import { EventCallbackMap, FetchEventCallback } from './events';
 
 interface IntegrationRuntimeDefinition<Context extends RuntimeContext = RuntimeContext> {
     /**
-     * Handler for events.
+     * Handler for the fetch event. As it has slightly stricter typing, it's pulled out of the generic
+     * events map.
+     */
+    fetch?: FetchEventCallback<Context>;
+
+    /**
+     * Handler for GitBook events.
      */
     events?: EventCallbackMap<Context>;
 }
@@ -35,4 +41,10 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
             });
         }
     });
+
+    if (definition.fetch) {
+        addEventListener('fetch', (event) => {
+            return definition.fetch(event, context);
+        });
+    }
 }
