@@ -45,8 +45,26 @@ export async function promptNewIntegration(dirPath: string): Promise<void> {
             name: 'scopes',
             message: 'Pick scopes for this integration',
             choices: [
-                { title: IntegrationScope.SpaceContent, value: IntegrationScope.SpaceContent },
-                { title: IntegrationScope.SpaceViews, value: IntegrationScope.SpaceViews },
+                {
+                    title: IntegrationScope.SpaceContentRead,
+                    value: IntegrationScope.SpaceContentRead,
+                },
+                {
+                    title: IntegrationScope.SpaceContentWrite,
+                    value: IntegrationScope.SpaceContentWrite,
+                },
+                {
+                    title: IntegrationScope.SpaceMetadataRead,
+                    value: IntegrationScope.SpaceMetadataRead,
+                },
+                {
+                    title: IntegrationScope.SpaceMetadataWrite,
+                    value: IntegrationScope.SpaceMetadataWrite,
+                },
+                {
+                    title: IntegrationScope.SpaceViewsRead,
+                    value: IntegrationScope.SpaceViewsRead,
+                },
             ],
         },
     ]);
@@ -67,7 +85,7 @@ export async function initializeProject(
         name: string;
         title: string;
         script: string;
-        scopes: IntegrationScope.SpaceContent[];
+        scopes: IntegrationScope[];
     }
 ) {
     const scriptPath = path.join(dirPath, project.script);
@@ -81,6 +99,7 @@ export async function initializeProject(
         title: project.title,
         script: path.relative(dirPath, scriptPath),
         scopes: project.scopes,
+        secrets: {},
     });
 
     if (!(await fileExists(scriptPath))) {
