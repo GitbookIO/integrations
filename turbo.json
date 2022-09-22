@@ -1,36 +1,36 @@
 {
-  "pipeline": {
-    "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["src/**"],
-      "outputs": ["dist/**"]
-    },
-    "api#build": {
-      "cache": false,
-      "inputs": ["src/**", "../../../gitbook-x/packages/api-client/static/openapi.yaml"],
-      "outputs": ["dist/**", "spec/**"]
-    },
-    "test": {
-      "dependsOn": ["build"]
-    },
-    "lint": {
-      "dependsOn": ["build"],
-      "outputs": []
-    },
-    "typecheck": {
-      "dependsOn": ["build"],
-      "outputs": []
-    },
-    "publish-integrations": {
-      "dependsOn": [
-        "build",
-        "$GITBOOK_TOKEN",
-        "$GITBOOK_ENDPOINT",
-        "$SLACK_CLIENT_ID",
-        "$SLACK_CLIENT_SECRET"
-      ],
-      "outputs": [],
-      "cache": false
+    "pipeline": {
+        "build": {
+            "dependsOn": ["^build"],
+            "inputs": ["src/**"],
+            "outputs": ["dist/**"]
+        },
+        "api#build": {
+            "cache": false,
+            "inputs": ["src/**"],
+            "outputs": ["dist/**", "spec/**"]
+        },
+        "test": {
+            "dependsOn": ["build"]
+        },
+        "lint": {
+            "dependsOn": ["build"],
+            "outputs": []
+        },
+        "typecheck": {
+            "dependsOn": ["build"],
+            "outputs": []
+        },
+        "publish-integrations": {
+            "dependsOn": [
+                "build",
+                "$GITBOOK_TOKEN",
+                "$GITBOOK_ENDPOINT",
+                "$SLACK_CLIENT_ID",
+                "$SLACK_CLIENT_SECRET"
+            ],
+            "outputs": [],
+            "cache": false
+        }
     }
-  }
 }
