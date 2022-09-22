@@ -28,7 +28,7 @@ const diagramBlock = createComponent<{
                                     state="content"
                                     content={content}
                                     syntax="mermaid"
-                                    editAction={{
+                                    onContentChange={{
                                         action: '@editor.node.updateProps',
                                         props: {
                                             content: element.dynamicState('content')

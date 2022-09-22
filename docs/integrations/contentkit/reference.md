@@ -77,7 +77,6 @@ With an icon:
     "onPress": { "type": "something" }
 }
 ```
-{% endtab %}
 
 With a tooltip:
 
@@ -104,6 +103,7 @@ With a confirm modal:
     "onPress": { "type": "something" }
 }
 ```
+{% endtab %}
 {% endtabs %}
 
 | Props             | Type                                   | Description                                                             |

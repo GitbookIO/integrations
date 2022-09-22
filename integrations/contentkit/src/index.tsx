@@ -32,10 +32,10 @@ const previewBlock = createComponent<{
         const parsed = JSON.parse(content);
         return (
             <block>
-                <box style="card">
+                <box>
                     <vstack>
-                    <hstack>
-                        <box>
+                        <hstack>
+                            <box>
                                 <codeblock content={content} syntax="javascript" />
                             </box>
                             <divider />
