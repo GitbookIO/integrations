@@ -4,7 +4,6 @@
     "rootDir": "./src",
     "compilerOptions": {
         "baseUrl": "./src",
-        "lib": ["ES2020"],
         "types": ["@cloudflare/workers-types"]
     }
 }
