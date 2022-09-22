@@ -51,7 +51,7 @@ async function buildScript(filePath: string): Promise<string> {
         platform: 'neutral',
         entryPoints: [filePath],
         bundle: true,
-        minify: false, // true,
+        minify: true,
         target: ['es2020'],
         write: false,
         mainFields: ['worker', 'browser', 'module', 'jsnext', 'main'],

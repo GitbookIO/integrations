@@ -30,8 +30,8 @@ test('events', async (t) => {
             anonymousId: 'gitbookAnonymousId',
             context: {
                 library: {
-                    name: 'segment',
-                    version: '1.0.0',
+                    name: 'GitBook',
+                    version: '0.0.0',
                 },
                 page: {
                     referrer: 'https://www.gitbook.com/',
