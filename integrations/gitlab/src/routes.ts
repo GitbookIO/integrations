@@ -6,8 +6,8 @@ import { executeGitLabAPIRequest } from './api';
 export async function listGitLabProjects() {
     const { configuration } = environment.spaceInstallation;
 
-    if (!configuration?.project || !configuration?.auth_token) {
-        return new Response('No GitLab project or auth token provided', {
+    if (!configuration?.auth_token) {
+        return new Response('No auth token provided', {
             status: 400,
         });
     }
