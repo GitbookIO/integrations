@@ -4,7 +4,9 @@
     "rootDir": "./src",
     "compilerOptions": {
         "baseUrl": "./src",
-        // kinda bad
-        "lib": ["dom"]
+        // This is not strictly true, as the API is being run in a CloudFlare worker (so not
+        // the DOM). However, swagger-typescript-api generated types that depend on things in
+        // the DOM lib like FormData and Response.
+        "lib": ["DOM"]
     }
 }
