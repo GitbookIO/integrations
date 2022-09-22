@@ -140,7 +140,7 @@ async function handleGitLabPushHookEvent(
     event: GitLabPushEvent,
     context: GitLabRuntimeContext
 ): Promise<Response> {
-    const { environment } = context;
+    const { api, environment } = context;
     const { spaceInstallation } = environment;
 
     console.info(`Handling GitLab push event on ref "${event.ref}" of "${event.project.id}"`);
@@ -177,7 +177,7 @@ async function handleGitLabMergeRequestEvent(
     event: GitLabMergeRequestEvent,
     context: GitLabRuntimeContext
 ): Promise<Response> {
-    const { environment } = context;
+    const { api, environment } = context;
     const { spaceInstallation } = environment;
     const { configuration } = spaceInstallation;
 
