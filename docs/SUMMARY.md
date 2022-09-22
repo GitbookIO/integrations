@@ -33,11 +33,13 @@
   * [Runtime APIs](integrations/runtime/apis.md)
   * [Environment](integrations/runtime/environment.md)
   * [HTTP Fetch](integrations/runtime/http-fetch.md)
+* [Blocks](integrations/blocks/README.md)
+  * [Link unfurling](integrations/blocks/link-unfurling.md)
+  * [Editable blocks](integrations/blocks/editable-blocks.md)
+  * [Working with Markdown](integrations/blocks/markdown.md)
 * [ContentKit](integrations/contentkit/README.md)
   * [Interactivity](integrations/contentkit/interactivity.md)
   * [Reference](integrations/contentkit/reference.md)
-* [Blocks](integrations/blocks/README.md)
-  * [Working with Markdown](integrations/blocks/markdown.md)
 * [Examples](integrations/examples/README.md)
   * [Segment](integrations/examples/segment.md)
   * [Slack](integrations/examples/slack.md)
@@ -49,5 +51,6 @@
 * [CI](cli/ci.md)
 
 ## Changelogs
-  * [API](changelogs/api.md)
-  * [Integrations](changelogs/integrations.md)
+
+* [API](changelogs/api.md)
+* [Integrations](changelogs/integrations.md)

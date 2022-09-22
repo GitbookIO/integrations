@@ -6,11 +6,11 @@ GitBook can synchronize user content with Git repositories with content being fo
 
 GitBook will automatically support formatting and parsing all integration blocks with Markdown. By default the Liquid syntax is used:
 
-{% raw %}
 ```markdown
+{% raw %}
 {% myintegration/block-name propA="A" %}
-```
 {% endraw %}
+```
 
 ## As a code block
 
@@ -18,25 +18,25 @@ In some cases (ex: with our official Mermaid block), integrations might want to 
 
 In the `gitbook-manifest.yaml`, define the `markdown` property for the a block:
 
-```yaml
-blocks:
+<pre class="language-yaml"><code class="lang-yaml">blocks:
     - id: block-name
       title: My custom block
-      markdown:
-        codeblock: blocksyntax
-        body: content
-```
+<strong>      markdown:
+</strong><strong>        codeblock: blocksyntax
+</strong><strong>        body: content</strong></code></pre>
 
 In this scenario, a block with the properties `{ "content": "something" }` will be formatted as:
 
-    ```blocksyntax
-    something
-    ```
+````
+```blocksyntax
+something
+```
+````
 
 In the scenario where the block also has other properties, those will be set on the codeblock. For example with a block having the properties `{ "content": "something", "propA": "A" }`
 
-    ```blocksyntax propA="A"
-    something
-    ```
-
-
+````
+```blocksyntax propA="A"
+something
+```
+````

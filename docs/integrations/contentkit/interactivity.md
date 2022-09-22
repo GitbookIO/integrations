@@ -9,7 +9,7 @@ The most common interactive elements are buttons. Buttons can be use to trigger 
 ```tsx
 <button
     label="Click me"
-    action={{
+    onPress={{
         type: 'hello',
         anotherProperty: 'something'
     }}
@@ -35,8 +35,7 @@ const helloWorldBlock = createComponent({
 
 ## Text and other inputs
 
-Collecting user input can be done through through inputs. The most common input elements are `textinput`.
-Inputs are tied to state and their value will be stored in the state.
+Collecting user input can be done through through inputs. The most common input elements are `textinput`. Inputs are tied to state and their value will be stored in the state.
 
 For example, considering the following element:
 
@@ -91,8 +90,7 @@ window.addEventListener("message", (event) => {
 
 ## Webframes and actions
 
-Webframes are powerful elements to integrate in GitBook external applications or complete UI. Passing data to the webframe can be done using the `data` prop.
-But the webframe also needs to be able to coomunicate data back to the top component. It can be achieved using the `window.postMessage`:
+Webframes are powerful elements to integrate in GitBook external applications or complete UI. Passing data to the webframe can be done using the `data` prop. But the webframe also needs to be able to coomunicate data back to the top component. It can be achieved using the `window.postMessage`:
 
 ```js
 window.parent.postMessage({
@@ -104,4 +102,62 @@ window.parent.postMessage({
 
 ## Modals
 
+Components can open overlay modals to show extra information or prompt the user. Opening a modal is done by dispatching the `@ui.modal.open` action:
+
+```typescript
+const block = createComponent({
+    componentId: 'block',
+    async render(element) {
+        return (
+            <block>
+                <button
+                    label="Open modal"
+                    onPress={{
+                        action: '@ui.modal.open',
+                        componentId: 'custommodal',
+                        props: {
+                            message: 'Hello world'
+                        }
+                    }}
+                    />
+            </block>
+        )
+    }
+});
+```
+
+Opening the modal will start rendering the component `custommodal` with the defined props:
+
+```typescript
+const custommodal = createComponent({
+    componentId: 'custommodal',
+    async render(element) {
+        return (
+            <modal title="Hello world">
+                <button
+                    label="Close the modal"
+                    onPress={{
+                        action: '@ui.modal.close',
+                        returnValue: {}
+                    }}
+                    />
+            </block>
+        )
+    }
+});
+```
+
+When closing a modal, data can be returned to the parent component using `returnValue`. These data will be accessible in the parent component's action handler.
+
 ## Opening urls
+
+A common pattern is to open a url as a webpage. A default action exists for this:
+
+```typescript
+<button
+    onPress={{
+        action: '@ui.url.open',
+        url: 'https://www.gitbook.com'
+    }}
+    />
+```

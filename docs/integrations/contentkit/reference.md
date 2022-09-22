@@ -1,8 +1,8 @@
-# ContentKit reference
+# Reference
 
 Our reference for the ContentKit covers all the objects you will receive and respond with, alongside all the components you can use in order to render the UI for your integrations.
 
-If you want to learn more about the ContentKit itself, alongside the different types of requests we make in order to make these work, please take a look at our [introduction](README.md).
+If you want to learn more about the ContentKit itself, alongside the different types of requests we make in order to make these work, please take a look at our [introduction](./).
 
 ## Components
 
@@ -21,6 +21,7 @@ Top level component for a custom block.
 }
 ```
 {% endtab %}
+
 {% tab title="JSX" %}
 ```tsx
 <block>
@@ -30,8 +31,8 @@ Top level component for a custom block.
 {% endtab %}
 {% endtabs %}
 
-| Props | Type | Description |
-| ----- | ---- | ----------- |
+| Props      | Type           | Description                                  |
+| ---------- | -------------- | -------------------------------------------- |
 | `children` | `Array<Block>` | (_Required_) Content to display in the block |
 
 ### `button`
@@ -44,40 +45,42 @@ Interactive pressable button, triggering a component action when clicked.
 {
     "type": "button",
     "label": "Click me",
-    "action": { "type": "something" }
+    "onPress": { "type": "something" }
 }
 ```
 {% endtab %}
+
 {% tab title="JSX" %}
 ```tsx
-<button label="Click me" action={{ type: 'something' }} />
+<button label="Click me" onPress={{ type: 'something' }} />
 ```
 {% endtab %}
+
 {% tab title="Examples" %}
 Basic button:
 
-```contentkit
+```
 {
     "type": "button",
     "label": "Click me",
-    "action": { "type": "something" }
+    "onPress": { "type": "something" }
 }
 ```
 {% endtab %}
 {% endtabs %}
 
-| Props | Type | Description |
-| ----- | ---- | ----------- |
-| `label` | `string` | (_Required_) Text displayed in the button |
-| `action` | `Action` | (_Required_) Action to trigger when the button is pressed |
-| `style` | `'primary' \| 'secondary' \| 'danger'` | Visual style for the button |
-| `tooltip` | `string` | Text displayed in an hovering tooltip |
-| `icon` | `Icon` | Visual icon to display on the start of the button |
-| `confirm` | `object` | Modal to display to ask the user to confirm the action before execution |
-| `confirm.title` | `string` | (_Required_) Title for the confirmation modal |
-| `confirm.text` | `string` | (_Required_) Content of the confirmation modal |
-| `confirm.confirm` | `string` | (_Required_) Label for the confirmation button |
-| `confirm.style` | `'primary' \| 'danger'` | Content of the confirmation modal |
+| Props             | Type                                   | Description                                                             |
+| ----------------- | -------------------------------------- | ----------------------------------------------------------------------- |
+| `label`           | `string`                               | (_Required_) Text displayed in the button                               |
+| `onPress`         | `Action`                               | (_Required_) Action to trigger when the button is pressed               |
+| `style`           | `'primary' \| 'secondary' \| 'danger'` | Visual style for the button                                             |
+| `tooltip`         | `string`                               | Text displayed in an hovering tooltip                                   |
+| `icon`            | `Icon`                                 | Visual icon to display on the start of the button                       |
+| `confirm`         | `object`                               | Modal to display to ask the user to confirm the action before execution |
+| `confirm.title`   | `string`                               | (_Required_) Title for the confirmation modal                           |
+| `confirm.text`    | `string`                               | (_Required_) Content of the confirmation modal                          |
+| `confirm.confirm` | `string`                               | (_Required_) Label for the confirmation button                          |
+| `confirm.style`   | `'primary' \| 'danger'`                | Content of the confirmation modal                                       |
 
 ### `box`
 
@@ -93,6 +96,7 @@ Basic button:
 }
 ```
 {% endtab %}
+
 {% tab title="JSX" %}
 ```tsx
 <box style="card">
@@ -102,15 +106,14 @@ Basic button:
 {% endtab %}
 {% endtabs %}
 
-| Props | Type | Description |
-| ----- | ---- | ----------- |
-| `children` | `Array<Block> \| Array<Inline>` | (_Required_) Content to display in the block |
-| `style` | `'card' \| 'secondary' \| 'default'` | Visual style for the box. |
-
+| Props      | Type                                 | Description                                  |
+| ---------- | ------------------------------------ | -------------------------------------------- |
+| `children` | `Array<Block> \| Array<Inline>`      | (_Required_) Content to display in the block |
+| `style`    | `'card' \| 'secondary' \| 'default'` | Visual style for the box.                    |
 
 ### `vstack`
 
-Flex layout element to render a vertical stack of elements. Use [`spacer`](#spacer), [`divider`](#divider), and [`box`](#box) to complete the layout.
+Flex layout element to render a vertical stack of elements. Use [`spacer`](reference.md#spacer), [`divider`](reference.md#divider), and [`box`](reference.md#box) to complete the layout.
 
 {% tabs %}
 {% tab title="JSON" %}
@@ -124,6 +127,7 @@ Flex layout element to render a vertical stack of elements. Use [`spacer`](#spac
 }
 ```
 {% endtab %}
+
 {% tab title="JSX" %}
 ```tsx
 <vstack style="start">
@@ -133,14 +137,14 @@ Flex layout element to render a vertical stack of elements. Use [`spacer`](#spac
 {% endtab %}
 {% endtabs %}
 
-| Props | Type | Description |
-| ----- | ---- | ----------- |
-| `children` | `Array<Block>` | (_Required_) Content to display in the stack |
-| `align` | `'start' \| 'center' \| 'end'` | Horizontal alignment of the elements in the stack |
+| Props      | Type                           | Description                                       |
+| ---------- | ------------------------------ | ------------------------------------------------- |
+| `children` | `Array<Block>`                 | (_Required_) Content to display in the stack      |
+| `align`    | `'start' \| 'center' \| 'end'` | Horizontal alignment of the elements in the stack |
 
 ### `hstack`
 
-Flex layout element to render an horizontal stack of elements. Use [`spacer`](#spacer), [`divider`](#divider), and [`box`](#box) to complete the layout.
+Flex layout element to render an horizontal stack of elements. Use [`spacer`](reference.md#spacer), [`divider`](reference.md#divider), and [`box`](reference.md#box) to complete the layout.
 
 {% tabs %}
 {% tab title="JSON" %}
@@ -154,6 +158,7 @@ Flex layout element to render an horizontal stack of elements. Use [`spacer`](#s
 }
 ```
 {% endtab %}
+
 {% tab title="JSX" %}
 ```tsx
 <hstack style="start">
@@ -163,11 +168,10 @@ Flex layout element to render an horizontal stack of elements. Use [`spacer`](#s
 {% endtab %}
 {% endtabs %}
 
-| Props | Type | Description |
-| ----- | ---- | ----------- |
-| `children` | `Array<Block>` | (_Required_) Content to display in the stack |
-| `align` | `'start' \| 'center' \| 'end'` | Vertical alignment of the elements in the stack |
-
+| Props      | Type                           | Description                                     |
+| ---------- | ------------------------------ | ----------------------------------------------- |
+| `children` | `Array<Block>`                 | (_Required_) Content to display in the stack    |
+| `align`    | `'start' \| 'center' \| 'end'` | Vertical alignment of the elements in the stack |
 
 ### `spacer`
 
@@ -181,13 +185,13 @@ A flexible space that expands along the major axis of its containing stack layou
 }
 ```
 {% endtab %}
+
 {% tab title="JSX" %}
 ```tsx
 <spacer />
 ```
 {% endtab %}
 {% endtabs %}
-
 
 ### `divider`
 
@@ -201,6 +205,7 @@ A visual delimiter between 2 elements of a containing stack layout.
 }
 ```
 {% endtab %}
+
 {% tab title="JSX" %}
 ```tsx
 <divider />
@@ -208,10 +213,10 @@ A visual delimiter between 2 elements of a containing stack layout.
 {% endtab %}
 {% endtabs %}
 
-| Props | Type | Description |
-| ----- | ---- | ----------- |
-| `style` | `"default" \| "line"` | Visual style for the divider. |
-| `size` | `"medium" \| "small" \| "large"` | Spacing of the divider (default to `medium`). |
+| Props   | Type                             | Description                                   |
+| ------- | -------------------------------- | --------------------------------------------- |
+| `style` | `"default" \| "line"`            | Visual style for the divider.                 |
+| `size`  | `"medium" \| "small" \| "large"` | Spacing of the divider (default to `medium`). |
 
 ### `text`
 
@@ -233,6 +238,7 @@ The text element is used for rendering blocks of text with formatting.
 }
 ```
 {% endtab %}
+
 {% tab title="JSX" %}
 ```tsx
 <text>
@@ -242,10 +248,10 @@ The text element is used for rendering blocks of text with formatting.
 {% endtab %}
 {% endtabs %}
 
-| Props | Type | Description |
-| ----- | ---- | ----------- |
-| `children` | `Array<string \| Text>` | (_Required_) Content of the text element. |
-| `style` | `"bold" \| "italic" \| "strikethrough" \| "code"` | (_Required_) Style to format the text with. |
+| Props      | Type                                              | Description                                 |
+| ---------- | ------------------------------------------------- | ------------------------------------------- |
+| `children` | `Array<string \| Text>`                           | (_Required_) Content of the text element.   |
+| `style`    | `"bold" \| "italic" \| "strikethrough" \| "code"` | (_Required_) Style to format the text with. |
 
 ### `codeblock`
 
@@ -261,6 +267,7 @@ Multi-lines code blocks with syntax highlighting.
 }
 ```
 {% endtab %}
+
 {% tab title="JSX" %}
 ```tsx
 <codeblock content="const variable = 10" syntax="javascript" />
@@ -268,14 +275,14 @@ Multi-lines code blocks with syntax highlighting.
 {% endtab %}
 {% endtabs %}
 
-| Props | Type | Description |
-| ----- | ---- | ----------- |
-| `content` | `string` | (_Required_) Text content for the codeblock |
-| `syntax` | `string` | Syntax to use for highlighting |
-| `lineNumbers` | `boolean \| number` | Control the display of the line numbers |
-| `buttons` | `Array<Button>` | Buttons to render as an overlay in top-right corner |
-| `state` | `string` | Editable state binding. The value of the input will be stored as a property in the state named after this ID. Passing this property automatically makes the code-block editable. |
-| `editAction` | `Action` | Action dispatched when the user has edited the content of this code block. It only applies if a `state` is passed. Usually the action is dispatched when the user is no longer focusing the code-block. |
+| Props             | Type                | Description                                                                                                                                                                                             |
+| ----------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `content`         | `string`            | (_Required_) Text content for the codeblock                                                                                                                                                             |
+| `syntax`          | `string`            | Syntax to use for highlighting                                                                                                                                                                          |
+| `lineNumbers`     | `boolean \| number` | Control the display of the line numbers                                                                                                                                                                 |
+| `buttons`         | `Array<Button>`     | Buttons to render as an overlay in top-right corner                                                                                                                                                     |
+| `state`           | `string`            | Editable state binding. The value of the input will be stored as a property in the state named after this ID. Passing this property automatically makes the code-block editable.                        |
+| `onContentChange` | `Action`            | Action dispatched when the user has edited the content of this code block. It only applies if a `state` is passed. Usually the action is dispatched when the user is no longer focusing the code-block. |
 
 ### `markdown`
 
@@ -290,6 +297,7 @@ Rich-text formatting of Markdown content.
 }
 ```
 {% endtab %}
+
 {% tab title="JSX" %}
 ```tsx
 <markdown content="Hello **world**" />
@@ -297,13 +305,13 @@ Rich-text formatting of Markdown content.
 {% endtab %}
 {% endtabs %}
 
-| Props | Type | Description |
-| ----- | ---- | ----------- |
+| Props     | Type     | Description                                  |
+| --------- | -------- | -------------------------------------------- |
 | `content` | `string` | (_Required_) Markdown text content to render |
 
 ### `webframe`
 
-Element to render an external URL. The frame can receive update when states are updated by defining dependencies with `data` (see [interactivity](./interactivity.md) for more details).
+Element to render an external URL. The frame can receive update when states are updated by defining dependencies with `data` (see [interactivity](interactivity.md) for more details).
 
 {% tabs %}
 {% tab title="JSON" %}
@@ -317,6 +325,7 @@ Element to render an external URL. The frame can receive update when states are 
 }
 ```
 {% endtab %}
+
 {% tab title="JSX" %}
 ```tsx
 <webframe
@@ -327,18 +336,17 @@ Element to render an external URL. The frame can receive update when states are 
 {% endtab %}
 {% endtabs %}
 
-| Props | Type | Description |
-| ----- | ---- | ----------- |
-| `source` | `object` | (_Required_) Content to load in the frame |
-| `source.url` | `string` | (_Required_) URL of the content to load |
-| `aspectRatio` | `number` | (_Required_) Aspect-ratio (width / height) for the block |
-| `buttons` | `Array<Button>` | Buttons to render as an overlay in top-right corner |
-| `data` | `Record<string, string \| DynamicBinding>` | States this webframe is depend on. Each state update will cause the webframe to receive a message. |
+| Props         | Type                                       | Description                                                                                        |
+| ------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `source`      | `object`                                   | (_Required_) Content to load in the frame                                                          |
+| `source.url`  | `string`                                   | (_Required_) URL of the content to load                                                            |
+| `aspectRatio` | `number`                                   | (_Required_) Aspect-ratio (width / height) for the block                                           |
+| `buttons`     | `Array<Button>`                            | Buttons to render as an overlay in top-right corner                                                |
+| `data`        | `Record<string, string \| DynamicBinding>` | States this webframe is depend on. Each state update will cause the webframe to receive a message. |
 
 ### `textinput`
 
-An input component is used to capture text input from the end user. 
-When an action is being dispatched to the integration, the value of the input is stored in the state value referenced by `id`. 
+An input component is used to capture text input from the end user. When an action is being dispatched to the integration, the value of the input is stored in the state value referenced by `id`.
 
 {% tabs %}
 {% tab title="JSON" %}
@@ -352,6 +360,7 @@ When an action is being dispatched to the integration, the value of the input is
 }
 ```
 {% endtab %}
+
 {% tab title="JSX" %}
 ```tsx
 <textinput
@@ -364,12 +373,12 @@ When an action is being dispatched to the integration, the value of the input is
 {% endtab %}
 {% endtabs %}
 
-| Props | Type | Description |
-| ----- | ---- | ----------- |
-| `state` | `string` | (_Required_) State binding. The value of the input will be stored as a property in the state named after this ID. |
-| `initialValue` | `string` | Initial value of the input. |
-| `label` | `string` | Label to display next to the input. |
-| `placeholder` | `string` | Text that appears in the form control when it has no value set |
+| Props          | Type     | Description                                                                                                       |
+| -------------- | -------- | ----------------------------------------------------------------------------------------------------------------- |
+| `state`        | `string` | (_Required_) State binding. The value of the input will be stored as a property in the state named after this ID. |
+| `initialValue` | `string` | Initial value of the input.                                                                                       |
+| `label`        | `string` | Label to display next to the input.                                                                               |
+| `placeholder`  | `string` | Text that appears in the form control when it has no value set                                                    |
 
 ## Actions
 
@@ -377,7 +386,7 @@ When an action is being dispatched to the integration, the value of the input is
 
 Update the properties stored on the editor node binded to the current component.
 
-```js
+```json
 {
     "action": "@editor.node.updateProps",
     "props": {}
@@ -386,7 +395,7 @@ Update the properties stored on the editor node binded to the current component.
 
 ### `@ui.url.open`
 
-```js
+```json
 {
     "action": "@ui.url.open",
     "url": "https://www.gitbook.com"
@@ -397,7 +406,7 @@ Update the properties stored on the editor node binded to the current component.
 
 Open a component `componentId` with props `props` as an overlay modal.
 
-```js
+```json
 {
     "action": "@ui.modal.open",
     "componentId": "myModal",
@@ -409,7 +418,7 @@ Open a component `componentId` with props `props` as an overlay modal.
 
 Close the current modal. This action should be called from within a modal component.
 
-```js
+```json
 {
     "action": "@ui.modal.close"
 }
@@ -419,7 +428,7 @@ Close the current modal. This action should be called from within a modal compon
 
 Action to send as a message from a webframe to indicate that the webframe is ready to receive messages and updates.
 
-```js
+```json
 {
     "action": "@webframe.ready"
 }
@@ -429,11 +438,22 @@ Action to send as a message from a webframe to indicate that the webframe is rea
 
 Action to send as a message from a webframe to resize the container.
 
-```js
+```json
 {
     "action": "@webframe.resize",
     "aspectRatio": 1.7,
     "maxHeight": 400,
     "maxWidth": 300
+}
+```
+
+### `@link.unfurl`
+
+Action sent to the block when the user is pasting a matching url. See [Link unfurling](../blocks/link-unfurling.md) for more details.
+
+```json
+{
+    "action": "@link.unfurl",
+    "url": "https://myapp.com/"
 }
 ```
