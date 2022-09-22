@@ -57,6 +57,11 @@ async function buildScript(filePath: string): Promise<string> {
         mainFields: ['worker', 'browser', 'module', 'jsnext', 'main'],
         conditions: ['worker', 'browser', 'import', 'production'],
         define: {},
+        // TODO: change format when we switch to Cloudflare Workers
+        // but until them, we need to use "iife" to be able to use
+        // the export syntax while running like an entry point.
+        format: 'iife',
+        globalName: '__gitbook_integration',
     });
 
     return result.outputFiles[0].text;

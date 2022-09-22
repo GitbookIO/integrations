@@ -1,12 +1,14 @@
-import { Request } from 'itty-router';
+import { FetchEventCallback } from '@gitbook/runtime';
+
+import { SlackRuntimeContext } from './configuration';
 
 /**
  * Handle an event from Slack.
  */
 export function createSlackEventsHandler(handlers: {
-    [type: string]: (event: object) => Promise<any>;
-}): (request: Request) => Promise<Response> {
-    return async (request) => {
+    [type: string]: (event: object, context: SlackRuntimeContext) => Promise<any>;
+}): FetchEventCallback {
+    return async (request, context) => {
         const event = await request.json();
 
         if (!event.type) {
@@ -23,7 +25,7 @@ export function createSlackEventsHandler(handlers: {
             });
         }
 
-        const data = await handler(event);
+        const data = await handler(event, context);
 
         if (typeof data === 'string') {
             return new Response(data, {

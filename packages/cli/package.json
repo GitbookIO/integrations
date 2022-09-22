@@ -11,7 +11,7 @@
         "commander": "^9.2.0",
         "conf": "^10.1.2",
         "dedent-js": "^1.0.1",
-        "esbuild": "^0.14.42",
+        "esbuild": "^0.15.7",
         "js-yaml": "^4.1.0",
         "prompts": "^2.4.2"
     },
