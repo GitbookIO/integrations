@@ -49,7 +49,7 @@ export function createComponent<
      */
     action?: RuntimeCallback<
         [ComponentInstance<Props, State>, Action],
-        Promise<ComponentInstance<Props, State>>,
+        Promise<{ props?: Props; state?: State }>,
         Context
     >;
 
@@ -81,7 +81,7 @@ export function createComponent<
             };
 
             if (action && component.action) {
-                instance = await component.action(instance, action, context);
+                instance = { ...instance, ...(await component.action(instance, action, context)) };
             }
 
             const element = await component.render(instance, context);
