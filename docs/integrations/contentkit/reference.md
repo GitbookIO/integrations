@@ -358,7 +358,7 @@ With nested formatting:
         {
             "type": "text",
             "style": "bold",
-            "children": "World"
+            "children": ["World"]
         }
     ]
 }
