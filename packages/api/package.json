@@ -1,8 +1,7 @@
 {
     "name": "@gitbook/api",
     "type": "module",
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
+    "main": "./src/index.ts",
     "private": true,
     "sideEffects": false,
     "files": [
