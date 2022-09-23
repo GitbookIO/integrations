@@ -18,13 +18,19 @@ export interface AddGitLabProjectHookResponse {
     id: number;
 }
 export type DeleteGitLabProjectHookResponse = null;
+export interface UpdateGitLabProjectCommitStatus {
+    name: string;
+    sha: string;
+    status: 'pending' | 'running' | 'success' | 'failure' | 'canceled';
+}
 
 type APIRequestMethod = 'GET' | 'POST' | 'DELETE';
 type GitLabAPIResponse =
     | ListGitLabProjectsResponse
     | ListGitLabProjectBranchesResponse
     | AddGitLabProjectHookResponse
-    | DeleteGitLabProjectHookResponse;
+    | DeleteGitLabProjectHookResponse
+    | UpdateGitLabProjectCommitStatus;
 
 interface GitLabAPIRequestInput {
     method: APIRequestMethod;
@@ -69,6 +75,35 @@ export async function executeGitLabAPIRequest<APIResponse extends GitLabAPIRespo
 
     const raw = await response.text();
     return raw ? await response.json<APIResponse>() : null;
+}
+
+/**
+ * Updates the commit status in GitLab.
+ */
+export async function updateGitLabProjectCommitStatus(
+    project: string,
+    commitSha: string,
+    update: {
+        context: string;
+        description: string;
+        state: 'running' | 'success' | 'failure';
+        url: string;
+    },
+    configuration: GitLabSpaceInstallationConfiguration
+) {
+    await executeGitLabAPIRequest<UpdateGitLabProjectCommitStatus>(
+        {
+            method: 'POST',
+            path: `/projects/${project}/statuses/${commitSha}`,
+            params: {
+                name: update.context,
+                description: update.description,
+                state: update.state,
+                target_url: update.url,
+            },
+        },
+        configuration
+    );
 }
 
 /**

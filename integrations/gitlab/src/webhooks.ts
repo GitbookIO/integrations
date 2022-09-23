@@ -189,11 +189,6 @@ async function handleGitLabMergeRequestEvent(
         return sendIgnoreResponse();
     }
 
-    // Ignore when the Space installation doesn't have Fork PR preview enabled.
-    if (!configuration.fork_pr_preview) {
-        return sendIgnoreResponse();
-    }
-
     const targetRef = `refs/heads/${event.object_attributes.target_branch}`;
     const sourceRef = `refs/heads/${event.object_attributes.source_branch}`;
 
