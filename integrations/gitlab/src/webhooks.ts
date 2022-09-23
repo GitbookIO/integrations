@@ -8,6 +8,8 @@ import {
     GitLabSpaceInstallationConfiguration,
 } from './configuration';
 import {
+    AddGitLabProjectHookResponse,
+    DeleteGitLabProjectHookResponse,
     executeGitLabAPIRequest,
     getGitCommitsURL,
     getGitRepoAuthURL,
@@ -143,6 +145,7 @@ async function handleGitLabPushHookEvent(
     const { api, environment } = context;
     const { spaceInstallation } = environment;
 
+    // eslint-disable-next-line no-console
     console.info(`Handling GitLab push event on ref "${event.ref}" of "${event.project.id}"`);
 
     const { configuration } = spaceInstallation;
@@ -199,6 +202,7 @@ async function handleGitLabMergeRequestEvent(
         return sendIgnoreResponse();
     }
 
+    // eslint-disable-next-line no-console
     console.info(
         `Handling GitLab merge request event "${event.object_attributes.action}" on ref "${targetRef}" of "${event.project.id}"`
     );
@@ -236,13 +240,15 @@ export async function installGitLabWebhook(
     webhookURL: string,
     configuration: GitLabSpaceInstallationConfiguration
 ): Promise<number> {
-    const data = await executeGitLabAPIRequest(
-        'POST',
-        `projects/${configuration.project}/hooks`,
+    const data = await executeGitLabAPIRequest<AddGitLabProjectHookResponse>(
         {
-            url: webhookURL,
-            push_events: true,
-            merge_requests_events: true,
+            method: 'POST',
+            path: `projects/${configuration.project}/hooks`,
+            params: {
+                url: webhookURL,
+                push_events: true,
+                merge_requests_events: true,
+            },
         },
         configuration
     );
@@ -257,10 +263,11 @@ export async function uninstallGitLabWebhook(
     hookId: number,
     configuration: GitLabSpaceInstallationConfiguration
 ): Promise<void> {
-    await executeGitLabAPIRequest(
-        'DELETE',
-        `projects/${configuration.project}/hooks/${hookId}`,
-        {},
+    await executeGitLabAPIRequest<DeleteGitLabProjectHookResponse>(
+        {
+            method: 'DELETE',
+            path: `projects/${configuration.project}/hooks/${hookId}`,
+        },
         configuration
     );
 }

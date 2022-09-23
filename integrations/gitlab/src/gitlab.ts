@@ -2,17 +2,46 @@ import { GitLabSpaceInstallationConfiguration } from './configuration';
 
 const DEFAULT_GITLAB_HOST = 'https://gitlab.com';
 
+export interface GitLabProjects {
+    id: string;
+    name: string;
+}
+
+export interface GitLabProjectBranches {
+    name: string;
+    protected: boolean;
+}
+
+export type ListGitLabProjectsResponse = Array<GitLabProjects>;
+export type ListGitLabProjectBranchesResponse = Array<GitLabProjectBranches>;
+export interface AddGitLabProjectHookResponse {
+    id: number;
+}
+export type DeleteGitLabProjectHookResponse = null;
+
+type APIRequestMethod = 'GET' | 'POST' | 'DELETE';
+type GitLabAPIResponse =
+    | ListGitLabProjectsResponse
+    | ListGitLabProjectBranchesResponse
+    | AddGitLabProjectHookResponse
+    | DeleteGitLabProjectHookResponse;
+
+interface GitLabAPIRequestInput {
+    method: APIRequestMethod;
+    path: string;
+    params?: Record<string, any>;
+}
+
 /**
  * Execute a GitLab API request.
  */
-export async function executeGitLabAPIRequest<GitLabAPIResponse>(
-    method: 'GET' | 'POST' | 'DELETE',
-    pathname: string,
-    params: Record<string, any>,
+export async function executeGitLabAPIRequest<APIResponse extends GitLabAPIResponse>(
+    input: GitLabAPIRequestInput,
     configuration: GitLabSpaceInstallationConfiguration
-): Promise<GitLabAPIResponse> {
+): Promise<APIResponse> {
+    const { method, path, params } = input;
     const gitlabEndpoint = configuration.gitlab_host || DEFAULT_GITLAB_HOST;
-    const url = new URL(`${gitlabEndpoint}/api/v4/${pathname}`);
+    const url = new URL(`${gitlabEndpoint}/api/v4/${path}`);
 
     const headers: Record<string, string> = {
         Authorization: `Bearer ${configuration.auth_token}`,
@@ -20,10 +49,10 @@ export async function executeGitLabAPIRequest<GitLabAPIResponse>(
 
     let body;
     if (method === 'GET') {
-        url.search = new URLSearchParams(params).toString();
+        url.search = new URLSearchParams(params || {}).toString();
     } else {
         headers['Content-Type'] = 'application/json';
-        body = Object.keys(params).length > 0 ? JSON.stringify(params) : undefined;
+        body = params ? JSON.stringify(params) : undefined;
     }
 
     const response = await fetch(url.toString(), {
@@ -38,9 +67,8 @@ export async function executeGitLabAPIRequest<GitLabAPIResponse>(
         );
     }
 
-    const data = await response.json<GitLabAPIResponse>();
-
-    return data;
+    const raw = await response.text();
+    return raw ? await response.json<APIResponse>() : null;
 }
 
 /**

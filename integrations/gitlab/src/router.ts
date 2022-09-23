@@ -3,7 +3,11 @@ import { Router } from 'itty-router';
 import { FetchEventCallback } from '@gitbook/runtime';
 
 import { GitLabRuntimeContext, GitLabRuntimeEnvironment } from './configuration';
-import { executeGitLabAPIRequest } from './gitlab';
+import {
+    executeGitLabAPIRequest,
+    ListGitLabProjectBranchesResponse,
+    ListGitLabProjectsResponse,
+} from './gitlab';
 import { createGitLabWebhookHandler } from './webhooks';
 
 /**
@@ -24,9 +28,6 @@ export const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async 
         ).pathname,
     });
 
-    /**
-     *
-     */
     router.get('/projects', async () => listGitLabProjects(environment));
     router.get('/branches', async () => listGitLabProjectBranches(environment));
     router.post('/webhook', createGitLabWebhookHandler(context));
@@ -51,10 +52,12 @@ export async function listGitLabProjects(environment: GitLabRuntimeEnvironment) 
         });
     }
 
-    const data = await executeGitLabAPIRequest(
-        'GET',
-        'projects',
-        { membership: true },
+    const data = await executeGitLabAPIRequest<ListGitLabProjectsResponse>(
+        {
+            method: 'GET',
+            path: 'projects',
+            params: { membership: true },
+        },
         configuration
     );
 
@@ -84,10 +87,11 @@ export async function listGitLabProjectBranches(environment: GitLabRuntimeEnviro
         });
     }
 
-    const data = await executeGitLabAPIRequest(
-        'GET',
-        `projects/${configuration.project}/repository/branches`,
-        {},
+    const data = await executeGitLabAPIRequest<ListGitLabProjectBranchesResponse>(
+        {
+            method: 'GET',
+            path: `projects/${configuration.project}/repository/branches`,
+        },
         configuration
     );
 

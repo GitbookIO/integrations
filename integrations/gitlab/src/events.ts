@@ -7,14 +7,19 @@ import { installGitLabWebhook, uninstallGitLabWebhook } from './webhooks';
  * Check if we should update the webhook.
  */
 export function shouldUpdateGitLabWebHook(
-    previousConf: GitLabSpaceInstallationConfiguration,
-    newConf: GitLabSpaceInstallationConfiguration
+    newConf: GitLabSpaceInstallationConfiguration,
+    previous: {
+        status: IntegrationInstallationStatus;
+        conf: GitLabSpaceInstallationConfiguration;
+    }
 ) {
     return (
-        newConf.project !== previousConf.project ||
-        newConf.auth_token !== previousConf.auth_token ||
-        newConf.ref !== previousConf.ref ||
-        newConf.gitlab_host !== previousConf.gitlab_host
+        newConf.project !== previous.conf.project ||
+        newConf.auth_token !== previous.conf.auth_token ||
+        newConf.gitlab_host !== previous.conf.gitlab_host ||
+        (previous.status === IntegrationInstallationStatus.Pending &&
+            !previous.conf.ref &&
+            newConf.ref)
     );
 }
 
@@ -30,6 +35,7 @@ export async function handleSpaceInstallationSetupEvent(
     const { status, installationId, spaceId, previous } = event;
 
     if (status === IntegrationInstallationStatus.Pending) {
+        // eslint-disable-next-line no-console
         console.info(
             `GitLab integration Space installation ${spaceId}/${installationId} is not complete. Skipping.`
         );
@@ -37,7 +43,6 @@ export async function handleSpaceInstallationSetupEvent(
     }
 
     const { configuration, urls } = environment.spaceInstallation;
-
     if (status === IntegrationInstallationStatus.Active) {
         if (!configuration?.project || !configuration?.auth_token) {
             throw new Error(
@@ -46,14 +51,21 @@ export async function handleSpaceInstallationSetupEvent(
         }
 
         const previousConfig = previous.configuration as GitLabSpaceInstallationConfiguration;
-        if (previousConfig && !shouldUpdateGitLabWebHook(previousConfig, configuration)) {
+        if (
+            previousConfig &&
+            !shouldUpdateGitLabWebHook(configuration, {
+                status: previous.status,
+                conf: previousConfig,
+            })
+        ) {
             return;
         }
 
         const prevHookId = previous.configuration?.hook_id;
         if (previousConfig && prevHookId) {
+            // eslint-disable-next-line no-console
             console.info(
-                `A webhook is already installed in GitLab project ${configuration.project} for Space installation ${spaceId}/${installationId}. Uninstalling.`
+                `A webhook (ID: ${prevHookId}) is already installed in GitLab project ${previousConfig.project} for Space installation ${installationId}/${spaceId}. Uninstalling.`
             );
             await uninstallGitLabWebhook(prevHookId, previousConfig);
         }
@@ -74,8 +86,9 @@ export async function handleSpaceInstallationSetupEvent(
             }
         );
 
+        // eslint-disable-next-line no-console
         console.info(
-            `Webhook ID: ${newHookId} installed in GitLab project ${configuration.project} for Space installation ${spaceId}/${installationId}`
+            `Webhook ID: ${newHookId} installed in GitLab project ${configuration.project} for Space installation ${installationId}/${spaceId}.`
         );
     }
 }
