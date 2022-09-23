@@ -1,0 +1,38 @@
+name: googleanalytics
+title: Google Analytics
+icon: ./assets/icon.png
+description: Receive traffic insights directly in your Google Analytics dashboard.
+organization: gitbook
+previewImages:
+    - ./assets/preview.png
+externalLinks:
+    - label: Documentation
+      url: https://docs.gitbook.com/integrations/google_analytics
+visibility: public
+script: ./src/index.ts
+scopes:
+    - space:publish:script
+summary: |
+    The GitBook Google Analytics integration allows you to track traffic in your published spaces from your Google Analytics dashboard.
+
+    Automatic tracking in your documentation:
+    Each of your connected GitBook spaces will fetch the Google Analytics tracking script and inject it in your public content.
+categories:
+    - analytics
+configurations:
+    space:
+        properties:
+            tracking_id:
+                type: string
+                title: Tracking ID
+                description: Look for this in your Google Analytics account.
+            privacy_policy:
+                type: string
+                title: Privacy Policy
+                description: Link to a privacy policy URL to help visitors understands cookies tracking.
+            track_private_view:
+                type: bool
+                title: Track private views
+                description: Track views in the GitBook app as well as public content.
+        required:
+            - tracking_id

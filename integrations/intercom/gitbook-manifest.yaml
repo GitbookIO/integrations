@@ -1,0 +1,34 @@
+name: intercom
+title: Intercom
+icon: ./assets/icon.png
+description: Add the Intercom chat widget to your public content
+organization: gitbook
+previewImages:
+    - ./assets/preview.png
+externalLinks:
+    - label: Documentation
+      url: https://docs.gitbook.com/integrations/intercom
+visibility: public
+script: ./src/index.ts
+scopes:
+    - space:publish:script
+summary: |
+    The GitBook Intercom integration allows you to be in contact with your user through the Intercom chat widget.
+
+    Automatic chat widget on your documentation:
+    Each of your connected GitBook spaces will fetch the Intercom chat widget script and inject it in your public content.
+categories:
+    - analytics
+configurations:
+    space:
+        properties:
+            app_id:
+                type: string
+                title: Application ID
+                description: You can find it in your Intercom account, under the "Installation" section of the "Settings" page.
+            privacy_policy:
+                type: string
+                title: Privacy Policy
+                description: Link to a privacy policy URL to help visitors understands cookies tracking.
+        required:
+            - app_id

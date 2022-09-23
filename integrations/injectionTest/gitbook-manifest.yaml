@@ -1,0 +1,13 @@
+name: injection_test
+title: Injection test
+icon: ./assets/icon.png
+description: Some test integration for injecting scripts
+organization: gitbook
+visibility: public
+script: ./src/index.ts
+scopes:
+    - space:publish:script
+summary: |
+    Test for injecting scripts
+categories:
+    - other
