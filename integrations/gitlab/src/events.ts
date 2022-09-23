@@ -163,16 +163,20 @@ export async function handleSpaceGitSyncProgressStatusEvents(
     event: SpaceGitSyncStartedEvent | SpaceGitSyncCompletedEvent,
     context: GitLabRuntimeContext
 ) {
-    const { commitId, revisionUrls } = event;
-    const { environment } = context;
+    const { revisionId, commitId } = event;
+    const { api, environment } = context;
     const { spaceInstallation } = environment;
 
     if (!spaceInstallation) {
         return;
     }
 
-    const status = event.type === 'space_gitsync_completed' ? event.state : 'running';
-    const { configuration } = spaceInstallation;
+    const { space, configuration } = spaceInstallation;
 
-    await updateCommitStatusWithPreviewLinks(commitId, status, revisionUrls, configuration);
+    const {
+        data: { urls },
+    } = await api.spaces.getRevisionById(space, revisionId);
+
+    const status = event.type === 'space_gitsync_completed' ? event.state : 'running';
+    await updateCommitStatusWithPreviewLinks(commitId, status, urls, configuration);
 }
