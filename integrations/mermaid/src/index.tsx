@@ -24,6 +24,7 @@ const diagramBlock = createComponent<{
                     <vstack>
                         {editable ? (
                             <>
+                                <box>
                                 <codeblock
                                     state="content"
                                     content={content}
@@ -35,9 +36,11 @@ const diagramBlock = createComponent<{
                                         }
                                     }}
                                     />
+                                </box>
                                 <divider />
                             </>
                         ) : null}
+                        <box>
                         <webframe
                             source={{
                                 url: environment.integration.urls.publicEndpoint,
@@ -47,6 +50,7 @@ const diagramBlock = createComponent<{
                                 content: element.dynamicState('content'),
                             }}
                         />
+                        </box>
                     </vstack>
                 </box>
             </block>

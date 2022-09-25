@@ -64,6 +64,27 @@ const embedBlock = createComponent<{
 
         const file = nodeId ? await fetchFigmaNode(fileId, nodeId, context) : await fetchFigmaFile(fileId, context);
         
+        if (!file) {
+            return (
+                <block>
+                    <card
+                    title={'Not found'}
+                    onPress={{
+                        action: '@ui.url.open',
+                        url,
+                    }}
+                    icon={(
+                        <image
+                            source={{
+                                url: context.environment.integration.urls.icon,
+                            }}
+                            aspectRatio={1}
+                        />
+                    )} />
+                </block>
+            );
+        }
+
         return (
             <block>
                 <card
@@ -81,7 +102,7 @@ const embedBlock = createComponent<{
                     />
                 )}
                 buttons={[
-                    <button icon="maximize" tooltip="Open preview" action={{
+                    <button icon="maximize" tooltip="Open preview" onPress={{
                         action: '@ui.modal.open',
                         componentId: 'previewModal',
                         props: {
