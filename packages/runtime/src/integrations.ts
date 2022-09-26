@@ -97,12 +97,15 @@ function createCloudFlareIntegration<Context extends RuntimeContext = RuntimeCon
         const cb = events[event.type as NonFetchEvent];
 
         if (cb) {
+            logger.info(`handling GitBook event ${event.type}`);
+
             if (Array.isArray(cb)) {
                 await Promise.all(cb.map((c) => c(event, context)));
             } else {
                 await cb(event, context);
             }
 
+            // TODO: maybe the callback wants to return something
             return new Response('OK', { status: 200 });
         }
 
