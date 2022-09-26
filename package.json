@@ -1,31 +1,33 @@
 {
-  "name": "@gitbook/integrations",
-  "version": "0.0.0",
-  "private": true,
-  "workspaces": [
-    "integrations/*",
-    "packages/*"
-  ],
-  "scripts": {
-    "build": "turbo run build",
-    "test": "turbo run test",
-    "lint": "turbo run lint",
-    "publish": "turbo run publish",
-    "typecheck": "turbo run typecheck",
-    "publish-integrations": "turbo run publish-integrations",
-    "version-packages": "changeset version",
-    "changeset": "changeset",
-    "release": "turbo run build && changeset publish"
-  },
-  "devDependencies": {
-    "turbo": "latest"
-  },
-  "engines": {
-    "npm": ">=7.0.0",
-    "node": ">=14.0.0"
-  },
-  "dependencies": {
-    "@changesets/cli": "^2.22.0"
-  },
-  "packageManager": "npm@8.4.1"
+    "name": "@gitbook/integrations",
+    "version": "0.0.0",
+    "private": true,
+    "workspaces": [
+        "integrations/*",
+        "packages/*"
+    ],
+    "scripts": {
+        "build": "turbo run build",
+        "test": "turbo run test",
+        "lint": "turbo run lint",
+        "publish": "turbo run publish",
+        "typecheck": "turbo run typecheck",
+        "publish-integrations": "turbo run publish-integrations",
+        "version-packages": "changeset version",
+        "changeset": "changeset",
+        "release": "turbo run build && changeset publish"
+    },
+    "devDependencies": {
+        "@types/node": "^18.7.18",
+        "@cloudflare/workers-types": "^3.16.0",
+        "turbo": "latest"
+    },
+    "engines": {
+        "npm": ">=7.0.0",
+        "node": ">=14.0.0"
+    },
+    "dependencies": {
+        "@changesets/cli": "^2.22.0"
+    },
+    "packageManager": "npm@8.4.1"
 }

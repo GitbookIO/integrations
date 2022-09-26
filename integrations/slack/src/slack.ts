@@ -16,9 +16,11 @@ export async function slackAPI(
     retriesLeft = 1
 ) {
     const { environment } = context;
+
     const accessToken =
         options.accessToken ||
         environment.installation.configuration.oauth_credentials?.access_token;
+
     if (!accessToken) {
         throw new Error('Connection not ready');
     }
@@ -52,7 +54,7 @@ export async function slackAPI(
         throw new Error(`${response.status} ${response.statusText}`);
     }
 
-    const result = await response.json();
+    const result = await response.json<SlackResponse>();
 
     if (!result.ok) {
         if (retriesLeft > 0) {
@@ -63,12 +65,18 @@ export async function slackAPI(
                      * try to send the message again.
                      */
                     await slackAPI(
-                        'POST',
-                        'conversations.join',
-                        { channel: payload.channel },
-                        { accessToken },
-                        0 // no retries
+                        context,
+                        {
+                            method: 'POST',
+                            path: 'conversations.join',
+                            payload: {
+                                channel: request.payload.channel,
+                            },
+                        },
+                        options,
+                        0
                     );
+
                     return slackAPI(context, request, options, retriesLeft - 1);
             }
         }
@@ -77,4 +85,9 @@ export async function slackAPI(
     }
 
     return result;
+}
+
+interface SlackResponse {
+    ok: boolean;
+    error?: string;
 }

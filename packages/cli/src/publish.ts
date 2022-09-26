@@ -45,6 +45,16 @@ export async function publishIntegration(filePath: string): Promise<void> {
 }
 
 /**
+ * Delete an integration
+ */
+export async function unpublishIntegration(name: string): Promise<void> {
+    const api = await getAPIClient(true);
+    await api.integrations.unpublishIntegration(name);
+
+    console.log(`👌 Integration "${name}" has been deleted`);
+}
+
+/**
  * Build the script into a single worker definition.
  */
 async function buildScript(filePath: string): Promise<string> {

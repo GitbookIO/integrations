@@ -1,15 +1,16 @@
 import { createIntegration, EventCallback } from '@gitbook/runtime';
 
+import { SlackRuntimeContext } from './configuration';
 import { handleFetchEvent } from './router';
 import { slackAPI } from './slack';
 
 /*
  * Handle content being updated: send a notification on Slack.
  */
-const handleSpaceContentUpdated: EventCallback<'space_content_updated'> = async (
-    event,
-    context
-) => {
+const handleSpaceContentUpdated: EventCallback<
+    'space_content_updated',
+    SlackRuntimeContext
+> = async (event, context) => {
     const { environment, api } = context;
     const channel =
         environment.spaceInstallation.configuration.channel ||
@@ -50,10 +51,10 @@ const handleSpaceContentUpdated: EventCallback<'space_content_updated'> = async 
 /*
  * Handle content visibility being updated: send a notification on Slack.
  */
-const handleSpaceVisibilityUpdated: EventCallback<'space_visibility_updated'> = async (
-    event,
-    context
-) => {
+const handleSpaceVisibilityUpdated: EventCallback<
+    'space_visibility_updated',
+    SlackRuntimeContext
+> = async (event, context) => {
     const { environment, api } = context;
 
     const channel =
@@ -95,8 +96,9 @@ const handleSpaceVisibilityUpdated: EventCallback<'space_visibility_updated'> = 
 };
 
 export default createIntegration({
+    fetch: handleFetchEvent,
+
     events: {
-        fetch: handleFetchEvent,
         space_content_updated: handleSpaceContentUpdated,
         space_visibility_updated: handleSpaceVisibilityUpdated,
     },

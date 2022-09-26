@@ -1,19 +1,17 @@
-import { UIRenderEvent } from '@gitbook/api';
-
-import { ComponentDefinition } from './components';
 import { createContext, RuntimeContext } from './context';
-import { EventCallbackMap } from './events';
+import { EventCallbackMap, FetchEventCallback } from './events';
 
 interface IntegrationRuntimeDefinition<Context extends RuntimeContext = RuntimeContext> {
     /**
-     * Handler for events.
+     * Handler for the fetch event. As it has slightly stricter typing, it's pulled out of the generic
+     * events map.
      */
-    events?: EventCallbackMap<Context>;
+    fetch?: FetchEventCallback<Context>;
 
     /**
-     * Components to bind in the runtime.
+     * Handler for GitBook events.
      */
-    components?: Array<ComponentDefinition<Context>>;
+    events?: EventCallbackMap<Context>;
 }
 
 /**
@@ -25,23 +23,10 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
     // TODO: adapt the implementation to the new runtime (Cloudflare Workers)
     // where we will listen to an incoming HTTP request and parse it.
 
-    const { events = {}, components = [] } = definition;
+    const { events = {} } = definition;
 
     // @ts-ignore - `environment` is currently a global variable until we switch to Cloudflare Workers
     const context = createContext(environment);
-
-    if (components.length > 0) {
-        addEventListener('ui_render', async (e) => {
-            // @ts-ignore
-            const event = e as UIRenderEvent;
-
-            const component = components.find((c) => c.componentId === event.componentId);
-            if (!component) {
-                return;
-            }
-            return component.render(event, context);
-        });
-    }
 
     Object.entries(events).forEach(([type, callback]) => {
         if (Array.isArray(callback)) {
@@ -56,4 +41,10 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
             });
         }
     });
+
+    if (definition.fetch) {
+        addEventListener('fetch', (event) => {
+            return definition.fetch(event, context);
+        });
+    }
 }

@@ -3,6 +3,7 @@ import { Router } from 'itty-router';
 import { createOAuthHandler, FetchEventCallback } from '@gitbook/runtime';
 
 import { createSlackEventsHandler } from './events';
+import { unfurlLink } from './links';
 import { acknowledgeSlackRequest, verifySlackRequest } from './middlewares';
 import { slackAPI } from './slack';
 
@@ -11,7 +12,7 @@ import { slackAPI } from './slack';
  * - OAuth requests
  * - Slack webhook requests
  */
-export const handleFetchEvent: FetchEventCallback = async (request, context) => {
+export const handleFetchEvent: FetchEventCallback = async ({ request }, context) => {
     const { environment } = context;
     const router = Router({
         base: new URL(
@@ -87,5 +88,10 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         })
     );
 
-    return router.handle(request, context);
+    const response = await router.handle(request, context);
+    if (!response) {
+        return new Response(`No route matching`, { status: 404 });
+    }
+
+    return response;
 };

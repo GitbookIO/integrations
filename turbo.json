@@ -22,13 +22,8 @@
       "outputs": []
     },
     "publish-integrations": {
-      "dependsOn": [
-        "build",
-        "$GITBOOK_TOKEN",
-        "$GITBOOK_ENDPOINT",
-        "$SLACK_CLIENT_ID",
-        "$SLACK_CLIENT_SECRET"
-      ],
+      "env": ["GITBOOK_TOKEN", "GITBOOK_ENDPOINT", "SLACK_CLIENT_ID", "SLACK_CLIENT_SECRET"],
+      "dependsOn": ["build"],
       "outputs": [],
       "cache": false
     }
