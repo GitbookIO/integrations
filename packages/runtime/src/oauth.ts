@@ -1,4 +1,4 @@
-import { FetchEvent, RequestUpdateIntegrationInstallation } from '@gitbook/api';
+import { RequestUpdateIntegrationInstallation } from '@gitbook/api';
 
 import { RuntimeCallback } from './context';
 
@@ -39,7 +39,7 @@ export interface OAuthConfig {
  */
 export function createOAuthHandler(
     config: OAuthConfig
-): RuntimeCallback<[FetchEvent | Request], Promise<Response>> {
+): RuntimeCallback<[Request], Promise<Response>> {
     const {
         extractCredentials = (response) => ({
             configuration: {
@@ -48,8 +48,7 @@ export function createOAuthHandler(
         }),
     } = config;
 
-    return async (event, { api, environment }) => {
-        const request = event.request ? event.request : event;
+    return async (request, { api, environment }) => {
         const url = new URL(request.url);
         const code = url.searchParams.get('code');
 
@@ -72,8 +71,6 @@ export function createOAuthHandler(
         // Exchange the code for an access token
         //
         else {
-            const code = url.searchParams.get('code');
-
             const params = new URLSearchParams();
             params.set('client_id', config.clientId);
             params.set('client_secret', config.clientSecret);
@@ -83,16 +80,17 @@ export function createOAuthHandler(
 
             const response = await fetch(config.accessTokenURL, {
                 method: 'POST',
+                body: params,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: params.toString(),
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to exchange code for access token');
-            }
             const json = await response.json();
+
+            if (!response.ok || !json.ok) {
+                throw new Error(`Failed to exchange code for access token ${JSON.stringify(json)}`);
+            }
 
             // Store the credentials in the installation configuration
             await api.integrations.updateIntegrationInstallation(

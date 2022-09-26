@@ -56,6 +56,17 @@ export class GitBookAPI extends Api<{
 
                 return {};
             },
+            customFetch: (input, init) => {
+                if ('credentials' in init) {
+                    delete init.credentials;
+                }
+
+                if ('referrerPolicy' in init) {
+                    delete init.referrerPolicy;
+                }
+
+                return fetch(input, init);
+            },
         });
 
         this.endpoint = endpoint;
