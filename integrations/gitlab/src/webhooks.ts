@@ -2,11 +2,7 @@ import { Request } from 'itty-router';
 
 import { RequestImportGitRepository } from '@gitbook/api';
 
-import {
-    GitLabRuntimeContext,
-    GitLabRuntimeEnvironment,
-    GitLabSpaceInstallationConfiguration,
-} from './configuration';
+import { GitLabRuntimeContext, GitLabSpaceInstallationConfiguration } from './configuration';
 import {
     AddGitLabProjectHookResponse,
     DeleteGitLabProjectHookResponse,
@@ -14,6 +10,7 @@ import {
     getGitCommitsURL,
     getGitRepoAuthURL,
     getGitTreeURL,
+    getRepoCacheID,
 } from './gitlab';
 
 enum GitLabEventName {
@@ -129,12 +126,6 @@ function sendIgnoreResponse() {
     });
 }
 
-function getRepoCacheID(environment: GitLabRuntimeEnvironment): string {
-    const { spaceInstallation, installation } = environment;
-
-    return `${installation.id}-${spaceInstallation.space}`;
-}
-
 /**
  * Handle a Push Hook event from GitBook by triggering a Git sync import.
  */
@@ -157,11 +148,11 @@ async function handleGitLabPushHookEvent(
 
     // Trigger a Git sync import.
     const importRequest: RequestImportGitRepository = {
-        url: getGitRepoAuthURL(event.project.git_http_url, configuration),
+        url: getGitRepoAuthURL(configuration),
         ref: event.ref,
         repoCacheID: getRepoCacheID(environment),
-        repoCommitURL: getGitCommitsURL(event.project.path_with_namespace, configuration),
-        repoTreeURL: getGitTreeURL(event.project.path_with_namespace, configuration),
+        repoCommitURL: getGitCommitsURL(configuration),
+        repoTreeURL: getGitTreeURL(configuration),
     };
 
     api.spaces.importGitRepository(spaceInstallation.space, importRequest);
@@ -204,11 +195,11 @@ async function handleGitLabMergeRequestEvent(
 
     // Trigger a Git sync standalone import.
     const importRequest: RequestImportGitRepository = {
-        url: getGitRepoAuthURL(event.project.git_http_url, configuration),
+        url: getGitRepoAuthURL(configuration),
         ref: sourceRef,
         repoCacheID: getRepoCacheID(environment),
-        repoCommitURL: getGitCommitsURL(event.project.path_with_namespace, configuration),
-        repoTreeURL: getGitTreeURL(event.project.path_with_namespace, configuration),
+        repoCommitURL: getGitCommitsURL(configuration),
+        repoTreeURL: getGitTreeURL(configuration),
         standalone: true,
     };
 
@@ -238,7 +229,7 @@ export async function installGitLabWebhook(
     const data = await executeGitLabAPIRequest<AddGitLabProjectHookResponse>(
         {
             method: 'POST',
-            path: `projects/${configuration.project}/hooks`,
+            path: `projects/${encodeURIComponent(configuration.project)}/hooks`,
             params: {
                 url: webhookURL,
                 push_events: true,
@@ -261,7 +252,7 @@ export async function uninstallGitLabWebhook(
     await executeGitLabAPIRequest<DeleteGitLabProjectHookResponse>(
         {
             method: 'DELETE',
-            path: `projects/${configuration.project}/hooks/${hookId}`,
+            path: `projects/${encodeURIComponent(configuration.project)}/hooks/${hookId}`,
         },
         configuration
     );

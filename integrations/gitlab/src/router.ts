@@ -64,7 +64,7 @@ export async function listGitLabProjects(environment: GitLabRuntimeEnvironment) 
     const projects = data.map((project) => {
         return {
             label: project.name,
-            value: `${project.id}`,
+            value: `${project.path_with_namespace}`,
         };
     });
 
@@ -90,7 +90,7 @@ export async function listGitLabProjectBranches(environment: GitLabRuntimeEnviro
     const data = await executeGitLabAPIRequest<ListGitLabProjectBranchesResponse>(
         {
             method: 'GET',
-            path: `projects/${configuration.project}/repository/branches`,
+            path: `projects/${encodeURIComponent(configuration.project)}/repository/branches`,
         },
         configuration
     );

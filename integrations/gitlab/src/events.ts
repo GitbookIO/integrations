@@ -1,12 +1,20 @@
 import {
     IntegrationInstallationStatus,
+    RequestExportToGitRepository,
+    SpaceContentUpdatedEvent,
     SpaceGitSyncCompletedEvent,
     SpaceGitSyncStartedEvent,
     SpaceInstallationSetupEvent,
 } from '@gitbook/api';
 
 import { GitLabRuntimeContext, GitLabSpaceInstallationConfiguration } from './configuration';
-import { updateGitLabProjectCommitStatus } from './gitlab';
+import {
+    getGitCommitsURL,
+    getGitRepoAuthURL,
+    getGitTreeURL,
+    getRepoCacheID,
+    updateGitLabProjectCommitStatus,
+} from './gitlab';
 import { installGitLabWebhook, uninstallGitLabWebhook } from './webhooks';
 
 /**
@@ -98,6 +106,58 @@ export async function handleSpaceInstallationSetupEvent(
             `Webhook ID: ${newHookId} installed in GitLab project ${configuration.project} for Space installation ${installationId}/${spaceId}.`
         );
     }
+}
+
+/**
+ * Handle a space_content_updated GitBook event.
+ * Trigger a Git sync export to the GitLab project.
+ */
+export async function handleSpaceContentUpdatedEvent(
+    event: SpaceContentUpdatedEvent,
+    context: GitLabRuntimeContext
+) {
+    const { spaceId, revisionId, installationId } = event;
+    const { api, environment } = context;
+
+    const { spaceInstallation } = environment;
+
+    if (!spaceInstallation) {
+        return;
+    }
+
+    const { data: revision } = await api.spaces.getRevisionById(spaceId, revisionId);
+
+    if (revision.git && revision.git.oid) {
+        // Skip the export if the revision was already git synced.
+        // We shouldn't have to check explicitly that it's not a rollback as we don't
+        // duplicate the git informations when creating the rollback Revision.
+        const revisionStatus = revision.git.createdByGitBook ? 'exported' : 'imported';
+        // eslint-disable-next-line no-console
+        console.info(
+            `Skipping GitLab sync export for space ${spaceId} revision ${revisionId} as it was already ${revisionStatus}`
+        );
+        return;
+    }
+
+    const { configuration } = spaceInstallation;
+
+    if (!configuration.auth_token || !configuration.project || !configuration.ref) {
+        // eslint-disable-next-line no-console
+        console.info(
+            `Skipping GitLab sync export as the Space installation ${spaceId}/${installationId} is not complete. Skipping.`
+        );
+        return;
+    }
+
+    // Trigger a Git sync export.
+    const exportRequest: RequestExportToGitRepository = {
+        url: getGitRepoAuthURL(configuration),
+        ref: configuration.ref,
+        repoCacheID: getRepoCacheID(environment),
+        repoCommitURL: getGitCommitsURL(configuration),
+        repoTreeURL: getGitTreeURL(configuration),
+    };
+    await api.spaces.exportToGitRepository(spaceId, exportRequest);
 }
 
 /**

@@ -2,6 +2,7 @@ import { createIntegration } from '@gitbook/runtime';
 
 import { GitLabRuntimeContext } from './configuration';
 import {
+    handleSpaceContentUpdatedEvent,
     handleSpaceGitSyncProgressStatusEvents,
     handleSpaceInstallationSetupEvent,
 } from './events';
@@ -14,5 +15,6 @@ export default createIntegration<GitLabRuntimeContext>({
         space_installation_setup: handleSpaceInstallationSetupEvent,
         space_gitsync_started: handleSpaceGitSyncProgressStatusEvents,
         space_gitsync_completed: handleSpaceGitSyncProgressStatusEvents,
+        space_content_updated: handleSpaceContentUpdatedEvent,
     },
 });
