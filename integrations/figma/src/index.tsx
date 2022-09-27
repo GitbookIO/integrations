@@ -1,5 +1,11 @@
-import { createIntegration, createComponent, createOAuthHandler, RuntimeEnvironment, RuntimeContext } from "@gitbook/runtime";
-import { extractNodeFromURL, fetchFigmaFile, fetchFigmaNode } from "./figma";
+import {
+    createIntegration,
+    createComponent,
+    createOAuthHandler,
+    RuntimeEnvironment,
+    RuntimeContext,
+} from '@gitbook/runtime';
+import { extractNodeFromURL, fetchFigmaFile, fetchFigmaNode } from './figma';
 
 interface FigmaInstallationConfiguration {
     oauth_credentials?: {
@@ -25,13 +31,13 @@ const embedBlock = createComponent<{
             case '@link.unfurl': {
                 const { url } = action;
                 const nodeProps = extractNodeFromURL(url);
-                
+
                 return {
                     props: {
                         ...nodeProps,
                         url,
-                    }
-                }
+                    },
+                };
             }
         }
 
@@ -45,42 +51,46 @@ const embedBlock = createComponent<{
             return (
                 <block>
                     <card
-                    title={'Not found'}
-                    onPress={{
-                        action: '@ui.url.open',
-                        url,
-                    }}
-                    icon={(
-                        <image
-                            source={{
-                                url: context.environment.integration.urls.icon,
-                            }}
-                            aspectRatio={1}
-                        />
-                    )} />
+                        title={'Not found'}
+                        onPress={{
+                            action: '@ui.url.open',
+                            url,
+                        }}
+                        icon={
+                            <image
+                                source={{
+                                    url: context.environment.integration.urls.icon,
+                                }}
+                                aspectRatio={1}
+                            />
+                        }
+                    />
                 </block>
             );
         }
 
-        const file = nodeId ? await fetchFigmaNode(fileId, nodeId, context) : await fetchFigmaFile(fileId, context);
-        
+        const file = nodeId
+            ? await fetchFigmaNode(fileId, nodeId, context)
+            : await fetchFigmaFile(fileId, context);
+
         if (!file) {
             return (
                 <block>
                     <card
-                    title={'Not found'}
-                    onPress={{
-                        action: '@ui.url.open',
-                        url,
-                    }}
-                    icon={(
-                        <image
-                            source={{
-                                url: context.environment.integration.urls.icon,
-                            }}
-                            aspectRatio={1}
-                        />
-                    )} />
+                        title={'Not found'}
+                        onPress={{
+                            action: '@ui.url.open',
+                            url,
+                        }}
+                        icon={
+                            <image
+                                source={{
+                                    url: context.environment.integration.urls.icon,
+                                }}
+                                aspectRatio={1}
+                            />
+                        }
+                    />
                 </block>
             );
         }
@@ -88,28 +98,36 @@ const embedBlock = createComponent<{
         return (
             <block>
                 <card
-                title={file ? file.name + (file.nodeName ? ` - ${file.nodeName}` : '') :  'Not found'}
-                onPress={{
-                    action: '@ui.url.open',
-                    url,
-                }}
-                icon={(
-                    <image
-                        source={{
-                            url: context.environment.integration.urls.icon,
-                        }}
-                        aspectRatio={1}
-                    />
-                )}
-                buttons={[
-                    <button icon="maximize" tooltip="Open preview" onPress={{
-                        action: '@ui.modal.open',
-                        componentId: 'previewModal',
-                        props: {
-                            url,
-                        }
-                    }} />
-                ]}
+                    title={
+                        file
+                            ? file.name + (file.nodeName ? ` - ${file.nodeName}` : '')
+                            : 'Not found'
+                    }
+                    onPress={{
+                        action: '@ui.url.open',
+                        url,
+                    }}
+                    icon={
+                        <image
+                            source={{
+                                url: context.environment.integration.urls.icon,
+                            }}
+                            aspectRatio={1}
+                        />
+                    }
+                    buttons={[
+                        <button
+                            icon="maximize"
+                            tooltip="Open preview"
+                            onPress={{
+                                action: '@ui.modal.open',
+                                componentId: 'previewModal',
+                                props: {
+                                    url,
+                                },
+                            }}
+                        />,
+                    ]}
                 >
                     {file.nodeImage ? (
                         <image
@@ -122,14 +140,14 @@ const embedBlock = createComponent<{
                 </card>
             </block>
         );
-    }
-})
+    },
+});
 
 /**
  * Component to render the preview modal when zooming.
  */
 const previewModal = createComponent<{
-    url: string
+    url: string;
 }>({
     componentId: 'previewModal',
 
@@ -140,27 +158,29 @@ const previewModal = createComponent<{
 
         return (
             <modal size="fullscreen">
-                <webframe source={{
-                    url: url.toString()
-                }} />
+                <webframe
+                    source={{
+                        url: url.toString(),
+                    }}
+                />
             </modal>
-        )
-    }
-})
+        );
+    },
+});
 
 export default createIntegration<FigmaRuntimeContext>({
     events: {
         fetch: (request, context) => {
             const oauthHandler = createOAuthHandler({
                 redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
-                clientId: environment.secrets.CLIENT_ID || 'cSdAhvzjrFTG61DEGnxnb6',
-                clientSecret: environment.secrets.CLIENT_SECRET || 'AFUd58LjGNoA2RzWsgXzP2Dn5WgRpu',
+                clientId: environment.secrets.CLIENT_ID,
+                clientSecret: environment.secrets.CLIENT_SECRET,
                 authorizeURL: 'https://www.figma.com/oauth?scope=file_read',
                 accessTokenURL: 'https://www.figma.com/api/oauth/token',
-            })
+            });
 
             return oauthHandler(request, context);
-        }
+        },
     },
-    components: [embedBlock, previewModal]
+    components: [embedBlock, previewModal],
 });
