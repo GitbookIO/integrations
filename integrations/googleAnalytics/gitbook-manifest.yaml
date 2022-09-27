@@ -11,7 +11,7 @@ externalLinks:
 visibility: public
 script: ./src/index.ts
 scopes:
-    - space:publish:script
+    - space:script:published
 summary: |
     The GitBook Google Analytics integration allows you to track traffic in your published spaces from your Google Analytics dashboard.
 
@@ -26,10 +26,6 @@ configurations:
                 type: string
                 title: Tracking ID
                 description: Look for this in your Google Analytics account.
-            privacy_policy:
-                type: string
-                title: Privacy Policy
-                description: Link to a privacy policy URL to help visitors understands cookies tracking.
             track_private_view:
                 type: bool
                 title: Track private views

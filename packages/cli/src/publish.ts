@@ -36,6 +36,7 @@ export async function publishIntegration(filePath: string): Promise<void> {
                 readImage(resolveFile(filePath, imageFilePath), 'preview')
             )
         ),
+        published: manifest.published,
         script,
     });
 

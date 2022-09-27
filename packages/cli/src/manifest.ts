@@ -26,6 +26,7 @@ export interface IntegrationManifest {
     externalLinks?: api.Integration['externalLinks'];
     organization?: string;
     secrets: { [key: string]: string };
+    published?: api.IntegrationPublished;
 }
 
 /**
@@ -173,6 +174,9 @@ async function getManifestSchema() {
             },
             secrets: {
                 ...getAPIJsonSchemaFor(openAPISpec, 'components/schemas/IntegrationSecrets'),
+            },
+            published: {
+                ...getAPIJsonSchemaFor(openAPISpec, 'components/schemas/IntegrationPublished'),
             },
             organization: {
                 ...getAPIJsonSchemaFor(

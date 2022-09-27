@@ -1,6 +1,6 @@
-import { createIntegration, FetchEventCallback } from '@gitbook/runtime';
+import { createIntegration, FetchPublishScriptEventCallback } from '@gitbook/runtime';
 
-export const handleFetchEvent: FetchEventCallback = async () => {
+export const handleFetchEvent: FetchPublishScriptEventCallback = async () => {
     return new Response(
         `
 (function(){
@@ -17,5 +17,7 @@ export const handleFetchEvent: FetchEventCallback = async () => {
 };
 
 export default createIntegration({
-    fetch: handleFetchEvent,
+    events: {
+        fetch_published_script: handleFetchEvent,
+    },
 });

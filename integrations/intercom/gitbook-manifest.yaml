@@ -11,7 +11,7 @@ externalLinks:
 visibility: public
 script: ./src/index.ts
 scopes:
-    - space:publish:script
+    - space:script:published
 summary: |
     The GitBook Intercom integration allows you to be in contact with your user through the Intercom chat widget.
 
@@ -26,9 +26,5 @@ configurations:
                 type: string
                 title: Application ID
                 description: You can find it in your Intercom account, under the "Installation" section of the "Settings" page.
-            privacy_policy:
-                type: string
-                title: Privacy Policy
-                description: Link to a privacy policy URL to help visitors understands cookies tracking.
         required:
             - app_id

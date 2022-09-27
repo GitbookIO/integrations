@@ -6,8 +6,10 @@ organization: gitbook
 visibility: public
 script: ./src/index.ts
 scopes:
-    - space:publish:script
+    - space:script:published
 summary: |
     Test for injecting scripts
 categories:
     - other
+published:
+    content_security_policy: "default-src 'self'"
