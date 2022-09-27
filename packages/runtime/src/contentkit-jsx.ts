@@ -2,7 +2,7 @@
 // https://github.com/reactjs/rfcs/blob/createlement-rfc/text/0000-create-element-changes.md
 
 export function Fragment() {
-    // TODO
+    // No implementation is needed as only a comparison with the "type" passed to "jsx" below is needed
 }
 
 /**

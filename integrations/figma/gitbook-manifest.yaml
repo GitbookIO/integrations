@@ -2,7 +2,7 @@ name: figma
 title: Figma
 icon: ./assets/icon.png
 description: Embed Figma files into GitBook pages
-# organization: gitbook
+organization: gitbook
 visibility: public
 script: ./src/index.tsx
 summary: |

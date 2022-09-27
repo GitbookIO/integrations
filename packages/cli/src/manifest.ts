@@ -87,7 +87,6 @@ async function validateIntegrationManifest(data: object): Promise<IntegrationMan
     const [validate, ajv] = await getManifestSchema();
     const valid = validate(data);
     if (!valid) {
-        console.log(validate.errors);
         throw new Error(ajv.errorsText(validate.errors));
     }
 

@@ -1,7 +1,7 @@
 name: mermaid
 title: Mermaid
 description: Diagramming and charting tool that uses Markdown-inspired text definitions
-# organization: gitbook
+organization: gitbook
 visibility: public
 script: ./src/index.tsx
 scopes: []

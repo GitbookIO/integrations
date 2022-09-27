@@ -1,8 +1,8 @@
 # Link unfurling
 
-As users inserts urls into GitBook, we attach simple previews, adding context and continuity to documents.
+As users insert URLs into GitBook, we convert them into preview blocks, adding context and continuity to documents.
 
-By default, GitBook will use the oembed spec to transform the url into a nice looking embed. But for services with authentication, it can be limiting and no offer the best experience to the end user.
+By default, GitBook will use the oembed spec to transform the url into a nice-looking embed. But for services with authentication, it can be limiting and not offer the best experience to the end user.
 
 "Link unfurling" refers to the concept of converting a url input from the user into a custom integration block.
 
