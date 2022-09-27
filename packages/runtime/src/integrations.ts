@@ -1,5 +1,6 @@
 import { Event, IntegrationEnvironment } from '@gitbook/api';
 
+import { ComponentDefinition } from './components';
 import { createContext, RuntimeContext } from './context';
 import { EventCallbackMap, FetchEventCallback, NonFetchEvent } from './events';
 import { Logger } from './logger';
@@ -17,6 +18,11 @@ interface IntegrationRuntimeDefinition<Context extends RuntimeContext = RuntimeC
      * Handler for GitBook events.
      */
     events?: EventCallbackMap<Context>;
+
+    /**
+     * Components to expose in the integration.
+     */
+    components?: Array<ComponentDefinition<Context>>;
 }
 
 /**
@@ -31,10 +37,23 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
         return createCloudFlareIntegration(definition);
     }
 
-    const { events = {} } = definition;
+    const { events = {}, components = [] } = definition;
 
     // @ts-ignore - `environment` is currently a global variable until we switch to Cloudflare Workers
     const context = createContext(environment);
+
+    if (components.length > 0) {
+        // @ts-ignore
+        events.ui_render = async (event) => {
+            const component = components.find((c) => c.componentId === event.componentId);
+            if (!component) {
+                return;
+            }
+
+            // @ts-ignore
+            return component.render(event, context);
+        };
+    }
 
     Object.entries(events).forEach(([type, callback]) => {
         if (Array.isArray(callback)) {
@@ -64,7 +83,7 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
 function createCloudFlareIntegration<Context extends RuntimeContext = RuntimeContext>(
     definition: IntegrationRuntimeDefinition<Context>
 ) {
-    const { events = {} } = definition;
+    const { events = {}, components = [] } = definition;
 
     /**
      * Handle a fetch event sent by the integration dispatcher.
@@ -92,6 +111,21 @@ function createCloudFlareIntegration<Context extends RuntimeContext = RuntimeCon
 
             logger.info(`handling fetch event ${request.method} ${request.url}`);
             return definition.fetch(request, context);
+        }
+
+        if (event.type === 'ui_render') {
+            const component = components.find((c) => c.componentId === event.componentId);
+            if (!component) {
+                return new Response('Component not defined', { status: 404 });
+            }
+
+            // @ts-ignore
+            const result = await component.render(event, context);
+            return new Response(JSON.stringify(result), {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
         }
 
         const cb = events[event.type as NonFetchEvent];

@@ -20,6 +20,7 @@ export interface IntegrationManifest {
     summary?: string;
     scopes?: api.IntegrationScope[];
     categories?: api.IntegrationCategory[];
+    blocks?: api.IntegrationBlock[];
     configurations?: api.IntegrationConfigurations;
     visibility?: api.IntegrationVisibility;
     previewImages?: api.Integration['previewImages'];
@@ -157,6 +158,12 @@ async function getManifestSchema() {
                 ...getAPIJsonSchemaFor(
                     openAPISpec,
                     'components/schemas/Integration/properties/scopes'
+                ),
+            },
+            blocks: {
+                ...getAPIJsonSchemaFor(
+                    openAPISpec,
+                    'components/schemas/Integration/properties/blocks'
                 ),
             },
             categories: {

@@ -2,6 +2,9 @@ import * as api from '@gitbook/api';
 
 import { version } from '../package.json';
 
+/**
+ * Generate the event to track in Segment for an actual GitBook event.
+ */
 export function generateSegmentTrackEvent(event: api.SpaceViewEvent) {
     const { visitor, referrer, url, spaceId, pageId } = event;
 

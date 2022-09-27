@@ -12,6 +12,7 @@
   "scripts": {
     "lint": "eslint ./src/**/*.ts",
     "publish-integrations": "gitbook publish .",
+    "publish-integrations-staging": "gitbook publish .",
     "test": "node -r esbuild-register ./tests/index.ts"
   }
 }
