@@ -9,7 +9,7 @@ import { GITBOOK_DEFAULT_ENDPOINT } from '@gitbook/api';
 import packageJSON from '../package.json';
 import { promptNewIntegration } from './init';
 import { DEFAULT_MANIFEST_FILE, resolveIntegrationManifestPath } from './manifest';
-import { publishIntegration } from './publish';
+import { publishIntegration, unpublishIntegration } from './publish';
 import { authenticate, whoami } from './remote';
 
 program
@@ -60,6 +60,23 @@ program
         await publishIntegration(
             await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath))
         );
+    });
+
+program
+    .command('unpublish')
+    .argument('[integration]', 'Name of the integration to unpublish')
+    .description('unpublish an integration')
+    .action(async (name, options) => {
+        const response = await prompts({
+            type: 'confirm',
+            name: 'confirm',
+            message: `Are you sure you want to unpublish the integration "${name}"?\nIt cannot be undone, it will be removed from the marketplace, and from all installed accounts.`,
+            initial: false,
+        });
+
+        if (response.confirm) {
+            await unpublishIntegration(name);
+        }
     });
 
 program.parseAsync().then(
