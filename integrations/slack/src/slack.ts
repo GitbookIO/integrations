@@ -19,10 +19,10 @@ export async function slackAPI(
 
     const accessToken =
         options.accessToken ||
-        environment.installation.configuration.oauth_credentials?.access_token;
+        environment.installation?.configuration.oauth_credentials?.access_token;
 
     if (!accessToken) {
-        throw new Error('Connection not ready');
+        throw new Error('No authentication token provided');
     }
 
     const url = new URL(`https://slack.com/api/${request.path}`);
