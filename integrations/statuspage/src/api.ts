@@ -4,6 +4,14 @@ export interface StatuspagePageObject {
     id: string;
     name: string;
     url: string;
+    updated_at: string;
+}
+
+export interface StatuspageComponentObject {
+    id: string;
+    name: string;
+    updated_at: string;
+    status: "operational" | "under_maintenance"|  "degraded_performance"|  "partial_outage" | "major_outage" | ""
 }
 
 /**

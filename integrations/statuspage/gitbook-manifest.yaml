@@ -3,7 +3,7 @@ title: Statuspage
 description: Display your service status directly in your documentation
 # organization: gitbook
 visibility: public
-script: ./src/index.tsx
+script: ./src/index.ts
 icon: ./assets/icon.png
 scopes: []
 blocks:
