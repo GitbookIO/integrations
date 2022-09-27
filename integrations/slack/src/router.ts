@@ -12,8 +12,9 @@ import { slackAPI } from './slack';
  * - OAuth requests
  * - Slack webhook requests
  */
-export const handleFetchEvent: FetchEventCallback = async ({ request }, context) => {
+export const handleFetchEvent: FetchEventCallback = async (request, context) => {
     const { environment } = context;
+
     const router = Router({
         base: new URL(
             environment.spaceInstallation?.urls?.publicEndpoint ||
@@ -90,7 +91,9 @@ export const handleFetchEvent: FetchEventCallback = async ({ request }, context)
 
     const response = await router.handle(request, context);
     if (!response) {
-        return new Response(`No route matching`, { status: 404 });
+        return new Response(`No route matching ${request.method} ${request.url}`, {
+            status: 404,
+        });
     }
 
     return response;

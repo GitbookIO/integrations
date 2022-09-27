@@ -1,4 +1,4 @@
-import { FetchEvent, RequestUpdateIntegrationInstallation } from '@gitbook/api';
+import { RequestUpdateIntegrationInstallation } from '@gitbook/api';
 
 import { RuntimeCallback } from './context';
 
@@ -44,7 +44,7 @@ export interface OAuthConfig {
  */
 export function createOAuthHandler(
     config: OAuthConfig
-): RuntimeCallback<[FetchEvent | Request], Promise<Response>> {
+): RuntimeCallback<[Request], Promise<Response>> {
     const {
         extractCredentials = (response) => ({
             configuration: {
@@ -53,8 +53,7 @@ export function createOAuthHandler(
         }),
     } = config;
 
-    return async (event, { api, environment }) => {
-        const request = event.request ? event.request : event;
+    return async (request, { api, environment }) => {
         const url = new URL(request.url);
         const code = url.searchParams.get('code');
 
@@ -82,7 +81,6 @@ export function createOAuthHandler(
         // Exchange the code for an access token
         //
         else {
-            const code = url.searchParams.get('code');
             const installationId = url.searchParams.get('state');
 
             const params = new URLSearchParams();
@@ -104,6 +102,10 @@ export function createOAuthHandler(
                 throw new Error('Failed to exchange code for access token');
             }
             const json = await response.json();
+
+            if (!json.ok) {
+                throw new Error(`Failed to exchange code for access token ${JSON.stringify(json)}`);
+            }
 
             // Store the credentials in the installation configuration
             await api.integrations.updateIntegrationInstallation(
