@@ -15,6 +15,7 @@
     },
     "scripts": {
         "lint": "eslint ./**/*.ts",
+        "publish-integrations-staging": "gitbook publish .",
         "publish-integrations": "gitbook publish ."
     }
 }

@@ -10,6 +10,6 @@
     "@gitbook/cli": "*"
   },
   "scripts": {
-    "publish-integrations-alpha": "gitbook publish ."
+    "publish-integrations-staging": "gitbook publish ."
   }
 }

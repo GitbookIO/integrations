@@ -25,7 +25,7 @@ blocks:
       title: Figma
       description: Preview of a Figma file
       urlUnfurl:
-        - https://www.figma.com/file/
+          - https://www.figma.com/file/
 configurations:
     account:
         properties:
@@ -37,3 +37,6 @@ configurations:
                 callback_url: /oauth
         required:
             - oauth_credentials
+secrets:
+    CLIENT_ID: ${{ env.FIGMA_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.FIGMA_CLIENT_SECRET }}
