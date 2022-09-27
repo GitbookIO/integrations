@@ -80,15 +80,18 @@ export function createOAuthHandler(
 
             const response = await fetch(config.accessTokenURL, {
                 method: 'POST',
-                body: params,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
+                body: params.toString(),
             });
 
+            if (!response.ok) {
+                throw new Error('Failed to exchange code for access token');
+            }
             const json = await response.json();
 
-            if (!response.ok || !json.ok) {
+            if (!json.ok) {
                 throw new Error(`Failed to exchange code for access token ${JSON.stringify(json)}`);
             }
 
