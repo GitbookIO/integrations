@@ -1,0 +1,26 @@
+name: statuspage
+title: Statuspage
+description: Display your service status directly in your documentation
+# organization: gitbook
+visibility: public
+script: ./src/index.tsx
+icon: ./assets/icon.png
+scopes: []
+blocks:
+    - id: page
+      title: Statuspage
+      description: Global status of all the components
+configurations:
+    space:
+        properties:
+            api_key:
+                type: string
+                title: API Key
+                description: Get your API key from the "API info" section of your Statuspage account.
+            page_id:
+                type: string
+                title: Page
+                completion_url: /pages
+        required:
+            - api_key
+            - page_id
