@@ -13,6 +13,7 @@
         "publish": "turbo run publish",
         "typecheck": "turbo run typecheck",
         "publish-integrations": "turbo run publish-integrations",
+        "publish-integrations-staging": "turbo run publish-integrations-staging",
         "version-packages": "changeset version",
         "changeset": "changeset",
         "release": "turbo run build && changeset publish"

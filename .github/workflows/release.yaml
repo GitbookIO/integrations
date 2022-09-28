@@ -52,13 +52,15 @@ jobs:
                   npm run build
                   npm ci
             - name: Publish all integrations to staging
-              run: npm run publish-integrations
+              run: npm run publish-integrations-staging
               env:
                   GITBOOK_TOKEN: ${{ secrets.GITBOOK_STAGING_API_TOKEN }}
                   GITBOOK_ENDPOINT: https://api.gitbook-staging.com
                   SLACK_CLIENT_ID: ${{ secrets.SLACK_STAGING_CLIENT_ID }}
                   SLACK_CLIENT_SECRET: ${{ secrets.SLACK_STAGING_CLIENT_SECRET }}
                   SLACK_SIGNING_SECRET: ${{ secrets.SLACK_STAGING_SIGNING_SECRET }}
+                  FIGMA_CLIENT_ID: ${{ secrets.FIGMA_STAGING_CLIENT_ID }}
+                  FIGMA_CLIENT_SECRET: ${{ secrets.FIGMA_STAGING_CLIENT_SECRET }}
             # - name: Publish all integrations to production
             #   run: npm run publish-integrations
             #   env:
@@ -67,3 +69,5 @@ jobs:
             #       SLACK_CLIENT_ID: ${{ secrets.SLACK_PROD_CLIENT_ID }}
             #       SLACK_CLIENT_SECRET: ${{ secrets.SLACK_PROD_CLIENT_SECRET }}
             #       SLACK_SIGNING_SECRET: ${{ secrets.SLACK_PROD_SIGNING_SECRET }}
+            #       FIGMA_CLIENT_ID: ${{ secrets.FIGMA_PROD_CLIENT_ID }}
+            #       FIGMA_CLIENT_SECRET: ${{ secrets.FIGMA_PROD_CLIENT_SECRET }}
