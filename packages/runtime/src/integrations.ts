@@ -1,7 +1,7 @@
 import { Event, IntegrationEnvironment } from '@gitbook/api';
 
 import { createContext, RuntimeContext } from './context';
-import { EventCallbackMap, FetchEventCallback, NonFetchEvent } from './events';
+import { EventCallbackMap, FetchEventCallback } from './events';
 import { Logger } from './logger';
 
 const logger = Logger('integrations');
@@ -70,34 +70,35 @@ function createCloudFlareIntegration<Context extends RuntimeContext = RuntimeCon
      * Handle a fetch event sent by the integration dispatcher.
      */
     async function handleWorkerDispatchEvent(ev: FetchEvent): Promise<Response> {
+        const version = new URL(ev.request.url).pathname.slice(1);
+
+        if (version !== 'v1') {
+            return new Response(`Unsupported version ${version}`, { status: 400 });
+        }
+
         const formData = await ev.request.formData();
 
+        const event = JSON.parse(formData.get('event') as string) as Event;
         const context = createContext(
             JSON.parse(formData.get('environment') as string) as IntegrationEnvironment
         );
 
-        const event = JSON.parse(formData.get('event') as string) as Event;
-
-        // Parse the request coming from the dispatch webworker and forward it on depending on whether
-        // it's a fetch event, or a specific GitBook-driven event.
         if (event.type === 'fetch' && definition.fetch) {
-            // the request at this point contains the request made to the dispatcher, but we
-            // want our integrations to think they were called directly. Repackage the request here.
+            logger.info(`handling fetch event ${event.request.url}`);
+
+            // Create a new Request that mimics the original Request
             const request = new Request(event.request.url, {
                 method: event.request.method,
                 headers: new Headers(event.request.headers),
             });
 
-            // TODO: handle the body
-
-            logger.info(`handling fetch event ${request.method} ${request.url}`);
             return definition.fetch(request, context);
         }
 
-        const cb = events[event.type as NonFetchEvent];
+        const cb = events[event.type];
 
         if (cb) {
-            logger.info(`handling GitBook event ${event.type}`);
+            logger.info(`handling GitBook-generated event ${event.type}`);
 
             if (Array.isArray(cb)) {
                 await Promise.all(cb.map((c) => c(event, context)));
@@ -109,15 +110,12 @@ function createCloudFlareIntegration<Context extends RuntimeContext = RuntimeCon
             return new Response('OK', { status: 200 });
         }
 
-        if (event.type) {
-            logger.info(`no handler found for event type ${event.type}`);
-        }
-
-        return new Response('Cannot handle request', { status: 404 });
+        return new Response(`Integration does not handle ${event.type} events`, {
+            status: 200,
+        });
     }
 
     addEventListener('fetch', (ev) => {
-        logger.debug(`received ${ev.request.url}`);
         ev.respondWith(handleWorkerDispatchEvent(ev));
     });
 }
