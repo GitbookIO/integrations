@@ -6,7 +6,7 @@ import {
     FetchEventCallback,
 } from '@gitbook/runtime';
 import { fetchRunKitFromLink } from './runkit';
-import { getWebFrameHTML } from './webframe';
+import { webFrameHTML } from './webframe';
 
 const runKitEmbedBlock = createComponent<{
     content?: string;
@@ -14,8 +14,9 @@ const runKitEmbedBlock = createComponent<{
     url?: string;
 }>({
     componentId: 'runkitEmbed',
-    initialState: (props) => {
+    initialState: (props, context) => {
         return {
+            editable: context.editable,
             content: props.content || `// Hello world!`,
             nodeVersion: props.nodeVersion,
         };
@@ -55,6 +56,7 @@ const runKitEmbedBlock = createComponent<{
                         data={{
                             content: element.dynamicState('content'),
                             nodeVersion: element.dynamicState('nodeVersion'),
+                            editable: element.dynamicState('editable'),
                         }}
                     />
                 </box>
@@ -76,14 +78,15 @@ const handleFetchEvent: FetchEventCallback<RuntimeContext> = async (request, con
     /**
      * Handle requests to serve the webframe content.
      */
-    router.get('/webframe', async (request) => {
-        const readOnly = request.query?.readOnly === 'true';
-        return new Response(getWebFrameHTML(readOnly), {
-            headers: {
-                'Content-Type': 'text/html',
-            },
-        });
-    });
+    router.get(
+        '/webframe',
+        async (request) =>
+            new Response(webFrameHTML, {
+                headers: {
+                    'Content-Type': 'text/html',
+                },
+            })
+    );
 
     const response = await router.handle(request, context);
     if (!response) {

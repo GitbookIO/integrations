@@ -8,10 +8,11 @@
         "@gitbook/runtime": "*"
     },
     "devDependencies": {
-        "@gitbook/cli": "*"
+        "@gitbook/cli": "*",
+        "esbuild": "^0.15.7"
     },
     "scripts": {
-        "publish-integrations-alpha": "gitbook publish .",
-        "test": "node -r esbuild-register ./tests/runkit.ts"
+        "prepublish-integrations-alpha": "node -r esbuild-register ./webframe/scripts/build.ts",
+        "publish-integrations-alpha": "gitbook publish ."
     }
 }
