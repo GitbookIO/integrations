@@ -1,23 +1,8 @@
-import { Api, HttpResponse } from './client';
+import { Api } from './client';
 
 export * from './client';
 
 export const GITBOOK_DEFAULT_ENDPOINT = 'https://api.gitbook.com';
-
-interface GitBookAPIErrorResponse {
-    error: { code: number; message: string };
-}
-
-class GitBookAPIError extends Error {
-    public statusCode: number;
-
-    constructor(public response: HttpResponse<GitBookAPIErrorResponse, GitBookAPIErrorResponse>) {
-        const errorData = response.data || response.error;
-        const error = errorData.error || { code: 500, message: 'Unknown error' };
-        super(error.message);
-        this.statusCode = error.code;
-    }
-}
 
 // @ts-ignore
 const IS_CLOUDFLARE = typeof WebSocketPair !== 'undefined';
@@ -78,26 +63,6 @@ export class GitBookAPI extends Api<{
         });
 
         this.endpoint = endpoint;
-
-        const request = this.request;
-        this.request = async (...args) => {
-            try {
-                const response = await request(...args);
-
-                if (!response.ok) {
-                    throw new GitBookAPIError(response);
-                }
-
-                return response;
-            } catch (error) {
-                if (error instanceof Error) {
-                    throw error;
-                }
-
-                throw new GitBookAPIError(error);
-            }
-        };
-
         this.setSecurityData({ authToken });
     }
 
