@@ -1,7 +1,8 @@
 name: runkit
 title: RunKit
+icon: ./assets/icon.png
 description: Embed RunKit notebooks in GitBook
-# organization: gitbook
+organization: gitbook
 visibility: public
 script: ./src/index.tsx
 scopes: []
