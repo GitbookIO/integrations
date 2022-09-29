@@ -86,10 +86,10 @@ function updateWebFrameSize(notebook: NotebookEmbed, { height }) {
 /**
  * Render the RunKit Embed.
  */
-function renderRunKitNoteBook(content: string, nodeVersion?: semverRange) {
+function renderRunKitNoteBook(content?: string, nodeVersion?: semverRange) {
     runKitNotebook = window.RunKit.createNotebook({
         element: document.getElementById('notebook'),
-        source: content,
+        source: content || '',
         nodeVersion,
         onLoad: onRunKitNotebookLoaded,
         onResize: updateWebFrameSize,
@@ -106,4 +106,4 @@ window.addEventListener('message', (event) => {
     }
 });
 
-renderRunKitNoteBook('');
+renderRunKitNoteBook();
