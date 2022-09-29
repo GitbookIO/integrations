@@ -1,0 +1,15 @@
+name: runkit
+title: RunKit
+description: Embed RunKit notebooks in GitBook
+# organization: gitbook
+visibility: public
+script: ./src/index.tsx
+scopes: []
+blocks:
+    - id: runkitEmbed
+      title: RunKit
+      markdown:
+          codeblock: runkit
+          body: content
+      urlUnfurl:
+          - https://runkit.com/
