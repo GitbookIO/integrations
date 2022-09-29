@@ -62,6 +62,10 @@ export class GitBookAPI extends Api<{
                     delete init.referrerPolicy;
                 }
 
+                const ping = await fetch(`https://${this.endpoint}/v1/`);
+                // eslint-disable-next-line no-console
+                console.log(await ping.json());
+
                 const response = await fetch(input, init);
 
                 if (!response.ok) {
