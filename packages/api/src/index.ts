@@ -62,10 +62,6 @@ export class GitBookAPI extends Api<{
                     delete init.referrerPolicy;
                 }
 
-                const ping = await fetch(`https://${this.endpoint}/v1/`);
-                // eslint-disable-next-line no-console
-                console.log(await ping.json());
-
                 const response = await fetch(input, init);
 
                 if (!response.ok) {
@@ -77,8 +73,7 @@ export class GitBookAPI extends Api<{
                     } catch (err) {
                         // if it's a browser error, also log the headers to see if it can give us more info
                         response.headers.forEach((value, key) => {
-                            // eslint-disable-next-line no-console
-                            console.log(key, value);
+                            error += `${key}:${value} `;
                         });
 
                         // Ignore, just use the statusText as an error message
