@@ -28,7 +28,7 @@ const runKitEmbedBlock = createComponent<{
                 const { content, nodeVersion } = await fetchRunKitFromLink(url);
 
                 return {
-                    props: {
+                    state: {
                         url,
                         content,
                         nodeVersion,
