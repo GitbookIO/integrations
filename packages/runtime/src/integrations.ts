@@ -103,7 +103,7 @@ function createCloudFlareIntegration<Context extends RuntimeContext = RuntimeCon
         );
 
         if (event.type === 'fetch' && definition.fetch) {
-            logger.info(`handling fetch event ${event.request.url}`);
+            logger.info(`handling ${event.request.method} ${event.request.url}`);
 
             // Create a new Request that mimics the original Request
             const request = new Request(event.request.url, {
@@ -144,6 +144,7 @@ function createCloudFlareIntegration<Context extends RuntimeContext = RuntimeCon
             return new Response('OK', { status: 200 });
         }
 
+        logger.info(`integration does not handle ${event.type} events`);
         return new Response(`Integration does not handle ${event.type} events`, {
             status: 200,
         });
