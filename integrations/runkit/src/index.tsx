@@ -41,10 +41,7 @@ const runKitEmbedBlock = createComponent<{
     },
     async render(element, context) {
         const { environment } = context;
-        const { editable } = element.context;
-
         const renderRunKitURL = new URL(`${environment.integration.urls.publicEndpoint}/webframe`);
-        renderRunKitURL.searchParams.set('readOnly', editable ? 'false' : 'true');
 
         return (
             <block>
