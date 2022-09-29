@@ -112,7 +112,7 @@ function createCloudFlareIntegration<Context extends RuntimeContext = RuntimeCon
                     headers: new Headers(event.request.headers),
                 });
 
-                return definition.fetch(request, context);
+                return await definition.fetch(request, context);
             }
 
             if (event.type === 'ui_render') {
