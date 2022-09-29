@@ -71,6 +71,12 @@ export class GitBookAPI extends Api<{
                         const body = (await response.json()) as GitBookAPIErrorResponse;
                         error = body?.error?.message || error;
                     } catch (err) {
+                        // if it's a browser error, also log the headers to see if it can give us more info
+                        response.headers.forEach((value, key) => {
+                            // eslint-disable-next-line no-console
+                            console.log(key, value);
+                        });
+
                         // Ignore, just use the statusText as an error message
                     }
 
