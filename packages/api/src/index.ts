@@ -45,7 +45,7 @@ export class GitBookAPI extends Api<{
 
                 return {};
             },
-            customFetch: (input, init) => {
+            customFetch: async (input, init) => {
                 // The current GitBook API has hard-coded the credentials and referrerPolicy
                 // properties which are not supported by the version of fetch supported by CloudFlare.
                 // Remove those properties here, but a future version of the GitBook API should make
@@ -58,7 +58,19 @@ export class GitBookAPI extends Api<{
                     delete init.referrerPolicy;
                 }
 
-                return fetch(input, init);
+                const response = await fetch(input, init);
+
+                if (!response.ok) {
+                    console.log(
+                        `[GitBookAPI] [${response.status}] ${response.url}: ${response.statusText}`
+                    );
+
+                    throw new Error(
+                        `[GitBookAPI] [${response.status}] ${response.url}: ${response.statusText}`
+                    );
+                }
+
+                return response;
             },
         });
 
