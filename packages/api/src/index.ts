@@ -68,7 +68,7 @@ export class GitBookAPI extends Api<{
                     let error: string = response.statusText;
 
                     try {
-                        const body = await response.json<GitBookAPIErrorResponse>();
+                        const body = (await response.json()) as GitBookAPIErrorResponse;
                         error = body?.error?.message || error;
                     } catch (err) {
                         // Ignore, just use the statusText as an error message
