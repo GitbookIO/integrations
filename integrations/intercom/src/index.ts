@@ -32,7 +32,7 @@ var APP_ID = "${appId}";
 (function(){
     var w = window;
     var ic = w.Intercom;
-    if (typeof ic==="function") {
+    if (typeof ic === "function") {
         ic('reattach_activator');
         ic('update',w.intercomSettings);
     } else {
@@ -50,15 +50,6 @@ var APP_ID = "${appId}";
             w.addEventListener('load',l,false);
         }
     }
-    if (w.registerUnmount) {
-        w.registerUnmount(function() {
-          var i = w.Intercom;
-          if (i) {
-            i('shutdown');
-            delete w.Intercom;
-          }
-        });
-    }
 })();
             
 
@@ -73,5 +64,7 @@ var APP_ID = "${appId}";
 };
 
 export default createIntegration<IntercomRuntimeContext>({
-    fetch: handleFetchEvent,
+    events: {
+        fetch_published_script: handleFetchEvent,
+    },
 });

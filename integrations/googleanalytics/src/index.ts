@@ -10,7 +10,6 @@ type GARuntimeContext = RuntimeContext<
         {},
         {
             tracking_id?: string;
-            track_private_view?: boolean;
         }
     >
 >;
@@ -26,29 +25,35 @@ export const handleFetchEvent: FetchEventCallback = async (
         );
     }
 
-    const gtagScript = await fetch(
-        `https://www.googletagmanager.com/gtag/js?id=${trackingId}`
-    ).then((result) => result.text());
-
     return new Response(
         `
-${gtagScript}
-
-function() {
-    if (!window.gtag) {
-        return;
-    }
-    
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){window.dataLayer.push(arguments);}
-    gtag('js', new Date());
-    
-    gtag('config', '${trackingId}', {
-        send_page_view: false,
-        anonymize_ip: true,
-        groups: 'tracking_views',
+(function(w, d, s, l, i){
+    w[l] = w[l] || [];
+    w[l].push({
+        'gtm.start': new Date().getTime(),
+        event: 'gtm.js'
     });
-}();
+    var f = d.getElementsByTagName(s)[0], j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : '';
+    j.async = true;
+    j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+    j.onload = function() {
+        if (!window.gtag) {
+            return;
+        }
+        
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){window.dataLayer.push(arguments);}
+        gtag('js', new Date());
+        
+        gtag('config', i, {
+            send_page_view: false,
+            anonymize_ip: true,
+            groups: 'tracking_views',
+        });
+    };
+    f.parentNode.insertBefore(j, f);
+    
+})(window, document, 'script', 'dataLayer', 'GTM-${trackingId}');
 `,
         {
             headers: {
@@ -60,5 +65,7 @@ function() {
 };
 
 export default createIntegration<GARuntimeContext>({
-    fetch: handleFetchEvent,
+    events: {
+        fetch_published_script: handleFetchEvent,
+    },
 });

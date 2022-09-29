@@ -12,6 +12,26 @@ visibility: public
 script: ./src/index.ts
 scopes:
     - space:script:published
+contentSecurityPolicy: |
+    script-src
+      https://www.google-analytics.com
+      https://ssl.google-analytics.com
+      https://google-analytics.com;
+    img-src
+      data:
+      blob:
+      www.google-analytics.com
+      ssl.google-analytics.com
+      www.google.com
+      analytics.google.com;
+    font-src
+      data:;
+    connect-src
+      www.google-analytics.com
+      stats.g.doubleclick.net
+      ampcid.google.com
+      analytics.google.com
+      about:;
 summary: |
     The GitBook Google Analytics integration allows you to track traffic in your published spaces from your Google Analytics dashboard.
 
@@ -26,9 +46,5 @@ configurations:
                 type: string
                 title: Tracking ID
                 description: Look for this in your Google Analytics account.
-            track_private_view:
-                type: bool
-                title: Track private views
-                description: Track views in the GitBook app as well as public content.
         required:
             - tracking_id

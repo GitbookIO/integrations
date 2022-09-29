@@ -1,5 +1,5 @@
 {
-  "name": "@gitbook/integration-ga",
+  "name": "@gitbook/integration-googleanalytics",
   "version": "0.0.0",
   "private": true,
   "dependencies": {

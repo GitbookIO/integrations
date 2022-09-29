@@ -11,5 +11,4 @@ summary: |
     Test for injecting scripts
 categories:
     - other
-published:
-    content_security_policy: "default-src 'self'"
+contentSecurityPolicy: ''
