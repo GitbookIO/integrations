@@ -4,6 +4,10 @@ export * from './client';
 
 export const GITBOOK_DEFAULT_ENDPOINT = 'https://api.gitbook.com';
 
+interface GitBookAPIErrorResponse {
+    error: { code: number; message: string };
+}
+
 // @ts-ignore
 const IS_CLOUDFLARE = typeof WebSocketPair !== 'undefined';
 
@@ -61,12 +65,17 @@ export class GitBookAPI extends Api<{
                 const response = await fetch(input, init);
 
                 if (!response.ok) {
-                    console.log(
-                        `[GitBookAPI] [${response.status}] ${response.url}: ${response.statusText}`
-                    );
+                    let error: string = response.statusText;
+
+                    try {
+                        const body = await response.json<GitBookAPIErrorResponse>();
+                        error = body?.error?.message || error;
+                    } catch (err) {
+                        // Ignore, just use the statusText as an error message
+                    }
 
                     throw new Error(
-                        `[GitBookAPI] [${response.status}] ${response.url}: ${response.statusText}`
+                        `GitBook API failed with [${response.status}] ${response.url}: ${error}`
                     );
                 }
 
