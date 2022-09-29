@@ -151,7 +151,7 @@ function createCloudFlareIntegration<Context extends RuntimeContext = RuntimeCon
             });
         } catch (err) {
             logger.error(err.stack);
-            return new Response('Internal Server Error', { status: 500 });
+            throw err;
         }
     }
 

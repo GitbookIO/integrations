@@ -13,8 +13,9 @@ class GitBookAPIError extends Error {
 
     constructor(public response: HttpResponse<GitBookAPIErrorResponse, GitBookAPIErrorResponse>) {
         const errorData = response.data || response.error;
-        super(errorData.error.message || 'Unknown error');
-        this.statusCode = errorData.error.code;
+        const error = errorData.error || { code: 500, message: 'Unknown error' };
+        super(error.message);
+        this.statusCode = error.code;
     }
 }
 
