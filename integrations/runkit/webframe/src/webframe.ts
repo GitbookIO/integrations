@@ -86,13 +86,17 @@ function updateWebFrameSize(notebook: NotebookEmbed, { height }) {
 /**
  * Render the RunKit Embed.
  */
-function renderRunKitNoteBook(content, nodeVersion) {
+function renderRunKitNoteBook(content: string, nodeVersion?: semverRange) {
     runKitNotebook = window.RunKit.createNotebook({
         element: document.getElementById('notebook'),
         source: content,
-        nodeVersion: nodeVersion,
+        nodeVersion,
         onLoad: onRunKitNotebookLoaded,
         onResize: updateWebFrameSize,
+    });
+
+    sendAction({
+        action: '@webframe.ready',
     });
 }
 
@@ -102,6 +106,4 @@ window.addEventListener('message', (event) => {
     }
 });
 
-sendAction({
-    action: '@webframe.ready',
-});
+renderRunKitNoteBook('');
