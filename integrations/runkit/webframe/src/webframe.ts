@@ -2,7 +2,10 @@ const gitbookWebFrame = window.top;
 
 let readOnly = false;
 let runKitNotebook: NotebookEmbed = null;
-let curContent: string = null;
+let curProps: {
+    content?: string;
+    nodeVersion?: string;
+} = {};
 
 console.info('runkit-embed: webframe initialize');
 
@@ -19,20 +22,22 @@ function sendAction(payload: ContentKitWebFrameActionPayload) {
 async function updateBlockProps(notebook: NotebookEmbed) {
     const content = await notebook.getSource();
     const nodeVersion = await notebook.getNodeVersion();
+    const hasChanged = content !== curProps.content || nodeVersion !== curProps.nodeVersion;
 
-    if (!content || content === curContent) {
+    if (!content || !hasChanged) {
         return;
     }
 
-    curContent = content;
+    curProps = {
+        content,
+        nodeVersion,
+    };
     sendAction({
         action: '@editor.node.updateProps',
-        props: {
-            content,
-            nodeVersion,
-        },
+        props: curProps,
     });
 }
+
 /**
  * Handle the GitBook ContentKit component state update messages.
  */
