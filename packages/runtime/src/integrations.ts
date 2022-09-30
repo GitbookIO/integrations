@@ -115,7 +115,13 @@ function createCloudFlareIntegration<Context extends RuntimeContext = RuntimeCon
                     body: fetchBody,
                 });
 
-                return await definition.fetch(request, context);
+                const resp = await definition.fetch(request, context);
+                logger.debug(
+                    `response ${resp.status} ${resp.statusText} Content-Type: ${resp.headers.get(
+                        'content-type'
+                    )}`
+                );
+                return resp;
             }
 
             if (event.type === 'ui_render') {

@@ -62,8 +62,6 @@ export class GitBookAPI extends Api<{
                     delete init.referrerPolicy;
                 }
 
-                // eslint-disable-next-line no-console
-                console.log(`fetch ${input}`);
                 const response = await fetch(input, init);
 
                 if (!response.ok) {
@@ -85,8 +83,6 @@ export class GitBookAPI extends Api<{
                         `GitBook API failed with [${response.status}] ${response.url}: ${error}`
                     );
                 }
-                // eslint-disable-next-line no-console
-                console.log(`response ${response.status} ${response.statusText} ${input}`);
                 return response;
             },
         });
