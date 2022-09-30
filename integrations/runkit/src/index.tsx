@@ -41,22 +41,19 @@ const runKitEmbedBlock = createComponent<{
     },
     async render(element, context) {
         const { environment } = context;
-        const renderRunKitURL = new URL(`${environment.integration.urls.publicEndpoint}/webframe`);
 
         return (
             <block>
-                <box>
-                    <webframe
-                        source={{
-                            url: renderRunKitURL.toString(),
-                        }}
-                        data={{
-                            content: element.dynamicState('content'),
-                            nodeVersion: element.dynamicState('nodeVersion'),
-                            editable: element.dynamicState('editable'),
-                        }}
-                    />
-                </box>
+                <webframe
+                    source={{
+                        url: `${environment.integration.urls.publicEndpoint}/webframe`,
+                    }}
+                    data={{
+                        content: element.dynamicState('content'),
+                        nodeVersion: element.dynamicState('nodeVersion'),
+                        editable: element.dynamicState('editable'),
+                    }}
+                />
             </block>
         );
     },
