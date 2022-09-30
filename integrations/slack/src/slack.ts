@@ -1,4 +1,8 @@
+import { Logger } from '@gitbook/runtime';
+
 import { SlackRuntimeContext } from './configuration';
+
+const logger = Logger('slack:api');
 
 /**
  * Execute a Slack API request and return the result.
@@ -44,6 +48,8 @@ export async function slackAPI(
         body = JSON.stringify(request.payload || {});
     }
 
+    logger.debug(`fetch ${request.method} ${url.toString()}: ${body}`);
+
     const response = await fetch(url.toString(), {
         method: request.method,
         body,
@@ -51,6 +57,7 @@ export async function slackAPI(
     });
 
     if (!response.ok) {
+        logger.error(`slack returned an error ${response.status}: ${response.statusText}`);
         throw new Error(`${response.status} ${response.statusText}`);
     }
 
@@ -60,6 +67,8 @@ export async function slackAPI(
         if (retriesLeft > 0) {
             switch (result.error) {
                 case 'not_in_channel':
+                    logger.debug(`Retrying ${request.path} after not_in_channel`);
+
                     /**
                      * Join the channel/conversation first and then
                      * try to send the message again.
