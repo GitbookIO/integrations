@@ -61,13 +61,13 @@ jobs:
                   SLACK_SIGNING_SECRET: ${{ secrets.SLACK_STAGING_SIGNING_SECRET }}
                   FIGMA_CLIENT_ID: ${{ secrets.FIGMA_STAGING_CLIENT_ID }}
                   FIGMA_CLIENT_SECRET: ${{ secrets.FIGMA_STAGING_CLIENT_SECRET }}
-            # - name: Publish all integrations to production
-            #   run: npm run publish-integrations
-            #   env:
-            #       GITBOOK_TOKEN: ${{ secrets.GITBOOK_PROD_API_TOKEN }}
-            #       GITBOOK_ENDPOINT: https://api.gitbook.com
-            #       SLACK_CLIENT_ID: ${{ secrets.SLACK_PROD_CLIENT_ID }}
-            #       SLACK_CLIENT_SECRET: ${{ secrets.SLACK_PROD_CLIENT_SECRET }}
-            #       SLACK_SIGNING_SECRET: ${{ secrets.SLACK_PROD_SIGNING_SECRET }}
-            #       FIGMA_CLIENT_ID: ${{ secrets.FIGMA_PROD_CLIENT_ID }}
-            #       FIGMA_CLIENT_SECRET: ${{ secrets.FIGMA_PROD_CLIENT_SECRET }}
+            - name: Publish all integrations to production
+              run: npm run publish-integrations
+              env:
+                  GITBOOK_TOKEN: ${{ secrets.GITBOOK_PROD_API_TOKEN }}
+                  GITBOOK_ENDPOINT: https://api.gitbook.com
+                  SLACK_CLIENT_ID: ${{ secrets.SLACK_PROD_CLIENT_ID }}
+                  SLACK_CLIENT_SECRET: ${{ secrets.SLACK_PROD_CLIENT_SECRET }}
+                  SLACK_SIGNING_SECRET: ${{ secrets.SLACK_PROD_SIGNING_SECRET }}
+                  FIGMA_CLIENT_ID: ${{ secrets.FIGMA_PROD_CLIENT_ID }}
+                  FIGMA_CLIENT_SECRET: ${{ secrets.FIGMA_PROD_CLIENT_SECRET }}
