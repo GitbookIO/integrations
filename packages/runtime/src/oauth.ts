@@ -94,7 +94,7 @@ export function createOAuthHandler(
             params.set('redirect_uri', redirectUri);
             params.set('grant_type', 'authorization_code');
 
-            logger.debug(`handle oauth access token exchange`);
+            logger.debug(`handle oauth access token exchange: ${config.accessTokenURL}`);
 
             const response = await fetch(config.accessTokenURL, {
                 method: 'POST',
@@ -103,6 +103,8 @@ export function createOAuthHandler(
                 },
                 body: params.toString(),
             });
+
+            logger.debug(`received oauth response ${response.status}: ${response.statusText}`);
 
             if (!response.ok) {
                 throw new Error('Failed to exchange code for access token');
