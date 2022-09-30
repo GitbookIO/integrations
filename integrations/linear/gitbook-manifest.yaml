@@ -1,0 +1,28 @@
+name: linear
+title: Linear
+icon: ./assets/icon.png
+description: Embed Linear issues in your documentation.
+organization: gitbook
+visibility: public
+script: ./src/index.tsx
+scopes: []
+blocks:
+    - id: embed
+      title: Linear
+      description: Preview of a Linear issue
+      urlUnfurl:
+          - https://linear.app/
+configurations:
+    account:
+        properties:
+            oauth_credentials:
+                type: button
+                title: Connection
+                description: Authorization between Linear and GitBook.
+                button_text: Authorize
+                callback_url: /oauth
+        required:
+            - oauth_credentials
+secrets:
+    CLIENT_ID: ${{ env.LINEAR_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.LINEAR_CLIENT_SECRET }}
