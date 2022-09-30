@@ -12,7 +12,7 @@
         "esbuild": "^0.15.7"
     },
     "scripts": {
-        "prepublish-integrations-alpha": "node -r esbuild-register ./webframe/scripts/build.ts",
-        "publish-integrations-alpha": "gitbook publish ."
+        "build": "node -r esbuild-register ./webframe/scripts/build.ts",
+        "publish-integrations-staging": "gitbook publish ."
     }
 }

@@ -1,9 +1,10 @@
 {
     "extends": "@gitbook/tsconfig/base.json",
-    "include": ["./src/**/*", "./types"],
+    "include": ["./src/**/*", "./scripts/**/*", "./types"],
     "rootDir": "./src",
     "compilerOptions": {
         "lib": ["ES2020", "DOM"],
+        "types": ["node"],
         "typeRoots": ["./types"]
     }
 }
