@@ -7,7 +7,7 @@ visibility: public
 script: ./src/index.tsx
 scopes: []
 blocks:
-    - id: runkitEmbed
+    - id: embed
       title: RunKit
       markdown:
           codeblock: runkit

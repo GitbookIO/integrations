@@ -8,12 +8,12 @@ import {
 import { fetchRunKitFromLink } from './runkit';
 import { webFrameHTML } from './webframe';
 
-const runKitEmbedBlock = createComponent<{
+const embedBlock = createComponent<{
     content?: string;
     nodeVersion?: string;
     url?: string;
 }>({
-    componentId: 'runkitEmbed',
+    componentId: 'embed',
     initialState: (props, context) => {
         return {
             editable: context.editable,
@@ -92,5 +92,5 @@ const handleFetchEvent: FetchEventCallback<RuntimeContext> = async (request, con
 
 export default createIntegration({
     fetch: handleFetchEvent,
-    components: [runKitEmbedBlock],
+    components: [embedBlock],
 });
