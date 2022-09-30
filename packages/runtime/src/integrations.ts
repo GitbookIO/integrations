@@ -43,58 +43,65 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
             return new Response(`Unsupported version ${version}`, { status: 400 });
         }
 
-        const formData = await ev.request.formData();
+        try {
+            const formData = await ev.request.formData();
 
-        const event = JSON.parse(formData.get('event') as string) as Event;
-        const context = createContext(
-            JSON.parse(formData.get('environment') as string) as IntegrationEnvironment
-        );
+            const event = JSON.parse(formData.get('event') as string) as Event;
+            const context = createContext(
+                JSON.parse(formData.get('environment') as string) as IntegrationEnvironment
+            );
 
-        if (event.type === 'fetch' && definition.fetch) {
-            logger.info(`handling fetch event ${event.request.url}`);
+            if (event.type === 'fetch' && definition.fetch) {
+                logger.info(`handling ${event.request.method} ${event.request.url}`);
 
-            // Create a new Request that mimics the original Request
-            const request = new Request(event.request.url, {
-                method: event.request.method,
-                headers: new Headers(event.request.headers),
-            });
+                // Create a new Request that mimics the original Request
+                const request = new Request(event.request.url, {
+                    method: event.request.method,
+                    headers: new Headers(event.request.headers),
+                });
 
-            return definition.fetch(request, context);
-        }
-
-        if (event.type === 'ui_render') {
-            const component = components.find((c) => c.componentId === event.componentId);
-            if (!component) {
-                return new Response('Component not defined', { status: 404 });
+                return await definition.fetch(request, context);
             }
 
-            // @ts-ignore
-            const result = await component.render(event, context);
-            return new Response(JSON.stringify(result), {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-        }
+            if (event.type === 'ui_render') {
+                const component = components.find((c) => c.componentId === event.componentId);
 
-        const cb = events[event.type];
+                if (!component) {
+                    return new Response('Component not defined', { status: 404 });
+                }
 
-        if (cb) {
-            logger.info(`handling GitBook-generated event ${event.type}`);
-
-            if (Array.isArray(cb)) {
-                await Promise.all(cb.map((c) => c(event, context)));
-            } else {
-                await cb(event, context);
+                // @ts-ignore
+                const result = await component.render(event, context);
+                return new Response(JSON.stringify(result), {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
             }
 
-            // TODO: maybe the callback wants to return something
-            return new Response('OK', { status: 200 });
-        }
+            const cb = events[event.type];
 
-        return new Response(`Integration does not handle ${event.type} events`, {
-            status: 200,
-        });
+            if (cb) {
+                logger.info(`handling GitBook-generated event ${event.type}`);
+
+                if (Array.isArray(cb)) {
+                    await Promise.all(cb.map((c) => c(event, context)));
+                } else {
+                    await cb(event, context);
+                }
+
+                // TODO: maybe the callback wants to return something
+                return new Response('OK', { status: 200 });
+            }
+
+            logger.info(`integration does not handle ${event.type} events`);
+            return new Response(`Integration does not handle ${event.type} events`, {
+                status: 200,
+            });
+        } catch (err) {
+            logger.error(err.stack);
+            throw err;
+        }
     }
 
     addEventListener('fetch', (ev) => {

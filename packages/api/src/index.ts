@@ -1,4 +1,4 @@
-import { Api, HttpResponse } from './client';
+import { Api } from './client';
 
 export * from './client';
 
@@ -6,16 +6,6 @@ export const GITBOOK_DEFAULT_ENDPOINT = 'https://api.gitbook.com';
 
 interface GitBookAPIErrorResponse {
     error: { code: number; message: string };
-}
-
-class GitBookAPIError extends Error {
-    public statusCode: number;
-
-    constructor(public response: HttpResponse<GitBookAPIErrorResponse, GitBookAPIErrorResponse>) {
-        const errorData = response.data || response.error;
-        super(errorData.error.message || 'Unknown error');
-        this.statusCode = errorData.error.code;
-    }
 }
 
 /*
@@ -56,7 +46,7 @@ export class GitBookAPI extends Api<{
 
                 return {};
             },
-            customFetch: (input, init) => {
+            customFetch: async (input, init) => {
                 // The current GitBook API has hard-coded the credentials and referrerPolicy
                 // properties which are not supported by the version of fetch supported by CloudFlare.
                 // Remove those properties here, but a future version of the GitBook API should make
@@ -69,31 +59,33 @@ export class GitBookAPI extends Api<{
                     delete init.referrerPolicy;
                 }
 
-                return fetch(input, init);
+                const response = await fetch(input, init);
+
+                if (!response.ok) {
+                    let error: string = response.statusText;
+
+                    try {
+                        const body = (await response.json()) as GitBookAPIErrorResponse;
+                        error = body?.error?.message || error;
+                    } catch (err) {
+                        // if it's a browser error, also log the headers to see if it can give us more info
+                        response.headers.forEach((value, key) => {
+                            error += `${key}:${value} `;
+                        });
+
+                        // Ignore, just use the statusText as an error message
+                    }
+
+                    throw new Error(
+                        `GitBook API failed with [${response.status}] ${response.url}: ${error}`
+                    );
+                }
+
+                return response;
             },
         });
 
         this.endpoint = endpoint;
-
-        const request = this.request;
-        this.request = async (...args) => {
-            try {
-                const response = await request(...args);
-
-                if (!response.ok) {
-                    throw new GitBookAPIError(response);
-                }
-
-                return response;
-            } catch (error) {
-                if (error instanceof Error) {
-                    throw error;
-                }
-
-                throw new GitBookAPIError(error);
-            }
-        };
-
         this.setSecurityData({ authToken });
     }
 
