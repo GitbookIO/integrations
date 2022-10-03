@@ -13,6 +13,8 @@ import { getAPIClient } from './remote';
  */
 export async function publishIntegration(
     filePath: string,
+    // will be fixed once we update eslint and everything
+    // eslint-disable-next-line no-undef
     updates: Partial<api.RequestPublishIntegration> = {}
 ): Promise<void> {
     const manifest = await readIntegrationManifest(filePath);
