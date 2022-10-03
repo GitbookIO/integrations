@@ -1,7 +1,6 @@
 name: contentkit
 title: ContentKit
 description: Preview and dev tools for ContentKit.
-organization: gitbook
 visibility: public
 script: ./src/index.tsx
 scopes: []
@@ -10,6 +9,5 @@ blocks:
       title: ContentKit Preview
       description: Preview of a ContentKit element.
       markdown:
-        codeblock: contentkit
-        body: content
-
+          codeblock: contentkit
+          body: content

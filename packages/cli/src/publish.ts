@@ -2,6 +2,8 @@ import * as esbuild from 'esbuild';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import * as api from '@gitbook/api';
+
 import { readIntegrationManifest } from './manifest';
 import { getAPIClient } from './remote';
 
@@ -9,7 +11,10 @@ import { getAPIClient } from './remote';
  * Publish the integration to GitBook.
  * If it already exists, it'll update it.
  */
-export async function publishIntegration(filePath: string): Promise<void> {
+export async function publishIntegration(
+    filePath: string,
+    updates: Partial<api.RequestPublishIntegration> = {}
+): Promise<void> {
     const manifest = await readIntegrationManifest(filePath);
     const api = await getAPIClient(true);
 
@@ -38,6 +43,7 @@ export async function publishIntegration(filePath: string): Promise<void> {
             )
         ),
         script,
+        ...updates,
     });
 
     console.log(`Integration "${created.data.name}" published`);
