@@ -18,7 +18,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
     });
 
     /*
-     * List the channels the user can select in the configuration flow.
+     * List the pages that can be accessed by the integration.
      */
     router.get('/pages', async () => {
         const pages = await statuspageAPI<StatuspagePageObject[]>(context, {
