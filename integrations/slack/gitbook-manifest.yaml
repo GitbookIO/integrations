@@ -2,7 +2,6 @@ name: slack
 title: Slack
 icon: ./assets/icon.png
 description: Notify a channel or individual in Slack with real-time events from GitBook.
-organization: gitbook
 categories:
     - collaboration
 previewImages:

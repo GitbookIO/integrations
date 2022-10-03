@@ -56,6 +56,7 @@ jobs:
               env:
                   GITBOOK_TOKEN: ${{ secrets.GITBOOK_STAGING_API_TOKEN }}
                   GITBOOK_ENDPOINT: https://api.gitbook-staging.com
+                  GITBOOK_ORGANIZATION: gitbook
                   SLACK_CLIENT_ID: ${{ secrets.SLACK_STAGING_CLIENT_ID }}
                   SLACK_CLIENT_SECRET: ${{ secrets.SLACK_STAGING_CLIENT_SECRET }}
                   SLACK_SIGNING_SECRET: ${{ secrets.SLACK_STAGING_SIGNING_SECRET }}
@@ -66,6 +67,7 @@ jobs:
               env:
                   GITBOOK_TOKEN: ${{ secrets.GITBOOK_PROD_API_TOKEN }}
                   GITBOOK_ENDPOINT: https://api.gitbook.com
+                  GITBOOK_ORGANIZATION: gitbook
                   SLACK_CLIENT_ID: ${{ secrets.SLACK_PROD_CLIENT_ID }}
                   SLACK_CLIENT_SECRET: ${{ secrets.SLACK_PROD_CLIENT_SECRET }}
                   SLACK_SIGNING_SECRET: ${{ secrets.SLACK_PROD_SIGNING_SECRET }}

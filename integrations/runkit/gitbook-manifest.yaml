@@ -14,7 +14,6 @@ summary: |
     Adding RunKit notebooks in your documentation is simple - select the RunKit block from the [Command palette](https://docs.gitbook.com/tour/editor/blocks#command-palette) and insert your code snippet.
 
     Or paste the link to an existing RunKit notebook into the GitBook editor to embed it in your page.
-organization: gitbook
 visibility: public
 script: ./src/index.tsx
 scopes: []
