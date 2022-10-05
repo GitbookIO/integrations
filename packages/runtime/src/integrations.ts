@@ -37,6 +37,7 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
         return createCloudFlareIntegration(definition);
     }
 
+    logger.debug(`Using addEventListener workers over CloudFlare integration worker`);
     const { events = {}, components = [] } = definition;
 
     // @ts-ignore - `environment` is currently a global variable until we switch to Cloudflare Workers

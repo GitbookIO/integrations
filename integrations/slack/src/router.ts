@@ -5,7 +5,7 @@ import { createOAuthHandler, FetchEventCallback } from '@gitbook/runtime';
 import { createSlackEventsHandler } from './events';
 import { unfurlLink } from './links';
 import { acknowledgeSlackRequest, verifySlackRequest } from './middlewares';
-import { slackAPI } from './slack';
+import { getChannelsPaginated } from './slack';
 
 /**
  * Handle incoming HTTP requests:
@@ -52,18 +52,9 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
      * List the channels the user can select in the configuration flow.
      */
     router.get('/channels', async () => {
-        // TODO: list from all pages
-        const result = await slackAPI(context, {
-            method: 'GET',
-            path: 'conversations.list',
-            payload: {
-                limit: 1000,
-                exclude_archived: true,
-                types: 'public_channel,private_channel',
-            },
-        });
+        const channels = await getChannelsPaginated(context);
 
-        const completions = result?.channels.map((channel) => ({
+        const completions = channels.map((channel) => ({
             label: channel.name,
             value: channel.id,
         }));

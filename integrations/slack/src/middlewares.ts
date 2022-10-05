@@ -1,4 +1,3 @@
-import { Request } from 'itty-router';
 import { sha256 } from 'js-sha256';
 
 import { SlackRuntimeContext } from './configuration';
@@ -7,7 +6,10 @@ import { SlackRuntimeContext } from './configuration';
  * Verify the authenticity of a Slack request.
  * Reference - https://api.slack.com/authentication/verifying-requests-from-slack
  */
-export async function verifySlackRequest(req: Request, { environment }: SlackRuntimeContext) {
+export async function verifySlackRequest(request: Request, { environment }: SlackRuntimeContext) {
+    // Clone the request as to not use up the only read the body allows for future requests
+    const req = request.clone();
+
     // @ts-ignore
     const slackSignature = req.headers.get('x-slack-signature');
     // @ts-ignore

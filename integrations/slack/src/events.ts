@@ -9,7 +9,7 @@ export function createSlackEventsHandler(handlers: {
     [type: string]: (event: object, context: SlackRuntimeContext) => Promise<any>;
 }): FetchEventCallback {
     return async (request, context) => {
-        const event = await request.json();
+        const event = await request.json<{ event?: { type: string }; type?: string }>();
 
         if (!event.type) {
             return new Response(`Invalid event`, {
