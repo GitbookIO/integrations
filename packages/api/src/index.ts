@@ -80,7 +80,6 @@ export class GitBookAPI extends Api<{
                         `GitBook API failed with [${response.status}] ${response.url}: ${error}`
                     );
                 }
-
                 return response;
             },
         });

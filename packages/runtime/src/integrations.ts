@@ -40,6 +40,7 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
         const version = new URL(ev.request.url).pathname.slice(1);
 
         if (version !== 'v1') {
+            logger.error(`unsupported version ${version}`);
             return new Response(`Unsupported version ${version}`, { status: 400 });
         }
 
@@ -47,20 +48,28 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
             const formData = await ev.request.formData();
 
             const event = JSON.parse(formData.get('event') as string) as Event;
+            const fetchBody = formData.get('fetch-body');
             const context = createContext(
                 JSON.parse(formData.get('environment') as string) as IntegrationEnvironment
             );
 
             if (event.type === 'fetch' && definition.fetch) {
-                logger.info(`handling ${event.request.method} ${event.request.url}`);
+                logger.info(`handling fetch ${event.request.method} ${event.request.url}`);
 
                 // Create a new Request that mimics the original Request
                 const request = new Request(event.request.url, {
                     method: event.request.method,
                     headers: new Headers(event.request.headers),
+                    body: fetchBody,
                 });
 
-                return await definition.fetch(request, context);
+                const resp = await definition.fetch(request, context);
+                logger.debug(
+                    `response ${resp.status} ${resp.statusText} Content-Type: ${resp.headers.get(
+                        'content-type'
+                    )}`
+                );
+                return resp;
             }
 
             if (event.type === 'ui_render') {
