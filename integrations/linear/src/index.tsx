@@ -1,33 +1,28 @@
-import {
-    createIntegration,
-    createComponent,
-    createOAuthHandler,
-    RuntimeEnvironment,
-    RuntimeContext,
-} from '@gitbook/runtime';
-
-interface LinearInstallationConfiguration {
-    oauth_credentials?: {
-        access_token: string;
-    };
-}
-
-type LinearRuntimeEnvironment = RuntimeEnvironment<LinearInstallationConfiguration>;
-type LinearRuntimeContext = RuntimeContext<LinearRuntimeEnvironment>;
+import { createIntegration, createComponent, createOAuthHandler } from '@gitbook/runtime';
+import { extractLinearIssueIdFromLink, getLinearAPIClient } from './linear';
+import { LinearRuntimeContext } from './types';
 
 /**
  * Component to render the block when embeding a Linear issue URL.
  */
 const embedBlock = createComponent<{
     url?: string;
+    issueId?: string;
 }>({
     componentId: 'embed',
 
-    async action(element, action) {
+    async action(element, action, context) {
         switch (action.action) {
             case '@link.unfurl': {
                 const { url } = action;
-                // Extract the issue details
+                const issueId = extractLinearIssueIdFromLink(url);
+
+                return {
+                    props: {
+                        url,
+                        issueId,
+                    },
+                };
             }
         }
 
@@ -35,7 +30,37 @@ const embedBlock = createComponent<{
     },
 
     async render(element, context) {
-        return <block></block>;
+        const { environment } = context;
+        const { installation } = environment;
+
+        if (!installation) {
+            return;
+        }
+
+        const { issueId, url } = element.props;
+
+        const linearClient = await getLinearAPIClient(installation.configuration);
+        const { issue } = await linearClient.issue({ id: issueId });
+
+        return (
+            <block>
+                <card
+                    title={issue.title}
+                    onPress={{
+                        action: '@ui.url.open',
+                        url,
+                    }}
+                    icon={
+                        <image
+                            source={{
+                                url: context.environment.integration.urls.icon,
+                            }}
+                            aspectRatio={1}
+                        />
+                    }
+                />
+            </block>
+        );
     },
 });
 

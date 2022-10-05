@@ -1,0 +1,13 @@
+overwrite: true
+schema: 'https://raw.githubusercontent.com/linear/linear/master/packages/sdk/src/schema.graphql'
+documents:
+    - './src/linear/operations.graphql'
+hooks:
+    afterOneFileWrite:
+        - prettier --write
+generates:
+    src/linear/gql/graphql.ts:
+        plugins:
+            - typescript
+            - typescript-operations
+            - typescript-graphql-request
