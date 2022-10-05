@@ -15,7 +15,7 @@
         "@graphql-codegen/typescript-graphql-request": "^4.5.5"
     },
     "scripts": {
-        "generate:linear-types": "graphql-codegen --config linear.sdk.codegen.yml",
+        "build": "graphql-codegen --config linear.sdk.codegen.yml",
         "publish-integrations-staging": "gitbook publish ."
     }
 }
