@@ -8,9 +8,6 @@ interface GitBookAPIErrorResponse {
     error: { code: number; message: string };
 }
 
-// @ts-ignore
-const IS_CLOUDFLARE = typeof WebSocketPair !== 'undefined';
-
 /*
  * Export the auto-generated API client under the name 'GitBookAPI'
  * and export all API types.
@@ -54,11 +51,11 @@ export class GitBookAPI extends Api<{
                 // properties which are not supported by the version of fetch supported by CloudFlare.
                 // Remove those properties here, but a future version of the GitBook API should make
                 // this easier to configure.
-                if (IS_CLOUDFLARE && 'credentials' in init) {
+                if ('credentials' in init) {
                     delete init.credentials;
                 }
 
-                if (IS_CLOUDFLARE && 'referrerPolicy' in init) {
+                if ('referrerPolicy' in init) {
                     delete init.referrerPolicy;
                 }
 

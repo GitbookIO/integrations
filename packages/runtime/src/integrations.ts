@@ -31,59 +31,6 @@ interface IntegrationRuntimeDefinition<Context extends RuntimeContext = RuntimeC
 export function createIntegration<Context extends RuntimeContext = RuntimeContext>(
     definition: IntegrationRuntimeDefinition<Context>
 ) {
-    // WebSocketPair is a non-standard API that is only provided in CloudFlare workers. We check
-    // its presence to determine if we are inside a CloudFlare worker.
-    if (typeof WebSocketPair !== 'undefined') {
-        return createCloudFlareIntegration(definition);
-    }
-
-    logger.debug(`Using addEventListener workers over CloudFlare integration worker`);
-    const { events = {}, components = [] } = definition;
-
-    // @ts-ignore - `environment` is currently a global variable until we switch to Cloudflare Workers
-    const context = createContext(environment);
-
-    if (components.length > 0) {
-        // @ts-ignore
-        events.ui_render = async (event) => {
-            const component = components.find((c) => c.componentId === event.componentId);
-            if (!component) {
-                return;
-            }
-
-            // @ts-ignore
-            return component.render(event, context);
-        };
-    }
-
-    Object.entries(events).forEach(([type, callback]) => {
-        if (Array.isArray(callback)) {
-            callback.forEach((cb) =>
-                addEventListener(type, (event) => {
-                    return cb(event, context);
-                })
-            );
-        } else {
-            addEventListener(type, (event) => {
-                return callback(event, context);
-            });
-        }
-    });
-
-    if (definition.fetch) {
-        addEventListener('fetch', (event) => {
-            return definition.fetch(event.request, context);
-        });
-    }
-}
-
-/**
- * Create an integration for CloudFlare workers. Eventually this will become the default way
- * of creating integrations.
- */
-function createCloudFlareIntegration<Context extends RuntimeContext = RuntimeContext>(
-    definition: IntegrationRuntimeDefinition<Context>
-) {
     const { events = {}, components = [] } = definition;
 
     /**
@@ -127,6 +74,7 @@ function createCloudFlareIntegration<Context extends RuntimeContext = RuntimeCon
 
             if (event.type === 'ui_render') {
                 const component = components.find((c) => c.componentId === event.componentId);
+
                 if (!component) {
                     return new Response('Component not defined', { status: 404 });
                 }
