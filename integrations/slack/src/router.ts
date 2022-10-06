@@ -46,7 +46,18 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         })
     );
 
-    router.post('/events', acknowledgeSlackRequest);
+    router.post(
+        '/events',
+        verifySlackRequest,
+        createSlackEventsHandler(
+            {
+                url_verification: async (event: { challenge: string }) => {
+                    return { challenge: event.challenge };
+                },
+            },
+            acknowledgeSlackRequest
+        )
+    );
 
     /*
      * List the channels the user can select in the configuration flow.
@@ -73,9 +84,6 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         '/events_task',
         verifySlackRequest,
         createSlackEventsHandler({
-            url_verification: async (event) => {
-                return { challenge: event.challenge };
-            },
             link_shared: unfurlLink,
         })
     );
