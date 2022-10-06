@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import test from 'node:test';
+import test from 'test';
 
 import * as api from '@gitbook/api';
 

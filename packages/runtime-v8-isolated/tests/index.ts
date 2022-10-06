@@ -1,9 +1,0 @@
-import './console';
-import './addEventListener';
-import './environment';
-import './fetch';
-import './fetchevent';
-import './url';
-import './binary';
-import './text-encoding';
-import './base64';
