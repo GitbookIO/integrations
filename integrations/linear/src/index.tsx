@@ -41,11 +41,13 @@ const embedBlock = createComponent<{
 
         const linearClient = await getLinearAPIClient(installation.configuration);
         const { issue } = await linearClient.issue({ id: issueId });
+        const hint = `${issueId} • ${issue.state.name}`;
 
         return (
             <block>
                 <card
                     title={issue.title}
+                    hint={hint}
                     onPress={{
                         action: '@ui.url.open',
                         url,
@@ -58,8 +60,79 @@ const embedBlock = createComponent<{
                             aspectRatio={1}
                         />
                     }
-                />
+                    buttons={[
+                        <button
+                            icon="maximize"
+                            tooltip="Show preview"
+                            onPress={{
+                                action: '@ui.modal.open',
+                                componentId: 'previewModal',
+                                props: {
+                                    id: issueId,
+                                    title: issue.title,
+                                    description: issue.description,
+                                    state: issue.state.name,
+                                },
+                            }}
+                        />,
+                    ]}
+                >
+                    <vstack>
+                        <hstack>
+                            <divider />
+                            <box>
+                                <markdown
+                                    content={issue.description ?? 'No description provided.'}
+                                />
+                            </box>
+                            <divider />
+                        </hstack>
+                        <divider />
+                    </vstack>
+                </card>
             </block>
+        );
+    },
+});
+
+/**
+ * Component to render a preview of Linear issue when clicking maximize button.
+ */
+const previewModal = createComponent<{
+    id: string;
+    title: string;
+    description?: string;
+    state: string;
+}>({
+    componentId: 'previewModal',
+
+    async render(element, context) {
+        const { id, title, description, state } = element.props;
+
+        return (
+            <modal size="fullscreen">
+                <card
+                    title={title}
+                    icon={
+                        <image
+                            source={{
+                                url: context.environment.integration.urls.icon,
+                            }}
+                            aspectRatio={1}
+                        />
+                    }
+                >
+                    <vstack>
+                        <hstack>
+                            <divider />
+                            <box>
+                                <markdown content={description ?? 'No description provided.'} />
+                            </box>
+                            <divider />
+                        </hstack>
+                    </vstack>
+                </card>
+            </modal>
         );
     },
 });
@@ -76,5 +149,5 @@ export default createIntegration<LinearRuntimeContext>({
 
         return oauthHandler(request, context);
     },
-    components: [embedBlock],
+    components: [embedBlock, previewModal],
 });
