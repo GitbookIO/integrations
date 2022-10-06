@@ -1,0 +1,11 @@
+{
+    "name": "mailchimp",
+    "private": true,
+    "scripts": {
+        "publish-integrations-staging": "gitbook publish ."
+    },
+    "devDependencies": {
+        "@gitbook/cli": "^0.0.1",
+        "@gitbook/runtime": "latest"
+    }
+}
