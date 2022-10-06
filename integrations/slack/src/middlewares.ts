@@ -7,7 +7,6 @@ import { SlackRuntimeContext } from './configuration';
  * Reference - https://api.slack.com/authentication/verifying-requests-from-slack
  */
 export async function verifySlackRequest(request: Request, { environment }: SlackRuntimeContext) {
-    return
     // Clone the request as to not use up the only read the body allows for future requests
     const req = request.clone();
 
