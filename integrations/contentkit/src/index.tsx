@@ -1,10 +1,14 @@
-import { createIntegration, createComponent } from "@gitbook/runtime";
+import { createIntegration, createComponent } from '@gitbook/runtime';
 
-const previewBlock = createComponent<{
-    content: string;
-}, {
-    action: object
-}, object>({
+const previewBlock = createComponent<
+    {
+        content: string;
+    },
+    {
+        action: object;
+    },
+    object
+>({
     componentId: 'preview',
     initialState: {},
     async action(element, action) {
@@ -12,8 +16,8 @@ const previewBlock = createComponent<{
             ...element,
             state: {
                 action: JSON.stringify(action),
-            }
-        }
+            },
+        };
     },
     async render({ props, state }) {
         const { content } = props;
@@ -26,7 +30,7 @@ const previewBlock = createComponent<{
                         <text>No content</text>
                     </box>
                 </block>
-            )
+            );
         }
 
         const parsed = JSON.parse(content);
@@ -40,16 +44,16 @@ const previewBlock = createComponent<{
                             </box>
                             <divider />
                             <spacer />
-                            <box>
-                                {parsed}
-                            </box>
+                            <box>{parsed}</box>
                             <spacer />
                         </hstack>
                         {action ? (
                             <>
                                 <divider />
                                 <box>
-                                    <box><text>action dispatched:</text></box>
+                                    <box>
+                                        <text>action dispatched:</text>
+                                    </box>
                                     <codeblock content={action} syntax="javascript" />
                                 </box>
                             </>
@@ -58,10 +62,9 @@ const previewBlock = createComponent<{
                 </box>
             </block>
         );
-    }
-})
-
+    },
+});
 
 export default createIntegration({
-    components: [previewBlock]
+    components: [previewBlock],
 });
