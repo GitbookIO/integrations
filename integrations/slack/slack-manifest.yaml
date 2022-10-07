@@ -47,7 +47,7 @@ oauth_config:
 settings:
     event_subscriptions:
         # UPDATE url here to match your env
-        request_url: https://integrations.gitbook.com/v1/integrations/slack/integration/events_task
+        request_url: https://integrations.gitbook.com/v1/integrations/slack/integration/events
         bot_events:
             - link_shared
     interactivity:
