@@ -2,6 +2,8 @@ import * as esbuild from 'esbuild';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import * as api from '@gitbook/api';
+
 import { readIntegrationManifest } from './manifest';
 import { getAPIClient } from './remote';
 
@@ -9,7 +11,12 @@ import { getAPIClient } from './remote';
  * Publish the integration to GitBook.
  * If it already exists, it'll update it.
  */
-export async function publishIntegration(filePath: string): Promise<void> {
+export async function publishIntegration(
+    filePath: string,
+    // will be fixed once we update eslint and everything
+    // eslint-disable-next-line no-undef
+    updates: Partial<api.RequestPublishIntegration> = {}
+): Promise<void> {
     const manifest = await readIntegrationManifest(filePath);
     const api = await getAPIClient(true);
 
@@ -26,6 +33,7 @@ export async function publishIntegration(filePath: string): Promise<void> {
         summary: manifest.summary,
         scopes: manifest.scopes,
         categories: manifest.categories,
+        blocks: manifest.blocks,
         configurations: manifest.configurations,
         secrets: manifest.secrets,
         visibility: manifest.visibility,
@@ -38,10 +46,21 @@ export async function publishIntegration(filePath: string): Promise<void> {
         ),
         contentSecurityPolicy: manifest.contentSecurityPolicy,
         script,
+        ...updates,
     });
 
     console.log(`Integration "${created.data.name}" published`);
     console.log(`👉 ${created.data.urls.app}`);
+}
+
+/**
+ * Delete an integration
+ */
+export async function unpublishIntegration(name: string): Promise<void> {
+    const api = await getAPIClient(true);
+    await api.integrations.unpublishIntegration(name);
+
+    console.log(`👌 Integration "${name}" has been deleted`);
 }
 
 /**
@@ -58,6 +77,9 @@ async function buildScript(filePath: string): Promise<string> {
         mainFields: ['worker', 'browser', 'module', 'jsnext', 'main'],
         conditions: ['worker', 'browser', 'import', 'production'],
         define: {},
+        // Automatically handle JSX using the ContentKit runtime
+        jsx: 'automatic',
+        jsxImportSource: '@gitbook/runtime',
         // TODO: change format when we switch to Cloudflare Workers
         // but until them, we need to use "iife" to be able to use
         // the export syntax while running like an entry point.

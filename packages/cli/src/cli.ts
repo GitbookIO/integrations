@@ -9,7 +9,7 @@ import { GITBOOK_DEFAULT_ENDPOINT } from '@gitbook/api';
 import packageJSON from '../package.json';
 import { promptNewIntegration } from './init';
 import { DEFAULT_MANIFEST_FILE, resolveIntegrationManifestPath } from './manifest';
-import { publishIntegration } from './publish';
+import { publishIntegration, unpublishIntegration } from './publish';
 import { authenticate, whoami } from './remote';
 
 program
@@ -55,11 +55,36 @@ program
 program
     .command('publish')
     .argument('[file]', 'integration definition file', DEFAULT_MANIFEST_FILE)
+    .option(
+        '-o, --organization <organization>',
+        'organization to publish to',
+        process.env.GITBOOK_ORGANIZATION
+    )
     .description('publish a new version of the integration')
     .action(async (filePath, options) => {
         await publishIntegration(
-            await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath))
+            await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath)),
+            {
+                ...(options.organization ? { organization: options.organization } : {}),
+            }
         );
+    });
+
+program
+    .command('unpublish')
+    .argument('[integration]', 'Name of the integration to unpublish')
+    .description('unpublish an integration')
+    .action(async (name, options) => {
+        const response = await prompts({
+            type: 'confirm',
+            name: 'confirm',
+            message: `Are you sure you want to unpublish the integration "${name}"?\nIt cannot be undone, it will be removed from the marketplace, and from all installed accounts.`,
+            initial: false,
+        });
+
+        if (response.confirm) {
+            await unpublishIntegration(name);
+        }
     });
 
 program.parseAsync().then(

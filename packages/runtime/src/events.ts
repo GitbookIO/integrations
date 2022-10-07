@@ -39,7 +39,7 @@ export type EventCallbackMap<Context extends RuntimeContext = RuntimeContext> = 
  * Callback for fetch events.
  */
 export type FetchEventCallback<Context extends RuntimeContext = RuntimeContext> = RuntimeCallback<
-    [FetchEvent],
+    [Request],
     Response | Promise<Response>,
     Context
 >;

@@ -1,0 +1,27 @@
+name: runkit
+title: RunKit
+icon: ./assets/icon.png
+description: Embed interactive Node.js notebooks in your documentation.
+summary: |
+    # Overview
+
+    RunKit notebooks are interactive JavaScript playgrounds connected to a complete Node environment right in your browser. Every npm module pre-installed.
+
+    They make it easy for your users to run sample code right from your documentation.
+
+    # How it works
+
+    Adding RunKit notebooks in your documentation is simple - select the RunKit block from the [Command palette](https://docs.gitbook.com/tour/editor/blocks#command-palette) and insert your code snippet.
+
+    Or paste the link to an existing RunKit notebook into the GitBook editor to embed it in your page.
+visibility: public
+script: ./src/index.tsx
+scopes: []
+blocks:
+    - id: embed
+      title: RunKit
+      markdown:
+          codeblock: runkit
+          body: content
+      urlUnfurl:
+          - https://runkit.com/

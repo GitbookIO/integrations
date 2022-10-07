@@ -1,0 +1,18 @@
+{
+    "name": "@gitbook/integration-runkit",
+    "version": "0.0.0",
+    "private": true,
+    "dependencies": {
+        "itty-router": "^2.6.1",
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "*",
+        "esbuild": "^0.15.7"
+    },
+    "scripts": {
+        "build": "node -r esbuild-register ./webframe/scripts/build.ts",
+        "publish-integrations-staging": "gitbook publish ."
+    }
+}

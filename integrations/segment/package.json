@@ -1,17 +1,20 @@
 {
-  "name": "@gitbook/integration-segment",
-  "version": "0.0.0",
-  "private": true,
-  "dependencies": {
-    "@gitbook/api": "*",
-    "@gitbook/runtime": "*"
-  },
-  "devDependencies": {
-    "@gitbook/cli": "*"
-  },
-  "scripts": {
-    "lint": "eslint ./src/**/*.ts",
-    "publish-integrations": "gitbook publish .",
-    "test": "node -r esbuild-register ./tests/index.ts"
-  }
+    "name": "@gitbook/integration-segment",
+    "version": "0.0.0",
+    "private": true,
+    "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "*",
+        "test": "^3.2.1",
+        "assert": "^2.0.0"
+    },
+    "scripts": {
+        "lint": "eslint ./src/**/*.ts",
+        "publish-integrations": "gitbook publish .",
+        "publish-integrations-staging": "gitbook publish .",
+        "test": "node -r esbuild-register ./tests/index.ts"
+    }
 }

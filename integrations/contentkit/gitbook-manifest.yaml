@@ -1,0 +1,13 @@
+name: contentkit
+title: ContentKit
+description: Preview and dev tools for ContentKit.
+visibility: public
+script: ./src/index.tsx
+scopes: []
+blocks:
+    - id: preview
+      title: ContentKit Preview
+      description: Preview of a ContentKit element.
+      markdown:
+          codeblock: contentkit
+          body: content

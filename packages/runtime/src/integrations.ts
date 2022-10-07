@@ -1,5 +1,11 @@
+import { Event, IntegrationEnvironment } from '@gitbook/api';
+
+import { ComponentDefinition } from './components';
 import { createContext, RuntimeContext } from './context';
 import { EventCallbackMap, FetchEventCallback } from './events';
+import { Logger } from './logger';
+
+const logger = Logger('integrations');
 
 interface IntegrationRuntimeDefinition<Context extends RuntimeContext = RuntimeContext> {
     /**
@@ -12,6 +18,11 @@ interface IntegrationRuntimeDefinition<Context extends RuntimeContext = RuntimeC
      * Handler for GitBook events.
      */
     events?: EventCallbackMap<Context>;
+
+    /**
+     * Components to expose in the integration.
+     */
+    components?: Array<ComponentDefinition<Context>>;
 }
 
 /**
@@ -20,31 +31,89 @@ interface IntegrationRuntimeDefinition<Context extends RuntimeContext = RuntimeC
 export function createIntegration<Context extends RuntimeContext = RuntimeContext>(
     definition: IntegrationRuntimeDefinition<Context>
 ) {
-    // TODO: adapt the implementation to the new runtime (Cloudflare Workers)
-    // where we will listen to an incoming HTTP request and parse it.
+    const { events = {}, components = [] } = definition;
 
-    const { events = {} } = definition;
+    /**
+     * Handle a fetch event sent by the integration dispatcher.
+     */
+    async function handleWorkerDispatchEvent(ev: FetchEvent): Promise<Response> {
+        const version = new URL(ev.request.url).pathname.slice(1);
 
-    // @ts-ignore - `environment` is currently a global variable until we switch to Cloudflare Workers
-    const context = createContext(environment);
-
-    Object.entries(events).forEach(([type, callback]) => {
-        if (Array.isArray(callback)) {
-            callback.forEach((cb) =>
-                addEventListener(type, (event) => {
-                    return cb(event, context);
-                })
-            );
-        } else {
-            addEventListener(type, (event) => {
-                return callback(event, context);
-            });
+        if (version !== 'v1') {
+            logger.error(`unsupported version ${version}`);
+            return new Response(`Unsupported version ${version}`, { status: 400 });
         }
-    });
 
-    if (definition.fetch) {
-        addEventListener('fetch', (event) => {
-            return definition.fetch(event, context);
-        });
+        try {
+            const formData = await ev.request.formData();
+
+            const event = JSON.parse(formData.get('event') as string) as Event;
+            const fetchBody = formData.get('fetch-body');
+            const context = createContext(
+                JSON.parse(formData.get('environment') as string) as IntegrationEnvironment
+            );
+
+            if (event.type === 'fetch' && definition.fetch) {
+                logger.info(`handling fetch ${event.request.method} ${event.request.url}`);
+
+                // Create a new Request that mimics the original Request
+                const request = new Request(event.request.url, {
+                    method: event.request.method,
+                    headers: new Headers(event.request.headers),
+                    body: fetchBody,
+                });
+
+                const resp = await definition.fetch(request, context);
+                logger.debug(
+                    `response ${resp.status} ${resp.statusText} Content-Type: ${resp.headers.get(
+                        'content-type'
+                    )}`
+                );
+                return resp;
+            }
+
+            if (event.type === 'ui_render') {
+                const component = components.find((c) => c.componentId === event.componentId);
+
+                if (!component) {
+                    return new Response('Component not defined', { status: 404 });
+                }
+
+                // @ts-ignore
+                const result = await component.render(event, context);
+                return new Response(JSON.stringify(result), {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+            }
+
+            const cb = events[event.type];
+
+            if (cb) {
+                logger.info(`handling GitBook-generated event ${event.type}`);
+
+                if (Array.isArray(cb)) {
+                    await Promise.all(cb.map((c) => c(event, context)));
+                } else {
+                    await cb(event, context);
+                }
+
+                // TODO: maybe the callback wants to return something
+                return new Response('OK', { status: 200 });
+            }
+
+            logger.info(`integration does not handle ${event.type} events`);
+            return new Response(`Integration does not handle ${event.type} events`, {
+                status: 200,
+            });
+        } catch (err) {
+            logger.error(err.stack);
+            throw err;
+        }
     }
+
+    addEventListener('fetch', (ev) => {
+        ev.respondWith(handleWorkerDispatchEvent(ev));
+    });
 }

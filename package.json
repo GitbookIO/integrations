@@ -13,13 +13,17 @@
         "publish": "turbo run publish",
         "typecheck": "turbo run typecheck",
         "publish-integrations": "turbo run publish-integrations",
+        "publish-integrations-staging": "turbo run publish-integrations-staging",
         "version-packages": "changeset version",
         "changeset": "changeset",
         "release": "turbo run build && changeset publish"
     },
     "devDependencies": {
-        "@types/node": "^18.7.18",
         "@cloudflare/workers-types": "^3.16.0",
+        "@types/node": "^18.7.18",
+        "assert": "^2.0.0",
+        "esbuild-register": "^3.3.3",
+        "test": "^3.2.1",
         "turbo": "latest"
     },
     "engines": {

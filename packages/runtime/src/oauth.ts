@@ -1,8 +1,14 @@
-import { FetchEvent, RequestUpdateIntegrationInstallation } from '@gitbook/api';
+import { RequestUpdateIntegrationInstallation } from '@gitbook/api';
 
 import { RuntimeCallback } from './context';
+import { Logger } from './logger';
 
 export interface OAuthConfig {
+    /**
+     * Redirect URL to use. When the OAuth identity provider only accept a static one.
+     */
+    redirectURL?: string;
+
     /**
      * ID of the client application in the OAuth provider.
      */
@@ -31,6 +37,8 @@ export interface OAuthConfig {
     ) => RequestUpdateIntegrationInstallation | Promise<RequestUpdateIntegrationInstallation>;
 }
 
+const logger = Logger('oauth');
+
 /**
  * Create a fetch request handler to handle an OAuth authentication flow.
  * The credentials are stored in the installation configuration as `installationCredentialsKey`.
@@ -39,7 +47,7 @@ export interface OAuthConfig {
  */
 export function createOAuthHandler(
     config: OAuthConfig
-): RuntimeCallback<[FetchEvent | Request], Promise<Response>> {
+): RuntimeCallback<[Request], Promise<Response>> {
     const {
         extractCredentials = (response) => ({
             configuration: {
@@ -48,13 +56,16 @@ export function createOAuthHandler(
         }),
     } = config;
 
-    return async (event, { api, environment }) => {
-        const request = event.request ? event.request : event;
+    return async (request, { api, environment }) => {
         const url = new URL(request.url);
         const code = url.searchParams.get('code');
 
-        const redirectUri = new URL(request.url);
-        redirectUri.search = '';
+        let redirectUri = config.redirectURL;
+        if (!redirectUri) {
+            const redirectUriObj = new URL(request.url);
+            redirectUriObj.search = '';
+            redirectUri = redirectUriObj.toString();
+        }
 
         //
         // Redirect to authorization
@@ -62,9 +73,11 @@ export function createOAuthHandler(
         if (!code) {
             const redirectTo = new URL(config.authorizeURL);
             redirectTo.searchParams.set('client_id', config.clientId);
-            redirectTo.searchParams.set('redirect_uri', redirectUri.toString());
+            redirectTo.searchParams.set('redirect_uri', redirectUri);
             redirectTo.searchParams.set('response_type', 'code');
+            redirectTo.searchParams.set('state', environment.installation.id);
 
+            logger.debug(`handle oauth redirect to ${redirectTo.toString()}`);
             return Response.redirect(redirectTo.toString());
         }
 
@@ -72,14 +85,16 @@ export function createOAuthHandler(
         // Exchange the code for an access token
         //
         else {
-            const code = url.searchParams.get('code');
+            const installationId = url.searchParams.get('state');
 
             const params = new URLSearchParams();
             params.set('client_id', config.clientId);
             params.set('client_secret', config.clientSecret);
             params.set('code', code);
-            params.set('redirect_uri', redirectUri.toString());
+            params.set('redirect_uri', redirectUri);
             params.set('grant_type', 'authorization_code');
+
+            logger.debug(`handle oauth access token exchange: ${config.accessTokenURL}`);
 
             const response = await fetch(config.accessTokenURL, {
                 method: 'POST',
@@ -89,17 +104,33 @@ export function createOAuthHandler(
                 body: params.toString(),
             });
 
+            logger.debug(`received oauth response ${response.status}: ${response.statusText}`);
+
             if (!response.ok) {
                 throw new Error('Failed to exchange code for access token');
             }
+
             const json = await response.json();
 
+            if (!json.ok) {
+                throw new Error(`Failed to exchange code for access token ${JSON.stringify(json)}`);
+            }
+
             // Store the credentials in the installation configuration
-            await api.integrations.updateIntegrationInstallation(
-                environment.integration.name,
-                environment.installation.id,
-                await extractCredentials(json)
-            );
+            const credentials = await extractCredentials(json);
+
+            logger.debug(`exchange code for credentials`, credentials);
+
+            try {
+                await api.integrations.updateIntegrationInstallation(
+                    environment.integration.name,
+                    installationId,
+                    credentials
+                );
+            } catch (err) {
+                logger.error(err.stack);
+                throw err;
+            }
 
             return new Response(
                 `
