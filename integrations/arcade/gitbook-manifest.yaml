@@ -1,0 +1,15 @@
+name: arcade
+title: Arcade
+icon: ./assets/icon.png
+description: Embed interactive product demos and turn all users into power users.
+visibility: public
+script: ./src/index.tsx
+summary: |
+    # Overview
+scopes: []
+blocks:
+    - id: embed
+      title: Arcade
+      description: Interactive product demo
+      urlUnfurl:
+          - https://app.arcade.software/flows/

@@ -1,0 +1,15 @@
+{
+    "name": "@gitbook/integration-arcade",
+    "version": "0.0.0",
+    "private": true,
+    "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "*"
+    },
+    "scripts": {
+        "publish-integrations-staging": "gitbook publish ."
+    }
+}
