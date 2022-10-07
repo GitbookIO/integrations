@@ -55,10 +55,18 @@ program
 program
     .command('publish')
     .argument('[file]', 'integration definition file', DEFAULT_MANIFEST_FILE)
+    .option(
+        '-o, --organization <organization>',
+        'organization to publish to',
+        process.env.GITBOOK_ORGANIZATION
+    )
     .description('publish a new version of the integration')
     .action(async (filePath, options) => {
         await publishIntegration(
-            await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath))
+            await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath)),
+            {
+                ...(options.organization ? { organization: options.organization } : {}),
+            }
         );
     });
 

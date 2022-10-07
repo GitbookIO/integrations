@@ -5,11 +5,15 @@ import { SlackRuntimeContext } from './configuration';
 /**
  * Handle an event from Slack.
  */
-export function createSlackEventsHandler(handlers: {
-    [type: string]: (event: object, context: SlackRuntimeContext) => Promise<any>;
-}): FetchEventCallback {
+export function createSlackEventsHandler(
+    handlers: {
+        [type: string]: (event: object, context: SlackRuntimeContext) => Promise<any>;
+    },
+    fallback?: FetchEventCallback
+): FetchEventCallback {
     return async (request, context) => {
-        const event = await request.json();
+        // Clone the request so its body is still available to the fallback
+        const event = await request.clone().json<{ event?: { type: string }; type?: string }>();
 
         if (!event.type) {
             return new Response(`Invalid event`, {
@@ -18,8 +22,13 @@ export function createSlackEventsHandler(handlers: {
         }
 
         const eventType = event.event?.type || event.type;
+        // Find the handle for the event type, or use the fallback if that's missing
         const handler = handlers[eventType];
         if (!handler) {
+            if (fallback) {
+                return fallback(request, context);
+            }
+
             return new Response(`No handler for event type "${eventType}"`, {
                 status: 404,
             });

@@ -7,5 +7,8 @@ export const Logger = (namespace: string) => {
         debug: (message: string, ...args: any) => {
             console.debug(`[${namespace}] ${message}`, ...args);
         },
+        error: (message: string, ...args: any) => {
+            console.error(`[${namespace}] ${message}`, ...args);
+        },
     };
 };
