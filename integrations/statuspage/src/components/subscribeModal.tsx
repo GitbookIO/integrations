@@ -1,11 +1,12 @@
 import { createComponent } from '@gitbook/runtime';
-import { statuspageAPI, StatuspageComponentObject } from '../api';
+import { statuspageAPI, StatuspageComponentObject, StatuspagePageObject } from '../api';
 import { StatuspageRuntimeContext } from '../configuration';
 
 export const subscribeModal = createComponent<
     {},
     {
         email: string;
+        components: string[];
     },
     void,
     StatuspageRuntimeContext
@@ -13,13 +14,20 @@ export const subscribeModal = createComponent<
     componentId: 'subscribeModal',
     initialState: {
         email: '',
+        components: ['all'],
     },
     async render(element, context) {
         const { page_id } = context.environment.spaceInstallation?.configuration || {};
-        const components = await statuspageAPI<StatuspageComponentObject[]>(context, {
-            method: 'GET',
-            path: `pages/${page_id}/components`,
-        });
+        const [components, page] = await Promise.all([
+            statuspageAPI<StatuspageComponentObject[]>(context, {
+                method: 'GET',
+                path: `pages/${page_id}/components`,
+            }),
+            statuspageAPI<StatuspagePageObject>(context, {
+                method: 'GET',
+                path: `pages/${page_id}`,
+            }),
+        ]);
 
         return (
             <modal
@@ -36,17 +44,22 @@ export const subscribeModal = createComponent<
                 }
             >
                 <text>
-                    Enter your email address to receive updates about updates in the status page.
+                    Get email notifications whenever {page.name} creates, updates or resolves an
+                    incident.
                 </text>
-                <divider />
                 <input
-                    label="Email"
+                    label="Email address"
                     hint="You'll receive a confirmation email."
                     element={
                         <textinput label="Email" state="email" placeholder="name@domain.com" />
                     }
                 />
                 <divider />
+                <input
+                    label="All components"
+                    hint="Subscribe to incidents in all components."
+                    element={<checkbox state="components" value="all" />}
+                />
                 {components.map((component) => (
                     <input
                         label={component.name}

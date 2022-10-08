@@ -7,7 +7,9 @@ import {
 
 import { RuntimeCallback, RuntimeContext } from './context';
 
-type PlainObject = { [key: string]: number | string | boolean | PlainObject | undefined | null };
+type PlainValue = string | number | boolean | null | undefined | PlainObject | PlainArray;
+type PlainArray = PlainValue[];
+type PlainObject = { [key: string]: PlainValue };
 
 export interface ComponentInstance<Props extends PlainObject, State extends PlainObject> {
     props: Props;

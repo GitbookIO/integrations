@@ -25,6 +25,11 @@ export async function statuspageAPI<Response>(
         path: string;
         payload?: { [key: string]: any };
     },
+    cache: {
+        ttl: number;
+    } = {
+        ttl: 3600
+    }
 ): Promise<Response> {
     const { environment } = context;
 
@@ -56,6 +61,10 @@ export async function statuspageAPI<Response>(
         method: request.method,
         body,
         headers,
+        cf: request.method === 'GET' ? {
+            cacheTtl: cache.ttl,
+            cacheEverything: true,
+        } : undefined,
     });
 
     if (!response.ok) {
