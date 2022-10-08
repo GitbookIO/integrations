@@ -10,6 +10,7 @@ export interface StatuspagePageObject {
 export interface StatuspageComponentObject {
     id: string;
     name: string;
+    description: string;
     updated_at: string;
     status: "operational" | "under_maintenance"|  "degraded_performance"|  "partial_outage" | "major_outage" | ""
 }

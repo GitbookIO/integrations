@@ -29,57 +29,31 @@ export const subscribeModal = createComponent<
                         onPress={{
                             action: 'subscribe',
                             email: element.dynamicState('email'),
+                            components: element.dynamicState('components'),
                         }}
                         label="Subscribe"
                     />
                 }
             >
-                <vstack>
-                    <box>
-                        <text>
-                            Enter your email address to receive updates about updates in the status
-                            page.
-                        </text>
-                    </box>
-                    <divider />
-                    <box>
-                        <input
-                            label="Email"
-                            hint="You'll receive a confirmation email."
-                            element={
-                                <textinput
-                                    label="Email"
-                                    state="email"
-                                    placeholder="name@domain.com"
-                                />
-                            }
-                        />
-                    </box>
-                    <divider />
-                    <box>
-                        <input
-                            label="Components"
-                            hint="Select the components you want to receive notifications about."
-                            element={
-                                <select
-                                    state="components"
-                                    multiple
-                                    initialValue={['']}
-                                    options={[
-                                        {
-                                            id: '',
-                                            label: 'All components',
-                                        },
-                                        ...components.map((component) => ({
-                                            id: component.id,
-                                            label: component.name,
-                                        })),
-                                    ]}
-                                />
-                            }
-                        />
-                    </box>
-                </vstack>
+                <text>
+                    Enter your email address to receive updates about updates in the status page.
+                </text>
+                <divider />
+                <input
+                    label="Email"
+                    hint="You'll receive a confirmation email."
+                    element={
+                        <textinput label="Email" state="email" placeholder="name@domain.com" />
+                    }
+                />
+                <divider />
+                {components.map((component) => (
+                    <input
+                        label={component.name}
+                        hint={components.description}
+                        element={<checkbox state="components" value={component.id} />}
+                    />
+                ))}
             </modal>
         );
     },

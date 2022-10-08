@@ -31,34 +31,30 @@ export const pageBlock = createComponent<{}, {}, void, StatuspageRuntimeContext>
             (component) => component.status !== 'operational'
         );
 
-        if (!degradedComponent) {
-            return (
-                <block>
-                    <card
-                        title="All Systems Operational"
-                        onPress={{
-                            action: '@ui.modal.open',
-                            componentId: pageOverviewModal.componentId,
-                            props: {},
-                        }}
-                        buttons={[
-                            <button
-                                label="Subscribe"
-                                onPress={{
-                                    action: '@ui.modal.open',
-                                    componentId: subscribeModal.componentId,
-                                    props: {},
-                                }}
-                            />,
-                        ]}
-                    />
-                </block>
-            );
-        }
-
         return (
             <block>
-                <card title={getTitleForStatus(degradedComponent.status)} />
+                <card
+                    title={
+                        degradedComponent
+                            ? getTitleForStatus(degradedComponent.status)
+                            : 'All Systems Operational'
+                    }
+                    onPress={{
+                        action: '@ui.modal.open',
+                        componentId: pageOverviewModal.componentId,
+                        props: {},
+                    }}
+                    buttons={[
+                        <button
+                            label="Subscribe"
+                            onPress={{
+                                action: '@ui.modal.open',
+                                componentId: subscribeModal.componentId,
+                                props: {},
+                            }}
+                        />,
+                    ]}
+                />
             </block>
         );
     },

@@ -14,13 +14,13 @@ export const pageOverviewModal = createComponent<{}, {}, void, StatuspageRuntime
 
         return (
             <modal title="Status overview">
-                <vstack>
-                    {components.map((component) => (
-                        <box>
-                            <card title={component.name} />
+                {components.map((component) => (
+                    <hstack>
+                        <box grow={1}>
+                            <text>{component.name}</text>
                         </box>
-                    ))}
-                </vstack>
+                    </hstack>
+                ))}
             </modal>
         );
     },
