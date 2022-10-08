@@ -5,16 +5,47 @@ import { StatuspageRuntimeContext } from '../configuration';
 export const subscribeModal = createComponent<
     {},
     {
+        subscribed: boolean;
         email: string;
         components: string[];
     },
-    void,
+    {
+        action: 'subscribe';
+    },
     StatuspageRuntimeContext
 >({
     componentId: 'subscribeModal',
     initialState: {
+        subscribed: false,
         email: '',
         components: ['all'],
+    },
+    async action(element, action, context) {
+        const { page_id } = context.environment.spaceInstallation?.configuration || {};
+
+        switch (action.action) {
+            case 'subscribe': {
+                await statuspageAPI<StatuspageComponentObject[]>(context, {
+                    method: 'POST',
+                    path: `pages/${page_id}/subscribers`,
+                    payload: {
+                        subscriber: {
+                            email: element.state.email,
+                            ...(element.state.components.length === 1 &&
+                            element.state.components[0] === 'all'
+                                ? {}
+                                : {
+                                      component_ids: element.state.components,
+                                  }),
+                        },
+                    },
+                });
+
+                return { state: { subscribed: true, email: '', components: [] } };
+            }
+        }
+
+        return {};
     },
     async render(element, context) {
         const { page_id } = context.environment.spaceInstallation?.configuration || {};
@@ -29,6 +60,17 @@ export const subscribeModal = createComponent<
             }),
         ]);
 
+        if (element.state.subscribed) {
+            return (
+                <modal title="Subscribed!">
+                    <text>
+                        You are now subscribed to {page.name}. Check your emails to follow the
+                        confirmation link.
+                    </text>
+                </modal>
+            );
+        }
+
         return (
             <modal
                 title="Subscribe to updates"
@@ -36,8 +78,6 @@ export const subscribeModal = createComponent<
                     <button
                         onPress={{
                             action: 'subscribe',
-                            email: element.dynamicState('email'),
-                            components: element.dynamicState('components'),
                         }}
                         label="Subscribe"
                     />
