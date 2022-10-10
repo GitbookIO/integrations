@@ -4,5 +4,8 @@
     "private": true,
     "dependencies": {
         "@types/node": "^17.0.33"
+    },
+    "devDependencies": {
+        "@cloudflare/workers-types": "^3.16.0"
     }
 }
