@@ -36,6 +36,12 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
                 'https://slack.com/oauth/v2/authorize?scope=chat:write%20channels:join%20channels:read%20%20groups:read%20links:read%20links:write%20commands',
             accessTokenURL: 'https://slack.com/api/oauth.v2.access',
             extractCredentials: (response) => {
+                if (!response.ok) {
+                    throw new Error(
+                        `Failed to exchange code for access token ${JSON.stringify(response)}`
+                    );
+                }
+
                 return {
                     externalIds: [response.team.id],
                     configuration: {

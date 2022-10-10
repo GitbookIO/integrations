@@ -25,4 +25,14 @@ blocks:
       description: Let users subscribe to a Mailchimp mailing list
       urlUnfurl:
           - https://www.figma.com/file/
-configurations: {}
+configurations:
+    account:
+        properties:
+            oauth_credentials:
+                type: button
+                title: Connection
+                description: Authorization between Mailchimp and GitBook.
+                button_text: Authorize
+                callback_url: /oauth
+        required:
+            - oauth_credentials

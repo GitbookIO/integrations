@@ -48,13 +48,7 @@ const logger = Logger('oauth');
 export function createOAuthHandler(
     config: OAuthConfig
 ): RuntimeCallback<[Request], Promise<Response>> {
-    const {
-        extractCredentials = (response) => ({
-            configuration: {
-                oauth_credentials: { access_token: response.access_token },
-            },
-        }),
-    } = config;
+    const { extractCredentials = defaultExtractCredentials } = config;
 
     return async (request, { api, environment }) => {
         const url = new URL(request.url);
@@ -112,10 +106,6 @@ export function createOAuthHandler(
 
             const json = await response.json();
 
-            if (!json.ok) {
-                throw new Error(`Failed to exchange code for access token ${JSON.stringify(json)}`);
-            }
-
             // Store the credentials in the installation configuration
             const credentials = await extractCredentials(json);
 
@@ -146,5 +136,19 @@ export function createOAuthHandler(
                 }
             );
         }
+    };
+}
+
+function defaultExtractCredentials(response: object): RequestUpdateIntegrationInstallation {
+    if (!response.access_token) {
+        throw new Error(
+            `Could not extract access_token from response ${JSON.stringify(response, null, 4)}`
+        );
+    }
+
+    return {
+        configuration: {
+            oauth_credentials: { access_token: response.access_token },
+        },
     };
 }
