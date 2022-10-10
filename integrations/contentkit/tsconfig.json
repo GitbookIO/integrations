@@ -1,6 +1,3 @@
 {
-    "compilerOptions": {
-        "jsx": "preserve"
-    },
     "extends": "@gitbook/tsconfig/integration.json"
 }
