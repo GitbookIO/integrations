@@ -84,12 +84,12 @@ export const subscribeModal = createComponent<
                 }
             >
                 <text>
-                    Get email notifications whenever {page.name} creates, updates or resolves an
+                    Get email notifications whenever {page.name} <text style="bold">creates</text>,{' '}
+                    <text style="bold">updates</text> or <text style="bold">resolves</text> an
                     incident.
                 </text>
                 <input
                     label="Email address"
-                    hint="You'll receive a confirmation email."
                     element={
                         <textinput label="Email" state="email" placeholder="name@domain.com" />
                     }
