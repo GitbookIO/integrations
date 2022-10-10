@@ -12,15 +12,16 @@ export const pageBlock = createComponent<{}, {}, void, StatuspageRuntimeContext>
         if (!page_id) {
             return (
                 <block>
-                    <card title="Finish configuring the Statuspage integration" />
+                    <card
+                        title="Configure the Statuspage integration"
+                        onPress={{
+                            action: '@ui.url.open',
+                            url: context.environment.integration.urls.app,
+                        }}
+                    />
                 </block>
             );
         }
-
-        const page = await statuspageAPI<StatuspagePageObject>(context, {
-            method: 'GET',
-            path: `pages/${page_id}`,
-        });
 
         const components = await statuspageAPI<StatuspageComponentObject[]>(context, {
             method: 'GET',
