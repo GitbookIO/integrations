@@ -7,11 +7,13 @@ import {
     RuntimeEnvironment,
 } from '@gitbook/runtime';
 import { mailchimp } from './sdk';
+import { ContentKitDefaultAction } from '@gitbook/api';
 
 // client_id 694931987396
 // client_secret e073b1c5e4602c94987befcc4c9bae4c8130258c56f8f86ef3
 
 interface MailchimpInstallationConfiguration {
+    api_endpoint: string;
     oauth_credentials?: {
         access_token: string;
     };
@@ -21,13 +23,31 @@ type MailchimpRuntimeEnvironment = RuntimeEnvironment<MailchimpInstallationConfi
 type MailchimpRuntimeContext = RuntimeContext<MailchimpRuntimeEnvironment>;
 
 type MailchimpBlockProps = {
-    email?: string;
+    cta?: string;
+    listId?: string;
 };
 
-type MailchimpBlockState = {};
+type MailchimpBlockState = {
+    success: boolean;
+    email: string;
+};
 
-const subscribeComponent = createComponent<MailchimpBlockProps, MailchimpBlockState>({
+type MailchimpAction =
+    | { action: 'subscribe'; email: string }
+    | { action: '@ui.modal.close'; listId?: string; cta?: string };
+
+const subscribeComponent = createComponent<
+    MailchimpBlockProps,
+    MailchimpBlockState,
+    MailchimpAction,
+    MailchimpRuntimeContext
+>({
     componentId: 'subscribe',
+
+    initialState: () => ({
+        email: '',
+        success: false,
+    }),
 
     async action(element, action, context) {
         switch (action.action) {
@@ -52,6 +72,7 @@ const subscribeComponent = createComponent<MailchimpBlockProps, MailchimpBlockSt
 
                 return {
                     state: {
+                        email: action.email,
                         success: true,
                     },
                 };
@@ -59,29 +80,26 @@ const subscribeComponent = createComponent<MailchimpBlockProps, MailchimpBlockSt
             case '@ui.modal.close': {
                 return {
                     props: {
-                        listId: action.listId,
+                        listId: action.listId || element.props.listId,
+                        cta: action.cta || element.props.cta,
                     },
                 };
             }
+            default:
+                return element;
         }
-
-        return element;
     },
 
     async render(element, context) {
-        const { listId } = element.props;
+        const { listId, cta } = element.props;
         const { success } = element.state;
 
         return (
             <block>
-                <card title={'Want to know more? Subscribe to our newsletter!'}>
+                <card title={cta}>
                     <hstack>
-                        <box>
-                            <textinput
-                                state="email"
-                                initialValue=""
-                                placeholder="Enter your email"
-                            />
+                        <box grow={1}>
+                            <textinput state="email" placeholder="Enter your email" />
                         </box>
                         <box>
                             <button
@@ -94,7 +112,7 @@ const subscribeComponent = createComponent<MailchimpBlockProps, MailchimpBlockSt
                         </box>
                         {success ? (
                             <box>
-                                <text>Welcome to the Wine Hunter club!</text>
+                                <text>You've been added to the mailing list!</text>
                             </box>
                         ) : null}
                         {listId && element.context.editable ? (
@@ -111,6 +129,7 @@ const subscribeComponent = createComponent<MailchimpBlockProps, MailchimpBlockSt
                                         componentId: 'settingsModal',
                                         props: {
                                             currentListId: listId,
+                                            currentCTA: cta,
                                         },
                                     }}
                                 />
@@ -126,8 +145,18 @@ const subscribeComponent = createComponent<MailchimpBlockProps, MailchimpBlockSt
 /**
  * Component to render the preview modal when zooming.
  */
-const settingsModal = createComponent({
+const settingsModal = createComponent<
+    { currentListId?: string; currentCTA?: string },
+    { cta?: string; listId?: string },
+    {},
+    MailchimpRuntimeContext
+>({
     componentId: 'settingsModal',
+
+    initialState: (props) => ({
+        listId: props.currentListId,
+        cta: props.currentCTA || 'Want to know more? Subscribe to our newsletter!',
+    }),
 
     async render(element, context) {
         const { environment } = context;
@@ -136,8 +165,6 @@ const settingsModal = createComponent({
         if (!configuration) {
             throw new Error();
         }
-
-        const { currentListId } = element.props;
 
         const resp = await fetch(`${configuration.api_endpoint}/3.0/lists`, {
             headers: {
@@ -148,39 +175,37 @@ const settingsModal = createComponent({
         const { lists } = (await resp.json()) as MailchimpListsResponse;
 
         return (
-            <modal title="Configure" size="fullscreen">
+            <modal
+                title="Configure Mailchimp"
+                size="medium"
+                submit={
+                    <button
+                        label="Save"
+                        onPress={{
+                            action: '@ui.modal.close',
+                            listId: element.dynamicState('listId'),
+                            cta: element.dynamicState('cta'),
+                        }}
+                    />
+                }
+            >
                 <vstack>
-                    <box>
-                        <text>Which mailing list do you want subscribers to join?</text>
-                    </box>
-                    {lists.map((list) => {
-                        return (
-                            <box>
-                                <text>
-                                    {list.name} ({list.id})
-                                </text>
-                            </box>
-                        );
-                    })}
-                    <box>
-                        <textinput state="listId" initialValue="" placeholder="Enter the list ID" />
-                    </box>
-                    <box>
-                        <text>
-                            {currentListId
-                                ? `Current list: ${currentListId}`
-                                : 'No list selected yet'}
-                        </text>
-                    </box>
-                    <box>
-                        <button
-                            label="Save"
-                            onPress={{
-                                action: '@ui.modal.close',
-                                listId: element.dynamicState('listId'),
-                            }}
+                    <text>Call-to-action text</text>
+                    <textinput state="cta" />
+                    <text>Mailchimp audience</text>
+                    {lists.length > 0 ? (
+                        <select
+                            state="listId"
+                            options={lists.map((list) => {
+                                return {
+                                    label: list.name,
+                                    id: list.id,
+                                };
+                            })}
                         />
-                    </box>
+                    ) : (
+                        <text>No Mailchimp lists found</text>
+                    )}
                 </vstack>
             </modal>
         );

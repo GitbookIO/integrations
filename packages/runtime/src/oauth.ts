@@ -3,6 +3,18 @@ import { RequestUpdateIntegrationInstallation } from '@gitbook/api';
 import { RuntimeCallback } from './context';
 import { Logger } from './logger';
 
+/**
+ * Utility interface for typing the response from a Slack OAuth call.
+ * TODO: Use the official Slack type
+ */
+export interface OAuthResponse {
+    ok?: boolean;
+    access_token: string;
+    team: {
+        id: string;
+    };
+}
+
 export interface OAuthConfig {
     /**
      * Redirect URL to use. When the OAuth identity provider only accept a static one.
@@ -33,7 +45,7 @@ export interface OAuthConfig {
      * Extract the credentials from the code exchange response.
      */
     extractCredentials?: (
-        response: object
+        response: OAuthResponse
     ) => RequestUpdateIntegrationInstallation | Promise<RequestUpdateIntegrationInstallation>;
 }
 
@@ -104,7 +116,7 @@ export function createOAuthHandler(
                 throw new Error('Failed to exchange code for access token');
             }
 
-            const json = await response.json();
+            const json = await response.json<OAuthResponse>();
 
             // Store the credentials in the installation configuration
             const credentials = await extractCredentials(json);

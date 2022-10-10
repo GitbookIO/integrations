@@ -5,6 +5,59 @@ import { SlackRuntimeContext } from './configuration';
 const logger = Logger('slack:api');
 
 /**
+ * Cloudflare workers have a maximum number of subrequests we can call (20 according to my
+ * tests) https://developers.cloudflare.com/workers/platform/limits/#how-many-subrequests-can-i-make
+ * TODO: Test with 50
+ */
+const maximumSubrequests = 20;
+
+/**
+ * Executes a Slack API request to fetch channels, handles pagination, then returns the merged
+ * results.
+ */
+export async function getChannelsPaginated(context: SlackRuntimeContext) {
+    const channels = [];
+
+    let response = await slackAPI(context, {
+        method: 'GET',
+        path: 'conversations.list',
+        payload: {
+            limit: 1000,
+            exclude_archived: true,
+            types: 'public_channel,private_channel',
+        },
+    });
+    channels.push(...response?.channels);
+
+    let numberOfCalls = 0;
+    // Handle pagination. Slack can be weird when it comes to paginating requests and not return
+    // all the channels even if we tell it to fetch a thousand of them. Pagination may be called
+    // even with workspaces with less than 1000 channels. We also keep a reference to number of
+    // subsequent calls to avoid hitting the hard limit of calls on workers.
+    while (response.response_metadata.next_cursor && numberOfCalls < maximumSubrequests) {
+        logger.debug('Request was paginated, calling the next cursor');
+        response = await slackAPI(context, {
+            method: 'GET',
+            path: 'conversations.list',
+            payload: {
+                limit: 1000,
+                exclude_archived: true,
+                types: 'public_channel,private_channel',
+                cursor: response.response_metadata.next_cursor,
+            },
+        });
+        channels.push(...response?.channels);
+        numberOfCalls++;
+    }
+
+    // Remove any duplicate as the pagination API could return duplicated channels
+    return channels.filter(
+        (value, index, self) =>
+            index === self.findIndex((t) => t.place === value.place && t.id === value.id)
+    );
+}
+
+/**
  * Execute a Slack API request and return the result.
  */
 export async function slackAPI(
