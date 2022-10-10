@@ -62,8 +62,6 @@ const embedBlock = createComponent<{
             );
         }
 
-        // https://app.arcade.software/api/oembed?url=https://app.arcade.software/share/DTXVNC1rbhyoL9kTn1pD
-
         return (
             <block>
                 <webframe
@@ -81,12 +79,12 @@ function extractFlowFromURL(input: string): {
     flowId?: string;
 } {
     const url = new URL(input);
-    if (url.hostname !== 'app.arcade.software') {
+    if (['app.arcade.software', 'demo.arcade.software'].includes(url.hostname)) {
         return;
     }
 
     const parts = url.pathname.split('/');
-    if (parts[1] !== 'flows') {
+    if (!['flows', 'share'].includes(parts[1])) {
         return;
     }
 
