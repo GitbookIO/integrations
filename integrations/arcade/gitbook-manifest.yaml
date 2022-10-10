@@ -13,3 +13,5 @@ blocks:
       description: Interactive product demo
       urlUnfurl:
           - https://app.arcade.software/flows/
+          - https://app.arcade.software/share/
+          - https://demo.arcade.software/share/
