@@ -9,5 +9,10 @@
     "devDependencies": {
         "@gitbook/cli": "*"
     },
-    "scripts": {}
+    "scripts": {
+        "lint": "eslint ./**/*.ts*",
+        "typecheck": "tsc --noEmit",
+        "publish-integrations-staging": "gitbook publish .",
+        "publish-integrations": "gitbook publish ."
+    }
 }

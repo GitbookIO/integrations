@@ -9,12 +9,12 @@
     },
     "devDependencies": {
         "@gitbook/api": "*",
-        "@gitbook/cli": "*",
         "@gitbook/eslint-config": "*",
         "@gitbook/tsconfig": "*"
     },
     "scripts": {
-        "lint": "eslint ./**/*.ts",
+        "lint": "eslint ./**/*.ts*",
+        "typecheck": "tsc --noEmit",
         "publish-integrations-staging": "gitbook publish .",
         "publish-integrations": "gitbook publish ."
     }

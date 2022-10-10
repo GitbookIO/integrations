@@ -5,6 +5,7 @@ import {
     RuntimeEnvironment,
     RuntimeContext,
 } from '@gitbook/runtime';
+
 import { extractNodeFromURL, fetchFigmaFile, fetchFigmaNode } from './figma';
 
 interface FigmaInstallationConfiguration {
