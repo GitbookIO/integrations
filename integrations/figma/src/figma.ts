@@ -114,6 +114,11 @@ export async function fetchFigmaFile(fileId: string, context: FigmaRuntimeContex
  * Execute a Figma API request.
  */
 export async function fetchFigmaAPI<T>(path: string, params: object, { environment }: FigmaRuntimeContext): Promise<T> {
+    const accessToken = environment.installation.configuration.oauth_credentials?.access_token
+    if (!accessToken) {
+        throw new Error('Missing authentication');
+    }
+
     const url = new URL(`https://api.figma.com/v1/${path}`);
 
     Object.entries(params).forEach(([key, value]) => {
@@ -122,7 +127,7 @@ export async function fetchFigmaAPI<T>(path: string, params: object, { environme
 
     const response = await fetch(url.toString(), {
         headers: {
-            'Authorization': `Bearer ${environment.installation.configuration.oauth_credentials.access_token}`,
+            'Authorization': `Bearer ${accessToken}`,
         },
     });
 

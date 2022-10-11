@@ -95,14 +95,11 @@ const embedBlock = createComponent<{
             );
         }
 
+        element.setCache({ maxAge: 60 * 60 * 24 });
         return (
             <block>
                 <card
-                    title={
-                        file
-                            ? file.name + (file.nodeName ? ` - ${file.nodeName}` : '')
-                            : 'Not found'
-                    }
+                    title={file.name + (file.nodeName ? ` - ${file.nodeName}` : '')}
                     onPress={{
                         action: '@ui.url.open',
                         url,
