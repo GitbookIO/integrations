@@ -33,7 +33,7 @@ export type NonFetchEvent = Exclude<
  */
 export type EventCallbackMap<Context extends RuntimeContext = RuntimeContext> = {
     [T in NonFetchEvent]?: EventCallback<T, Context> | Array<EventCallback<T, Context>>;
-};
+} & Record<FetchPublishedScriptEvent['type'], FetchPublishScriptEventCallback<Context>>;
 
 /**
  * Callback for fetch events.

@@ -63,7 +63,24 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                     body: fetchBody,
                 });
 
+                // @ts-ignore
                 const resp = await definition.fetch(request, context);
+                logger.debug(
+                    `response ${resp.status} ${resp.statusText} Content-Type: ${resp.headers.get(
+                        'content-type'
+                    )}`
+                );
+                return resp;
+            }
+
+            if (
+                event.type === 'fetch_published_script' &&
+                definition.events.fetch_published_script
+            ) {
+                logger.info(`handling fetch_published_script`);
+
+                // @ts-ignore
+                const resp = await definition.events.fetch_published_script(event, context);
                 logger.debug(
                     `response ${resp.status} ${resp.statusText} Content-Type: ${resp.headers.get(
                         'content-type'

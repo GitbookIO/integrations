@@ -1,6 +1,6 @@
 import {
     createIntegration,
-    FetchEventCallback,
+    FetchPublishScriptEventCallback,
     RuntimeContext,
     RuntimeEnvironment,
 } from '@gitbook/runtime';
@@ -14,7 +14,7 @@ type IntercomRuntimeContext = RuntimeContext<
     >
 >;
 
-export const handleFetchEvent: FetchEventCallback = async (
+export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
     { environment }: IntercomRuntimeContext
 ) => {
@@ -50,6 +50,15 @@ var APP_ID = "${appId}";
             w.addEventListener('load',l,false);
         }
     }
+    
+    window.Gitbook.addEventListener('unload', () => {
+        if (!ic) {
+            return;
+        }
+
+        ic('shutdown');
+        w.Intercom = undefined;
+    });
 })();
             
 

@@ -1,6 +1,6 @@
 import {
     createIntegration,
-    FetchEventCallback,
+    FetchPublishScriptEventCallback,
     RuntimeContext,
     RuntimeEnvironment,
 } from '@gitbook/runtime';
@@ -14,7 +14,7 @@ type GARuntimeContext = RuntimeContext<
     >
 >;
 
-export const handleFetchEvent: FetchEventCallback = async (
+export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
     { environment }: GARuntimeContext
 ) => {
@@ -37,10 +37,6 @@ export const handleFetchEvent: FetchEventCallback = async (
     j.async = true;
     j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
     j.onload = function() {
-        if (!window.gtag) {
-            return;
-        }
-        
         window.dataLayer = window.dataLayer || [];
         function gtag(){window.dataLayer.push(arguments);}
         gtag('js', new Date());

@@ -33,7 +33,7 @@ contentSecurityPolicy: |
       analytics.google.com
       about:;
 summary: |
-    The GitBook Google Analytics integration allows you to track traffic in your published spaces from your Google Analytics dashboard.
+    The GitBook Google Analytics integration allows you to track traffic in your published spaces from your Google Tags Manager dashboard.
 
     Automatic tracking in your documentation:
     Each of your connected GitBook spaces will fetch the Google Analytics tracking script and inject it in your public content.

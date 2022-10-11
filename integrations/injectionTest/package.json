@@ -10,7 +10,6 @@
     "@gitbook/cli": "*"
   },
   "scripts": {
-    "lint": "eslint ./src/**/*.ts",
-    "publish-integrations": "gitbook publish ."
+    "lint": "eslint ./src/**/*.ts"
   }
 }
