@@ -80,12 +80,7 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                 }
 
                 // @ts-ignore
-                const result = await component.render(event, context);
-                return new Response(JSON.stringify(result), {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
+                return await component.render(event, context);
             }
 
             const cb = events[event.type];
