@@ -17,7 +17,6 @@
         "build": "node -r esbuild-register ./webframe/scripts/build.ts",
         "lint": "eslint ./**/*.ts*",
         "typecheck": "tsc --noEmit",
-        "publish-integrations-staging": "gitbook publish .",
-        "publish-integrations": "gitbook publish ."
+        "publish-integrations-staging": "gitbook publish ."
     }
 }
