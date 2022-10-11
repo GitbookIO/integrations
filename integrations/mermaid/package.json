@@ -7,7 +7,9 @@
         "@gitbook/runtime": "*"
     },
     "devDependencies": {
-        "@gitbook/cli": "*"
+        "@gitbook/cli": "*",
+        "@gitbook/eslint-config": "*",
+        "@gitbook/tsconfig": "*"
     },
     "scripts": {
         "lint": "eslint ./**/*.ts*",

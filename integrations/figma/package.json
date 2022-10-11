@@ -5,6 +5,10 @@
     "dependencies": {
         "@gitbook/runtime": "*"
     },
+    "devDependencies": {
+        "@gitbook/eslint-config": "*",
+        "@gitbook/tsconfig": "*"
+    },
     "scripts": {
         "lint": "eslint ./**/*.ts*",
         "typecheck": "tsc --noEmit",
