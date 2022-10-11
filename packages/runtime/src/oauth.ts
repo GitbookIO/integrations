@@ -124,7 +124,7 @@ export function createOAuthHandler(
 
             const json = await response.json<OAuthResponse>();
 
-            if (!json.ok) {
+            if (!json.access_token) {
                 throw new Error(`Failed to exchange code for access token ${JSON.stringify(json)}`);
             }
 
