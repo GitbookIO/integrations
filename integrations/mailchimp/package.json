@@ -4,8 +4,10 @@
     "scripts": {
         "publish-integrations-staging": "gitbook publish ."
     },
+    "dependencies": {
+        "@gitbook/runtime": "*"
+    },
     "devDependencies": {
-        "@gitbook/cli": "^0.0.1",
-        "@gitbook/runtime": "latest"
+        "@gitbook/cli": "*"
     }
 }
