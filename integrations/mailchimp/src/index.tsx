@@ -1,4 +1,5 @@
 import { Router } from 'itty-router';
+
 import {
     createComponent,
     createIntegration,
@@ -6,6 +7,7 @@ import {
     RuntimeContext,
     RuntimeEnvironment,
 } from '@gitbook/runtime';
+
 import { getMailingLists, getUserMetadata, subscribeUserToList } from './sdk';
 
 type MailchimpRuntimeContext = RuntimeContext<
@@ -199,6 +201,8 @@ const settingsModal = createComponent<
                         label="Save"
                         onPress={{
                             action: '@ui.modal.close',
+
+                            // @ts-ignore dynamicState gets converted to a string by our runtime
                             listId: lists[element.dynamicState('listId')]?.id,
                             cta: element.dynamicState('cta'),
                         }}
