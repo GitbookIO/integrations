@@ -1,40 +1,52 @@
 {
-  "pipeline": {
-    "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["src/**"],
-      "outputs": ["dist/**"]
+    "pipeline": {
+        "build": {
+            "dependsOn": ["^build"],
+            "inputs": ["src/**"],
+            "outputs": ["dist/**"]
+        },
+        "api#build": {
+            "cache": false,
+            "inputs": ["src/**", "../gitbook-x/packages/api-client/static/openapi.yaml"],
+            "outputs": ["dist/**", "spec/**"]
+        },
+        "test": {
+            "dependsOn": ["build"]
+        },
+        "lint": {
+            "dependsOn": ["build"],
+            "outputs": []
+        },
+        "typecheck": {
+            "dependsOn": ["build"],
+            "outputs": []
+        },
+        "publish-integrations": {
+            "env": [
+                "GITBOOK_TOKEN",
+                "GITBOOK_ENDPOINT",
+                "SLACK_CLIENT_ID",
+                "SLACK_CLIENT_SECRET",
+                "FIGMA_CLIENT_ID",
+                "FIGMA_CLIENT_SECRET"
+            ],
+            "dependsOn": ["build"],
+            "outputs": [],
+            "cache": false
+        },
+        "publish-integrations-staging": {
+            "env": [
+                "GITBOOK_TOKEN",
+                "GITBOOK_ENDPOINT",
+                "SLACK_CLIENT_ID",
+                "SLACK_CLIENT_SECRET",
+                "FIGMA_CLIENT_ID",
+                "FIGMA_CLIENT_SECRET"
+            ],
+            "dependsOn": ["build"],
+            "outputs": [],
+            "cache": false
+        }
     },
-    "api#build": {
-      "cache": false,
-      "inputs": ["src/**", "../../../gitbook-x/packages/api-client/static/openapi.yaml"],
-      "outputs": ["dist/**", "spec/**"]
-    },
-    "test": {
-      "dependsOn": ["build"]
-    },
-    "lint": {
-      "dependsOn": ["build"],
-      "outputs": []
-    },
-    "typecheck": {
-      "dependsOn": ["build"],
-      "outputs": []
-    },
-    "publish-integrations": {
-      "env": ["GITBOOK_TOKEN", "GITBOOK_ENDPOINT", "SLACK_CLIENT_ID", "SLACK_CLIENT_SECRET", "FIGMA_CLIENT_ID", "FIGMA_CLIENT_SECRET"],
-      "dependsOn": ["build"],
-      "outputs": [],
-      "cache": false
-    },
-    "publish-integrations-staging": {
-      "env": ["GITBOOK_TOKEN", "GITBOOK_ENDPOINT", "SLACK_CLIENT_ID", "SLACK_CLIENT_SECRET", "FIGMA_CLIENT_ID", "FIGMA_CLIENT_SECRET"],
-      "dependsOn": ["build"],
-      "outputs": [],
-      "cache": false
-    }
-  },
-  "globalDependencies": [
-    ".env"
-  ]
+    "globalDependencies": [".env"]
 }

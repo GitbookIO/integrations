@@ -1,30 +1,30 @@
 name: mailchimp
 title: Mailchimp
 icon: ./assets/icon.png
-description: Embed Figma files into GitBook pages
+description: Grow your mailing list by having your readers subscribe directly from your GitBook documentation.
+categories:
+    - marketing
 visibility: private
 script: ./src/index.tsx
+previewImages:
+    - ./assets/preview.png
 summary: |
     # Overview
 
-    This integration embeds Figma artboards and files into GitBook documents, making it easy to find and view relevant design files whenever you need them. Never search through Figma, Slack, or emails to find design files again.
+    This integration provides a way for readers of your GitBook-powered documentation to subscribe to a Mailchimp Audience.
 
     # How it works
 
-    Embedding Figma files into GitBook is simple - just paste a Figma link into the GitBook editor. The app will turn the link into an embed that shows the Figma file name along with an image snapshot of what the file looked like at the moment that you embedded it.
-
-    When viewing an embed, click on the maximize button to preview the file in GitBook or on the file or artboard name to open it in Figma.
+    Once the integration is installed, insert the Mailchimp block into any page. Users will be able to subscribe to your selected Audience directly from the page.
 
     # Configure
 
-    GitBook admins can go to the integrations settings to connect your organization's Figma account to GitBook. Once enabled, the integration will work for all spaces where it's enabled in your organization.
+    Once the block has been inserted, you can configure which Audience you'd like new subscribers to be added to.
 scopes: []
 blocks:
-    - id: subscribe
+    - id: mailchimpBlock
       title: Mailchimp
-      description: Let users subscribe to a Mailchimp mailing list
-      urlUnfurl:
-          - https://www.figma.com/file/
+      description: Grow your mailing list by having your readers subscribe directly from GitBook.
 configurations:
     account:
         properties:
@@ -36,3 +36,6 @@ configurations:
                 callback_url: /oauth
         required:
             - oauth_credentials
+secrets:
+    CLIENT_ID: ${{ env.MAILCHIMP_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.MAILCHIMP_CLIENT_SECRET }}

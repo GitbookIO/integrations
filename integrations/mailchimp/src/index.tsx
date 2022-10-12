@@ -6,21 +6,16 @@ import {
     RuntimeContext,
     RuntimeEnvironment,
 } from '@gitbook/runtime';
-import { mailchimp } from './sdk';
-import { ContentKitDefaultAction } from '@gitbook/api';
+import { getMailingLists, getUserMetadata, subscribeUserToList } from './sdk';
 
-// client_id 694931987396
-// client_secret e073b1c5e4602c94987befcc4c9bae4c8130258c56f8f86ef3
-
-interface MailchimpInstallationConfiguration {
-    api_endpoint: string;
-    oauth_credentials?: {
-        access_token: string;
-    };
-}
-
-type MailchimpRuntimeEnvironment = RuntimeEnvironment<MailchimpInstallationConfiguration>;
-type MailchimpRuntimeContext = RuntimeContext<MailchimpRuntimeEnvironment>;
+type MailchimpRuntimeContext = RuntimeContext<
+    RuntimeEnvironment<{
+        api_endpoint: string;
+        oauth_credentials?: {
+            access_token: string;
+        };
+    }>
+>;
 
 type MailchimpBlockProps = {
     cta?: string;
@@ -28,7 +23,7 @@ type MailchimpBlockProps = {
 };
 
 type MailchimpBlockState = {
-    success: boolean;
+    success: boolean | undefined;
     email: string;
 };
 
@@ -36,17 +31,22 @@ type MailchimpAction =
     | { action: 'subscribe'; email: string }
     | { action: '@ui.modal.close'; listId?: string; cta?: string };
 
-const subscribeComponent = createComponent<
+const DEFAULT_CTA = 'Want to know more? Subscribe to our newsletter!';
+
+/**
+ * A Block to subscribe to a Mailchimp mailing list.
+ */
+const mailchimpBlock = createComponent<
     MailchimpBlockProps,
     MailchimpBlockState,
     MailchimpAction,
     MailchimpRuntimeContext
 >({
-    componentId: 'subscribe',
+    componentId: 'mailchimpBlock',
 
     initialState: () => ({
         email: '',
-        success: false,
+        success: undefined,
     }),
 
     async action(element, action, context) {
@@ -54,28 +54,41 @@ const subscribeComponent = createComponent<
             case 'subscribe': {
                 const { environment } = context;
                 const configuration = environment.installation?.configuration;
-                const { listId } = element.props;
-                const resp = await fetch(
-                    `${configuration.api_endpoint}/3.0/lists/${listId}/members`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${configuration.oauth_credentials?.access_token}`,
-                        },
-                        body: JSON.stringify({
-                            email_address: action.email,
-                            status: 'subscribed',
-                        }),
-                    }
-                );
+                let listId = element.props.listId;
 
-                return {
-                    state: {
-                        email: action.email,
-                        success: true,
-                    },
-                };
+                try {
+                    if (!listId) {
+                        const lists = await getMailingLists(
+                            configuration.api_endpoint,
+                            configuration.oauth_credentials?.access_token
+                        );
+
+                        if (!lists.length) {
+                            throw new Error(`no lists found`);
+                        }
+
+                        listId = lists[0].id;
+                    }
+
+                    await subscribeUserToList(listId, action.email, {
+                        apiEndpoint: configuration.api_endpoint,
+                        accessToken: configuration.oauth_credentials?.access_token,
+                    });
+
+                    return {
+                        state: {
+                            email: action.email,
+                            success: true,
+                        },
+                    };
+                } catch (err) {
+                    return {
+                        state: {
+                            email: action.email,
+                            success: false,
+                        },
+                    };
+                }
             }
             case '@ui.modal.close': {
                 return {
@@ -90,52 +103,50 @@ const subscribeComponent = createComponent<
         }
     },
 
-    async render(element, context) {
-        const { listId, cta } = element.props;
+    async render(element) {
+        const { cta = DEFAULT_CTA } = element.props;
         const { success } = element.state;
 
         return (
-            <block>
-                <card title={cta}>
-                    <hstack>
+            <block
+                controls={[
+                    {
+                        label: 'Edit',
+                        icon: 'edit',
+                        onPress: {
+                            action: '@ui.modal.open',
+                            componentId: 'settingsModal',
+                            props: {
+                                currentCTA: cta,
+                            },
+                        },
+                    },
+                ]}
+            >
+                <card>
+                    <hstack align="center">
                         <box grow={1}>
-                            <textinput state="email" placeholder="Enter your email" />
+                            <text>{cta}</text>
+                        </box>
+                        <box grow={2}>
+                            <textinput state="email" placeholder="Your email address" />
                         </box>
                         <box>
                             <button
-                                label="Subscribe"
+                                disabled={typeof success === 'boolean'}
+                                label={success ? 'Subscribed!' : 'Subscribe'}
                                 onPress={{
                                     action: 'subscribe',
                                     email: element.dynamicState('email'),
                                 }}
                             />
                         </box>
-                        {success ? (
-                            <box>
-                                <text>You've been added to the mailing list!</text>
-                            </box>
-                        ) : null}
-                        {listId && element.context.editable ? (
-                            <box>
-                                <text>{listId}</text>
-                            </box>
-                        ) : null}
-                        {element.context.editable ? (
-                            <box>
-                                <button
-                                    label="Edit"
-                                    onPress={{
-                                        action: '@ui.modal.open',
-                                        componentId: 'settingsModal',
-                                        props: {
-                                            currentListId: listId,
-                                            currentCTA: cta,
-                                        },
-                                    }}
-                                />
-                            </box>
-                        ) : null}
                     </hstack>
+                    {typeof success === 'boolean' && success === false ? (
+                        <box>
+                            <text>An error occured, the site owner has been notified</text>
+                        </box>
+                    ) : null}
                 </card>
             </block>
         );
@@ -143,76 +154,94 @@ const subscribeComponent = createComponent<
 });
 
 /**
- * Component to render the preview modal when zooming.
+ * A modal to configure the Mailchimp block.
  */
 const settingsModal = createComponent<
     { currentListId?: string; currentCTA?: string },
-    { cta?: string; listId?: string },
+    { cta: string; listIndex: string },
     {},
     MailchimpRuntimeContext
 >({
     componentId: 'settingsModal',
 
     initialState: (props) => ({
-        listId: props.currentListId,
-        cta: props.currentCTA || 'Want to know more? Subscribe to our newsletter!',
+        cta: props.currentCTA || DEFAULT_CTA,
+
+        // Store an index instead of an id so we can pre-select something
+        listIndex: '0',
     }),
 
     async render(element, context) {
+        // Don't cache so that people can change to lists that they just created
+        element.setCache({ maxAge: 0 });
+
         const { environment } = context;
         const configuration = environment.installation?.configuration;
 
         if (!configuration) {
+            // This would essentially mean that the integration is only partially installed.
+            // We should have an easy way, from the contentkit, to let GitBook know that the
+            // integration is not installed properly.
             throw new Error();
         }
 
-        const resp = await fetch(`${configuration.api_endpoint}/3.0/lists`, {
-            headers: {
-                Authorization: `Bearer ${configuration.oauth_credentials?.access_token}`,
-            },
-        });
-
-        const { lists } = (await resp.json()) as MailchimpListsResponse;
+        const lists = await getMailingLists(
+            configuration.api_endpoint,
+            configuration.oauth_credentials?.access_token
+        );
 
         return (
             <modal
-                title="Configure Mailchimp"
+                title="Edit Mailchimp Block"
                 size="medium"
                 submit={
                     <button
                         label="Save"
                         onPress={{
                             action: '@ui.modal.close',
-                            listId: element.dynamicState('listId'),
+                            listId: lists[element.dynamicState('listId')]?.id,
                             cta: element.dynamicState('cta'),
                         }}
                     />
                 }
             >
                 <vstack>
-                    <text>Call-to-action text</text>
-                    <textinput state="cta" />
-                    <text>Mailchimp audience</text>
-                    {lists.length > 0 ? (
-                        <select
-                            state="listId"
-                            options={lists.map((list) => {
-                                return {
-                                    label: list.name,
-                                    id: list.id,
-                                };
-                            })}
-                        />
-                    ) : (
-                        <text>No Mailchimp lists found</text>
-                    )}
+                    <box>
+                        <text>Call-to-action text</text>
+                        <textinput state="cta" />
+                    </box>
+                    <box>
+                        <text>Audience</text>
+                        {lists.length > 0 ? (
+                            <select
+                                state="listIndex"
+                                options={lists.map((list, index) => {
+                                    return {
+                                        label: list.name,
+                                        id: String(index),
+                                    };
+                                })}
+                            />
+                        ) : (
+                            <text>
+                                No Mailchimp audiences found, did you complete the authentication
+                                step?
+                            </text>
+                        )}
+                    </box>
                 </vstack>
             </modal>
         );
     },
 });
 
+/**
+ * Mailchimp integration for subscribing users to mailing lists.
+ */
 export default createIntegration<MailchimpRuntimeContext>({
+    /**
+     * This integration only handles OAuth over its fetch handler.
+     */
     fetch: async (request, context) => {
         const { environment } = context;
 
@@ -231,8 +260,8 @@ export default createIntegration<MailchimpRuntimeContext>({
             '/oauth',
             createOAuthHandler({
                 redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
-                clientId: '694931987396',
-                clientSecret: 'e073b1c5e4602c94987befcc4c9bae4c8130258c56f8f86ef3',
+                clientId: environment.secrets.CLIENT_ID,
+                clientSecret: environment.secrets.CLIENT_SECRET,
                 authorizeURL: 'https://login.mailchimp.com/oauth2/authorize',
                 accessTokenURL: 'https://login.mailchimp.com/oauth2/token',
                 async extractCredentials(response) {
@@ -244,18 +273,14 @@ export default createIntegration<MailchimpRuntimeContext>({
                         );
                     }
 
-                    const resp = await fetch('https://login.mailchimp.com/oauth2/metadata', {
-                        headers: {
-                            Authorization: `OAuth ${response.access_token}`,
-                        },
-                    });
-
-                    const json = (await resp.json()) as MailchimpMetadataResponse;
+                    // In Mailchimp, you need to know the user's region before making API
+                    // requests. We get the user metadata and store it in the installation.
+                    const metadata = await getUserMetadata(response.access_token);
 
                     return {
                         configuration: {
                             oauth_credentials: { access_token: response.access_token },
-                            api_endpoint: json.api_endpoint,
+                            api_endpoint: metadata.api_endpoint,
                         },
                     };
                 },
@@ -271,51 +296,5 @@ export default createIntegration<MailchimpRuntimeContext>({
 
         return response;
     },
-    components: [subscribeComponent, settingsModal],
+    components: [mailchimpBlock, settingsModal],
 });
-
-interface MailchimpListsResponse {
-    lists: MailchimpListItem[];
-    total_items: number;
-}
-
-interface MailchimpListItem {
-    id: string;
-    web_id: number;
-    name: string;
-    date_created: string;
-}
-
-interface MailchimpMetadataResponse {
-    dc: string;
-    role: string;
-    accountname: string;
-    user_id: number;
-    login: {
-        email: string;
-        avatar: string | null;
-        login_id: number;
-        login_name: string;
-        login_email: string;
-    };
-    login_url: string;
-    api_endpoint: string;
-}
-
-/**
- * 
-                        <textinput
-                            id="email"
-                            label="Email"
-                            initialValue=""
-                            placeholder="Enter your email"
-                        />
-                        <button
-                            icon="maximize"
-                            label="Subscribe"
-                            tooltip="Subscribe"
-                            onPress={{
-                                action: '@ui.subscribe',
-                            }}
-                        />
- */
