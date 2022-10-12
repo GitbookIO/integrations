@@ -9,17 +9,6 @@ dist/
 
 *.log
 
-# Yarn
-.yarn
-!.yarn/releases
-!.yarn/plugins
-!.yarn/sdks
-!.yarn/versions
-.pnp.*
-
-# Storybook
-storybook-dist
-
 # Build files
 .cache
 
@@ -28,11 +17,6 @@ storybook-dist
 
 # ESlint
 .eslintcache
-
-# Coverage files
-coverage
-
-cloudrun.json
 
 # Don't prettify docs
 CHANGELOG.md
