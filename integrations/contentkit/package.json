@@ -6,6 +6,7 @@
         "@gitbook/runtime": "*"
     },
     "devDependencies": {
+        "@gitbook/cli": "*",
         "@gitbook/eslint-config": "*",
         "@gitbook/tsconfig": "*"
     },
