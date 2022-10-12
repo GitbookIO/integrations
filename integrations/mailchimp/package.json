@@ -1,5 +1,5 @@
 {
-    "name": "mailchimp",
+    "name": "@gitbook/integration-mailchimp",
     "private": true,
     "scripts": {
         "publish-integrations-staging": "gitbook publish ."
