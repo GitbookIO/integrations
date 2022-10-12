@@ -1,4 +1,4 @@
-import { RuntimeEnvironment, RuntimeContext } from "@gitbook/runtime";
+import { RuntimeEnvironment, RuntimeContext } from '@gitbook/runtime';
 
 export interface FigmaInstallationConfiguration {
     oauth_credentials?: {

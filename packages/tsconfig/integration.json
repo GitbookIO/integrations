@@ -3,6 +3,8 @@
     "display": "Integration",
     "extends": "./base.json",
     "compilerOptions": {
+        "jsx": "react-jsx",
+        "jsxImportSource": "@gitbook/runtime",
         "types": ["@cloudflare/workers-types"]
     }
 }

@@ -9,10 +9,19 @@ import { RuntimeCallback, RuntimeContext } from './context';
 
 type PlainObject = { [key: string]: number | string | boolean | PlainObject | undefined | null };
 
+export interface ComponentRenderCache {
+    maxAge: number;
+}
+
 export interface ComponentInstance<Props extends PlainObject, State extends PlainObject> {
     props: Props;
     state: State;
     context: ContentKitContext;
+
+    /**
+     * Set the cache max-age for the output of this component.
+     */
+    setCache(cache: ComponentRenderCache): void;
 
     /**
      * Return an identifier for a dynamic state binding.
@@ -22,7 +31,7 @@ export interface ComponentInstance<Props extends PlainObject, State extends Plai
 
 export interface ComponentDefinition<Context extends RuntimeContext = RuntimeContext> {
     componentId: string;
-    render: RuntimeCallback<[UIRenderEvent], Promise<ContentKitRenderOutput>, Context>;
+    render: RuntimeCallback<[UIRenderEvent], Promise<Response>, Context>;
 }
 
 /**
@@ -74,10 +83,15 @@ export function createComponent<
                     ? component.initialState(props, event.context)
                     : ((component.initialState || {}) as State));
 
+            let cache: ComponentRenderCache | undefined = undefined;
+
             let instance: ComponentInstance<Props, State> = {
                 state,
                 props,
                 context: event.context,
+                setCache: (newCache) => {
+                    cache = newCache;
+                },
                 dynamicState: (key) => ({ $state: key }),
             };
 
@@ -87,11 +101,18 @@ export function createComponent<
 
             const element = await component.render(instance, context);
 
-            return {
+            const output: ContentKitRenderOutput = {
                 state: instance.state,
                 props: instance.props,
                 element,
             };
+
+            return new Response(JSON.stringify(output), {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(cache ? { 'Cache-Control': `max-age=${cache.maxAge}` } : {}),
+                },
+            });
         },
     };
 }
