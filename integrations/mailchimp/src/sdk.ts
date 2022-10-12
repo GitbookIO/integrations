@@ -1,5 +1,5 @@
 /**
- * Returns all mailing lists for the given user.
+ * Returns all available mailing lists
  */
 export async function getMailingLists(
     apiEndpoint: string,
