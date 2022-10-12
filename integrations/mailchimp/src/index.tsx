@@ -31,7 +31,7 @@ type MailchimpAction =
     | { action: 'subscribe'; email: string }
     | { action: '@ui.modal.close'; listId?: string; cta?: string };
 
-const DEFAULT_CTA = 'Want to know more? Subscribe to our newsletter!';
+const DEFAULT_CTA = 'Sign up to our mailing list to receive updates!';
 
 /**
  * A Block to subscribe to a Mailchimp mailing list.
