@@ -1,6 +1,9 @@
-import { createIntegration, createComponent, createOAuthHandler } from '@gitbook/runtime';
+import { createIntegration, createComponent, createOAuthHandler, Logger } from '@gitbook/runtime';
 import { extractLinearIssueIdFromLink, getLinearAPIClient } from './linear';
+import { IssueQuery } from './linear/gql/graphql';
 import { LinearRuntimeContext } from './types';
+
+const logger = Logger('linear');
 
 /**
  * Component to render the block when embeding a Linear issue URL.
@@ -38,9 +41,40 @@ const embedBlock = createComponent<{
         }
 
         const { issueId, url } = element.props;
-
         const linearClient = await getLinearAPIClient(installation.configuration);
-        const { issue } = await linearClient.issue({ id: issueId });
+
+        let response: IssueQuery;
+        try {
+            response = await linearClient.issue({ id: issueId });
+        } catch (error) {
+            logger.info(
+                `API Error when fetching the issue (ID: ${issueId})`,
+                JSON.stringify(error)
+            );
+            // Fallback to displaying a generic card on error
+            return (
+                <block>
+                    <card
+                        title="Linear"
+                        hint={url}
+                        onPress={{
+                            action: '@ui.url.open',
+                            url,
+                        }}
+                        icon={
+                            <image
+                                source={{
+                                    url: context.environment.integration.urls.icon,
+                                }}
+                                aspectRatio={1}
+                            />
+                        }
+                    />
+                </block>
+            );
+        }
+
+        const { issue } = response;
         // TODO: add images with Linear icons once we've added build script to publish public assets to Cloudflare
         const hint = [<text>{issueId}</text>, <text> • </text>, <text>{issue.state.name}</text>];
 
