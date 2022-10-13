@@ -1,0 +1,17 @@
+{
+    "name": "jira",
+    "private": true,
+    "scripts": {
+        "lint": "eslint ./**/*.ts*",
+        "typecheck": "tsc --noEmit",
+        "publish-integrations-staging": "gitbook publish ."
+    },
+    "dependencies": {
+        "itty-router": "^2.6.1"
+    },
+    "devDependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/cli": "*",
+        "@gitbook/runtime": "*"
+    }
+}

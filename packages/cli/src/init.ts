@@ -145,7 +145,7 @@ export function generateScript(): string {
 
         type IntegrationContext = {} & RuntimeContext;
         
-        const handleFetchEvent: FetchEventCallback<IntegrationContext> = (request, context) => {
+        const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request, context) => {
             // Use the API to make requests to GitBook
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { api } = context;
