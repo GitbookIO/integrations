@@ -1,0 +1,35 @@
+name: plausible
+title: Plausible Analytics
+icon: ./assets/icon.png
+description: Track your GitBook analytics directly from your Plausible dashboard.
+organization: gitbook
+previewImages:
+    - ./assets/preview.png
+externalLinks:
+    - label: Documentation
+      url: https://docs.gitbook.com/integrations/plausible
+visibility: public
+script: ./src/index.ts
+scopes:
+    - space:script:published
+contentSecurityPolicy: |
+    script-src
+      plausible.io;
+    connect-src
+      plausible.io;
+summary: |
+    The GitBook Plausible Analytics integration allows you to track traffic in your published spaces from your Plausible dashboard.
+
+    Automatic tracking in your documentation:
+    Each of your connected GitBook spaces will fetch the cookie-less Plausible tracking script and inject it in your public content.
+categories:
+    - analytics
+configurations:
+    space:
+        properties:
+            domain:
+                type: string
+                title: Domain
+                description: The domain URL you configured for this Plausible website.
+        required:
+            - domain
