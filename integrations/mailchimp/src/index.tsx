@@ -56,20 +56,16 @@ const mailchimpBlock = createComponent<
             case 'subscribe': {
                 const { environment } = context;
                 const configuration = environment.installation?.configuration;
-                let listId = element.props.listId;
 
                 try {
+                    const listId = await resolveMailingListId(
+                        element.props.listId,
+                        configuration.api_endpoint,
+                        configuration.oauth_credentials?.access_token
+                    );
+
                     if (!listId) {
-                        const lists = await getMailingLists(
-                            configuration.api_endpoint,
-                            configuration.oauth_credentials?.access_token
-                        );
-
-                        if (!lists.length) {
-                            throw new Error(`no lists found`);
-                        }
-
-                        listId = lists[0].id;
+                        throw new Error(`no lists found`);
                     }
 
                     await subscribeUserToList(listId, action.email, {
@@ -154,6 +150,19 @@ const mailchimpBlock = createComponent<
         );
     },
 });
+
+async function resolveMailingListId(
+    propListId: string,
+    apiEndpoint: string,
+    accessToken: string
+): Promise<string | undefined> {
+    if (propListId) {
+        return propListId;
+    }
+
+    const lists = await getMailingLists(apiEndpoint, accessToken);
+    return lists.length ? lists.length[0].id : undefined;
+}
 
 /**
  * A modal to configure the Mailchimp block.
