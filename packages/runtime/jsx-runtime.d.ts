@@ -48,7 +48,6 @@ declare global {
             box: OmitType<ContentKitBox>;
             vstack: OmitType<ContentKitVStack>;
             hstack: OmitType<ContentKitHStack>;
-            spacer: any;
             divider: OmitType<ContentKitDivider>;
             text: OmitType<ContentKitText>;
             codeblock: OmitType<ContentKitCodeBlock>;
