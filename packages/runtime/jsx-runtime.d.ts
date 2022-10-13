@@ -1,3 +1,24 @@
+import {
+    ContentKitBox,
+    ContentKitButton,
+    ContentKitCard,
+    ContentKitCodeBlock,
+    ContentKitDivider,
+    ContentKitHStack,
+    ContentKitMarkdown,
+    ContentKitVStack,
+    ContentKitWebFrame,
+    ContentKitTextInput,
+    ContentKitText,
+    ContentKitBlock,
+    ContentKitImage,
+    ContentKitSelect,
+    ContentKitSwitch,
+    ContentKitRadio,
+    ContentKitCheckbox,
+    ContentKitModal,
+} from '@gitbook/api';
+
 // eslint-disable-next-line import/no-internal-modules
 import { jsx, jsxDEV, jsxs, Fragment } from './src/contentkit-jsx';
 
@@ -13,20 +34,34 @@ declare module '@gitbook/runtime/jsx-runtime' {
     export type Fragment = typeof Fragment;
 }
 
-declare namespace JSX {
-    interface IntrinsicElements {
-        block: any;
-        button: any;
-        box: any;
-        vstack: any;
-        hstack: any;
-        spacer: any;
-        divider: any;
-        text: any;
-        codeblock: any;
-        markdown: any;
-        webframe: any;
-        textinput: any;
-        card: any;
+type OmitType<T> = Omit<T, 'type'>;
+
+declare global {
+    namespace JSX {
+        interface ElementChildrenAttribute {
+            children: {}; // specify children name to use
+        }
+
+        interface IntrinsicElements {
+            block: OmitType<ContentKitBlock>;
+            button: OmitType<ContentKitButton>;
+            box: OmitType<ContentKitBox>;
+            vstack: OmitType<ContentKitVStack>;
+            hstack: OmitType<ContentKitHStack>;
+            spacer: any;
+            divider: OmitType<ContentKitDivider>;
+            text: OmitType<ContentKitText>;
+            codeblock: OmitType<ContentKitCodeBlock>;
+            markdown: OmitType<ContentKitMarkdown>;
+            webframe: OmitType<ContentKitWebFrame>;
+            textinput: OmitType<ContentKitTextInput>;
+            card: OmitType<ContentKitCard>;
+            image: OmitType<ContentKitImage>;
+            select: OmitType<ContentKitSelect>;
+            switch: OmitType<ContentKitSwitch>;
+            radio: OmitType<ContentKitRadio>;
+            modal: OmitType<ContentKitModal>;
+            checkbox: OmitType<ContentKitCheckbox>;
+        }
     }
 }
