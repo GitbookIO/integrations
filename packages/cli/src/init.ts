@@ -35,12 +35,6 @@ export async function promptNewIntegration(dirPath: string): Promise<void> {
             initial: (prev) => prev || '',
         },
         {
-            type: 'text',
-            name: 'script',
-            initial: 'script.ts',
-            message: 'Path to the JS/TS script (created if non-existant):',
-        },
-        {
             type: 'multiselect',
             name: 'scopes',
             message: 'Pick scopes for this integration',
@@ -72,7 +66,7 @@ export async function promptNewIntegration(dirPath: string): Promise<void> {
     await initializeProject(dirPath, response);
     console.log('');
     console.log('Your integration is ready!');
-    console.log(`Edit the ${response.script} file to add your integration logic.`);
+    console.log(`Edit the ./src/index.tsx file to add your integration logic.`);
     console.log('Then, run `gitbook publish` to upload it to GitBook.');
 }
 
@@ -84,14 +78,15 @@ export async function initializeProject(
     project: {
         name: string;
         title: string;
-        script: string;
         scopes: IntegrationScope[];
     }
 ) {
-    const scriptPath = path.join(dirPath, project.script);
+    const srcPath = path.join(dirPath, 'src');
+    const scriptPath = path.join(srcPath, 'index.tsx');
 
     // Create the directly first
     await fs.promises.mkdir(dirPath, { recursive: true });
+    await fs.promises.mkdir(srcPath, { recursive: true });
 
     // Write the manifest
     await writeIntegrationManifest(path.join(dirPath, DEFAULT_MANIFEST_FILE), {
@@ -102,9 +97,9 @@ export async function initializeProject(
         secrets: {},
     });
 
-    if (!(await fileExists(scriptPath))) {
-        await fs.promises.writeFile(scriptPath, generateScript());
-    }
+    await fs.promises.writeFile(scriptPath, generateScript());
+    await fs.promises.writeFile(path.join(dirPath, 'tsconfig.json'), generateTSConfig());
+    await fs.promises.writeFile(path.join(dirPath, '.eslintrc.json'), generateESLint());
 
     await extendPackageJson(dirPath, project.name);
 }
@@ -115,22 +110,22 @@ export async function initializeProject(
 export async function extendPackageJson(dirPath: string, projectName: string): Promise<void> {
     const packageJsonPath = path.join(dirPath, 'package.json');
 
-    let packageJsonObject: {
+    const packageJsonObject: {
         name?: string;
         private?: boolean;
         scripts?: { [key: string]: string };
         devDependencies?: { [key: string]: string };
     } = {};
 
-    if ((await fileExists(packageJsonPath)) === 'file') {
-        packageJsonObject = JSON.parse(await fs.promises.readFile(packageJsonPath, 'utf8'));
-    } else {
-        packageJsonObject.name = projectName;
-        packageJsonObject.private = true;
-        packageJsonObject.scripts = {
-            publish: 'gitbook publish',
-        };
-    }
+    packageJsonObject.name = projectName;
+    packageJsonObject.private = true;
+    packageJsonObject.scripts = {
+        lint: 'eslint ./**/*.ts*',
+        typecheck: 'tsc --noEmit',
+
+        // TODO: this is GitBook-specific
+        'publish-integrations-staging': 'gitbook publish .',
+    };
 
     packageJsonObject.devDependencies = {
         ...(packageJsonObject.devDependencies || {}),
@@ -145,21 +140,41 @@ export async function extendPackageJson(dirPath: string, projectName: string): P
  * Generate the script code.
  */
 export function generateScript(): string {
+    const src = detent(`
+        import { createIntegration, FetchEventCallback, RuntimeContext } from '@gitbook/runtime';
+
+        type IntegrationContext = {} & RuntimeContext;
+        
+        const handleFetchEvent: FetchEventCallback<IntegrationContext> = (request, context) => {
+            // Use the API to make requests to GitBook
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { api } = context;
+        
+            return new Response('Hello World');
+        };
+        
+        export default createIntegration({
+            fetch: handleFetchEvent,
+            components: [],
+            events: {},
+        });    
+    `).trim();
+
+    return `${src}\n`;
+}
+
+export function generateTSConfig(): string {
     return detent(`
-        import { api } from '@gitbook/runtime';
+        {
+            "extends": "@gitbook/tsconfig/integration.json"
+        }
+    `).trim();
+}
 
-        addEventListener('installation:setup', async (event) => {
-            // Do something when the integration has been installed 
-        });
-
-        addEventListener('fetch', async (event) => {
-            // Do something when receiving an HTTP request
-            event.respondWith(new Response('Hello world!'));
-        });
-
-        addEventListener('space:content:updated', async (event) => {
-            // Depending on the scopes of your integration
-            // You can listen to different events related to user actions.
-        });
+export function generateESLint(): string {
+    return detent(`
+        {
+            "extends": ["@gitbook/eslint-config/integration"]
+        }    
     `).trim();
 }
