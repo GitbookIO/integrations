@@ -5,6 +5,7 @@ import {
     RuntimeEnvironment,
     RuntimeContext,
 } from '@gitbook/runtime';
+
 import { extractNodeFromURL, fetchFigmaFile, fetchFigmaNode } from './figma';
 
 interface FigmaInstallationConfiguration {
@@ -95,14 +96,11 @@ const embedBlock = createComponent<{
             );
         }
 
+        element.setCache({ maxAge: 60 * 60 * 24 });
         return (
             <block>
                 <card
-                    title={
-                        file
-                            ? file.name + (file.nodeName ? ` - ${file.nodeName}` : '')
-                            : 'Not found'
-                    }
+                    title={file.name + (file.nodeName ? ` - ${file.nodeName}` : '')}
                     onPress={{
                         action: '@ui.url.open',
                         url,
@@ -169,18 +167,16 @@ const previewModal = createComponent<{
 });
 
 export default createIntegration<FigmaRuntimeContext>({
-    events: {
-        fetch: (request, context) => {
-            const oauthHandler = createOAuthHandler({
-                redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
-                clientId: environment.secrets.CLIENT_ID,
-                clientSecret: environment.secrets.CLIENT_SECRET,
-                authorizeURL: 'https://www.figma.com/oauth?scope=file_read',
-                accessTokenURL: 'https://www.figma.com/api/oauth/token',
-            });
+    fetch: (request, context) => {
+        const oauthHandler = createOAuthHandler({
+            redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
+            clientId: context.environment.secrets.CLIENT_ID,
+            clientSecret: context.environment.secrets.CLIENT_SECRET,
+            authorizeURL: 'https://www.figma.com/oauth?scope=file_read',
+            accessTokenURL: 'https://www.figma.com/api/oauth/token',
+        });
 
-            return oauthHandler(request, context);
-        },
+        return oauthHandler(request, context);
     },
     components: [embedBlock, previewModal],
 });
