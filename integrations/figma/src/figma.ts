@@ -1,4 +1,4 @@
-import { FigmaRuntimeContext } from "./types";
+import { FigmaRuntimeContext } from './types';
 
 export interface FileNodeId {
     fileId: string;
@@ -17,16 +17,16 @@ interface FigmaAPINodes extends FigmaAPIFile {
         [key: string]: {
             document?: {
                 name?: string;
-            }
-        }
-    }
+            };
+        };
+    };
 }
 
 // https://www.figma.com/developers/api#get-images-endpoint
 interface FigmaAPIImages {
     images: {
         [key: string]: string;
-    }
+    };
 }
 
 /**
@@ -55,17 +55,21 @@ export function extractNodeFromURL(input: string): FileNodeId | undefined {
 /**
  * Fetch the informations about a Figma node.
  */
- export async function fetchFigmaNode(fileId: string, nodeId: string, context: FigmaRuntimeContext) {
+export async function fetchFigmaNode(fileId: string, nodeId: string, context: FigmaRuntimeContext) {
     try {
         const [node, image] = await Promise.all([
-            fetchFigmaAPI<FigmaAPINodes>(`files/${fileId}/nodes`, { ids: nodeId, depth: 1 }, context),
-            fetchFigmaImage(fileId, nodeId, context)
+            fetchFigmaAPI<FigmaAPINodes>(
+                `files/${fileId}/nodes`,
+                { ids: nodeId, depth: 1 },
+                context
+            ),
+            fetchFigmaImage(fileId, nodeId, context),
         ]);
         return {
             name: node.name,
             thumbnailUrl: node.thumbnailUrl,
             nodeName: node.nodes[nodeId]?.document?.name,
-            nodeImage: image
+            nodeImage: image,
         };
     } catch (err) {
         return undefined;
@@ -75,9 +79,17 @@ export function extractNodeFromURL(input: string): FileNodeId | undefined {
 /**
  * Fetch the preview image for a node.
  */
- export async function fetchFigmaImage(fileId: string, nodeId: string, context: FigmaRuntimeContext) {
+export async function fetchFigmaImage(
+    fileId: string,
+    nodeId: string,
+    context: FigmaRuntimeContext
+) {
     try {
-        const image = await fetchFigmaAPI<FigmaAPIImages>(`images/${fileId}`, { ids: nodeId, format: 'svg' }, context);
+        const image = await fetchFigmaAPI<FigmaAPIImages>(
+            `images/${fileId}`,
+            { ids: nodeId, format: 'svg' },
+            context
+        );
         const imageUrl = image.images?.[nodeId];
         if (!imageUrl) {
             return undefined;
@@ -86,12 +98,12 @@ export function extractNodeFromURL(input: string): FileNodeId | undefined {
         const response = await fetch(imageUrl);
         const svgText = await response.text();
 
-        const [,width, height] = svgText.match(/viewBox="0 0 (\d+) (\d+)"/) || [];
+        const [, width, height] = svgText.match(/viewBox="0 0 (\d+) (\d+)"/) || [];
 
         return {
             width: parseInt(width, 10),
             height: parseInt(height, 10),
-            url: imageUrl
+            url: imageUrl,
         };
     } catch (err) {
         return undefined;
@@ -113,8 +125,12 @@ export async function fetchFigmaFile(fileId: string, context: FigmaRuntimeContex
 /**
  * Execute a Figma API request.
  */
-export async function fetchFigmaAPI<T>(path: string, params: object, { environment }: FigmaRuntimeContext): Promise<T> {
-    const accessToken = environment.installation.configuration.oauth_credentials?.access_token
+export async function fetchFigmaAPI<T>(
+    path: string,
+    params: object,
+    { environment }: FigmaRuntimeContext
+): Promise<T> {
+    const accessToken = environment.installation.configuration.oauth_credentials?.access_token;
     if (!accessToken) {
         throw new Error('Missing authentication');
     }
@@ -127,7 +143,7 @@ export async function fetchFigmaAPI<T>(path: string, params: object, { environme
 
     const response = await fetch(url.toString(), {
         headers: {
-            'Authorization': `Bearer ${accessToken}`,
+            Authorization: `Bearer ${accessToken}`,
         },
     });
 

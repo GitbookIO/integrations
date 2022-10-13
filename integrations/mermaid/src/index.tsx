@@ -1,23 +1,26 @@
-import { createIntegration, createComponent } from "@gitbook/runtime";
+import { createIntegration, createComponent } from '@gitbook/runtime';
 
-const defaultContent =`graph TD
+const defaultContent = `graph TD
   Mermaid --> Diagram`;
 
-const diagramBlock = createComponent<{
-    content?: string;
-}, {
-    content: string;
-}>({
+const diagramBlock = createComponent<
+    {
+        content?: string;
+    },
+    {
+        content: string;
+    }
+>({
     componentId: 'diagram',
     initialState: (props) => {
         return {
-            content: props.content || defaultContent
+            content: props.content || defaultContent,
         };
     },
     async render(element, { environment }) {
         const { editable } = element.context;
         const { content } = element.state;
-        
+
         return (
             <block>
                 <box style="secondary">
@@ -25,39 +28,38 @@ const diagramBlock = createComponent<{
                         {editable ? (
                             <>
                                 <box>
-                                <codeblock
-                                    state="content"
-                                    content={content}
-                                    syntax="mermaid"
-                                    onContentChange={{
-                                        action: '@editor.node.updateProps',
-                                        props: {
-                                            content: element.dynamicState('content')
-                                        }
-                                    }}
+                                    <codeblock
+                                        state="content"
+                                        content={content}
+                                        syntax="mermaid"
+                                        onContentChange={{
+                                            action: '@editor.node.updateProps',
+                                            props: {
+                                                content: element.dynamicState('content'),
+                                            },
+                                        }}
                                     />
                                 </box>
                                 <divider />
                             </>
                         ) : null}
                         <box>
-                        <webframe
-                            source={{
-                                url: environment.integration.urls.publicEndpoint,
-                            }}
-                            aspectRatio={16 / 9}
-                            data={{
-                                content: element.dynamicState('content'),
-                            }}
-                        />
+                            <webframe
+                                source={{
+                                    url: environment.integration.urls.publicEndpoint,
+                                }}
+                                aspectRatio={16 / 9}
+                                data={{
+                                    content: element.dynamicState('content'),
+                                }}
+                            />
                         </box>
                     </vstack>
                 </box>
             </block>
         );
-    }
-})
-
+    },
+});
 
 export default createIntegration({
     events: {
@@ -123,7 +125,7 @@ export default createIntegration({
                     },
                 }
             );
-        }
+        },
     },
-    components: [diagramBlock]
+    components: [diagramBlock],
 });
