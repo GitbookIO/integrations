@@ -14,12 +14,6 @@ declare module '@gitbook/runtime/jsx-runtime' {
 }
 
 declare namespace JSX {
-    // type Children = ContentKitDescendantElement | ContentKitDescendantElement[];
-    type Element = string;
-    interface ElementChildrenAttribute {
-        children: {}; // specify children name to use
-    }
-
     interface IntrinsicElements {
         block: any;
         button: any;
