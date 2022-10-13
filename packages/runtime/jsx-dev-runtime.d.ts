@@ -12,3 +12,21 @@ declare module '@gitbook/runtime/jsx-dev-runtime' {
     export type jsxDEV = typeof jsxDEV;
     export type Fragment = typeof Fragment;
 }
+
+declare namespace JSX {
+    interface IntrinsicElements {
+        block: any;
+        button: any;
+        box: any;
+        vstack: any;
+        hstack: any;
+        spacer: any;
+        divider: any;
+        text: any;
+        codeblock: any;
+        markdown: any;
+        webframe: any;
+        textinput: any;
+        card: any;
+    }
+}

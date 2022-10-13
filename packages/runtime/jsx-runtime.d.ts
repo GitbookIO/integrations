@@ -12,3 +12,27 @@ declare module '@gitbook/runtime/jsx-runtime' {
     export type jsxDEV = typeof jsxDEV;
     export type Fragment = typeof Fragment;
 }
+
+declare namespace JSX {
+    // type Children = ContentKitDescendantElement | ContentKitDescendantElement[];
+    type Element = string;
+    interface ElementChildrenAttribute {
+        children: {}; // specify children name to use
+    }
+
+    interface IntrinsicElements {
+        block: any;
+        button: any;
+        box: any;
+        vstack: any;
+        hstack: any;
+        spacer: any;
+        divider: any;
+        text: any;
+        codeblock: any;
+        markdown: any;
+        webframe: any;
+        textinput: any;
+        card: any;
+    }
+}
