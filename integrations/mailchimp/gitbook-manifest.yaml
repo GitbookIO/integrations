@@ -4,7 +4,7 @@ icon: ./assets/icon.png
 description: Grow your mailing list by having your readers subscribe directly from your GitBook documentation.
 categories:
     - marketing
-visibility: private
+visibility: public
 script: ./src/index.tsx
 previewImages:
     - ./assets/preview.png
