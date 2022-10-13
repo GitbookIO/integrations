@@ -22,7 +22,7 @@ summary: |
     Once the block has been inserted, you can configure which Audience you'd like new subscribers to be added to.
 scopes: []
 blocks:
-    - id: mailchimpBlock
+    - id: mailchimpSubscribe
       title: Mailchimp
       description: Grow your mailing list by having your readers subscribe directly from GitBook.
 configurations:

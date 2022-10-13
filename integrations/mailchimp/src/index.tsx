@@ -38,13 +38,13 @@ const DEFAULT_CTA = 'Sign up to our mailing list to receive updates!';
 /**
  * A Block to subscribe to a Mailchimp mailing list.
  */
-const mailchimpBlock = createComponent<
+const mailchimpSubscribe = createComponent<
     MailchimpBlockProps,
     MailchimpBlockState,
     MailchimpAction,
     MailchimpRuntimeContext
 >({
-    componentId: 'mailchimpBlock',
+    componentId: 'mailchimpSubscribe',
 
     initialState: () => ({
         email: '',
@@ -309,5 +309,5 @@ export default createIntegration<MailchimpRuntimeContext>({
 
         return response;
     },
-    components: [mailchimpBlock, settingsModal],
+    components: [mailchimpSubscribe, settingsModal],
 });
