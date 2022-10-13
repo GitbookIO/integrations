@@ -11,7 +11,7 @@ const embedBlock = createComponent<{
 }>({
     componentId: 'embed',
 
-    async action(element, action, context) {
+    async action(element, action) {
         switch (action.action) {
             case '@link.unfurl': {
                 const { url } = action;
@@ -41,7 +41,8 @@ const embedBlock = createComponent<{
 
         const linearClient = await getLinearAPIClient(installation.configuration);
         const { issue } = await linearClient.issue({ id: issueId });
-        const hint = `${issueId} • ${issue.state.name}`;
+        // TODO: add images with Linear icons once we've added build script to publish public assets to Cloudflare
+        const hint = [<text>{issueId}</text>, <text> • </text>, <text>{issue.state.name}</text>];
 
         return (
             <block>
@@ -60,36 +61,33 @@ const embedBlock = createComponent<{
                             aspectRatio={1}
                         />
                     }
-                    buttons={[
-                        <button
-                            icon="maximize"
-                            tooltip="Show preview"
-                            onPress={{
-                                action: '@ui.modal.open',
-                                componentId: 'previewModal',
-                                props: {
-                                    id: issueId,
-                                    title: issue.title,
-                                    description: issue.description,
-                                    state: issue.state.name,
-                                },
-                            }}
-                        />,
-                    ]}
-                >
-                    <vstack>
-                        <hstack>
-                            <divider />
-                            <box>
-                                <markdown
-                                    content={issue.description ?? 'No description provided.'}
-                                />
-                            </box>
-                            <divider />
-                        </hstack>
-                        <divider />
-                    </vstack>
-                </card>
+                    buttons={
+                        issue.description
+                            ? [
+                                  <button
+                                      icon="maximize"
+                                      tooltip="Show preview"
+                                      onPress={{
+                                          action: '@ui.modal.open',
+                                          componentId: 'previewModal',
+                                          props: {
+                                              id: issueId,
+                                              title: issue.title,
+                                              description: issue.description,
+                                              assignee: issue.assignee
+                                                  ? {
+                                                        name: issue.assignee.name,
+                                                        avatarUrl: issue.assignee.avatarUrl,
+                                                    }
+                                                  : undefined,
+                                              state: issue.state.name,
+                                          },
+                                      }}
+                                  />,
+                              ]
+                            : []
+                    }
+                />
             </block>
         );
     },
@@ -102,36 +100,42 @@ const previewModal = createComponent<{
     id: string;
     title: string;
     description?: string;
+    assignee?: {
+        name: string;
+        avatarUrl?: string;
+    };
     state: string;
 }>({
     componentId: 'previewModal',
 
     async render(element, context) {
-        const { id, title, description, state } = element.props;
+        const { id, title, description, state, assignee } = element.props;
 
         return (
-            <modal size="fullscreen">
-                <card
-                    title={title}
-                    icon={
-                        <image
-                            source={{
-                                url: context.environment.integration.urls.icon,
-                            }}
-                            aspectRatio={1}
-                        />
-                    }
-                >
-                    <vstack>
-                        <hstack>
-                            <divider />
-                            <box>
-                                <markdown content={description ?? 'No description provided.'} />
-                            </box>
-                            <divider />
-                        </hstack>
-                    </vstack>
-                </card>
+            <modal title={title} size="fullscreen">
+                <vstack>
+                    <hstack align="center">
+                        <text>{id}</text>
+                        <text>{state}</text>
+                        {assignee ? (
+                            <>
+                                {assignee.avatarUrl ? (
+                                    <image
+                                        source={{
+                                            url: assignee.avatarUrl,
+                                        }}
+                                        aspectRatio={4}
+                                    />
+                                ) : null}
+                                <text>{assignee.name}</text>
+                            </>
+                        ) : null}
+                    </hstack>
+                    <divider />
+                    <box>
+                        <markdown content={description ?? 'No description provided.'} />
+                    </box>
+                </vstack>
             </modal>
         );
     },
