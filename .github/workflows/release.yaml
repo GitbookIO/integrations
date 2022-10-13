@@ -62,6 +62,8 @@ jobs:
                   SLACK_SIGNING_SECRET: ${{ secrets.SLACK_STAGING_SIGNING_SECRET }}
                   FIGMA_CLIENT_ID: ${{ secrets.FIGMA_STAGING_CLIENT_ID }}
                   FIGMA_CLIENT_SECRET: ${{ secrets.FIGMA_STAGING_CLIENT_SECRET }}
+                  MAILCHIMP_CLIENT_ID: ${{ secrets.MAILCHIMP_STAGING_CLIENT_ID }}
+                  MAILCHIMP_CLIENT_SECRET: ${{ secrets.MAILCHIMP_STAGING_CLIENT_SECRET }}
             - name: Publish all integrations to production
               run: npm run publish-integrations
               env:
@@ -73,3 +75,5 @@ jobs:
                   SLACK_SIGNING_SECRET: ${{ secrets.SLACK_PROD_SIGNING_SECRET }}
                   FIGMA_CLIENT_ID: ${{ secrets.FIGMA_PROD_CLIENT_ID }}
                   FIGMA_CLIENT_SECRET: ${{ secrets.FIGMA_PROD_CLIENT_SECRET }}
+                  MAILCHIMP_CLIENT_ID: ${{ secrets.MAILCHIMP_PROD_CLIENT_ID }}
+                  MAILCHIMP_CLIENT_SECRET: ${{ secrets.MAILCHIMP_PROD_CLIENT_SECRET }}
