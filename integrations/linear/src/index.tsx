@@ -108,11 +108,12 @@ const embedBlock = createComponent<{
                                           props: {
                                               id: issueId,
                                               title: issue.title,
-                                              description: issue.description,
+                                              description: issue.description ?? undefined,
                                               assignee: issue.assignee
                                                   ? {
                                                         name: issue.assignee.name,
-                                                        avatarUrl: issue.assignee.avatarUrl,
+                                                        avatarUrl:
+                                                            issue.assignee.avatarUrl ?? undefined,
                                                     }
                                                   : undefined,
                                               state: issue.state.name,
@@ -149,7 +150,7 @@ const previewModal = createComponent<{
         return (
             <modal title={title} size="fullscreen">
                 <vstack>
-                    <hstack align="center">
+                    <hstack>
                         <text>{id}</text>
                         <text>{state}</text>
                         {assignee ? (
