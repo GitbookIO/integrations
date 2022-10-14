@@ -1,3 +1,4 @@
+import { ContentKitIcon } from '@gitbook/api';
 import { createIntegration, createComponent, createOAuthHandler, Logger } from '@gitbook/runtime';
 import { extractLinearIssueIdFromLink, getLinearAPIClient } from './linear';
 import { IssueQuery } from './linear/gql/graphql';
@@ -99,7 +100,7 @@ const embedBlock = createComponent<{
                         issue.description
                             ? [
                                   <button
-                                      icon="maximize"
+                                      icon={ContentKitIcon.Maximize}
                                       tooltip="Show preview"
                                       onPress={{
                                           action: '@ui.modal.open',
@@ -177,8 +178,9 @@ const previewModal = createComponent<{
 
 export default createIntegration<LinearRuntimeContext>({
     fetch: (request, context) => {
+        const { environment } = context;
         const oauthHandler = createOAuthHandler({
-            redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
+            redirectURL: `${environment.integration.urls.publicEndpoint}/oauth`,
             clientId: environment.secrets.CLIENT_ID,
             clientSecret: environment.secrets.CLIENT_SECRET,
             authorizeURL: 'https://linear.app/oauth/authorize',
