@@ -7,7 +7,7 @@
         },
         "api#build": {
             "cache": false,
-            "inputs": ["src/**", "../../../gitbook-x/packages/api-client/static/openapi.yaml"],
+            "inputs": ["src/**", "../gitbook-x/packages/api-client/static/openapi.yaml"],
             "outputs": ["dist/**", "spec/**"]
         },
         "test": {
