@@ -2,7 +2,6 @@ name: intercom
 title: Intercom
 icon: ./assets/icon.png
 description: Add the Intercom chat widget to your published GitBook content
-organization: gitbook
 previewImages:
     - ./assets/preview.png
 externalLinks:

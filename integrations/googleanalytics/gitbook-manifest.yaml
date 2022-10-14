@@ -2,7 +2,6 @@ name: googleanalytics
 title: Google Analytics
 icon: ./assets/icon.png
 description: Receive traffic insights directly in your Google Analytics dashboard.
-organization: gitbook
 previewImages:
     - ./assets/preview.png
 externalLinks:

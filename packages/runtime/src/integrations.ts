@@ -51,7 +51,7 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
             const fetchBody = formData.get('fetch-body');
             const context = createContext(
                 JSON.parse(formData.get('environment') as string) as IntegrationEnvironment
-            );
+            ) as Context;
 
             if (event.type === 'fetch' && definition.fetch) {
                 logger.info(`handling fetch ${event.request.method} ${event.request.url}`);
@@ -63,7 +63,6 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                     body: fetchBody,
                 });
 
-                // @ts-ignore
                 const resp = await definition.fetch(request, context);
                 logger.debug(
                     `response ${resp.status} ${resp.statusText} Content-Type: ${resp.headers.get(
@@ -96,7 +95,6 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                     return new Response('Component not defined', { status: 404 });
                 }
 
-                // @ts-ignore
                 return await component.render(event, context);
             }
 
