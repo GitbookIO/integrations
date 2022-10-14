@@ -78,7 +78,6 @@ export default createIntegration({
                                 document.getElementById('content').innerHTML = svgGraph;
                                 const svg = document.getElementById('content').querySelector('svg');
                                 const size = { width: svg.viewBox.baseVal.width, height: svg.viewBox.baseVal.height };
-                                console.log(size);
 
                                 sendAction({
                                     action: '@webframe.resize',
@@ -92,6 +91,7 @@ export default createIntegration({
                         }
 
                         function sendAction(action) {
+                            console.log('sendAction', action);
                             window.top.postMessage(
                                 {
                                     action,
