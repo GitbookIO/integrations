@@ -1,6 +1,8 @@
 ---
 '@gitbook/integration-fathom': patch
 '@gitbook/integration-plausible': patch
+'@gitbook/integration-googleanalytics': patch
+'@gitbook/integration-intercom': patch
 '@gitbook/cli': patch
 '@gitbook/eslint-config': patch
 ---
