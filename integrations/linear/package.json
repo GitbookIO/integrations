@@ -12,10 +12,12 @@
         "@gitbook/cli": "*",
         "@graphql-codegen/cli": "2.13.3",
         "@graphql-codegen/client-preset": "1.0.2",
-        "@graphql-codegen/typescript-graphql-request": "^4.5.5"
+        "@graphql-codegen/typescript-graphql-request": "^4.5.5",
+        "dotenv-cli": "^6.0.0"
     },
     "scripts": {
         "build": "graphql-codegen --config linear.sdk.codegen.yml",
-        "publish-integrations-staging": "gitbook publish ."
+        "publish-linear-dev": "dotenv gitbook publish .",
+        "publish-integrations-staging": "dotenv gitbook publish ."
     }
 }
