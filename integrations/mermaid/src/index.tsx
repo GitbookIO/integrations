@@ -21,52 +21,49 @@ const diagramBlock = createComponent<
         const { editable } = element.context;
         const { content } = element.state;
 
+        element.setCache({
+            maxAge: 86400,
+        });
+
+        const output = (
+            <webframe
+                source={{
+                    url: environment.integration.urls.publicEndpoint,
+                }}
+                aspectRatio={16 / 9}
+                data={{
+                    content: element.dynamicState('content'),
+                }}
+            />
+        );
+
         return (
             <block>
-                <box style="secondary">
-                    <vstack>
-                        {editable ? (
-                            <>
-                                <box>
-                                    <codeblock
-                                        state="content"
-                                        content={content}
-                                        syntax="mermaid"
-                                        onContentChange={{
-                                            action: '@editor.node.updateProps',
-                                            props: {
-                                                content: element.dynamicState('content'),
-                                            },
-                                        }}
-                                    />
-                                </box>
-                                <divider />
-                            </>
-                        ) : null}
-                        <box>
-                            <webframe
-                                source={{
-                                    url: environment.integration.urls.publicEndpoint,
-                                }}
-                                aspectRatio={16 / 9}
-                                data={{
-                                    content: element.dynamicState('content'),
-                                }}
-                            />
-                        </box>
-                    </vstack>
-                </box>
+                {editable ? (
+                    <codeblock
+                        state="content"
+                        content={content}
+                        syntax="mermaid"
+                        onContentChange={{
+                            action: '@editor.node.updateProps',
+                            props: {
+                                content: element.dynamicState('content'),
+                            },
+                        }}
+                        footer={output}
+                    />
+                ) : (
+                    output
+                )}
             </block>
         );
     },
 });
 
 export default createIntegration({
-    events: {
-        fetch: async (event) => {
-            return new Response(
-                `
-                <html>
+    fetch: async (request) => {
+        return new Response(
+            `<html>
                 <style>
                 * { margin: 0; padding: 0; }
                 </style>
@@ -117,15 +114,14 @@ export default createIntegration({
                     </script>
                     <div id="content"></div>
                 </body>
-            </html>
-                `,
-                {
-                    headers: {
-                        'Content-Type': 'text/html',
-                    },
-                }
-            );
-        },
+            </html>`,
+            {
+                headers: {
+                    'Content-Type': 'text/html',
+                    'Cache-Control': 'public, max-age=86400',
+                },
+            }
+        );
     },
     components: [diagramBlock],
 });
