@@ -50,7 +50,7 @@ const diagramBlock = createComponent<
                                 content: element.dynamicState('content'),
                             },
                         }}
-                        footer={output}
+                        footer={[output]}
                     />
                 ) : (
                     output
