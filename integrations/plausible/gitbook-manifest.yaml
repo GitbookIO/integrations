@@ -2,7 +2,6 @@ name: plausible
 title: Plausible Analytics
 icon: ./assets/icon.png
 description: Track your GitBook analytics directly from your Plausible dashboard.
-organization: gitbook
 previewImages:
     - ./assets/preview.png
 externalLinks:

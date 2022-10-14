@@ -5,7 +5,7 @@ import {
     RuntimeEnvironment,
 } from '@gitbook/runtime';
 
-import script from './plausibleScript.raw.js';
+import script from './fathomScript.raw.js';
 
 type FathomRuntimeContext = RuntimeContext<
     RuntimeEnvironment<
