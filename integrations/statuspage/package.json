@@ -1,15 +1,17 @@
 {
-  "name": "@gitbook/integration-statuspage",
-  "version": "0.0.0",
-  "private": true,
-  "dependencies": {
-    "@gitbook/api": "*",
-    "@gitbook/runtime": "*"
-  },
-  "devDependencies": {
-    "@gitbook/cli": "*"
-  },
-  "scripts": {
-    "publish-integrations-staging": "gitbook publish ."
-  }
+    "name": "@gitbook/integration-statuspage",
+    "version": "0.0.0",
+    "private": true,
+    "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "*"
+    },
+    "scripts": {
+        "lint": "eslint ./src/**/*.ts",
+        "typecheck": "tsc --noEmit",
+        "publish-integrations-staging": "gitbook publish ."
+    }
 }

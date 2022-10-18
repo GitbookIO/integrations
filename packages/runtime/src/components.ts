@@ -7,8 +7,8 @@ import {
 
 import { RuntimeCallback, RuntimeContext } from './context';
 
-type PlainValue = string | number | boolean | null | undefined | PlainObject | PlainArray;
 type PlainArray = PlainValue[];
+type PlainValue = string | number | boolean | null | undefined | PlainObject | PlainArray;
 type PlainObject = { [key: string]: PlainValue };
 
 export interface ComponentRenderCache {
