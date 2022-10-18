@@ -43,9 +43,7 @@ const previewBlock = createComponent<
                                 <codeblock content={content} syntax="javascript" />
                             </box>
                             <divider />
-                            <spacer />
                             <box>{parsed}</box>
-                            <spacer />
                         </hstack>
                         {action ? (
                             <>

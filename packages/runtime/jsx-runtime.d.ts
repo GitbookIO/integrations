@@ -17,6 +17,7 @@ import {
     ContentKitRadio,
     ContentKitCheckbox,
     ContentKitModal,
+    ContentKitInput,
 } from '@gitbook/api';
 
 // eslint-disable-next-line import/no-internal-modules
@@ -48,12 +49,12 @@ declare global {
             box: OmitType<ContentKitBox>;
             vstack: OmitType<ContentKitVStack>;
             hstack: OmitType<ContentKitHStack>;
-            spacer: any;
             divider: OmitType<ContentKitDivider>;
             text: OmitType<ContentKitText>;
             codeblock: OmitType<ContentKitCodeBlock>;
             markdown: OmitType<ContentKitMarkdown>;
             webframe: OmitType<ContentKitWebFrame>;
+            input: OmitType<ContentKitInput>;
             textinput: OmitType<ContentKitTextInput>;
             card: OmitType<ContentKitCard>;
             image: OmitType<ContentKitImage>;
