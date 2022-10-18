@@ -44,6 +44,7 @@ export async function publishIntegration(
                 readImage(resolveFile(filePath, imageFilePath), 'preview')
             )
         ),
+        contentSecurityPolicy: manifest.contentSecurityPolicy,
         script,
         ...updates,
     });
