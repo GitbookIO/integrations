@@ -12,7 +12,13 @@ export interface StatuspageComponentObject {
     name: string;
     description: string;
     updated_at: string;
-    status: "operational" | "under_maintenance"|  "degraded_performance"|  "partial_outage" | "major_outage" | ""
+    status:
+        | 'operational'
+        | 'under_maintenance'
+        | 'degraded_performance'
+        | 'partial_outage'
+        | 'major_outage'
+        | '';
 }
 
 /**
@@ -28,7 +34,7 @@ export async function statuspageAPI<Response>(
     cache: {
         ttl: number;
     } = {
-        ttl: 3600
+        ttl: 3600,
     }
 ): Promise<Response> {
     const { environment } = context;
@@ -61,16 +67,18 @@ export async function statuspageAPI<Response>(
         method: request.method,
         body,
         headers,
-        cf: request.method === 'GET' ? {
-            cacheTtl: cache.ttl,
-            cacheEverything: true,
-        } : undefined,
+        cf:
+            request.method === 'GET'
+                ? {
+                      cacheTtl: cache.ttl,
+                      cacheEverything: true,
+                  }
+                : undefined,
     });
 
     if (!response.ok) {
         throw new Error(`${response.status} ${response.statusText}`);
     }
 
-    const result = await response.json();
-    return result;
+    return response.json();
 }

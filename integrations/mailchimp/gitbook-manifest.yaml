@@ -1,0 +1,41 @@
+name: mailchimp
+title: Mailchimp
+icon: ./assets/icon.png
+description: Grow your mailing list by having your readers subscribe directly from your GitBook documentation.
+categories:
+    - marketing
+visibility: public
+script: ./src/index.tsx
+previewImages:
+    - ./assets/preview.png
+summary: |
+    # Overview
+
+    This integration provides a way for readers of your GitBook-powered documentation to subscribe to a Mailchimp Audience.
+
+    # How it works
+
+    Once the integration is installed, insert the Mailchimp block into any page. Users will be able to subscribe to your selected Audience directly from the page.
+
+    # Configure
+
+    Once the block has been inserted, you can configure which Audience you'd like new subscribers to be added to.
+scopes: []
+blocks:
+    - id: mailchimpSubscribe
+      title: Mailchimp
+      description: Grow your mailing list by having your readers subscribe directly from GitBook.
+configurations:
+    account:
+        properties:
+            oauth_credentials:
+                type: button
+                title: Connection
+                description: Authorization between Mailchimp and GitBook.
+                button_text: Authorize
+                callback_url: /oauth
+        required:
+            - oauth_credentials
+secrets:
+    CLIENT_ID: ${{ env.MAILCHIMP_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.MAILCHIMP_CLIENT_SECRET }}

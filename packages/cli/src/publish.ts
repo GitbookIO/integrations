@@ -44,6 +44,7 @@ export async function publishIntegration(
                 readImage(resolveFile(filePath, imageFilePath), 'preview')
             )
         ),
+        contentSecurityPolicy: manifest.contentSecurityPolicy,
         script,
         ...updates,
     });
@@ -75,7 +76,9 @@ async function buildScript(filePath: string): Promise<string> {
         write: false,
         mainFields: ['worker', 'browser', 'module', 'jsnext', 'main'],
         conditions: ['worker', 'browser', 'import', 'production'],
-        define: {},
+        define: {
+            'process.env.NODE_ENV': '"production"',
+        },
         // Automatically handle JSX using the ContentKit runtime
         jsx: 'automatic',
         jsxImportSource: '@gitbook/runtime',
