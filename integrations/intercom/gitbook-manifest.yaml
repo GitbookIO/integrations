@@ -12,22 +12,22 @@ script: ./src/index.ts
 scopes:
     - space:script:published
     - space:cookie:inject
-contentSecurityPolicy: |
-    script-src
+contentSecurityPolicy:
+    script-src: |
       https://js.intercomcdn.com
       https://widget.intercom.io
       https://app.intercom.io;
-    style-src
+    style-src: |
       'unsafe-inline';
-    frame-src
+    frame-src: |
       www.intercom-reporting.com;
-    child-src
+    child-src: |
       www.intercom-reporting.com
       intercom-sheets.com
       www.youtube.com
       player.vimeo.com
       fast.wistia.net;
-    img-src
+    img-src: |
       data:
       blob:
       static.intercomassets.com
@@ -42,18 +42,18 @@ contentSecurityPolicy: |
       *.intercom-attachments-6.com
       *.intercom-attachments-7.com
       *.intercom-attachments-9.com;
-    font-src
+    font-src: |
       js.intercomcdn.com
       fonts.intercomcdn.com;
-    connect-src
+    connect-src: |
       *.intercom.io
       wss://*.intercom.io
       uploads.intercomcdn.com
       uploads.intercomusercontent.com;
-    form-action
+    form-action: |
       api-iam.intercom.io
       intercom.help;
-    media-src
+    media-src: |
       *.intercomcdn.com;
 summary: |
     The Intercom integration for GitBook allows you to be in contact with your readers through the Intercom chat widget.

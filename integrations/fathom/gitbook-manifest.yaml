@@ -11,10 +11,10 @@ visibility: public
 script: ./src/index.ts
 scopes:
     - space:script:published
-contentSecurityPolicy: |
-    script-src
+contentSecurityPolicy:
+    script-src: |
       usefathom.com;
-    connect-src
+    connect-src: |
       usefathom.com;
 summary: |
     The GitBook Fathom Analytics integration allows you to track traffic in your published spaces from your Fathom dashboard.
