@@ -12,7 +12,6 @@ summary: |
     # How it works
 
     Embedding Linear in your documentation is simple - just paste a Linear link into the GitBook editor. The app will turn the link into an embed that show details of the Linear issue like the title, status & assignee along with a snapshot of the issue description.
-organization: gitbook
 visibility: public
 script: ./src/index.tsx
 scopes: []
