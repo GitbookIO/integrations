@@ -15,14 +15,12 @@ export function extractLinearIssueIdFromLink(link: string): string {
         return;
     }
 
-    const parts = url.pathname.split('/').slice(1);
+    const [, issuePath, issueId] = url.pathname.split('/').slice(1);
 
     // Not an issue link
-    if (parts[1] !== 'issue') {
+    if (issuePath !== 'issue') {
         return;
     }
-
-    const issueId = parts[2];
 
     return issueId;
 }
