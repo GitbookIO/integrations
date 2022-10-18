@@ -106,17 +106,8 @@ const embedBlock = createComponent<{
                                           action: '@ui.modal.open',
                                           componentId: 'previewModal',
                                           props: {
-                                              id: issueId,
-                                              title: issue.title,
-                                              description: issue.description ?? undefined,
-                                              assignee: issue.assignee
-                                                  ? {
-                                                        name: issue.assignee.name,
-                                                        avatarUrl:
-                                                            issue.assignee.avatarUrl ?? undefined,
-                                                    }
-                                                  : undefined,
-                                              state: issue.state.name,
+                                              issueId,
+                                              url,
                                           },
                                       }}
                                   />,
@@ -133,43 +124,64 @@ const embedBlock = createComponent<{
  * Component to render a preview of Linear issue when clicking maximize button.
  */
 const previewModal = createComponent<{
-    id: string;
-    title: string;
-    description?: string;
-    assignee?: {
-        name: string;
-        avatarUrl?: string;
-    };
-    state: string;
+    issueId: string;
+    url: string;
 }>({
     componentId: 'previewModal',
 
     async render(element, context) {
-        const { id, title, description, state, assignee } = element.props;
+        const { environment } = context;
+        const { installation } = environment;
 
+        if (!installation) {
+            return;
+        }
+
+        const { issueId, url } = element.props;
+        const linearClient = await getLinearAPIClient(installation.configuration);
+
+        let response: IssueQuery;
+        try {
+            response = await linearClient.issue({ id: issueId });
+        } catch (error) {
+            logger.info(
+                `API Error when fetching the issue (ID: ${issueId})`,
+                JSON.stringify(error)
+            );
+            return (
+                <modal title="Linear" size="fullscreen">
+                    <vstack>
+                        <hstack>
+                            <text style="italic">{url}</text>
+                            <button
+                                icon={ContentKitIcon.LinkExternal}
+                                onPress={{ action: '@ui.url.open', url }}
+                            />
+                        </hstack>
+                        <divider />
+                        <text>
+                            <text style="bold">Error: </text>
+                            <text>Couldn't get the issue details.</text>
+                        </text>
+                    </vstack>
+                </modal>
+            );
+        }
+
+        const { issue } = response;
         return (
-            <modal title={title} size="fullscreen">
+            <modal title={issue.title} size="fullscreen">
                 <vstack>
                     <hstack>
-                        <text>{id}</text>
-                        <text>{state}</text>
-                        {assignee ? (
-                            <>
-                                {assignee.avatarUrl ? (
-                                    <image
-                                        source={{
-                                            url: assignee.avatarUrl,
-                                        }}
-                                        aspectRatio={4}
-                                    />
-                                ) : null}
-                                <text>{assignee.name}</text>
-                            </>
-                        ) : null}
+                        <text>{issueId}</text>
+                        <text> • </text>
+                        <text>{issue.state.name}</text>
+                        <text> • </text>
+                        <text>{issue.assignee ? issue.assignee.name : 'Unassigned'}</text>
                     </hstack>
                     <divider />
                     <box>
-                        <markdown content={description ?? 'No description provided.'} />
+                        <markdown content={issue.description ?? 'No description provided.'} />
                     </box>
                 </vstack>
             </modal>
