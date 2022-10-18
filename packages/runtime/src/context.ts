@@ -34,7 +34,7 @@ export type RuntimeCallback<
 > = (...args: [...Input, Context]) => Result;
 
 /**
- * Create a mnewew runtime context from an environment.
+ * Create a new runtime context from an environment.
  */
 export function createContext(environment: IntegrationEnvironment): RuntimeContext {
     return {

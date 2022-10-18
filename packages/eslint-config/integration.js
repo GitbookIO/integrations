@@ -1,10 +1,10 @@
 module.exports = {
     extends: ['./'],
-    "env": {
-        "browser": true,
-        "serviceworker": true
+    env: {
+        browser: true,
+        serviceworker: true,
     },
-    "globals": {
-        "environment": "readonly"
-    }
+    globals: {
+        environment: 'readonly',
+    },
 };

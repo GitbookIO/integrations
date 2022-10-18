@@ -1,0 +1,12 @@
+name: injection_test
+title: Injection test
+icon: ./assets/icon.png
+description: Some test integration for injecting scripts
+visibility: public
+script: ./src/index.ts
+scopes:
+    - space:script:published
+summary: |
+    Test for injecting scripts
+categories:
+    - other

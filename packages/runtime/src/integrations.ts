@@ -51,7 +51,7 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
             const fetchBody = formData.get('fetch-body');
             const context = createContext(
                 JSON.parse(formData.get('environment') as string) as IntegrationEnvironment
-            );
+            ) as Context;
 
             if (event.type === 'fetch' && definition.fetch) {
                 logger.info(`handling fetch ${event.request.method} ${event.request.url}`);
@@ -72,6 +72,22 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                 return resp;
             }
 
+            if (
+                event.type === 'fetch_published_script' &&
+                definition.events.fetch_published_script
+            ) {
+                logger.info(`handling fetch_published_script`);
+
+                // @ts-ignore
+                const resp = await definition.events.fetch_published_script(event, context);
+                logger.debug(
+                    `response ${resp.status} ${resp.statusText} Content-Type: ${resp.headers.get(
+                        'content-type'
+                    )}`
+                );
+                return resp;
+            }
+
             if (event.type === 'ui_render') {
                 const component = components.find((c) => c.componentId === event.componentId);
 
@@ -79,13 +95,7 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                     return new Response('Component not defined', { status: 404 });
                 }
 
-                // @ts-ignore
-                const result = await component.render(event, context);
-                return new Response(JSON.stringify(result), {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
+                return await component.render(event, context);
             }
 
             const cb = events[event.type];
