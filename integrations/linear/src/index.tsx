@@ -1,10 +1,36 @@
-import { ContentKitIcon } from '@gitbook/api';
+import { ContentKitBlock, ContentKitIcon, ContentKitModal } from '@gitbook/api';
 import { createIntegration, createComponent, createOAuthHandler, Logger } from '@gitbook/runtime';
 import { extractLinearIssueIdFromLink, getLinearAPIClient } from './linear';
 import { IssueQuery } from './linear/gql/graphql';
 import { LinearRuntimeContext } from './types';
 
 const logger = Logger('linear');
+
+/**
+ * Render a generic Linear issue card linking to the URL provided.
+ */
+function renderGenericCard(url: string, context: LinearRuntimeContext): ContentKitBlock {
+    return (
+        <block>
+            <card
+                title="Linear"
+                hint={url}
+                onPress={{
+                    action: '@ui.url.open',
+                    url,
+                }}
+                icon={
+                    <image
+                        source={{
+                            url: context.environment.integration.urls.icon,
+                        }}
+                        aspectRatio={1}
+                    />
+                }
+            />
+        </block>
+    );
+}
 
 /**
  * Component to render the block when embeding a Linear issue URL.
@@ -35,14 +61,14 @@ const embedBlock = createComponent<{
 
     async render(element, context) {
         const { environment } = context;
-        const { installation } = environment;
+        const configuration = environment.installation?.configuration;
 
-        if (!installation) {
-            return;
+        if (!configuration || !('oauth_credentials' in configuration)) {
+            return renderGenericCard(element.props.url, context);
         }
 
         const { issueId, url } = element.props;
-        const linearClient = await getLinearAPIClient(installation.configuration);
+        const linearClient = await getLinearAPIClient(configuration);
 
         let response: IssueQuery;
         try {
@@ -53,26 +79,7 @@ const embedBlock = createComponent<{
                 JSON.stringify(error)
             );
             // Fallback to displaying a generic card on error
-            return (
-                <block>
-                    <card
-                        title="Linear"
-                        hint={url}
-                        onPress={{
-                            action: '@ui.url.open',
-                            url,
-                        }}
-                        icon={
-                            <image
-                                source={{
-                                    url: context.environment.integration.urls.icon,
-                                }}
-                                aspectRatio={1}
-                            />
-                        }
-                    />
-                </block>
-            );
+            return renderGenericCard(element.props.url, context);
         }
 
         const { issue } = response;
@@ -121,6 +128,30 @@ const embedBlock = createComponent<{
 });
 
 /**
+ * Render a generic modal in case of errors.
+ */
+function renderGenericModal(url: string, context: LinearRuntimeContext): ContentKitModal {
+    return (
+        <modal title="Linear" size="fullscreen">
+            <vstack>
+                <hstack>
+                    <text style="italic">{url}</text>
+                    <button
+                        icon={ContentKitIcon.LinkExternal}
+                        onPress={{ action: '@ui.url.open', url }}
+                    />
+                </hstack>
+                <divider />
+                <text>
+                    <text style="bold">Error: </text>
+                    <text>Couldn't get the issue details.</text>
+                </text>
+            </vstack>
+        </modal>
+    );
+}
+
+/**
  * Component to render a preview of Linear issue when clicking maximize button.
  */
 const previewModal = createComponent<{
@@ -131,14 +162,14 @@ const previewModal = createComponent<{
 
     async render(element, context) {
         const { environment } = context;
-        const { installation } = environment;
+        const configuration = environment.installation?.configuration;
 
-        if (!installation) {
-            return;
+        if (!configuration || !('oauth_credentials' in configuration)) {
+            return renderGenericModal(element.props.url, context);
         }
 
         const { issueId, url } = element.props;
-        const linearClient = await getLinearAPIClient(installation.configuration);
+        const linearClient = await getLinearAPIClient(configuration);
 
         let response: IssueQuery;
         try {
@@ -148,24 +179,7 @@ const previewModal = createComponent<{
                 `API Error when fetching the issue (ID: ${issueId})`,
                 JSON.stringify(error)
             );
-            return (
-                <modal title="Linear" size="fullscreen">
-                    <vstack>
-                        <hstack>
-                            <text style="italic">{url}</text>
-                            <button
-                                icon={ContentKitIcon.LinkExternal}
-                                onPress={{ action: '@ui.url.open', url }}
-                            />
-                        </hstack>
-                        <divider />
-                        <text>
-                            <text style="bold">Error: </text>
-                            <text>Couldn't get the issue details.</text>
-                        </text>
-                    </vstack>
-                </modal>
-            );
+            return renderGenericModal(element.props.url, context);
         }
 
         const { issue } = response;
