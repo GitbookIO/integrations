@@ -1,7 +1,7 @@
 name: mailchimp
 title: Mailchimp
 icon: ./assets/icon.png
-description: Grow your Mailchimp audience by having your readers subscribe directly from your GitBook documentation.
+description: Grow your Mailchimp audiences, directly from your GitBook content.
 categories:
     - marketing
 visibility: public
@@ -21,7 +21,7 @@ summary: |
 
     Once the block has been inserted, you can configure which Audience you'd like new subscribers to be added to through the block controls.
 externalLinks:
-    - label: MailChimp Audiences
+    - label: Mailchimp Audiences
       url: https://mailchimp.com/help/create-audience/
 scopes: []
 blocks:
