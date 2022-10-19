@@ -1,7 +1,7 @@
 name: mailchimp
 title: Mailchimp
 icon: ./assets/icon.png
-description: Grow your mailing list by having your readers subscribe directly from your GitBook documentation.
+description: Grow your Mailchimp audience by having your readers subscribe directly from your GitBook documentation.
 categories:
     - marketing
 visibility: public
@@ -15,16 +15,16 @@ summary: |
 
     # How it works
 
-    Once the integration is installed, insert the Mailchimp block into any page. Users will be able to subscribe to your selected Audience directly from the page.
+    Once the integration is installed, a new Mailchimp block will become available. Insert the Mailchimp block into any page in GitBook to allow users to subscribe directly to your selected Audience.
 
     # Configure
 
-    Once the block has been inserted, you can configure which Audience you'd like new subscribers to be added to.
+    Once the block has been inserted, you can configure which Audience you'd like new subscribers to be added to through the block controls.
 scopes: []
 blocks:
     - id: mailchimpSubscribe
       title: Mailchimp
-      description: Grow your mailing list by having your readers subscribe directly from GitBook.
+      description: Grow your Mailchimp audience by having your readers subscribe directly from your GitBook documentation.
 configurations:
     account:
         properties:
