@@ -1,4 +1,4 @@
-import { Event, FetchEvent } from '@gitbook/api';
+import { Event, FetchEvent, FetchPublishedScriptEvent } from '@gitbook/api';
 
 import { RuntimeCallback, RuntimeContext } from './context';
 
@@ -23,14 +23,17 @@ export type EventCallback<
 /**
  * All GitBook events, exluding the generic fetch event.
  */
-export type NonFetchEvent = Exclude<EventType, FetchEvent['type']>;
+export type NonFetchEvent = Exclude<
+    EventType,
+    FetchEvent['type'] | FetchPublishedScriptEvent['type']
+>;
 
 /**
  * Mapping of event types to their callbacks.
  */
 export type EventCallbackMap<Context extends RuntimeContext = RuntimeContext> = {
     [T in NonFetchEvent]?: EventCallback<T, Context> | Array<EventCallback<T, Context>>;
-};
+} & Record<FetchPublishedScriptEvent['type'], FetchPublishScriptEventCallback<Context>>;
 
 /**
  * Callback for fetch events.
@@ -40,3 +43,9 @@ export type FetchEventCallback<Context extends RuntimeContext = RuntimeContext> 
     Response | Promise<Response>,
     Context
 >;
+
+/**
+ * Callback for fetch events to fetch published scripts from integrations.
+ */
+export type FetchPublishScriptEventCallback<Context extends RuntimeContext = RuntimeContext> =
+    RuntimeCallback<[FetchPublishedScriptEvent], Response | Promise<Response>, Context>;
