@@ -51,10 +51,6 @@ export async function whoami(): Promise<void> {
         const { data: user } = await api.user.getAuthenticatedUser();
 
         console.log(`Authenticated as ${user.displayName} on ${endpoint}`);
-        console.log(`ID: ${user.id}`);
-        if (user.email) {
-            console.log(`Email address: ${user.email}`);
-        }
     } else {
         console.log(`No authentication configured.`);
     }
