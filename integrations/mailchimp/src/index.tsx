@@ -4,11 +4,14 @@ import {
     createComponent,
     createIntegration,
     createOAuthHandler,
+    Logger,
     RuntimeContext,
     RuntimeEnvironment,
 } from '@gitbook/runtime';
 
 import { getMailingLists, getUserMetadata, subscribeUserToList } from './sdk';
+
+const logger = Logger('mailchimp');
 
 type MailchimpRuntimeContext = RuntimeContext<
     RuntimeEnvironment<{
@@ -80,6 +83,8 @@ const mailchimpSubscribe = createComponent<
                         },
                     };
                 } catch (err) {
+                    logger.error(err.stack);
+
                     return {
                         state: {
                             email: action.email,
