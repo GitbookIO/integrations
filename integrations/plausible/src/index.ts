@@ -5,29 +5,29 @@ import {
     RuntimeEnvironment,
 } from '@gitbook/runtime';
 
-import script from './script.raw.js';
+import script from './plausibleScript.raw.js';
 
-type GARuntimeContext = RuntimeContext<
+type PlausibleRuntimeContext = RuntimeContext<
     RuntimeEnvironment<
         {},
         {
-            tracking_id?: string;
+            domain?: string;
         }
     >
 >;
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: GARuntimeContext
+    { environment }: PlausibleRuntimeContext
 ) => {
-    const trackingId = environment.spaceInstallation.configuration.tracking_id;
-    if (!trackingId) {
+    const domain = environment.spaceInstallation.configuration.domain;
+    if (!domain) {
         throw new Error(
-            `The Google Analytics tracking ID is missing from the Space (ID: ${event.installationId}) installation.`
+            `The Plausible domain is missing from the Space (ID: ${event.installationId}) installation.`
         );
     }
 
-    return new Response(script.replace('<TO_REPLACE>', trackingId), {
+    return new Response(script.replace('<TO_REPLACE>', domain), {
         headers: {
             'Content-Type': 'application/javascript',
             'Cache-Control': 'max-age=604800',
@@ -35,7 +35,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     });
 };
 
-export default createIntegration<GARuntimeContext>({
+export default createIntegration<PlausibleRuntimeContext>({
     events: {
         fetch_published_script: handleFetchEvent,
     },

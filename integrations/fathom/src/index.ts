@@ -5,29 +5,29 @@ import {
     RuntimeEnvironment,
 } from '@gitbook/runtime';
 
-import script from './script.raw.js';
+import script from './fathomScript.raw.js';
 
-type GARuntimeContext = RuntimeContext<
+type FathomRuntimeContext = RuntimeContext<
     RuntimeEnvironment<
         {},
         {
-            tracking_id?: string;
+            site_id?: string;
         }
     >
 >;
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: GARuntimeContext
+    { environment }: FathomRuntimeContext
 ) => {
-    const trackingId = environment.spaceInstallation.configuration.tracking_id;
-    if (!trackingId) {
+    const siteId = environment.spaceInstallation.configuration.site_id;
+    if (!siteId) {
         throw new Error(
-            `The Google Analytics tracking ID is missing from the Space (ID: ${event.installationId}) installation.`
+            `The Fathom site ID is missing from the Space (ID: ${event.installationId}) installation.`
         );
     }
 
-    return new Response(script.replace('<TO_REPLACE>', trackingId), {
+    return new Response(script.replace('<TO_REPLACE>', siteId), {
         headers: {
             'Content-Type': 'application/javascript',
             'Cache-Control': 'max-age=604800',
@@ -35,7 +35,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     });
 };
 
-export default createIntegration<GARuntimeContext>({
+export default createIntegration<FathomRuntimeContext>({
     events: {
         fetch_published_script: handleFetchEvent,
     },
