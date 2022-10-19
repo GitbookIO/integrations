@@ -61,7 +61,7 @@ const diagramBlock = createComponent<
 });
 
 export default createIntegration({
-    fetch: async (request) => {
+    fetch: async () => {
         return new Response(
             `<html>
                 <style>
@@ -70,7 +70,6 @@ export default createIntegration({
                 <body>
                     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
                     <script>
-                    console.log("iframe: initialize");
                         mermaid.initialize({ startOnLoad: false });
             
                         function renderDiagram(content) {
@@ -91,7 +90,6 @@ export default createIntegration({
                         }
 
                         function sendAction(action) {
-                            console.log('sendAction', action);
                             window.top.postMessage(
                                 {
                                     action,
@@ -101,7 +99,6 @@ export default createIntegration({
                         }
             
                         window.addEventListener("message", (event) => {
-                            console.log("iframe: Received message", event.data);
                             if (event.data) {
                                 const content = event.data.state.content;
                                 renderDiagram(content)

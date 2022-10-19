@@ -2,4 +2,4 @@
 '@gitbook/integration-mermaid': minor
 ---
 
-Add presentqtion (icon and preview images) and fix the mermaid integration
+Add presentation (icon and preview images) and fix the mermaid integration
