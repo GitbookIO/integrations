@@ -1,4 +1,5 @@
 import { createComponent } from '@gitbook/runtime';
+
 import { statuspageAPI, StatuspageComponentObject, StatuspagePageObject } from '../api';
 import { StatuspageRuntimeContext } from '../configuration';
 
@@ -90,9 +91,7 @@ export const subscribeModal = createComponent<
                 </text>
                 <input
                     label="Email address"
-                    element={
-                        <textinput label="Email" state="email" placeholder="name@domain.com" />
-                    }
+                    element={<textinput state="email" placeholder="name@domain.com" />}
                 />
                 <divider />
                 <input
@@ -100,13 +99,15 @@ export const subscribeModal = createComponent<
                     hint="Subscribe to incidents in all components."
                     element={<checkbox state="components" value="all" />}
                 />
-                {components.map((component) => (
-                    <input
-                        label={component.name}
-                        hint={components.description}
-                        element={<checkbox state="components" value={component.id} />}
-                    />
-                ))}
+                {components
+                    .filter((component) => !component.group)
+                    .map((component) => (
+                        <input
+                            label={component.name}
+                            hint={component.description}
+                            element={<checkbox state="components" value={component.id} />}
+                        />
+                    ))}
             </modal>
         );
     },

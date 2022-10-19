@@ -14,6 +14,7 @@ export interface StatuspageComponentObject {
     name: string;
     description: string;
     updated_at: string;
+    group: boolean;
     status:
         | 'operational'
         | 'under_maintenance'
@@ -21,6 +22,52 @@ export interface StatuspageComponentObject {
         | 'partial_outage'
         | 'major_outage'
         | '';
+    position: number;
+    group_id: string | null;
+}
+
+export interface StatuspageComponentGroupObject {
+    id: string;
+    name: string;
+    description: string;
+    updated_at: string;
+    components: string[];
+    position: number;
+}
+
+export interface StatuspageIncidentUpdateObject {
+    id: string;
+    incident_id: string;
+    body: string;
+    updated_at: string;
+    affected_components: string[];
+    status:
+        | 'investigating'
+        | 'identified'
+        | 'monitoring'
+        | 'resolved'
+        | 'scheduled'
+        | 'in_progress'
+        | 'verifying'
+        | 'completed';
+}
+
+export interface StatuspageIncidentObject {
+    id: string;
+    name: string;
+    updated_at: string;
+    components: string[];
+    impact: 'none' | 'maintenance' | 'minor' | 'major' | 'critical';
+    status:
+        | 'investigating'
+        | 'identified'
+        | 'monitoring'
+        | 'resolved'
+        | 'scheduled'
+        | 'in_progress'
+        | 'verifying'
+        | 'completed';
+    incident_updates: StatuspageIncidentUpdateObject[];
 }
 
 /**

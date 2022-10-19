@@ -1,9 +1,15 @@
 import { createComponent } from '@gitbook/runtime';
 
-import { statuspageAPI, StatuspageComponentObject, StatuspagePageObject } from '../api';
+import {
+    statuspageAPI,
+    StatuspageComponentObject,
+    StatuspageIncidentObject,
+    StatuspagePageObject,
+} from '../api';
 import { StatuspageRuntimeContext } from '../configuration';
 import { pageOverviewModal } from './pageOverviewModal';
 import { subscribeModal } from './subscribeModal';
+import { getTitleForStatus, getTitleForIncidentStatus, getTitleForIncidentImpact } from './utils';
 
 export const pageBlock = createComponent<{}, {}, void, StatuspageRuntimeContext>({
     componentId: 'page',
@@ -24,10 +30,20 @@ export const pageBlock = createComponent<{}, {}, void, StatuspageRuntimeContext>
             );
         }
 
-        const components = await statuspageAPI<StatuspageComponentObject[]>(context, {
-            method: 'GET',
-            path: `pages/${page_id}/components`,
-        });
+        const [page, components, incidents] = await Promise.all([
+            statuspageAPI<StatuspagePageObject>(context, {
+                method: 'GET',
+                path: `pages/${page_id}`,
+            }),
+            statuspageAPI<StatuspageComponentObject[]>(context, {
+                method: 'GET',
+                path: `pages/${page_id}/components`,
+            }),
+            statuspageAPI<StatuspageIncidentObject[]>(context, {
+                method: 'GET',
+                path: `pages/${page_id}/incidents/unresolved`,
+            }),
+        ]);
 
         const degradedComponent = components.find(
             (component) => component.status !== 'operational'
@@ -59,15 +75,23 @@ export const pageBlock = createComponent<{}, {}, void, StatuspageRuntimeContext>
                     ]}
                 >
                     <vstack>
-                        {components.map((component) => (
-                            <block>
-                                <text>
-                                    <text style="bold">{component.name}: </text>
-                                    <text>{getTitleForStatus(component.status)}</text>
+                        {incidents.map((incident, index) => (
+                            <>
+                                <text style="bold">
+                                    {getTitleForIncidentImpact(incident.impact)}, {incident.name}
                                 </text>
-                                <divider />
-                                <text>{component.description}</text>
-                            </block>
+                                {incident.incident_updates.length ? (
+                                    <text>
+                                        <text style="bold">
+                                            {getTitleForIncidentStatus(
+                                                incident.incident_updates[0].status
+                                            )}
+                                        </text>
+                                        <text> - {incident.incident_updates[0].body}</text>
+                                    </text>
+                                ) : null}
+                                {index < incidents.length - 1 ? <divider /> : null}
+                            </>
                         ))}
                     </vstack>
                 </card>
@@ -75,18 +99,3 @@ export const pageBlock = createComponent<{}, {}, void, StatuspageRuntimeContext>
         );
     },
 });
-
-function getTitleForStatus(status: StatuspageComponentObject['status']): string {
-    switch (status) {
-        case 'operational':
-            return 'All Systems Operational';
-        case 'degraded_performance':
-            return 'Degraded Performance';
-        case 'partial_outage':
-            return 'Partial Outage';
-        case 'major_outage':
-            return 'Major Outage';
-        default:
-            return 'Unknown Status';
-    }
-}
