@@ -1,4 +1,5 @@
 import { createComponent } from '@gitbook/runtime';
+
 import { statuspageAPI, StatuspageComponentObject, StatuspagePageObject } from '../api';
 import { StatuspageRuntimeContext } from '../configuration';
 import { pageOverviewModal } from './pageOverviewModal';
@@ -34,11 +35,12 @@ export const pageBlock = createComponent<{}, {}, void, StatuspageRuntimeContext>
         return (
             <block>
                 <card
-                    title={
+                    title={`${page.name} - ${
                         degradedComponent
                             ? getTitleForStatus(degradedComponent.status)
                             : 'All Systems Operational'
-                    }
+                    }`}
+                    hint={page.page_description}
                     onPress={{
                         action: '@ui.modal.open',
                         componentId: pageOverviewModal.componentId,
@@ -54,7 +56,20 @@ export const pageBlock = createComponent<{}, {}, void, StatuspageRuntimeContext>
                             }}
                         />,
                     ]}
-                />
+                >
+                    <vstack>
+                        {components.map((component) => (
+                            <block>
+                                <text>
+                                    <text style="bold">{component.name}: </text>
+                                    <text>{getTitleForStatus(component.status)}</text>
+                                </text>
+                                <divider />
+                                <text>{component.description}</text>
+                            </block>
+                        ))}
+                    </vstack>
+                </card>
             </block>
         );
     },

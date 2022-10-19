@@ -24,8 +24,6 @@ summary: |
     # Subscribe and unsubscribe to status changes
     Users accessing your published content on GitBook will be able to use the custom Statuspage block to subscribe to
     status changes, like they would in your official status page.
-categories:
-    - communication
 configurations:
     space:
         properties:

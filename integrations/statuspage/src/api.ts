@@ -3,7 +3,9 @@ import { StatuspageRuntimeContext } from './configuration';
 export interface StatuspagePageObject {
     id: string;
     name: string;
+    page_description: string;
     url: string;
+    support_url: string;
     updated_at: string;
 }
 
