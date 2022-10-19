@@ -4,11 +4,14 @@ import {
     createComponent,
     createIntegration,
     createOAuthHandler,
+    Logger,
     RuntimeContext,
     RuntimeEnvironment,
 } from '@gitbook/runtime';
 
 import { getMailingLists, getUserMetadata, subscribeUserToList } from './sdk';
+
+const logger = Logger('mailchimp');
 
 type MailchimpRuntimeContext = RuntimeContext<
     RuntimeEnvironment<{
@@ -80,6 +83,8 @@ const mailchimpSubscribe = createComponent<
                         },
                     };
                 } catch (err) {
+                    logger.error(err.stack);
+
                     return {
                         state: {
                             email: action.email,
@@ -161,7 +166,7 @@ async function resolveMailingListId(
     }
 
     const lists = await getMailingLists(apiEndpoint, accessToken);
-    return lists.length ? lists.length[0].id : undefined;
+    return lists.length ? lists[0].id : undefined;
 }
 
 /**

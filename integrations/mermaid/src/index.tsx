@@ -21,59 +21,55 @@ const diagramBlock = createComponent<
         const { editable } = element.context;
         const { content } = element.state;
 
+        element.setCache({
+            maxAge: 86400,
+        });
+
+        const output = (
+            <webframe
+                source={{
+                    url: environment.integration.urls.publicEndpoint,
+                }}
+                aspectRatio={16 / 9}
+                data={{
+                    content: element.dynamicState('content'),
+                }}
+            />
+        );
+
         return (
             <block>
-                <box style="secondary">
-                    <vstack>
-                        {editable ? (
-                            <>
-                                <box>
-                                    <codeblock
-                                        state="content"
-                                        content={content}
-                                        syntax="mermaid"
-                                        onContentChange={{
-                                            action: '@editor.node.updateProps',
-                                            props: {
-                                                content: element.dynamicState('content'),
-                                            },
-                                        }}
-                                    />
-                                </box>
-                                <divider />
-                            </>
-                        ) : null}
-                        <box>
-                            <webframe
-                                source={{
-                                    url: environment.integration.urls.publicEndpoint,
-                                }}
-                                aspectRatio={16 / 9}
-                                data={{
-                                    content: element.dynamicState('content'),
-                                }}
-                            />
-                        </box>
-                    </vstack>
-                </box>
+                {editable ? (
+                    <codeblock
+                        state="content"
+                        content={content}
+                        syntax="mermaid"
+                        onContentChange={{
+                            action: '@editor.node.updateProps',
+                            props: {
+                                content: element.dynamicState('content'),
+                            },
+                        }}
+                        footer={[output]}
+                    />
+                ) : (
+                    output
+                )}
             </block>
         );
     },
 });
 
 export default createIntegration({
-    events: {
-        fetch: async (event) => {
-            return new Response(
-                `
-                <html>
+    fetch: async () => {
+        return new Response(
+            `<html>
                 <style>
                 * { margin: 0; padding: 0; }
                 </style>
                 <body>
                     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
                     <script>
-                    console.log("iframe: initialize");
                         mermaid.initialize({ startOnLoad: false });
             
                         function renderDiagram(content) {
@@ -81,7 +77,6 @@ export default createIntegration({
                                 document.getElementById('content').innerHTML = svgGraph;
                                 const svg = document.getElementById('content').querySelector('svg');
                                 const size = { width: svg.viewBox.baseVal.width, height: svg.viewBox.baseVal.height };
-                                console.log(size);
 
                                 sendAction({
                                     action: '@webframe.resize',
@@ -104,7 +99,6 @@ export default createIntegration({
                         }
             
                         window.addEventListener("message", (event) => {
-                            console.log("iframe: Received message", event.data);
                             if (event.data) {
                                 const content = event.data.state.content;
                                 renderDiagram(content)
@@ -117,15 +111,14 @@ export default createIntegration({
                     </script>
                     <div id="content"></div>
                 </body>
-            </html>
-                `,
-                {
-                    headers: {
-                        'Content-Type': 'text/html',
-                    },
-                }
-            );
-        },
+            </html>`,
+            {
+                headers: {
+                    'Content-Type': 'text/html',
+                    'Cache-Control': 'public, max-age=86400',
+                },
+            }
+        );
     },
     components: [diagramBlock],
 });
