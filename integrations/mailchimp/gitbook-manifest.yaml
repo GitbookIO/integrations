@@ -20,6 +20,9 @@ summary: |
     # Configure
 
     Once the block has been inserted, you can configure which Audience you'd like new subscribers to be added to through the block controls.
+externalLinks:
+    - label: MailChimp Audiences
+      url: https://mailchimp.com/help/create-audience/
 scopes: []
 blocks:
     - id: mailchimpSubscribe
