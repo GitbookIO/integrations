@@ -166,7 +166,7 @@ async function resolveMailingListId(
     }
 
     const lists = await getMailingLists(apiEndpoint, accessToken);
-    return lists.length ? lists.length[0].id : undefined;
+    return lists.length ? lists[0].id : undefined;
 }
 
 /**
