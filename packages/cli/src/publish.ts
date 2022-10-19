@@ -87,6 +87,11 @@ async function buildScript(filePath: string): Promise<string> {
         // the export syntax while running like an entry point.
         format: 'iife',
         globalName: '__gitbook_integration',
+        loader: {
+            // If importing a file as `.raw.js`, eslint will convert to string so we can use that
+            // file as a string without opening it.
+            '.raw.js': 'text',
+        },
     });
 
     return result.outputFiles[0].text;
