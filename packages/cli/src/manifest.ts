@@ -183,10 +183,7 @@ async function getManifestSchema() {
                 ...getAPIJsonSchemaFor(openAPISpec, 'components/schemas/IntegrationSecrets'),
             },
             contentSecurityPolicy: {
-                ...getAPIJsonSchemaFor(
-                    openAPISpec,
-                    'components/schemas/IntegrationContentSecurityPolicy'
-                ),
+                type: 'string',
             },
             organization: {
                 ...getAPIJsonSchemaFor(

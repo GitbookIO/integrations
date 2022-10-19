@@ -12,8 +12,9 @@ window.intercomSettings = {
         ic('update', w.intercomSettings);
     } else {
         const d = document;
-        const i = function (...args) {
-            i.c(args);
+        const i = function () {
+            // eslint-disable-next-line prefer-rest-params
+            i.c(arguments);
         };
         i.q = [];
         i.c = function (args) {
