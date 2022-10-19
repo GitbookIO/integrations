@@ -1,7 +1,7 @@
 name: contentkit
 title: ContentKit
 description: Preview and dev tools for ContentKit.
-visibility: public
+visibility: private
 script: ./src/index.tsx
 scopes: []
 blocks:
