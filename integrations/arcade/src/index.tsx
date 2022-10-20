@@ -79,7 +79,7 @@ function extractFlowFromURL(input: string): {
     flowId?: string;
 } {
     const url = new URL(input);
-    if (['app.arcade.software', 'demo.arcade.software'].includes(url.hostname)) {
+    if (!['app.arcade.software', 'demo.arcade.software'].includes(url.hostname)) {
         return;
     }
 
