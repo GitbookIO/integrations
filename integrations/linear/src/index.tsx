@@ -6,6 +6,8 @@ import { LinearRuntimeContext } from './types';
 
 const logger = Logger('linear');
 
+const integrationAssetsURL = 'https://8e50cd04.integrations-assets-dev.pages.dev/linear/';
+
 /**
  * Render a generic Linear issue card linking to the URL provided.
  */
@@ -30,6 +32,19 @@ function renderGenericCard(url: string, context: LinearRuntimeContext): ContentK
             />
         </block>
     );
+}
+
+/**
+ *
+ */
+function getIssueIconsURLs(status: string, priority: string) {
+    const statusIcon = `status-${status.toLowerCase().replaceAll(' ', '-')}.png`;
+    const priorityIcon = `priority-${priority.toLocaleLowerCase().replaceAll(' ', '-')}.png`;
+
+    return {
+        status: `${integrationAssetsURL}${statusIcon}`,
+        priority: `${integrationAssetsURL}${priorityIcon}`,
+    };
 }
 
 /**
@@ -83,8 +98,15 @@ const embedBlock = createComponent<{
         }
 
         const { issue } = response;
+        const icons = getIssueIconsURLs(issue.state.name, issue.priorityLabel);
         // TODO: add images with Linear icons once we've added build script to publish public assets to Cloudflare
-        const hint = [<text>{issueId}</text>, <text> • </text>, <text>{issue.state.name}</text>];
+        const hint = [
+            <image source={{ url: icons.priority }} aspectRatio={1} />,
+            <text>{issueId}</text>,
+            <text>•</text>,
+            <image source={{ url: icons.status }} aspectRatio={1} />,
+            <text>{issue.state.name}</text>,
+        ];
 
         return (
             <block>
@@ -183,12 +205,15 @@ const previewModal = createComponent<{
         }
 
         const { issue } = response;
+        const icons = getIssueIconsURLs(issue.state.name, issue.priorityLabel);
+
         return (
             <modal title={issue.title} size="fullscreen">
                 <vstack>
                     <hstack>
+                        <image source={{ url: icons.priority }} aspectRatio={1} />
                         <text>{issueId}</text>
-                        <text> • </text>
+                        <image source={{ url: icons.status }} aspectRatio={1} />
                         <text>{issue.state.name}</text>
                         <text> • </text>
                         <text>{issue.assignee ? issue.assignee.name : 'Unassigned'}</text>
