@@ -19,7 +19,7 @@ const integrationsRootFolder = '../integrations';
 const assetsDistFolder = '../dist';
 
 /** The file extensions that we are filtering assets on */
-const assetFilters = ['.png', '.svg'];
+const assetFilters = ['.png', '.svg', '.jpg', '.jpeg', '.webp'];
 
 /**
  * List all public asset for one integration.
