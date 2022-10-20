@@ -12,14 +12,17 @@ else
   OPENAPI_URL="${GITBOOK_OPENAPI_URL}"
 fi
 
+echo "Building API client from OpenAPI spec..."
+
 if [ -f "$LOCAL_OPENAPI_FILE" ]; then
+    echo "Using local OpenAPI spec $LOCAL_OPENAPI_FILE"
     cp $LOCAL_OPENAPI_FILE spec/openapi.yaml
 else
+    echo "Fetching remote OpenAPI spec $OPENAPI_URL"
     curl $OPENAPI_URL --output spec/openapi.yaml --silent
 fi
 
 # First we build the API client from the OpenAPI definition
-echo "Building API client from OpenAPI spec..."
 swagger-typescript-api --path ./spec/openapi.yaml --output ./src/ --name client.ts --silent
 
 # Then we bundle into an importable JSON module

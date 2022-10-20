@@ -3,11 +3,16 @@
     "version": "0.0.0",
     "private": true,
     "dependencies": {
-        "@gitbook/api": "*",
         "@gitbook/runtime": "*"
     },
     "devDependencies": {
-        "@gitbook/cli": "*"
+        "@gitbook/cli": "*",
+        "@gitbook/eslint-config": "*",
+        "@gitbook/tsconfig": "*"
     },
-    "scripts": {}
+    "scripts": {
+        "lint": "eslint ./**/*.ts*",
+        "typecheck": "tsc --noEmit",
+        "publish-integrations-staging": "gitbook publish ."
+    }
 }

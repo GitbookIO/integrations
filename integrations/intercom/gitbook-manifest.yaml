@@ -1,0 +1,73 @@
+name: intercom
+title: Intercom
+icon: ./assets/icon.png
+description: Add the Intercom chat widget to your published GitBook content
+previewImages:
+    - ./assets/preview.png
+externalLinks:
+    - label: Documentation
+      url: https://docs.gitbook.com/integrations/intercom
+visibility: public
+script: ./src/index.ts
+scopes:
+    - space:script:published
+    - space:cookie:inject
+contentSecurityPolicy:
+    script-src: |
+      https://js.intercomcdn.com
+      https://widget.intercom.io
+      https://app.intercom.io;
+    style-src: |
+      'unsafe-inline';
+    frame-src: |
+      www.intercom-reporting.com;
+    child-src: |
+      www.intercom-reporting.com
+      intercom-sheets.com
+      www.youtube.com
+      player.vimeo.com
+      fast.wistia.net;
+    img-src: |
+      data:
+      blob:
+      static.intercomassets.com
+      *.intercomcdn.com
+      *.intercom-mail.com
+      *.intercom.io
+      *.intercomusercontent.com
+      *.intercom-attachments-1.com
+      *.intercom-attachments-2.com
+      *.intercom-attachments-3.com
+      *.intercom-attachments-5.com
+      *.intercom-attachments-6.com
+      *.intercom-attachments-7.com
+      *.intercom-attachments-9.com;
+    font-src: |
+      js.intercomcdn.com
+      fonts.intercomcdn.com;
+    connect-src: |
+      *.intercom.io
+      wss://*.intercom.io
+      uploads.intercomcdn.com
+      uploads.intercomusercontent.com;
+    form-action: |
+      api-iam.intercom.io
+      intercom.help;
+    media-src: |
+      *.intercomcdn.com;
+summary: |
+    The Intercom integration for GitBook allows you to be in contact with your readers through the Intercom chat widget.
+
+    Automatic chat widget on your documentation:
+    Each of your connected GitBook spaces will fetch the Intercom chat widget script and inject it in your published content.
+categories:
+    - analytics
+configurations:
+    space:
+        properties:
+            app_id:
+                type: string
+                title: Application ID
+                description: You can find it in your Intercom account, under the "Installation" section of the "Settings" page.
+        required:
+            - app_id
