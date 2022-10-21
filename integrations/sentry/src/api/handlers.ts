@@ -41,12 +41,10 @@ export async function oauthHandler(request: Request, { environment }: SentryRunt
         status: 302,
         headers: {
             Location: `https://sentry.io/sentry-apps/${environment.secrets.SENTRY_APP}/external-install/`,
-            'Set-Cookie': cookie.serialize(
-                INSTALLATION_STATE_COOKIE,
-                environment.installation.id,
-                // TODO
-                { path: '/v1/integrations/sentry', maxAge: 60 * 5 } // 5 mins
-            ),
+            'Set-Cookie': cookie.serialize(INSTALLATION_STATE_COOKIE, environment.installation.id, {
+                path: new URL(environment.integration.urls.publicEndpoint).pathname, // /v1/integrations/sentry/integration
+                maxAge: 60 * 5, // 5 mins
+            }),
         },
     });
 }
@@ -79,7 +77,7 @@ export async function redirectHandler(
         return new Response(null, {
             status: 302,
             headers: {
-                // TODO
+                // TODO read from env
                 Location: `https://app.gitbook.com/integrations/${environment.integration.name}/`,
             },
         });

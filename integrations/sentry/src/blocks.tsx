@@ -28,7 +28,7 @@ function defaultBlock(url: string, context: SentryRuntimeContext): ContentKitBlo
     return (
         <block>
             <card
-                title={context.environment.integration.name}
+                title={'Sentry'}
                 hint={url}
                 onPress={{
                     action: '@ui.url.open',
