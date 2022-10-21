@@ -1,0 +1,30 @@
+name: sentry
+title: Sentry
+icon: ./assets/icon.png
+description: Preview Sentry issues into GitBook pages
+visibility: public
+script: ./src/index.tsx
+summary: |
+    # Sentry summary
+scopes: []
+blocks:
+    - id: embed
+      title: Sentry
+      description: Preview of a Sentry issue
+      urlUnfurl:
+          - https://sentry.io/
+configurations:
+    account:
+        properties:
+            oauth_credentials:
+                type: button
+                title: Connection
+                description: Authorization between Sentry and GitBook.
+                button_text: Authorize
+                callback_url: /oauth
+        required:
+            - oauth_credentials
+secrets:
+    CLIENT_ID: ${{ env.SENTRY_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.SENTRY_CLIENT_SECRET }}
+    SENTRY_APP: ${{ env.SENTRY_GITBOOK_INTEGRATION }}

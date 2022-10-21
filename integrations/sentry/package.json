@@ -1,0 +1,15 @@
+{
+    "name": "@gitbook/integration-sentry",
+    "version": "0.0.0",
+    "private": true,
+    "dependencies": {
+        "cookie": "^0.5.0",
+        "itty-router": "^2.6.1",
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "*"
+    },
+    "scripts": {}
+}
