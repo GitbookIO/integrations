@@ -13,7 +13,7 @@ scopes:
     - space:script:published
 contentSecurityPolicy: |
     script-src
-      usefathom.com;
+      https://cdn.usefathom.com;
     connect-src
       usefathom.com;
 summary: |

@@ -13,7 +13,7 @@ scopes:
     - space:script:published
 contentSecurityPolicy: |
     script-src
-      plausible.io;
+      https://plausible.io;
     connect-src
       plausible.io;
 summary: |
