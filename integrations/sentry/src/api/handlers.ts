@@ -1,12 +1,9 @@
 import * as cookie from 'cookie';
 
 import { Logger } from '@gitbook/runtime';
-import {
-    OAuthResponse,
-    SentryCredentials,
-    SentryOAuthCredentials,
-    RuntimeHandlerCallback,
-} from './types';
+import { SentryCredentials, SentryOAuthCredentials, RuntimeHandlerCallback } from './../types';
+
+import * as sentry from '../api/sentry';
 
 /**
  * EXPLAIN
@@ -56,7 +53,7 @@ export function createOAuthHandler(): RuntimeHandlerCallback {
     };
 }
 
-export function createWebhoookHandler(config: SentrySecretsConfig): RuntimeHandlerCallback {
+export function createWebhoookHandler(): RuntimeHandlerCallback {
     return async (request, { api, environment }) => {
         // TODO
         // 1. refreshToken
@@ -84,30 +81,15 @@ export function createWebhoookHandler(config: SentrySecretsConfig): RuntimeHandl
             throw Error('Missing installation state');
         }
 
-        const data = {
-            client_id: config.clientId,
-            client_secret: config.clientSecret,
+        const tokens = await sentry.fetchCredentials({
+            clientId: environment.secrets.CLIENT_ID,
+            clientSecret: environment.secrets.CLIENT_SECRET,
             code,
-            grant_type: 'authorization_code',
-        };
-
-        const accessTokenURL = `https://sentry.io/api/0/sentry-app-installations/${sentryInstallationId}/authorizations/`;
-        logger.info('accessTokenURL', accessTokenURL);
-
-        const response = await fetch(accessTokenURL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
+            grantType: sentry.AuthorizationGrant.AuthorizationCode,
+            installationId: sentryInstallationId,
         });
 
-        if (!response.ok) {
-            throw new Error('Failed to exchange code for access token');
-        }
-
-        const json = await response.json<OAuthResponse>();
-        const credentials = extractCredentials(json);
+        const credentials = extractCredentials(tokens);
 
         // Store credentials and extras in gitbook's installation configuration
         try {
