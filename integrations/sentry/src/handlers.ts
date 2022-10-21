@@ -1,22 +1,26 @@
 import * as cookie from 'cookie';
 
 import { Logger } from '@gitbook/runtime';
-import { SentryCredentials, SentryOAuthCredentials, SentryRuntimeContext } from './../types';
+import { SentryCredentials, SentryOAuthCredentials, SentryRuntimeContext } from './types';
 
-import * as sentry from '../api/sentry';
+import * as sentry from './api/sentry';
 
 /**
- * EXPLAIN
+ * This cookie is used to store the state (installationId) of the sentry integration in GitBook.
+ * We cannot pass this state (or any other) parameter because Sentry doesn't support it.
+ *
+ * The reason this cookie is named __session is because ALL other cookies are stripped from the request by Cloud Functions,
+ * which is where the request is routed before reaching the integration.
+ *
+ * @see https://firebase.google.com/docs/hosting/manage-cache#using_cookies
  */
 const INSTALLATION_STATE_COOKIE = '__session';
 
 const logger = Logger('worker:integration:sentry');
 
 /**
- * Create a fetch request handler to handle an OAuth authentication flow.
- * The credentials are stored in the installation configuration as `installationCredentialsKey`.
- *
- * When using this handler, you must configure `https://integrations.gitbook.com/integrations/{name}/` as a redirect URI.
+ * Redirect to a Sentry (external) app where the user will install the GitBook integration in their chosen Sentry org.
+ * Passes our installation ID in the cookies (to be used when Sentry redirects back)
  */
 export async function oauthHandler(request: Request, { environment }: SentryRuntimeContext) {
     if (!environment.installation?.id) {
@@ -49,14 +53,14 @@ export async function oauthHandler(request: Request, { environment }: SentryRunt
     });
 }
 
+/**
+ * Handles the OAuth callback from Sentry.
+ * Exchanges the code for an access token and refresh token.
+ */
 export async function redirectHandler(
     request: Request,
     { api, environment }: SentryRuntimeContext
 ) {
-    // TODO
-    // 3. uninstallation
-    // 4. Discuss limitation of one sentry org per installation
-
     const url = new URL(request.url);
 
     // sentry redirect params
@@ -125,7 +129,7 @@ export async function redirectHandler(
 export async function webhookHandler(
     request: Request,
     { api, environment }: SentryRuntimeContext
-) {}
+) {} // TODO probably will handle uninstall
 
 function extractCredentials(response: SentryCredentials): SentryOAuthCredentials {
     const { token, refreshToken, expiresAt, dateCreated } = response;

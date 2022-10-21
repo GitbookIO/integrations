@@ -1,11 +1,6 @@
 import { Logger } from '@gitbook/runtime';
-import {
-    OAuthResponse,
-    SentryCredentials,
-    SentryIssue,
-    SentryOAuthCredentials,
-    SentryRuntimeContext,
-} from '../types';
+import { OAuthResponse, SentryIssue, SentryRuntimeContext } from '../types';
+import { extractCredentials } from '../utils';
 
 const logger = Logger('worker:integration:sentry');
 
@@ -24,7 +19,7 @@ export type CredentialsParam = {
     orgSlug?: string;
 };
 
-async function fetchCredentials({
+export async function fetchCredentials({
     clientId,
     clientSecret,
     code,
@@ -86,7 +81,7 @@ async function refreshCredentials({
 }
 
 /**
- * Fetches an organization's Sentry API token, refreshing it if necessary.
+ * Fetches an organization's Sentry auth token, refreshing it if necessary.
  */
 async function getToken(context: SentryRuntimeContext) {
     const { api, environment } = context;
@@ -127,7 +122,13 @@ async function getToken(context: SentryRuntimeContext) {
     return tokens.token;
 }
 
-async function getIssue(issueId: string, context: SentryRuntimeContext): Promise<SentryIssue> {
+/**
+ * Fetch issue data from Sentry
+ */
+export async function getIssue(
+    issueId: string,
+    context: SentryRuntimeContext
+): Promise<SentryIssue> {
     const token = await getToken(context);
 
     const response = await fetch(`https://sentry.io/api/0/issues/${issueId}/`, {
@@ -142,18 +143,3 @@ async function getIssue(issueId: string, context: SentryRuntimeContext): Promise
 
     return data;
 }
-
-function extractCredentials(response: SentryCredentials): SentryOAuthCredentials {
-    const { token, refreshToken, expiresAt, dateCreated } = response;
-
-    return {
-        oauth_credentials: {
-            token,
-            refreshToken,
-            expiresAt,
-            dateCreated,
-        },
-    };
-}
-
-export { fetchCredentials, getIssue };

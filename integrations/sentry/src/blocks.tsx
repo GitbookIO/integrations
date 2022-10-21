@@ -3,23 +3,7 @@ import { createComponent } from '@gitbook/runtime';
 
 import * as sentry from './api/sentry';
 import { SentryIssue, SentryRuntimeContext } from './types';
-
-/**
- * Extract the parameters from a Figma URL.
- */
-function extractIssueIdFromURL(input: string): string | undefined {
-    const url = new URL(input);
-    if (url.hostname !== 'sentry.io') {
-        return;
-    }
-
-    const parts = url.pathname.split('/');
-    return parts[4];
-}
-
-function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
+import { capitalizeFirstLetter, extractIssueIdFromURL } from './utils';
 
 /**
  * A generic block with a text and a link to the URL provided
@@ -48,7 +32,7 @@ function defaultBlock(url: string, context: SentryRuntimeContext): ContentKitBlo
 }
 
 /**
- * Component to render the block when embeding a Figma URL.
+ * Component to render the block when embeding a Sentry URL.
  */
 export const embedBlock = createComponent<{
     issueId?: string;
@@ -73,7 +57,7 @@ export const embedBlock = createComponent<{
     },
 
     async render(element, context) {
-        const { issueId, url = 'https://sentry.io' } = element.props;
+        const { issueId, url } = element.props;
 
         let issueData: SentryIssue;
         try {
