@@ -1,7 +1,7 @@
 name: sentry
 title: Sentry
 icon: ./assets/icon.png
-description: Preview Sentry issues into GitBook pages
+description: Embed Sentry issues in your documentation.
 visibility: public
 script: ./src/index.tsx
 summary: |
