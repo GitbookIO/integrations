@@ -76,9 +76,7 @@ async function refreshCredentials({
     // Store the token information for future requests
     logger.info(`Token for '${orgSlug}' has been refreshed.`);
 
-    // save the new credentials in the installation configuration
-
-    // Return the newly refreshed token
+    // Return the newly refreshed credentials
     return credentials;
 }
 
@@ -125,13 +123,12 @@ async function getToken(context: RuntimeContext<IntegrationEnvironment>) {
 }
 
 async function getIssue(
-    issue: string,
+    issueId: string,
     context: RuntimeContext<IntegrationEnvironment>
 ): Promise<SentryIssue> {
     const token = await getToken(context);
-    console.log('issue', issue);
 
-    const response = await fetch(`https://sentry.io/api/0/issues/${issue}/`, {
+    const response = await fetch(`https://sentry.io/api/0/issues/${issueId}/`, {
         headers: { Authorization: `Bearer ${token}` },
     });
 

@@ -1,5 +1,11 @@
 import { createIntegration } from '@gitbook/runtime';
-import { createOAuthHandler, createWebhoookHandler } from './api/handlers';
+import {
+    createOAuthHandler,
+    createWebhoookHandler,
+    oauthHandler,
+    redirectHandler,
+    webhookHandler,
+} from './api/handlers';
 import { SentryRuntimeContext } from './types';
 import { Router } from 'itty-router';
 import { embedBlock } from './blocks';
@@ -16,24 +22,23 @@ export default createIntegration<SentryRuntimeContext>({
             ).pathname,
         });
 
-        // Auth router/routes
         /*
-         * Authenticate the user using OAuth.
+         * Handles auth flow, starting from integration installation in gitbook
          */
-
-        router.get('/oauth', createOAuthHandler());
+        router.get('/oauth', oauthHandler);
 
         /*
-         * Handles Sentry's webhook/redirect requests.
+         * Handles Sentry's redirect requests.
          * What request types are sent are configured in https://sentry.io/settings/gitbook/developer-settings/
          *
          * Integration install/uninstall events are supported by default.
          */
-        router.get('/webhook', createWebhoookHandler());
+        router.get('/redirect', redirectHandler);
 
-        router.post('/webhook', (req, { api, environment }) => {
-            console.log('webhook post');
-        });
+        /**
+         * Handles Sentry's webhook requests.
+         */
+        router.post('/webhook', webhookHandler);
 
         const response = await router.handle(request, context);
         if (!response) {
