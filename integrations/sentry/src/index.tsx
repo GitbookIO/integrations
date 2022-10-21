@@ -17,17 +17,18 @@ export default createIntegration<SentryRuntimeContext>({
         });
 
         /*
-         * Handles auth flow, starting from integration installation in Gitbook
+         * Handles GitBook auth flow
          */
         router.get('/oauth', oauthHandler);
 
         /*
-         * Handles Sentry's redirect requests, only used after integration install/uninstall in sentry.io
+         * Handles Sentry redirect requests,
+         * only used after integration install/uninstall in sentry.io
          */
         router.get('/redirect', redirectHandler);
 
         /**
-         * Handles Sentry's webhook requests
+         * Handles Sentry webhook requests
          * Which hooks are sent are configured in https://sentry.io/settings/gitbook/developer-settings/
          *
          * Integration install/uninstall events are sent by default.
