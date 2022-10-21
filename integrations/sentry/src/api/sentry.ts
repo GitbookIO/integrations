@@ -1,6 +1,11 @@
-import { Api, IntegrationEnvironment } from '@gitbook/api';
-import { Logger, RuntimeContext } from '@gitbook/runtime';
-import { OAuthResponse, SentryCredentials, SentryOAuthCredentials } from '../types';
+import { Logger } from '@gitbook/runtime';
+import {
+    OAuthResponse,
+    SentryCredentials,
+    SentryIssue,
+    SentryOAuthCredentials,
+    SentryRuntimeContext,
+} from '../types';
 
 const logger = Logger('worker:integration:sentry');
 
@@ -83,7 +88,7 @@ async function refreshCredentials({
 /**
  * Fetches an organization's Sentry API token, refreshing it if necessary.
  */
-async function getToken(context: RuntimeContext<IntegrationEnvironment>) {
+async function getToken(context: SentryRuntimeContext) {
     const { api, environment } = context;
     const { CLIENT_ID: clientId, CLIENT_SECRET: clientSecret } = environment.secrets;
     const {
@@ -122,10 +127,7 @@ async function getToken(context: RuntimeContext<IntegrationEnvironment>) {
     return tokens.token;
 }
 
-async function getIssue(
-    issueId: string,
-    context: RuntimeContext<IntegrationEnvironment>
-): Promise<SentryIssue> {
+async function getIssue(issueId: string, context: SentryRuntimeContext): Promise<SentryIssue> {
     const token = await getToken(context);
 
     const response = await fetch(`https://sentry.io/api/0/issues/${issueId}/`, {
@@ -139,14 +141,6 @@ async function getIssue(
     const data = (await response.json()) as SentryIssue;
 
     return data;
-}
-
-interface SentryIssue {
-    title: string;
-    shortId: string;
-    level: string;
-    metadata: { function: string };
-    status: string;
 }
 
 function extractCredentials(response: SentryCredentials): SentryOAuthCredentials {

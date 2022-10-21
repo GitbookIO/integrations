@@ -1,7 +1,7 @@
 import * as cookie from 'cookie';
 
 import { Logger } from '@gitbook/runtime';
-import { SentryCredentials, SentryOAuthCredentials, RuntimeHandlerCallback } from './../types';
+import { SentryCredentials, SentryOAuthCredentials, SentryRuntimeContext } from './../types';
 
 import * as sentry from '../api/sentry';
 
@@ -18,8 +18,7 @@ const logger = Logger('worker:integration:sentry');
  *
  * When using this handler, you must configure `https://integrations.gitbook.com/integrations/{name}/` as a redirect URI.
  */
-// export function createOAuthHandler(): RuntimeHandlerCallback {
-export async function oauthHandler(request, { environment }) {
+export async function oauthHandler(request: Request, { environment }: SentryRuntimeContext) {
     if (!environment.installation?.id) {
         logger.error('Could not find the installation id');
         throw new Error('Stale request');
@@ -52,7 +51,10 @@ export async function oauthHandler(request, { environment }) {
     });
 }
 
-export async function redirectHandler(request, { api, environment }) {
+export async function redirectHandler(
+    request: Request,
+    { api, environment }: SentryRuntimeContext
+) {
     // TODO
     // 3. uninstallation
     // 4. Discuss limitation of one sentry org per installation
@@ -122,7 +124,10 @@ export async function redirectHandler(request, { api, environment }) {
     );
 }
 
-export async function webhookHandler(request, { api, environment }) {}
+export async function webhookHandler(
+    request: Request,
+    { api, environment }: SentryRuntimeContext
+) {}
 
 function extractCredentials(response: SentryCredentials): SentryOAuthCredentials {
     const { token, refreshToken, expiresAt, dateCreated } = response;

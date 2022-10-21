@@ -1,6 +1,8 @@
+import { ContentKitBlock } from '@gitbook/api';
 import { createComponent } from '@gitbook/runtime';
 
 import * as sentry from './api/sentry';
+import { SentryIssue, SentryRuntimeContext } from './types';
 
 /**
  * Extract the parameters from a Figma URL.
@@ -17,6 +19,32 @@ function extractIssueIdFromURL(input: string): string | undefined {
 
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+/**
+ * A generic block with a text and a link to the URL provided
+ */
+function defaultBlock(url: string, context: SentryRuntimeContext): ContentKitBlock {
+    return (
+        <block>
+            <card
+                title={context.environment.integration.name}
+                hint={url}
+                onPress={{
+                    action: '@ui.url.open',
+                    url,
+                }}
+                icon={
+                    <image
+                        source={{
+                            url: context.environment.integration.urls.icon,
+                        }}
+                        aspectRatio={1}
+                    />
+                }
+            />
+        </block>
+    );
 }
 
 /**
@@ -45,9 +73,16 @@ export const embedBlock = createComponent<{
     },
 
     async render(element, context) {
-        const { issueId, url } = element.props;
+        const { issueId, url = 'https://sentry.io' } = element.props;
 
-        const { title, shortId, level, metadata, status } = await sentry.getIssue(issueId, context);
+        let issueData: SentryIssue;
+        try {
+            issueData = await sentry.getIssue(issueId, context);
+        } catch {
+            return defaultBlock(url, context);
+        }
+
+        const { title, shortId, level, metadata, status } = issueData;
 
         const hint = [
             <text>{shortId}</text>,

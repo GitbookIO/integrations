@@ -1,11 +1,5 @@
 import { createIntegration } from '@gitbook/runtime';
-import {
-    createOAuthHandler,
-    createWebhoookHandler,
-    oauthHandler,
-    redirectHandler,
-    webhookHandler,
-} from './api/handlers';
+import { oauthHandler, redirectHandler, webhookHandler } from './api/handlers';
 import { SentryRuntimeContext } from './types';
 import { Router } from 'itty-router';
 import { embedBlock } from './blocks';

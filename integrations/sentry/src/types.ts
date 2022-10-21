@@ -1,16 +1,19 @@
-import { RuntimeEnvironment, RuntimeContext, OAuthConfig, RuntimeCallback } from '@gitbook/runtime';
+import { RuntimeEnvironment, RuntimeContext, OAuthConfig } from '@gitbook/runtime';
 
 export interface SentryInstallationConfiguration {
     oauth_credentials?: {
-        access_token: string;
+        token: string;
+        refreshToken: string;
+        expiresAt: string;
     };
+    sentryInstallationId?: string;
+    sentryOrgSlug?: string;
 }
 
 export type SentryRuntimeEnvironment = RuntimeEnvironment<SentryInstallationConfiguration>;
 export type SentryRuntimeContext = RuntimeContext<SentryRuntimeEnvironment>;
 
 export type SentrySecretsConfig = Pick<OAuthConfig, 'clientId' | 'clientSecret'>;
-export type RuntimeHandlerCallback = RuntimeCallback<[Request], Promise<Response>>;
 
 export interface OAuthResponse {
     id: number;
@@ -29,4 +32,12 @@ export type SentryCredentials = Pick<
 
 export interface SentryOAuthCredentials {
     oauth_credentials: SentryCredentials;
+}
+
+export interface SentryIssue {
+    title: string;
+    shortId: string;
+    level: string;
+    metadata: { function: string };
+    status: string;
 }
