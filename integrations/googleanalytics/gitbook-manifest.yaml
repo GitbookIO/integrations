@@ -11,21 +11,22 @@ visibility: public
 script: ./src/index.ts
 scopes:
     - space:script:published
-contentSecurityPolicy: |
-    script-src
+    - space:cookie:inject
+contentSecurityPolicy:
+    script-src: |
       https://www.google-analytics.com
       https://ssl.google-analytics.com
       https://google-analytics.com;
-    img-src
+    img-src: |
       data:
       blob:
       www.google-analytics.com
       ssl.google-analytics.com
       www.google.com
       analytics.google.com;
-    font-src
+    font-src: |
       data:;
-    connect-src
+    connect-src: |
       www.google-analytics.com
       stats.g.doubleclick.net
       ampcid.google.com
