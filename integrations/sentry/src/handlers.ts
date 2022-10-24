@@ -1,7 +1,12 @@
 import * as cookie from 'cookie';
 
 import { Logger } from '@gitbook/runtime';
-import { SentryCredentials, SentryOAuthCredentials, SentryRuntimeContext } from './types';
+import {
+    SentryCredentials,
+    SentryInstallationWebhookPayload,
+    SentryOAuthCredentials,
+    SentryRuntimeContext,
+} from './types';
 
 import * as sentry from './api/sentry';
 
@@ -102,9 +107,8 @@ export async function redirectHandler(
         await api.integrations.updateIntegrationInstallation(environment.integration.name, state, {
             configuration: {
                 ...credentials,
-                sentryInstallationId,
-                sentryOrgSlug,
             },
+            externalIds: [sentryInstallationId, sentryOrgSlug],
         });
     } catch (err) {
         logger.error(err.stack);
@@ -126,10 +130,55 @@ export async function redirectHandler(
     );
 }
 
-export async function webhookHandler(
-    request: Request,
-    { api, environment }: SentryRuntimeContext
-) {} // TODO probably will handle uninstall
+/**
+ * Handle the `installation.deleted` webhook from Sentry
+ * Ignores the `installation.created` which is handled by the redirect handler
+ */
+export async function webhookHandler(request: Request, { api, environment }: SentryRuntimeContext) {
+    console.log('webhookHandler', JSON.stringify(request.headers));
+    const payload = await request.json<SentryInstallationWebhookPayload>();
+
+    if (payload.action === 'deleted') {
+        const sentryInstallationId = payload.data.installation.uuid;
+        logger.info(
+            `Sentry installation.delete integration hook received with installation id ${sentryInstallationId}`
+        );
+
+        // Lookup the concerned installations
+        const {
+            data: { items: installations },
+        } = await api.integrations.listIntegrationInstallations(environment.integration.name, {
+            externalId: sentryInstallationId,
+        });
+
+        const installation = installations[0];
+        if (!installation) {
+            logger.error(
+                `Could not find installation for sentry installation ${sentryInstallationId}`
+            );
+            return new Response(null, { status: 200 });
+        }
+
+        // remove installation in gitbook
+        const gitbookInstallationId = installation.id;
+        const res = await api.integrations.updateIntegrationInstallation(
+            environment.integration.name,
+            gitbookInstallationId,
+            {
+                configuration: {},
+                externalIds: [],
+            }
+        );
+
+        if (!res.ok) {
+            logger.error(
+                `Could not remove installation for sentry installation ${sentryInstallationId}`
+            );
+        }
+
+        return new Response(null, { status: 200 });
+    }
+}
 
 function extractCredentials(response: SentryCredentials): SentryOAuthCredentials {
     const { token, refreshToken, expiresAt, dateCreated } = response;

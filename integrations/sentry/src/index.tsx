@@ -32,8 +32,6 @@ export default createIntegration<SentryRuntimeContext>({
          * Which hooks are sent are configured in https://sentry.io/settings/gitbook/developer-settings/
          *
          * Integration install/uninstall events are sent by default.
-         *
-         * Status: no handlig yet, /redirect is used instead
          */
         router.post('/webhook', webhookHandler);
 

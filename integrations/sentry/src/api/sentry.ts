@@ -88,9 +88,9 @@ async function getToken(context: SentryRuntimeContext) {
     const { CLIENT_ID: clientId, CLIENT_SECRET: clientSecret } = environment.secrets;
     const {
         oauth_credentials: { token: currentToken, refreshToken, expiresAt },
-        sentryInstallationId,
-        sentryOrgSlug,
     } = environment.installation.configuration;
+
+    const [sentryInstallationId, sentryOrgSlug] = environment.installation.externalIds;
 
     // If the token is not expired, no need to refresh it
     if (new Date(expiresAt).getTime() > Date.now()) {
@@ -113,9 +113,8 @@ async function getToken(context: SentryRuntimeContext) {
         {
             configuration: {
                 ...credentials,
-                sentryInstallationId,
-                sentryOrgSlug,
             },
+            externalIds: [sentryInstallationId, sentryOrgSlug],
         }
     );
 

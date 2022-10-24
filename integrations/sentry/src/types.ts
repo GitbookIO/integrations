@@ -41,3 +41,18 @@ export interface SentryIssue {
     metadata: { function: string };
     status: string;
 }
+
+export interface SentryInstallationWebhookPayload {
+    action: 'created' | 'deleted';
+    installation: { uuid: string };
+    data: {
+        installation: {
+            app: { uuid: string; slug: string };
+            organization: { slug: string };
+            uuid: string;
+            status: 'installed' | 'uninstalled';
+            code: string;
+        };
+    };
+    actor: { type: string; id: number; name: string };
+}
