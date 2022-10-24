@@ -11,7 +11,7 @@ visibility: public
 script: ./src/index.ts
 scopes:
     - space:script:inject
-    - space:script:cookie
+    - space:script:cookies
 contentSecurityPolicy:
     script-src: |
         https://www.google-analytics.com
