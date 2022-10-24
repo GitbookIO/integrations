@@ -185,7 +185,7 @@ async function getManifestSchema() {
             contentSecurityPolicy: {
                 ...getAPIJsonSchemaFor(
                     openAPISpec,
-                    'components/schemas/IntegrationsContentSecurityPolicy'
+                    'components/schemas/IntegrationContentSecurityPolicy'
                 ),
             },
             organization: {
