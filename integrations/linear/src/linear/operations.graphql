@@ -939,6 +939,7 @@ fragment Issue on Issue {
     assignee {
         id
         name
+        displayName
         avatarUrl
     }
     # The user who created the issue.

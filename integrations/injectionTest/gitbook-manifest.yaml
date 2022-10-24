@@ -5,7 +5,7 @@ description: Some test integration for injecting scripts
 visibility: private
 script: ./src/index.ts
 scopes:
-    - space:script:published
+    - space:script:inject
 summary: |
     Test for injecting scripts
 categories:
