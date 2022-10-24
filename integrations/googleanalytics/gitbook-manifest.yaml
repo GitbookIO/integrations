@@ -10,28 +10,28 @@ externalLinks:
 visibility: public
 script: ./src/index.ts
 scopes:
-    - space:script:published
-    - space:cookie:inject
+    - space:script:inject
+    - space:script:cookie
 contentSecurityPolicy:
     script-src: |
-      https://www.google-analytics.com
-      https://ssl.google-analytics.com
-      https://google-analytics.com;
+        https://www.google-analytics.com
+        https://ssl.google-analytics.com
+        https://google-analytics.com;
     img-src: |
-      data:
-      blob:
-      www.google-analytics.com
-      ssl.google-analytics.com
-      www.google.com
-      analytics.google.com;
+        data:
+        blob:
+        www.google-analytics.com
+        ssl.google-analytics.com
+        www.google.com
+        analytics.google.com;
     font-src: |
-      data:;
+        data:;
     connect-src: |
-      www.google-analytics.com
-      stats.g.doubleclick.net
-      ampcid.google.com
-      analytics.google.com
-      about:;
+        www.google-analytics.com
+        stats.g.doubleclick.net
+        ampcid.google.com
+        analytics.google.com
+        about:;
 summary: |
     The Google Analytics integration for GitBook allows you to track traffic in your published spaces from your Google Tags Manager dashboard.
 
