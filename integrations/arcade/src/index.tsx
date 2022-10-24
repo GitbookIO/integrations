@@ -44,7 +44,7 @@ const embedBlock = createComponent<{
             return (
                 <block>
                     <card
-                        title={'Not found'}
+                        title={'Arcade'}
                         onPress={{
                             action: '@ui.url.open',
                             url,
@@ -66,7 +66,7 @@ const embedBlock = createComponent<{
             <block>
                 <webframe
                     source={{
-                        url: `https://demo.arcade.software/${flowId}`,
+                        url: `https://demo.arcade.software/${flowId}?embed`,
                     }}
                     aspectRatio={1024 / 571}
                 />
