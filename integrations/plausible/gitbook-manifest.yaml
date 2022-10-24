@@ -10,12 +10,12 @@ externalLinks:
 visibility: public
 script: ./src/index.ts
 scopes:
-    - space:script:published
+    - space:script:inject
 contentSecurityPolicy:
     script-src: |
-      plausible.io;
+        https://plausible.io;
     connect-src: |
-      plausible.io;
+        plausible.io;
 summary: |
     The GitBook Plausible Analytics integration allows you to track traffic in your published spaces from your Plausible dashboard.
 
