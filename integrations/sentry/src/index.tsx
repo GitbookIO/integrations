@@ -1,8 +1,14 @@
 import { createIntegration } from '@gitbook/runtime';
-import { oauthHandler, redirectHandler, webhookHandler } from './handlers';
+import {
+    oauthHandler,
+    redirectHandler,
+    webhookHandler,
+    withSignatureVerification,
+} from './handlers';
 import { SentryRuntimeContext } from './types';
 import { Router } from 'itty-router';
 import { embedBlock } from './blocks';
+import { withContent } from 'itty-router-extras';
 
 export default createIntegration<SentryRuntimeContext>({
     fetch: async (request, context) => {
@@ -33,7 +39,7 @@ export default createIntegration<SentryRuntimeContext>({
          *
          * Integration install/uninstall events are sent by default.
          */
-        router.post('/webhook', webhookHandler);
+        router.post('/webhook', withContent, withSignatureVerification, webhookHandler);
 
         const response = await router.handle(request, context);
         if (!response) {

@@ -1,3 +1,5 @@
+import hmacSHA256 from 'crypto-js/hmac-sha256';
+
 import * as cookie from 'cookie';
 
 import { Logger } from '@gitbook/runtime';
@@ -8,7 +10,9 @@ import {
     SentryRuntimeContext,
 } from './types';
 
-import * as sentry from './api/sentry';
+import * as sentry from './sentry';
+
+export const logger = Logger('integration:sentry');
 
 /**
  * This cookie is used to store the state (installationId) of the sentry integration in GitBook.
@@ -20,8 +24,6 @@ import * as sentry from './api/sentry';
  * @see https://firebase.google.com/docs/hosting/manage-cache#using_cookies
  */
 const INSTALLATION_STATE_COOKIE = '__session';
-
-const logger = Logger('worker:integration:sentry');
 
 /**
  * Redirect to a Sentry (external) app where the user will install the GitBook integration in their chosen Sentry org.
@@ -134,50 +136,89 @@ export async function redirectHandler(
  * Handle the `installation.deleted` webhook from Sentry
  * Ignores the `installation.created` which is handled by the redirect handler
  */
-export async function webhookHandler(request: Request, { api, environment }: SentryRuntimeContext) {
-    console.log('webhookHandler', JSON.stringify(request.headers));
-    const payload = await request.json<SentryInstallationWebhookPayload>();
+export async function webhookHandler(
+    request: Request & { content: SentryInstallationWebhookPayload },
+    { api, environment }: SentryRuntimeContext
+) {
+    const resource = request.headers.get('Sentry-Hook-Resource');
+    const payload = request.content;
 
-    if (payload.action === 'deleted') {
-        const sentryInstallationId = payload.data.installation.uuid;
-        logger.info(
-            `Sentry installation.delete integration hook received with installation id ${sentryInstallationId}`
-        );
+    if (resource !== 'installation' || payload.action !== 'deleted') {
+        return new Response(null, { status: 404 });
+    }
 
-        // Lookup the concerned installations
-        const {
-            data: { items: installations },
-        } = await api.integrations.listIntegrationInstallations(environment.integration.name, {
-            externalId: sentryInstallationId,
-        });
+    const sentryInstallationId = payload.data.installation.uuid;
+    logger.info(
+        `Sentry "installation.deleted" integration hook received with installation id ${sentryInstallationId}`
+    );
 
-        const installation = installations[0];
-        if (!installation) {
-            logger.error(
-                `Could not find installation for sentry installation ${sentryInstallationId}`
-            );
-            return new Response(null, { status: 200 });
-        }
+    // Lookup the concerned installations
+    const {
+        data: { items: installations },
+    } = await api.integrations.listIntegrationInstallations(environment.integration.name, {
+        externalId: sentryInstallationId,
+    });
 
-        // remove installation in gitbook
-        const gitbookInstallationId = installation.id;
-        const res = await api.integrations.updateIntegrationInstallation(
-            environment.integration.name,
-            gitbookInstallationId,
-            {
-                configuration: {},
-                externalIds: [],
-            }
-        );
-
-        if (!res.ok) {
-            logger.error(
-                `Could not remove installation for sentry installation ${sentryInstallationId}`
-            );
-        }
-
+    const installation = installations[0];
+    if (!installation) {
+        logger.error(`Could not find installation for sentry installation ${sentryInstallationId}`);
         return new Response(null, { status: 200 });
     }
+
+    // remove installation in gitbook
+    const gitbookInstallationId = installation.id;
+    const res = await api.integrations.updateIntegrationInstallation(
+        environment.integration.name,
+        gitbookInstallationId,
+        {
+            configuration: {},
+            externalIds: [],
+        }
+    );
+
+    if (!res.ok) {
+        logger.error(
+            `Could not remove installation for sentry installation ${sentryInstallationId}`
+        );
+    } else {
+        logger.info(
+            `Remove installation for sentry installation ${sentryInstallationId} and gitbook installation ${gitbookInstallationId}`
+        );
+    }
+
+    return new Response(null, { status: 200 });
+}
+
+/**
+ * Verify the sentry webhook request middleware
+ */
+export async function withSignatureVerification(
+    request: Request & { content: SentryInstallationWebhookPayload },
+    { environment }: SentryRuntimeContext
+) {
+    const signature = getSignatureBody(request.content);
+    const digest = hmacSHA256(signature, environment.secrets.CLIENT_SECRET).toString();
+
+    if (
+        // HACK: The signature header may be one of these two values
+        digest === request.headers.get('Sentry-Hook-Signature') ||
+        digest === request.headers.get('Sentry-App-Signature')
+    ) {
+        // itty-router middleware, continue to next handler
+        return;
+    }
+
+    logger.error('Unauthorized: Could not verify request came from Sentry');
+    return new Response(null, { status: 401 });
+}
+
+// There are few hacks in this verification step (denoted with HACK) that we at Sentry hope
+// to migrate away from in the future. Presently however, for legacy reasons, they are
+// necessary to keep around, so we've shown how to deal with them here.
+function getSignatureBody(payload: any): string {
+    const stringifiedBody = JSON.stringify(payload);
+    // HACK: This is necessary since express.json() converts the empty request body to {}
+    return stringifiedBody === '{}' ? '' : stringifiedBody;
 }
 
 function extractCredentials(response: SentryCredentials): SentryOAuthCredentials {

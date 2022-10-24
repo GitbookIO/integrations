@@ -1,9 +1,11 @@
 import { ContentKitBlock } from '@gitbook/api';
-import { createComponent } from '@gitbook/runtime';
+import { createComponent, Logger } from '@gitbook/runtime';
 
-import * as sentry from './api/sentry';
+import * as sentry from './sentry';
 import { SentryIssue, SentryRuntimeContext } from './types';
 import { capitalizeFirstLetter, extractIssueIdFromURL } from './utils';
+
+export const logger = Logger('integration:sentry');
 
 /**
  * A generic block with a text and a link to the URL provided
@@ -62,7 +64,8 @@ export const embedBlock = createComponent<{
         let issueData: SentryIssue;
         try {
             issueData = await sentry.getIssue(issueId, context);
-        } catch {
+        } catch (err) {
+            logger.error('Error while fetching Sentry issue', err.message);
             return defaultBlock(url, context);
         }
 

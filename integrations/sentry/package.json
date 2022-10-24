@@ -3,12 +3,15 @@
     "version": "0.0.0",
     "private": true,
     "dependencies": {
+        "crypto-js": "^3.1.9",
         "cookie": "^0.5.0",
         "itty-router": "^2.6.1",
+        "itty-router-extras": "^0.4.2",
         "@gitbook/api": "*",
         "@gitbook/runtime": "*"
     },
     "devDependencies": {
+        "@types/crypto-js": "*",
         "@gitbook/cli": "*"
     },
     "scripts": {}

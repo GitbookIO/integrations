@@ -1,8 +1,8 @@
 import { Logger } from '@gitbook/runtime';
-import { OAuthResponse, SentryIssue, SentryRuntimeContext } from '../types';
-import { extractCredentials } from '../utils';
+import { OAuthResponse, SentryIssue, SentryRuntimeContext } from './types';
+import { extractCredentials } from './utils';
 
-const logger = Logger('worker:integration:sentry');
+export const logger = Logger('integration:sentry');
 
 export enum AuthorizationGrant {
     AuthorizationCode = 'authorization_code',
