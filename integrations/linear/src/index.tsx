@@ -33,6 +33,20 @@ function renderGenericCard(url: string, context: LinearRuntimeContext): ContentK
 }
 
 /**
+ *
+ */
+function getIssueIconsURLs(context: LinearRuntimeContext, status: string, priority: string) {
+    const statusIcon = `status-${status.toLowerCase().replaceAll(' ', '-')}.png`;
+    const priorityIcon = `priority-${priority.toLocaleLowerCase().replaceAll(' ', '-')}.png`;
+
+    return {
+        status: `${context.environment.integration.urls.assets}/${statusIcon}`,
+        priority: `${context.environment.integration.urls.assets}/${priorityIcon}`,
+        unassigned: `${context.environment.integration.urls.assets}/unassigned.png`,
+    };
+}
+
+/**
  * Component to render the block when embeding a Linear issue URL.
  */
 const embedBlock = createComponent<{
@@ -83,8 +97,15 @@ const embedBlock = createComponent<{
         }
 
         const { issue } = response;
+        const icons = getIssueIconsURLs(context, issue.state.name, issue.priorityLabel);
         // TODO: add images with Linear icons once we've added build script to publish public assets to Cloudflare
-        const hint = [<text>{issueId}</text>, <text> • </text>, <text>{issue.state.name}</text>];
+        const hint = [
+            <image source={{ url: icons.priority }} aspectRatio={1} />,
+            <text>{issueId}</text>,
+            <text>•</text>,
+            <image source={{ url: icons.status }} aspectRatio={1} />,
+            <text>{issue.state.name}</text>,
+        ];
 
         return (
             <block>
@@ -183,17 +204,27 @@ const previewModal = createComponent<{
         }
 
         const { issue } = response;
+        const icons = getIssueIconsURLs(context, issue.state.name, issue.priorityLabel);
+        const subtitle = [
+            <image source={{ url: icons.priority }} aspectRatio={1} />,
+            <text>{issueId}</text>,
+            <text>•</text>,
+            <image source={{ url: icons.status }} aspectRatio={1} />,
+            <text>{issue.state.name}</text>,
+            <text>•</text>,
+            <image
+                source={{ url: issue.assignee ? issue.assignee.avatarUrl : icons.unassigned }}
+                aspectRatio={1}
+            />,
+            <text>
+                {issue.assignee ? `Assigned to ${issue.assignee.displayName}` : 'Unassigned'}
+            </text>,
+        ];
+
         return (
-            <modal title={issue.title} size="fullscreen">
+            <modal title={issue.title} subtitle={subtitle} size="fullscreen">
+                <divider />
                 <vstack>
-                    <hstack>
-                        <text>{issueId}</text>
-                        <text> • </text>
-                        <text>{issue.state.name}</text>
-                        <text> • </text>
-                        <text>{issue.assignee ? issue.assignee.name : 'Unassigned'}</text>
-                    </hstack>
-                    <divider />
                     <box>
                         <markdown content={issue.description ?? 'No description provided.'} />
                     </box>
