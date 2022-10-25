@@ -4,6 +4,7 @@ import {
     RuntimeEnvironment,
     RuntimeContext,
 } from '@gitbook/runtime';
+import { extractArcadeFlowFromURL, fetchArcadeOEmbedData } from './arcade';
 
 interface ArcadeInstallationConfiguration {}
 
@@ -23,7 +24,7 @@ const embedBlock = createComponent<{
         switch (action.action) {
             case '@link.unfurl': {
                 const { url } = action;
-                const nodeProps = extractFlowFromURL(url);
+                const nodeProps = extractArcadeFlowFromURL(url);
 
                 return {
                     props: {
@@ -38,6 +39,7 @@ const embedBlock = createComponent<{
     },
 
     async render(element, context) {
+        const { environment } = context;
         const { flowId, url } = element.props;
 
         if (!flowId) {
@@ -52,7 +54,7 @@ const embedBlock = createComponent<{
                         icon={
                             <image
                                 source={{
-                                    url: context.environment.integration.urls.icon,
+                                    url: environment.integration.urls.icon,
                                 }}
                                 aspectRatio={1}
                             />
@@ -62,34 +64,20 @@ const embedBlock = createComponent<{
             );
         }
 
+        const embedData = await fetchArcadeOEmbedData(flowId);
+        const aspectRatio = embedData.width / embedData.height;
         return (
             <block>
                 <webframe
                     source={{
                         url: `https://demo.arcade.software/${flowId}?embed`,
                     }}
-                    aspectRatio={1024 / 571}
+                    aspectRatio={aspectRatio}
                 />
             </block>
         );
     },
 });
-
-function extractFlowFromURL(input: string): {
-    flowId?: string;
-} {
-    const url = new URL(input);
-    if (!['app.arcade.software', 'demo.arcade.software'].includes(url.hostname)) {
-        return;
-    }
-
-    const parts = url.pathname.split('/');
-    if (!['flows', 'share'].includes(parts[1])) {
-        return;
-    }
-
-    return { flowId: parts[2] };
-}
 
 export default createIntegration<ArcadeRuntimeContext>({
     components: [embedBlock],
