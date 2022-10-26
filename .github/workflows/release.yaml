@@ -74,7 +74,7 @@ jobs:
                   LINEAR_CLIENT_SECRET: ${{ secrets.LINEAR_STAGING_CLIENT_SECRET }}
                   SENTRY_CLIENT_ID: ${{ secrets.SENTRY_STAGING_CLIENT_ID }}
                   SENTRY_CLIENT_SECRET: ${{ secrets.SENTRY_STAGING_CLIENT_SECRET }}
-                  SENTRY_CLIENT_APP: ${{ secrets.SENTRY_STAGING_CLIENT_APP }}
+                  SENTRY_GITBOOK_INTEGRATION: ${{ secrets.SENTRY_STAGING_GITBOOK_INTEGRATION }}
             - name: Publish all integrations to production
               run: npm run publish-integrations
               env:
