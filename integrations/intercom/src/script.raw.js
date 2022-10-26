@@ -2,6 +2,7 @@
     const APP_ID = '<TO_REPLACE>';
 
     window.intercomSettings = {
+        api_base: 'https://api-iam.intercom.io',
         app_id: APP_ID,
     };
 
