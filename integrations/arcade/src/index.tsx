@@ -4,6 +4,7 @@ import {
     RuntimeEnvironment,
     RuntimeContext,
 } from '@gitbook/runtime';
+
 import { extractArcadeFlowFromURL, fetchArcadeOEmbedData } from './arcade';
 
 interface ArcadeInstallationConfiguration {}

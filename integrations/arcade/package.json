@@ -10,6 +10,8 @@
         "@gitbook/cli": "*"
     },
     "scripts": {
+        "lint": "eslint ./**/*.ts*",
+        "typecheck": "tsc --noEmit",
         "publish-integrations-staging": "gitbook publish ."
     }
 }

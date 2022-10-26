@@ -20,6 +20,6 @@ blocks:
       title: Arcade
       description: Interactive product demo
       urlUnfurl:
-          - https://app.arcade.software/flows/
-          - https://app.arcade.software/share/
-          - https://demo.arcade.software/share/
+          - https://app.arcade.software/flows/**
+          - https://app.arcade.software/flows/**
+          - https://demo.arcade.software/share/**
