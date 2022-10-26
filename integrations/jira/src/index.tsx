@@ -7,6 +7,7 @@ import {
     createOAuthHandler,
     FetchEventCallback,
     getToken,
+    OAuthConfiguration,
     OAuthResponse,
     RuntimeContext,
     RuntimeEnvironment,
@@ -21,9 +22,10 @@ interface Site {
     avatarUrl: string;
 }
 
-interface IntegrationEnvironment extends RuntimeEnvironment {
+type IntegrationEnvironment = RuntimeEnvironment<{
     sites: Site[];
-}
+    oauth_credentials: OAuthConfiguration;
+}>;
 
 type IntegrationContext = RuntimeContext<IntegrationEnvironment>;
 
@@ -84,8 +86,8 @@ const embedBlock = createComponent<Props, {}, {}, IntegrationContext>({
         }
 
         const accessToken = await getToken(configuration.oauth_credentials, {
-            clientId: 'Xn1NdMa5ka7fjCtIx37MnmCQ5tdaFZAe',
-            clientSecret: '0_ZCVno4O2YkAULcXJfAsstmuwf9cPaZIQB-qeLHWzjiGLUrAKKFFGgIcAh4U4kg',
+            clientId: environment.secrets.CLIENT_ID,
+            clientSecret: environment.secrets.CLIENT_SECRET,
             accessTokenURL: 'https://auth.atlassian.com/oauth/token',
             api,
             installationId: environment.installation?.id,
