@@ -1,10 +1,10 @@
-const APP_ID = '<TO_REPLACE>';
-
-window.intercomSettings = {
-    app_id: APP_ID,
-};
-
 (function () {
+    const APP_ID = '<TO_REPLACE>';
+
+    window.intercomSettings = {
+        app_id: APP_ID,
+    };
+
     const w = window;
     const ic = w.Intercom;
     if (typeof ic === 'function') {
@@ -27,7 +27,7 @@ window.intercomSettings = {
             s.async = true;
             s.src = `https://widget.intercom.io/widget/${APP_ID}`;
             s.onload = () => {
-                ic('boot', {
+                w.Intercom('boot', {
                     app_id: APP_ID,
                 });
             };
@@ -36,11 +36,11 @@ window.intercomSettings = {
             x.parentNode.insertBefore(s, x);
 
             w.GitBook.addEventListener('unload', () => {
-                if (!ic) {
+                if (!w.Intercom) {
                     return;
                 }
 
-                ic('shutdown');
+                w.Intercom('shutdown');
                 w.Intercom = undefined;
             });
         };
