@@ -4,6 +4,7 @@ icon: ./assets/icon.png
 description: Embed Jira issues directly in your GitBook documentation.
 script: src/index.tsx
 scopes: []
+visibility: public
 blocks:
     - id: embed
       title: Jira
