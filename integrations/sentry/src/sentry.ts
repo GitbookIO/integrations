@@ -1,4 +1,5 @@
 import { Logger } from '@gitbook/runtime';
+
 import { OAuthResponse, SentryIssue, SentryRuntimeContext } from './types';
 import { extractCredentials } from './utils';
 

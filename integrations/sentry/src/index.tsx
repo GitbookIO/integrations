@@ -1,4 +1,9 @@
+import { Router } from 'itty-router';
+import { withContent } from 'itty-router-extras';
+
 import { createIntegration } from '@gitbook/runtime';
+
+import { embedBlock } from './blocks';
 import {
     oauthHandler,
     redirectHandler,
@@ -6,9 +11,6 @@ import {
     withSignatureVerification,
 } from './handlers';
 import { SentryRuntimeContext } from './types';
-import { Router } from 'itty-router';
-import { embedBlock } from './blocks';
-import { withContent } from 'itty-router-extras';
 
 export default createIntegration<SentryRuntimeContext>({
     fetch: async (request, context) => {

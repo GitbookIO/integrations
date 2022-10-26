@@ -1,16 +1,16 @@
+import * as cookie from 'cookie';
+// eslint-disable-next-line import/no-internal-modules
 import hmacSHA256 from 'crypto-js/hmac-sha256';
 
-import * as cookie from 'cookie';
-
 import { Logger } from '@gitbook/runtime';
+
+import * as sentry from './sentry';
 import {
     SentryCredentials,
     SentryInstallationWebhookPayload,
     SentryOAuthCredentials,
     SentryRuntimeContext,
 } from './types';
-
-import * as sentry from './sentry';
 
 export const logger = Logger('integration:sentry');
 

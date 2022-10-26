@@ -3,16 +3,21 @@
     "version": "0.0.0",
     "private": true,
     "dependencies": {
-        "crypto-js": "^3.1.9",
-        "cookie": "^0.5.0",
-        "itty-router": "^2.6.1",
-        "itty-router-extras": "^0.4.2",
         "@gitbook/api": "*",
-        "@gitbook/runtime": "*"
+        "@gitbook/runtime": "*",
+        "cookie": "^0.5.0",
+        "crypto-js": "^3.1.9",
+        "itty-router": "^2.6.1",
+        "itty-router-extras": "^0.4.2"
     },
     "devDependencies": {
+        "@gitbook/cli": "*",
         "@types/crypto-js": "*",
-        "@gitbook/cli": "*"
+        "@types/itty-router-extras": "^0.4.0"
     },
-    "scripts": {}
+    "scripts": {
+        "lint": "eslint ./**/*.ts*",
+        "typecheck": "tsc --noEmit",
+        "publish-integrations-staging": "gitbook publish ."
+    }
 }
