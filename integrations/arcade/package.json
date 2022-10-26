@@ -4,7 +4,8 @@
     "private": true,
     "dependencies": {
         "@gitbook/api": "*",
-        "@gitbook/runtime": "*"
+        "@gitbook/runtime": "*",
+        "itty-router": "^2.6.6"
     },
     "devDependencies": {
         "@gitbook/cli": "*"
@@ -12,6 +13,7 @@
     "scripts": {
         "lint": "eslint ./**/*.ts*",
         "typecheck": "tsc --noEmit",
+        "build": "node -r esbuild-register ./webframe/scripts/build.ts",
         "publish-integrations-staging": "gitbook publish ."
     }
 }
