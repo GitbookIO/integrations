@@ -1,0 +1,25 @@
+name: arcade
+title: Arcade
+icon: ./assets/icon.png
+description: Embed interactive product demos and turn all users into power users.
+summary: |
+    # Overview
+
+    Arcade lets you create interactive product demos in minutes and turn all users into power users.
+
+    This integration allow you to embed Arcade interactive demos into your GitBook documentation.
+
+    # How it works
+
+    Embedding an Arcade flow in your documentation is simple - just paste a Arcade flow link into the GitBook editor. The app will turn the link into an Arcade embed showing your recorded demo.
+visibility: public
+script: ./src/index.tsx
+scopes: []
+blocks:
+    - id: embed
+      title: Arcade
+      description: Interactive product demo
+      urlUnfurl:
+          - https://app.arcade.software/flows/**
+          - https://app.arcade.software/flows/**
+          - https://demo.arcade.software/share/**
