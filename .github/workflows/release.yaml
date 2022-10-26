@@ -51,6 +51,12 @@ jobs:
                   npm ci
                   npm run build
                   npm ci
+            - name: Publish all integrations assets to staging
+              run: npm run publish-assets
+              env:
+                  CLOUDFLARE_PAGES_PROJECT: ${{ secrets.INTEGRATIONS_ASSETS_STAGING_PROJECT }}
+                  CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+                  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
             - name: Publish all integrations to staging
               run: npm run publish-integrations-staging
               env:
@@ -66,6 +72,11 @@ jobs:
                   MAILCHIMP_CLIENT_SECRET: ${{ secrets.MAILCHIMP_STAGING_CLIENT_SECRET }}
                   JIRA_CLIENT_ID: ${{ secrets.JIRA_STAGING_CLIENT_ID }}
                   JIRA_CLIENT_SECRET: ${{ secrets.JIRA_STAGING_CLIENT_SECRET }}
+                  LINEAR_CLIENT_ID: ${{ secrets.LINEAR_STAGING_CLIENT_ID }}
+                  LINEAR_CLIENT_SECRET: ${{ secrets.LINEAR_STAGING_CLIENT_SECRET }}
+                  SENTRY_CLIENT_ID: ${{ secrets.SENTRY_STAGING_CLIENT_ID }}
+                  SENTRY_CLIENT_SECRET: ${{ secrets.SENTRY_STAGING_CLIENT_SECRET }}
+                  SENTRY_GITBOOK_INTEGRATION: ${{ secrets.SENTRY_STAGING_GITBOOK_INTEGRATION }}
             - name: Publish all integrations to production
               run: npm run publish-integrations
               env:

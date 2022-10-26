@@ -44,6 +44,7 @@ export async function publishIntegration(
                 readImage(resolveFile(filePath, imageFilePath), 'preview')
             )
         ),
+        contentSecurityPolicy: manifest.contentSecurityPolicy,
         script,
         ...updates,
     });
@@ -75,7 +76,9 @@ async function buildScript(filePath: string): Promise<string> {
         write: false,
         mainFields: ['worker', 'browser', 'module', 'jsnext', 'main'],
         conditions: ['worker', 'browser', 'import', 'production'],
-        define: {},
+        define: {
+            'process.env.NODE_ENV': '"production"',
+        },
         // Automatically handle JSX using the ContentKit runtime
         jsx: 'automatic',
         jsxImportSource: '@gitbook/runtime',
@@ -84,6 +87,11 @@ async function buildScript(filePath: string): Promise<string> {
         // the export syntax while running like an entry point.
         format: 'iife',
         globalName: '__gitbook_integration',
+        loader: {
+            // If importing a file as `.raw.js`, eslint will convert to string so we can use that
+            // file as a string without opening it.
+            '.raw.js': 'text',
+        },
     });
 
     return result.outputFiles[0].text;

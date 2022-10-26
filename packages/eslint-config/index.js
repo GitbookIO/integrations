@@ -17,6 +17,7 @@ module.exports = {
         es6: true,
         node: true,
     },
+    ignorePatterns: ['*.raw.js'],
     rules: {
         curly: ['error', 'all'],
         //
@@ -68,7 +69,7 @@ module.exports = {
         'import/no-mutable-exports': 'error',
         'import/no-named-as-default': 'error',
         'import/no-named-as-default-member': 'error',
-        'import/no-unresolved': 'error',
+        'import/no-unresolved': ['error', { ignore: ['\\.raw.js'] }],
         //
         // Code
         //
