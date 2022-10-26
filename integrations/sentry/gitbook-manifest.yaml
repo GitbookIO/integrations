@@ -1,0 +1,38 @@
+name: sentry
+title: Sentry
+icon: ./assets/icon.png
+description: Embed Sentry issues in your documentation.
+visibility: public
+script: ./src/index.tsx
+summary: |
+    # Overview
+
+    Sentry helps developers and organizations see what actually matters, solve errors and performance issues quicker, and learn continuously about their application health - from the frontend to the backend.
+
+    This integration lets you embed Sentry issues into your GitBook documentation. It allows your reader to get a preview of the issues right from your documentation pages.
+
+    # How it works
+
+    Embedding Sentry in your documentation is simple - just paste a Sentry issue link (e.g [https://try.sentry-demo.com/organizations/artistic-mudfish/issues/179907/](https://try.sentry-demo.com/organizations/artistic-mudfish/issues/179907/)) into the GitBook editor. The app will turn the link into an embed that show details of the Sentry issue like the title, status & culprit of issue etc.
+scopes: []
+blocks:
+    - id: embed
+      title: Sentry
+      description: Preview of a Sentry issue
+      urlUnfurl:
+          - https://sentry.io/
+configurations:
+    account:
+        properties:
+            oauth_credentials:
+                type: button
+                title: Connection
+                description: Authorization between Sentry and GitBook.
+                button_text: Authorize
+                callback_url: /oauth
+        required:
+            - oauth_credentials
+secrets:
+    CLIENT_ID: ${{ env.SENTRY_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.SENTRY_CLIENT_SECRET }}
+    SENTRY_APP: ${{ env.SENTRY_GITBOOK_INTEGRATION }}
