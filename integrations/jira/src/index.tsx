@@ -73,7 +73,7 @@ const embedBlock = createComponent<Props, {}, {}, IntegrationContext>({
         const site = configuration.sites.find((site) => url.toString().startsWith(site.url));
 
         if (!site) {
-            // JIRA site not part of this
+            // JIRA site not part of this installation
             return (
                 <block>
                     <card title="No site found">

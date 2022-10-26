@@ -1,6 +1,6 @@
 name: jira
 title: Jira
-description: Embed Jira issue directly in your GitBook documentation.
+description: Embed Jira issues directly in your GitBook documentation.
 script: src/index.tsx
 scopes: []
 blocks:
@@ -8,7 +8,7 @@ blocks:
       title: Jira
       description: Information about a Jira task
       urlUnfurl:
-          - https://gitbook-dev-steven.atlassian.net/browse
+          - https://*.atlassian.net/browse/**
 configurations:
     account:
         properties:

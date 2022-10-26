@@ -24,4 +24,4 @@ blocks:
           codeblock: runkit
           body: content
       urlUnfurl:
-          - https://runkit.com/
+          - https://runkit.com/**
