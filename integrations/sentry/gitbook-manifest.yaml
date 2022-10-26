@@ -20,7 +20,7 @@ blocks:
       title: Sentry
       description: Preview of a Sentry issue
       urlUnfurl:
-          - https://sentry.io/
+          - https://sentry.io/**
 configurations:
     account:
         properties:

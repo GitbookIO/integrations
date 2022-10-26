@@ -20,7 +20,7 @@ blocks:
       title: Linear
       description: Preview of a Linear issue
       urlUnfurl:
-          - https://linear.app/
+          - https://linear.app/**
 configurations:
     account:
         properties:
