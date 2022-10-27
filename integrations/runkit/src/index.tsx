@@ -7,6 +7,7 @@ import {
     FetchEventCallback,
 } from '@gitbook/runtime';
 
+import { getWebframeCacheControl, getWebframeCacheKey } from './cache';
 import { fetchRunKitFromLink } from './runkit';
 import { webFrameHTML } from './webframe';
 
@@ -44,11 +45,15 @@ const embedBlock = createComponent<{
     async render(element, context) {
         const { environment } = context;
 
+        const cacheKey = getWebframeCacheKey();
+        const webframeURL = new URL(`${environment.integration.urls.publicEndpoint}/webframe`);
+        webframeURL.search = cacheKey;
+
         return (
             <block>
                 <webframe
                     source={{
-                        url: `${environment.integration.urls.publicEndpoint}/webframe`,
+                        url: webframeURL.toString(),
                     }}
                     data={{
                         content: element.dynamicState('content'),
@@ -74,12 +79,14 @@ const handleFetchEvent: FetchEventCallback<RuntimeContext> = async (request, con
     /**
      * Handle requests to serve the webframe content.
      */
+    const cacheControl = getWebframeCacheControl();
     router.get(
         '/webframe',
         async (request) =>
             new Response(webFrameHTML, {
                 headers: {
                     'Content-Type': 'text/html',
+                    'Cache-Control': cacheControl,
                 },
             })
     );
