@@ -3,7 +3,7 @@ title: Intercom
 icon: ./assets/icon.png
 description: Add the Intercom chat widget to your published GitBook content
 previewImages:
-    - ./assets/preview.png
+    - ./assets/intercom-preview.png
 externalLinks:
     - label: Documentation
       url: https://docs.gitbook.com/integrations/intercom
@@ -56,10 +56,17 @@ contentSecurityPolicy:
     media-src: |
         *.intercomcdn.com;
 summary: |
-    The Intercom integration for GitBook allows you to be in contact with your readers through the Intercom chat widget.
+    # Overview
 
-    Automatic chat widget on your documentation:
-    Each of your connected GitBook spaces will fetch the Intercom chat widget script and inject it in your published content.
+    The Intercom integration for GitBook allows you to display the Intercom chat widget on your public documentation to connect and interact with your readers.
+
+    # How it works
+
+    Automatic chat widget on your documentation: Each of your connected GitBook spaces will fetch the Intercom chat widget script and inject it in your published content.
+
+    # Configure
+
+    You can configure the integration on single or multiple public spaces by navigating to the integrations in sub-navigation or org settings. You will then have to provide Application ID to finish the configuration.
 categories:
     - analytics
 configurations:

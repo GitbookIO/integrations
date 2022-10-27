@@ -15,8 +15,7 @@ summary: |
 
     # How it works
 
-    After installing the integration and authorizing with your Mailchimp account, a new Mailchimp block will become available in the GitBook editor.
-    Insert the Mailchimp block into any page in GitBook to allow users to subscribe directly to your selected Audience.
+    After installing the integration and authorizing with your Mailchimp account, a new Mailchimp block will become available in the GitBook editor. Insert the Mailchimp block into any page in GitBook to allow users to subscribe directly to your selected Audience.
 
     # Configure
 

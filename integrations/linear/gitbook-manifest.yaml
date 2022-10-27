@@ -1,7 +1,9 @@
 name: linear
 title: Linear
 icon: ./assets/icon.png
-description: Embed Linear issues in your documentation.
+previewImages:
+    - ./assets/linear-preview.png
+description: Embed Linear issues directly in your GitBook documentation.
 summary: |
     # Overview
 
@@ -12,6 +14,10 @@ summary: |
     # How it works
 
     Embedding Linear in your documentation is simple - just paste a Linear link into the GitBook editor. The app will turn the link into an embed that show details of the Linear issue like the title, status & assignee along with a snapshot of the issue description.
+
+    # Configure
+
+    Once the Linear integration has been installed, you will have to authorize the connection between GitBook and Linear. You can select specific spaces you which you would like the integration to run on, or select all spaces.
 visibility: public
 script: ./src/index.tsx
 scopes: []
