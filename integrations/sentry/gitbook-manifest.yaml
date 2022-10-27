@@ -1,7 +1,7 @@
 name: sentry
 title: Sentry
 icon: ./assets/icon.png
-description: Embed Sentry issues in your documentation.
+description: Embed Sentry issues in your GitBook documentation.
 visibility: public
 script: ./src/index.tsx
 summary: |
@@ -14,6 +14,10 @@ summary: |
     # How it works
 
     Embedding Sentry in your documentation is simple - just paste a Sentry issue link (e.g [https://try.sentry-demo.com/organizations/artistic-mudfish/issues/179907/](https://try.sentry-demo.com/organizations/artistic-mudfish/issues/179907/)) into the GitBook editor. The app will turn the link into an embed that show details of the Sentry issue like the title, status & culprit of issue etc.
+
+    # Configure
+
+    You can install Sentry on single space by clicking on the Integrations button or on multiple or all spaces by going into your organization settings. To instal the Sentry integration you will need to authorize the connection between Sentry and GitBook.
 scopes: []
 blocks:
     - id: embed

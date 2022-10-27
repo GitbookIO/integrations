@@ -1,7 +1,7 @@
 name: plausible
 title: Plausible
 icon: ./assets/icon.png
-description: Track your GitBook analytics directly from your Plausible dashboard.
+description: Receive GitBook traffic insights directly in your Plausible dashboard.
 previewImages:
     - ./assets/plausible-preview.png
 externalLinks:
@@ -17,10 +17,17 @@ contentSecurityPolicy:
     connect-src: |
         plausible.io;
 summary: |
-    The GitBook Plausible Analytics integration allows you to track traffic in your published spaces from your Plausible dashboard.
+    # Overview
 
-    Automatic tracking in your documentation:
-    Each of your connected GitBook spaces will fetch the cookie-less Plausible tracking script and inject it in your public content.
+    Plausable Analytics are a GDPR CCPA and cookie law compliant site analytics. Web analytics is the process of measuring and analyzing the usage of a website. With Plausible activated on your website, you get access to a simple open source analytics dashboard. You can then use this data to assess the performance of your site and to figure out what you can do to improve your future efforts.
+
+    # How it works
+
+    The GitBook Plausible Analytics integration allows you to track traffic in your published spaces from your Plausible dashboard. Automatic tracking in your documentation: Each of your connected GitBook spaces will fetch the cookie-less Plausible tracking script and inject it in your public content.
+
+    # Configure
+
+    You can enable the integration on single published space by navigating to the sub-navigation and clicking on Integrations button. If you prefer to enable  the integration or multiple or all published spaces you can do so by navigating to the org settings and clicking the Integrations tab. You will need your Domain to finish the configuration.
 categories:
     - analytics
 configurations:

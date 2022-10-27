@@ -1,7 +1,7 @@
 name: figma
 title: Figma
 icon: ./assets/icon.png
-description: Embed Figma files into GitBook pages
+description: Embed Figma files and designs directly into GitBook pages.
 previewImages:
     - ./assets/figma-preview.png
 visibility: public

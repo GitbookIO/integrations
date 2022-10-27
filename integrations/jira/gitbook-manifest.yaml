@@ -6,6 +6,18 @@ script: src/index.tsx
 previewImages:
     - ./assets/jira-preview.png
 scopes: []
+summary: |
+    # Overview
+
+    Plan, track, and manage your agile and software development projects in Jira. Customize your workflow, collaborate, and release great software. Embed Jira issues directly in your GitBook documentation.
+
+    # How it works
+
+    Embedding Jira issues in your documentation is simple - just paste a Jira link into the GitBook editor. The app will turn the link into an embed that show details of the Jira issue like the title, status, and assignee.
+
+    # Configure
+
+    Authorize the connection between Jira and GitBook. You can install the integration on single space directly from your sub-navigation panel by clicking on Integrations or enable it in multiple or all of your spaces by navigating to the integrations tab in the organization settings.
 visibility: public
 blocks:
     - id: embed
