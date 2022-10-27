@@ -30,10 +30,8 @@ function handleGitBookBlockStateUpdate(event) {
     }
 
     if (!arcadeEmbed) {
-        const embedURL = new URL(arcadeEmbedOrigin + '?embed');
-        embedURL.pathname = flowId;
-
-        renderArcadeEmbed(embedURL.toString());
+        const url = `${arcadeEmbedOrigin}/${flowId}?embed`;
+        renderArcadeEmbed(url);
     }
 
     // Send message to Arcade embed to navigate to the selected step.

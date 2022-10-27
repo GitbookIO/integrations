@@ -42,7 +42,7 @@ async function build() {
 
     const webframeModule = `
 export const webFrameHTML: string = \`
-${webframeHTML}
+${webframeHTML.replaceAll('`', '\\`').replaceAll('$', '\\$')}
 \`
 `;
     await fs.promises.writeFile(path.join(__dirname, '../../src/webframe.ts'), webframeModule);

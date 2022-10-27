@@ -10,6 +10,7 @@ import {
 } from '@gitbook/runtime';
 
 import { extractArcadeFlowFromURL, fetchArcadeOEmbedData } from './arcade';
+import { ArcadeEmbedStep } from './types';
 import { webFrameHTML } from './webframe';
 
 interface ArcadeInstallationConfiguration {}
