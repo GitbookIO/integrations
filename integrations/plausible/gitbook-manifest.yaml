@@ -3,7 +3,7 @@ title: Plausible
 icon: ./assets/icon.png
 description: Track your GitBook analytics directly from your Plausible dashboard.
 previewImages:
-    - ./assets/preview.png
+    - ./assets/plausible-preview.png
 externalLinks:
     - label: Documentation
       url: https://docs.gitbook.com/integrations/plausible

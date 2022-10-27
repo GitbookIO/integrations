@@ -1,6 +1,8 @@
 name: arcade
 title: Arcade
 icon: ./assets/icon.png
+previewImages:
+    - ./assets/arcade-preview.png
 description: Embed interactive product demos and turn all users into power users.
 summary: |
     # Overview

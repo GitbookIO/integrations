@@ -5,7 +5,7 @@ description: Notify a channel or individual in Slack with real-time events from 
 categories:
     - collaboration
 previewImages:
-    - ./assets/preview.png
+    - ./assets/slack-preview.png
 externalLinks:
     - label: Documentation
       url: https://docs.gitbook.com/integrations/slack

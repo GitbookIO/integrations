@@ -1,6 +1,8 @@
 name: linear
 title: Linear
 icon: ./assets/icon.png
+previewImages:
+    - ./assets/linear-preview.png
 description: Embed Linear issues in your documentation.
 summary: |
     # Overview

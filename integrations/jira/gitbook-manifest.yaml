@@ -3,6 +3,8 @@ title: Jira
 icon: ./assets/icon.png
 description: Embed Jira issues directly in your GitBook documentation.
 script: src/index.tsx
+previewImages:
+    - ./assets/jira-preview.png
 scopes: []
 visibility: public
 blocks:

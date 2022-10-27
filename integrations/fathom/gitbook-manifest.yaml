@@ -3,7 +3,7 @@ title: Fathom
 icon: ./assets/icon.png
 description: Track your GitBook analytics directly from your Fathom dashboard.
 previewImages:
-    - ./assets/preview.png
+    - ./assets/fathom-preview.png
 externalLinks:
     - label: Documentation
       url: https://docs.gitbook.com/integrations/fathom

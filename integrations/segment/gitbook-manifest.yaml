@@ -3,7 +3,7 @@ title: Segment
 icon: ./assets/icon.png
 description: Integrate your GitBook public documentation with your Segment pipeline.
 previewImages:
-    - ./assets/preview.png
+    - ./assets/segment-preview.png
 externalLinks:
     - label: Documentation
       url: https://docs.gitbook.com/integrations/segment

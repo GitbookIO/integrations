@@ -1,6 +1,8 @@
 name: runkit
 title: RunKit
 icon: ./assets/icon.png
+previewImages:
+    - ./assets/runkit-preview.png
 description: Embed interactive Node.js notebooks in your documentation.
 summary: |
     # Overview
