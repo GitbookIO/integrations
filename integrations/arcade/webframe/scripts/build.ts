@@ -10,7 +10,7 @@ async function buildWebFrameScript(scriptPath: string): Promise<string> {
         platform: 'browser',
         entryPoints: [scriptPath],
         bundle: true,
-        minify: false,
+        minify: true,
         write: false,
         format: 'esm',
         mainFields: ['worker', 'browser', 'module', 'jsnext', 'main'],
@@ -32,21 +32,6 @@ async function buildWebFrameHTML(htmlPath: string, webframeJS: string) {
         `<script>${webframeJS}</script>`
     );
 }
-
-/* async function build() {
-    const webframeScriptPath = path.join(__dirname, '../src/webframe.ts');
-    const webframeJSCode = await buildWebFrameScript(webframeScriptPath);
-
-    const htmlTemplatePath = path.join(__dirname, '../template/webframe.html');
-    const webframeHTML = await buildWebFrameHTML(htmlTemplatePath, webframeJSCode);
-
-    const publicAssetsFolder = path.join(__dirname, '../../public');
-    if (!fs.existsSync(publicAssetsFolder)) {
-        await fs.promises.mkdir(publicAssetsFolder);
-    }
-
-    await fs.promises.writeFile(path.join(publicAssetsFolder, 'webframe.html'), webframeHTML);
-} */
 
 async function build() {
     const webframeScriptPath = path.join(__dirname, '../src/webframe.ts');
