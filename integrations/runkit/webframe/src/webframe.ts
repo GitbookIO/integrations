@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const gitbookWebFrame = window.top;
 
 let readOnly = false;
@@ -67,7 +68,7 @@ function handleBlockStateUpdate(event) {
  * Send periodic props update message once the RunKit Embed has loaded.
  */
 function onRunKitNotebookLoaded(notebook: NotebookEmbed) {
-    console.info('runkit-embed: runkit iframe loaded');
+    console.info('runkit-embed: runkit notebook loaded');
     if (!readOnly) {
         setInterval(updateBlockProps, 1000, notebook);
     }
@@ -99,10 +100,7 @@ function renderRunKitNoteBook(content?: string, nodeVersion?: semverRange) {
         onLoad: onRunKitNotebookLoaded,
         onResize: updateWebFrameSize,
     });
-
-    sendAction({
-        action: '@webframe.ready',
-    });
+    console.info('runkit-embed: runkit notebook created');
 }
 
 window.addEventListener('message', (event) => {
@@ -111,4 +109,6 @@ window.addEventListener('message', (event) => {
     }
 });
 
-renderRunKitNoteBook();
+sendAction({
+    action: '@webframe.ready',
+});
