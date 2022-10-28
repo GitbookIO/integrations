@@ -143,50 +143,58 @@ export async function webhookHandler(
     const resource = request.headers.get('Sentry-Hook-Resource');
     const payload = request.content;
 
-    if (resource !== 'installation' || payload.action !== 'deleted') {
+    if (resource !== 'installation') {
         return new Response(null, { status: 404 });
     }
 
-    const sentryInstallationId = payload.data.installation.uuid;
-    logger.info(
-        `Sentry "installation.deleted" integration hook received with installation id ${sentryInstallationId}`
-    );
-
-    // Lookup the concerned installations
-    const {
-        data: { items: installations },
-    } = await api.integrations.listIntegrationInstallations(environment.integration.name, {
-        externalId: sentryInstallationId,
-    });
-
-    const installation = installations[0];
-    if (!installation) {
-        logger.error(`Could not find installation for sentry installation ${sentryInstallationId}`);
+    if (payload.action === 'created') {
         return new Response(null, { status: 200 });
     }
 
-    // remove installation in gitbook
-    const gitbookInstallationId = installation.id;
-    const res = await api.integrations.updateIntegrationInstallation(
-        environment.integration.name,
-        gitbookInstallationId,
-        {
-            configuration: {},
-            externalIds: [],
-        }
-    );
-
-    if (!res.ok) {
-        logger.error(
-            `Could not remove installation for sentry installation ${sentryInstallationId}`
-        );
-    } else {
+    if (payload.action === 'deleted') {
+        const sentryInstallationId = payload.data.installation.uuid;
         logger.info(
-            `Remove installation for sentry installation ${sentryInstallationId} and gitbook installation ${gitbookInstallationId}`
+            `Sentry "installation.deleted" integration hook received with installation id ${sentryInstallationId}`
         );
-    }
 
-    return new Response(null, { status: 200 });
+        // Lookup the concerned installations
+        const {
+            data: { items: installations },
+        } = await api.integrations.listIntegrationInstallations(environment.integration.name, {
+            externalId: sentryInstallationId,
+        });
+
+        const installation = installations[0];
+        if (!installation) {
+            logger.error(
+                `Could not find installation for sentry installation ${sentryInstallationId}`
+            );
+            return new Response(null, { status: 200 });
+        }
+
+        // remove installation in gitbook
+        const gitbookInstallationId = installation.id;
+        const res = await api.integrations.updateIntegrationInstallation(
+            environment.integration.name,
+            gitbookInstallationId,
+            {
+                configuration: {},
+                externalIds: [],
+            }
+        );
+
+        if (!res.ok) {
+            logger.error(
+                `Could not remove installation for sentry installation ${sentryInstallationId}`
+            );
+        } else {
+            logger.info(
+                `Remove installation for sentry installation ${sentryInstallationId} and gitbook installation ${gitbookInstallationId}`
+            );
+        }
+
+        return new Response(null, { status: 200 });
+    }
 }
 
 /**
