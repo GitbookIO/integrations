@@ -1,3 +1,4 @@
 {
-    "extends": "@gitbook/tsconfig/integration.json"
+    "extends": "@gitbook/tsconfig/integration.json",
+    "exclude": ["public/functions/**/*"]
 }

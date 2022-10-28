@@ -952,8 +952,10 @@ fragment Issue on Issue {
     }
     # The workflow state that the issue is associated with.
     state {
-        id
+        type
         name
+        color
+        position
     }
 }
 
