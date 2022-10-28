@@ -14,11 +14,10 @@ export async function onRequestGet({ request, params, env }) {
 
     const fillColor = query.get('fill');
     const strokeColor = query.get('stroke');
-    const themeMode = query.get('theme');
 
     const statusAssetURL = origReqURL;
     statusAssetURL.search = '';
-    statusAssetURL.pathname = `/linear/status-${statusType}-${themeMode ? themeMode : 'light'}.svg`;
+    statusAssetURL.pathname = `/linear/status-${statusType}.svg`;
 
     // Fetch the SVG corresponding to the status type
     let statusAssetResponse: Response;
