@@ -7,7 +7,7 @@ categories:
 visibility: public
 script: ./src/index.tsx
 previewImages:
-    - ./assets/preview.png
+    - ./assets/mailchimp-preview.png
 summary: |
     # Overview
 
