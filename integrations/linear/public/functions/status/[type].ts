@@ -1,4 +1,4 @@
-const VALID_STATUS_TYPES = ['backlog', 'unstarted', 'started', 'completed', 'canceled'];
+const VALID_STATUS_TYPES = ['backlog', 'unstarted', 'started', 'completed', 'canceled', 'triage'];
 
 export async function onRequestGet({ request, params, env }) {
     const statusType = params.type;
