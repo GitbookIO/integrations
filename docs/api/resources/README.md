@@ -6,39 +6,24 @@ The GitBook API is currently in **beta**. This means you should not rely on it's
 
 ## Users
 
-|                                                                                                                                                          |                                                                                                          |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| <p><strong></strong><a href="users/README.md"><strong>Authenticated User</strong></a><br>Retrieve info and search content of the authenticated User.</p> | <p><strong></strong><a href="users/README.md"><strong>User</strong></a><br>Retrieve a specific User.</p> |
+<table data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="users/"><strong>Authenticated User</strong></a><br>Retrieve info and search content of the authenticated User.</td><td></td></tr><tr><td><a href="users/"><strong>User</strong></a><br>Retrieve a specific User.</td><td></td></tr></tbody></table>
 
 ## Collections
 
-|                                                                                                                          |                                                                                                                             |
-| ------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| <p><strong></strong><a href="collections/README.md"><strong>Collection</strong></a><br>Retrieve a Collection object.</p> | <p><strong></strong><a href="collections/README.md"><strong>Spaces</strong></a><br>Retrieve the Spaces in a Collection.</p> |
+<table data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="collections/"><strong>Collection</strong></a><br>Retrieve a Collection object.</td><td></td></tr><tr><td><a href="collections/"><strong>Spaces</strong></a><br>Retrieve the Spaces in a Collection.</td><td></td></tr></tbody></table>
 
 ## Organizations
 
-|                                                                                                                                    |                                                                                                                             |
-| ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| <p><strong></strong><a href="organizations/README.md"><strong>Spaces</strong></a><br>Retrieve the Spaces in an Organization.</p>   | <p><strong></strong><a href="organizations/README.md"><strong>Search</strong></a><br>Search content in an Organization.</p> |
-| <p><strong></strong><a href="organizations/members.md"><strong>Members</strong></a><br>Invite, remove, and update members.</p> | <p><strong></strong><a href="organizations/teams.md"><strong>Teams</strong></a><br>Create, remove, and update teams.</p> |
+<table data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="organizations/"><strong>Spaces</strong></a><br>Retrieve the Spaces in an Organization.</td><td></td></tr><tr><td><a href="organizations/members.md"><strong>Members</strong></a><br>Invite, remove, and update members.</td><td></td></tr><tr><td></td><td></td></tr><tr><td><a href="organizations/"><strong>Search</strong></a><br>Search content in an Organization.</td><td></td></tr><tr><td><a href="organizations/teams.md"><strong>Teams</strong></a><br>Create, remove, and update teams.</td><td></td></tr></tbody></table>
 
 ## Spaces
 
-|                                                                                                                                                        |                                                                                                                             |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| <p><strong></strong><a href="spaces/README.md"><strong>Space</strong></a><br>Retrieve a Space object.</p>                                              | <p><strong></strong><a href="spaces/insights.md"><strong>Insights</strong></a><br>Retrieve Insights data for a Space.</p>   |
-| <p><strong></strong><a href="spaces/change-requests.md"><strong>Change Requests</strong></a><br>Act on Change Requests and retrieve their content.</p> | <p><strong></strong><a href="spaces/content.md"><strong>Content</strong></a><br>Retrieve and import content to a Space.</p> |
-| <p><strong></strong><a href="spaces/revisions.md"><strong>Revisions</strong></a><br>Retrieve Revisions content.</p>                                    | <p><strong></strong><a href="spaces/README.md"><strong>Search</strong></a><br>Search content in a Space.</p>                |
+<table data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="spaces/"><strong>Space</strong></a><br>Retrieve a Space object.</td><td></td></tr><tr><td><a href="spaces/change-requests.md"><strong>Change Requests</strong></a><br>Act on Change Requests and retrieve their content.</td><td></td></tr><tr><td><a href="spaces/revisions.md"><strong>Revisions</strong></a><br>Retrieve Revisions content.</td><td></td></tr><tr><td><a href="spaces/insights.md"><strong>Insights</strong></a><br>Retrieve Insights data for a Space.</td><td></td></tr><tr><td><a href="spaces/content.md"><strong>Content</strong></a><br>Retrieve and import content to a Space.</td><td></td></tr><tr><td><a href="spaces/"><strong>Search</strong></a><br>Search content in a Space.</td><td></td></tr></tbody></table>
 
 ## Integrations
 
-|                                                                                                                      |     |
-| -------------------------------------------------------------------------------------------------------------------- | --- |
-| <p><strong></strong><a href="integrations/README.md"><strong>Integration</strong></a><br>Publish an Integration.</p> |     |
+<table data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="integrations/"><strong>Integration</strong></a><br>Publish an Integration.</td><td></td></tr></tbody></table>
 
 ## URLs
 
-|                                                                                                                                                        |     |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------ | --- |
-| <p><strong></strong><a href="urls/README.md"><strong>Content</strong></a><br>Resolve a URL to its corresponding content (Space, Collection, Page).</p> |     |
+<table data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="urls/"><strong>Content</strong></a><br>Resolve a URL to its corresponding content (Space, Collection, Page).</td><td></td></tr></tbody></table>
