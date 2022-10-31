@@ -45,7 +45,12 @@ function getIssueIconsURLs(
 
     const assetsBaseURL = context.environment.integration.urls.assets;
     const statusIconURL = new URL(`${assetsBaseURL}/status/${state.type}`);
-    statusIconURL.searchParams.set('fill', state.color.replace('#', ''));
+    if (state.type !== 'unstarted') {
+        statusIconURL.searchParams.set('fill', state.color.replace('#', ''));
+    }
+    if (['completed', 'unstarted'].includes(state.type)) {
+        statusIconURL.searchParams.set('stroke', state.color.replace('#', ''));
+    }
     statusIconURL.searchParams.set('theme', theme);
 
     const priorityIcon = `priority-${priority
