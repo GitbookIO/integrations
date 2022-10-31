@@ -33,16 +33,31 @@ function renderGenericCard(url: string, context: LinearRuntimeContext): ContentK
 }
 
 /**
- *
+ * Get the issue icons based on the issue details.
  */
-function getIssueIconsURLs(context: LinearRuntimeContext, status: string, priority: string) {
-    const statusIcon = `status-${status.toLowerCase().replaceAll(' ', '-')}.png`;
-    const priorityIcon = `priority-${priority.toLocaleLowerCase().replaceAll(' ', '-')}.png`;
+function getIssueIconsURLs(
+    context: LinearRuntimeContext,
+    issueQueryResponse: IssueQuery,
+    theme: string
+) {
+    const { issue } = issueQueryResponse;
+    const { state, priorityLabel: priority } = issue;
+
+    const assetsBaseURL = context.environment.integration.urls.assets;
+    const statusIconURL = new URL(`${assetsBaseURL}/status/${state.type}`);
+    statusIconURL.searchParams.set('fill', state.color.replace('#', ''));
+    statusIconURL.searchParams.set('theme', theme);
+
+    const priorityIcon = `priority-${priority
+        .toLocaleLowerCase()
+        .replaceAll(' ', '-')}-${theme}.svg`;
 
     return {
-        status: `${context.environment.integration.urls.assets}/${statusIcon}`,
-        priority: `${context.environment.integration.urls.assets}/${priorityIcon}`,
-        unassigned: `${context.environment.integration.urls.assets}/unassigned.png`,
+        status: statusIconURL.toString(),
+        priority: `${assetsBaseURL}/${priorityIcon}`,
+        assignee: issue.assignee
+            ? issue.assignee.avatarUrl
+            : `${assetsBaseURL}/unassigned-${theme}.svg`,
     };
 }
 
@@ -96,9 +111,9 @@ const embedBlock = createComponent<{
             return renderGenericCard(element.props.url, context);
         }
 
+        const icons = getIssueIconsURLs(context, response, element.context.theme);
+
         const { issue } = response;
-        const icons = getIssueIconsURLs(context, issue.state.name, issue.priorityLabel);
-        // TODO: add images with Linear icons once we've added build script to publish public assets to Cloudflare
         const hint = [
             <image source={{ url: icons.priority }} aspectRatio={1} />,
             <text>{issueId}</text>,
@@ -203,8 +218,9 @@ const previewModal = createComponent<{
             return renderGenericModal(element.props.url, context);
         }
 
+        const icons = getIssueIconsURLs(context, response, element.context.theme);
         const { issue } = response;
-        const icons = getIssueIconsURLs(context, issue.state.name, issue.priorityLabel);
+
         const subtitle = [
             <image source={{ url: icons.priority }} aspectRatio={1} />,
             <text>{issueId}</text>,
@@ -212,10 +228,7 @@ const previewModal = createComponent<{
             <image source={{ url: icons.status }} aspectRatio={1} />,
             <text>{issue.state.name}</text>,
             <text>•</text>,
-            <image
-                source={{ url: issue.assignee ? issue.assignee.avatarUrl : icons.unassigned }}
-                aspectRatio={1}
-            />,
+            <image source={{ url: icons.assignee }} aspectRatio={1} />,
             <text>
                 {issue.assignee ? `Assigned to ${issue.assignee.displayName}` : 'Unassigned'}
             </text>,

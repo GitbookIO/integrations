@@ -12,11 +12,22 @@ interface IntegrationPublicAsset {
     assetsFolderPath: string;
 }
 
+interface IntegrationFunctionsFolder {
+    /** The name of integration owning the functions folder */
+    integration: string;
+
+    /** The full path to the functions path */
+    functionsFolderPath: string;
+}
+
 /** The root folder for all the integrations */
 const integrationsRootFolder = '../integrations';
 
 /** The assets folder that is uploaded to the Cloudflare pages project */
 const assetsDistFolder = '../dist';
+
+/** The funtions folder that is uploaded to the Cloudflare pages project */
+const functionsDistFolder = '../functions';
 
 /** The file extensions that we are filtering assets on */
 const assetFilters = ['.png', '.svg', '.jpg', '.jpeg', '.webp'];
@@ -47,33 +58,58 @@ function listIntegrationPublicAssets(
 }
 
 /**
- * List all public assets for every integrations.
+ * List all public assets and functions folders for every integrations.
  */
-function listAllPublicAssets() {
+function listAllPublicFoldersContent() {
     const integrationsRootPath = path.join(__dirname, integrationsRootFolder);
     const integrationsStats = fs.readdirSync(integrationsRootPath, { withFileTypes: true });
 
-    return integrationsStats.reduce<IntegrationPublicAsset[]>((allAssets, currentStats) => {
-        if (currentStats.isDirectory()) {
-            const integrationName = currentStats.name;
-            const integrationPublicAssetsPath = path.join(
-                integrationsRootPath,
-                integrationName,
-                'public'
-            );
-            if (!fs.existsSync(integrationPublicAssetsPath)) {
-                return allAssets;
+    let integrationsFunctions: IntegrationFunctionsFolder[] = [];
+
+    const integrationsAssets = integrationsStats.reduce<IntegrationPublicAsset[]>(
+        (allAssets, currentStats) => {
+            if (currentStats.isDirectory()) {
+                const integrationName = currentStats.name;
+                const integrationPublicFolderPath = path.join(
+                    integrationsRootPath,
+                    integrationName,
+                    'public'
+                );
+                const integrationFunctionsFolderPath = path.join(
+                    integrationPublicFolderPath,
+                    'functions'
+                );
+
+                if (
+                    fs.existsSync(integrationFunctionsFolderPath) &&
+                    fs.statSync(integrationFunctionsFolderPath).isDirectory()
+                ) {
+                    integrationsFunctions.push({
+                        integration: integrationName,
+                        functionsFolderPath: integrationFunctionsFolderPath,
+                    });
+                }
+
+                if (!fs.existsSync(integrationPublicFolderPath)) {
+                    return allAssets;
+                }
+
+                const integrationAssets = listIntegrationPublicAssets(
+                    integrationName,
+                    integrationPublicFolderPath
+                );
+
+                return [...allAssets, ...integrationAssets];
             }
+            return allAssets;
+        },
+        []
+    );
 
-            const integrationAssets = listIntegrationPublicAssets(
-                integrationName,
-                integrationPublicAssetsPath
-            );
-
-            return [...allAssets, ...integrationAssets];
-        }
-        return allAssets;
-    }, []);
+    return {
+        integrationsAssets,
+        integrationsFunctions,
+    };
 }
 
 /**
@@ -100,10 +136,36 @@ async function writeAssetsToDistFolder(distFolder: string, assets: IntegrationPu
     );
 }
 
+/**
+ * Copy all public functions from the integration to the functions folder that is uploaded to Cloudfare pages project.
+ */
+async function copyFunctionsToFunctionsFolder(
+    functionsFolder: string,
+    functions: IntegrationFunctionsFolder[]
+) {
+    if (fs.existsSync(functionsFolder)) {
+        await fs.promises.rm(functionsFolder, { recursive: true });
+    }
+
+    await Promise.all(
+        functions.map(async (integrationFunctions) => {
+            await fs.promises.cp(
+                integrationFunctions.functionsFolderPath,
+                path.join(functionsFolder, integrationFunctions.integration),
+                { recursive: true }
+            );
+        })
+    );
+}
+
 async function main() {
     console.log('⚙️  Building integration assets folder...');
-    const assets = listAllPublicAssets();
-    await writeAssetsToDistFolder(path.join(__dirname, assetsDistFolder), assets);
+    const distFolder = path.join(__dirname, assetsDistFolder);
+    const functionsFolder = path.join(__dirname, functionsDistFolder);
+
+    const { integrationsAssets, integrationsFunctions } = listAllPublicFoldersContent();
+    await writeAssetsToDistFolder(distFolder, integrationsAssets);
+    await copyFunctionsToFunctionsFolder(functionsFolder, integrationsFunctions);
 }
 
 main()
