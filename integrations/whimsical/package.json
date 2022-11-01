@@ -1,0 +1,17 @@
+{
+    "name": "@gitbook/integration-figma",
+    "version": "0.0.0",
+    "private": true,
+    "dependencies": {
+        "@gitbook/runtime": "*"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "*",
+        "@gitbook/eslint-config": "*",
+        "@gitbook/tsconfig": "*"
+    },
+    "scripts": {
+        "lint": "eslint ./**/*.ts*",
+        "typecheck": "tsc --noEmit"
+    }
+}

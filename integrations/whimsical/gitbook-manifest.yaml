@@ -1,0 +1,27 @@
+name: whimsical
+title: Whimsical
+icon: ./assets/icon.png
+description: Embed Figma files into GitBook pages
+visibility: public
+script: ./src/index.tsx
+summary: |
+    # Overview
+
+    This integration embeds Figma artboards and files into GitBook documents, making it easy to find and view relevant design files whenever you need them. Never search through Figma, Slack, or emails to find design files again.
+
+    # How it works
+
+    Embedding Figma files into GitBook is simple - just paste a Figma link into the GitBook editor. The app will turn the link into an embed that shows the Figma file name along with an image snapshot of what the file looked like at the moment that you embedded it.
+
+    When viewing an embed, click on the maximize button to preview the file in GitBook or on the file or artboard name to open it in Figma.
+
+    # Configure
+
+    GitBook admins can go to the integrations settings to connect your organization's Figma account to GitBook. Once enabled, the integration will work for all spaces where it's enabled in your organization.
+scopes: []
+blocks:
+    - id: embed
+      title: Whimsical
+      description: Preview of a Whimsical
+      urlUnfurl:
+          - https://whimsical.com/**
