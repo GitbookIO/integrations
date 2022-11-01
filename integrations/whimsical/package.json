@@ -1,8 +1,9 @@
 {
-    "name": "@gitbook/integration-figma",
+    "name": "@gitbook/integration-whimsical",
     "version": "0.0.0",
     "private": true,
     "dependencies": {
+        "@gitbook/api": "*",
         "@gitbook/runtime": "*"
     },
     "devDependencies": {
