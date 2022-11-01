@@ -241,7 +241,6 @@ const previewModal = createComponent<{
 
         return (
             <modal title={issue.title} subtitle={subtitle} size="fullscreen">
-                <divider />
                 <vstack>
                     <box>
                         <markdown content={issue.description ?? 'No description provided.'} />
