@@ -173,7 +173,7 @@ const embedBlock = createComponent<{
  */
 function renderGenericModal(url: string, context: LinearRuntimeContext): ContentKitModal {
     return (
-        <modal title="Linear" size="fullscreen">
+        <modal title="Linear" size="large">
             <vstack>
                 <hstack>
                     <text style="italic">{url}</text>
@@ -240,7 +240,7 @@ const previewModal = createComponent<{
         ];
 
         return (
-            <modal title={issue.title} subtitle={subtitle} size="fullscreen">
+            <modal title={issue.title} subtitle={subtitle} size="large">
                 <divider />
                 <vstack>
                     <box>
