@@ -1,7 +1,7 @@
 name: whimsical
 title: Whimsical
 icon: ./assets/icon.png
-description: Embed Whimsical files into GitBook pages
+description: Embed Whimsical files in your GitBook documentation.
 visibility: public
 script: ./src/index.tsx
 summary: |
@@ -13,7 +13,9 @@ summary: |
 
     Embedding Whimsical files into GitBook is simple - just paste a Whimsical link into the GitBook editor. The app will turn the link into an embed that shows the Whimsical file.
 
-    ![image](https://d33v4339jhl8k0.cloudfront.net/docs/assets/602e845dc6b4255ec178360b/images/63196f4490c29a3d732c594e/file-ILpMqA7bqn.png)
+    Make sure that your files have permissions set to `Anyone with a link -> Can View` at least in order for your files to be viewable publically.
+
+    ![whimsical permissions](https://integrations-assets.gitbook.com/whimsical/permissions-preview.png)
 scopes: []
 blocks:
     - id: embed
