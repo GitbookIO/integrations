@@ -78,7 +78,7 @@ export const embedBlock = createComponent<{
             <text> • </text>,
             <text>{capitalizeFirstLetter(status)}</text>,
             <text> • </text>,
-            <text>{metadata.function}</text>,
+            <text>{metadata.function ?? metadata.type ?? metadata.value}</text>,
         ];
 
         return (
