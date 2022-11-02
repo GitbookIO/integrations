@@ -18,6 +18,7 @@
     "scripts": {
         "build": "graphql-codegen --config linear.sdk.codegen.yml",
         "publish-linear-dev": "dotenv gitbook publish .",
-        "publish-integrations-staging": "dotenv gitbook publish ."
+        "publish-integrations": "gitbook publish .",
+        "publish-integrations-staging": "gitbook publish ."
     }
 }
