@@ -60,9 +60,10 @@ function getIssueIconsURLs(
     return {
         status: statusIconURL.toString(),
         priority: `${assetsBaseURL}/${priorityIcon}`,
-        assignee: issue.assignee
-            ? issue.assignee.avatarUrl
-            : `${assetsBaseURL}/unassigned-${theme}.svg`,
+        assignee:
+            issue.assignee && issue.assignee.avatarUrl
+                ? issue.assignee.avatarUrl
+                : `${assetsBaseURL}/unassigned-${theme}.svg`,
     };
 }
 
