@@ -5,7 +5,8 @@
     "scripts": {
         "lint": "eslint ./**/*.ts*",
         "typecheck": "tsc --noEmit",
-        "publish-integrations-staging": "gitbook publish ."
+        "publish-integrations-staging": "gitbook publish .",
+        "publish-integrations": "gitbook publish ."
     },
     "dependencies": {
         "@gitbook/runtime": "*",
