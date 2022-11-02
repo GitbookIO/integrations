@@ -1,58 +1,16 @@
-import { RuntimeEnvironment, RuntimeContext, OAuthConfig } from '@gitbook/runtime';
+import { RuntimeEnvironment, RuntimeContext } from '@gitbook/runtime';
 
 export interface SentryInstallationConfiguration {
-    oauth_credentials?: {
-        token: string;
-        refreshToken: string;
-        expiresAt: string;
-    };
-    sentryInstallationId?: string;
-    sentryOrgSlug?: string;
+    auth_token?: string;
 }
 
 export type SentryRuntimeEnvironment = RuntimeEnvironment<SentryInstallationConfiguration>;
 export type SentryRuntimeContext = RuntimeContext<SentryRuntimeEnvironment>;
 
-export type SentrySecretsConfig = Pick<OAuthConfig, 'clientId' | 'clientSecret'>;
-
-export interface OAuthResponse {
-    id: number;
-    token: string;
-    refreshToken: string;
-    dateCreated: string;
-    expiresAt: string;
-    state: null;
-    application: null;
-}
-
-export type SentryCredentials = Pick<
-    OAuthResponse,
-    'token' | 'refreshToken' | 'expiresAt' | 'dateCreated'
->;
-
-export interface SentryOAuthCredentials {
-    oauth_credentials: SentryCredentials;
-}
-
 export interface SentryIssue {
     title: string;
     shortId: string;
     level: string;
-    metadata: { function: string };
+    metadata: { function?: string; value?: string; type?: string };
     status: string;
-}
-
-export interface SentryInstallationWebhookPayload {
-    action: 'created' | 'deleted';
-    installation: { uuid: string };
-    data: {
-        installation: {
-            app: { uuid: string; slug: string };
-            organization: { slug: string };
-            uuid: string;
-            status: 'installed' | 'uninstalled';
-            code: string;
-        };
-    };
-    actor: { type: string; id: number; name: string };
 }

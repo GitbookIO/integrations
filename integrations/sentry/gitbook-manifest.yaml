@@ -30,15 +30,9 @@ blocks:
 configurations:
     account:
         properties:
-            oauth_credentials:
-                type: button
-                title: Connection
-                description: Authorization between Sentry and GitBook.
-                button_text: Authorize
-                callback_url: /oauth
+            auth_token:
+                type: string
+                title: Auth Token
+                description: Authentication token that allows you to use the Sentry API on behalf of your account.
         required:
-            - oauth_credentials
-secrets:
-    CLIENT_ID: ${{ env.SENTRY_CLIENT_ID }}
-    CLIENT_SECRET: ${{ env.SENTRY_CLIENT_SECRET }}
-    SENTRY_APP: ${{ env.SENTRY_GITBOOK_INTEGRATION }}
+            - auth_token
