@@ -19,7 +19,7 @@ summary: |
 
     # Configure
 
-    You can install Sentry on single space by clicking on the Integrations button or on multiple or all spaces by going into your organization settings. To instal the Sentry integration you will need to authorize the connection between Sentry and GitBook.
+    You can install Sentry on a single space by clicking on the Integrations button or on multiple or all spaces by going into your organization settings. To complete the installation you will need to provide a API Auth Token. To generate an auth token follow [https://sentry.io/settings/account/api/auth-tokens/](https://sentry.io/settings/account/api/auth-tokens/) and copy-paste the new token in the respective configuraiton in GitBook.
 scopes: []
 blocks:
     - id: embed
