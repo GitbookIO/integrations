@@ -22,9 +22,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 ) => {
     const trackingId = environment.spaceInstallation.configuration.tracking_id;
     if (!trackingId) {
-        throw new Error(
-            `The Google Analytics tracking ID is missing from the Space (ID: ${event.installationId}) installation.`
-        );
+        return;
     }
 
     return new Response(script.replace('<TO_REPLACE>', trackingId), {
@@ -36,7 +34,5 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 };
 
 export default createIntegration<GARuntimeContext>({
-    events: {
-        fetch_published_script: handleFetchEvent,
-    },
+    fetch_published_script: handleFetchEvent,
 });
