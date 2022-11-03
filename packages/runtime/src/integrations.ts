@@ -2,7 +2,7 @@ import { Event, IntegrationEnvironment } from '@gitbook/api';
 
 import { ComponentDefinition } from './components';
 import { createContext, RuntimeContext } from './context';
-import { EventCallbackMap, FetchEventCallback } from './events';
+import { EventCallbackMap, FetchEventCallback, FetchPublishScriptEventCallback } from './events';
 import { Logger } from './logger';
 
 const logger = Logger('integrations');
@@ -13,6 +13,11 @@ interface IntegrationRuntimeDefinition<Context extends RuntimeContext = RuntimeC
      * events map.
      */
     fetch?: FetchEventCallback<Context>;
+
+    /**
+     * Handler for fetching the injectable script for an integration.
+     */
+    fetch_published_script?: FetchPublishScriptEventCallback<Context>;
 
     /**
      * Handler for GitBook events.
@@ -72,19 +77,27 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                 return resp;
             }
 
-            if (
-                event.type === 'fetch_published_script' &&
-                definition.events.fetch_published_script
-            ) {
-                logger.info(`handling fetch_published_script`);
+            if (event.type === 'fetch_published_script' && definition.fetch_published_script) {
+                logger.info(`handling fetch_script`);
 
-                // @ts-ignore
-                const resp = await definition.events.fetch_published_script(event, context);
+                const resp = await definition.fetch_published_script(event, context);
+
+                if (!resp) {
+                    logger.debug(`fetch_published_script is no-op, sending no-op script`);
+
+                    return new Response('/** no-op */', {
+                        headers: {
+                            'Content-Type': 'application/javascript',
+                        },
+                    });
+                }
+
                 logger.debug(
                     `response ${resp.status} ${resp.statusText} Content-Type: ${resp.headers.get(
                         'content-type'
                     )}`
                 );
+
                 return resp;
             }
 
