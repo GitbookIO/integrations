@@ -77,26 +77,26 @@ jobs:
                   SENTRY_CLIENT_ID: ${{ secrets.SENTRY_STAGING_CLIENT_ID }}
                   SENTRY_CLIENT_SECRET: ${{ secrets.SENTRY_STAGING_CLIENT_SECRET }}
                   SENTRY_GITBOOK_INTEGRATION: ${{ secrets.SENTRY_STAGING_GITBOOK_INTEGRATION }}
-            - name: Publish all integrations assets to production
-              run: npm run publish-assets
-              env:
-                  CLOUDFLARE_PAGES_PROJECT: ${{ secrets.INTEGRATIONS_ASSETS_PROD_PROJECT }}
-                  CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-                  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
-            - name: Publish all integrations to production
-              run: npm run publish-integrations
-              env:
-                  GITBOOK_TOKEN: ${{ secrets.GITBOOK_PROD_API_TOKEN }}
-                  GITBOOK_ENDPOINT: https://api.gitbook.com
-                  GITBOOK_ORGANIZATION: gitbook
-                  SLACK_CLIENT_ID: ${{ secrets.SLACK_PROD_CLIENT_ID }}
-                  SLACK_CLIENT_SECRET: ${{ secrets.SLACK_PROD_CLIENT_SECRET }}
-                  SLACK_SIGNING_SECRET: ${{ secrets.SLACK_PROD_SIGNING_SECRET }}
-                  FIGMA_CLIENT_ID: ${{ secrets.FIGMA_PROD_CLIENT_ID }}
-                  FIGMA_CLIENT_SECRET: ${{ secrets.FIGMA_PROD_CLIENT_SECRET }}
-                  MAILCHIMP_CLIENT_ID: ${{ secrets.MAILCHIMP_PROD_CLIENT_ID }}
-                  MAILCHIMP_CLIENT_SECRET: ${{ secrets.MAILCHIMP_PROD_CLIENT_SECRET }}
-                  JIRA_CLIENT_ID: ${{ secrets.JIRA_PROD_CLIENT_ID }}
-                  JIRA_CLIENT_SECRET: ${{ secrets.JIRA_PROD_CLIENT_SECRET }}
-                  LINEAR_CLIENT_ID: ${{ secrets.LINEAR_PROD_CLIENT_ID }}
-                  LINEAR_CLIENT_SECRET: ${{ secrets.LINEAR_PROD_CLIENT_SECRET }}
+            # - name: Publish all integrations assets to production
+            #   run: npm run publish-assets
+            #   env:
+            #       CLOUDFLARE_PAGES_PROJECT: ${{ secrets.INTEGRATIONS_ASSETS_PROD_PROJECT }}
+            #       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+            #       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
+            # - name: Publish all integrations to production
+            #   run: npm run publish-integrations
+            #   env:
+            #       GITBOOK_TOKEN: ${{ secrets.GITBOOK_PROD_API_TOKEN }}
+            #       GITBOOK_ENDPOINT: https://api.gitbook.com
+            #       GITBOOK_ORGANIZATION: gitbook
+            #       SLACK_CLIENT_ID: ${{ secrets.SLACK_PROD_CLIENT_ID }}
+            #       SLACK_CLIENT_SECRET: ${{ secrets.SLACK_PROD_CLIENT_SECRET }}
+            #       SLACK_SIGNING_SECRET: ${{ secrets.SLACK_PROD_SIGNING_SECRET }}
+            #       FIGMA_CLIENT_ID: ${{ secrets.FIGMA_PROD_CLIENT_ID }}
+            #       FIGMA_CLIENT_SECRET: ${{ secrets.FIGMA_PROD_CLIENT_SECRET }}
+            #       MAILCHIMP_CLIENT_ID: ${{ secrets.MAILCHIMP_PROD_CLIENT_ID }}
+            #       MAILCHIMP_CLIENT_SECRET: ${{ secrets.MAILCHIMP_PROD_CLIENT_SECRET }}
+            #       JIRA_CLIENT_ID: ${{ secrets.JIRA_PROD_CLIENT_ID }}
+            #       JIRA_CLIENT_SECRET: ${{ secrets.JIRA_PROD_CLIENT_SECRET }}
+            #       LINEAR_CLIENT_ID: ${{ secrets.LINEAR_PROD_CLIENT_ID }}
+            #       LINEAR_CLIENT_SECRET: ${{ secrets.LINEAR_PROD_CLIENT_SECRET }}
