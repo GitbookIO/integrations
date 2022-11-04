@@ -57,7 +57,7 @@ export const pageBlock = createComponent<{}, {}, void, StatuspageRuntimeContext>
                             ? getTitleForStatus(degradedComponent.status)
                             : 'All Systems Operational'
                     }`}
-                    hint={page.page_description}
+                    hint={page.page_description ?? undefined}
                     onPress={{
                         action: '@ui.modal.open',
                         componentId: pageOverviewModal.componentId,
@@ -74,26 +74,29 @@ export const pageBlock = createComponent<{}, {}, void, StatuspageRuntimeContext>
                         />,
                     ]}
                 >
-                    <vstack>
-                        {incidents.map((incident, index) => (
-                            <>
-                                <text style="bold">
-                                    {getTitleForIncidentImpact(incident.impact)}, {incident.name}
-                                </text>
-                                {incident.incident_updates.length ? (
-                                    <text>
-                                        <text style="bold">
-                                            {getTitleForIncidentStatus(
-                                                incident.incident_updates[0].status
-                                            )}
-                                        </text>
-                                        <text> - {incident.incident_updates[0].body}</text>
+                    {incidents.length > 0 ? (
+                        <vstack>
+                            {incidents.map((incident, index) => (
+                                <>
+                                    <text style="bold">
+                                        {getTitleForIncidentImpact(incident.impact)},{' '}
+                                        {incident.name}
                                     </text>
-                                ) : null}
-                                {index < incidents.length - 1 ? <divider /> : null}
-                            </>
-                        ))}
-                    </vstack>
+                                    {incident.incident_updates.length > 0 ? (
+                                        <text>
+                                            <text style="bold">
+                                                {getTitleForIncidentStatus(
+                                                    incident.incident_updates[0].status
+                                                )}
+                                            </text>
+                                            <text> - {incident.incident_updates[0].body}</text>
+                                        </text>
+                                    ) : null}
+                                    {index < incidents.length - 1 ? <divider /> : null}
+                                </>
+                            ))}
+                        </vstack>
+                    ) : null}
                 </card>
             </block>
         );
