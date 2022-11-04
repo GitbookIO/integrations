@@ -1,26 +1,35 @@
 name: fathom
-title: Fathom Analytics
+title: Fathom
 icon: ./assets/icon.png
-description: Track your GitBook analytics directly from your Fathom dashboard.
+description: Receive GitBook traffic insights directly in your Fathom dashboard.
 previewImages:
-    - ./assets/preview.png
+    - ./assets/fathom-preview.png
 externalLinks:
     - label: Documentation
       url: https://docs.gitbook.com/integrations/fathom
 visibility: public
 script: ./src/index.ts
 scopes:
-    - space:script:published
+    - space:script:inject
 contentSecurityPolicy:
     script-src: |
-      usefathom.com;
+        https://cdn.usefathom.com;
     connect-src: |
-      usefathom.com;
+        usefathom.com;
 summary: |
+    # Overview
+
+    Fathom Analytics is a no cookie analytics platform which you can enable with a single line of code. Gain valuable insights into your website or web application while being GDPR, CCPA, ePrivacy, PECR (and more) compliant.
+
+    # How it works
+
     The GitBook Fathom Analytics integration allows you to track traffic in your published spaces from your Fathom dashboard.
 
-    Automatic tracking in your documentation:
-    Each of your connected GitBook spaces will fetch the light-weight Fathom tracking script and inject it in your public content.
+    Automatic tracking in your documentation: Each of your connected GitBook spaces will fetch the light-weight Fathom tracking script and inject it in your public content.
+
+    # Configure
+
+    Analytics integrations can be configured only for spaces that are published. To enable the integration in a single space, click on Integrations button in the sub-navigation. Alternatively you can enable it for multiple or all published spaces by going into your organization settings. You will need your Site ID to finish the configuration.
 categories:
     - analytics
 configurations:

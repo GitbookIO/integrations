@@ -1,0 +1,41 @@
+name: jira
+title: Jira
+icon: ./assets/icon.png
+description: Embed Jira issues directly in your GitBook documentation.
+script: src/index.tsx
+previewImages:
+    - ./assets/jira-preview.png
+scopes: []
+summary: |
+    # Overview
+
+    Plan, track, and manage your agile and software development projects in Jira. Customize your workflow, collaborate, and release great software. Embed Jira issues directly in your GitBook documentation.
+
+    # How it works
+
+    Embedding Jira issues in your documentation is simple - just paste a Jira link into the GitBook editor. The app will turn the link into an embed that show details of the Jira issue like the title, status, and assignee.
+
+    # Configure
+
+    Authorize the connection between Jira and GitBook. You can install the integration on single space directly from your sub-navigation panel by clicking on Integrations or enable it in multiple or all of your spaces by navigating to the integrations tab in the organization settings.
+visibility: public
+blocks:
+    - id: embed
+      title: Jira
+      description: Information about a Jira task
+      urlUnfurl:
+          - https://*.atlassian.net/browse/**
+configurations:
+    account:
+        properties:
+            oauth_credentials:
+                type: button
+                title: Connection
+                description: Authorization between Jira and GitBook.
+                button_text: Authorize
+                callback_url: /oauth
+        required:
+            - oauth_credentials
+secrets:
+    CLIENT_ID: ${{ env.JIRA_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.JIRA_CLIENT_SECRET }}

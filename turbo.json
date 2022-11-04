@@ -28,7 +28,13 @@
                 "SLACK_CLIENT_ID",
                 "SLACK_CLIENT_SECRET",
                 "FIGMA_CLIENT_ID",
-                "FIGMA_CLIENT_SECRET"
+                "FIGMA_CLIENT_SECRET",
+                "MAILCHIMP_CLIENT_ID",
+                "MAILCHIMP_CLIENT_SECRET",
+                "JIRA_CLIENT_ID",
+                "JIRA_CLIENT_SECRET",
+                "LINEAR_CLIENT_ID",
+                "LINEAR_CLIENT_SECRET"
             ],
             "dependsOn": ["build"],
             "outputs": [],
@@ -41,7 +47,13 @@
                 "SLACK_CLIENT_ID",
                 "SLACK_CLIENT_SECRET",
                 "FIGMA_CLIENT_ID",
-                "FIGMA_CLIENT_SECRET"
+                "FIGMA_CLIENT_SECRET",
+                "MAILCHIMP_CLIENT_ID",
+                "MAILCHIMP_CLIENT_SECRET",
+                "JIRA_CLIENT_ID",
+                "JIRA_CLIENT_SECRET",
+                "LINEAR_CLIENT_ID",
+                "LINEAR_CLIENT_SECRET"
             ],
             "dependsOn": ["build"],
             "outputs": [],

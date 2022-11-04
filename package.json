@@ -16,13 +16,17 @@
         "publish-integrations-staging": "turbo run publish-integrations-staging",
         "version-packages": "changeset version",
         "changeset": "changeset",
-        "release": "turbo run build && changeset publish"
+        "release": "turbo run build && changeset publish",
+        "build-assets": "ts-node ./scripts/build-assets.ts",
+        "publish-assets": "./scripts/publish-assets.sh"
     },
     "devDependencies": {
         "assert": "^2.0.0",
         "esbuild-register": "^3.3.3",
         "test": "^3.2.1",
-        "turbo": "latest"
+        "ts-node": "^10.9.1",
+        "turbo": "latest",
+        "wrangler": "^2.1.12"
     },
     "engines": {
         "npm": ">=7.0.0",

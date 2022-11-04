@@ -17,6 +17,7 @@ module.exports = {
         es6: true,
         node: true,
     },
+    ignorePatterns: ['*.raw.js'],
     rules: {
         curly: ['error', 'all'],
         //
@@ -68,7 +69,7 @@ module.exports = {
         'import/no-mutable-exports': 'error',
         'import/no-named-as-default': 'error',
         'import/no-named-as-default-member': 'error',
-        'import/no-unresolved': ['error', { ignore: ['\\\.raw\.js'] }],
+        'import/no-unresolved': ['error', { ignore: ['\\.raw.js'] }],
         //
         // Code
         //
@@ -170,6 +171,16 @@ module.exports = {
         'yield-star-spacing': ['error', 'after'],
         yoda: ['error', 'never'],
     },
+    overrides: [
+        // Disable no-undef rule for TS files since checks are already provided by Typescript itself:
+        // https://github.com/typescript-eslint/typescript-eslint/blob/67744db31f61acab14b5fe027fbc2844ba198c97/docs/linting/TROUBLESHOOTING.md#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
+        {
+            files: ['*.ts', '*.tsx'],
+            rules: {
+                'no-undef': 'off',
+            },
+        },
+    ],
     globals: {
         NodeJS: true,
     },

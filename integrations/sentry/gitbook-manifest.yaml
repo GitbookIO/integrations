@@ -1,0 +1,41 @@
+name: sentry
+title: Sentry
+icon: ./assets/icon.png
+description: Embed Sentry issues in your GitBook documentation.
+visibility: public
+script: ./src/index.tsx
+previewImages:
+    - ./assets/sentry-preview.png
+summary: |
+    # Overview
+
+    Sentry helps developers and organizations see what actually matters, solve errors and performance issues quicker, and learn continuously about their application health - from the frontend to the backend.
+
+    This integration lets you embed Sentry issues into your GitBook documentation. It allows your reader to get a preview of the issues right from your documentation pages.
+
+    # How it works
+
+    Embedding Sentry in your documentation is simple - just paste a Sentry issue link (e.g [https://try.sentry-demo.com/organizations/artistic-mudfish/issues/179907/](https://try.sentry-demo.com/organizations/artistic-mudfish/issues/179907/)) into the GitBook editor. The app will turn the link into an embed that show details of the Sentry issue like the title, status & culprit of issue etc.
+
+    # Configure
+
+    You can install Sentry on a single space by clicking on the Integrations button or on multiple or all spaces by going into your organization settings. 
+
+    To complete the installation you will need to provide a API Auth Token. 
+    To generate an auth token follow the instructions [here](https://sentry.io/settings/account/api/auth-tokens/). Choose `event:read` scope and copy-paste the new generated token in the respective configuraiton in GitBook.
+scopes: []
+blocks:
+    - id: embed
+      title: Sentry
+      description: Preview of a Sentry issue
+      urlUnfurl:
+          - https://sentry.io/**
+configurations:
+    account:
+        properties:
+            auth_token:
+                type: string
+                title: Auth Token
+                description: Authentication token that allows you to use the Sentry API on behalf of your account.
+        required:
+            - auth_token

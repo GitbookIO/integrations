@@ -33,6 +33,41 @@ function renderGenericCard(url: string, context: LinearRuntimeContext): ContentK
 }
 
 /**
+ * Get the issue icons based on the issue details.
+ */
+function getIssueIconsURLs(
+    context: LinearRuntimeContext,
+    issueQueryResponse: IssueQuery,
+    theme: string
+) {
+    const { issue } = issueQueryResponse;
+    const { state, priorityLabel: priority } = issue;
+
+    const assetsBaseURL = context.environment.integration.urls.assets;
+    const statusIconURL = new URL(`${assetsBaseURL}/status/${state.type}`);
+    if (state.type !== 'unstarted') {
+        statusIconURL.searchParams.set('fill', state.color.replace('#', ''));
+    }
+    if (['completed', 'unstarted'].includes(state.type)) {
+        statusIconURL.searchParams.set('stroke', state.color.replace('#', ''));
+    }
+    statusIconURL.searchParams.set('theme', theme);
+
+    const priorityIcon = `priority-${priority
+        .toLocaleLowerCase()
+        .replaceAll(' ', '-')}-${theme}.svg`;
+
+    return {
+        status: statusIconURL.toString(),
+        priority: `${assetsBaseURL}/${priorityIcon}`,
+        assignee:
+            issue.assignee && issue.assignee.avatarUrl
+                ? issue.assignee.avatarUrl
+                : `${assetsBaseURL}/unassigned-${theme}.svg`,
+    };
+}
+
+/**
  * Component to render the block when embeding a Linear issue URL.
  */
 const embedBlock = createComponent<{
@@ -82,9 +117,16 @@ const embedBlock = createComponent<{
             return renderGenericCard(element.props.url, context);
         }
 
+        const icons = getIssueIconsURLs(context, response, element.context.theme);
+
         const { issue } = response;
-        // TODO: add images with Linear icons once we've added build script to publish public assets to Cloudflare
-        const hint = [<text>{issueId}</text>, <text> • </text>, <text>{issue.state.name}</text>];
+        const hint = [
+            <image source={{ url: icons.priority }} aspectRatio={1} />,
+            <text>{issueId}</text>,
+            <text>•</text>,
+            <image source={{ url: icons.status }} aspectRatio={1} />,
+            <text>{issue.state.name}</text>,
+        ];
 
         return (
             <block>
@@ -132,7 +174,7 @@ const embedBlock = createComponent<{
  */
 function renderGenericModal(url: string, context: LinearRuntimeContext): ContentKitModal {
     return (
-        <modal title="Linear" size="fullscreen">
+        <modal title="Linear" size="xlarge">
             <vstack>
                 <hstack>
                     <text style="italic">{url}</text>
@@ -182,18 +224,25 @@ const previewModal = createComponent<{
             return renderGenericModal(element.props.url, context);
         }
 
+        const icons = getIssueIconsURLs(context, response, element.context.theme);
         const { issue } = response;
+
+        const subtitle = [
+            <image source={{ url: icons.priority }} aspectRatio={1} />,
+            <text>{issueId}</text>,
+            <text>•</text>,
+            <image source={{ url: icons.status }} aspectRatio={1} />,
+            <text>{issue.state.name}</text>,
+            <text>•</text>,
+            <image source={{ url: icons.assignee }} aspectRatio={1} />,
+            <text>
+                {issue.assignee ? `Assigned to ${issue.assignee.displayName}` : 'Unassigned'}
+            </text>,
+        ];
+
         return (
-            <modal title={issue.title} size="fullscreen">
+            <modal title={issue.title} subtitle={subtitle} size="xlarge">
                 <vstack>
-                    <hstack>
-                        <text>{issueId}</text>
-                        <text> • </text>
-                        <text>{issue.state.name}</text>
-                        <text> • </text>
-                        <text>{issue.assignee ? issue.assignee.name : 'Unassigned'}</text>
-                    </hstack>
-                    <divider />
                     <box>
                         <markdown content={issue.description ?? 'No description provided.'} />
                     </box>

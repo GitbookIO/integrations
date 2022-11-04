@@ -17,25 +17,16 @@ curl https://api.gitbook.com/v1/
 
 ## Authentication & Rate Limiting
 
-|                                                                                                                                                           |                                                                                                                                        |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| <p><strong></strong><a href="authentication.md"><strong>Authentication</strong></a><br>Create an API access token and authenticate your API requests.</p> | <p><strong></strong><a href="rate-limiting.md"><strong>Rate Limiting</strong></a><br>Understand how API requests are rate limited.</p> |
+<table data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="authentication.md"><strong>Authentication</strong></a><br>Create an API access token and authenticate your API requests.</td><td></td></tr><tr><td><a href="rate-limiting.md"><strong>Rate Limiting</strong></a><br>Understand how API requests are rate limited.</td><td></td></tr></tbody></table>
 
 ## Errors & Pagination
 
-|                                                                                                                                                   |                                                                                                                       |
-| ------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| <p><strong></strong><a href="errors.md"><strong>Errors</strong></a><br>Learn about API errors, how they're structured and how to handle them.</p> | <p><strong></strong><a href="pagination.md"><strong>Pagination</strong></a><br>Paginate through API List results.</p> |
+<table data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="errors.md"><strong>Errors</strong></a><br>Learn about API errors, how they're structured and how to handle them.</td><td></td></tr><tr><td><a href="pagination.md"><strong>Pagination</strong></a><br>Paginate through API List results.</td><td></td></tr></tbody></table>
 
 ## Resources & Libraries
 
-|                                                                                                                                                                                            |                                                                                                                                     |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| <p><strong></strong><a href="resources/README.md"><strong>Resources Documentation</strong></a><br>Read the reference documentation for the exposed API resources and their operations.</p> | <p><strong></strong><a href="libraries/README.md"><strong>Libraries</strong></a><br>Use our libraries to interact with the API.</p> |
-
+<table data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="resources/"><strong>Resources Documentation</strong></a><br>Read the reference documentation for the exposed API resources and their operations.</td><td></td></tr><tr><td><a href="libraries/"><strong>Libraries</strong></a><br>Use our libraries to interact with the API.</td><td></td></tr></tbody></table>
 
 ## Changelog & Feedback
 
-|                                                                                                                                    |                                                                                                                                                                                                                                                                       |
-| ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <p><strong></strong><a href="../changelogs/api.md"><strong>API Changelog</strong></a><br>Read about what changed with the API.</p> | <p><strong></strong><a href="mailto:support@gitbook.com"><strong>Feedback</strong></a><br>Share your feedback to improve the API and ensure it fits your needs. Feel free to send your questions & feedback to [support@gitbook.com](mailto:support@gitbook.com).</p> |
+<table data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="../changelogs/api.md"><strong>API Changelog</strong></a><br>Read about what changed with the API.</td><td></td></tr><tr><td><a href="mailto:support@gitbook.com"><strong>Feedback</strong></a><br>Share your feedback to improve the API and ensure it fits your needs. Feel free to send your questions &#x26; feedback to <a href="mailto:support@gitbook.com">support@gitbook.com</a>.</td><td></td></tr></tbody></table>
