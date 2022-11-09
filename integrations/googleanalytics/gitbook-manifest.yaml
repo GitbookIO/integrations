@@ -6,7 +6,7 @@ previewImages:
     - ./assets/google-analytics-preview.png
 externalLinks:
     - label: Documentation
-      url: https://docs.gitbook.com/integrations/google_analytics
+      url: https://www.gitbook.com/integrations/googleanalytics
 visibility: public
 script: ./src/index.ts
 scopes:

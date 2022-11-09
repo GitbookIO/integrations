@@ -6,7 +6,7 @@ previewImages:
     - ./assets/plausible-preview.png
 externalLinks:
     - label: Documentation
-      url: https://docs.gitbook.com/integrations/plausible
+      url: https://www.gitbook.com/integrations/plausible
 visibility: public
 script: ./src/index.ts
 scopes:
