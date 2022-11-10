@@ -21,10 +21,9 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     { environment }: FathomRuntimeContext
 ) => {
     const siteId = environment.spaceInstallation.configuration.site_id;
+
     if (!siteId) {
-        throw new Error(
-            `The Fathom site ID is missing from the Space (ID: ${event.installationId}) installation.`
-        );
+        return;
     }
 
     return new Response(script.replace('<TO_REPLACE>', siteId), {
@@ -36,7 +35,5 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 };
 
 export default createIntegration<FathomRuntimeContext>({
-    events: {
-        fetch_published_script: handleFetchEvent,
-    },
+    fetch_published_script: handleFetchEvent,
 });

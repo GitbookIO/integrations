@@ -6,7 +6,7 @@ previewImages:
     - ./assets/segment-preview.png
 externalLinks:
     - label: Documentation
-      url: https://docs.gitbook.com/integrations/segment
+      url: https://www.gitbook.com/integrations/segment
 visibility: public
 script: ./src/index.ts
 scopes:

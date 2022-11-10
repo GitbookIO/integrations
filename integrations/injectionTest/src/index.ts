@@ -17,7 +17,5 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async () => {
 };
 
 export default createIntegration({
-    events: {
-        fetch_published_script: handleFetchEvent,
-    },
+    fetch_published_script: handleFetchEvent,
 });

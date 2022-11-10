@@ -33,7 +33,7 @@ export type NonFetchEvent = Exclude<
  */
 export type EventCallbackMap<Context extends RuntimeContext = RuntimeContext> = {
     [T in NonFetchEvent]?: EventCallback<T, Context> | Array<EventCallback<T, Context>>;
-} & Record<FetchPublishedScriptEvent['type'], FetchPublishScriptEventCallback<Context>>;
+};
 
 /**
  * Callback for fetch events.
@@ -48,4 +48,8 @@ export type FetchEventCallback<Context extends RuntimeContext = RuntimeContext> 
  * Callback for fetch events to fetch published scripts from integrations.
  */
 export type FetchPublishScriptEventCallback<Context extends RuntimeContext = RuntimeContext> =
-    RuntimeCallback<[FetchPublishedScriptEvent], Response | Promise<Response>, Context>;
+    RuntimeCallback<
+        [FetchPublishedScriptEvent],
+        Response | undefined | Promise<Response | undefined>, // Scripts can return undefined, in which case a no-op script will be sent back to the caller.
+        Context
+    >;

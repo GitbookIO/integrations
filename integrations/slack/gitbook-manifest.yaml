@@ -8,7 +8,7 @@ previewImages:
     - ./assets/slack-preview.png
 externalLinks:
     - label: Documentation
-      url: https://docs.gitbook.com/integrations/slack
+      url: https://www.gitbook.com/integrations/slack
     - label: Slack App Directory
       url: https://slack.com/apps/A7DE1QCTD-gitbook?tab=more_info
 visibility: public

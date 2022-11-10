@@ -6,7 +6,7 @@ previewImages:
     - ./assets/intercom-preview.png
 externalLinks:
     - label: Documentation
-      url: https://docs.gitbook.com/integrations/intercom
+      url: https://www.gitbook.com/integrations/intercom
 visibility: public
 script: ./src/index.ts
 scopes:

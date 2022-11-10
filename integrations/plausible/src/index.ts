@@ -22,9 +22,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 ) => {
     const domain = environment.spaceInstallation.configuration.domain;
     if (!domain) {
-        throw new Error(
-            `The Plausible domain is missing from the Space (ID: ${event.installationId}) installation.`
-        );
+        return;
     }
 
     return new Response(script.replace('<TO_REPLACE>', domain), {
@@ -36,7 +34,5 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 };
 
 export default createIntegration<PlausibleRuntimeContext>({
-    events: {
-        fetch_published_script: handleFetchEvent,
-    },
+    fetch_published_script: handleFetchEvent,
 });

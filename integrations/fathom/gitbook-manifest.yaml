@@ -6,7 +6,7 @@ previewImages:
     - ./assets/fathom-preview.png
 externalLinks:
     - label: Documentation
-      url: https://docs.gitbook.com/integrations/fathom
+      url: https://www.gitbook.com/integrations/fathom
 visibility: public
 script: ./src/index.ts
 scopes:

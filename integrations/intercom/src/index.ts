@@ -21,10 +21,9 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     { environment }: IntercomRuntimeContext
 ) => {
     const appId = environment.spaceInstallation.configuration.app_id;
+
     if (!appId) {
-        throw new Error(
-            `The Intercom application ID is missing from the Space (ID: ${event.installationId}) installation.`
-        );
+        return;
     }
 
     return new Response(script.replace('<TO_REPLACE>', appId), {
@@ -36,7 +35,5 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 };
 
 export default createIntegration<IntercomRuntimeContext>({
-    events: {
-        fetch_published_script: handleFetchEvent,
-    },
+    fetch_published_script: handleFetchEvent,
 });
