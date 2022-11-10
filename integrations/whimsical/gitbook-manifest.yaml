@@ -1,7 +1,7 @@
 name: whimsical
 title: Whimsical
 icon: ./assets/icon.png
-description: Embed Whimsical files in your GitBook documentation.
+description: Embed Whimsical flowcharts and wireframes in your GitBook documentation.
 visibility: public
 script: ./src/index.tsx
 summary: |
