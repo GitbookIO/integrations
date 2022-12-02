@@ -25,7 +25,7 @@ curl https://api.gitbook.com/v1/
 
 ## Resources & Libraries
 
-<table data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="resources/"><strong>Resources Documentation</strong></a><br>Read the reference documentation for the exposed API resources and their operations.</td><td></td></tr><tr><td><a href="libraries/"><strong>Libraries</strong></a><br>Use our libraries to interact with the API.</td><td></td></tr></tbody></table>
+<table data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="resources/"><strong>Resources Documentation</strong></a><br>Read the reference documentation for the exposed API resources and their operations.</td><td></td></tr><tr><td><strong></strong><a href="librairies/"><strong>Libraries</strong></a><br>Use our libraries to interact with the API.</td><td></td></tr></tbody></table>
 
 ## Changelog & Feedback
 
