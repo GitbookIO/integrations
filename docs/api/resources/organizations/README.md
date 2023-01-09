@@ -7,5 +7,8 @@ The GitBook API is currently in **beta**. This means you should not rely on it's
 {% swagger src="https://api.gitbook.com/openapi.yaml" path="/orgs/{organizationId}/spaces" method="get" %}
 {% endswagger %}
 
+{% swagger src="https://api.gitbook.com/openapi.yaml" path="/orgs/{organizationId}/collections" method="get" %}
+{% endswagger %}
+
 {% swagger src="https://api.gitbook.com/openapi.yaml" path="/orgs/{organizationId}/search" method="get" %}
 {% endswagger %}
