@@ -15,7 +15,8 @@ contentSecurityPolicy:
     script-src: |
         https://plausible.io;
     connect-src: |
-        plausible.io;
+        plausible.io
+        *;
 summary: |
     # Overview
 
@@ -37,9 +38,9 @@ configurations:
                 type: string
                 title: Domain
                 description: The domain URL you configured for this Plausible website.
-            host:
+            api:
                 type: string
-                title: Self-hosted host
-                description: When self-hosting, configure the host of your instance (empty when using the managed plausible.io).
+                title: Self-hosted host API
+                description: When self-hosting, configure the url of the instance API (empty when using plausible.io).
         required:
             - domain

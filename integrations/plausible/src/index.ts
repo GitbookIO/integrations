@@ -12,7 +12,7 @@ type PlausibleRuntimeContext = RuntimeContext<
         {},
         {
             domain?: string;
-            host?: string;
+            api?: string;
         }
     >
 >;
@@ -22,12 +22,12 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     { environment }: PlausibleRuntimeContext
 ) => {
     const domain = environment.spaceInstallation.configuration.domain;
-    const host = environment.spaceInstallation.configuration.host || 'plausible.io';
+    const api = environment.spaceInstallation.configuration.api || '';
     if (!domain) {
         return;
     }
 
-    return new Response(script.replace('<domain>', domain).replace('<host>', normalizeHost(host)), {
+    return new Response(script.replace('<domain>', domain).replace('<api>', api), {
         headers: {
             'Content-Type': 'application/javascript',
             'Cache-Control': 'max-age=604800',
@@ -38,11 +38,3 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 export default createIntegration<PlausibleRuntimeContext>({
     fetch_published_script: handleFetchEvent,
 });
-
-function normalizeHost(host: string) {
-    if (host.startsWith('https://') || host.startsWith('http://')) {
-        return host;
-    }
-
-    return `https://${host}`;
-}
