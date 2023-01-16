@@ -3,6 +3,6 @@
     const element = doc.createElement('script');
     element.defer = true;
     element.setAttribute('data-domain', domain);
-    element.src = 'https://<host>/js/script.js';
+    element.src = '<host>/js/script.js';
     sibling.parentNode.insertBefore(element, sibling);
 })(document, '<domain>');
