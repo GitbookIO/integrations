@@ -37,5 +37,9 @@ configurations:
                 type: string
                 title: Domain
                 description: The domain URL you configured for this Plausible website.
+            host:
+                type: string
+                title: Self-hosted host
+                description: When self-hosting, configure the host of your instance (empty when using the managed plausible.io).
         required:
             - domain

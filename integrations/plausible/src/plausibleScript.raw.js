@@ -3,6 +3,6 @@
     const element = doc.createElement('script');
     element.defer = true;
     element.setAttribute('data-domain', domain);
-    element.src = 'https://plausible.io/js/script.js';
+    element.src = 'https://<host>/js/script.js';
     sibling.parentNode.insertBefore(element, sibling);
-})(document, '<TO_REPLACE>');
+})(document, '<domain>');
