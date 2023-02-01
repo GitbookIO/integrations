@@ -8,3 +8,4 @@ blocks:
     - id: divider
       title: Divider
       description: A simple divider
+organization: gitbook
