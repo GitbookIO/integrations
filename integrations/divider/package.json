@@ -1,0 +1,13 @@
+{
+  "name": "divider",
+  "private": true,
+  "scripts": {
+    "lint": "eslint ./**/*.ts*",
+    "typecheck": "tsc --noEmit",
+    "publish-integrations-staging": "gitbook publish ."
+  },
+  "devDependencies": {
+    "@gitbook/cli": "^0.0.1",
+    "@gitbook/runtime": "latest"
+  }
+}

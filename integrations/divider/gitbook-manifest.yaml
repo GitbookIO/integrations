@@ -1,0 +1,5 @@
+name: divider
+title: divider
+script: src/index.tsx
+scopes: []
+secrets: {}
