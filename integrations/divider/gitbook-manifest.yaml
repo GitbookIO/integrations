@@ -3,3 +3,8 @@ title: divider
 script: src/index.tsx
 scopes: []
 secrets: {}
+description: A simple divider to add visible sections to your GitBook pages.
+blocks:
+    - id: divider
+      title: Divider
+      description: A simple divider
