@@ -21,3 +21,12 @@ Then run the following command to authenticate locally:
 ```
 gitbook auth
 ```
+
+### Step 3: Bootstrap your app
+
+Bootstrap your first app by running:
+
+```
+gitbook init
+```
+

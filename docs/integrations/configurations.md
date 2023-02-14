@@ -1,12 +1,86 @@
+---
+description: >-
+  Learn about the different configuration options your app or integration can
+  use
+---
+
 # Configurations
 
-{% hint style="warning" %}
-The GitBook Integration Platform is currently in **alpha**. It's not opened to developers just yet.
-{% endhint %}
+## GitBook Manifest
 
-## Schema
+Integrations can define a schema for the configuration. You will be prompted upon setup via the CLI for some required options. See the example `gitbook-manifest.yaml` file below for a list of available configurations.
 
-Integrations can define a schema for the configuration. The user will be prompted on filling in the configuration to activate the integration.
+```
+name: slack
+title: Slack
+icon: ./assets/icon.png
+description: Notify a channel or individual in Slack with real-time events from GitBook.
+categories:
+    - collaboration
+previewImages:
+    - ./assets/slack-preview.png
+externalLinks:
+    - label: Documentation
+      url: https://www.gitbook.com/integrations/slack
+    - label: Slack App Directory
+      url: https://slack.com/apps/A7DE1QCTD-gitbook?tab=more_info
+visibility: public
+script: ./src/index.ts
+scopes:
+    - space:content:read
+    - space:metadata:read
+summary: |
+    # Overview
+    The GitBook Slack integration brings the power of GitBook to your Slack workspace. Your teams have instant access to your GitBook knowledge base, without leaving Slack.
+    # How it works
+    Get notified of what's important:
+    Receive real-time Slack notifications when something important happens to your content on GitBook. For example, when your content is updated, published, etc.
+    Pick and choose what, where, and how you wish to be notified.
+    Searching made simple:
+    Searching has never been easier. Use Slack global shortcuts to search within your content: Type "/gitbook [search]".
+    Improved links sharing:
+    The GitBook Slack integration will automatically generate a nice-looking preview for all GitBook links shared in Slack.
+    # Configure
+    You can install the integration on a single space by clicking the integrations button in sub-navigation panel. If you prefer to install the Slack integration on multiple on all spaces you can enable this through organization settings. To configure the integration you will have to authorize the connection between Slack and GitBook. You can also select the default channel to post messages to.
+configurations:
+    account:
+        properties:
+            oauth_credentials:
+                type: button
+                title: Connection
+                description: Authorization between Slack and GitBook.
+                button_text: Authorize
+                callback_url: /oauth
+            default_channel:
+                type: string
+                title: Default Channel
+                description: Select a channel to post messages to, when none is configured for a specific space.
+                completion_url: /channels
+        required:
+            - oauth_credentials
+            - default_channel
+    space:
+        properties:
+            channel:
+                type: string
+                title: Channel
+                description: Select a channel to post messages related to this space.
+                completion_url: /channels
+            notify_content_update:
+                type: boolean
+                title: Notify Content Update
+                description: Post a notification message every time the content of the space is updated.
+                default: true
+            notify_visibility_update:
+                type: boolean
+                title: Notify Visibility Update
+                description: Post a notification message every time the visibility of the space is updated.
+                default: true
+secrets:
+    CLIENT_ID: ${{ env.SLACK_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.SLACK_CLIENT_SECRET }}
+    SIGNING_SECRET: ${{ env.SLACK_SIGNING_SECRET }}
+```
 
 ## Installation & Configuration flow
 

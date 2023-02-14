@@ -1,8 +1,4 @@
-# Usage in CI
-
-{% hint style="warning" %}
-The GitBook Integration Platform is currently in **alpha**. It's not opened to developers just yet.
-{% endhint %}
+# Continuous Integration
 
 The `gitbook` CLI can be used in a CI environment to publish the integrations for every commit.
 
@@ -28,4 +24,3 @@ jobs:
         env:
             GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
 ```
-

@@ -2,6 +2,12 @@
 
 * [Welcome](README.md)
 
+## Getting Started
+
+* [Setup Guide](getting-started/setup-guide.md)
+* [Development](getting-started/development.md)
+* [Publishing](getting-started/publishing.md)
+
 ## API
 
 * [Overview](api/overview.md)
@@ -46,11 +52,15 @@
   * [Segment](integrations/examples/segment.md)
   * [Slack](integrations/examples/slack.md)
 
+## Visitor Authentication
+
+* [Visitor Authentication](https://docs.gitbook.com/advanced-guides/advanced-sharing-and-security/visitor-authentication)
+
 ## CLI
 
 * [Quickstart](cli/quickstart.md)
 * [Reference](cli/reference.md)
-* [CI](cli/ci.md)
+* [Continuous Integration](cli/ci.md)
 
 ## Changelogs
 
