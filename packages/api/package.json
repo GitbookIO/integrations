@@ -27,5 +27,6 @@
         "build": "./build.sh",
         "lint": "eslint ./src/**/*.ts",
         "typecheck": "tsc --noEmit"
-    }
+    },
+    "version": null
 }
