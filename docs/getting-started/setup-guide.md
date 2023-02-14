@@ -1,6 +1,6 @@
 # Setup Guide
 
-Before you can use the GitBook Integration Platform, you'll need to make sure you have a your developer account set up.
+Before you can use the GitBook Integration Platform, you'll need to make sure you have your developer account set up.
 
 ### Personal Access Token
 
