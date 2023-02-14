@@ -2,6 +2,7 @@
     "name": "@gitbook/api",
     "type": "module",
     "main": "./src/index.ts",
+    "version": "0.1.0",
     "sideEffects": false,
     "files": [
         "spec/**",
@@ -27,6 +28,5 @@
         "build": "./build.sh",
         "lint": "eslint ./src/**/*.ts",
         "typecheck": "tsc --noEmit"
-    },
-    "version": null
+    }
 }
