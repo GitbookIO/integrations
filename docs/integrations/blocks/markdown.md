@@ -22,8 +22,9 @@ In the `gitbook-manifest.yaml`, define the `markdown` property for the a block:
     - id: block-name
       title: My custom block
 <strong>      markdown:
-</strong><strong>        codeblock: blocksyntax
-</strong><strong>        body: content</strong></code></pre>
+</strong>        codeblock: blocksyntax
+<strong>        body: content
+</strong></code></pre>
 
 In this scenario, a block with the properties `{ "content": "something" }` will be formatted as:
 

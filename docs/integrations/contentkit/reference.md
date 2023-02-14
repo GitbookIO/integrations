@@ -59,7 +59,7 @@ Interactive pressable button, triggering a component action when clicked.
 {% tab title="Examples" %}
 Basic button:
 
-```contentkit
+```
 {
     "type": "button",
     "label": "Click me",
@@ -69,7 +69,7 @@ Basic button:
 
 With an icon:
 
-```contentkit
+```
 {
     "type": "button",
     "label": "Click me",
@@ -80,7 +80,7 @@ With an icon:
 
 With a tooltip:
 
-```contentkit
+```
 {
     "type": "button",
     "label": "Click me",
@@ -91,7 +91,7 @@ With a tooltip:
 
 With a confirm modal:
 
-```contentkit
+```
 {
     "type": "button",
     "label": "Click me",
@@ -176,7 +176,7 @@ Flex layout element to render a vertical stack of elements. Use [`spacer`](refer
 {% tab title="Examples" %}
 Basic vertical stack:
 
-```contentkit
+```
 {
     "type": "vstack",
     "children": [
@@ -188,7 +188,7 @@ Basic vertical stack:
 
 with `align`:
 
-```contentkit
+```
 {
     "type": "vstack",
     "align": "center",
@@ -234,7 +234,7 @@ Flex layout element to render an horizontal stack of elements. Use [`spacer`](re
 {% tab title="Examples" %}
 Basic horizontal stack:
 
-```contentkit
+```
 {
     "type": "hstack",
     "children": [
@@ -246,7 +246,7 @@ Basic horizontal stack:
 
 with `align`:
 
-```contentkit
+```
 {
     "type": "hstack",
     "align": "center",
@@ -341,7 +341,7 @@ The text element is used for rendering blocks of text with formatting.
 {% tab title="Examples" %}
 Basic text:
 
-```contentkit
+```
 {
     "type": "text",
     "children": ["Hello"]
@@ -350,7 +350,7 @@ Basic text:
 
 With nested formatting:
 
-```contentkit
+```
 {
     "type": "text",
     "children": [
@@ -493,7 +493,7 @@ An input component is used to capture text input from the end user. When an acti
 {% tab title="Examples" %}
 Basic textinput:
 
-```contentkit
+```
 {
     "type": "textinput",
     "state": "name",
@@ -502,7 +502,6 @@ Basic textinput:
     "placeholder": "Enter a name"
 }
 ```
-
 {% endtab %}
 {% endtabs %}
 

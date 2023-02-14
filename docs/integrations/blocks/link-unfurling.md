@@ -14,7 +14,8 @@ GitBook needs to know what integration can handle what specific url. To do so, i
     - id: helloworld
       title: Hello world
 <strong>      urlUnfurl:
-</strong><strong>        - https://myapp.com/</strong></code></pre>
+</strong>        - https://myapp.com/
+</code></pre>
 
 ## Handle the `@link.unfurl` action
 
@@ -56,4 +57,3 @@ export default createIntegration({
   components: [helloWorld]
 });
 ```
-

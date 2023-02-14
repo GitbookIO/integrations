@@ -1,4 +1,4 @@
-# Rate limiting
+# Rate Limiting
 
 {% hint style="warning" %}
 The GitBook API is currently in **beta**. This means you should not rely on it's availability, and that it may change without prior warning.
@@ -17,7 +17,6 @@ The response's HTTP headers are the authoritative source for the current number 
 If you exceed the rate limit, an API error response is returned:
 
 ```shell
-
 > HTTP/2 429
 > X-RateLimit-Limit: 60
 > X-RateLimit-Remaining: 0
