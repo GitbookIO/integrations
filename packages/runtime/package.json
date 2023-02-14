@@ -22,5 +22,6 @@
         ".": "./src/index.ts",
         "./jsx-runtime": "./src/contentkit-jsx.ts",
         "./jsx-dev-runtime": "./src/contentkit-jsx.ts"
-    }
+    },
+    "version": null
 }

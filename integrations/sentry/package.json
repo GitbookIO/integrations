@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-sentry",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "private": true,
     "dependencies": {
         "@gitbook/api": "*",
