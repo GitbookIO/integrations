@@ -2,7 +2,6 @@
     "name": "@gitbook/api",
     "type": "module",
     "main": "./src/index.ts",
-    "private": true,
     "sideEffects": false,
     "files": [
         "spec/**",
