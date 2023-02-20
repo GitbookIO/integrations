@@ -1,4 +1,8 @@
-# `@gitbook/integrations`
+# GitBook Integrations Platform
+
+> Before getting started, head to our documentation to learn more
+> 
+> https://developer.gitbook.com/
 
 This repository contains:
 - [`@gitbook/cli`](./packages/cli/): CLI to build and publish integrations for GitBook
