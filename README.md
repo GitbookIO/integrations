@@ -1,9 +1,8 @@
-> Head to our documentation to learn more
-> 
-> https://developer.gitbook.com/
-
 # GitBook Integrations Platform
 
+Welcome to GitBook Integrations Platform!
+
+This repository contains code, packages, and scripts related to the integrations platform in GitBook. Head to our documentation at https://developer.gitbook.com/ to learn more.
 
 This repository contains:
 - [`@gitbook/cli`](./packages/cli/): CLI to build and publish integrations for GitBook
