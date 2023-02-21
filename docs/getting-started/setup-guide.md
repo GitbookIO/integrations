@@ -32,7 +32,7 @@ Building Integrations and Custom Blocks requires use of the **GitBook CLI** in o
 
 Once you have your personal access token, head to our Integrations & Custom Blocks overview to start building your first app.
 
-#### Build your first app with the GitBook CLI
+#### Build your first integration with the GitBook CLI
 
 {% content-ref url="../integrations/" %}
 [integrations](../integrations/)
