@@ -7,6 +7,7 @@
 * [Setup Guide](getting-started/setup-guide.md)
 * [Development](getting-started/development.md)
 * [Publishing](getting-started/publishing.md)
+* [GitHub Examples](https://github.com/GitbookIO/integrations)
 
 ## API
 
