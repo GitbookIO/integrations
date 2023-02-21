@@ -12,8 +12,8 @@ The GitBook Integrations Platform is currently in **alpha**. This means you shou
 
 Head to our Setup Guide in our Getting Started section to learn how to start using the GitBook Integrations Platform.
 
-{% content-ref url="broken-reference" %}
-[Broken link](broken-reference)
+{% content-ref url="getting-started/setup-guide.md" %}
+[setup-guide.md](getting-started/setup-guide.md)
 {% endcontent-ref %}
 
 ## Explore the GitBook Integrations Platform
