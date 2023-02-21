@@ -12,5 +12,7 @@ When you're ready to publish your integration, you're able to publish it for use
 
 ## Publishing to a space
 
+WIP
+
 ## Submitting to GitBook's Integration Marketplace
 
