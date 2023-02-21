@@ -6,11 +6,11 @@ The GitBook API is currently in **beta**. This means you should not rely on it's
 
 ## Users
 
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="users/"><strong>Authenticated User</strong></a><br>Retrieve info and search content of the authenticated User.</td><td></td></tr><tr><td><a href="users/"><strong>User</strong></a><br>Retrieve a specific User.</td><td></td></tr></tbody></table>
+<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="users.md"><strong>Authenticated User</strong></a><br>Retrieve info and search content of the authenticated User.</td><td></td></tr><tr><td><a href="users.md"><strong>User</strong></a><br>Retrieve a specific User.</td><td></td></tr></tbody></table>
 
 ## Collections
 
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="collections/"><strong>Collection</strong></a><br>Retrieve a Collection object.</td><td></td></tr><tr><td><a href="collections/"><strong>Spaces</strong></a><br>Retrieve the Spaces in a Collection.</td><td></td></tr></tbody></table>
+<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="collections.md"><strong>Collection</strong></a><br>Retrieve a Collection object.</td><td></td></tr><tr><td><a href="collections.md"><strong>Spaces</strong></a><br>Retrieve the Spaces in a Collection.</td><td></td></tr></tbody></table>
 
 ## Organizations
 
@@ -22,8 +22,8 @@ The GitBook API is currently in **beta**. This means you should not rely on it's
 
 ## Integrations
 
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="integrations/"><strong>Integration</strong></a><br>Publish an Integration.</td><td></td></tr></tbody></table>
+<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="integrations.md"><strong>Integration</strong></a><br>Publish an Integration.</td><td></td></tr></tbody></table>
 
 ## URLs
 
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="urls/"><strong>Content</strong></a><br>Resolve a URL to its corresponding content (Space, Collection, Page).</td><td></td></tr></tbody></table>
+<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="urls.md"><strong>Content</strong></a><br>Resolve a URL to its corresponding content (Space, Collection, Page).</td><td></td></tr></tbody></table>

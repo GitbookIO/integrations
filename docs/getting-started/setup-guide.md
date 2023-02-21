@@ -22,8 +22,8 @@ Once you have your personal access token, you're already able to start making yo
 
 #### Make your first API call
 
-{% content-ref url="../api/overview.md" %}
-[overview.md](../api/overview.md)
+{% content-ref url="broken-reference" %}
+[Broken link](broken-reference)
 {% endcontent-ref %}
 
 ## Integrations & Custom Blocks
@@ -34,8 +34,8 @@ Once you have your personal access token, head to our Integrations & Custom Bloc
 
 #### Build your first integration with the GitBook CLI
 
-{% content-ref url="../integrations/" %}
-[integrations](../integrations/)
+{% content-ref url="broken-reference" %}
+[Broken link](broken-reference)
 {% endcontent-ref %}
 
 ## Visitor Authentication
