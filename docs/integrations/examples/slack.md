@@ -12,7 +12,7 @@ This guide will show you how to build an integration in GitBook that can authent
 
 For a complete code source reference, you can check out the official Slack integration's code: [https://github.com/GitbookIO/integrations/tree/main/integrations/slack](https://github.com/GitbookIO/integrations/tree/main/integrations/slack).
 
-## Step 1: create the integration
+## Step 1: Create the integration
 
 After following the [Quickstart](../../quickstart.md) guide to install and configure the GitBook CLI, you can create a new integration:
 
@@ -22,9 +22,9 @@ gitbook new ./my-slack
 
 The CLI will prompt you to enter a title and to select scopes, choose the scopes `space:content` to ensure the integration can listen to the `space:content:updated` event.
 
-## Step 2: authenticate the user
+## Step 2: Authenticate the user
 
-Now that our integration can be edited locally, it's time to implement a flow to let the user authenticate themselve.
+Now that our integration can be edited locally, it's time to implement a flow to let the user authenticate themselves.
 
 To do so, we are going to make 2 changes:
 
@@ -46,6 +46,6 @@ configurations:
         callback_url: /oauth
 ```
 
-## Step 3: listen to events
+## Step 3: Listen to events
 
-## Step 4: make API calls to Slack
+## Step 4: Make API calls to Slack
