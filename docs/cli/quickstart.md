@@ -27,6 +27,6 @@ gitbook auth
 Bootstrap your first app by running:
 
 ```
-gitbook init
+gitbook new
 ```
 
