@@ -1,7 +1,7 @@
 {
     "name": "@gitbook/runtime",
     "type": "module",
-    "private": true,
+    "version": "0.0.0",
     "sideEffects": false,
     "main": "src/index.ts",
     "dependencies": {
@@ -22,6 +22,5 @@
         ".": "./src/index.ts",
         "./jsx-runtime": "./src/contentkit-jsx.ts",
         "./jsx-dev-runtime": "./src/contentkit-jsx.ts"
-    },
-    "version": null
+    }
 }
