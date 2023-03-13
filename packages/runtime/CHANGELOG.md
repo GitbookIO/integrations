@@ -1,5 +1,11 @@
 # @gitbook/runtime
 
+## 0.1.0
+
+### Minor Changes
+
+-   b05a1dd: Publish @gitbook/runtime to NPM
+
 ## null
 
 ### Minor Changes
