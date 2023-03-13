@@ -2,7 +2,7 @@
     "name": "@gitbook/api",
     "type": "module",
     "main": "./src/index.ts",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "sideEffects": false,
     "files": [
         "spec/**",
