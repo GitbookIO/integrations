@@ -30,7 +30,7 @@ swagger-cli bundle ./spec/openapi.yaml --outfile ./spec/openapi.json --type json
 
 # Then we build the JS files
 echo "Bundling library from code..."
-esbuild ./src/index.ts --bundle --platform=node --outfile=./dist/index.js --log-level=warning
+esbuild ./src/index.ts --bundle --platform=node --format=esm --outfile=./dist/index.js --log-level=warning
 
 # Finally we build the TypeScript declaration files
 echo "Generating public types from code..."
