@@ -1,9 +1,10 @@
 {
     "name": "@gitbook/api",
     "type": "module",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
-    "version": "0.2.1",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "version": "0.3.0",
     "sideEffects": false,
     "files": [
         "spec/**",
@@ -29,5 +30,14 @@
         "build": "./build.sh",
         "lint": "eslint ./src/**/*.ts",
         "typecheck": "tsc --noEmit"
+    },
+    "exports": {
+        ".": {
+            "require": "./dist/index.cjs",
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        },
+        "./spec/openapi.json": "./spec/openapi.json",
+        "./spec/openapi.yaml": "./spec/openapi.yaml"
     }
 }
