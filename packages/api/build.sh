@@ -29,7 +29,9 @@ swagger-typescript-api --path ./spec/openapi.yaml --output ./src/ --name client.
 swagger-cli bundle ./spec/openapi.yaml --outfile ./spec/openapi.json --type json
 
 # Then we build the JS files
-echo "Bundling library from code..."
+echo "Bundling CJS format from code..."
+esbuild ./src/index.ts --bundle --platform=node --format=cjs --outfile=./dist/index.cjs --log-level=warning
+echo "Bundling ESM format from code..."
 esbuild ./src/index.ts --bundle --platform=node --format=esm --outfile=./dist/index.js --log-level=warning
 
 # Finally we build the TypeScript declaration files
