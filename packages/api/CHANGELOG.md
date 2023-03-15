@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.2.2
+
+### Patch Changes
+
+-   bd01cd4: Output @gitbook/api build in ESM format
+
 ## 0.2.1
 
 ### Patch Changes
