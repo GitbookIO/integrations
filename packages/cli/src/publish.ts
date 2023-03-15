@@ -1,10 +1,10 @@
-import * as esbuild from 'esbuild';
 import * as fs from 'fs';
 import * as path from 'path';
 
 import * as api from '@gitbook/api';
 
-import { readIntegrationManifest } from './manifest';
+import { buildScriptFromManifest } from './build';
+import { resolveFile } from './manifest';
 import { getAPIClient } from './remote';
 
 /**
@@ -12,22 +12,21 @@ import { getAPIClient } from './remote';
  * If it already exists, it'll update it.
  */
 export async function publishIntegration(
-    filePath: string,
+    specFilePath: string,
     // will be fixed once we update eslint and everything
     // eslint-disable-next-line no-undef
     updates: Partial<api.RequestPublishIntegration> = {}
 ): Promise<void> {
-    const manifest = await readIntegrationManifest(filePath);
-    const api = await getAPIClient(true);
-
     // Build the script
-    const script = await buildScript(resolveFile(filePath, manifest.script));
+    const { script, manifest } = await buildScriptFromManifest(specFilePath);
+
+    const api = await getAPIClient(true);
 
     // Publish the integration.
     const created = await api.integrations.publishIntegration(manifest.name, {
         title: manifest.title,
         icon: manifest.icon
-            ? await readImage(resolveFile(filePath, manifest.icon), 'icon')
+            ? await readImage(resolveFile(specFilePath, manifest.icon), 'icon')
             : undefined,
         description: manifest.description,
         summary: manifest.summary,
@@ -41,7 +40,7 @@ export async function publishIntegration(
         externalLinks: manifest.externalLinks,
         previewImages: await Promise.all(
             (manifest.previewImages || []).map(async (imageFilePath) =>
-                readImage(resolveFile(filePath, imageFilePath), 'preview')
+                readImage(resolveFile(specFilePath, imageFilePath), 'preview')
             )
         ),
         contentSecurityPolicy: manifest.contentSecurityPolicy,
@@ -61,40 +60,6 @@ export async function unpublishIntegration(name: string): Promise<void> {
     await api.integrations.unpublishIntegration(name);
 
     console.log(`👌 Integration "${name}" has been deleted`);
-}
-
-/**
- * Build the script into a single worker definition.
- */
-async function buildScript(filePath: string): Promise<string> {
-    const result = await esbuild.build({
-        platform: 'neutral',
-        entryPoints: [filePath],
-        bundle: true,
-        minify: true,
-        target: ['es2020'],
-        write: false,
-        mainFields: ['worker', 'browser', 'module', 'jsnext', 'main'],
-        conditions: ['worker', 'browser', 'import', 'production'],
-        define: {
-            'process.env.NODE_ENV': '"production"',
-        },
-        // Automatically handle JSX using the ContentKit runtime
-        jsx: 'automatic',
-        jsxImportSource: '@gitbook/runtime',
-        // TODO: change format when we switch to Cloudflare Workers
-        // but until them, we need to use "iife" to be able to use
-        // the export syntax while running like an entry point.
-        format: 'iife',
-        globalName: '__gitbook_integration',
-        loader: {
-            // If importing a file as `.raw.js`, eslint will convert to string so we can use that
-            // file as a string without opening it.
-            '.raw.js': 'text',
-        },
-    });
-
-    return result.outputFiles[0].text;
 }
 
 /**
@@ -124,8 +89,4 @@ async function readImage(filePath: string, type: 'icon' | 'preview'): Promise<st
     }
 
     return content.toString('base64');
-}
-
-function resolveFile(specFile: string, filePath: string): string {
-    return path.resolve(path.dirname(specFile), filePath);
 }

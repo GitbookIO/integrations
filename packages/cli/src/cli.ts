@@ -7,6 +7,7 @@ import prompts from 'prompts';
 import { GITBOOK_DEFAULT_ENDPOINT } from '@gitbook/api';
 
 import packageJSON from '../package.json';
+import { startIntegrationsDevServer } from './dev';
 import { promptNewIntegration } from './init';
 import { DEFAULT_MANIFEST_FILE, resolveIntegrationManifestPath } from './manifest';
 import { publishIntegration, unpublishIntegration } from './publish';
@@ -53,6 +54,14 @@ program
     });
 
 program
+    .command('dev')
+    .description('run the integrations dev server')
+    .option('-p, --port <number>', 'port to run the dev server on')
+    .action(async (options) => {
+        await startIntegrationsDevServer(options.port ? Number(options.port) : undefined);
+    });
+
+program
     .command('publish')
     .argument('[file]', 'integration definition file', DEFAULT_MANIFEST_FILE)
     .option(
@@ -88,7 +97,11 @@ program
     });
 
 program.parseAsync().then(
-    () => {
+    (command) => {
+        if (command.args[0] === 'dev') {
+            return;
+        }
+
         process.exit(0);
     },
     (error) => {

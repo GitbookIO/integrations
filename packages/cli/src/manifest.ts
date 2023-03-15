@@ -31,6 +31,20 @@ export interface IntegrationManifest {
 }
 
 /**
+ * Get the default manifest file path for the current working directory.
+ */
+export function getDefaultManifestPath(): string {
+    return path.resolve(process.cwd(), DEFAULT_MANIFEST_FILE);
+}
+
+/**
+ * Resolve a file path relative to the manifest spec file directory.
+ */
+export function resolveFile(specFile: string, filePath: string): string {
+    return path.resolve(path.dirname(specFile), filePath);
+}
+
+/**
  * Resolve a user-inputed path into a real manifest file path.
  */
 export async function resolveIntegrationManifestPath(inputPath: string): Promise<string> {
