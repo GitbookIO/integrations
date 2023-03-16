@@ -25,11 +25,13 @@
         "typescript": "^4.6.3"
     },
     "files": [
-        "dist/**"
+        "dist/**",
+        "install-cloudflared.js"
     ],
     "scripts": {
         "build": "./build.sh",
         "lint": "eslint ./src/**/*.ts",
+        "postinstall": "node install-cloudflared.js",
         "typecheck": "tsc --noEmit"
     },
     "engines": {
