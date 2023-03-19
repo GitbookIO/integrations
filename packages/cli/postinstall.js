@@ -2,7 +2,6 @@
  * Script to install cloudflared binary on the current platform.
  * Reference: https://github.com/JacobLinCool/node-cloudflared/blob/main/src/install.ts
  */
-
 const { execSync } = require('child_process');
 const fs = require('fs');
 const https = require('https');
