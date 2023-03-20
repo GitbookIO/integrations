@@ -18,8 +18,18 @@ export const GITBOOK_DEV_CONFIG_FILE = 'gitbook-dev.yaml';
 
 const spinner = ora({ color: 'blue' });
 
+/**
+ * Start the integrations dev server on the given port. If no port is given,
+ * the default one is used. The dev server will automatically reload changes to
+ * the integration script.
+ */
 export async function startIntegrationsDevServer(port: number = GITBOOK_DEV_SERVER_PORT) {
     spinner.start('Starting dev server...');
+    /**
+     * Read the integration manifest and build the integration script so that
+     * it can be served by the dev server.
+     * Also, read the dev config file to get the space to use for the dev server.
+     */
     const manifestSpecPath = await resolveIntegrationManifestPath(getDefaultManifestPath());
     const devConfigPath = resolveFile(manifestSpecPath, GITBOOK_DEV_CONFIG_FILE);
     const devConfig = await readDevConfig(devConfigPath);
