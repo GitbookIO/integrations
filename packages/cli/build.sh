@@ -8,6 +8,6 @@ esbuild ./src/cli.ts \
     --external:@stoplight/json-ref-resolver \
     --external:@miniflare/storage-redis \
     --external:ioredis \
-    --external:chokidar \
+    --external:fsevents \
     --outfile=./dist/cli.js \
     --log-level=warning
