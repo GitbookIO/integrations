@@ -98,6 +98,10 @@ program
 
 program.parseAsync().then(
     (command) => {
+        /**
+         * If the command is "dev", we don't want to exit the process as it will
+         * kill the dev server.
+         */
         if (command.args[0] === 'dev') {
             return;
         }
