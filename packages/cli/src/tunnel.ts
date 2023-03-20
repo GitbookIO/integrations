@@ -1,8 +1,6 @@
 import { spawn } from 'child_process';
 import * as path from 'path';
 
-import { getAPIClient } from './remote';
-
 /**
  * Create a tunnel using `cloudflared` mapped to `localhost:{port}`
  */
