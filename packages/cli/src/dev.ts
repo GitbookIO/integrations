@@ -2,6 +2,7 @@ import Ajv, { Schema } from 'ajv';
 import addFormats from 'ajv-formats';
 import chokidar from 'chokidar';
 import * as fs from 'fs';
+import getPort from 'get-port';
 import * as yaml from 'js-yaml';
 import { Miniflare } from 'miniflare';
 import ora from 'ora';
@@ -19,12 +20,12 @@ export const GITBOOK_DEV_CONFIG_FILE = 'gitbook-dev.yaml';
 const spinner = ora({ color: 'blue' });
 
 /**
- * Start the integrations dev server on the given port. If no port is given,
- * the default one is used. The dev server will automatically reload changes to
- * the integration script.
+ * Start the integrations dev server on a random available port.
+ * The dev server will automatically reload changes to the integration script.
  */
-export async function startIntegrationsDevServer(port: number = GITBOOK_DEV_SERVER_PORT) {
+export async function startIntegrationsDevServer() {
     spinner.start('Starting dev server...');
+    const port = await getPort();
     /**
      * Read the integration manifest and build the integration script so that
      * it can be served by the dev server.
