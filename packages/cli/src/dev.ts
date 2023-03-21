@@ -7,6 +7,7 @@ import * as yaml from 'js-yaml';
 import { Miniflare } from 'miniflare';
 import ora from 'ora';
 import * as path from 'path';
+import * as util from 'util';
 
 import { buildScriptFromManifest } from './build';
 import { prettyPath } from './files';
@@ -52,7 +53,7 @@ export async function startIntegrationsDevServer() {
         liveReload: true,
         watch: true,
     });
-    await mf.startServer();
+    const mfServer = await mf.startServer();
 
     /**
      * Add the tunnel to the integration for the dev space events in the GitBook platform
@@ -69,7 +70,7 @@ export async function startIntegrationsDevServer() {
      * Additionally, watch the directory of the script file for changes. When a change is
      * detected, rebuild the script and miniflare will automatically reload it in the dev server.
      */
-    chokidar
+    const watcher = chokidar
         .watch(path.dirname(resolveFile(manifestSpecPath, manifest.script)), {
             ignoreInitial: true,
         })
@@ -86,7 +87,11 @@ export async function startIntegrationsDevServer() {
      */
     process.on('SIGINT', async () => {
         spinner.start('\nExiting...');
-        await api.integrations.removeIntegrationTunnelForSpace(manifest.name, tunnel.data.id);
+        await Promise.all([
+            util.promisify(mfServer.close)(),
+            watcher.close(),
+            api.integrations.removeIntegrationTunnelForSpace(manifest.name, tunnel.data.id),
+        ]);
         process.exit(0);
     });
 }
