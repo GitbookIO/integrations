@@ -1,10 +1,9 @@
 import * as esbuild from 'esbuild';
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 
 import { resolveFile, readIntegrationManifest } from './manifest';
-
-const GITBOOK_OUTPUT_DIR = '.gitbook';
 
 interface BuildOutput {
     /** path where the final script is outputted */
@@ -24,10 +23,7 @@ export async function buildScriptFromManifest(manifestSpecPath: string): Promise
      * Resolve the input and output file paths relatve to the manifest file.
      */
     const inputFilePath = resolveFile(manifestSpecPath, manifest.script);
-    const outputFilePath = resolveFile(
-        manifestSpecPath,
-        path.join(GITBOOK_OUTPUT_DIR, 'script.js')
-    );
+    const outputFilePath = path.join(os.tmpdir(), '.gitbook', manifest.name, 'script.js');
 
     await esbuild.build({
         platform: 'neutral',
