@@ -15,7 +15,6 @@ import { getDefaultManifestPath, resolveFile, resolveIntegrationManifestPath } f
 import { getAPIClient } from './remote';
 import { createDevTunnel } from './tunnel';
 
-export const GITBOOK_DEV_SERVER_PORT = 8787;
 export const GITBOOK_DEV_CONFIG_FILE = '.gitbook-dev.yaml';
 
 const spinner = ora({ color: 'blue' });
