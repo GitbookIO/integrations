@@ -36,7 +36,9 @@ export async function startIntegrationsDevServer() {
     const manifestSpecPath = await resolveIntegrationManifestPath(getDefaultManifestPath());
     const devConfigPath = resolveFile(manifestSpecPath, GITBOOK_DEV_CONFIG_FILE);
     const devConfig = await readDevConfig(devConfigPath);
-    const { path: scriptPath, manifest } = await buildScriptFromManifest(manifestSpecPath);
+    const { path: scriptPath, manifest } = await buildScriptFromManifest(manifestSpecPath, {
+        mode: 'development',
+    });
 
     /**
      * Create a tunnel to allow the dev server to receive integration events

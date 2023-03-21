@@ -17,7 +17,12 @@ interface BuildOutput {
 /**
  * Build the script into a single worker definition.
  */
-export async function buildScriptFromManifest(manifestSpecPath: string): Promise<BuildOutput> {
+export async function buildScriptFromManifest(
+    manifestSpecPath: string,
+    options: {
+        mode?: 'development' | 'production';
+    } = { mode: 'production' }
+): Promise<BuildOutput> {
     const manifest = await readIntegrationManifest(manifestSpecPath);
     /**
      * Resolve the input and output file paths relatve to the manifest file.
@@ -30,7 +35,8 @@ export async function buildScriptFromManifest(manifestSpecPath: string): Promise
         entryPoints: [inputFilePath],
         outfile: outputFilePath,
         bundle: true,
-        minify: true,
+        minify: options.mode === 'production',
+        sourcemap: options.mode === 'development',
         target: ['es2020'],
         write: true,
         mainFields: ['worker', 'browser', 'module', 'jsnext', 'main'],
