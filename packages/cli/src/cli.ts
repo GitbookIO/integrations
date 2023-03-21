@@ -56,7 +56,6 @@ program
 program
     .command('dev')
     .description('run the integrations dev server')
-    .option('-p, --port <number>', 'port to run the dev server on')
     .action(async () => {
         await startIntegrationsDevServer();
     });
