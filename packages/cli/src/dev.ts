@@ -19,13 +19,14 @@ export const GITBOOK_DEV_SERVER_PORT = 8787;
 export const GITBOOK_DEV_CONFIG_FILE = '.gitbook-dev.yaml';
 
 const spinner = ora({ color: 'blue' });
+spinner.indent = 2;
 
 /**
  * Start the integrations dev server on a random available port.
  * The dev server will automatically reload changes to the integration script.
  */
 export async function startIntegrationsDevServer() {
-    spinner.start('Starting dev server...');
+    spinner.start('\nStarting dev server...');
     const port = await getPort();
     /**
      * Read the integration manifest and build the integration script so that
@@ -59,12 +60,14 @@ export async function startIntegrationsDevServer() {
      * Add the tunnel to the integration for the dev space events in the GitBook platform
      */
     const api = await getAPIClient(true);
-    const tunnel = await api.integrations.addIntegrationTunnelForSpace(manifest.name, {
-        space: devConfig.space,
-        url: tunnelUrl,
+    await api.integrations.updateIntegrationDevSpace(manifest.name, devConfig.space, {
+        tunnelUrl,
     });
 
     spinner.succeed(`Dev server started on ${port} 🔥`);
+    spinner.info(
+        `Integration events originating from the dev space will be dispatched to your locally running version of the integration.`
+    );
 
     /**
      * Additionally, watch the directory of the script file for changes. When a change is
@@ -90,7 +93,7 @@ export async function startIntegrationsDevServer() {
         await Promise.all([
             util.promisify(mfServer.close)(),
             watcher.close(),
-            api.integrations.removeIntegrationTunnelForSpace(manifest.name, tunnel.data.id),
+            api.integrations.removeIntegrationDevSpace(manifest.name, devConfig.space),
         ]);
         process.exit(0);
     });
