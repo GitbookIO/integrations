@@ -19,18 +19,24 @@ curl https://api.gitbook.com/v1/
 {"version":"10.9.128","build":"2022-07-19T13:00:05.548Z"}
 ```
 
+## API Reference
+
+<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong></strong><a href="reference/"><strong>API Reference</strong></a><br><br>Learn more about the endpoints you can use from GitBook's REST API</td><td></td><td><a href="reference/">reference</a></td></tr><tr><td></td><td></td><td></td></tr></tbody></table>
+
+##
+
 ## Authentication & Rate Limiting
 
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="authentication.md"><strong>Authentication</strong></a><br>Create an API access token and authenticate your API requests.</td><td></td></tr><tr><td><a href="rate-limiting.md"><strong>Rate Limiting</strong></a><br>Understand how API requests are rate limited.</td><td></td></tr></tbody></table>
+<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><p><a href="authentication.md"><strong>Authentication</strong></a></p><p><br>Create an API access token and authenticate your API requests.</p></td><td></td><td><a href="authentication.md">authentication.md</a></td></tr><tr><td><p><a href="rate-limiting.md"><strong>Rate Limiting</strong></a></p><p><br>Understand how API requests are rate limited.</p></td><td></td><td><a href="rate-limiting.md">rate-limiting.md</a></td></tr></tbody></table>
 
 ## Errors & Pagination
 
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="errors.md"><strong>Errors</strong></a><br>Learn about API errors, how they're structured and how to handle them.</td><td></td></tr><tr><td><a href="pagination.md"><strong>Pagination</strong></a><br>Paginate through API List results.</td><td></td></tr></tbody></table>
+<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><p><a href="errors.md"><strong>Errors</strong></a></p><p><br>Learn about API errors, how they're structured and how to handle them.</p></td><td></td><td><a href="errors.md">errors.md</a></td></tr><tr><td><p><a href="pagination.md"><strong>Pagination</strong></a></p><p><br>Paginate through API List results.</p></td><td></td><td><a href="pagination.md">pagination.md</a></td></tr></tbody></table>
 
-## Resources & Libraries
+## Client Libraries
 
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="reference/"><strong>Resources Documentation</strong></a><br>Read the reference documentation for the exposed API resources and their operations.</td><td></td></tr><tr><td><strong></strong><a href="librairies/"><strong>Libraries</strong></a><br>Use our libraries to interact with the API.</td><td></td></tr></tbody></table>
+<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><p><strong></strong><a href="librairies/"><strong>Libraries</strong></a></p><p><br>Use our libraries to interact with the API.</p></td><td></td><td><a href="librairies/">librairies</a></td></tr></tbody></table>
 
 ## Changelog & Feedback
 
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="../changelogs/api.md"><strong>API Changelog</strong></a><br>Read about what changed with the API.</td><td></td></tr><tr><td><a href="mailto:support@gitbook.com"><strong>Feedback</strong></a><br>Share your feedback to improve the API and ensure it fits your needs. Feel free to send your questions &#x26; feedback to <a href="mailto:support@gitbook.com">support@gitbook.com</a>.</td><td></td></tr></tbody></table>
+<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><p><a href="../changelogs/api.md"><strong>API Changelog</strong></a></p><p><br>Read about what changed with the API.</p></td><td></td><td><a href="broken-reference">Broken link</a></td></tr><tr><td><p><strong></strong><a href="../getting-started/support.md"><strong>Support</strong></a><strong></strong></p><p><br>Share your feedback to improve the API and ensure it fits your needs. </p><p></p></td><td></td><td><a href="../getting-started/support.md">support.md</a></td></tr></tbody></table>
