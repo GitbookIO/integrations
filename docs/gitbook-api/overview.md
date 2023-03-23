@@ -6,9 +6,7 @@ description: >-
 
 # Overview
 
-{% hint style="warning" %}
-The GitBook API is currently in **alpha**. This means you should not rely on it's availability, and that it may change without prior warning.
-{% endhint %}
+The GitBook API allows you to read and write information across the spaces and pages you have access to in GitBook. You can do things like update permissions for members in an organization, create change requests, and much more.
 
 This section describes how to use the GitBook API and its resources. If you have any questions or issues, please contact the [GitBook Support](mailto:support@gitbook.com).
 
@@ -31,7 +29,7 @@ curl https://api.gitbook.com/v1/
 
 ## Resources & Libraries
 
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="resources/"><strong>Resources Documentation</strong></a><br>Read the reference documentation for the exposed API resources and their operations.</td><td></td></tr><tr><td><strong></strong><a href="librairies/"><strong>Libraries</strong></a><br>Use our libraries to interact with the API.</td><td></td></tr></tbody></table>
+<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="reference/"><strong>Resources Documentation</strong></a><br>Read the reference documentation for the exposed API resources and their operations.</td><td></td></tr><tr><td><strong></strong><a href="librairies/"><strong>Libraries</strong></a><br>Use our libraries to interact with the API.</td><td></td></tr></tbody></table>
 
 ## Changelog & Feedback
 

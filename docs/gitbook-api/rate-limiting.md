@@ -1,9 +1,5 @@
 # Rate Limiting
 
-{% hint style="warning" %}
-The GitBook API is currently in **beta**. This means you should not rely on it's availability, and that it may change without prior warning.
-{% endhint %}
-
 Different types of API methods are subject to different rate limits.
 
 The response's HTTP headers are the authoritative source for the current number of API calls available to you or your app at any given time. The returned HTTP headers of any API request show your current rate limit status, as described below.

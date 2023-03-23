@@ -1,8 +1,10 @@
-{% hint style="warning" %}
-The GitBook API library is still in **alpha**. It's not available publicly just yet.
-{% endhint %}
+---
+description: GitBook's official Node.js client library.
+---
 
-# Browser / Node
+# Node.js
+
+## Overview
 
 GitBook provides an official Typescript/Javascript client for the HTTP API. This client can be used in a browser or Node.js environment.
 
@@ -14,17 +16,17 @@ npm install @gitbook/api
 
 ## Usage
 
-### General usage:
+#### General usage:
 
 ```typescript
 import { GitBookAPI } from '@gitbook/api';
 
 const client = new GitBookAPI({
-  authToken
+  authToken: <your_access_token>
 });
 ```
 
-### Usage with Node.js
+#### Usage with Node.js
 
 When using the `@gitbook/api` module with Node.js < v18, you should pass a custom `fetch` function.
 

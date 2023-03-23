@@ -12,6 +12,8 @@ The GitBook Integration Platform is currently in **alpha**. This means you shoul
 
 This section describes how to create integrations and custom blocks in GitBook—Whether you're publicly integrating your service with ours, or you're building for your own team's private usage.
 
+Developing custom blocks for GitBook is built using [TypeScript](https://www.typescriptlang.org/), making it easier to spot errors in your code earlier on.&#x20;
+
 ## Build your first integration
 
 In order to build your first integration, you'll need to run the GitBook CLI to bootstrap your project.

@@ -1,8 +1,6 @@
-# Resources
+# API Reference
 
-{% hint style="warning" %}
-The GitBook API is currently in **beta**. This means you should not rely on it's availability, and that it may change without prior warning.
-{% endhint %}
+Here you can find a list of the different endpoints available to use across the GitBook API. Click into each card to learn more.
 
 ## Users
 
@@ -19,6 +17,10 @@ The GitBook API is currently in **beta**. This means you should not rely on it's
 ## Spaces
 
 <table data-view="cards"><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><a href="spaces/"><strong>Space</strong></a><br>Retrieve a Space object.</td><td></td></tr><tr><td><a href="spaces/change-requests.md"><strong>Change Requests</strong></a><br>Act on Change Requests and retrieve their content.</td><td></td></tr><tr><td><a href="spaces/revisions.md"><strong>Revisions</strong></a><br>Retrieve Revisions content.</td><td></td></tr><tr><td><a href="spaces/insights.md"><strong>Insights</strong></a><br>Retrieve Insights data for a Space.</td><td></td></tr><tr><td><a href="spaces/content.md"><strong>Content</strong></a><br>Retrieve and import content to a Space.</td><td></td></tr><tr><td><a href="spaces/"><strong>Search</strong></a><br>Search content in a Space.</td><td></td></tr></tbody></table>
+
+## Search
+
+
 
 ## Integrations
 
