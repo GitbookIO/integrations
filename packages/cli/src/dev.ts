@@ -83,7 +83,7 @@ export async function startIntegrationsDevServer() {
                 await buildScriptFromManifest(manifestSpecPath);
                 console.log(`📦 Rebuilt in ${((performance.now() - p1) / 1000).toFixed(2)}s`);
             } catch (error) {
-                console.log('Failed to rebuild: ', error);
+                console.log(error);
             }
         });
 
