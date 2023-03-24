@@ -1,6 +1,6 @@
 {
     "extends": "@gitbook/tsconfig/base.json",
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "./global.d.ts"],
     "rootDir": "./src",
     "compilerOptions": {
         "baseUrl": "./src",

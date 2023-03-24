@@ -52,6 +52,9 @@ export async function startIntegrationsDevServer() {
         port,
         liveReload: true,
         watch: true,
+        bindings: {
+            MODE: 'development',
+        },
     });
     await mf.startServer();
 

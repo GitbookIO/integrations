@@ -44,10 +44,16 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
     async function handleWorkerDispatchEvent(ev: FetchEvent): Promise<Response> {
         const version = new URL(ev.request.url).pathname.slice(1);
 
-        // if (version !== 'v1') {
-        //     logger.error(`unsupported version ${version}`);
-        //     return new Response(`Unsupported version ${version}`, { status: 400 });
-        // }
+        /**
+         * Only check the version in production, as the dispatcher is not versioned
+         * in development mode
+         */
+        if (MODE === 'production') {
+            if (version !== 'v1') {
+                logger.error(`unsupported version ${version}`);
+                return new Response(`Unsupported version ${version}`, { status: 400 });
+            }
+        }
 
         try {
             const formData = await ev.request.formData();
