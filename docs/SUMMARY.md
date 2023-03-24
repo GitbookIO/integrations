@@ -33,6 +33,7 @@
   * [URLs](gitbook-api/reference/urls.md)
 * [Libraries](gitbook-api/librairies/README.md)
   * [Node.js](gitbook-api/librairies/browser-node.md)
+* [API Explorer](https://api-explorer.gitbook.dev/)
 
 ## Integrations
 

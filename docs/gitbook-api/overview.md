@@ -21,7 +21,7 @@ curl https://api.gitbook.com/v1/
 
 ## API Reference
 
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong></strong><a href="reference/"><strong>API Reference</strong></a><br><br>Learn more about the endpoints you can use from GitBook's REST API</td><td></td><td><a href="reference/">reference</a></td></tr></tbody></table>
+<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong></strong><a href="reference/"><strong>API Reference</strong></a><br><br>Learn more about the endpoints you can use from GitBook's REST API</td><td></td><td><a href="reference/">reference</a></td></tr><tr><td><strong></strong><a href="https://api-explorer.gitbook.dev/"><strong>API Explorer</strong></a><br><br>Try out the GitBook API and view responses</td><td></td><td><a href="https://api-explorer.gitbook.dev/">https://api-explorer.gitbook.dev/</a></td></tr></tbody></table>
 
 ##
 
