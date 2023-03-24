@@ -7,7 +7,6 @@ import * as yaml from 'js-yaml';
 import { Miniflare } from 'miniflare';
 import ora from 'ora';
 import * as path from 'path';
-import * as util from 'util';
 
 import { buildScriptFromManifest } from './build';
 import { prettyPath } from './files';
@@ -18,7 +17,6 @@ import { createDevTunnel } from './tunnel';
 export const GITBOOK_DEV_CONFIG_FILE = '.gitbook-dev.yaml';
 
 const spinner = ora({ color: 'blue' });
-spinner.indent = 2;
 
 /**
  * Start the integrations dev server on a random available port.
@@ -55,7 +53,7 @@ export async function startIntegrationsDevServer() {
         liveReload: true,
         watch: true,
     });
-    const mfServer = await mf.startServer();
+    await mf.startServer();
 
     /**
      * Add the tunnel to the integration for the dev space events in the GitBook platform
@@ -81,8 +79,12 @@ export async function startIntegrationsDevServer() {
         .on('all', async () => {
             const p1 = performance.now();
             console.log('Detected changes, rebuilding...🛠');
-            await buildScriptFromManifest(manifestSpecPath);
-            console.log(`\n📦 Rebuilt in ${((performance.now() - p1) / 1000).toFixed(2)}s`);
+            try {
+                await buildScriptFromManifest(manifestSpecPath);
+                console.log(`📦 Rebuilt in ${((performance.now() - p1) / 1000).toFixed(2)}s`);
+            } catch (error) {
+                console.log('Failed to rebuild: ', error);
+            }
         });
 
     /**
@@ -92,7 +94,6 @@ export async function startIntegrationsDevServer() {
     process.on('SIGINT', async () => {
         spinner.start('\nExiting...');
         await Promise.all([
-            util.promisify(mfServer.close)(),
             watcher.close(),
             api.integrations.removeIntegrationDevSpace(manifest.name, devConfig.space),
         ]);
