@@ -56,8 +56,9 @@ program
 program
     .command('dev')
     .description('run the integrations dev server')
-    .action(async () => {
-        await startIntegrationsDevServer();
+    .argument('[space]', 'ID of the development space', undefined)
+    .action(async (space?: string) => {
+        await startIntegrationsDevServer(space);
     });
 
 program

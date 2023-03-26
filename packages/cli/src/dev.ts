@@ -22,20 +22,27 @@ const spinner = ora({ color: 'blue' });
  * Start the integrations dev server on a random available port.
  * The dev server will automatically reload changes to the integration script.
  */
-export async function startIntegrationsDevServer() {
-    spinner.start('\nStarting dev server...');
+export async function startIntegrationsDevServer(space: string | undefined) {
+    spinner.start('Starting dev server...\n');
     const port = await getPort();
     /**
      * Read the integration manifest and build the integration script so that
      * it can be served by the dev server.
-     * Also, read the dev config file to get the space to use for the dev server.
      */
     const manifestSpecPath = await resolveIntegrationManifestPath(getDefaultManifestPath());
-    const devConfigPath = resolveFile(manifestSpecPath, GITBOOK_DEV_CONFIG_FILE);
-    const devConfig = await readDevConfig(devConfigPath);
     const { path: scriptPath, manifest } = await buildScriptFromManifest(manifestSpecPath, {
         mode: 'development',
     });
+
+    /**
+     * Also, read the dev config file to get the space to use for the dev server.
+     * If a space is provided as an argument, it will override the space in the dev config file.
+     */
+    const devConfigPath = resolveFile(manifestSpecPath, GITBOOK_DEV_CONFIG_FILE);
+    if (space) {
+        await writeDevConfig(devConfigPath, { space });
+    }
+    const devConfig = await readDevConfig(devConfigPath);
 
     /**
      * Create a tunnel to allow the dev server to receive integration events
@@ -95,7 +102,7 @@ export async function startIntegrationsDevServer() {
      * killed (e.g. Ctrl/CMD+C)
      */
     process.on('SIGINT', async () => {
-        spinner.start('\nExiting...');
+        spinner.start('Exiting...\n');
         await Promise.all([
             watcher.close(),
             api.integrations.removeIntegrationDevSpace(manifest.name, devConfig.space),
@@ -124,6 +131,18 @@ async function readDevConfig(configFilePath: string): Promise<GitBookDevConfig> 
     } catch (e) {
         throw new Error(
             `Failed to read dev config from ${prettyPath(configFilePath)}: ${e.message}`
+        );
+    }
+}
+
+async function writeDevConfig(configFilePath: string, config: GitBookDevConfig): Promise<void> {
+    try {
+        const normalized = await validateDevConfig(config);
+        const configContent = yaml.dump(normalized);
+        await fs.promises.writeFile(configFilePath, configContent, 'utf8');
+    } catch (e) {
+        throw new Error(
+            `Failed to write dev config to ${prettyPath(configFilePath)}: ${e.message}`
         );
     }
 }
