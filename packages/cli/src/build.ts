@@ -42,7 +42,8 @@ export async function buildScriptFromManifest(
         mainFields: ['worker', 'browser', 'module', 'jsnext', 'main'],
         conditions: ['worker', 'browser', 'import', 'production'],
         define: {
-            'process.env.NODE_ENV': '"production"',
+            'process.env.NODE_ENV': JSON.stringify(options.mode),
+            MODE: JSON.stringify(options.mode),
         },
         // Automatically handle JSX using the ContentKit runtime
         jsx: 'automatic',

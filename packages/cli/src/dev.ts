@@ -59,9 +59,6 @@ export async function startIntegrationsDevServer(space: string | undefined) {
         port,
         liveReload: true,
         watch: true,
-        bindings: {
-            MODE: 'development',
-        },
     });
     await mf.startServer();
 
@@ -75,7 +72,7 @@ export async function startIntegrationsDevServer(space: string | undefined) {
 
     spinner.succeed(`Dev server started on ${port} 🔥`);
     spinner.info(
-        `Integration events originating from the dev space will be dispatched to your locally running version of the integration.`
+        `Integration events originating from space (${devConfig.space}) will be dispatched to your locally running version of the integration.`
     );
 
     /**
