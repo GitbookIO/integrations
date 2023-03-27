@@ -135,6 +135,9 @@ async function readDevConfig(configFilePath: string): Promise<GitBookDevConfig> 
     }
 }
 
+/**
+ * Write the dev config file to the given path.
+ */
 async function writeDevConfig(configFilePath: string, config: GitBookDevConfig): Promise<void> {
     try {
         const normalized = await validateDevConfig(config);
