@@ -23,3 +23,9 @@ description: >-
 {% swagger src="../../.gitbook/assets/openapi.json" path="/spaces/{spaceId}/search" method="get" %}
 [openapi.json](../../.gitbook/assets/openapi.json)
 {% endswagger %}
+
+### `GET` AI search results from all spaces for the currently authenticated user
+
+{% swagger src="https://api.gitbook.com/openapi.json" path="/search/ask" method="get" %}
+[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
+{% endswagger %}
