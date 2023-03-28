@@ -24,6 +24,14 @@ description: >-
 [openapi.json](../../.gitbook/assets/openapi.json)
 {% endswagger %}
 
+
+
+
+
+
+
+<figure><img src="../../.gitbook/assets/GitBook AI - Lens horizontal (1).png" alt=""><figcaption><p>GitBook Lens API</p></figcaption></figure>
+
 ### `GET` AI search results from all spaces for the currently authenticated user
 
 {% swagger src="https://api.gitbook.com/openapi.json" path="/search/ask" method="get" %}
