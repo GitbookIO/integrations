@@ -4,10 +4,6 @@ Welcome to GitBook Integrations Platform!
 
 This documentation provides all the information needed to start using the **GitBook API**, start building **Custom Blocks** and **Integrations**, or learn more about **Visitor Authentication**.
 
-{% hint style="warning" %}
-The GitBook Integrations Platform is currently in **alpha**. This means you should not rely on it's availability, and that it may change without prior warning.
-{% endhint %}
-
 ## Getting Started
 
 Head to our Setup Guide in our Getting Started section to learn how to start using the GitBook Integrations Platform.
@@ -22,4 +18,4 @@ Head to our Setup Guide in our Getting Started section to learn how to start usi
 
 ## Learn more
 
-<table data-view="cards"><thead><tr><th></th><th></th><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>App Examples</strong></td><td></td><td></td><td><a href=".gitbook/assets/github.jpeg">github.jpeg</a></td><td><a href="https://github.com/GitbookIO/integrations">https://github.com/GitbookIO/integrations</a></td></tr><tr><td><strong>Community</strong></td><td></td><td></td><td><a href=".gitbook/assets/github.jpeg">github.jpeg</a></td><td><a href="https://github.com/GitbookIO/community">https://github.com/GitbookIO/community</a></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>GitHub Examples</strong></td><td></td><td></td><td><a href=".gitbook/assets/Enabling GitHub Sync.png">Enabling GitHub Sync.png</a></td><td><a href="https://github.com/GitbookIO/integrations">https://github.com/GitbookIO/integrations</a></td></tr><tr><td><strong>Community</strong></td><td></td><td></td><td><a href=".gitbook/assets/Enabling GitHub Sync.png">Enabling GitHub Sync.png</a></td><td><a href="https://github.com/GitbookIO/community">https://github.com/GitbookIO/community</a></td></tr><tr><td><strong>ContentKit Playground</strong></td><td></td><td></td><td><a href=".gitbook/assets/Rectangle 1.png">Rectangle 1.png</a></td><td><a href="https://app.gitbook.com/dev/contentkit/">https://app.gitbook.com/dev/contentkit/</a></td></tr><tr><td><strong>API Explorer</strong></td><td></td><td></td><td><a href=".gitbook/assets/Rectangle 1.png">Rectangle 1.png</a></td><td><a href="https://api-explorer.gitbook.dev/">https://api-explorer.gitbook.dev/</a></td></tr></tbody></table>

@@ -4,12 +4,6 @@ The ContentKit framework allows you to build integrations that work from directl
 
 This means you can bring your workflows and/or product into GitBook, making it easy for teammates and customers to see information or take actions that aren't specifically to do with GitBook.
 
-## Playground
-
-We have an interactive playground that lets you play with ContentKit components, and see how they function in realtime. In addition to seeing how they work functionally, you're able to see examples of different components and configurations.
-
-{% embed url="https://app.gitbook.com/dev/contentkit/" %}
-
 ## Example
 
 The following example displays a button, that when clicked, will return a message in the component's local state that says "Hello world".

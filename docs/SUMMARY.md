@@ -48,6 +48,7 @@
   * [Interactivity](integrations/contentkit/interactivity.md)
   * [Reference](integrations/contentkit/reference.md)
   * [Internal design](integrations/contentkit/internal-design.md)
+  * [ContentKit Playground](https://app.gitbook.com/dev/contentkit/)
 * [Blocks](integrations/blocks/README.md)
   * [Link unfurling](integrations/blocks/link-unfurling.md)
   * [Editable blocks](integrations/blocks/editable-blocks.md)
