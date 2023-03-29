@@ -1,11 +1,6 @@
----
-cover: .gitbook/assets/Background - dark 3.png
-coverY: 0
----
-
 # Welcome
 
-Welcome to GitBook Integrations Platform!
+Welcome to GitBook Integration Platform!
 
 This documentation provides all the information needed to start using the **GitBook API**, start building **Custom Blocks** and **Integrations**, or learn more about **Visitor Authentication**.
 
