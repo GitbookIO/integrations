@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import prompts from 'prompts';
 
-import { IntegrationScope } from '@gitbook/api';
+import { IntegrationScope, IntegrationVisibility } from '@gitbook/api';
 
 import packageJSON from '../package.json';
 import { fileExists } from './files';
@@ -32,6 +32,12 @@ export async function promptNewIntegration(dirPath: string): Promise<void> {
             type: 'text',
             name: 'title',
             message: 'Title of the integration:',
+            initial: (prev) => prev || '',
+        },
+        {
+            type: 'text',
+            name: 'organization',
+            message: 'ID of the organization this integration is owned by',
             initial: (prev) => prev || '',
         },
         {
@@ -67,7 +73,7 @@ export async function promptNewIntegration(dirPath: string): Promise<void> {
     console.log('');
     console.log('Your integration is ready!');
     console.log(`Edit the ./src/index.tsx file to add your integration logic.`);
-    console.log('Then, run `gitbook publish` to upload it to GitBook.');
+    console.log('Then, run `gitbook publish` to publish it to GitBook.');
 }
 
 /**
@@ -78,6 +84,7 @@ export async function initializeProject(
     project: {
         name: string;
         title: string;
+        organization: string;
         scopes: IntegrationScope[];
     }
 ) {
@@ -92,6 +99,8 @@ export async function initializeProject(
     await writeIntegrationManifest(path.join(dirPath, DEFAULT_MANIFEST_FILE), {
         name: project.name,
         title: project.title,
+        organization: project.organization,
+        visibility: IntegrationVisibility.Private,
         script: path.relative(dirPath, scriptPath),
         scopes: project.scopes,
         secrets: {},
