@@ -14,6 +14,12 @@ The token can also be provided using the command line argument `--token=<token>`
 
 Create and initialize a new integration locally. The program will prompt for information about the integration.
 
+## `gitbook dev <spaceId>`
+
+Create a live connection with a space within your GitBook organization. Updates made locally while the connection is running will automatically be received in the chosen space.&#x20;
+
+See the [development section](../getting-started/development.md) to learn more.
+
 ## `gitbook publish`
 
 Publish the integration defined in the `gitbook-manifest.yaml` file. See the [GitBook Manifest reference](broken-reference) documentation to learn more.

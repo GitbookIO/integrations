@@ -4,17 +4,15 @@ description: Learn how to Publish your apps and integrations publicly and privat
 
 # Publishing
 
-{% hint style="danger" %}
-This section is still currently a WIP as we continue to develop the GitBook Integrations Platform.
-{% endhint %}
-
 When you're ready to publish your integration, you're able to publish it for use within GitBook.
 
 ## Publishing to a space
 
-To publish your integration, you will need to use the [GitBook CLI](broken-reference). By running the `publish` command, it will publish your integration to GitBook using the options defined in your `gitbook-manifest.yaml` file.&#x20;
+To publish your integration, you will need to use the [GitBook CLI](broken-reference). By running the `publish` command, it will publish your integration to GitBook using the options defined in your `.gitbook-manifest.yaml` file.&#x20;
 
 It's required to have a `name`, `title`, `description`,`scopes`, and `organization` in your `gitbook-manifest.yaml` file to publish an integration.
+
+See the [Configurations section](../integrations/configurations.md) to learn more about the `.gitbook-manifest.yaml` file.
 
 #### `name`
 
@@ -28,6 +26,14 @@ The title of your integration. (e.g. Slack)
 
 The description for your integration.
 
+**`organization`**
+
+The [`organizationId`](concepts.md) of the organization that owns the integration you're publishing.
+
+**`visibility`**
+
+The visibility of your integration. By default it is set to "private". It is not currently possible to publish your integration publicly (see [Submitting to GitBook's Integration Marketplace](publishing.md#submitting-to-gitbooks-integration-marketplace)).
+
 **`scopes`**
 
 A list of scopes your integration allows. The following scopes are accepted:
@@ -40,17 +46,13 @@ A list of scopes your integration allows. The following scopes are accepted:
   - space:views:read
 ```
 
-**`organization`**
+### Installing your integration
 
-The name of the **subdomain** for the organization you are publishing your integration to.
-
-
-
-After successfully publishing your integration, you will be able to find your integration via the link returned in your console. \
-\
-Alternatively, you can visit your [organization's integration page](https://app.gitbook.com/account/integrations) to see your integration and any other available integrations to install to a space.&#x20;
+After successfully publishing your integration, you will be able to find and install your integration via the link returned in your console.
 
 ## Submitting to GitBook's Integration Marketplace
 
-WIP
+Right now, you're only able to publish your integration privately, for you to develop and test. We are accepting submissions for integrations to be listed publicly and within our [Integration Marketplace](https://www.gitbook.com/integrations).
+
+If you've developed an integration and would like to submit it to our Marketplace, please reach out to us at [support@gitbook.com](mailto:support@gitbook.com).
 

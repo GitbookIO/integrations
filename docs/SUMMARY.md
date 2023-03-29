@@ -5,6 +5,7 @@
 ## Getting Started
 
 * [Setup Guide](getting-started/setup-guide.md)
+* [Concepts](getting-started/concepts.md)
 * [Development](getting-started/development.md)
 * [Publishing](getting-started/publishing.md)
 * [Support](getting-started/support.md)

@@ -25,5 +25,3 @@ Bootstrap your first app by running:
 ```
 gitbook new
 ```
-
-You'll need to give your app a `name`, `title`, per
