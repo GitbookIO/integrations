@@ -49,10 +49,10 @@ const client = new GitBookAPI({
 
 The following methods can be found on the `client.search` object.
 
-| Method            |   |   |
-| ----------------- | - | - |
-| `searchContent()` |   |   |
-| `askQuery()`      |   |   |
+| Method            |
+| ----------------- |
+| `searchContent()` |
+| `askQuery()`      |
 
 ### User
 
