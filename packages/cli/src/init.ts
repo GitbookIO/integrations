@@ -37,7 +37,7 @@ export async function promptNewIntegration(dirPath: string): Promise<void> {
         {
             type: 'text',
             name: 'organization',
-            message: 'ID of the organization this integration is owned by',
+            message: 'ID or subdomain of the organization this integration is owned by',
             initial: (prev) => prev || '',
         },
         {
