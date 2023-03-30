@@ -28,7 +28,7 @@ The description for your integration.
 
 **`organization`**
 
-The [`organizationId`](concepts.md) of the organization that owns the integration you're publishing.
+The [`organizationId`](concepts.md) or [subdomain](https://docs.gitbook.com/publishing/custom-domain/choose) of the organization that owns the integration you're publishing.
 
 **`visibility`**
 
