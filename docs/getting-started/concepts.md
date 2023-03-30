@@ -26,7 +26,7 @@ A unique identifier of a Space in GitBook. You can find the organization ID in t
 
 A unique identifier of a User in GitBook. You can find your User ID from calling the [`GET` Current User endpoint](../gitbook-api/reference/users.md#get-current-user) in the GitBook API.
 
-### `.gitbook-manifest.yaml`
+### `gitbook-manifest.yaml`
 
 A required file in a GitBook integration that contains information for publishing and developing your app. See the [Configurations section](../integrations/configurations.md) for more info.
 

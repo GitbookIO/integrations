@@ -8,11 +8,11 @@ When you're ready to publish your integration, you're able to publish it for use
 
 ## Publishing to a space
 
-To publish your integration, you will need to use the [GitBook CLI](broken-reference). By running the `publish` command, it will publish your integration to GitBook using the options defined in your `.gitbook-manifest.yaml` file.&#x20;
+To publish your integration, you will need to use the [GitBook CLI](broken-reference). By running the `publish` command, it will publish your integration to GitBook using the options defined in your `gitbook-manifest.yaml` file.&#x20;
 
 It's required to have a `name`, `title`, `description`,`scopes`, and `organization` in your `gitbook-manifest.yaml` file to publish an integration.
 
-See the [Configurations section](../integrations/configurations.md) to learn more about the `.gitbook-manifest.yaml` file.
+See the [Configurations section](../integrations/configurations.md) to learn more about the `gitbook-manifest.yaml` file.
 
 #### `name`
 
