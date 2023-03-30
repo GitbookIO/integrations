@@ -101,6 +101,7 @@ export async function initializeProject(
         title: project.title,
         organization: project.organization,
         visibility: IntegrationVisibility.Private,
+        description: '',
         script: path.relative(dirPath, scriptPath),
         scopes: project.scopes,
         secrets: {},
