@@ -8,9 +8,9 @@ All notable changes to the REST API will be documented in this page.
 
 We are introducing a collection of API endpoints to automate the management of members and teams in an organization:
 
-* [`/v1/orgs/:id/members`](../gitbook-api/resources/organizations/members.md)
-* [`/v1/orgs/:id/invites`](../gitbook-api/resources/organizations/members.md)
-* [`/v1/orgs/:id/teams`](../gitbook-api/resources/organizations/teams.md)
+* [`/v1/orgs/:id/members`](../gitbook-api/reference/organizations/members.md)
+* [`/v1/orgs/:id/invites`](../gitbook-api/reference/organizations/members.md)
+* [`/v1/orgs/:id/teams`](../gitbook-api/reference/organizations/teams.md)
 
 ## 2022-06-30
 

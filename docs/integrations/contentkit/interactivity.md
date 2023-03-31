@@ -1,6 +1,6 @@
 # Interactivity
 
-ContentKit makes interacting with users intuitive and stylish.
+ContentKit makes interacting with your components intuitive and powerful.
 
 ## Buttons and actions
 

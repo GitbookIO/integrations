@@ -4,7 +4,7 @@ Before you can use the GitBook Integration Platform, you'll need to make sure yo
 
 ### Personal Access Token
 
-In order to use the GitBook Integrations Platform, you'll need to first create a personal access token in your [developer settings](https://app.gitbook.com/account/developer).
+In order to use the GitBook Integration Platform, you'll need to first create a personal access token in your [developer settings](https://app.gitbook.com/account/developer).
 
 This token represents your user in GitBook, and allows you to make API calls, create integrations, and publish them to any GitBook spaces you're a part of to test them.
 

@@ -4,15 +4,9 @@ The ContentKit framework allows you to build integrations that work from directl
 
 This means you can bring your workflows and/or product into GitBook, making it easy for teammates and customers to see information or take actions that aren't specifically to do with GitBook.
 
-```
-{
-    "type": "button",
-    "label": "Click me",
-    "onPress": { "action": "something" }
-}
-```
-
 ## Example
+
+The following example displays a button, that when clicked, will return a message in the component's local state that says "Hello world".
 
 ```tsx
 import { createIntegration, createComponent } from '@gitbook/runtime';
@@ -46,7 +40,23 @@ export default createIntegration({
 
 Inspired by React, ContentKit relies on a core concept: Components. A component represent an element of the UI rendered with specific properties (`props`) and updated through actions impacting its local state (`state`).
 
-Components are being created using `createComponent`.
+Components are created using the `createComponent` method, which takes a few different options to customize it's behavior.&#x20;
+
+### `componentId`
+
+A unique identifier for the component in the integration.
+
+### `initialState`
+
+The initial state of the component.
+
+### `action`
+
+Callback to handle dipatched actions.
+
+### `render`
+
+Callback to render a component. View the [reference](reference.md) to learn more about what type of elements you can render.
 
 ## Props
 
