@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.2.0
+
+### Minor Changes
+
+-   0a17e3b: new command: gitbook dev
+
 ## 0.1.0
 
 ### Minor Changes
