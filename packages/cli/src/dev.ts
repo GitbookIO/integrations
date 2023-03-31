@@ -85,9 +85,9 @@ export async function startIntegrationsDevServer(space: string | undefined) {
         })
         .on('all', async () => {
             const p1 = performance.now();
-            console.log('Detected changes, rebuilding...🛠');
+            console.log('🛠 Detected changes, rebuilding...');
             try {
-                await buildScriptFromManifest(manifestSpecPath);
+                await buildScriptFromManifest(manifestSpecPath, { mode: 'development' });
                 console.log(`📦 Rebuilt in ${((performance.now() - p1) / 1000).toFixed(2)}s`);
             } catch (error) {
                 console.log(error);
