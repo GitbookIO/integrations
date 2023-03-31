@@ -11,23 +11,29 @@
         "commander": "^9.2.0",
         "conf": "^10.1.2",
         "dedent-js": "^1.0.1",
-        "esbuild": "^0.15.7",
+        "esbuild": "^0.17.11",
+        "get-port": "^6.1.2",
         "js-yaml": "^4.1.0",
+        "ora": "^6.2.0",
         "prompts": "^2.4.2"
     },
     "devDependencies": {
         "@gitbook/eslint-config": "*",
         "@types/node": "^17.0.33",
         "@types/prompts": "^2.0.14",
+        "chokidar": "^3.5.3",
         "eslint": "^8.16.0",
+        "miniflare": "^2.12.1",
         "typescript": "^4.6.3"
     },
     "files": [
-        "dist/**"
+        "dist/**",
+        "postinstall.js"
     ],
     "scripts": {
         "build": "./build.sh",
         "lint": "eslint ./src/**/*.ts",
+        "postinstall": "node postinstall.js",
         "typecheck": "tsc --noEmit"
     },
     "engines": {

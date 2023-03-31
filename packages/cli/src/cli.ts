@@ -7,6 +7,7 @@ import prompts from 'prompts';
 import { GITBOOK_DEFAULT_ENDPOINT } from '@gitbook/api';
 
 import packageJSON from '../package.json';
+import { startIntegrationsDevServer } from './dev';
 import { promptNewIntegration } from './init';
 import { DEFAULT_MANIFEST_FILE, resolveIntegrationManifestPath } from './manifest';
 import { publishIntegration, unpublishIntegration } from './publish';
@@ -53,6 +54,14 @@ program
     });
 
 program
+    .command('dev')
+    .description('run the integrations dev server')
+    .argument('[space]', 'ID of the development space', undefined)
+    .action(async (space?: string) => {
+        await startIntegrationsDevServer(space);
+    });
+
+program
     .command('publish')
     .argument('[file]', 'integration definition file', DEFAULT_MANIFEST_FILE)
     .option(
@@ -88,7 +97,15 @@ program
     });
 
 program.parseAsync().then(
-    () => {
+    (command) => {
+        /**
+         * If the command is "dev", we don't want to exit the process as it will
+         * kill the dev server.
+         */
+        if (command.args[0] === 'dev') {
+            return;
+        }
+
         process.exit(0);
     },
     (error) => {
