@@ -1,5 +1,11 @@
 # @gitbook/runtime
 
+## 0.2.0
+
+### Minor Changes
+
+-   0a17e3b: Dispatch version checked in production only
+
 ## 0.1.0
 
 ### Minor Changes
