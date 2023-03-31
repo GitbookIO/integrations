@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.3.0
+
+### Minor Changes
+
+-   87a1411: rebuild in dev mode in the watcher
+
 ## 0.2.0
 
 ### Minor Changes
