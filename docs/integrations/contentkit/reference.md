@@ -11,6 +11,14 @@ If you want to learn more about the ContentKit itself, alongside the different t
 Top level component for a custom block.
 
 {% tabs %}
+{% tab title="JSX" %}
+```tsx
+<block>
+    ...
+</block>
+```
+{% endtab %}
+
 {% tab title="JSON" %}
 ```json
 {
@@ -19,14 +27,6 @@ Top level component for a custom block.
         ...
     ]
 }
-```
-{% endtab %}
-
-{% tab title="JSX" %}
-```tsx
-<block>
-    ...
-</block>
 ```
 {% endtab %}
 {% endtabs %}
@@ -40,6 +40,12 @@ Top level component for a custom block.
 Interactive pressable button, triggering a component action when clicked.
 
 {% tabs %}
+{% tab title="JSX" %}
+```tsx
+<button label="Click me" onPress={{ type: 'something' }} />
+```
+{% endtab %}
+
 {% tab title="JSON" %}
 ```json
 {
@@ -47,12 +53,6 @@ Interactive pressable button, triggering a component action when clicked.
     "label": "Click me",
     "onPress": { "type": "something" }
 }
-```
-{% endtab %}
-
-{% tab title="JSX" %}
-```tsx
-<button label="Click me" onPress={{ type: 'something' }} />
 ```
 {% endtab %}
 
@@ -122,6 +122,14 @@ With a confirm modal:
 ### `box`
 
 {% tabs %}
+{% tab title="JSX" %}
+```tsx
+<box style="card">
+    ...
+</box>
+```
+{% endtab %}
+
 {% tab title="JSON" %}
 ```json
 {
@@ -131,14 +139,6 @@ With a confirm modal:
         ...
     ]
 }
-```
-{% endtab %}
-
-{% tab title="JSX" %}
-```tsx
-<box style="card">
-    ...
-</box>
 ```
 {% endtab %}
 {% endtabs %}
@@ -153,6 +153,14 @@ With a confirm modal:
 Flex layout element to render a vertical stack of elements. Use [`spacer`](reference.md#spacer), [`divider`](reference.md#divider), and [`box`](reference.md#box) to complete the layout.
 
 {% tabs %}
+{% tab title="JSX" %}
+```tsx
+<vstack style="start">
+    ...
+</vstack>
+```
+{% endtab %}
+
 {% tab title="JSON" %}
 ```json
 {
@@ -162,14 +170,6 @@ Flex layout element to render a vertical stack of elements. Use [`spacer`](refer
         ...
     ]
 }
-```
-{% endtab %}
-
-{% tab title="JSX" %}
-```tsx
-<vstack style="start">
-    ...
-</vstack>
 ```
 {% endtab %}
 
@@ -211,6 +211,14 @@ with `align`:
 Flex layout element to render an horizontal stack of elements. Use [`spacer`](reference.md#spacer), [`divider`](reference.md#divider), and [`box`](reference.md#box) to complete the layout.
 
 {% tabs %}
+{% tab title="JSX" %}
+```tsx
+<hstack style="start">
+    ...
+</hstack>
+```
+{% endtab %}
+
 {% tab title="JSON" %}
 ```json
 {
@@ -220,14 +228,6 @@ Flex layout element to render an horizontal stack of elements. Use [`spacer`](re
         ...
     ]
 }
-```
-{% endtab %}
-
-{% tab title="JSX" %}
-```tsx
-<hstack style="start">
-    ...
-</hstack>
 ```
 {% endtab %}
 
@@ -269,17 +269,17 @@ with `align`:
 A flexible space that expands along the major axis of its containing stack layout, or on both axes if not contained in a stack.
 
 {% tabs %}
+{% tab title="JSX" %}
+```tsx
+<spacer />
+```
+{% endtab %}
+
 {% tab title="JSON" %}
 ```json
 {
     "type": "spacer"
 }
-```
-{% endtab %}
-
-{% tab title="JSX" %}
-```tsx
-<spacer />
 ```
 {% endtab %}
 {% endtabs %}
@@ -289,17 +289,17 @@ A flexible space that expands along the major axis of its containing stack layou
 A visual delimiter between 2 elements of a containing stack layout.
 
 {% tabs %}
+{% tab title="JSX" %}
+```tsx
+<divider />
+```
+{% endtab %}
+
 {% tab title="JSON" %}
 ```json
 {
     "type": "divider"
 }
-```
-{% endtab %}
-
-{% tab title="JSX" %}
-```tsx
-<divider />
 ```
 {% endtab %}
 {% endtabs %}
@@ -314,6 +314,14 @@ A visual delimiter between 2 elements of a containing stack layout.
 The text element is used for rendering blocks of text with formatting.
 
 {% tabs %}
+{% tab title="JSX" %}
+```tsx
+<text>
+    Hello <text style="bold">World</text>
+</text>
+```
+{% endtab %}
+
 {% tab title="JSON" %}
 ```json
 {
@@ -327,14 +335,6 @@ The text element is used for rendering blocks of text with formatting.
         }
     ]
 }
-```
-{% endtab %}
-
-{% tab title="JSX" %}
-```tsx
-<text>
-    Hello <text style="bold">World</text>
-</text>
 ```
 {% endtab %}
 
@@ -376,6 +376,12 @@ With nested formatting:
 Multi-lines code blocks with syntax highlighting.
 
 {% tabs %}
+{% tab title="JSX" %}
+```tsx
+<codeblock content="const variable = 10" syntax="javascript" />
+```
+{% endtab %}
+
 {% tab title="JSON" %}
 ```json
 {
@@ -383,12 +389,6 @@ Multi-lines code blocks with syntax highlighting.
     "content": "const variable = 10",
     "syntax": "javascript"
 }
-```
-{% endtab %}
-
-{% tab title="JSX" %}
-```tsx
-<codeblock content="const variable = 10" syntax="javascript" />
 ```
 {% endtab %}
 {% endtabs %}
@@ -407,18 +407,18 @@ Multi-lines code blocks with syntax highlighting.
 Rich-text formatting of Markdown content.
 
 {% tabs %}
+{% tab title="JSX" %}
+```tsx
+<markdown content="Hello **world**" />
+```
+{% endtab %}
+
 {% tab title="JSON" %}
 ```json
 {
     "type": "markdown",
     "content": "Hello **world**"
 }
-```
-{% endtab %}
-
-{% tab title="JSX" %}
-```tsx
-<markdown content="Hello **world**" />
 ```
 {% endtab %}
 {% endtabs %}
@@ -432,6 +432,15 @@ Rich-text formatting of Markdown content.
 Element to render an external URL. The frame can receive update when states are updated by defining dependencies with `data` (see [interactivity](interactivity.md) for more details).
 
 {% tabs %}
+{% tab title="JSX" %}
+```tsx
+<webframe
+    source={{ url: 'https://www.gitbook.com' }}
+    aspectRatio={16 / 9}
+    />
+```
+{% endtab %}
+
 {% tab title="JSON" %}
 ```json
 {
@@ -441,15 +450,6 @@ Element to render an external URL. The frame can receive update when states are 
     },
     "aspectRatio": 1.7
 }
-```
-{% endtab %}
-
-{% tab title="JSX" %}
-```tsx
-<webframe
-    source={{ url: 'https://www.gitbook.com' }}
-    aspectRatio={16 / 9}
-    />
 ```
 {% endtab %}
 {% endtabs %}
@@ -467,6 +467,17 @@ Element to render an external URL. The frame can receive update when states are 
 An input component is used to capture text input from the end user. When an action is being dispatched to the integration, the value of the input is stored in the state value referenced by `id`.
 
 {% tabs %}
+{% tab title="JSX" %}
+```tsx
+<textinput
+    id="name"
+    label="Name"
+    initialValue="John Doe"
+    placeholder="Enter a name"
+    />
+```
+{% endtab %}
+
 {% tab title="JSON" %}
 ```json
 {
@@ -476,17 +487,6 @@ An input component is used to capture text input from the end user. When an acti
     "initialValue": "John Doe",
     "placeholder": "Enter a name"
 }
-```
-{% endtab %}
-
-{% tab title="JSX" %}
-```tsx
-<textinput
-    id="name"
-    label="Name"
-    initialValue="John Doe"
-    placeholder="Enter a name"
-    />
 ```
 {% endtab %}
 

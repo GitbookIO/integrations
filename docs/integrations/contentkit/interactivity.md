@@ -1,6 +1,6 @@
 # Interactivity
 
-ContentKit makes interacting with your components intuitive and powerful.
+ContentKit components can be interactive, meaning the users visiting your site can do things like type or click in your components.
 
 ## Buttons and actions
 
@@ -34,7 +34,7 @@ const helloWorldBlock = createComponent({
 
 ## Text and other inputs
 
-Collecting user input can be done through through inputs. The most common input elements are `textinput`. Inputs are tied to state and their value will be stored in the state.
+Collecting user input can be done through through inputs. The most common input elements are `textinput`s. Inputs are tied to state and their value will be stored in the state.
 
 For example, considering the following element:
 
@@ -46,7 +46,7 @@ When a next action will be dispatched (ex: when pressing a button), the value of
 
 ## Dynamic binding
 
-Interactions with actions are asynchronous, pressing a button will cause the integration's code to run to re-render the component. But in some cases, there is a need for syncronous binding between the elements to provide a top class user experience (ex: live preview when typing).
+Interactions with actions are asynchronous, meaning that pressing a button will cause the integration's code to run and re-render the component. But in some cases, there is a need for synchronous binding between the elements to provide a top class user experience (ex: live preview when typing).
 
 ContentKit provides a solution with dynamic binding, connecting multiple elements to a dynamic state.
 

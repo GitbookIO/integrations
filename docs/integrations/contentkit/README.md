@@ -1,8 +1,8 @@
 # ContentKit
 
-The ContentKit framework allows you to build integrations that work from directly within the GitBook UI. It is used to define interactive layouts for Custom Blocks, Configurations flows, etc.
+ContentKit is a UI framework allows you to build integrations that work from directly within GitBook. It is used to define interactive layouts for Custom Blocks, Configurations flows, etc.
 
-This means you can bring your workflows and/or product into GitBook, making it easy for teammates and customers to see information or take actions that aren't specifically to do with GitBook.
+This means you can bring your workflows and/or product _into_ GitBook, making it easy for teammates and customers to see information or take actions that aren't specifically to do with GitBook.
 
 ## Example
 
@@ -40,26 +40,18 @@ export default createIntegration({
 
 Inspired by React, ContentKit relies on a core concept: Components. A component represent an element of the UI rendered with specific properties (`props`) and updated through actions impacting its local state (`state`).
 
-Components are created using the `createComponent` method, which takes a few different options to customize it's behavior.&#x20;
+Components are created using the `createComponent` method, which takes a few different options to customize it's behavior. See the [`createComponent`](../runtime/createcomponent.md) reference to learn more.
 
-### `componentId`
+In addition to creating components, there are a few concepts related specifically to ContentKit and Custom Blocks that will let your integration interact with the rest of GitBook.
 
-A unique identifier for the component in the integration.
+### Props
 
-### `initialState`
+Props in ContentKit components are accessed in the render function of your integration. They work similarly to [props in React](https://react.dev/learn/passing-props-to-a-component), and help describe the way your component should render.
 
-The initial state of the component.
+### State
 
-### `action`
+State in a  ContentKit component is a way to keep track of data and information as it changes over time. It's scoped to only be accessible by the component it's defined in, and works similarly to [state in React](https://react.dev/learn/state-a-components-memory).
 
-Callback to handle dipatched actions.
+### Actions
 
-### `render`
-
-Callback to render a component. View the [reference](reference.md) to learn more about what type of elements you can render.
-
-## Props
-
-## State
-
-## Actions
+Actions in ContentKit components are ways to handle or respond to events that happen in the UI of your component, and help update your components state. See the [Interactivity section](broken-reference) to learn more about handling events in your integration.

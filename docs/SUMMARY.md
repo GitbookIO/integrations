@@ -41,6 +41,8 @@
 * [Overview](integrations/README.md)
 * [Configurations](integrations/configurations.md)
 * [Runtime](integrations/runtime/README.md)
+  * [createIntegration](integrations/runtime/createintegration.md)
+  * [createComponent](integrations/runtime/createcomponent.md)
   * [Runtime APIs](integrations/runtime/apis.md)
   * [Environment](integrations/runtime/environment.md)
   * [HTTP Fetch](integrations/runtime/http-fetch.md)
