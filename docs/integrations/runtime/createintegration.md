@@ -4,19 +4,17 @@ The `createIntegration()` method is the main entry point for your app or integra
 
 The `createIntegration()` method can take 4 optional arguments, and must be exported from the main script executed in your app's `gitbook-manifest.yaml` file. See the [Configurations section](../configurations.md) for more info.
 
-| Argument                 | Description                                                                                                            |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
-| `fetch`                  | An async fetch event used to communicate with the GitBook API to make requests.                                        |
-| `fetch_published_script` | An async fetch event used to fetch an injectable script for an integration.                                            |
-| `events`                 | Handler for GitBook events.                                                                                            |
-| `components`             | The component(s) to expose in your integration. See the [`createComponent`](createcomponent.md) section for more info. |
+| Argument     | Description                                                                                                            |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `fetch`      | An async fetch event used to communicate with the GitBook API to make requests.                                        |
+| `events`     | Handler for GitBook events.                                                                                            |
+| `components` | The component(s) to expose in your integration. See the [`createComponent`](createcomponent.md) section for more info. |
 
 ### Example
 
 ```typescript
 export default createIntegration({
     fetch: async () => {},
-    fetch_published_script: async () => {},
     components: [createComponent(options)],
     events: {},
 });
