@@ -32,15 +32,20 @@ description: >-
 
 <figure><img src="../../.gitbook/assets/GitBook AI - Lens horizontal (1).png" alt=""><figcaption><p>GitBook Lens API</p></figcaption></figure>
 
-### `POST` AI search results from all spaces for the currently authenticated user
+### `POST` AI Ask question on all content accessible by the authenticated user
 
 {% swagger src="https://api.gitbook.com/openapi.json" path="/search/ask" method="post" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
-### `POST` AI question recommendations&#x20;
+### `POST` AI Ask question on a specific space&#x20;
 
-{% swagger src="https://api.gitbook.com/openapi.json" path="/search/questions" method="post" %}
+{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/search/ask" method="post" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
+### `GET` AI Get recommended questions in a space
+
+{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/search/questions" method="get" %}
+[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
+{% endswagger %}
