@@ -69,7 +69,7 @@ export async function readIntegrationManifest(filePath: string): Promise<Integra
     try {
         const content = await fs.promises.readFile(filePath, 'utf8');
         const doc = yaml.load(content);
-        const manifest = await validateIntegrationManifest(doc);
+        const manifest = await validateIntegrationManifest(doc as object);
 
         if (manifest.secrets) {
             manifest.secrets = interpolateSecrets(manifest.secrets);
@@ -222,13 +222,14 @@ async function getManifestSchema() {
 function interpolateSecrets(secrets: { [key: string]: string }): { [key: string]: string } {
     return Object.keys(secrets).reduce((acc, key) => {
         acc[key] = secrets[key].replace(/\${{\s*env.([\S]+)\s*}}/g, (_, envVar) => {
-            if (!process.env[envVar]) {
+            const secretEnvVar = process.env[envVar];
+            if (!secretEnvVar) {
                 throw new Error(
                     `Missing environment variable: "${envVar}" used for secret "${key}"`
                 );
             }
 
-            return process.env[envVar];
+            return secretEnvVar;
         });
         return acc;
     }, {});

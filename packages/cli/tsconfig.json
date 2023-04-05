@@ -5,7 +5,6 @@
     "compilerOptions": {
         "baseUrl": "./src",
         "lib": ["DOM"],
-        "strict": true,
         "strictNullChecks": true
     }
 }

@@ -1,3 +1,4 @@
+import { spawn } from 'child_process';
 import detent from 'dedent-js';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -77,7 +78,7 @@ export async function promptNewIntegration(dir?: string): Promise<void> {
 
     await initializeProject(dirPath, response);
     console.log('');
-    console.log('Your integration is ready!');
+    console.log(`🎉 Your integration is ready at ${dirPath}`);
     console.log(`Edit the ./src/index.tsx file to add your integration logic.`);
     console.log('Then, run `gitbook publish` to publish it to GitBook.');
 }
@@ -118,6 +119,8 @@ export async function initializeProject(
     await fs.promises.writeFile(path.join(dirPath, '.eslintrc.json'), generateESLint());
 
     await extendPackageJson(dirPath, project.name);
+    console.log(`\n⬇️ Installing dependencies...\n`);
+    await installDependencies(dirPath);
 }
 
 /**
@@ -150,6 +153,22 @@ export async function extendPackageJson(dirPath: string, projectName: string): P
     };
 
     await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJsonObject, null, 2));
+}
+
+export function installDependencies(dirPath: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        const install = spawn('npm', ['install'], {
+            stdio: 'inherit',
+            cwd: dirPath,
+        });
+
+        install.on('close', (code) => {
+            if (code !== 0) {
+                throw new Error(`npm install exited with code ${code}`);
+            }
+            resolve();
+        });
+    });
 }
 
 /**
