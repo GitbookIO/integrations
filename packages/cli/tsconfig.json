@@ -4,6 +4,8 @@
     "rootDir": "./src",
     "compilerOptions": {
         "baseUrl": "./src",
-        "lib": ["DOM"]
+        "lib": ["DOM"],
+        "strict": true,
+        "strictNullChecks": true
     }
 }

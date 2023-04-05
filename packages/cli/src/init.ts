@@ -11,22 +11,15 @@ import { DEFAULT_MANIFEST_FILE, writeIntegrationManifest } from './manifest';
 
 /**
  * Interactive prompt to create a new integration.
+ * @param dir directory to create the integration project in.
  */
-export async function promptNewIntegration(dirPath: string): Promise<void> {
-    if ((await fileExists(dirPath)) === 'file') {
-        throw new Error(`The path ${dirPath} is an existing file.`);
-    }
-
-    if (await fileExists(path.join(dirPath, DEFAULT_MANIFEST_FILE))) {
-        throw new Error(`The path ${dirPath} already contains a ${DEFAULT_MANIFEST_FILE} file.`);
-    }
-
+export async function promptNewIntegration(dir?: string): Promise<void> {
     const response = await prompts([
         {
             type: 'text',
             name: 'name',
             message: 'Name of the integration:',
-            initial: path.basename(dirPath),
+            initial: dir ? path.basename(dir) : 'my-integration',
         },
         {
             type: 'text',
@@ -68,6 +61,19 @@ export async function promptNewIntegration(dirPath: string): Promise<void> {
             ],
         },
     ]);
+
+    // Resolve the final directory path where the integration will be created
+    const dirPath = path.resolve(process.cwd(), dir || response.name);
+
+    if ((await fileExists(dirPath)) === 'file') {
+        throw new Error(`\n❌ The path ${dirPath} is an existing file.`);
+    }
+
+    if (await fileExists(path.join(dirPath, DEFAULT_MANIFEST_FILE))) {
+        throw new Error(
+            `\n❌ The path ${dirPath} already contains a ${DEFAULT_MANIFEST_FILE} file.`
+        );
+    }
 
     await initializeProject(dirPath, response);
     console.log('');
@@ -154,20 +160,20 @@ export function generateScript(): string {
         import { createIntegration, FetchEventCallback, RuntimeContext } from '@gitbook/runtime';
 
         type IntegrationContext = {} & RuntimeContext;
-        
+
         const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request, context) => {
             // Use the API to make requests to GitBook
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { api } = context;
-        
+
             return new Response('Hello World');
         };
-        
+
         export default createIntegration({
             fetch: handleFetchEvent,
             components: [],
             events: {},
-        });    
+        });
     `).trim();
 
     return `${src}\n`;
@@ -185,6 +191,6 @@ export function generateESLint(): string {
     return detent(`
         {
             "extends": ["@gitbook/eslint-config/integration"]
-        }    
+        }
     `).trim();
 }
