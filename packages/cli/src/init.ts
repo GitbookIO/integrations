@@ -20,7 +20,7 @@ export async function promptNewIntegration(dir?: string): Promise<void> {
             type: 'text',
             name: 'name',
             message: 'Name of the integration:',
-            initial: dir ? path.basename(dir) : path.basename(process.cwd()),
+            initial: path.basename(dir || process.cwd()),
         },
         {
             type: 'text',
