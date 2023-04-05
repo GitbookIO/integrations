@@ -20,7 +20,7 @@ export async function promptNewIntegration(dir?: string): Promise<void> {
             type: 'text',
             name: 'name',
             message: 'Name of the integration:',
-            initial: dir ? path.basename(dir) : 'my-integration',
+            initial: dir ? path.basename(dir) : path.basename(process.cwd()),
         },
         {
             type: 'text',
@@ -119,7 +119,7 @@ export async function initializeProject(
     await fs.promises.writeFile(path.join(dirPath, '.eslintrc.json'), generateESLint());
 
     await extendPackageJson(dirPath, project.name);
-    console.log(`\n⬇️ Installing dependencies...\n`);
+    console.log(`\n⬇️  Installing dependencies...\n`);
     await installDependencies(dirPath);
 }
 
@@ -155,6 +155,9 @@ export async function extendPackageJson(dirPath: string, projectName: string): P
     await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJsonObject, null, 2));
 }
 
+/**
+ * Install the project dependencies using npm.
+ */
 export function installDependencies(dirPath: string): Promise<void> {
     return new Promise((resolve, reject) => {
         const install = spawn('npm', ['install'], {
