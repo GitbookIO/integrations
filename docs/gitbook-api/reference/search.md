@@ -8,20 +8,20 @@ description: >-
 
 ### `GET` search results from all spaces for the current user
 
-{% swagger src="../../.gitbook/assets/openapi.json" path="/search" method="get" %}
-[openapi.json](../../.gitbook/assets/openapi.json)
+{% swagger src="https://api.gitbook.com/openapi.json" path="/search" method="get" %}
+[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
 ### `GET` search results from a specific organization
 
-{% swagger src="../../.gitbook/assets/openapi.json" path="/orgs/{organizationId}/search" method="get" %}
-[openapi.json](../../.gitbook/assets/openapi.json)
+{% swagger src="https://api.gitbook.com/openapi.json" path="/orgs/{organizationId}/search" method="get" %}
+[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
 ### `GET` search results from a specific space
 
-{% swagger src="../../.gitbook/assets/openapi.json" path="/spaces/{spaceId}/search" method="get" %}
-[openapi.json](../../.gitbook/assets/openapi.json)
+{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/search" method="get" %}
+[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
 
@@ -39,6 +39,12 @@ description: >-
 {% endswagger %}
 
 ### `POST` AI Ask question on a specific space&#x20;
+
+{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/search/ask" method="post" %}
+[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
+{% endswagger %}
+
+### `POST` AI search results from a specific space
 
 {% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/search/ask" method="post" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)

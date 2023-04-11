@@ -8,12 +8,12 @@ description: A user in GitBook is the entity of someone who has signed up with a
 
 ### `GET` current user
 
-{% swagger src="https://api.gitbook.com/openapi.yaml" path="/user" method="get" %}
-[https://api.gitbook.com/openapi.yaml](https://api.gitbook.com/openapi.yaml)
+{% swagger src="https://api.gitbook.com/openapi.json" path="/user" method="get" %}
+[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
 ### `GET` user by ID
 
-{% swagger src="https://api.gitbook.com/openapi.yaml" path="/users/{userId}" method="get" %}
-[https://api.gitbook.com/openapi.yaml](https://api.gitbook.com/openapi.yaml)
+{% swagger src="https://api.gitbook.com/openapi.json" path="/users/{userId}" method="get" %}
+[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}

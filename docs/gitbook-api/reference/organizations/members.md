@@ -14,24 +14,24 @@ description: A member in GitBook is the entity of a user associated with an orga
 
 ### `GET` a specific member in an organization
 
-{% swagger src="../../../.gitbook/assets/openapi.json" path="/orgs/{organizationId}/members/{userId}" method="get" %}
-[openapi.json](../../../.gitbook/assets/openapi.json)
+{% swagger src="https://api.gitbook.com/openapi.json" path="/orgs/{organizationId}/members/{userId}" method="get" %}
+[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
 ### `PATCH` a specific member in an organization
 
-{% swagger src="../../../.gitbook/assets/openapi.json" path="/orgs/{organizationId}/members/{userId}" method="patch" %}
-[openapi.json](../../../.gitbook/assets/openapi.json)
+{% swagger src="https://api.gitbook.com/openapi.json" path="/orgs/{organizationId}/members/{userId}" method="patch" %}
+[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
 ### `DELETE` a specific member in an organization
 
-{% swagger src="../../../.gitbook/assets/openapi.json" path="/orgs/{organizationId}/members/{userId}" method="delete" %}
-[openapi.json](../../../.gitbook/assets/openapi.json)
+{% swagger src="https://api.gitbook.com/openapi.json" path="/orgs/{organizationId}/members/{userId}" method="delete" %}
+[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
 ### `POST` a user as an SSO member in an organization
 
-{% swagger src="../../../.gitbook/assets/openapi.json" path="/orgs/{organizationId}/members/{userId}/sso" method="post" %}
-[openapi.json](../../../.gitbook/assets/openapi.json)
+{% swagger src="https://api.gitbook.com/openapi.json" path="/orgs/{organizationId}/members/{userId}/sso" method="post" %}
+[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
