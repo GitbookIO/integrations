@@ -1,10 +1,14 @@
 # Interactivity
 
-ContentKit components can be interactive, meaning the users visiting your site can do things like type or click in your components.
+ContentKit components can be interactive, meaning the users visiting your site can do things like type or click in your components. Different components expose different action handlers—Like buttons exposing an `onPress` event.&#x20;
+
+See the [Actions Reference](reference/actions.md) to learn about the different actions GitBook exposes for you to hook into.
+
+When creating your component through the [`createComponent`](../runtime/createcomponent.md) call, you can also specify how to handle each action through the `action` prop.&#x20;
 
 ## Buttons and actions
 
-The most common interactive elements are buttons. Buttons can be use to trigger an asynchronous action.
+The most common interactive elements are buttons. Buttons can be use to trigger an asynchronous action.&#x20;
 
 ```tsx
 <button

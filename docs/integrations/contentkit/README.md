@@ -77,4 +77,4 @@ State in a ContentKit component is a way to keep track of data and information a
 
 ### Actions
 
-Actions in ContentKit components are ways to handle or respond to events that happen in the UI of your component, and help update your components state. See the [Interactivity section](broken-reference) to learn more about handling events in your integration.
+Actions in ContentKit components are ways to handle or respond to events that happen in the UI of your component, and help update your components state. See the [Interactivity section](interactivity.md) to learn more about handling events in your integration.

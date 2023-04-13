@@ -8,12 +8,12 @@ Any component defined in the `blocks` object will be available in the GitBook's 
 
 See the [Configurations section](../configurations.md) for more info.
 
-| Argument                                        | Description                                                                                                                 |
-| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `componentId`<mark style="color:red;">\*</mark> | A unique identifier for the component in the integration.                                                                   |
-| `initialState`                                  | An object containing the initial state of your app or integration when the page loads.                                      |
-| `action`                                        | An async function to handle a dispatched action.                                                                            |
-| `render`                                        | An async function that must return valid UI from ContentKit. See the [ContentKit reference](../contentkit/) for more info.  |
+| Argument                                        | Type       | Description                                                                                                                 |
+| ----------------------------------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `componentId`<mark style="color:red;">\*</mark> | `string`   | A unique identifier for the component in the integration.                                                                   |
+| `initialState`                                  | `object`   | An object containing the initial state of your app or integration when the page loads.                                      |
+| `action`                                        | `function` | An async function to handle a dispatched action. See the [Actions section](action.md) to learn more.                        |
+| `render`                                        | `function` | An async function that must return valid UI from ContentKit. See the [ContentKit reference](../contentkit/) for more info.  |
 
 <mark style="color:red;">\*required</mark>
 
@@ -22,16 +22,16 @@ See the [Configurations section](../configurations.md) for more info.
 ```typescript
 const component = createComponent({
     componentId: 'unique-id',
-    initialState: {
+    initialState: (props) => ({
         message: 'Click me',
-    },
-    action: async (previous, action) => {
+    }),
+    action: async (element, action, context) => {
         switch (action.action) {
             case 'say':
                 return { state: { message: 'Hello world' } };
         }
     },
-    render: async ({ props, state }) => {
+    render: async (element, action, context) => {
         return (
             <block>
                 <button label={state.message} onPress={{ action: 'say' }} />
