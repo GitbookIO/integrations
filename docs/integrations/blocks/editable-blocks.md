@@ -18,4 +18,3 @@ Updating the properties of a block is done through a [`@editor.node.updateProps`
         />
 </block>
 ```
-

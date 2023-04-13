@@ -10,24 +10,24 @@ description: >-
 
 ### `GET` organizations for current user
 
-{% swagger src="../../../.gitbook/assets/openapi.json" path="/orgs" method="get" %}
-[openapi.json](../../../.gitbook/assets/openapi.json)
+{% swagger src="https://api.gitbook.com/openapi.json" path="/orgs" method="get" %}
+[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
 ### `GET` collections in an organization
 
-{% swagger src="../../../.gitbook/assets/openapi.json" path="/orgs/{organizationId}/collections" method="get" %}
-[openapi.json](../../../.gitbook/assets/openapi.json)
+{% swagger src="https://api.gitbook.com/openapi.json" path="/orgs/{organizationId}/collections" method="get" %}
+[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
 ### `GET` spaces in an organization
 
-{% swagger src="../../../.gitbook/assets/openapi.json" path="/orgs/{organizationId}/spaces" method="get" %}
-[openapi.json](../../../.gitbook/assets/openapi.json)
+{% swagger src="https://api.gitbook.com/openapi.json" path="/orgs/{organizationId}/spaces" method="get" %}
+[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
 ### `POST` an invite to an organization
 
-{% swagger src="../../../.gitbook/assets/openapi.json" path="/orgs/{organizationId}/invites" method="post" %}
-[openapi.json](../../../.gitbook/assets/openapi.json)
+{% swagger src="https://api.gitbook.com/openapi.json" path="/orgs/{organizationId}/invites" method="post" %}
+[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}

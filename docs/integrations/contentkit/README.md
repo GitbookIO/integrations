@@ -40,18 +40,41 @@ export default createIntegration({
 
 Inspired by React, ContentKit relies on a core concept: Components. A component represent an element of the UI rendered with specific properties (`props`) and updated through actions impacting its local state (`state`).
 
-Components are created using the `createComponent` method, which takes a few different options to customize it's behavior. See the [`createComponent`](../runtime/createcomponent.md) reference to learn more.
+Components are created using the `createComponent` method, which takes a few different options to customize it's behavior. See the [`createComponent`](../reference/createcomponent.md) reference to learn more.
 
 In addition to creating components, there are a few concepts related specifically to ContentKit and Custom Blocks that will let your integration interact with the rest of GitBook.
 
 ### Props
 
-Props in ContentKit components are accessed in the render function of your integration. They work similarly to [props in React](https://react.dev/learn/passing-props-to-a-component), and help describe the way your component should render.
+Props in ContentKit components are accessed in the render function of your integration. They work similarly to [props in React](https://react.dev/learn/passing-props-to-a-component), and help describe the way your component should render.&#x20;
+
+Props are bound to your component block for all instances. To update props on a block, see [`@editor.node.updateProps`](https://developer.gitbook.com/integrations/contentkit/reference#editor.node.updateprops).
+
+**Example**
+
+```typescript
+{
+    action: "@editor.node.updateProps",
+    props: {
+        propMessage: "Props Updated!",
+    },
+};
+```
 
 ### State
 
-State in a  ContentKit component is a way to keep track of data and information as it changes over time. It's scoped to only be accessible by the component it's defined in, and works similarly to [state in React](https://react.dev/learn/state-a-components-memory).
+State in a ContentKit component is a way to keep track of data and information as it changes over time. State is bound locally to a component block, and can be updated by setting the state through an action. It's scoped to only be accessible by the component it's defined in, and works similarly to [state in React](https://react.dev/learn/state-a-components-memory).
+
+**Example**
+
+```typescript
+{ 
+    state: { 
+        stateMessage: "State Updated !" 
+    } 
+};
+```
 
 ### Actions
 
-Actions in ContentKit components are ways to handle or respond to events that happen in the UI of your component, and help update your components state. See the [Interactivity section](broken-reference) to learn more about handling events in your integration.
+Actions in ContentKit components are ways to handle or respond to events that happen in the UI of your component, and help update your components state. See the [Interactivity section](interactivity.md) to learn more about handling events in your integration.
