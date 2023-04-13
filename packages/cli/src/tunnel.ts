@@ -24,13 +24,13 @@ export function createDevTunnel(port: number): Promise<string> {
             }
 
             // Count the number of connections to the tunnel
-            // We need at least 4 connections to be able to use the tunnel
+            // We need at least 1 connection to be able to use the tunnel
             const tunnelConnectionOutput = output.match(/Connection .+ registered/);
             if (tunnelConnectionOutput) {
                 connectionsCount++;
             }
 
-            if (connectionsCount >= 4) {
+            if (connectionsCount >= 1) {
                 resolve(tunnelUrl);
             }
         });
