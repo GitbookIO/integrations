@@ -24,11 +24,11 @@ After bootstrapping your project, head to the [Development section](../getting-s
 
 ## Runtime
 
-<table data-view="cards"><thead><tr><th></th><th></th><th></th></tr></thead><tbody><tr><td><a href="runtime/"><strong>Runtime APIs</strong></a></td><td></td><td>View the APIs and methods available at runtime</td></tr><tr><td><a href="runtime/environment.md"><strong>Environment</strong></a></td><td></td><td>Learn more about the environment your integration runs in</td></tr><tr><td><a href="broken-reference"><strong>HTTP Fetch</strong></a></td><td></td><td>Learn about fetching data inside your app or components</td></tr><tr><td><a href="receiving-requests.md"><strong>Receiving Requests</strong></a></td><td></td><td>Learn about how to recieve requests in your app or components</td></tr></tbody></table>
+<table data-view="cards"><thead><tr><th></th><th></th><th></th></tr></thead><tbody><tr><td><a href="reference/"><strong>Runtime APIs</strong></a></td><td></td><td>View the APIs and methods available at runtime</td></tr><tr><td><a href="reference/environment.md"><strong>Environment</strong></a></td><td></td><td>Learn more about the environment your integration runs in</td></tr><tr><td><a href="broken-reference"><strong>HTTP Fetch</strong></a></td><td></td><td>Learn about fetching data inside your app or components</td></tr><tr><td><a href="runtime/receiving-requests.md"><strong>Receiving Requests</strong></a></td><td></td><td>Learn about how to recieve requests in your app or components</td></tr></tbody></table>
 
 ## ContentKit
 
-<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th><th></th></tr></thead><tbody><tr><td><a href="contentkit/interactivity.md"><strong>Interactivity</strong></a></td><td></td><td>Learn how blocks interact with GitBook</td></tr><tr><td><a href="contentkit/reference/reference.md"><strong>Reference</strong></a></td><td></td><td>View the complete reference for building Custom Blocks</td></tr></tbody></table>
+<table data-card-size="large" data-view="cards"><thead><tr><th></th><th></th><th></th></tr></thead><tbody><tr><td><a href="contentkit/interactivity.md"><strong>Interactivity</strong></a></td><td></td><td>Learn how blocks interact with GitBook</td></tr><tr><td><a href="contentkit/reference.md"><strong>Reference</strong></a></td><td></td><td>View the complete reference for building Custom Blocks</td></tr></tbody></table>
 
 ## Blocks
 

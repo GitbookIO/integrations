@@ -2,7 +2,7 @@
 
 Our reference for the ContentKit covers all the objects you will receive and respond with, alongside all the components you can use in order to render the UI for your integrations.
 
-If you want to learn more about the ContentKit itself, alongside the different types of requests we make in order to make these work, please take a look at our [introduction](../).
+If you want to learn more about the ContentKit itself, alongside the different types of requests we make in order to make these work, please take a look at our [introduction](./).
 
 ## Components
 
@@ -429,7 +429,7 @@ Rich-text formatting of Markdown content.
 
 ### `webframe`
 
-Element to render an external URL. The frame can receive update when states are updated by defining dependencies with `data` (see [interactivity](../interactivity.md) for more details).
+Element to render an external URL. The frame can receive update when states are updated by defining dependencies with `data` (see [interactivity](interactivity.md) for more details).
 
 {% tabs %}
 {% tab title="JSX" %}

@@ -4,7 +4,7 @@ ContentKit components can be interactive, meaning the users visiting your site c
 
 See the [Actions Reference](reference/actions.md) to learn about the different actions GitBook exposes for you to hook into.
 
-When creating your component through the [`createComponent`](../runtime/createcomponent.md) call, you can also specify how to handle each action through the `action` prop.&#x20;
+When creating your component through the [`createComponent`](../reference/createcomponent.md) call, you can also specify how to handle each action through the `action` prop.&#x20;
 
 ## Buttons and actions
 

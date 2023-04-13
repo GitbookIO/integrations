@@ -40,7 +40,7 @@ export default createIntegration({
 
 Inspired by React, ContentKit relies on a core concept: Components. A component represent an element of the UI rendered with specific properties (`props`) and updated through actions impacting its local state (`state`).
 
-Components are created using the `createComponent` method, which takes a few different options to customize it's behavior. See the [`createComponent`](../runtime/createcomponent.md) reference to learn more.
+Components are created using the `createComponent` method, which takes a few different options to customize it's behavior. See the [`createComponent`](../reference/createcomponent.md) reference to learn more.
 
 In addition to creating components, there are a few concepts related specifically to ContentKit and Custom Blocks that will let your integration interact with the rest of GitBook.
 
