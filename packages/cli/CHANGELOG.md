@@ -1,5 +1,13 @@
 # @gitbook/cli
 
+## 0.4.0
+
+### Minor Changes
+
+-   ab8df1d: - Install deps for gitbook new command
+    -   Create root folder when running gitbook new
+    -   Bump cloudflared to 2023.4.0
+
 ## 0.3.0
 
 ### Minor Changes
