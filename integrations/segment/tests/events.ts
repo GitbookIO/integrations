@@ -32,7 +32,7 @@ test('events', async (t) => {
             context: {
                 library: {
                     name: 'GitBook',
-                    version: '0.0.0',
+                    version: '1.0.0',
                 },
                 page: {
                     referrer: 'https://www.gitbook.com/',
