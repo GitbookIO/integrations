@@ -299,11 +299,11 @@ A visual delimiter between 2 elements of a containing stack layout.
 {% endtab %}
 {% endtabs %}
 
-| Props      | Type                                                                                                                                                                                                                       | Description                                              |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| `children` | `Array<Block> \| Array<Inline>`                                                                                                                                                                                            | Content to display in the block.                         |
-| `title`    | `string`                                                                                                                                                                                                                   | Title for the card.                                      |
-| `hint`     | `string`                                                                                                                                                                                                                   | Hint for the card.                                       |
+| Props      | Type                                                                                                                                                                                                                       | Description                                                                                                        |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `children` | `Array<Block> \| Array<Inline>`                                                                                                                                                                                            | Content to display in the block.                                                                                   |
+| `title`    | `string`                                                                                                                                                                                                                   | Title for the card.                                                                                                |
+| `hint`     | `string`                                                                                                                                                                                                                   | Hint for the card.                                                                                                 |
 | `icon`     | <pre class="language-typescript"><code class="lang-typescript">'close' |
 'edit' |
 'github' |
@@ -317,9 +317,9 @@ A visual delimiter between 2 elements of a containing stack layout.
 'link' |
 'link-external' |
 Image
-</code></pre> | Icon or Image displayed with the card.                   |
-| `onPress`  | `Action`                                                                                                                                                                                                                   | Action dispatched when pressed.                          |
-| `buttons`  | `Array<Button>`                                                                                                                                                                                                            | Button(s) displayed in the top right corner of the card. |
+</code></pre> | Icon or Image displayed with the card.                                                                             |
+| `onPress`  | `Action`                                                                                                                                                                                                                   | <p>Action dispatched when pressed.<br><br>See <a href="reference/actions.md">Actions</a> for more information.</p> |
+| `buttons`  | `Array<Button>`                                                                                                                                                                                                            | Button(s) displayed in the top right corner of the card.                                                           |
 
 <mark style="color:red;">\*required</mark>
 
@@ -447,7 +447,42 @@ Rich-text formatting of Markdown content.
 
 
 
-### Interactive
+## Interactive
+
+### `modal`
+
+Overlay modal&#x20;
+
+{% tabs %}
+{% tab title="JSX" %}
+```tsx
+<modal />
+```
+{% endtab %}
+
+{% tab title="JSON" %}
+```json
+{
+    "type": "button",
+    "label": "Click me",
+    "onPress": { "type": "something" }
+}
+```
+{% endtab %}
+{% endtabs %}
+
+| Props                                        | Type                                       | Description                                                                                                      |
+| -------------------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| `children`<mark style="color:red;">\*</mark> | `Array<Block> \| Array<Inline>`            | Block items to display inside the modal.                                                                         |
+| `title`                                      | `string`                                   | Title of the modal                                                                                               |
+| `subtitle`                                   | `string`                                   | Subtitle of the modal                                                                                            |
+| `size`                                       | `'medium'` \| `'xlarge'` \| `'fullscreen'` | Size of the modal                                                                                                |
+| `returnValue`                                | `object`                                   | Data passed back to the parent view when the modal is closed. These data are accessible in the "@ui.modal.close" |
+| `submit`                                     | `Button`                                   | Button instance that triggers an action.                                                                         |
+
+<mark style="color:red;">\*required</mark>
+
+
 
 ### `button`
 
@@ -520,18 +555,30 @@ With a confirm modal:
 {% endtab %}
 {% endtabs %}
 
-| Props                                               | Type                                   | Description                                                                    |
-| --------------------------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------ |
-| `label`<mark style="color:red;">\*</mark>           | `string`                               | Text displayed in the button                                                   |
-| `onPress`<mark style="color:red;">\*</mark>         | `Action`                               | Action to trigger when the button is pressed                                   |
-| `style`                                             | `'primary' \| 'secondary' \| 'danger'` | Visual style for the button                                                    |
-| `tooltip`                                           | `string`                               | Text displayed in an hovering tooltip                                          |
-| `icon`                                              | `Icon`                                 | Visual icon to display on the start of the button                              |
-| `confirm`                                           | `object`                               | Modal object to display to ask the user to confirm the action before execution |
-| `confirm.title`<mark style="color:red;">\*</mark>   | `string`                               | Title for the confirmation modal                                               |
-| `confirm.text`<mark style="color:red;">\*</mark>    | `string`                               | Content of the confirmation modal                                              |
-| `confirm.confirm`<mark style="color:red;">\*</mark> | `string`                               | Label for the confirmation button                                              |
-| `confirm.style`<mark style="color:red;">\*</mark>   | `'primary' \| 'danger'`                | Style of the confirmation button                                               |
+| Props                                               | Type                                                                                                                                                            | Description                                                                                                                     |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `label`<mark style="color:red;">\*</mark>           | `string`                                                                                                                                                        | Text displayed in the button                                                                                                    |
+| `onPress`<mark style="color:red;">\*</mark>         | `Action`                                                                                                                                                        | <p>Action to trigger when the button is pressed<br><br>See <a href="reference/actions.md">Actions</a> for more information.</p> |
+| `style`                                             | `'primary' \| 'secondary' \| 'danger'`                                                                                                                          | Visual style for the button                                                                                                     |
+| `tooltip`                                           | `string`                                                                                                                                                        | Text displayed in an hovering tooltip                                                                                           |
+| `icon`                                              | <pre><code>'close' |
+'edit' |
+'github' |
+'maximize' |
+'email' |
+'settings' |
+'search' |
+'delete' |
+'star' |
+'warning' |
+'link' |
+'link-external' 
+</code></pre> | Visual icon to display on the start of the button                                                                               |
+| `confirm`                                           | `object`                                                                                                                                                        | Modal object to display to ask the user to confirm the action before execution                                                  |
+| `confirm.title`<mark style="color:red;">\*</mark>   | `string`                                                                                                                                                        | Title for the confirmation modal                                                                                                |
+| `confirm.text`<mark style="color:red;">\*</mark>    | `string`                                                                                                                                                        | Content of the confirmation modal                                                                                               |
+| `confirm.confirm`<mark style="color:red;">\*</mark> | `string`                                                                                                                                                        | Label for the confirmation button                                                                                               |
+| `confirm.style`<mark style="color:red;">\*</mark>   | `'primary' \| 'danger'`                                                                                                                                         | Style of the confirmation button                                                                                                |
 
 <mark style="color:red;">\*required</mark>
 
@@ -613,14 +660,14 @@ Multi-lines code blocks with syntax highlighting.
 {% endtab %}
 {% endtabs %}
 
-| Props                                       | Type                | Description                                                                                                                                                                                             |
-| ------------------------------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `content`<mark style="color:red;">\*</mark> | `string`            | Text content for the codeblock                                                                                                                                                                          |
-| `syntax`                                    | `string`            | Syntax to use for highlighting                                                                                                                                                                          |
-| `lineNumbers`                               | `boolean \| number` | Control the display of the line numbers                                                                                                                                                                 |
-| `buttons`                                   | `Array<Button>`     | Buttons to render as an overlay in top-right corner                                                                                                                                                     |
-| `state`                                     | `string`            | Editable state binding. The value of the input will be stored as a property in the state named after this ID. Passing this property automatically makes the code-block editable.                        |
-| `onContentChange`                           | `Action`            | Action dispatched when the user has edited the content of this code block. It only applies if a `state` is passed. Usually the action is dispatched when the user is no longer focusing the code-block. |
+| Props                                       | Type                | Description                                                                                                                                                                                                                                                                                           |
+| ------------------------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `content`<mark style="color:red;">\*</mark> | `string`            | Text content for the codeblock                                                                                                                                                                                                                                                                        |
+| `syntax`                                    | `string`            | Syntax to use for highlighting                                                                                                                                                                                                                                                                        |
+| `lineNumbers`                               | `boolean \| number` | Control the display of the line numbers                                                                                                                                                                                                                                                               |
+| `buttons`                                   | `Array<Button>`     | Buttons to render as an overlay in top-right corner                                                                                                                                                                                                                                                   |
+| `state`                                     | `string`            | Editable state binding. The value of the input will be stored as a property in the state named after this ID. Passing this property automatically makes the code-block editable.                                                                                                                      |
+| `onContentChange`                           | `Action`            | <p>Action dispatched when the user has edited the content of this code block. It only applies if a <code>state</code> is passed. Usually the action is dispatched when the user is no longer focusing the code-block.<br><br>See <a href="reference/actions.md">Actions</a> for more information.</p> |
 
 <mark style="color:red;">\*required</mark>
 
