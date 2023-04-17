@@ -471,14 +471,14 @@ Overlay modal&#x20;
 {% endtab %}
 {% endtabs %}
 
-| Props                                        | Type                                       | Description                                                                                                      |
-| -------------------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
-| `children`<mark style="color:red;">\*</mark> | `Array<Block> \| Array<Inline>`            | Block items to display inside the modal.                                                                         |
-| `title`                                      | `string`                                   | Title of the modal                                                                                               |
-| `subtitle`                                   | `string`                                   | Subtitle of the modal                                                                                            |
-| `size`                                       | `'medium'` \| `'xlarge'` \| `'fullscreen'` | Size of the modal                                                                                                |
-| `returnValue`                                | `object`                                   | Data passed back to the parent view when the modal is closed. These data are accessible in the "@ui.modal.close" |
-| `submit`                                     | `Button`                                   | Button instance that triggers an action.                                                                         |
+| Props                                        | Type                                       | Description                                                                                                             |
+| -------------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `children`<mark style="color:red;">\*</mark> | `Array<Block> \| Array<Inline>`            | Block items to display inside the modal.                                                                                |
+| `title`                                      | `string`                                   | Title of the modal                                                                                                      |
+| `subtitle`                                   | `string`                                   | Subtitle of the modal                                                                                                   |
+| `size`                                       | `'medium'` \| `'xlarge'` \| `'fullscreen'` | Size of the modal                                                                                                       |
+| `returnValue`                                | `object`                                   | Data passed back to the parent view when the modal is closed. These data are accessible in the `@ui.modal.close action` |
+| `submit`                                     | `Button`                                   | Button instance that triggers an action.                                                                                |
 
 <mark style="color:red;">\*required</mark>
 
