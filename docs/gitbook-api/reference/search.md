@@ -38,20 +38,14 @@ description: >-
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
-### `POST` AI Ask question on a specific space&#x20;
+### `POST` AI Ask question in a specific space&#x20;
 
 {% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/search/ask" method="post" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
-### `POST` AI search results from a specific space
+### `POST` AI Get recommended questions in a space
 
-{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/search/ask" method="post" %}
-[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
-{% endswagger %}
-
-### `GET` AI Get recommended questions in a space
-
-{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/search/questions" method="get" %}
+{% swagger src="https://api.gitbook.com/openapi.json" path="/search/questions" method="post" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}

@@ -48,7 +48,7 @@ In addition to creating components, there are a few concepts related specificall
 
 Props in ContentKit components are accessed in the render function of your integration. They work similarly to [props in React](https://react.dev/learn/passing-props-to-a-component), and help describe the way your component should render.&#x20;
 
-Props are bound to your component block for all instances. To update props on a block, see [`@editor.node.updateProps`](https://developer.gitbook.com/integrations/contentkit/reference#editor.node.updateprops).
+Props are bound to your component block for all instances. To update props on a block, see [`@editor.node.updateProps`](reference/actions.md).
 
 **Example**
 
