@@ -1,7 +1,6 @@
 {
     "name": "@gitbook/tsconfig",
     "version": "0.0.0",
-    "private": true,
     "devDependencies": {
         "@cloudflare/workers-types": "^3.16.0",
         "@types/node": "^18.8.3"
