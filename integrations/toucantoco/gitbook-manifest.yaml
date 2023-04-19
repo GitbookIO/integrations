@@ -1,0 +1,27 @@
+name: toucantoco
+title: Toucan Toco
+icon: ./assets/icon.png
+description: TODO
+summary: |
+    # Overview
+
+    TODO
+
+    # How it works
+
+    Embedding a Toucan embed link in your documentation is simple - just paste the Toucan embed URL into the GitBook editor. The app will turn the link into a rich Toucan embed.
+
+    # Configure
+
+    To install on a single space navigate to integrations in sub-navigation. If you prefer to install the Toucan integration on multiple or all spaces, navigate to your organization settings and enable it from the integrations panel. This will give you access to the custom Toucan block.
+visibility: private
+script: ./src/index.tsx
+scopes: []
+blocks:
+    - id: embed
+      title: Toucan Toco
+      description: Interactive product demo
+      urlUnfurl:
+          - https://demo-staging.toucantoco.com/embed.html
+          - https://demo-embed.toucantoco.com/embed.html
+          - https://embed.toucantoco.com/embed.html
