@@ -1,0 +1,40 @@
+name: statuspage
+title: Statuspage
+icon: ./assets/icon.png
+description: Display your service status directly in your documentation
+previewImages:
+    - ./assets/preview.png
+externalLinks:
+    - label: Documentation
+      url: https://docs.gitbook.com/integrations/statuspage
+visibility: public
+script: ./src/index.ts
+scopes: []
+blocks:
+    - id: page
+      title: Statuspage
+      description: Global status of all the components
+summary: |
+    The Statuspage integration for GitBook allows you to display your status page directly in your published content.
+
+    # Display the status of your site in GitBook
+    GitBook will display the up-to-date status information of the page linked to this integration in a block on your
+    published content. Just insert the block wherever you want the status to display and we'll take care of the rest.
+
+    # Subscribe and unsubscribe to status changes
+    Users accessing your published content on GitBook will be able to use the custom Statuspage block to subscribe to
+    status changes, like they would in your official status page.
+configurations:
+    space:
+        properties:
+            api_key:
+                type: string
+                title: API Key
+                description: Get your API key from the "API info" section of your Statuspage account.
+            page_id:
+                type: string
+                title: Page
+                completion_url: /pages
+        required:
+            - api_key
+            - page_id
