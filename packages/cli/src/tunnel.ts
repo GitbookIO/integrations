@@ -10,6 +10,7 @@ export function createDevTunnel(port: number): Promise<string> {
         let connectionsCount = 0;
         const cloudflared = spawn(path.join(__dirname, 'cloudflared'), [
             'tunnel',
+            '--no-autoupdate',
             '--url',
             `http://localhost:${port}`,
         ]);
