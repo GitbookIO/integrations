@@ -4,8 +4,6 @@ Welcome to GitBook Integration Platform!
 
 This documentation provides all the information needed to start using the **GitBook API**, start building **Custom Blocks** and **Integrations**, or learn more about **Visitor Authentication**.
 
-New line of text
-
 ## Getting Started
 
 Head to our Setup Guide in our Getting Started section to learn how to start using the GitBook Integrations Platform.

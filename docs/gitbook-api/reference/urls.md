@@ -8,6 +8,6 @@ description: >-
 
 ### `GET` resolved information from a URL
 
-{% swagger src="https://api.gitbook.com/openapi.json" path="/urls/content" method="get" %}
+{% swagger src="https://api.gitbook.com/openapi.json" path="/urls/content" method="get" expanded="true" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
