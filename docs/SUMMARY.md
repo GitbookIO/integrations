@@ -9,7 +9,6 @@
 * [Development](getting-started/development.md)
 * [Publishing](getting-started/publishing.md)
 * [Support](getting-started/support.md)
-* [Guides](getting-started/guides.md)
 * [GitHub Examples](https://github.com/GitbookIO/integrations)
 
 ## GitBook API
