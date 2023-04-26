@@ -104,6 +104,13 @@ export async function initializeProject(
         description: '',
         script: path.relative(dirPath, scriptPath),
         scopes: project.scopes,
+        blocks: [
+            {
+                id: 'example-block',
+                title: 'Exmple Block',
+                description: 'An example block for a GitBook Integration',
+            },
+        ],
         secrets: {},
     });
 
@@ -151,23 +158,54 @@ export async function extendPackageJson(dirPath: string, projectName: string): P
  */
 export function generateScript(): string {
     const src = detent(`
-        import { createIntegration, FetchEventCallback, RuntimeContext } from '@gitbook/runtime';
-
+        import {
+            createIntegration,
+            createComponent,
+            FetchEventCallback,
+            RuntimeContext,
+        } from "@gitbook/runtime";
+        
         type IntegrationContext = {} & RuntimeContext;
         
-        const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request, context) => {
-            // Use the API to make requests to GitBook
+        const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (
+            request,
+            context
+        ) => {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { api } = context;
         
-            return new Response('Hello World');
+            const user = api.user.getAuthenticatedUser();
+        
+            return new Response(JSON.stringify(user));
         };
+        
+        const exampleBlock = createComponent({
+            componentId: "example-block",
+            initialState: (props) => {
+            return {
+                stateMessage: "Update State",
+            };
+            },
+            action: async (element, action, context) => {
+            switch (action.action) {
+                case "state":
+                return { state: { stateMessage: "State Updated Locally!" } };
+            }
+            },
+            render: async (element, action, context) => {
+            return (
+                <block>
+                <button label={state.stateMessage} onPress={{ action: "state" }} />
+                </block>
+            );
+            },
+        });
         
         export default createIntegration({
             fetch: handleFetchEvent,
-            components: [],
+            components: [exampleBlock],
             events: {},
-        });    
+        });         
     `).trim();
 
     return `${src}\n`;
