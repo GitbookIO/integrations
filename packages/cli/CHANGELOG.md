@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.7.0
+
+### Minor Changes
+
+-   0b60654: Fix logic to match tunnel output using an updated pattern
+
 ## 0.6.0
 
 ### Minor Changes
