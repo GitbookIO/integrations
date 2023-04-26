@@ -68,8 +68,8 @@ export default createIntegration({
                 * { margin: 0; padding: 0; }
                 </style>
                 <body>
-                    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-                    <script>
+                    <script type="module">
+                        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
                         mermaid.initialize({ startOnLoad: false });
             
                         function renderDiagram(content) {
