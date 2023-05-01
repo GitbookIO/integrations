@@ -7,14 +7,14 @@ The `createIntegration()` method can take 3 optional arguments, and must be expo
 | Argument     | Type       | Description                                                                                                            |
 | ------------ | ---------- | ---------------------------------------------------------------------------------------------------------------------- |
 | `fetch`      | `function` | An async fetch event used to communicate with the GitBook API to make requests.                                        |
-| `events`     | `object`   | An object allowing you to react to GitBook events. See the [Events section](event.md) for more information.            |
 | `components` | `array`    | The component(s) to expose in your integration. See the [`createComponent`](createcomponent.md) section for more info. |
+| `events`     | `object`   | An object allowing you to react to GitBook events. See the [Events section](event.md) for more information.            |
 
 ### Example
 
 ```typescript
 export default createIntegration({
-    fetch: async () => {},
+    fetch: async (element, action, context) => {},
     components: [createComponent(options)],
     events: {},
 });

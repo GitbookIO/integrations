@@ -6,7 +6,9 @@ You can access this information in your integration by parsing the `environment`
 
 ### Integration Environment
 
-This is the main object exposed to your integration, and can be found by calling the `environment` object.&#x20;
+This is the main object exposed to your integration, and can be found by calling the `context.environment` object.&#x20;
+
+When reading information about your integration, you should default to using `spaceInstallation` information.
 
 <pre class="language-typescript"><code class="lang-typescript">environment: {
     /** URL of the HTTP API */
@@ -17,6 +19,31 @@ This is the main object exposed to your integration, and can be found by calling
     
     /** Information about the integration */
     integration: Integration;
+    
+    /** Installation of an integration at a space level */
+    spaceInstallation?: {
+        /** ID of the space the integration is installed on. */
+        space: string;
+        
+        status: {
+            Active = "active",
+            Pending = "pending",
+            Paused = "paused"
+        };
+        
+        /** 
+        Custom configuration variables of the integration at the account level. 
+        See the Configurations section to learn more
+        */
+        configuration: {};
+        
+        externalIds: any;
+        
+        /** URLs associated with the object */
+        urls: {
+            publicEndpoint: string;
+        };
+    };
     
     /** Installation of an integration on an account */
     installation?: {
@@ -54,33 +81,8 @@ This is the main object exposed to your integration, and can be found by calling
         
         /** Target of the integration installation */
         target: IntegrationInstallationTarget;
-    },
-    
-    /** Installation of an integration at a space level */
-    spaceInstallation?: {
-        /** ID of the space the integration is installed on. */
-        space: string;
-        
-        status: {
-            Active = "active",
-            Pending = "pending",
-            Paused = "paused"
-        };
-        
-        /** 
-        Custom configuration variables of the integration at the account level. 
-        See the Configurations section to learn more
-        */
-        configuration: {};
-        
-        externalIds: any;
-        
-        /** URLs associated with the object */
-        urls: {
-            publicEndpoint: string;
-        };
-<strong>    };
-</strong><strong>    
+    };
+<strong>    
 </strong>    /** Secrets stored on the integration and passed at runtime. */
     secrets: IntegrationSecrets;
 }
