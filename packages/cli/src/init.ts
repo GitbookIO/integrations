@@ -106,15 +106,15 @@ export async function initializeProject(
         scopes: project.scopes,
         blocks: [
             {
-                id: 'example-block',
-                title: 'Exmple Block',
-                description: 'An example block for a GitBook Integration',
+                id: project.name,
+                title: project.title,
+                description: 'My GitBook Integration',
             },
         ],
         secrets: {},
     });
 
-    await fs.promises.writeFile(scriptPath, generateScript());
+    await fs.promises.writeFile(scriptPath, generateScript(project));
     await fs.promises.writeFile(path.join(dirPath, 'tsconfig.json'), generateTSConfig());
     await fs.promises.writeFile(path.join(dirPath, '.eslintrc.json'), generateESLint());
 
@@ -156,56 +156,56 @@ export async function extendPackageJson(dirPath: string, projectName: string): P
 /**
  * Generate the script code.
  */
-export function generateScript(): string {
+export function generateScript(project: { name: string }): string {
     const src = detent(`
-        import {
-            createIntegration,
-            createComponent,
-            FetchEventCallback,
-            RuntimeContext,
-        } from "@gitbook/runtime";
-        
-        type IntegrationContext = {} & RuntimeContext;
-        
-        const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (
-            request,
-            context
-        ) => {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { api } = context;
-        
-            const user = api.user.getAuthenticatedUser();
-        
-            return new Response(JSON.stringify(user));
-        };
-        
-        const exampleBlock = createComponent({
-            componentId: "example-block",
-            initialState: (props) => {
-            return {
-                stateMessage: "Update State",
-            };
-            },
-            action: async (element, action, context) => {
-            switch (action.action) {
-                case "state":
-                return { state: { stateMessage: "State Updated Locally!" } };
-            }
-            },
-            render: async (element, action, context) => {
-            return (
-                <block>
-                <button label={state.stateMessage} onPress={{ action: "state" }} />
-                </block>
-            );
-            },
-        });
-        
-        export default createIntegration({
-            fetch: handleFetchEvent,
-            components: [exampleBlock],
-            events: {},
-        });         
+    import {
+        createIntegration,
+        createComponent,
+        FetchEventCallback,
+        RuntimeContext,
+      } from "@gitbook/runtime";
+      
+      type IntegrationContext = {} & RuntimeContext;
+      
+      const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (
+        request,
+        context
+      ) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { api } = context;
+        const user = api.user.getAuthenticatedUser();
+      
+        return new Response(JSON.stringify(user));
+      };
+      
+      const exampleBlock = createComponent({
+        componentId: ${project.name},
+        initialState: (props) => {
+          return {
+            message: "Click Me",
+          };
+        },
+        action: async (element, action, context) => {
+          switch (action.action) {
+            case "click":
+              console.log("Button Clicked");
+              return {};
+          }
+        },
+        render: async (element, action, context) => {
+          return (
+            <block>
+              <button label={element.state.message} onPress={{ action: "click" }} />
+            </block>
+          );
+        },
+      });
+      
+      export default createIntegration({
+        fetch: handleFetchEvent,
+        components: [exampleBlock],
+        events: {},
+      });             
     `).trim();
 
     return `${src}\n`;
