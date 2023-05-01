@@ -34,7 +34,7 @@ const component = createComponent({
     render: async (element, action, context) => {
         return (
             <block>
-                <button label={state.message} onPress={{ action: 'say' }} />
+                <button label={element.state.message} onPress={{ action: 'say' }} />
             </block>
         );
     },
