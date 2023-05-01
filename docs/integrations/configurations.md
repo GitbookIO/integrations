@@ -80,6 +80,10 @@ secrets:
     CLIENT_ID: ${{ env.SLACK_CLIENT_ID }}
     CLIENT_SECRET: ${{ env.SLACK_CLIENT_SECRET }}
     SIGNING_SECRET: ${{ env.SLACK_SIGNING_SECRET }}
+blocks:
+  - id: unique-id
+    title: Exmple Block
+    description: An example block declaration for a GitBook integration
 ```
 
 ## Installation & Configuration flow
