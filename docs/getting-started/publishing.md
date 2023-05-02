@@ -6,11 +6,13 @@ description: Learn how to Publish your apps and integrations publicly and privat
 
 When you're ready to publish your integration, you're able to publish it for use within GitBook.
 
-## Publishing to a space
+## Publishing to your organization
 
 To publish your integration, you will need to use the [GitBook CLI](broken-reference). By running the `publish` command, it will publish your integration to GitBook using the options defined in your `gitbook-manifest.yaml` file.&#x20;
 
-It's required to have a `name`, `title`, `description`,`scopes`, and `organization` in your `gitbook-manifest.yaml` file to publish an integration.
+It's required to have a `name`, `title`, `description`, `scopes`, and `organization` in your `gitbook-manifest.yaml` file to publish an integration.
+
+By default, it will publish your integration to the organization specified in your integration's `gitbook-manifest.yaml` file. Keep in mind, that only users within this organization will be able to install it.
 
 See the [Configurations section](../integrations/configurations.md) to learn more about the `gitbook-manifest.yaml` file.
 
@@ -32,7 +34,11 @@ The [`organizationId`](concepts.md) or [subdomain](https://docs.gitbook.com/publ
 
 **`visibility`**
 
-The visibility of your integration. By default it is set to "private". It is not currently possible to publish your integration publicly (see [Submitting to GitBook's Integration Marketplace](publishing.md#submitting-to-gitbooks-integration-marketplace)).
+The visibility for your integration. Defaults to `private`. When set to `private`, only members of the organization that owns the integration are able to see or install the integration into a space.&#x20;
+
+Set the visibility to `unlisted` in order to share your integration install link with anyone.
+
+Setting the visibility to `public` is only available by GitBook staff, and setting it to `public` will allow your integration to be [listed on our marketplace](https://www.gitbook.com/integrations). See [Submitting to GitBook's Integration Marketplace](publishing.md#submitting-to-gitbooks-integration-marketplace) below for more info.
 
 **`scopes`**
 
@@ -48,11 +54,17 @@ A list of scopes your integration allows. The following scopes are accepted:
 
 ### Installing your integration
 
-After successfully publishing your integration, you will be able to find and install your integration via the link returned in your console.
+After successfully publishing your integration, you will be able to find and install your integration via the link returned in your console.&#x20;
+
+Keep in mind, that only users within your organization will be able to find or install your integration in their spaces.
+
+### Sharing your integration with others
+
+If you're interested in sharing or testing your integration with users outside, you'll need to update the `visibility` key in your integration's `gitbook-manifest.yaml` file.&#x20;
+
+Setting `visibility: unlisted` will allow your integration to be installed in organizations outside of the one that has published it. Make sure you republish your integration using `gitbook publish` after updating this key locally.
 
 ## Submitting to GitBook's Integration Marketplace
 
-Right now, you're only able to publish your integration privately, for you to develop and test. We are accepting submissions for integrations to be listed publicly and within our [Integration Marketplace](https://www.gitbook.com/integrations).
-
-If you've developed an integration and would like to submit it to our Marketplace, please reach out to us at [support@gitbook.com](mailto:support@gitbook.com).
+In order for your integration to be listed on our Marketplace, you will need to go through our submission process. You can start this process by reaching out to us at [support@gitbook.com](mailto:support@gitbook.com). We will then get back to you with steps and requirements for getting your integration published publicly.
 
