@@ -177,7 +177,9 @@ You can create as many properties as you would like, and can be of the following
 
 **`string`**
 
-String configurations can be used to collect user input. An optional key `completion_url` can be added to render a dropdown list instead of a text input. See the [Slack configuration](../../integrations/slack/gitbook-manifest.yaml) to learn more.
+String configurations can be used to collect user input. You can use optional keys `enum` or `completion_url` to provide a list of items from a dropdown list instead than an input.
+
+`enum` allows you to specify a list of items, while `completion_url` allows you to fetch options from an endpoint. See the [Slack configuration](../../integrations/slack/gitbook-manifest.yaml) to learn more.
 
 ```yaml
 string_property:
@@ -185,6 +187,13 @@ string_property:
     title: String Property
     description: A short description
     default: A default Value
+    
+    # Optional key to provide a list of options
+    enum:
+      - item 1
+      - item 2
+      - item 3
+      - item 4
     
     # Optional key to fetch a list of entries from an endpoint.
     completion_url: /completion-endpoint
