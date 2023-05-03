@@ -6,7 +6,7 @@ description: >-
 
 # Configurations
 
-### g`itbook-manifest.yaml`
+## `gitbook-manifest.yaml`
 
 Integrations can define a schema for the configuration. You will be prompted upon setup via the CLI for some required options. See the keys below for more information.
 
@@ -167,19 +167,27 @@ externalLinks:
 
 ### Configurations
 
-The configurations key allows you to specify specific steps and configurations for your integration. You're able to set up default configurations under the `configurations.account` key, and space-specific configurations through the `configurations.space` key.
+The configurations key allows you to specify specific steps and configurations for your integration through it's [`environment`](reference/environment.md).&#x20;
 
-Both of these configurations accept `properties`, which are named keys used to describe the different steps your user will go through as they install your integration.&#x20;
+You're able to set up default configurations under the `configurations.account` key, and space-specific configurations through the `configurations.space` key.
 
-You can create as many properties as you would like, and can be of the following configurations:
+Both of these configurations accept `properties`, which are named keys used to describe the different steps your user will go through as they install your integration. You can also name these properties in a `required` key to enforce certain configurations.
+
+You can create as many properties as you would like, and can be of the following:
 
 **`string`**
+
+String configurations can be used to collect user input. An optional key `completion_url` can be added to render a dropdown list instead of a text input. See the [Slack configuration](../../integrations/slack/gitbook-manifest.yaml) to learn more.
 
 ```yaml
 string_property:
     type: string
     title: String Property
     description: A short description
+    default: A default Value
+    
+    # Optional key to fetch a list of entries from an endpoint.
+    completion_url: /completion-endpoint
 ```
 
 **`number`**
@@ -189,6 +197,7 @@ number_property:
     type: number
     title: Number Property
     description: A short description
+    default: 1
 ```
 
 **`boolean`**
@@ -203,7 +212,7 @@ boolean_property:
 
 **`button`**
 
-Button configurations are useful if you need to set up an OAuth connection with a provider in order to use your integration.
+Button configurations can be used if you need to set up an OAuth connection with a provider in order to use your integration. See [`createOAuthHandler()`](reference/createoauthhandler.md) for more information.
 
 ```yaml
 button_property:
