@@ -9,6 +9,7 @@
 * [Development](getting-started/development.md)
 * [Publishing](getting-started/publishing.md)
 * [Support](getting-started/support.md)
+* [Guides](getting-started/guides.md)
 * [GitHub Examples](https://github.com/GitbookIO/integrations)
 
 ## GitBook API
@@ -75,6 +76,11 @@
 * [Quickstart](cli/quickstart.md)
 * [Reference](cli/reference.md)
 * [Continuous Integration](cli/ci.md)
+
+## Marketplace
+
+* [Overview](marketplace/overview.md)
+* [Submit your app for review](marketplace/submit-your-app-for-review.md)
 
 ## Changelogs
 

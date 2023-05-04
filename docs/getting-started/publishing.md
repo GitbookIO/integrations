@@ -66,5 +66,7 @@ Setting `visibility: unlisted` will allow your integration to be installed in or
 
 ## Submitting to GitBook's Integration Marketplace
 
-In order for your integration to be listed on our Marketplace, you will need to go through our submission process. You can start this process by reaching out to us at [support@gitbook.com](mailto:support@gitbook.com). We will then get back to you with steps and requirements for getting your integration published publicly.
+In order for your integration to be listed on our Marketplace, you will need to go through our submission process.&#x20;
+
+See [submitting your app for review](../marketplace/submit-your-app-for-review.md) for more info.
 
