@@ -1,0 +1,22 @@
+name: github-unfurl
+title: Github Unfurl
+icon: ./assets/github-mark.png
+organization: the-delta-integrations
+visibility: private
+description: TODO Description
+summary: TODO Summary
+script: ./src/index.tsx
+scopes:
+  - space:content:read
+  - space:content:write
+  - space:metadata:read
+  - space:metadata:write
+  - space:views:read
+secrets:
+  ORG_ACCESS_TOKEN: ${{ env.GITHUB_ACCESS_TOKEN }}
+blocks:
+  - id: github-code-block
+    title: Github Unfurl
+    description: Unfurls a selection from Github
+    urlUnfurl:
+      - https://github.com/**

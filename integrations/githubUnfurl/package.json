@@ -1,0 +1,13 @@
+{
+  "name": "github-unfurl",
+  "private": true,
+  "scripts": {
+    "lint": "eslint ./**/*.ts*",
+    "typecheck": "tsc --noEmit",
+    "publish-integrations-staging": "gitbook publish ."
+  },
+  "devDependencies": {
+    "@gitbook/cli": "^0.7.0",
+    "@gitbook/runtime": "latest"
+  }
+}
