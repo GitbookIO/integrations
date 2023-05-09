@@ -1,7 +1,8 @@
 import { createIntegration, createComponent } from '@gitbook/runtime';
 
 interface BlockProps {
-    githubContent: string;
+    content: string;
+    url: string;
 }
 
 const splitUrl = (url: string) => {
@@ -105,8 +106,7 @@ const githubCodeBlock = createComponent({
                     urlObject.orgName,
                     urlObject.repoName,
                     urlObject.fileName,
-                    urlObject.ref,
-                    urlObject.lines
+                    urlObject.ref
                 );
 
                 // console.log('CONTENT');
