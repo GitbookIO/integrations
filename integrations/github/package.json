@@ -1,0 +1,19 @@
+{
+  "name": "@gitbook/integration-github",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@gitbook/runtime": "*"
+  },
+  "devDependencies": {
+    "@gitbook/cli": "*",
+    "@gitbook/eslint-config": "*",
+    "@gitbook/tsconfig": "*"
+  },
+  "scripts": {
+    "lint": "eslint ./**/*.ts*",
+    "typecheck": "tsc --noEmit",
+    "publish-integrations": "gitbook publish .",
+    "publish-integrations-staging": "gitbook publish ."
+  }
+}
