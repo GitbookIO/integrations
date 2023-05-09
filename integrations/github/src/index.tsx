@@ -6,36 +6,22 @@ interface BlockProps {
 }
 
 const splitUrl = (url: string) => {
-    const regex = /^https?:\/\/github\.com\/([\w-]+)\/([\w-]+)\/blob\/([a-f0-9]+)\/(.+?)#(.+)$/;
-    const match = url.match(regex);
+    const permalinkTypeRegex =
+        /^https?:\/\/github\.com\/([\w-]+)\/([\w-]+)\/blob\/([a-f0-9]+)\/(.+?)#(.+)$/;
+    const wholeFileTypeRegex =
+        /^https?:\/\/github\.com\/([\w-]+)\/([\w-]+)\/blob\/([\w.-]+)\/(.+)$/;
 
-    const orgName = match[1];
-    const repoName = match[2];
-    const ref = match[3];
-    const fileName = match[4];
-    const hash = match[5];
-    let lines = [];
+    const permalinkMatch = url.match(permalinkTypeRegex);
+    const wholeFileMatch = url.match(wholeFileTypeRegex);
 
-    if (hash !== '') {
-        const lineFormatRegex = /^L\d+-L\d+$/;
-        if (hash.match(lineFormatRegex)) {
-            lines = hash.replace(/L/g, '').split('-').map(Number);
-        } else {
-            // Do other line format things
-            //     https://github.com/GitbookIO/integrations/blob/main/integrations/jira/src/sdk.ts#:~:text=*/-,export%20async%20function%20getJIRASites(accessToken%3A%20string)%3A%20Promise,%7D,-/**
-        }
-    } else {
-        // Show whole file
-        // https://github.com/GitbookIO/integrations/blob/main/integrations/mailchimp/src/sdk.ts
+    if (permalinkMatch) {
+        const [, orgName, repoName, ref, fileName, hash] = permalinkMatch;
+        const lines = hash ? hash.replace(/L/g, '').split('-').map(Number) : [];
+        return { orgName, repoName, ref, fileName, lines };
+    } else if (wholeFileMatch) {
+        const [, orgName, repoName, ref, fileName] = wholeFileMatch;
+        return { orgName, repoName, ref, fileName, lines: [] };
     }
-
-    return {
-        orgName,
-        repoName,
-        fileName,
-        ref,
-        lines,
-    };
 };
 
 const splitFileFromLines = (content, lines) => {
@@ -97,8 +83,6 @@ const githubCodeBlock = createComponent({
             const urlObject = splitUrl(action.url);
 
             const userLoggedIn = await isUserLoggedIn();
-            // console.log('userLoggedIn');
-            // console.log(userLoggedIn);
             let content: string | boolean = '';
 
             if (userLoggedIn) {
@@ -108,9 +92,6 @@ const githubCodeBlock = createComponent({
                     urlObject.fileName,
                     urlObject.ref
                 );
-
-                // console.log('CONTENT');
-                // console.log(content);
 
                 if (content) {
                     if (urlObject.lines.length > 0) {
