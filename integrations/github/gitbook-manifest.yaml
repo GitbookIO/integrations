@@ -12,8 +12,9 @@ scopes:
   - space:metadata:read
   - space:metadata:write
   - space:views:read
-#secrets:
-#  ORG_ACCESS_TOKEN: ${{ env.GITHUB_ACCESS_TOKEN }}
+secrets:
+  CLIENT_ID: ${{ env.GITHUB_CLIENT_ID }}
+  CLIENT_SECRET: ${{ env.GITHUB_CLIENT_SECRET }}
 blocks:
   - id: github-code-block
     title: Github Unfurl

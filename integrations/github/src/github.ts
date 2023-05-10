@@ -1,5 +1,6 @@
+import { GithubRuntimeContext } from './types';
+
 export interface GithubProps {
-    content: string;
     url: string;
 }
 
@@ -26,12 +27,12 @@ const getLinesFromGithubFile = (content, lines) => {
     return content.slice(lines[0] - 1, lines[1]);
 };
 
-const fetchGithubFile = async (orgName, repoName, file, ref) => {
+const fetchGithubFile = async (orgName, repoName, file, ref, accessToken: string) => {
     const baseURL = `https://api.github.com/repos/${orgName}/${repoName}/contents/${file}?ref=${ref}`;
 
     const headers = {
         'User-Agent': 'request',
-        Authorization: 'Bearer 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',
+        Authorization: `Bearer ${accessToken}`,
     };
 
     const res = await fetch(baseURL, { headers }).catch((err) => {
@@ -39,62 +40,31 @@ const fetchGithubFile = async (orgName, repoName, file, ref) => {
     });
 
     if (!res.ok) {
-        return false;
-        // throw new Error(`Response status from ${baseURL}: ${res.status}`)
+        throw new Error(`Response status from ${baseURL}: ${res.status}`);
     }
 
     const body = await res.text();
     return atob(JSON.parse(body).content);
 };
 
-const isUserLoggedIn = async () => {
-    return await fetch('https://api.github.com/user', {
-        method: 'GET',
-        headers: {
-            'User-Agent': 'request',
-            Authorization: `Bearer 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`,
-        },
-    })
-        .then((response) => {
-            if (response.ok) {
-                // console.log('User is logged in');
-                return true;
-                // User is logged in
-                // Perform action to display the code
-            } else {
-                // console.log('User is not logged in');
-                return false;
-                // User is not logged in
-                // Redirect to login page or display a login form
-            }
-        })
-        .catch((error) => {
-            console.error('Error in https://api.github.com/user', error);
-            return false;
-        });
-};
-
-export const getGithubContent = async (url: string) => {
+export const getGithubContent = async (url: string, context: GithubRuntimeContext) => {
     const urlObject = splitGithubUrl(url);
-
-    const userLoggedIn = await isUserLoggedIn();
     let content: string | boolean = '';
 
-    if (userLoggedIn) {
-        content = await fetchGithubFile(
-            urlObject.orgName,
-            urlObject.repoName,
-            urlObject.fileName,
-            urlObject.ref
-        );
+    content = await fetchGithubFile(
+        urlObject.orgName,
+        urlObject.repoName,
+        urlObject.fileName,
+        urlObject.ref,
+        context.environment.installation.configuration.oauth_credentials?.access_token
+    );
 
-        if (content) {
-            if (urlObject.lines.length > 0) {
-                const contentArray = content.split('\n');
-                const splitContent = getLinesFromGithubFile(contentArray, urlObject.lines);
+    if (content) {
+        if (urlObject.lines.length > 0) {
+            const contentArray = content.split('\n');
+            const splitContent = getLinesFromGithubFile(contentArray, urlObject.lines);
 
-                return splitContent.join('\n');
-            }
+            return splitContent.join('\n');
         }
     }
 

@@ -1,23 +1,31 @@
-import { createIntegration, createComponent } from '@gitbook/runtime';
+import { createIntegration, createComponent, createOAuthHandler } from '@gitbook/runtime';
 
 import { getGithubContent, GithubProps } from './github';
+import { GithubRuntimeContext } from './types';
 
-const githubCodeBlock = createComponent({
+const embedBlock = createComponent<{ url?: string }, {}, {}, GithubRuntimeContext>({
     componentId: 'github-code-block',
-    async action(block, action) {
-        if (action.action === '@link.unfurl') {
-            const content = await getGithubContent(action.url);
 
-            return {
-                props: {
-                    content,
-                    url: action.url,
-                },
-            };
+    async action(element, action) {
+        switch (action.action) {
+            case '@link.unfurl': {
+                const { url } = action;
+                // const content = await getGithubContent(url);
+
+                return {
+                    props: {
+                        url,
+                    },
+                };
+            }
         }
+
+        return element;
     },
-    async render(block, context) {
-        const { content, url } = block.props as GithubProps;
+
+    async render(element, context) {
+        const { url } = element.props as GithubProps;
+        const content = await getGithubContent(url, context);
 
         if (!content) {
             return (
@@ -57,19 +65,6 @@ const githubCodeBlock = createComponent({
                             aspectRatio={1}
                         />
                     }
-                    buttons={[
-                        <button
-                            icon="maximize"
-                            tooltip="Open preview"
-                            onPress={{
-                                action: '@ui.modal.open',
-                                componentId: 'previewModal',
-                                props: {
-                                    url,
-                                },
-                            }}
-                        />,
-                    ]}
                 >
                     <codeblock content={content.toString()} lineNumbers={true} />
                 </card>
@@ -78,6 +73,17 @@ const githubCodeBlock = createComponent({
     },
 });
 
-export default createIntegration({
-    components: [githubCodeBlock],
+export default createIntegration<GithubRuntimeContext>({
+    fetch: (request, context) => {
+        const oauthHandler = createOAuthHandler({
+            redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
+            clientId: context.environment.secrets.CLIENT_ID,
+            clientSecret: context.environment.secrets.CLIENT_SECRET,
+            authorizeURL: 'https://github.com/login/oauth/authorize',
+            accessTokenURL: 'https://github.com/login/oauth/access_token',
+        });
+
+        return oauthHandler(request, context);
+    },
+    components: [embedBlock],
 });
