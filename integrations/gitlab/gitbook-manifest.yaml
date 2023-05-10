@@ -1,0 +1,13 @@
+name: gitlab
+title: gitlab
+organization: the-delta-integrations
+visibility: private
+description: ''
+script: src/index.tsx
+scopes:
+  - space:content:read
+  - space:content:write
+  - space:metadata:read
+  - space:metadata:write
+  - space:views:read
+secrets: {}
