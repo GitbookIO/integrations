@@ -1,9 +1,9 @@
-name: gitlab
-title: gitlab
+name: gitlab-unfurl
+title: Gitlab Unfurl
 organization: the-delta-integrations
 visibility: private
 description: ''
-script: src/index.tsx
+script: ./src/index.tsx
 scopes:
   - space:content:read
   - space:content:write
@@ -11,3 +11,9 @@ scopes:
   - space:metadata:write
   - space:views:read
 secrets: {}
+blocks:
+  - id: gitlab-code-block
+    title: Gitlab Unfurl
+    description: Unfurls a selection from Github
+    urlUnfurl:
+      - https://gitlab.com/**
