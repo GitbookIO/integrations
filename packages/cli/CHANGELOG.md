@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.8.0
+
+### Minor Changes
+
+-   3326853: Update init template
+
 ## 0.7.0
 
 ### Minor Changes
