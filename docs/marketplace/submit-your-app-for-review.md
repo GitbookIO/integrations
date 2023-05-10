@@ -44,9 +44,7 @@ Once you're happy with your integration, you'll need to provide some assets with
 
 To make things easier, we've prepared a Figma template you can use to create assets for your integration that meet our design requirements.
 
-**Figma Template:**
-
-{% embed url="https://www.figma.com/file/9FCuynZip3iJnlu0zB80ve/GitBook---Integrations-Template/duplicate" %}
+[**Figma Template**](https://www.figma.com/file/9FCuynZip3iJnlu0zB80ve/GitBook---Integrations-Template/duplicate)
 
 **Example**:
 
