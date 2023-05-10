@@ -10,6 +10,7 @@ export function createDevTunnel(port: number): Promise<string> {
         let connectionsCount = 0;
         const cloudflared = spawn(path.join(__dirname, 'cloudflared'), [
             'tunnel',
+            '--no-autoupdate',
             '--url',
             `http://localhost:${port}`,
         ]);
@@ -24,13 +25,13 @@ export function createDevTunnel(port: number): Promise<string> {
             }
 
             // Count the number of connections to the tunnel
-            // We need at least 4 connections to be able to use the tunnel
-            const tunnelConnectionOutput = output.match(/Connection .+ registered/);
+            // We need at least 1 connection to be able to use the tunnel
+            const tunnelConnectionOutput = output.match(/Registered tunnel/);
             if (tunnelConnectionOutput) {
                 connectionsCount++;
             }
 
-            if (connectionsCount >= 4) {
+            if (connectionsCount >= 1) {
                 resolve(tunnelUrl);
             }
         });

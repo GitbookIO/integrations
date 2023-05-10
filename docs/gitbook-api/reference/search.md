@@ -8,13 +8,13 @@ description: >-
 
 ### `GET` search results from all spaces for the current user
 
-{% swagger src="https://api.gitbook.com/openapi.json" path="/search" method="get" %}
+{% swagger src="https://api.gitbook.com/openapi.json" path="/search" method="get" expanded="true" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
 ### `GET` search results from a specific organization
 
-{% swagger src="https://api.gitbook.com/openapi.json" path="/orgs/{organizationId}/search" method="get" %}
+{% swagger src="https://api.gitbook.com/openapi.json" path="/orgs/{organizationId}/search" method="get" expanded="true" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
@@ -34,24 +34,18 @@ description: >-
 
 ### `POST` AI Ask question on all content accessible by the authenticated user
 
-{% swagger src="https://api.gitbook.com/openapi.json" path="/search/ask" method="post" %}
+{% swagger src="https://api.gitbook.com/openapi.json" path="/search/ask" method="post" expanded="true" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
-### `POST` AI Ask question on a specific space&#x20;
+### `POST` AI Ask question in a specific space&#x20;
 
-{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/search/ask" method="post" %}
+{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/search/ask" method="post" expanded="true" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
-### `POST` AI search results from a specific space
+### `POST` AI Get recommended questions in a space
 
-{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/search/ask" method="post" %}
-[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
-{% endswagger %}
-
-### `GET` AI Get recommended questions in a space
-
-{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/search/questions" method="get" %}
+{% swagger src="https://api.gitbook.com/openapi.json" path="/search/questions" method="post" expanded="true" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}

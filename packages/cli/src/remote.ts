@@ -59,7 +59,7 @@ export async function whoami(): Promise<void> {
 /**
  * Lookup the auth token to use.
  */
-function getAuthToken(): string | null {
+function getAuthToken(): string | undefined {
     // First lookup the token in the environment.
     if (process.env.GITBOOK_TOKEN) {
         return process.env.GITBOOK_TOKEN;

@@ -9,6 +9,7 @@
 * [Development](getting-started/development.md)
 * [Publishing](getting-started/publishing.md)
 * [Support](getting-started/support.md)
+* [Guides](getting-started/guides.md)
 * [GitHub Examples](https://github.com/GitbookIO/integrations)
 
 ## GitBook API
@@ -40,16 +41,22 @@
 
 * [Overview](integrations/README.md)
 * [Configurations](integrations/configurations.md)
-* [Runtime](integrations/runtime/README.md)
-  * [createIntegration](integrations/runtime/createintegration.md)
-  * [createComponent](integrations/runtime/createcomponent.md)
-  * [Runtime APIs](integrations/runtime/apis.md)
-  * [Environment](integrations/runtime/environment.md)
-  * [HTTP Fetch](integrations/runtime/http-fetch.md)
-  * [Receiving Requests](integrations/runtime/receiving-requests.md)
+* [Reference](integrations/reference/README.md)
+  * [createIntegration](integrations/reference/createintegration.md)
+  * [createComponent](integrations/reference/createcomponent.md)
+  * [createOAuthHandler](integrations/reference/createoauthhandler.md)
+  * [Environment](integrations/reference/environment.md)
+  * [Fetch](integrations/reference/fetch.md)
+  * [Action](integrations/reference/action.md)
+  * [Render](integrations/reference/render.md)
+  * [Event](integrations/reference/event.md)
+* [Web APIs](integrations/runtime/apis.md)
+* [Receiving Requests](integrations/runtime/receiving-requests.md)
 * [ContentKit](integrations/contentkit/README.md)
+  * [Reference](integrations/contentkit/reference/README.md)
+    * [Components](integrations/contentkit/reference.md)
+    * [Actions](integrations/contentkit/reference/actions.md)
   * [Interactivity](integrations/contentkit/interactivity.md)
-  * [Reference](integrations/contentkit/reference.md)
   * [Internal design](integrations/contentkit/internal-design.md)
   * [ContentKit Playground](https://app.gitbook.com/dev/contentkit/)
 * [Blocks](integrations/blocks/README.md)
@@ -69,6 +76,11 @@
 * [Quickstart](cli/quickstart.md)
 * [Reference](cli/reference.md)
 * [Continuous Integration](cli/ci.md)
+
+## Marketplace
+
+* [Overview](marketplace/overview.md)
+* [Submit your app for review](marketplace/submit-your-app-for-review.md)
 
 ## Changelogs
 

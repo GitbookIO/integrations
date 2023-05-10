@@ -48,7 +48,7 @@ export async function publishIntegration(
         ...updates,
     });
 
-    console.log(`Integration "${created.data.name}" published`);
+    console.log(`🚀 Integration "${created.data.name}" published`);
     console.log(`👉 ${created.data.urls.app}`);
 }
 

@@ -1,5 +1,31 @@
 # @gitbook/cli
 
+## 0.7.0
+
+### Minor Changes
+
+-   0b60654: Fix logic to match tunnel output using an updated pattern
+
+## 0.6.0
+
+### Minor Changes
+
+-   62ec05b: Disable autoupdate of cloudflared binary
+
+## 0.5.0
+
+### Minor Changes
+
+-   014e2e6: Suppress experimental warning in the CLI
+
+## 0.4.0
+
+### Minor Changes
+
+-   ab8df1d: - Install deps for gitbook new command
+    -   Create root folder when running gitbook new
+    -   Bump cloudflared to 2023.4.0
+
 ## 0.3.0
 
 ### Minor Changes

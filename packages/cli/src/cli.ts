@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --no-warnings
 
 import { program } from 'commander';
 import * as path from 'path';
@@ -47,10 +47,10 @@ program
 
 program
     .command('new')
-    .argument('[dir]', 'directory to initialize project in', './')
+    .argument('[dir]', 'directory to initialize project in', undefined)
     .description('initialize a new project')
     .action(async (dirPath, options) => {
-        await promptNewIntegration(path.resolve(process.cwd(), dirPath));
+        await promptNewIntegration(dirPath);
     });
 
 program
