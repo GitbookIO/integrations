@@ -1,9 +1,11 @@
 name: gitlab-unfurl
 title: Gitlab Unfurl
+icon: ./assets/gitlab-logo.png
 organization: the-delta-integrations
 visibility: private
-description: ''
+description: Unfurls Gitlab permalinks and full file links in GitBook pages.
 script: ./src/index.tsx
+summary: TODO Summary
 scopes:
   - space:content:read
   - space:content:write
