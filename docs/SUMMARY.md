@@ -26,6 +26,7 @@
     * [Teams](gitbook-api/reference/organizations/teams.md)
   * [Collections](gitbook-api/reference/collections.md)
   * [Spaces](gitbook-api/reference/spaces/README.md)
+    * [Publishing](gitbook-api/reference/spaces/publishing.md)
     * [Change Requests](gitbook-api/reference/spaces/change-requests.md)
     * [Content](gitbook-api/reference/spaces/content.md)
     * [Insights](gitbook-api/reference/spaces/insights.md)
