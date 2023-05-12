@@ -275,7 +275,9 @@ configurations:
 
 A list of secrets or environment variables that your integration might need in order to function. By default, environment variables are not loaded into GitBook's Manifest file.&#x20;
 
-We recommend using a package like [`dotenv-cli`](https://www.npmjs.com/package/dotenv-cli) to include environment variables in your integrations configuration through an `.env` file. See the [Linear integration](../../integrations/linear/package.json) for an example.
+We recommend using a package like [`dotenv-cli`](https://www.npmjs.com/package/dotenv-cli) to include environment variables in your integrations configuration through an `.env` file when using the `cli`.
+
+See the [Linear integration](../../integrations/linear/package.json) for an example.
 
 **Example:**
 
