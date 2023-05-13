@@ -49,7 +49,7 @@ The `id` or `subdomain` of the organization that owns this integration.
 **Example:**
 
 ```yaml
-organiation: gitbook
+organization: gitbook
 ```
 
 ### Visibility<mark style="color:red;">\*</mark>
