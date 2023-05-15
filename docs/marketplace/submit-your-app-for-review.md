@@ -23,6 +23,8 @@ If you're ready to start building, you can follow our [Setup Guide](../getting-s
 
 After you've built your integration - you'll need to publish it to GitBook's Integration Platform. This will allow you to install your app in any spaces you're a part of, or share your app with others.&#x20;
 
+Before submitting your app, you'll need to make sure you set your app's `visibility` to `unlisted` in the `gitbook-manifest.yaml` file. This is required so we can test and see your application outside of your organization.
+
 See the [Publishing section](../getting-started/publishing.md) to learn more.
 
 ### Test your integration
@@ -86,6 +88,7 @@ You will need to provide some details for us, such as:&#x20;
 * Contact email address
 * Published integration name
 * Link to code repository (Must be public, or access for GitBook staff if private)
+* Installation link for your integration
 
 When you have everything prepared, you can submit your integration using [this form](https://forms.gle/SXBdguvquFsCUtDX8).
 
