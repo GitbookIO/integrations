@@ -9,7 +9,7 @@ import {
 type IntegrationContext = {} & RuntimeContext;
 
 export interface GitlabProps {
-    gitlabContent: string;
+    url: string;
 }
 function getProject(url) {
     const namespaceEndIndex = url.indexOf('/', 8); // index of the first slash after "https://"
@@ -45,7 +45,6 @@ const splitGitlabUrl = (url) => {
         namespace = matchesNamespaceRegex ? matchesNamespaceRegex[1].split('/')[0] : '';
         projectName = getProject(url);
         ref = matchesBranchOrCommitRegex ? matchesBranchOrCommitRegex[1].split('/')[0] : '';
-        // file_path = matchesFilePathRegex ? `${branch}/${matchesFilePathRegex[1]}` : '';
         file_path = matchesFilePathRegex ? matchesFilePathRegex[1] : '';
 
         const hash = matchesHashRegex ? matchesHashRegex[0] : '';
@@ -93,47 +92,91 @@ const fetchGitlabFile = (nameSpace, projectName, filePath, ref) => {
         });
 };
 
+export const getGitlabContent = async (url: string) => {
+    const urlObject = splitGitlabUrl(url);
+    let content: string | boolean = '';
+
+    content = await fetchGitlabFile(
+        urlObject.namespace,
+        urlObject.projectName,
+        urlObject.file_path.split('#')[0],
+        urlObject.ref
+    );
+
+    if (content) {
+        if (urlObject.lines.length > 0) {
+            const contentArray = content.split('\n');
+            const splitContent = getLinesFromGitlabFile(contentArray, urlObject.lines);
+
+            return splitContent.join('\n');
+        }
+    }
+
+    return content;
+};
+
 const gitlabCodeBlock = createComponent<{ url?: string }, {}, {}>({
     componentId: 'gitlab-code-block',
     async action(element, action) {
-        if (action.action === '@link.unfurl') {
-            const { url } = action;
-            const urlObject = splitGitlabUrl(url);
-            console.log('URL_OBJECT');
-            console.log(urlObject);
-            let content: string | boolean = '';
-            content = await fetchGitlabFile(
-                urlObject.namespace,
-                urlObject.projectName,
-                urlObject.file_path.split('#')[0],
-                urlObject.ref
-            );
-            if (content) {
-                console.log(content);
-                if (urlObject.lines.length > 0) {
-                    const contentArray = content.split('\n');
-                    const splitContent = getLinesFromGitlabFile(contentArray, urlObject.lines);
-                    //
-                    console.log('splitContent');
-                    console.log(splitContent.join('\n'));
-                    return splitContent.join('\n');
-                }
+        switch (action.action) {
+            case '@link.unfurl': {
+                const { url } = action;
+
+                return {
+                    props: {
+                        url,
+                    },
+                };
             }
-            // TODO: Get filename and branch from URL
-            return {
-                props: {
-                    url,
-                },
-            };
         }
+
         return element;
     },
-    async render(block) {
-        // const { gitlabContent } = block.props as GitlabProps;
+    async render(element, context) {
+        const { url } = element.props as GitlabProps;
+        const content = await getGitlabContent(url);
+
+        if (!content) {
+            return (
+                <block>
+                    <card
+                        title={'Not found'}
+                        onPress={{
+                            action: '@ui.url.open',
+                            url,
+                        }}
+                        icon={
+                            <image
+                                source={{
+                                    url: context.environment.integration.urls.icon,
+                                }}
+                                aspectRatio={1}
+                            />
+                        }
+                    />
+                </block>
+            );
+        }
 
         return (
             <block>
-                <codeblock content="{gitlabContent.toString()}" lineNumbers={true} />
+                <card
+                    title={url}
+                    onPress={{
+                        action: '@ui.url.open',
+                        url,
+                    }}
+                    icon={
+                        <image
+                            source={{
+                                url: context.environment.integration.urls.icon,
+                            }}
+                            aspectRatio={1}
+                        />
+                    }
+                >
+                    <codeblock content={content.toString()} lineNumbers={true} />
+                </card>
             </block>
         );
     },
