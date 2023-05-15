@@ -1,5 +1,12 @@
 // TODO: Remove console logs
-import { createIntegration, createComponent } from '@gitbook/runtime';
+import {
+    createIntegration,
+    createComponent,
+    FetchEventCallback,
+    RuntimeContext,
+} from '@gitbook/runtime';
+
+type IntegrationContext = {} & RuntimeContext;
 
 export interface GitlabProps {
     gitlabContent: string;
@@ -38,7 +45,10 @@ const splitGitlabUrl = (url) => {
         namespace = matchesNamespaceRegex ? matchesNamespaceRegex[1].split('/')[0] : '';
         projectName = getProject(url);
         branch = matchesBranchOrCommitRegex ? matchesBranchOrCommitRegex[1].split('/')[0] : '';
-        file_path = matchesFilePathRegex ? `${branch}/${matchesFilePathRegex[1]}` : '';
+        // file_path = matchesFilePathRegex ? `${branch}/${matchesFilePathRegex[1]}` : '';
+        file_path = matchesFilePathRegex ? matchesFilePathRegex[1] : '';
+        console.log('FILE_PATH');
+        console.log(file_path);
 
         const hash = matchesHashRegex ? matchesHashRegex[0] : '';
         if (hash !== '') {
@@ -54,16 +64,40 @@ const splitGitlabUrl = (url) => {
     }
 };
 
+const fetchGitlabProjectId = (nameSpace, projectName, filePath, branch) => {
+    const projectPath = `${nameSpace}/${projectName}`;
+    const apiUrl = `https://gitlab.com/api/v4/projects/${encodeURIComponent(
+        projectPath
+    )}/repository/files/${encodeURIComponent(filePath).replace('.', '%2E')}?ref=${branch}`;
+    return fetch(apiUrl)
+        .then((response) => {
+            if (response.ok) {
+                return response.text();
+            } else {
+                throw new Error(
+                    `Failed to fetch file from GitLab API (status code ${response.status})`
+                );
+            }
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+};
+
 const gitlabCodeBlock = createComponent<{ url?: string }, {}, {}>({
     componentId: 'gitlab-code-block',
     async action(element, action) {
         if (action.action === '@link.unfurl') {
             const { url } = action;
-            // const content = await getGitlabContent(url);
-            const content = '';
-            const urlObject = splitGitlabUrl(action.url);
+            const urlObject = splitGitlabUrl(url);
+            fetchGitlabProjectId(urlObject.namespace, urlObject.projectName, urlObject.file_path.split('#')[0], urlObject.branch).then(
+                (fileContent) => {
+                console.log('FILECONTENT');
+                console.log(fileContent);
+            });
             console.log('URL_OBJECT');
             console.log(urlObject);
+            // TODO: Get filename and branch from URL
             return {
                 props: {
                     url,
@@ -73,11 +107,11 @@ const gitlabCodeBlock = createComponent<{ url?: string }, {}, {}>({
         return element;
     },
     async render(block) {
-        const { gitlabContent } = block.props as GitlabProps;
+        // const { gitlabContent } = block.props as GitlabProps;
 
         return (
             <block>
-                <codeblock content={gitlabContent.toString()} lineNumbers={true} />
+                <codeblock content="{gitlabContent.toString()}" lineNumbers={true} />
             </block>
         );
     },
