@@ -16,6 +16,6 @@ secrets: {}
 blocks:
   - id: gitlab-code-block
     title: Gitlab Unfurl
-    description: Unfurls a selection from Github
+    description: Unfurls a selection or whole file from Gitlab.
     urlUnfurl:
       - https://gitlab.com/**

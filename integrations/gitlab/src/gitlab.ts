@@ -3,7 +3,7 @@ export interface GitlabProps {
 }
 
 function getProject(url) {
-    const namespaceEndIndex = url.indexOf('/', 8); // index of the first slash after "https://"
+    const namespaceEndIndex = url.indexOf('/', 8);
     const projectStartIndex = url.indexOf('/', namespaceEndIndex + 1) + 1;
     const projectEndIndex = url.indexOf('/-/blob/', projectStartIndex);
     const project = url.substring(projectStartIndex, projectEndIndex);
