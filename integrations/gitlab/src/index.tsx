@@ -37,18 +37,16 @@ const splitGitlabUrl = (url) => {
 
     let namespace = 'namespace initial';
     let projectName = 'project initial';
-    let branch = 'branch initial';
+    let ref = 'ref initial';
     let file_path = 'file_path initial';
     let lines = [];
 
     if (matchGitlabLink) {
         namespace = matchesNamespaceRegex ? matchesNamespaceRegex[1].split('/')[0] : '';
         projectName = getProject(url);
-        branch = matchesBranchOrCommitRegex ? matchesBranchOrCommitRegex[1].split('/')[0] : '';
+        ref = matchesBranchOrCommitRegex ? matchesBranchOrCommitRegex[1].split('/')[0] : '';
         // file_path = matchesFilePathRegex ? `${branch}/${matchesFilePathRegex[1]}` : '';
         file_path = matchesFilePathRegex ? matchesFilePathRegex[1] : '';
-        console.log('FILE_PATH');
-        console.log(file_path);
 
         const hash = matchesHashRegex ? matchesHashRegex[0] : '';
         if (hash !== '') {
@@ -57,22 +55,33 @@ const splitGitlabUrl = (url) => {
         return {
             namespace,
             projectName,
-            branch,
+            ref,
             file_path,
             lines,
         };
     }
 };
 
-const fetchGitlabProjectId = (nameSpace, projectName, filePath, branch) => {
+const getLinesFromGitlabFile = (content, lines) => {
+    if (lines.length > 1) {
+        return content.slice(lines[0] - 1, lines[1]);
+    } else {
+        return content.slice(lines[0] - 1, lines[0]);
+    }
+};
+
+const fetchGitlabFile = (nameSpace, projectName, filePath, ref) => {
+    let body = '';
     const projectPath = `${nameSpace}/${projectName}`;
+    // fullstops aren't being encoded so had to replace them manually
     const apiUrl = `https://gitlab.com/api/v4/projects/${encodeURIComponent(
         projectPath
-    )}/repository/files/${encodeURIComponent(filePath).replace('.', '%2E')}?ref=${branch}`;
+    )}/repository/files/${encodeURIComponent(filePath).replace('.', '%2E')}?ref=${ref}`;
     return fetch(apiUrl)
-        .then((response) => {
+        .then(async (response) => {
             if (response.ok) {
-                return response.text();
+                body = await response.text();
+                return atob(JSON.parse(body).content);
             } else {
                 throw new Error(
                     `Failed to fetch file from GitLab API (status code ${response.status})`
@@ -90,13 +99,26 @@ const gitlabCodeBlock = createComponent<{ url?: string }, {}, {}>({
         if (action.action === '@link.unfurl') {
             const { url } = action;
             const urlObject = splitGitlabUrl(url);
-            fetchGitlabProjectId(urlObject.namespace, urlObject.projectName, urlObject.file_path.split('#')[0], urlObject.branch).then(
-                (fileContent) => {
-                console.log('FILECONTENT');
-                console.log(fileContent);
-            });
             console.log('URL_OBJECT');
             console.log(urlObject);
+            let content: string | boolean = '';
+            content = await fetchGitlabFile(
+                urlObject.namespace,
+                urlObject.projectName,
+                urlObject.file_path.split('#')[0],
+                urlObject.ref
+            );
+            if (content) {
+                console.log(content);
+                if (urlObject.lines.length > 0) {
+                    const contentArray = content.split('\n');
+                    const splitContent = getLinesFromGitlabFile(contentArray, urlObject.lines);
+                    //
+                    console.log('splitContent');
+                    console.log(splitContent.join('\n'));
+                    return splitContent.join('\n');
+                }
+            }
             // TODO: Get filename and branch from URL
             return {
                 props: {
