@@ -22,7 +22,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 ) => {
   const trackingId = environment.spaceInstallation.configuration.tracking_id;
   if (!trackingId) {
-    // return;
+  
     throw new Error(
       `The Heap environment ID is missing from the configuration (ID: ${event.spaceId}).`
     );
