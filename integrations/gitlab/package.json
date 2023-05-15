@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@gitbook/runtime": "*"
+    "@gitbook/runtime": "latest"
   },
   "devDependencies": {
-    "@gitbook/cli": "*",
+    "@gitbook/cli": "^0.8.0",
     "@gitbook/eslint-config": "*",
     "@gitbook/tsconfig": "*"
   },
