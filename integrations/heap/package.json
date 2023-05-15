@@ -1,6 +1,7 @@
 {
-  "name": "heap",
-  "private": true,
+    "name": "@gitbook/integration-heap",
+    "version": "0.0.1",
+    "private": true,
     "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*"
