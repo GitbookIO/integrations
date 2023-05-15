@@ -12,12 +12,23 @@ scopes:
   - space:metadata:read
   - space:metadata:write
   - space:views:read
-secrets:
-  CLIENT_ID: ${{ env.GITHUB_CLIENT_ID }}
-  CLIENT_SECRET: ${{ env.GITHUB_CLIENT_SECRET }}
 blocks:
   - id: github-code-block
     title: Github Unfurl
     description: Unfurls a selection from Github
     urlUnfurl:
       - https://github.com/**
+configurations:
+  account:
+    properties:
+      oauth_credentials:
+        type: button
+        title: Connection
+        description: Authorization between Github and GitBook.
+        button_text: Authorize
+        callback_url: /oauth
+    required:
+      - oauth_credentials
+secrets:
+  CLIENT_ID: ${{ env.GITHUB_CLIENT_ID }}
+  CLIENT_SECRET: ${{ env.GITHUB_CLIENT_SECRET }}
