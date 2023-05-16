@@ -124,6 +124,10 @@ After we sign in successfully, we'll then be able to navigate to our published s
 
 Visitor Authentication allows you to protect published GitBook sites behind a sign-in flow that you control.
 
-Not only is it customizable, but it also opens up the door for many more possibilities in the future around the way you want to work in GitBook.&#x20;
+Not only is it customizable, but it also opens up the door for many more possibilities in the future around the way you want to work in GitBook. Make sure to head to the [Visitor Authentication](https://docs.gitbook.com/publishing/visitor-authentication) docs to learn more.
 
-Make sure to head to the [Visitor Authentication](https://docs.gitbook.com/publishing/visitor-authentication) docs to learn more.
+
+
+Interested in hearing more? Sign up for our newsletter below:
+
+{% @formspree/formspree %}
