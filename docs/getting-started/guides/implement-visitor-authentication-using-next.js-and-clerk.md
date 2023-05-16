@@ -128,6 +128,8 @@ Not only is it customizable, but it also opens up the door for many more possibi
 
 
 
+### Stay up to date
+
 Interested in hearing more? Sign up for our newsletter below:
 
 {% @formspree/formspree %}
