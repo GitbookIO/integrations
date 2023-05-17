@@ -1,6 +1,9 @@
 name: heap
 title: Heap
 icon: ./assets/icon.png
+previewImages:
+    - ./assets/heap-preview-1.png
+    - ./assets/heap-preview-2.png
 description: Plug your GitBook site to your Heap Analytics instance.
 externalLinks:
     - label: Documentation
