@@ -19,10 +19,6 @@ categories:
 script: src/index.tsx
 scopes:
     - space:content:read
-    - space:content:write
-    - space:metadata:read
-    - space:metadata:write
-    - space:views:read
 blocks:
     - id: formspree
       title: Formspree
