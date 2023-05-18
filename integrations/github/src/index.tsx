@@ -79,7 +79,7 @@ export default createIntegration<GithubRuntimeContext>({
             redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
             clientId: context.environment.secrets.CLIENT_ID,
             clientSecret: context.environment.secrets.CLIENT_SECRET,
-            authorizeURL: 'https://github.com/login/oauth/authorize',
+            authorizeURL: 'https://github.com/login/oauth/authorize?scope=repo',
             accessTokenURL: 'https://github.com/login/oauth/access_token',
         });
 

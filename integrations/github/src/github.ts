@@ -59,24 +59,49 @@ const getLinesFromGithubFile = (content, lines) => {
     return content.slice(lines[0] - 1, lines[1]);
 };
 
-const fetchGithubFile = async (orgName, repoName, file, ref, accessToken: string) => {
-    const baseURL = `https://api.github.com/repos/${orgName}/${repoName}/contents/${file}?ref=${ref}`;
-
-    const headers = {
+const getHeaders = (authorise: boolean, accessToken = '') => {
+    const headers: { 'User-Agent': string; Authorization?: string } = {
         'User-Agent': 'request',
-        Authorization: `Bearer ${accessToken}`,
     };
 
+    if (authorise) {
+        headers.Authorization = `Bearer ${accessToken}`;
+    }
+
+    return headers;
+};
+
+const getGithubApiResponse = async (
+    headers: { 'User-Agent': string; Authorization?: string },
+    baseURL: string
+) => {
     const res = await fetch(baseURL, { headers }).catch((err) => {
         throw new Error(`Error fetching content from ${baseURL}. ${err}`);
     });
 
     if (!res.ok) {
-        throw new Error(`Response status from ${baseURL}: ${res.status}`);
+        if (res.status === 403 || res.status === 404) {
+            return false;
+        } else {
+            throw new Error(`Response status from ${baseURL}: ${res.status}`);
+        }
     }
 
     const body = await res.text();
     return atob(JSON.parse(body).content);
+};
+
+const fetchGithubFile = async (
+    orgName: string,
+    repoName: string,
+    file: string,
+    ref: string,
+    accessToken: string
+) => {
+    const baseURL = `https://api.github.com/repos/${orgName}/${repoName}/contents/${file}?ref=${ref}`;
+    const headers = getHeaders(false, accessToken);
+
+    return await getGithubApiResponse(headers, baseURL);
 };
 
 export const getGithubContent = async (url: string, context: GithubRuntimeContext) => {
