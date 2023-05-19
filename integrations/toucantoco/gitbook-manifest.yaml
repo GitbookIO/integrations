@@ -18,8 +18,7 @@ summary: |
     # Configure
 
     To install on a single space navigate to integrations in sub-navigation. If you prefer to install the Toucan integration on multiple or all spaces, navigate to your organization settings and enable it from the integrations panel.
-visibility: private
-organization: tR3xNi7ylrfGmQLebDDh
+visibility: public
 script: ./src/index.tsx
 scopes: []
 blocks:
