@@ -1,5 +1,6 @@
 #!/usr/bin/env -S node --no-warnings
 
+import checkNodeVersion from 'check-node-version';
 import { program } from 'commander';
 import * as path from 'path';
 import prompts from 'prompts';
@@ -96,20 +97,32 @@ program
         }
     });
 
-program.parseAsync().then(
-    (command) => {
-        /**
-         * If the command is "dev", we don't want to exit the process as it will
-         * kill the dev server.
-         */
-        if (command.args[0] === 'dev') {
-            return;
-        }
+checkNodeVersion({ node: '>= 18' }, (error, result) => {
+    if (error) {
+        console.error(error);
+        return;
+    }
 
-        process.exit(0);
-    },
-    (error) => {
-        console.error(error.message);
+    if (!result.isSatisfied) {
+        console.error('The GitBook CLI requires Node v18 or later.');
         process.exit(1);
     }
-);
+
+    program.parseAsync().then(
+        (command) => {
+            /**
+             * If the command is "dev", we don't want to exit the process as it will
+             * kill the dev server.
+             */
+            if (command.args[0] === 'dev') {
+                return;
+            }
+
+            process.exit(0);
+        },
+        (error) => {
+            console.error(error.message);
+            process.exit(1);
+        }
+    );
+});
