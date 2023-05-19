@@ -10,7 +10,6 @@ const embedBlock = createComponent<{ url?: string }, {}, {}, GithubRuntimeContex
         switch (action.action) {
             case '@link.unfurl': {
                 const { url } = action;
-                // const content = await getGithubContent(url);
 
                 return {
                     props: {
@@ -65,8 +64,21 @@ const embedBlock = createComponent<{ url?: string }, {}, {}, GithubRuntimeContex
                             aspectRatio={1}
                         />
                     }
+                    buttons={[
+                        <button
+                            icon="maximize"
+                            tooltip="Open preview"
+                            onPress={{
+                                action: '@ui.modal.open',
+                                componentId: 'previewModal',
+                                props: {
+                                    url,
+                                },
+                            }}
+                        />,
+                    ]}
                 >
-                    <codeblock content={content.toString()} lineNumbers={true} />
+                    {content ? <codeblock content={content.toString()} lineNumbers={true} /> : null}
                 </card>
             </block>
         );
