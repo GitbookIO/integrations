@@ -24,6 +24,6 @@ scopes: []
 blocks:
     - id: embed
       title: Toucan Toco
-      description: Analytics, powered by Toucan Toco
+      description: Embedded Analytics, powered by Toucan Toco
       urlUnfurl:
           - https://*.toucantoco.com/embed.html*
