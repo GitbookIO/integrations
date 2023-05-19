@@ -10,54 +10,54 @@ description: >-
 
 ### `POST` a new Change Request in a space
 
-{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/change-requests" method="post" %}
+{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/change-requests" method="post" expanded="true" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
 ### `POST` a merge for a specific Change Request
 
-{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/change-requests/{changeRequestId}/merge" method="post" %}
+{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/change-requests/{changeRequestId}/merge" method="post" expanded="true" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
 ### `POST` updates to Change Request with primary content
 
-{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/change-requests/{changeRequestId}/update" method="post" %}
+{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/change-requests/{changeRequestId}/update" method="post" expanded="true" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
 ### `GET` content in a Change Request
 
-{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/change-requests/{changeRequestId}/content" method="get" %}
+{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/change-requests/{changeRequestId}/content" method="get" expanded="true" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
 ### `GET` files in a Change Request
 
-{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/change-requests/{changeRequestId}/content/files" method="get" %}
+{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/change-requests/{changeRequestId}/content/files" method="get" expanded="true" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
 ### `POST` content to a Change Request
 
-{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/change-requests/{changeRequestId}/content/import" method="post" %}
+{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/change-requests/{changeRequestId}/content/import" method="post" expanded="true" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
 ### `GET` a page in a Change Request by it's path
 
-{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/change-requests/{changeRequestId}/content/path/{pagePath}" method="get" %}
+{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/change-requests/{changeRequestId}/content/path/{pagePath}" method="get" expanded="true" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
 ### `GET` a page in a Change Request by it's ID
 
-{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/change-requests/{changeRequestId}/content/page/{pageId}" method="get" %}
+{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/change-requests/{changeRequestId}/content/page/{pageId}" method="get" expanded="true" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
 ### `POST` external content to a page in a Change Request by it's ID
 
-{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/change-requests/{changeRequestId}/content/page/{pageId}/import" method="post" %}
+{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/change-requests/{changeRequestId}/content/page/{pageId}/import" method="post" expanded="true" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}

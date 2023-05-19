@@ -26,9 +26,9 @@ Publish the integration defined in the `gitbook-manifest.yaml` file. See the [Gi
 
 See the [publishing section](../getting-started/publishing.md) to learn more about publishing your integration to GitBook.
 
-## `gitbook unpublish`
+## `gitbook unpublish <integration-name>`
 
-Unpublish your integration from the GitBook integration platform.
+Unpublish your integration from the GitBook integration platform. Pass the name of the integration as an argument to the command.
 
 ## `gitbook whoami`
 

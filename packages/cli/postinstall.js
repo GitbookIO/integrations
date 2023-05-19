@@ -139,4 +139,4 @@ function download(url, to, redirect = 0) {
  * Install the cloudflared binary inside the dist folder.
  * Locking the version to 2023.4.0 instead of latest to avoid breaking changes.
  */
-installCloudflared(path.join(__dirname, 'dist', 'cloudflared'), '2023.4.0');
+installCloudflared(path.join(__dirname, 'dist', 'cloudflared'), '2023.4.1');

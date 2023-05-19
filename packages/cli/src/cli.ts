@@ -1,4 +1,4 @@
-#!/usr/bin/env node --no-warnings
+#!/usr/bin/env -S node --no-warnings
 
 import checkNodeVersion from 'check-node-version';
 import { program } from 'commander';

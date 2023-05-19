@@ -1,7 +1,7 @@
 {
     "name": "@gitbook/cli",
     "description": "CLI to build and publish integrations on GitBook.com",
-    "version": "0.5.0",
+    "version": "0.8.0",
     "dependencies": {
         "@gitbook/api": "*",
         "@openapi-contrib/openapi-schema-to-json-schema": "^3.1.2",

@@ -28,7 +28,7 @@ The **`Response`** interface of the [Fetch API](https://developer.mozilla.org/en
 
 ```typescript
 const handleFetchEvent = async (request, context) => {
-    return new Response({message: "Hello World" e});
+    return new Response({message: "Hello World"});
 };
 ```
 
