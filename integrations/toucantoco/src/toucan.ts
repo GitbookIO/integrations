@@ -1,13 +1,13 @@
 /**
- * Extract the Toucan ID from the embed URL.
+ * Extract the Toucan ID and subdomain from the embed URL.
  */
-export function extractToucanFromURL(input: string): {
+export function extractToucanInfoFromURL(input: string): {
     toucanId?: string;
 } {
     const url = new URL(input);
 
     // Ignore non-TT URLs
-    if (!url.hostname.endsWith('toucantoco.com')) {
+    if (!url.hostname.endsWith('.toucantoco.com')) {
         return;
     }
 

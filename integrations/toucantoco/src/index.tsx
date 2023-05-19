@@ -5,7 +5,7 @@ import {
     RuntimeContext,
 } from '@gitbook/runtime';
 
-import { extractToucanFromURL } from './toucan';
+import { extractToucanInfoFromURL } from './toucan';
 
 interface ToucanInstallationConfiguration {}
 
@@ -25,7 +25,7 @@ const embedBlock = createComponent<{
         switch (action.action) {
             case '@link.unfurl': {
                 const { url } = action;
-                const nodeProps = extractToucanFromURL(url);
+                const nodeProps = extractToucanInfoFromURL(url);
 
                 return {
                     props: {
@@ -69,7 +69,7 @@ const embedBlock = createComponent<{
             <block>
                 <webframe
                     source={{
-                        url: `https://demo-staging.toucantoco.com/embed.html?id=${toucanId}`,
+                        url,
                     }}
                     aspectRatio={1}
                 />
