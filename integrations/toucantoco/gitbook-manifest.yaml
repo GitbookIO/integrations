@@ -1,6 +1,10 @@
 name: toucantoco
 title: Toucan Toco
 icon: ./assets/icon.png
+previewImages:
+    - ./assets/toucan-toco-1.png
+    - ./assets/toucan-toco-2.png
+    - ./assets/toucan-toco-3.png
 description: Embed Toucan's customer-facing analytics in your GitBook content.
 summary: |
     # Overview
