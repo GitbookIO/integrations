@@ -220,7 +220,7 @@ export function generateScript(project: { name: string }): string {
               return {};
           }
         },
-        render: async (element, action, context) => {
+        render: async (element, context) => {
           return (
             <block>
               <button label={element.state.message} onPress={{ action: "click" }} />
