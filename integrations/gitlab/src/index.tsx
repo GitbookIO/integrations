@@ -1,8 +1,9 @@
-import { createIntegration, createComponent } from '@gitbook/runtime';
+import { createIntegration, createComponent, createOAuthHandler } from '@gitbook/runtime';
 
 import { getGitlabContent, GitlabProps } from './gitlab';
+import { GitlabRuntimeContext } from './types';
 
-const gitlabCodeBlock = createComponent<{ url?: string }, {}, {}>({
+const gitlabCodeBlock = createComponent<{ url?: string }, {}, {}, GitlabRuntimeContext>({
     componentId: 'gitlab-code-block',
     async action(element, action) {
         switch (action.action) {
@@ -21,7 +22,7 @@ const gitlabCodeBlock = createComponent<{ url?: string }, {}, {}>({
     },
     async render(element, context) {
         const { url } = element.props as GitlabProps;
-        const content = await getGitlabContent(url);
+        const content = await getGitlabContent(url, context);
 
         if (!content) {
             return (
@@ -61,14 +62,38 @@ const gitlabCodeBlock = createComponent<{ url?: string }, {}, {}>({
                             aspectRatio={1}
                         />
                     }
+                    buttons={[
+                        <button
+                            icon="maximize"
+                            tooltip="Open preview"
+                            onPress={{
+                                action: '@ui.modal.open',
+                                componentId: 'previewModal',
+                                props: {
+                                    url,
+                                },
+                            }}
+                        />,
+                    ]}
                 >
-                    <codeblock content={content.toString()} lineNumbers={true} />
+                    {content ? <codeblock content={content.toString()} lineNumbers={true} /> : null}
                 </card>
             </block>
         );
     },
 });
 
-export default createIntegration({
+export default createIntegration<GitlabRuntimeContext>({
+    fetch: (request, context) => {
+        const oauthHandler = createOAuthHandler({
+            redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
+            clientId: context.environment.secrets.CLIENT_ID,
+            clientSecret: context.environment.secrets.CLIENT_SECRET,
+            authorizeURL: 'https://gitlab.com/login/oauth/authorize?scope=repo',
+            accessTokenURL: 'https://gitlab.com/login/oauth/access_token',
+        });
+
+        return oauthHandler(request, context);
+    },
     components: [gitlabCodeBlock],
 });

@@ -1,3 +1,5 @@
+import { GitlabRuntimeContext } from './types';
+
 export interface GitlabProps {
     url: string;
 }
@@ -60,38 +62,63 @@ const getLinesFromGitlabFile = (content, lines) => {
     }
 };
 
-const fetchGitlabFile = (nameSpace, projectName, filePath, ref) => {
-    let body = '';
-    const projectPath = `${nameSpace}/${projectName}`;
-    // fullstops aren't being encoded so had to replace them manually
-    const apiUrl = `https://gitlab.com/api/v4/projects/${encodeURIComponent(
-        projectPath
-    )}/repository/files/${encodeURIComponent(filePath).replace('.', '%2E')}?ref=${ref}`;
-    return fetch(apiUrl)
-        .then(async (response) => {
-            if (response.ok) {
-                body = await response.text();
-                return atob(JSON.parse(body).content);
-            } else {
-                throw new Error(
-                    `Failed to fetch file from GitLab API (status code ${response.status})`
-                );
-            }
-        })
-        .catch((error) => {
-            console.error(error);
-        });
+const getHeaders = (authorise: boolean, accessToken = '') => {
+    const headers: { 'User-Agent': string; Authorization?: string } = {
+        'User-Agent': 'request',
+    };
+
+    if (authorise) {
+        headers.Authorization = `Bearer ${accessToken}`;
+    }
+
+    return headers;
 };
 
-export const getGitlabContent = async (url: string) => {
+const getGitlabApiResponse = async (
+    headers: { 'User-Agent': string; Authorization?: string },
+    baseURL: string
+) => {
+    const res = await fetch(baseURL, { headers }).catch((err) => {
+        throw new Error(`Error fetching content from ${baseURL}. ${err}`);
+    });
+
+    if (!res.ok) {
+        if (res.status === 403 || res.status === 404) {
+            return false;
+        } else {
+            throw new Error(`Response status from ${baseURL}: ${res.status}`);
+        }
+    }
+
+    const body = await res.text();
+    return atob(JSON.parse(body).content);
+};
+
+const fetchGitlabFile = async (
+    nameSpace: string,
+    projectName: string,
+    filePath: string,
+    ref: string,
+    accessToken: string
+) => {
+    const projectPath = `${nameSpace}/${projectName}`;
+    const baseURL = `https://gitlab.com/api/v4/projects/${encodeURIComponent(
+        projectPath
+    )}/repository/files/${encodeURIComponent(filePath).replace('.', '%2E')}?ref=${ref}`;
+    const headers = getHeaders(false, accessToken);
+
+    return await getGitlabApiResponse(headers, baseURL);
+};
+
+export const getGitlabContent = async (url: string, context: GitlabRuntimeContext) => {
     const urlObject = splitGitlabUrl(url);
     let content: string | boolean = '';
-
     content = await fetchGitlabFile(
         urlObject.namespace,
         urlObject.projectName,
         urlObject.filePath.split('#')[0],
-        urlObject.ref
+        urlObject.ref,
+        context.environment.installation.configuration.oauth_credentials?.access_token
     );
 
     if (content) {
