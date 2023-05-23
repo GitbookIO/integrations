@@ -10,6 +10,7 @@
 * [Publishing](getting-started/publishing.md)
 * [Support](getting-started/support.md)
 * [Guides](getting-started/guides/README.md)
+  * [Use GitHub Actions to translate GitBook pages](getting-started/guides/use-github-actions-to-translate-gitbook-pages.md)
   * [Implement Visitor Authentication using Next.js and Clerk](getting-started/guides/implement-visitor-authentication-using-next.js-and-clerk.md)
 * [GitHub Examples](https://github.com/GitbookIO/integrations)
 
