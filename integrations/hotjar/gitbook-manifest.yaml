@@ -1,0 +1,39 @@
+name: hotjar
+title: Hotjar
+icon: ./assets/icon.png
+# previewImages:
+#   - ./assets/hotjar-preview.png
+description: Plug your GitBook site to your Hotjar installation.
+externalLinks:
+    - label: Documentation
+      url: https://www.gitbook.com/integrations/hotjar
+visibility: public
+script: ./src/index.ts
+scopes:
+    - space:script:inject
+organization: d8f63b60-89ae-11e7-8574-5927d48c4877
+contentSecurityPolicy:
+    script-src: static.hotjar.com script.hotjar.com;
+summary: |
+    # Overview
+    This integration allows to add the Hotjar tracker on your published GitBook site.
+
+    # How it works
+    The integration injects the Hotjar Analytics script on your page, using the configured environment ID, 
+    so that you can get analytics information from your GitBook site directly inside of Heap.
+
+    # Configure
+    Install the integration on the GitBook space of your choice.
+    Locate the Hotjar site ID you want to use, which is available in Hotjar's Organization & sites section
+
+categories:
+    - analytics
+configurations:
+    space:
+        properties:
+            tracking_id:
+                type: string
+                title: Hotjar Site ID
+                description: Available in Hotjar's Organization & sites section
+        required:
+            - tracking_id
