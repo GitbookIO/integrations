@@ -99,7 +99,7 @@ const fetchGithubFile = async (
     accessToken: string
 ) => {
     const baseURL = `https://api.github.com/repos/${orgName}/${repoName}/contents/${file}?ref=${ref}`;
-    const headers = getHeaders(false, accessToken);
+    const headers = getHeaders(accessToken !== '', accessToken);
 
     return await getGithubApiResponse(headers, baseURL);
 };

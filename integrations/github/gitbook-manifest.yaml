@@ -2,7 +2,7 @@ name: github-unfurl
 title: Github Unfurl
 icon: ./assets/github-mark.png
 organization: the-delta-integrations
-visibility: private
+visibility: unlisted
 description: TODO Description
 summary: TODO Summary
 script: ./src/index.tsx
