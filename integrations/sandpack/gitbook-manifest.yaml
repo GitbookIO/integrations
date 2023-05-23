@@ -1,0 +1,17 @@
+name: sandpack
+title: Sandpack
+organization: the-delta-integrations
+visibility: private
+description: ''
+script: src/index.tsx
+scopes:
+  - space:content:read
+  - space:content:write
+  - space:metadata:read
+  - space:metadata:write
+  - space:views:read
+blocks:
+  - id: sandpack
+    title: Sandpack
+    description: TODO Sandpack description
+secrets: {}

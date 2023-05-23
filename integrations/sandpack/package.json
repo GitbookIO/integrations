@@ -1,0 +1,16 @@
+{
+  "name": "sandpack",
+  "private": true,
+  "scripts": {
+    "lint": "eslint ./**/*.ts*",
+    "typecheck": "tsc --noEmit",
+    "publish-integrations-staging": "gitbook publish ."
+  },
+  "devDependencies": {
+    "@gitbook/cli": "^0.8.0",
+    "@gitbook/runtime": "latest"
+  },
+  "dependencies": {
+    "@gitbook/api": "^0.3.0"
+  }
+}
