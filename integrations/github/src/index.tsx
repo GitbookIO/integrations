@@ -74,19 +74,6 @@ const embedBlock = createComponent<{ url?: string }, {}, {}, GithubRuntimeContex
                             aspectRatio={1}
                         />
                     }
-                    buttons={[
-                        <button
-                            icon="maximize"
-                            tooltip="Open preview"
-                            onPress={{
-                                action: '@ui.modal.open',
-                                componentId: 'previewModal',
-                                props: {
-                                    url,
-                                },
-                            }}
-                        />,
-                    ]}
                 >
                     {content ? <codeblock content={content.toString()} lineNumbers={true} /> : null}
                 </card>
