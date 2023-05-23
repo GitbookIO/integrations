@@ -1,5 +1,11 @@
 # @gitbook/runtime
 
+## 0.3.0
+
+### Minor Changes
+
+-   882996d: Accept application/json by default for OAuth token response
+
 ## 0.2.0
 
 ### Minor Changes
