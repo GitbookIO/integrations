@@ -1,0 +1,21 @@
+name: codesandbox
+title: CodeSandbox
+organization: gitbook
+visibility: public
+description: 'Online realtime IDE for web projects'
+summary:
+logo: ./assets/logo.png
+previewImages:
+    -
+externalLinks:
+    - label: Documentation
+      url: https://codesandbox.io/docs/learn/sandboxes/embedding
+script: src/index.tsx
+blocks:
+    - id: codesandbox
+      title: CodeSandbox
+      description: Interactive IDE
+      urlUnfurl:
+          - https://codesandbox.io/s/**
+scopes: []
+secrets: {}
