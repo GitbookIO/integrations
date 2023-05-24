@@ -3,9 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@gitbook/runtime": "latest",
-    "gitbook-api": "^3.0.2",
-    "itty-router": "^3.0.12"
+    "@gitbook/runtime": "latest"
   },
   "devDependencies": {
     "@gitbook/cli": "^0.8.0",
