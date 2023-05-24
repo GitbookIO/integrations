@@ -40,5 +40,5 @@ configurations:
         required:
             - oauth_credentials
 secrets:
-    CLIENT_ID: ${{ env.GITHUB_UNFURL_CLIENT_ID }}
-    CLIENT_SECRET: ${{ env.GITHUB_UNFURL_CLIENT_SECRET }}
+    CLIENT_ID: ${{ env.UNFURL_GITHUB_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.UNFURL_GITHUB_CLIENT_SECRET }}
