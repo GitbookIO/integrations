@@ -1,34 +1,44 @@
 name: github-unfurl
 title: Github Unfurl
 icon: ./assets/github-mark.png
-organization: the-delta-integrations
-visibility: unlisted
-description: TODO Description
-summary: TODO Summary
+organization: gitbook
+visibility: public
+description: Unfurl GitHub files or lines of code into code blocks
+summary: |
+    # Overview
+
+    The GitHub Unfurl integration allows you to take a link to a GitHub file, or permalinks to lines of code in a GitHub file and unfurl them into code blocks in GitBook.
+
+    # How it works
+
+    After installing the GitHub Unfurl integration, you're able to insert it into a GitBook file in the (CMD + /) menu.
+
+    Insert the integration, paste your link, and the integration will display the code in a formatted code block.
+
+    # Configure
+
+    In order to unfurl code from private repositories, you'll need to authorize with your GitHub Account in the integration's configuration page.
 script: ./src/index.tsx
 scopes:
-  - space:content:read
-  - space:content:write
-  - space:metadata:read
-  - space:metadata:write
-  - space:views:read
+    - space:content:read
+    - space:content:write
 blocks:
-  - id: github-code-block
-    title: Github Unfurl
-    description: Unfurls a selection from Github
-    urlUnfurl:
-      - https://github.com/**
+    - id: github-code-block
+      title: Github Unfurl
+      description: Unfurls a selection from Github
+      urlUnfurl:
+          - https://github.com/**
 configurations:
-  account:
-    properties:
-      oauth_credentials:
-        type: button
-        title: Connection
-        description: Authorization between Github and GitBook.
-        button_text: Authorize
-        callback_url: /oauth
-    required:
-      - oauth_credentials
+    account:
+        properties:
+            oauth_credentials:
+                type: button
+                title: Connection
+                description: Authorization between Github and GitBook.
+                button_text: Authorize
+                callback_url: /oauth
+        required:
+            - oauth_credentials
 secrets:
-  CLIENT_ID: ${{ env.GITHUB_CLIENT_ID }}
-  CLIENT_SECRET: ${{ env.GITHUB_CLIENT_SECRET }}
+    CLIENT_ID: ${{ env.GITHUB_UNFURL_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.GITHUB_UNFURL_CLIENT_SECRET }}
