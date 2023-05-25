@@ -12,9 +12,7 @@ Alternatively, you can click the "Copy org ID" button when viewing your organiza
 
 **Example**
 
-| URL                                                | Organization ID |
-| -------------------------------------------------- | --------------- |
-| https://app.gitbook.com/o/6DshSpVsoE/s/I6OHwf4UHU/ | `6DshSpVsoE`    |
+<table><thead><tr><th width="499">URL</th><th>Organization ID</th></tr></thead><tbody><tr><td>https://app.gitbook.com/o/6DshSpVsoE/s/I6OHwf4UHU/</td><td><code>6DshSpVsoE</code></td></tr></tbody></table>
 
 ### `<spaceId>`
 
@@ -26,9 +24,7 @@ Alternatively, you can click the "Copy space ID" button from the dropdown menu i
 
 **Example**
 
-| URL                                                | Space ID     |
-| -------------------------------------------------- | ------------ |
-| https://app.gitbook.com/o/6DshSpVsoE/s/I6OHwf4UHU/ | `I6OHwf4UHU` |
+<table><thead><tr><th width="499">URL</th><th>Space ID</th></tr></thead><tbody><tr><td>https://app.gitbook.com/o/6DshSpVsoE/s/I6OHwf4UHU/</td><td><code>I6OHwf4UHU</code></td></tr></tbody></table>
 
 ### `<collectionId>`
 
@@ -40,9 +36,7 @@ Alternatively, you can click the "Copy collection ID" button from the dropdown m
 
 **Example**
 
-| URL                                                | Collection ID |
-| -------------------------------------------------- | ------------- |
-| https://app.gitbook.com/o/6DshSpVsoE/c/fj08dm76dh2 | `fj08dm76dh2` |
+<table><thead><tr><th width="499">URL</th><th>Collection ID</th></tr></thead><tbody><tr><td>https://app.gitbook.com/o/6DshSpVsoE/c/fj08dm76dh2</td><td><code>fj08dm76dh2</code></td></tr></tbody></table>
 
 ### `<userId>`
 

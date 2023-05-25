@@ -60,7 +60,7 @@ The main icon for your integration. It's should be high-resolution, and a 1:1 as
 
 **Preview Images**
 
-Any images you would like to include with your integration. Each image should be high-resolution. (recommended: `1570px` × `900px`)
+Any images you would like to include with your integration. Each image should be high-resolution. (recommended: `1600px` × `900px`)
 
 **Summary**
 

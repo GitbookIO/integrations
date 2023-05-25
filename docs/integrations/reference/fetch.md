@@ -24,7 +24,4 @@ Context about your integration, including the environment and installation detai
 
 This object contains the following keys:
 
-| Name          | Description                                                                                              |
-| ------------- | -------------------------------------------------------------------------------------------------------- |
-| `environment` | Environment of the integration. See the [Environment section](environment.md) to learn more.             |
-| `api`         | Authenticated client to the GitBook API. See the [API docs](../../gitbook-api/reference/) to learn more. |
+<table><thead><tr><th width="235">Name</th><th>Description</th></tr></thead><tbody><tr><td><code>environment</code></td><td>Environment of the integration. See the <a href="environment.md">Environment section</a> to learn more.</td></tr><tr><td><code>api</code></td><td>Authenticated client to the GitBook API. See the <a href="../../gitbook-api/reference/">API docs</a> to learn more.</td></tr></tbody></table>
