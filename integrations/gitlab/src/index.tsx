@@ -85,11 +85,21 @@ const gitlabCodeBlock = createComponent<{ url?: string }, {}, {}, GitlabRuntimeC
 
 export default createIntegration<GitlabRuntimeContext>({
     fetch: (request, context) => {
+        const base64URLEncode = (str) => {
+            return str.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        };
+        const verifier = base64URLEncode(crypto.randomBytes(32));
+
+        const sha256 = (buffer) => {
+            return crypto.createHash('sha256').update(buffer).digest();
+        };
+        const challenge = base64URLEncode(sha256(verifier));
+
         const oauthHandler = createOAuthHandler({
             redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
             clientId: context.environment.secrets.CLIENT_ID,
             clientSecret: context.environment.secrets.CLIENT_SECRET,
-            authorizeURL: 'https://gitlab.com/login/oauth/authorize?scope=read_repository',
+            authorizeURL: `https://gitlab.com/login/oauth/authorize?scope=read_repository&code_challenge=${challenge}&code_challenge_method=S256`,
             accessTokenURL: 'https://gitlab.com/login/oauth/token',
         });
 
