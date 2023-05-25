@@ -11,6 +11,7 @@
 * [Support](getting-started/support.md)
 * [Guides](getting-started/guides/README.md)
   * [Use GitHub Actions to translate GitBook pages](getting-started/guides/use-github-actions-to-translate-gitbook-pages.md)
+  * [Create a custom unfurl action for your integration](getting-started/guides/create-a-custom-unfurl-action-for-your-integration.md)
   * [Implement Visitor Authentication using Next.js and Clerk](getting-started/guides/implement-visitor-authentication-using-next.js-and-clerk.md)
 * [GitHub Examples](https://github.com/GitbookIO/integrations)
 
