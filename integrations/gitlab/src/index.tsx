@@ -106,11 +106,25 @@ export default createIntegration<GitlabRuntimeContext>({
         };
         const challenge = sha256(verifier);
 
+        const generateRandomString = () => {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let randomString = '';
+
+            for (let i = 0; i < 32; i++) {
+                const randomIndex = Math.floor(Math.random() * characters.length);
+                randomString += characters.charAt(randomIndex);
+            }
+
+            return randomString;
+        };
+
+        const randomString = generateRandomString();
+
         const oauthHandler = createOAuthHandler({
             redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
             clientId: context.environment.secrets.CLIENT_ID,
             clientSecret: context.environment.secrets.CLIENT_SECRET,
-            authorizeURL: `https://gitlab.com/login/oauth/authorize?scope=read_repository&code_challenge=${challenge}&code_challenge_method=S256`,
+            authorizeURL: `https://gitlab.com/login/oauth/authorize?scope=read_repository&code_challenge=${challenge}&code_challenge_method=S256&state=${randomString}`,
             accessTokenURL: 'https://gitlab.com/login/oauth/token',
         });
 
