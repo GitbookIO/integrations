@@ -1,3 +1,4 @@
+import { Sandpack } from "@codesandbox/sandpack-react";
 import {
     createIntegration,
     createComponent,
@@ -30,11 +31,9 @@ const exampleBlock = createComponent({
         }
     },
     render: async (element, action, context) => {
-        return (
-            <block>
-                <button label={element.state.message} onPress={{ action: 'click' }} />
-            </block>
-        );
+        const files = {}
+
+        return <Sandpack files={files} theme="dark" template="nextjs"></Sandpack>;
     },
 });
 

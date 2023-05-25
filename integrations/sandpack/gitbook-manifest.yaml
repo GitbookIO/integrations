@@ -3,7 +3,7 @@ title: Sandpack
 organization: the-delta-integrations
 visibility: private
 description: ''
-script: src/index.tsx
+script: ./src/index.tsx
 scopes:
   - space:content:read
   - space:content:write
