@@ -122,7 +122,7 @@ const block = createComponent({
                             message: 'Hello world'
                         }
                     }}
-                    />
+                />
             </block>
         )
     }
@@ -143,8 +143,8 @@ const custommodal = createComponent({
                         action: '@ui.modal.close',
                         returnValue: {}
                     }}
-                    />
-            </block>
+                />
+            </modal>
         )
     }
 });
@@ -162,5 +162,5 @@ A common pattern is to open a url as a webpage. A default action exists for this
         action: '@ui.url.open',
         url: 'https://www.gitbook.com'
     }}
-    />
+/>
 ```
