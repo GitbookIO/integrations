@@ -85,15 +85,26 @@ const gitlabCodeBlock = createComponent<{ url?: string }, {}, {}, GitlabRuntimeC
 
 export default createIntegration<GitlabRuntimeContext>({
     fetch: (request, context) => {
-        const base64URLEncode = (str) => {
-            return str.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        const base64URLEncode = (arrayBuffer) => {
+            const uint8Array = new Uint8Array(arrayBuffer);
+            const base64 = btoa(String.fromCharCode.apply(null, uint8Array));
+            return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
         };
-        const verifier = base64URLEncode(crypto.randomBytes(32));
 
-        const sha256 = (buffer) => {
-            return crypto.createHash('sha256').update(buffer).digest();
+        const generateVerifier = async () => {
+            const randomBytes = new Uint8Array(32);
+            crypto.getRandomValues(randomBytes);
+            return base64URLEncode(randomBytes.buffer);
         };
-        const challenge = base64URLEncode(sha256(verifier));
+        const verifier = generateVerifier();
+
+        const sha256 = async (buffer) => {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(buffer);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            return base64URLEncode(hashBuffer);
+        };
+        const challenge = sha256(verifier);
 
         const oauthHandler = createOAuthHandler({
             redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
