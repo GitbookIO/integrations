@@ -207,7 +207,7 @@ export function generateScript(project: { name: string }): string {
       };
       
       const exampleBlock = createComponent({
-        componentId: ${project.name},
+        componentId: "${project.name}",
         initialState: (props) => {
           return {
             message: "Click Me",
