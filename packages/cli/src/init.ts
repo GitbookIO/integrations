@@ -157,6 +157,8 @@ export async function extendPackageJson(dirPath: string, projectName: string): P
         ...(packageJsonObject.devDependencies || {}),
         [packageJSON.name]: `^${packageJSON.version}`,
         [`@gitbook/runtime`]: 'latest',
+        '@cloudflare/workers-types': 'latest',
+        '@gitbook/tsconfig': 'latest',
     };
 
     await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJsonObject, null, 2));
@@ -213,7 +215,7 @@ export function generateScript(project: { name: string }): string {
             message: "Click Me",
           };
         },
-        action: async (element, action, context) => {
+        action: async (element, action: { action: string }, context) => {
           switch (action.action) {
             case "click":
               console.log("Button Clicked");
