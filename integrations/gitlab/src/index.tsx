@@ -89,7 +89,7 @@ export default createIntegration<GitlabRuntimeContext>({
             redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
             clientId: context.environment.secrets.CLIENT_ID,
             clientSecret: context.environment.secrets.CLIENT_SECRET,
-            authorizeURL: 'https://gitlab.com/oauth/authorize?scope=read_repository',
+            authorizeURL: 'https://gitlab.com/oauth/authorize?scope=read_repository+api',
             accessTokenURL: 'https://gitlab.com/oauth/token',
         });
 
