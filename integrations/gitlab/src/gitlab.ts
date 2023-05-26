@@ -63,12 +63,12 @@ const getLinesFromGitlabFile = (content, lines) => {
 };
 
 const getHeaders = (authorise: boolean, accessToken = '') => {
-    const headers: { 'User-Agent': string; 'Private-Token'?: string } = {
+    const headers: { 'User-Agent': string; Authorization?: string } = {
         'User-Agent': 'request',
     };
 
     if (authorise) {
-        headers['Private-Token'] = `${accessToken}`;
+        headers.Authorization = `Bearer ${accessToken}`;
     }
 
     return headers;
