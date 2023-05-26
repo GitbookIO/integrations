@@ -28,7 +28,7 @@ const diagramBlock = createComponent<
         const output = (
             <webframe
                 source={{
-                    url: environment.installation.urls.publicEndpoint,
+                    url: environment.integration.urls.publicEndpoint,
                 }}
                 aspectRatio={16 / 9}
                 data={{
