@@ -242,7 +242,11 @@ export function generateScript(project: { name: string }): string {
 export function generateTSConfig(): string {
     return detent(`
         {
-            "extends": "@gitbook/tsconfig/integration.json"
+            "extends": "@gitbook/tsconfig/integration.json",
+            "compilerOptions": {
+            "lib": ["ES6", "DOM"],
+            "types": ["@cloudflare/workers-types"]
+            }
         }
     `).trim();
 }
