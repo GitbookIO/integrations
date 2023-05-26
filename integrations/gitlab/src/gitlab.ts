@@ -111,7 +111,9 @@ const fetchGitlabFile = async (
 };
 
 export const getGitlabContent = async (url: string, context: GitlabRuntimeContext) => {
-    const urlObject = splitGitlabUrl(url);
+    const textFileRegex = /\?plain=\d+/g;
+    const urlToSplit = url.replace(textFileRegex, '');
+    const urlObject = splitGitlabUrl(urlToSplit);
     let content: string | boolean = '';
     content = await fetchGitlabFile(
         urlObject.namespace,
