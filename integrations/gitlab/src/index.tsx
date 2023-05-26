@@ -85,47 +85,12 @@ const gitlabCodeBlock = createComponent<{ url?: string }, {}, {}, GitlabRuntimeC
 
 export default createIntegration<GitlabRuntimeContext>({
     fetch: (request, context) => {
-        const base64URLEncode = (arrayBuffer) => {
-            const uint8Array = new Uint8Array(arrayBuffer);
-            const base64 = btoa(String.fromCharCode.apply(null, uint8Array));
-            return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-        };
-
-        const generateVerifier = async () => {
-            const randomBytes = new Uint8Array(32);
-            crypto.getRandomValues(randomBytes);
-            return base64URLEncode(randomBytes.buffer);
-        };
-        const verifier = generateVerifier();
-
-        const sha256 = async (buffer) => {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(buffer);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            return base64URLEncode(hashBuffer);
-        };
-        const challenge = sha256(verifier);
-
-        const generateRandomString = () => {
-            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            let randomString = '';
-
-            for (let i = 0; i < 32; i++) {
-                const randomIndex = Math.floor(Math.random() * characters.length);
-                randomString += characters.charAt(randomIndex);
-            }
-
-            return randomString;
-        };
-
-        const randomString = generateRandomString();
-
         const oauthHandler = createOAuthHandler({
             redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
             clientId: context.environment.secrets.CLIENT_ID,
             clientSecret: context.environment.secrets.CLIENT_SECRET,
-            authorizeURL: `https://gitlab.com/login/oauth/authorize?scope=read_repository&code_challenge=${challenge}&code_challenge_method=S256&state=${randomString}`,
-            accessTokenURL: 'https://gitlab.com/login/oauth/token',
+            authorizeURL: 'https://gitlab.com/oauth/authorize?scope=read_repository',
+            accessTokenURL: 'https://gitlab.com/oauth/token',
         });
 
         return oauthHandler(request, context);

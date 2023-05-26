@@ -63,12 +63,12 @@ const getLinesFromGitlabFile = (content, lines) => {
 };
 
 const getHeaders = (authorise: boolean, accessToken = '') => {
-    const headers: { 'User-Agent': string; Authorization?: string } = {
+    const headers: { 'User-Agent': string; 'Private-Token'?: string } = {
         'User-Agent': 'request',
     };
 
     if (authorise) {
-        headers.Authorization = `Bearer ${accessToken}`;
+        headers['Private-Token'] = `${accessToken}`;
     }
 
     return headers;
@@ -83,7 +83,7 @@ const getGitlabApiResponse = async (
     });
 
     if (!res.ok) {
-        if (res.status === 403 || res.status === 404) {
+        if (res.status === 401 || res.status === 403 || res.status === 404) {
             return false;
         } else {
             throw new Error(`Response status from ${baseURL}: ${res.status}`);
@@ -105,7 +105,7 @@ const fetchGitlabFile = async (
     const baseURL = `https://gitlab.com/api/v4/projects/${encodeURIComponent(
         projectPath
     )}/repository/files/${encodeURIComponent(filePath).replace('.', '%2E')}?ref=${ref}`;
-    const headers = getHeaders(false, accessToken);
+    const headers = getHeaders(accessToken !== '', accessToken);
 
     return await getGitlabApiResponse(headers, baseURL);
 };
