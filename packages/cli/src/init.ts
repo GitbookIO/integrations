@@ -192,9 +192,9 @@ export function generateScript(project: { name: string }): string {
         FetchEventCallback,
         RuntimeContext,
       } from "@gitbook/runtime";
-      
+
       type IntegrationContext = {} & RuntimeContext;
-      
+
       const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (
         request,
         context
@@ -202,12 +202,12 @@ export function generateScript(project: { name: string }): string {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { api } = context;
         const user = api.user.getAuthenticatedUser();
-      
+
         return new Response(JSON.stringify(user));
       };
-      
+
       const exampleBlock = createComponent({
-        componentId: ${project.name},
+        componentId: "${project.name}",
         initialState: (props) => {
           return {
             message: "Click Me",
@@ -228,7 +228,7 @@ export function generateScript(project: { name: string }): string {
           );
         },
       });
-      
+
       export default createIntegration({
         fetch: handleFetchEvent,
         components: [exampleBlock],
