@@ -1,5 +1,6 @@
 name: stackblitz
-title: stackblitz
+title: Stackblitz
+icon: ./assets/stackblitz-logo.png
 organization: the-delta-integrations
 visibility: private
 description: ''
@@ -12,6 +13,6 @@ scopes:
   - space:views:read
 blocks:
   - id: stackblitz
-    title: stackblitz
+    title: Stackblitz
     description: My GitBook Integration
 secrets: {}
