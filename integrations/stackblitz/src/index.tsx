@@ -5,6 +5,8 @@ import {
     RuntimeContext,
 } from '@gitbook/runtime';
 
+const defaultContent = '';
+
 type IntegrationContext = {} & RuntimeContext;
 
 const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request, context) => {
@@ -15,24 +17,60 @@ const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request,
     return new Response(JSON.stringify(user));
 };
 
-const stackblitzBlock = createComponent({
+const stackblitzBlock = createComponent<
+    {
+        content?: string;
+    },
+    {
+        content: string;
+    }
+>({
     componentId: 'stackblitz',
     initialState: (props) => {
         return {
-            message: 'Click Me',
+            content: props.content || defaultContent,
         };
     },
-    action: async (element, action, context) => {
-        switch (action.action) {
-            case 'click':
-                console.log('Button Clicked');
-                return {};
-        }
-    },
-    render: async (element, action, context) => {
+    async render(element, { environment }) {
+        const { editable } = element.context;
+        const { content } = element.state;
+
+        element.setCache({
+            maxAge: 86400,
+        });
+
+        const output = (
+            <webframe
+                source={{
+                    // url: environment.integration.urls.publicEndpoint,
+                    // TODO: Remove hardcoded example
+                    url: 'https://stackblitz.com/edit/simple-search-filter?embed=1&file=src%2Fapp%2Fapp.component.ts',
+                }}
+                aspectRatio={16 / 9}
+                data={{
+                    content: element.dynamicState('content'),
+                }}
+            />
+        );
+
         return (
             <block>
-                <button label={element.state.message} onPress={{ action: 'click' }} />
+                {editable ? (
+                    <codeblock
+                        state="content"
+                        content={content}
+                        syntax="stackblitz"
+                        onContentChange={{
+                            action: '@editor.node.updateProps',
+                            props: {
+                                content: element.dynamicState('content'),
+                            },
+                        }}
+                        footer={[output]}
+                    />
+                ) : (
+                    output
+                )}
             </block>
         );
     },
