@@ -27,6 +27,10 @@ const handleSpaceContentUpdated: EventCallback<
     }
 
     const { data: space } = await api.spaces.getSpaceById(event.spaceId);
+    const { data: revision } = await api.revisions.getRevisionById(event.spaceId, event.revisionId);
+
+    const revisionMessage = revision.git.message;
+    const pagesUpdatedInRevision = revision.pages.map((page) => page.title);
 
     await slackAPI(context, {
         method: 'POST',
@@ -40,7 +44,19 @@ const handleSpaceContentUpdated: EventCallback<
                         type: 'mrkdwn',
                         text: `Content of *<${space.urls.app}|${
                             space.title || 'Space'
-                        }>* has been updated`,
+                        }>* has been updated${
+                            revisionMessage.length > 0 ? `: *${revisionMessage}*` : ''
+                        }
+
+                        ${
+                            pagesUpdatedInRevision.length > 0
+                                ? `\n\nPages updated: \n ${pagesUpdatedInRevision.map(
+                                      (title) => `• ${title}\n`
+                                  )}`
+                                : ''
+                        }
+
+                        `,
                     },
                 },
             ],
