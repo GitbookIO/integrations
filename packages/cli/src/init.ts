@@ -157,6 +157,8 @@ export async function extendPackageJson(dirPath: string, projectName: string): P
         ...(packageJsonObject.devDependencies || {}),
         [packageJSON.name]: `^${packageJSON.version}`,
         [`@gitbook/runtime`]: 'latest',
+        '@cloudflare/workers-types': 'latest',
+        '@gitbook/tsconfig': 'latest',
     };
 
     await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJsonObject, null, 2));
@@ -194,6 +196,9 @@ export function generateScript(project: { name: string }): string {
       } from "@gitbook/runtime";
       
       type IntegrationContext = {} & RuntimeContext;
+      type IntegrationBlockProps = {};
+      type IntegrationBlockState = { message: string };
+      type IntegrationAction = { action: "click" };
       
       const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (
         request,
@@ -206,8 +211,13 @@ export function generateScript(project: { name: string }): string {
         return new Response(JSON.stringify(user));
       };
       
-      const exampleBlock = createComponent({
-        componentId: ${project.name},
+      const exampleBlock = createComponent<
+         IntegrationBlockProps,
+         IntegrationBlockState,
+         IntegrationAction,
+         IntegrationContext
+      >({
+        componentId: "${project.name}",
         initialState: (props) => {
           return {
             message: "Click Me",
@@ -220,7 +230,7 @@ export function generateScript(project: { name: string }): string {
               return {};
           }
         },
-        render: async (element, action, context) => {
+        render: async (element, context) => {
           return (
             <block>
               <button label={element.state.message} onPress={{ action: "click" }} />
@@ -242,7 +252,10 @@ export function generateScript(project: { name: string }): string {
 export function generateTSConfig(): string {
     return detent(`
         {
-            "extends": "@gitbook/tsconfig/integration.json"
+            "extends": "@gitbook/tsconfig/integration.json",
+            "compilerOptions": {
+                "lib": ["ES6", "DOM"],
+            }
         }
     `).trim();
 }
