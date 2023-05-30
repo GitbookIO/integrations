@@ -254,8 +254,7 @@ export function generateTSConfig(): string {
         {
             "extends": "@gitbook/tsconfig/integration.json",
             "compilerOptions": {
-            "lib": ["ES6", "DOM"],
-            "types": ["@cloudflare/workers-types"]
+                "lib": ["ES6", "DOM"],
             }
         }
     `).trim();
