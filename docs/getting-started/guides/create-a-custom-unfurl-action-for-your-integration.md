@@ -71,7 +71,7 @@ const UnfurlExample = createComponent<{
 
 export default createIntegration({
     components: [UnfurlExample],
-});r
+});
 ```
 
 ### How it works
