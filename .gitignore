@@ -36,7 +36,8 @@ yarn-error.log*
 # turbo
 .turbo
 
-integrations/github/.env
 
+.env
 .idea
+
 .gitbook-dev.yaml

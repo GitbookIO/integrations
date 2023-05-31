@@ -1,0 +1,29 @@
+name: toucantoco
+title: Toucan Toco
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/toucan-toco-1.png
+    - ./assets/toucan-toco-2.png
+    - ./assets/toucan-toco-3.png
+description: Embed Toucan's customer-facing analytics in your GitBook content.
+summary: |
+    # Overview
+
+    Toucan is a customer-facing analytics platform that empowers organizations to drive engagement with the best end user experience.
+
+    # How it works
+
+    Toucan for Embedded Analytics is a complete workflow to help you build and maintain analytics in your GitBook content. Once the integration is installed, simply paste a Toucan embed link anywhere in GitBook to transform it into a rich Toucan embed.
+
+    # Configure
+
+    To install on a single space navigate to integrations in sub-navigation. If you prefer to install the Toucan integration on multiple or all spaces, navigate to your organization settings and enable it from the integrations panel.
+visibility: public
+script: ./src/index.tsx
+scopes: []
+blocks:
+    - id: embed
+      title: Toucan Toco
+      description: Embedded Analytics, powered by Toucan Toco
+      urlUnfurl:
+          - https://*.toucantoco.com/embed.html*

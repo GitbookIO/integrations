@@ -4,16 +4,7 @@ Create a fetch request handler to handle an OAuth authentication flow. The crede
 
 See the [Configurations](../configurations.md) section to learn more.
 
-| Argument                                           | Type       | Description                                                                      |
-| -------------------------------------------------- | ---------- | -------------------------------------------------------------------------------- |
-| `clientId`<mark style="color:red;">\*</mark>       | `string`   | ID of the client application in the OAuth provider.                              |
-| `clientSecret`<mark style="color:red;">\*</mark>   | `string`   | Secret of the client application in the OAuth provider.                          |
-| `authorizeURL`<mark style="color:red;">\*</mark>   | `string`   | URL to redirect the user to, for authorization.                                  |
-| `accessTokenURL`<mark style="color:red;">\*</mark> | `string`   | URL to exchange the OAuth code for an access token.                              |
-| `redirectURL`                                      | `string`   | Redirect URL to use. When the OAuth identity provider only accepts a static one. |
-| `scopes`                                           | `string[]` | Scopes to ask for.                                                               |
-| `prompt`                                           | `string`   | Optional configuration for a prompt during the OAuth process.                    |
-| `extractCredentials`                               | `function` | Extract the credentials from the code exchange response.                         |
+<table><thead><tr><th width="242">Argument</th><th width="124.33333333333331">Type</th><th>Description</th></tr></thead><tbody><tr><td><code>clientId</code><mark style="color:red;">*</mark></td><td><code>string</code></td><td>ID of the client application in the OAuth provider.</td></tr><tr><td><code>clientSecret</code><mark style="color:red;">*</mark></td><td><code>string</code></td><td>Secret of the client application in the OAuth provider.</td></tr><tr><td><code>authorizeURL</code><mark style="color:red;">*</mark></td><td><code>string</code></td><td>URL to redirect the user to, for authorization.</td></tr><tr><td><code>accessTokenURL</code><mark style="color:red;">*</mark></td><td><code>string</code></td><td>URL to exchange the OAuth code for an access token.</td></tr><tr><td><code>redirectURL</code></td><td><code>string</code></td><td>Redirect URL to use. When the OAuth identity provider only accepts a static one.</td></tr><tr><td><code>scopes</code></td><td><code>string[]</code></td><td>Scopes to ask for.</td></tr><tr><td><code>prompt</code></td><td><code>string</code></td><td>Optional configuration for a prompt during the OAuth process.</td></tr><tr><td><code>extractCredentials</code></td><td><code>function</code></td><td>Extract the credentials from the code exchange response.</td></tr></tbody></table>
 
 <mark style="color:red;">\*required</mark>
 
