@@ -4,6 +4,8 @@ icon: ./assets/github-mark.png
 organization: gitbook
 visibility: public
 description: Unfurl GitHub files or lines of code into code blocks
+previewImages:
+    - ./assets/github-preview.png
 summary: |
     # Overview
 
