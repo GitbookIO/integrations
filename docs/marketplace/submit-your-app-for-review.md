@@ -23,6 +23,8 @@ If you're ready to start building, you can follow our [Setup Guide](../getting-s
 
 After you've built your integration - you'll need to publish it to GitBook's Integration Platform. This will allow you to install your app in any spaces you're a part of, or share your app with others.&#x20;
 
+Before submitting your app, you'll need to make sure you set your app's `visibility` to `public` in the `gitbook-manifest.yaml` file. This is required so we can test and see your application outside of your organization.
+
 See the [Publishing section](../getting-started/publishing.md) to learn more.
 
 ### Test your integration
@@ -42,6 +44,10 @@ Some considerations and areas to keep in mind when testing:
 
 Once you're happy with your integration, you'll need to provide some assets with your submission before it's accepted. All assets can be specified and added in your integration's [`gitbook-manifest.yaml`](../integrations/configurations.md) file, which will be displayed in the integration's listing page after it's published.
 
+To make things easier, we've prepared a Figma template you can use to create assets for your integration that meet our design requirements.
+
+[**Figma Template**](https://www.figma.com/file/9FCuynZip3iJnlu0zB80ve/GitBook---Integrations-Template/duplicate)
+
 **Example**:
 
 <figure><img src="../.gitbook/assets/Screenshot 2023-05-04 at 14.51.08.png" alt=""><figcaption><p>Integration listing page</p></figcaption></figure>
@@ -54,7 +60,7 @@ The main icon for your integration. It's should be high-resolution, and a 1:1 as
 
 **Preview Images**
 
-Any images you would like to include with your integration. Each image should be high-resolution. (recommended: `1570px` × `900px`)
+Any images you would like to include with your integration. Each image should be high-resolution. (recommended: `1600px` × `900px`)
 
 **Summary**
 
@@ -82,6 +88,7 @@ You will need to provide some details for us, such as:&#x20;
 * Contact email address
 * Published integration name
 * Link to code repository (Must be public, or access for GitBook staff if private)
+* Installation link for your integration
 
 When you have everything prepared, you can submit your integration using [this form](https://forms.gle/SXBdguvquFsCUtDX8).
 

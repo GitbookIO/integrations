@@ -24,95 +24,46 @@ The following events can be read on the `event` object passed into the arguments
 
 Event received when integration has been installed or updated.
 
-| Key              | Description                          |
-| ---------------- | ------------------------------------ |
-| `eventId`        | The id of the event                  |
-| `type`           | The type of event fired              |
-| `installationId` | The id of the installation event     |
-| `status`         | The status of the installation event |
+<table><thead><tr><th width="295">Key</th><th>Description</th></tr></thead><tbody><tr><td><code>eventId</code></td><td>The id of the event</td></tr><tr><td><code>type</code></td><td>The type of event fired</td></tr><tr><td><code>installationId</code></td><td>The id of the installation event</td></tr><tr><td><code>status</code></td><td>The status of the installation event</td></tr></tbody></table>
 
 ### `space_installation_setup`
 
 Event received when integration has been installed or updated on a space.
 
-| Key              | Description                                           |
-| ---------------- | ----------------------------------------------------- |
-| `eventId`        | The id of the event                                   |
-| `type`           | The type of event fired                               |
-| `installationId` | The id of the installation event                      |
-| `spaceId`        | The id of the space the installation event occured in |
-| `status`         | The status of the installation event                  |
-|                  |                                                       |
+<table><thead><tr><th width="295">Key</th><th>Description</th></tr></thead><tbody><tr><td><code>eventId</code></td><td>The id of the event</td></tr><tr><td><code>type</code></td><td>The type of event fired</td></tr><tr><td><code>installationId</code></td><td>The id of the installation event</td></tr><tr><td><code>spaceId</code></td><td>The id of the space the installation event occured in</td></tr><tr><td><code>status</code></td><td>The status of the installation event</td></tr><tr><td></td><td></td></tr></tbody></table>
 
 ### `space_view`
 
 Event received when a page has been visited.
 
-| Key        | Description                                                                                          |
-| ---------- | ---------------------------------------------------------------------------------------------------- |
-| `eventId`  | The id of the event                                                                                  |
-| `type`     | The type of event fired                                                                              |
-| `pageId`   |                                                                                                      |
-| `visitor`  | <p><code>anonymousId</code><br><code>cookies</code><br><code>userAgent</code><br><code>ip</code></p> |
-| `url`      |                                                                                                      |
-| `referrer` |                                                                                                      |
+<table><thead><tr><th width="295">Key</th><th>Description</th></tr></thead><tbody><tr><td><code>eventId</code></td><td>The id of the event</td></tr><tr><td><code>type</code></td><td>The type of event fired</td></tr><tr><td><code>pageId</code></td><td></td></tr><tr><td><code>visitor</code></td><td><code>anonymousId</code><br><code>cookies</code><br><code>userAgent</code><br><code>ip</code></td></tr><tr><td><code>url</code></td><td></td></tr><tr><td><code>referrer</code></td><td></td></tr></tbody></table>
 
 ### `ui_render`
 
 Event generated when rendering a UI
 
-| Key           | Description             |
-| ------------- | ----------------------- |
-| `eventId`     | The id of the event     |
-| `type`        | The type of event fired |
-| `auth`        | `userId`                |
-| `componentId` |                         |
-| `props`       |                         |
-| `state`       |                         |
-| `context`     |                         |
-| `action`      |                         |
+<table><thead><tr><th width="295">Key</th><th>Description</th></tr></thead><tbody><tr><td><code>eventId</code></td><td>The id of the event</td></tr><tr><td><code>type</code></td><td>The type of event fired</td></tr><tr><td><code>auth</code></td><td><code>userId</code></td></tr><tr><td><code>componentId</code></td><td></td></tr><tr><td><code>props</code></td><td></td></tr><tr><td><code>state</code></td><td></td></tr><tr><td><code>context</code></td><td></td></tr><tr><td><code>action</code></td><td></td></tr></tbody></table>
 
 ### `space_content_updated`
 
 Event when the primary content of a space has been updated.
 
-| Key       | Description             |
-| --------- | ----------------------- |
-| `eventId` | The id of the event     |
-| `type`    | The type of event fired |
-|           |                         |
-|           |                         |
+<table><thead><tr><th width="295">Key</th><th>Description</th></tr></thead><tbody><tr><td><code>eventId</code></td><td>The id of the event</td></tr><tr><td><code>type</code></td><td>The type of event fired</td></tr><tr><td></td><td></td></tr><tr><td></td><td></td></tr></tbody></table>
 
 ### `space_visibility_updated`
 
 Event when the visibility of the space has been changed.
 
-| Key                  | Description             |
-| -------------------- | ----------------------- |
-| `eventId`            | The id of the event     |
-| `type`               | The type of event fired |
-| `visibility`         |                         |
-| `previousVisibility` |                         |
+<table><thead><tr><th width="295">Key</th><th>Description</th></tr></thead><tbody><tr><td><code>eventId</code></td><td>The id of the event</td></tr><tr><td><code>type</code></td><td>The type of event fired</td></tr><tr><td><code>visibility</code></td><td></td></tr><tr><td><code>previousVisibility</code></td><td></td></tr></tbody></table>
 
 ### `space_gitsync_completed`
 
 Event when a GitSync operation has been completed.
 
-| Key          | Description             |
-| ------------ | ----------------------- |
-| `eventId`    | The id of the event     |
-| `type`       | The type of event fired |
-| `state`      |                         |
-| `revisionId` |                         |
-| `commitId`   |                         |
+<table><thead><tr><th width="295">Key</th><th>Description</th></tr></thead><tbody><tr><td><code>eventId</code></td><td>The id of the event</td></tr><tr><td><code>type</code></td><td>The type of event fired</td></tr><tr><td><code>state</code></td><td></td></tr><tr><td><code>revisionId</code></td><td></td></tr><tr><td><code>commitId</code></td><td></td></tr></tbody></table>
 
 ### `space_gitsync_started`
 
 Event when a GitSync operation has been started.
 
-| Key          | Description             |
-| ------------ | ----------------------- |
-| `eventId`    | The id of the event     |
-| `type`       | The type of event fired |
-| `revisionId` |                         |
-| `commitId`   |                         |
+<table><thead><tr><th width="295">Key</th><th>Description</th></tr></thead><tbody><tr><td><code>eventId</code></td><td>The id of the event</td></tr><tr><td><code>type</code></td><td>The type of event fired</td></tr><tr><td><code>revisionId</code></td><td></td></tr><tr><td><code>commitId</code></td><td></td></tr></tbody></table>

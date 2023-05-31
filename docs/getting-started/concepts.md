@@ -8,13 +8,11 @@ A unique identifier of an Organization in GitBook. You can find the organization
 
 Alternatively, you can click the "Copy org ID" button when viewing your organization's settings.
 
-<figure><img src="../.gitbook/assets/organization.png" alt=""><figcaption><p>Copy org ID</p></figcaption></figure>
+<figure><img src="../.gitbook/assets/organization-id.png" alt=""><figcaption><p>Copy org ID</p></figcaption></figure>
 
 **Example**
 
-| URL                                                | Organization ID |
-| -------------------------------------------------- | --------------- |
-| https://app.gitbook.com/o/6DshSpVsoE/s/I6OHwf4UHU/ | `6DshSpVsoE`    |
+<table><thead><tr><th width="499">URL</th><th>Organization ID</th></tr></thead><tbody><tr><td>https://app.gitbook.com/o/6DshSpVsoE/s/I6OHwf4UHU/</td><td><code>6DshSpVsoE</code></td></tr></tbody></table>
 
 ### `<spaceId>`
 
@@ -22,13 +20,11 @@ A unique identifier of a Space in GitBook. You can find the space ID in the URL 
 
 Alternatively, you can click the "Copy space ID" button from the dropdown menu in the upper right corner when viewing a space.
 
-<figure><img src="../.gitbook/assets/space.png" alt=""><figcaption><p>Copy space ID</p></figcaption></figure>
+<figure><img src="../.gitbook/assets/space-id.png" alt=""><figcaption><p>Copy space ID</p></figcaption></figure>
 
 **Example**
 
-| URL                                                | Space ID     |
-| -------------------------------------------------- | ------------ |
-| https://app.gitbook.com/o/6DshSpVsoE/s/I6OHwf4UHU/ | `I6OHwf4UHU` |
+<table><thead><tr><th width="499">URL</th><th>Space ID</th></tr></thead><tbody><tr><td>https://app.gitbook.com/o/6DshSpVsoE/s/I6OHwf4UHU/</td><td><code>I6OHwf4UHU</code></td></tr></tbody></table>
 
 ### `<collectionId>`
 
@@ -36,13 +32,11 @@ A unique identifier of a collection in GitBook. You can find the collection ID i
 
 Alternatively, you can click the "Copy collection ID" button from the dropdown menu in the upper right corner when viewing a collection.
 
-<figure><img src="../.gitbook/assets/collection.png" alt=""><figcaption><p>Copy collection ID</p></figcaption></figure>
+<figure><img src="../.gitbook/assets/collection-id.png" alt=""><figcaption><p>Copy collection ID</p></figcaption></figure>
 
 **Example**
 
-| URL                                                | Collection ID |
-| -------------------------------------------------- | ------------- |
-| https://app.gitbook.com/o/6DshSpVsoE/c/fj08dm76dh2 | `fj08dm76dh2` |
+<table><thead><tr><th width="499">URL</th><th>Collection ID</th></tr></thead><tbody><tr><td>https://app.gitbook.com/o/6DshSpVsoE/c/fj08dm76dh2</td><td><code>fj08dm76dh2</code></td></tr></tbody></table>
 
 ### `<userId>`
 
@@ -50,7 +44,7 @@ A unique identifier of a User in GitBook. You can find your User ID from calling
 
 Alternatively, you can click the "Copy user ID" button from the dropdown when viewing a member within an organization.
 
-<figure><img src="../.gitbook/assets/user.png" alt=""><figcaption><p>Copy user ID</p></figcaption></figure>
+<figure><img src="../.gitbook/assets/user-id.png" alt=""><figcaption><p>Copy user ID</p></figcaption></figure>
 
 ### `gitbook-manifest.yaml`
 
