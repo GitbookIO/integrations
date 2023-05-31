@@ -11,7 +11,7 @@
     "@gitbook/runtime": "latest"
   },
   "dependencies": {
-    "@codesandbox/sandpack-react": "^2.6.6",
+    "@codesandbox/sandpack-client": "^2.6.7",
     "@gitbook/api": "^0.3.0"
   }
 }

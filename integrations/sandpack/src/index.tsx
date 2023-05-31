@@ -1,44 +1,39 @@
-import { Sandpack } from "@codesandbox/sandpack-react";
 import {
     createIntegration,
-    createComponent,
-    FetchEventCallback,
     RuntimeContext,
+    RuntimeEnvironment,
+    FetchPublishScriptEventCallback,
 } from '@gitbook/runtime';
 
-type IntegrationContext = {} & RuntimeContext;
+import script from './script.raw.js';
 
-const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request, context) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { api } = context;
-    const user = api.user.getAuthenticatedUser();
+type SandpackRuntimeContext = RuntimeContext<
+    RuntimeEnvironment<
+        {},
+        {
+            app_id?: string;
+        }
+    >
+>;
 
-    return new Response(JSON.stringify(user));
+export const handleFetchEvent: FetchPublishScriptEventCallback = async (
+    event,
+    { environment }: SandpackRuntimeContext
+) => {
+    const appId = environment.spaceInstallation.configuration.app_id;
+
+    if (!appId) {
+        return;
+    }
+
+    return new Response(script.replace('<TO_REPLACE>', appId), {
+        headers: {
+            'Content-Type': 'application/javascript',
+            'Cache-Control': 'max-age=604800',
+        },
+    });
 };
 
-const exampleBlock = createComponent({
-    componentId: 'sandpack',
-    initialState: (props) => {
-        return {
-            message: 'Click Me',
-        };
-    },
-    action: async (element, action, context) => {
-        switch (action.action) {
-            case 'click':
-                console.log('Button Clicked');
-                return {};
-        }
-    },
-    render: async (element, action, context) => {
-        const files = {}
-
-        return <Sandpack files={files} theme="dark" template="nextjs"></Sandpack>;
-    },
-});
-
-export default createIntegration({
-    fetch: handleFetchEvent,
-    components: [exampleBlock],
-    events: {},
+export default createIntegration<SandpackRuntimeContext>({
+    fetch_published_script: handleFetchEvent,
 });
