@@ -1,8 +1,8 @@
 name: hotjar
 title: Hotjar
 icon: ./assets/icon.png
-# previewImages:
-#   - ./assets/hotjar-preview.png
+previewImages:
+    - ./assets/hotjar-preview.png
 description: Plug your GitBook site to your Hotjar installation.
 externalLinks:
     - label: Documentation
