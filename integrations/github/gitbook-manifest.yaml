@@ -6,6 +6,9 @@ visibility: public
 description: Unfurl GitHub files or lines of code into code blocks
 previewImages:
     - ./assets/github-preview.png
+externalLinks:
+    - label: GitHub Homepage
+      url: https://github.com
 summary: |
     # Overview
 
