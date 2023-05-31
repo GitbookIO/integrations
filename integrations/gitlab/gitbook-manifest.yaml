@@ -2,7 +2,7 @@ name: gitlab-unfurl
 title: Gitlab Unfurl
 icon: ./assets/gitlab-logo.png
 organization: the-delta-integrations
-visibility: unlisted
+visibility: public
 description: Unfurls Gitlab permalinks and full file links in GitBook pages.
 script: ./src/index.tsx
 summary: TODO Summary
