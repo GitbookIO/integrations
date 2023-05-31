@@ -5,6 +5,11 @@ organization: gitbook
 visibility: public
 description: Unfurl Gitlab permalinks and full file links in GitBook pages.
 script: ./src/index.tsx
+previewImages:
+    - ./assets/gitlab-preview.png
+externalLinks:
+    - label: GitLab Homepage
+      url: https://gitlab.com/
 summary: |
     # Overview
     The GitLab Unfurl integration allows you to take a link to a GitLab file, or permalink to lines of code in a GitLab file and unfurl them into code blocks in GitBook.
