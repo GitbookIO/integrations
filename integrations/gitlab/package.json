@@ -1,19 +1,20 @@
 {
-  "name": "@gitbook/integration-gitlab",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@gitbook/runtime": "latest"
-  },
-  "devDependencies": {
-    "@gitbook/cli": "^0.8.0",
-    "@gitbook/eslint-config": "*",
-    "@gitbook/tsconfig": "*"
-  },
-  "scripts": {
-    "lint": "eslint ./**/*.ts*",
-    "typecheck": "tsc --noEmit",
-    "publish-integrations": "gitbook publish .",
-    "publish-integrations-staging": "gitbook publish ."
-  }
+    "name": "@gitbook/integration-gitlab",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "@gitbook/runtime": "latest",
+        "dotenv": "^16.1.1"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "^0.8.0",
+        "@gitbook/eslint-config": "*",
+        "@gitbook/tsconfig": "*"
+    },
+    "scripts": {
+        "lint": "eslint ./**/*.ts*",
+        "typecheck": "tsc --noEmit",
+        "publish-integrations": "dotenv gitbook publish .",
+        "publish-integrations-staging": "gitbook publish ."
+    }
 }
