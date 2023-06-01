@@ -1,5 +1,5 @@
 name: gitlab-files
-title: Gitlab Files
+title: GitLab Files
 icon: ./assets/logo.png
 organization: gitbook
 visibility: public
@@ -28,7 +28,7 @@ scopes:
     - space:content:read
 blocks:
     - id: gitlab-code-block
-      title: Gitlab Files
+      title: GitLab Files
       description: Insert a GitLab file as a code block
       urlUnfurl:
           - https://gitlab.com/**
@@ -38,7 +38,7 @@ configurations:
             oauth_credentials:
                 type: button
                 title: Connection
-                description: Authorization between Gitlab and GitBook.
+                description: Authorization between GitLab and GitBook.
                 button_text: Authorize
                 callback_url: /oauth
         required:
