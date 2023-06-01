@@ -1,8 +1,3 @@
----
-cover: .gitbook/assets/Group 1 (2).png
-coverY: 0
----
-
 # Welcome
 
 Welcome to GitBook Integration Platform!
