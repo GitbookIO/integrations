@@ -1,9 +1,9 @@
-name: github-unfurl
-title: Github Unfurl
+name: github-files
+title: Github Files
 icon: ./assets/github-mark.png
 organization: gitbook
 visibility: public
-description: Unfurl GitHub files or lines of code into code blocks
+description: View GitHub files or permalinks into code blocks
 previewImages:
     - ./assets/github-preview.png
 externalLinks:
@@ -12,24 +12,24 @@ externalLinks:
 summary: |
     # Overview
 
-    The GitHub Unfurl integration allows you to take a link to a GitHub file, or permalinks to lines of code in a GitHub file and unfurl them into code blocks in GitBook.
+    The GitHub Files integration allows you to take a link to a GitHub file or a permalink to lines of code and display them into code blocks in GitBook.
 
     # How it works
 
-    After installing the GitHub Unfurl integration, you're able to insert it into a GitBook file in the (CMD + /) menu.
+    After installing the GitHub Files integration, you're able to insert it into a GitBook file in the (CMD + /) menu.
 
     Insert the integration, paste your link, and the integration will display the code in a formatted code block.
 
     # Configure
 
-    In order to unfurl code from private repositories, you'll need to authorize with your GitHub Account in the integration's configuration page.
+    In order to view code from private repositories, you'll need to authorize with your GitHub Account in the integration's configuration page.
 script: ./src/index.tsx
 scopes:
     - space:content:read
 blocks:
     - id: github-code-block
-      title: Github Unfurl
-      description: Unfurls a selection from Github
+      title: Github Files
+      description: Insert a GitHub file as a code block
       urlUnfurl:
           - https://github.com/**
 configurations:

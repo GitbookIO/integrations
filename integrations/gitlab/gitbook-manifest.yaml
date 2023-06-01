@@ -1,9 +1,9 @@
-name: gitlab-unfurl
-title: Gitlab Unfurl
+name: gitlab-files
+title: Gitlab Files
 icon: ./assets/logo.png
 organization: gitbook
 visibility: public
-description: Unfurl Gitlab permalinks and full file links in GitBook pages.
+description: View GitLab files or permalinks into code blocks
 script: ./src/index.tsx
 previewImages:
     - ./assets/gitlab-preview.png
@@ -12,20 +12,24 @@ externalLinks:
       url: https://gitlab.com/
 summary: |
     # Overview
-    The GitLab Unfurl integration allows you to take a link to a GitLab file, or permalink to lines of code in a GitLab file and unfurl them into code blocks in GitBook.
+
+    The GitLab Files integration allows you to take a link to a GitLab file or a permalink to lines of code and display them into code blocks in GitBook.
 
     # How it works
-    After installing the GitLab Unfurl integration, you're able to insert it into a GitBook file in the (CMD + /) menu.
+
+    After installing the GitLab Files integration, you're able to insert it into a GitBook file in the (CMD + /) menu.
+
     Insert the integration, paste your link, and the integration will display the code in a formatted code block.
 
     # Configure
-    In order to unfurl code from private repositories, you'll need to authorize with your GitLab Account in the integration's configuration page.
+
+    In order to view code from private repositories, you'll need to authorize with your GitLab Account in the integration's configuration page.
 scopes:
     - space:content:read
 blocks:
     - id: gitlab-code-block
-      title: Gitlab Unfurl
-      description: Unfurls a selection or whole file from Gitlab.
+      title: Gitlab Files
+      description: Insert a GitLab file as a code block
       urlUnfurl:
           - https://gitlab.com/**
 configurations:
