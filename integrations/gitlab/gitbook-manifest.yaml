@@ -24,8 +24,7 @@ summary: |
     # Configure
 
     In order to view code from private repositories, you'll need to authorize with your GitLab Account in the integration's configuration page.
-scopes:
-    - space:content:read
+scopes: []
 blocks:
     - id: gitlab-code-block
       title: GitLab Files
