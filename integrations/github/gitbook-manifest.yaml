@@ -1,5 +1,5 @@
 name: github-files
-title: Github Files
+title: GitHub Files
 icon: ./assets/github-mark.png
 organization: gitbook
 visibility: public
@@ -24,11 +24,10 @@ summary: |
 
     In order to view code from private repositories, you'll need to authorize with your GitHub Account in the integration's configuration page.
 script: ./src/index.tsx
-scopes:
-    - space:content:read
+scopes: []
 blocks:
     - id: github-code-block
-      title: Github Files
+      title: GitHub Files
       description: Insert a GitHub file as a code block
       urlUnfurl:
           - https://github.com/**
@@ -38,7 +37,7 @@ configurations:
             oauth_credentials:
                 type: button
                 title: Connection
-                description: Authorization between Github and GitBook.
+                description: Authorization between GitHub and GitBook.
                 button_text: Authorize
                 callback_url: /oauth
         required:
