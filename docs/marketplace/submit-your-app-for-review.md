@@ -54,6 +54,13 @@ To make things easier, we've prepared a Figma template you can use to create ass
 
 Some important assets that are required and provide public facing information:
 
+**Name**
+
+This is the name for your integration - and must be unique across all GitBook integrations. This name should also be descriptive and specific for your integration. A good rule of thumb is to not include things the following things to your integration's name:
+
+* `-gitbook`
+* `-integration`
+
 **Icon**
 
 The main icon for your integration. It's should be high-resolution, and a 1:1 aspect ratio (recommended: `512px` × `512px`).
