@@ -1,3 +1,8 @@
+---
+cover: .gitbook/assets/Group 1 (1).png
+coverY: 0
+---
+
 # Welcome
 
 Welcome to GitBook Integration Platform!
@@ -14,7 +19,7 @@ Head to our Setup Guide in our Getting Started section to learn how to start usi
 
 ## Explore the GitBook Integrations Platform
 
-<table data-view="cards"><thead><tr><th></th><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><p><strong>GitBook API</strong><br></p><p>Browse the documentation and API references to help you use our API.</p></td><td></td><td><a href=".gitbook/assets/API (1).png">API (1).png</a></td><td><a href="gitbook-api/overview.md">overview.md</a></td></tr><tr><td><p><strong>Integrations</strong><br></p><p>Learn more about building your own custom blocks and integrations in GitBook.</p></td><td></td><td><a href=".gitbook/assets/Integrations.png">Integrations.png</a></td><td><a href="integrations/">integrations</a></td></tr><tr><td><p><strong>Visitor Authentication</strong><br></p><p>Build dynamic documentation and customized access.</p></td><td></td><td><a href=".gitbook/assets/Vistor Authentication.png">Vistor Authentication.png</a></td><td><a href="https://docs.gitbook.com/advanced-guides/advanced-sharing-and-security/visitor-authentication">https://docs.gitbook.com/advanced-guides/advanced-sharing-and-security/visitor-authentication</a></td></tr></tbody></table>
+<table data-view="cards"><thead><tr><th></th><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><p><strong>GitBook API</strong><br></p><p>Browse the documentation and API references to help you use our API.</p></td><td></td><td><a href=".gitbook/assets/API (1) (1) (1) (1).png">API (1) (1) (1) (1).png</a></td><td><a href="gitbook-api/overview.md">overview.md</a></td></tr><tr><td><p><strong>Integrations</strong><br></p><p>Learn more about building your own custom blocks and integrations in GitBook.</p></td><td></td><td><a href=".gitbook/assets/Integrations.png">Integrations.png</a></td><td><a href="integrations/">integrations</a></td></tr><tr><td><p><strong>Visitor Authentication</strong><br></p><p>Build dynamic documentation and customized access.</p></td><td></td><td><a href=".gitbook/assets/Vistor Authentication.png">Vistor Authentication.png</a></td><td><a href="https://docs.gitbook.com/advanced-guides/advanced-sharing-and-security/visitor-authentication">https://docs.gitbook.com/advanced-guides/advanced-sharing-and-security/visitor-authentication</a></td></tr></tbody></table>
 
 ## Learn more
 
