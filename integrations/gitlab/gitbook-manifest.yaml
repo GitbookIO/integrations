@@ -22,7 +22,6 @@ summary: |
     In order to unfurl code from private repositories, you'll need to authorize with your GitLab Account in the integration's configuration page.
 scopes:
     - space:content:read
-    - space:content:write
 blocks:
     - id: gitlab-code-block
       title: Gitlab Unfurl

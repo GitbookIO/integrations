@@ -26,7 +26,6 @@ summary: |
 script: ./src/index.tsx
 scopes:
     - space:content:read
-    - space:content:write
 blocks:
     - id: github-code-block
       title: Github Unfurl
