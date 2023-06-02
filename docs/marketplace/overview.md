@@ -20,3 +20,4 @@ You are still able to share any app or integration you build in GitBook with oth
 See the [publishing section](../getting-started/publishing.md) to learn more.
 {% endhint %}
 
+Interested in an integration, but don't have the resources to build it? Feel free to [submit an integration request](https://survey.refiner.io/e61q1m-dp057m)!&#x20;
