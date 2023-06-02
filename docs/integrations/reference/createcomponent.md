@@ -8,12 +8,7 @@ Any component defined in the `blocks` object will be available in the GitBook's 
 
 See the [Configurations section](../configurations.md) for more info.
 
-| Argument                                        | Type       | Description                                                                                                                 |
-| ----------------------------------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `componentId`<mark style="color:red;">\*</mark> | `string`   | A unique identifier for the component in the integration.                                                                   |
-| `initialState`                                  | `object`   | An object containing the initial state of your app or integration when the page loads.                                      |
-| `action`                                        | `function` | An async function to handle a dispatched action. See the [Actions section](action.md) to learn more.                        |
-| `render`                                        | `function` | An async function that must return valid UI from ContentKit. See the [ContentKit reference](../contentkit/) for more info.  |
+<table><thead><tr><th width="230.33333333333331">Argument</th><th width="143">Type</th><th>Description</th></tr></thead><tbody><tr><td><code>componentId</code><mark style="color:red;">*</mark></td><td><code>string</code></td><td>A unique identifier for the component in the integration.</td></tr><tr><td><code>initialState</code></td><td><code>object</code></td><td>An object containing the initial state of your app or integration when the page loads.</td></tr><tr><td><code>action</code></td><td><code>function</code></td><td>An async function to handle a dispatched action. See the <a href="action.md">Actions section</a> to learn more.</td></tr><tr><td><code>render</code></td><td><code>function</code></td><td>An async function that must return valid UI from ContentKit. See the <a href="../contentkit/">ContentKit reference</a> for more info. </td></tr></tbody></table>
 
 <mark style="color:red;">\*required</mark>
 

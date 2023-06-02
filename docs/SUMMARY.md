@@ -9,7 +9,10 @@
 * [Development](getting-started/development.md)
 * [Publishing](getting-started/publishing.md)
 * [Support](getting-started/support.md)
-* [Guides](getting-started/guides.md)
+* [Guides](getting-started/guides/README.md)
+  * [Use GitHub Actions to translate GitBook pages](getting-started/guides/use-github-actions-to-translate-gitbook-pages.md)
+  * [Create a custom unfurl action for your integration](getting-started/guides/create-a-custom-unfurl-action-for-your-integration.md)
+  * [Implement Visitor Authentication using Next.js and Clerk](getting-started/guides/implement-visitor-authentication-using-next.js-and-clerk.md)
 * [GitHub Examples](https://github.com/GitbookIO/integrations)
 
 ## GitBook API
@@ -26,6 +29,7 @@
     * [Teams](gitbook-api/reference/organizations/teams.md)
   * [Collections](gitbook-api/reference/collections.md)
   * [Spaces](gitbook-api/reference/spaces/README.md)
+    * [Publishing](gitbook-api/reference/spaces/publishing.md)
     * [Change Requests](gitbook-api/reference/spaces/change-requests.md)
     * [Content](gitbook-api/reference/spaces/content.md)
     * [Insights](gitbook-api/reference/spaces/insights.md)
