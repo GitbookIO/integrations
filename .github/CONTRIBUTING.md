@@ -91,13 +91,3 @@ When you're finished with the changes, [create a pull request](https://docs.gith
 Congratulations 🎉 
 
 Thank you for your contribution! Once your PR is merged, your contributions will be publicly visible on the relevant repository.
-
-
-
-
-
-
-
-
-
-
