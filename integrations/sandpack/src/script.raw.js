@@ -1,11 +1,6 @@
 import { loadSandpackClient, SandboxSetup, ClientOptions } from '@codesandbox/sandpack-client';
 
 (async function (document) {
-    let divElement = document.createElement("div");
-    divElement.id = "iframe";
-    let bodyElement = document.getElementsByTagName("body")[0];
-    bodyElement.appendChild(divElement);
-
     const iframe = document.getElementById("iframe");
 
     const content: SandboxSetup = {
