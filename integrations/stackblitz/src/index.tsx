@@ -33,7 +33,11 @@ const exampleBlock = createComponent({
     },
     render: async (element, action, context) => {
         console.log('RENDER');
-        await createProject();
+        try{
+            await createProject();
+        } catch (e) {
+            console.log(e);
+        }
         return (
             <block>
                 <button label={element.state.message} onPress={{ action: 'click' }} />
