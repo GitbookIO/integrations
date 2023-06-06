@@ -5,7 +5,7 @@ import {
     RuntimeContext,
 } from '@gitbook/runtime';
 
-const defaultContent = '';
+import { createProject } from './stackblitz';
 
 type IntegrationContext = {} & RuntimeContext;
 
@@ -17,60 +17,26 @@ const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request,
     return new Response(JSON.stringify(user));
 };
 
-const stackblitzBlock = createComponent<
-    {
-        content?: string;
-    },
-    {
-        content: string;
-    }
->({
+const exampleBlock = createComponent({
     componentId: 'stackblitz',
     initialState: (props) => {
         return {
-            content: props.content || defaultContent,
+            message: 'Click Me',
         };
     },
-    async render(element, { environment }) {
-        const { editable } = element.context;
-        const { content } = element.state;
-
-        element.setCache({
-            maxAge: 86400,
-        });
-
-        const output = (
-            <webframe
-                source={{
-                    // url: environment.integration.urls.publicEndpoint,
-                    // TODO: Remove hardcoded example
-                    url: 'https://stackblitz.com/edit/simple-search-filter?embed=1&file=src%2Fapp%2Fapp.component.ts',
-                }}
-                aspectRatio={16 / 9}
-                data={{
-                    content: element.dynamicState('content'),
-                }}
-            />
-        );
-
+    action: async (element, action, context) => {
+        switch (action.action) {
+            case 'click':
+                console.log('Button Clicked');
+                return {};
+        }
+    },
+    render: async (element, action, context) => {
+        console.log('RENDER');
+        await createProject();
         return (
             <block>
-                {editable ? (
-                    <codeblock
-                        state="content"
-                        content={content}
-                        syntax="stackblitz"
-                        onContentChange={{
-                            action: '@editor.node.updateProps',
-                            props: {
-                                content: element.dynamicState('content'),
-                            },
-                        }}
-                        footer={[output]}
-                    />
-                ) : (
-                    output
-                )}
+                <button label={element.state.message} onPress={{ action: 'click' }} />
             </block>
         );
     },
@@ -78,6 +44,6 @@ const stackblitzBlock = createComponent<
 
 export default createIntegration({
     fetch: handleFetchEvent,
-    components: [stackblitzBlock],
+    components: [exampleBlock],
     events: {},
 });
