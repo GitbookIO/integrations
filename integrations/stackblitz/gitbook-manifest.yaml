@@ -12,7 +12,10 @@ scopes:
   - space:metadata:write
   - space:views:read
 blocks:
-  - id: stackblitz
+  - id: diagram
     title: Stackblitz
-    description: My GitBook Integration
+    description: TODO Stackblitz Integration Description
+    markdown:
+      codeblock: stackblitz
+      body: content
 secrets: {}
