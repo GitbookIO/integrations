@@ -1,6 +1,8 @@
 import { createIntegration, createComponent } from '@gitbook/runtime';
 
-const defaultContent = 'Starter Javascript Project';
+import { fetchHTML } from './stackblitz';
+
+const defaultContent = '//TODO: Starter Javascript Project';
 
 const diagramBlock = createComponent<
     {
@@ -17,6 +19,7 @@ const diagramBlock = createComponent<
         };
     },
     async render(element, { environment }) {
+        await fetchHTML();
         const { editable } = element.context;
         const { content } = element.state;
 
@@ -69,39 +72,5 @@ const diagramBlock = createComponent<
 // project[template] = Can be one of: typescript, angular-cli, create-react-app, javascript
 
 export default createIntegration({
-    fetch: async () => {
-        return new Response(
-            `<html lang='en'>
-<head></head>
-<body>
-
-<form id='mainForm' method='post' action='https://stackblitz.com/run' target='_self'>
-<input type='hidden' name='project[files][index.ts]' value="import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/fromEvent';
-import 'rxjs/add/operator/scan';
-
-var button = document.querySelector('button');
-Observable.fromEvent(button, 'click')
-  .scan((count: number) => count + 1, 0)
-  .subscribe(count => console.log(\`Clicked times\`));
-">
-<input type='hidden' name='project[files][index.html]' value='<button>Click Me</button>
-'>
-<input type='hidden' name='project[description]' value='RxJS Example'>
-<input type='hidden' name='project[dependencies]' value='{&quot;rxjs&quot;:&quot;5.5.6&quot;}'>
-<input type='hidden' name='project[template]' value='typescript'>
-<input type='hidden' name='project[settings]' value='{&quot;compile&quot;:{&quot;clearConsole&quot;:false}}'>
-</form>
-<script>document.getElementById("mainForm").submit();</script>
-
-</body></html>`,
-            {
-                headers: {
-                    'Content-Type': 'text/html',
-                    'Cache-Control': 'public, max-age=86400',
-                },
-            }
-        );
-    },
     components: [diagramBlock],
 });
