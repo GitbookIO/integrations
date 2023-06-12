@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@codesandbox/sandpack-client": "^2.6.7",
-    "@gitbook/api": "^0.3.0"
+    "@gitbook/api": "^0.3.0",
+    "static-browser-server": "^1.0.5"
   }
 }

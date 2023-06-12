@@ -1,34 +1,26 @@
-import {
-    createComponent,
-    createIntegration,
-    FetchPublishScriptEventCallback,
-    RuntimeContext,
-} from '@gitbook/runtime';
+import { createComponent, createIntegration, RuntimeContext } from '@gitbook/runtime';
 
-import script from './script.raw.js';
+import { getPreviewUrl } from './sandpack';
 
 const embedBlock = createComponent<{ url?: string }, {}, {}, RuntimeContext>({
     componentId: 'sandpack',
 
     async render(element, context) {
+        const previewUrl = await getPreviewUrl();
+
         return (
             <block>
-                <card id={'iframe'}></card>
+                <webframe
+                    source={{
+                        url: previewUrl,
+                    }}
+                    aspectRatio={16 / 9}
+                />
             </block>
         );
     },
 });
 
-export const handleFetchEvent: FetchPublishScriptEventCallback = async (event, { environment }) => {
-    return new Response(script, {
-        headers: {
-            'Content-Type': 'application/javascript',
-            'Cache-Control': 'max-age=604800',
-        },
-    });
-};
-
 export default createIntegration({
-    fetch_published_script: handleFetchEvent,
     components: [embedBlock],
 });
