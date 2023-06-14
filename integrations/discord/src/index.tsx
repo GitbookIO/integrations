@@ -7,7 +7,7 @@ import {
     createOAuthHandler,
     OAuthResponse,
     FetchEventCallback,
-    EventCallback
+    EventCallback,
 } from '@gitbook/runtime';
 
 import { DiscordRuntimeContext } from './types';
@@ -28,24 +28,31 @@ const handleSpaceContentUpdated: EventCallback<
 
     console.log('space');
     console.log(space);
-    // await slackAPI(context, {
-    //     method: 'POST',
-    //     path: 'chat.postMessage',
-    //     payload: {
-    //         channel,
-    //         blocks: [
-    //             {
-    //                 type: 'section',
-    //                 text: {
-    //                     type: 'mrkdwn',
-    //                     text: `Content of *<${space.urls.app}|${
-    //                         space.title || 'Space'
-    //                     }>* has been updated`,
-    //                 },
-    //             },
-    //         ],
-    //     },
-    // });
+
+    const accessToken = environment.installation?.configuration.oauth_credentials?.access_token;
+
+    if (!accessToken) {
+        throw new Error('No authentication token provided');
+    }
+
+    const channelId = 0; // TODO: We need to figure out how to get the channel id when a user authorizes and then save that value.
+
+    const url = `https://discord.com/api/v10/channels/${channelId}/messages`;
+    const headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+    };
+    const body = JSON.stringify({
+        content: 'Hello from the otter slide!! （ ^_^）o自自o（^_^ ）',
+    });
+
+    const res = await fetch(url, { method: 'POST', headers, body }).catch((err) => {
+        throw new Error(`Error fetching content from ${url}. ${err}`);
+    });
+
+    // TODO: Remove `res` as it is unnessary, but useful fro debugging to see what status id is returned.
+    console.log('RESPONSE');
+    console.log(res);
 };
 
 const handleFetchEvent: FetchEventCallback<DiscordRuntimeContext> = async (request, context) => {
@@ -106,6 +113,7 @@ const extractCredentials = async (
 export default createIntegration<DiscordRuntimeContext>({
     fetch: handleFetchEvent,
     events: {
+        // TODO: Update this event to the correct one for when a change is merged - I only used this one as it is quicker to test the changes
         space_content_updated: handleSpaceContentUpdated,
     },
 });
