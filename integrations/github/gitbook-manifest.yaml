@@ -1,0 +1,47 @@
+name: github-files
+title: GitHub Files
+icon: ./assets/github-mark.png
+organization: gitbook
+visibility: public
+description: View GitHub files or permalinks into code blocks
+previewImages:
+    - ./assets/github-preview.png
+externalLinks:
+    - label: GitHub Homepage
+      url: https://github.com
+summary: |
+    # Overview
+
+    The GitHub Files integration allows you to take a link to a GitHub file or a permalink to lines of code and display them into code blocks in GitBook.
+
+    # How it works
+
+    After installing the GitHub Files integration, you're able to insert it into a GitBook file in the (CMD + /) menu.
+
+    Insert the integration, paste your link, and the integration will display the code in a formatted code block.
+
+    # Configure
+
+    In order to view code from private repositories, you'll need to authorize with your GitHub Account in the integration's configuration page.
+script: ./src/index.tsx
+scopes: []
+blocks:
+    - id: github-code-block
+      title: GitHub Files
+      description: Insert a GitHub file as a code block
+      urlUnfurl:
+          - https://github.com/**
+configurations:
+    account:
+        properties:
+            oauth_credentials:
+                type: button
+                title: Connection
+                description: Authorization between GitHub and GitBook.
+                button_text: Authorize
+                callback_url: /oauth
+        required:
+            - oauth_credentials
+secrets:
+    CLIENT_ID: ${{ env.UNFURL_GITHUB_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.UNFURL_GITHUB_CLIENT_SECRET }}

@@ -68,12 +68,12 @@ export default createIntegration({
                 * { margin: 0; padding: 0; }
                 </style>
                 <body>
-                    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-                    <script>
+                    <script type="module">
+                        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
                         mermaid.initialize({ startOnLoad: false });
-            
+
                         function renderDiagram(content) {
-                            mermaid.render('output', content,  (svgGraph) => {
+                            mermaid.render('output', content).then(({ svg: svgGraph }) => {
                                 document.getElementById('content').innerHTML = svgGraph;
                                 const svg = document.getElementById('content').querySelector('svg');
                                 const size = { width: svg.viewBox.baseVal.width, height: svg.viewBox.baseVal.height };
@@ -86,7 +86,7 @@ export default createIntegration({
                                         maxWidth: size.width,
                                     }
                                 })
-                            }); 
+                            });
                         }
 
                         function sendAction(action) {
@@ -97,7 +97,7 @@ export default createIntegration({
                                 '*'
                             );
                         }
-            
+
                         window.addEventListener("message", (event) => {
                             if (event.data) {
                                 const content = event.data.state.content;

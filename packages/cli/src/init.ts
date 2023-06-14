@@ -111,10 +111,17 @@ export async function initializeProject(
         description: '',
         script: path.relative(dirPath, scriptPath),
         scopes: project.scopes,
+        blocks: [
+            {
+                id: project.name,
+                title: project.title,
+                description: 'My GitBook Integration',
+            },
+        ],
         secrets: {},
     });
 
-    await fs.promises.writeFile(scriptPath, generateScript());
+    await fs.promises.writeFile(scriptPath, generateScript(project));
     await fs.promises.writeFile(path.join(dirPath, 'tsconfig.json'), generateTSConfig());
     await fs.promises.writeFile(path.join(dirPath, '.eslintrc.json'), generateESLint());
 
@@ -150,6 +157,8 @@ export async function extendPackageJson(dirPath: string, projectName: string): P
         ...(packageJsonObject.devDependencies || {}),
         [packageJSON.name]: `^${packageJSON.version}`,
         [`@gitbook/runtime`]: 'latest',
+        '@cloudflare/workers-types': 'latest',
+        '@gitbook/tsconfig': 'latest',
     };
 
     await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJsonObject, null, 2));
@@ -177,25 +186,64 @@ export function installDependencies(dirPath: string): Promise<void> {
 /**
  * Generate the script code.
  */
-export function generateScript(): string {
+export function generateScript(project: { name: string }): string {
     const src = detent(`
-        import { createIntegration, FetchEventCallback, RuntimeContext } from '@gitbook/runtime';
-
-        type IntegrationContext = {} & RuntimeContext;
-
-        const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request, context) => {
-            // Use the API to make requests to GitBook
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { api } = context;
-
-            return new Response('Hello World');
-        };
-
-        export default createIntegration({
-            fetch: handleFetchEvent,
-            components: [],
-            events: {},
-        });
+    import {
+        createIntegration,
+        createComponent,
+        FetchEventCallback,
+        RuntimeContext,
+      } from "@gitbook/runtime";
+      
+      type IntegrationContext = {} & RuntimeContext;
+      type IntegrationBlockProps = {};
+      type IntegrationBlockState = { message: string };
+      type IntegrationAction = { action: "click" };
+      
+      const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (
+        request,
+        context
+      ) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { api } = context;
+        const user = api.user.getAuthenticatedUser();
+      
+        return new Response(JSON.stringify(user));
+      };
+      
+      const exampleBlock = createComponent<
+         IntegrationBlockProps,
+         IntegrationBlockState,
+         IntegrationAction,
+         IntegrationContext
+      >({
+        componentId: "${project.name}",
+        initialState: (props) => {
+          return {
+            message: "Click Me",
+          };
+        },
+        action: async (element, action, context) => {
+          switch (action.action) {
+            case "click":
+              console.log("Button Clicked");
+              return {};
+          }
+        },
+        render: async (element, context) => {
+          return (
+            <block>
+              <button label={element.state.message} onPress={{ action: "click" }} />
+            </block>
+          );
+        },
+      });
+      
+      export default createIntegration({
+        fetch: handleFetchEvent,
+        components: [exampleBlock],
+        events: {},
+      });
     `).trim();
 
     return `${src}\n`;
@@ -204,7 +252,10 @@ export function generateScript(): string {
 export function generateTSConfig(): string {
     return detent(`
         {
-            "extends": "@gitbook/tsconfig/integration.json"
+            "extends": "@gitbook/tsconfig/integration.json",
+            "compilerOptions": {
+                "lib": ["ES6", "DOM"],
+            }
         }
     `).trim();
 }

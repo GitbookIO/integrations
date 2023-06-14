@@ -134,6 +134,7 @@ export function createOAuthHandler(
             const response = await fetch(config.accessTokenURL, {
                 method: 'POST',
                 headers: {
+                    Accept: 'application/json',
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
                 body: params.toString(),

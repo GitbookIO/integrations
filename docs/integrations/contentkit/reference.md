@@ -37,11 +37,7 @@ Top level component for a custom block.
 {% endtab %}
 {% endtabs %}
 
-| Props                                        | Type                                                                                                                                                           | Description                                                                                                                    |
-| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `children`<mark style="color:red;">\*</mark> | `Array<Block>`                                                                                                                                                 | Content to display in the block.                                                                                               |
-| `controls`                                   | `Array<BlockControl>`                                                                                                                                          | <p>Control menu items displayed for the block.<br></p>                                                                         |
-| `controls.icon`                              | <pre><code>'close' |
+<table><thead><tr><th width="287.3333333333333">Props</th><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><code>children</code><mark style="color:red;">*</mark></td><td><code>Array&#x3C;Block></code></td><td>Content to display in the block.</td></tr><tr><td><code>controls</code></td><td><code>Array&#x3C;BlockControl></code></td><td>Control menu items displayed for the block.<br></td></tr><tr><td><code>controls.icon</code></td><td><pre><code>'close' |
 'edit' |
 'github' |
 'maximize' |
@@ -53,14 +49,7 @@ Top level component for a custom block.
 'warning' |
 'link' |
 'link-external'
-</code></pre> | The icon to display with the control                                                                                           |
-| `controls.label`                             | `string`                                                                                                                                                       | The label for the control                                                                                                      |
-| `controls.onPress`                           | `Action`                                                                                                                                                       | <p>Action dispatched when control is pressed. <br><br>See <a href="reference/actions.md">Actions</a> for more information.</p> |
-| `controls.confirm`                           | `object`                                                                                                                                                       | Modal object to display to ask the user to confirm the action before execution                                                 |
-| `controls.confirm.title`                     | `string`                                                                                                                                                       | Title for the confirmation button                                                                                              |
-| `controls.confirm.text`                      | `string`                                                                                                                                                       | Content for the confirmation button                                                                                            |
-| `controls.confirm.confirm`                   | `string`                                                                                                                                                       | Label for the confirmation button                                                                                              |
-| `controls.confirm.style`                     | `"primary"` \| `"danger"`                                                                                                                                      | Style for the confirmation button.                                                                                             |
+</code></pre></td><td>The icon to display with the control</td></tr><tr><td><code>controls.label</code></td><td><code>string</code></td><td>The label for the control</td></tr><tr><td><code>controls.onPress</code></td><td><code>Action</code></td><td>Action dispatched when control is pressed. <br><br>See <a href="reference/actions.md">Actions</a> for more information.</td></tr><tr><td><code>controls.confirm</code></td><td><code>object</code></td><td>Modal object to display to ask the user to confirm the action before execution</td></tr><tr><td><code>controls.confirm.title</code></td><td><code>string</code></td><td>Title for the confirmation button</td></tr><tr><td><code>controls.confirm.text</code></td><td><code>string</code></td><td>Content for the confirmation button</td></tr><tr><td><code>controls.confirm.confirm</code></td><td><code>string</code></td><td>Label for the confirmation button</td></tr><tr><td><code>controls.confirm.style</code></td><td><code>"primary"</code> | <code>"danger"</code></td><td>Style for the confirmation button.</td></tr></tbody></table>
 
 <mark style="color:red;">\*required</mark>
 
