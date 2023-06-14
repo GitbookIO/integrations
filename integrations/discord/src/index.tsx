@@ -57,10 +57,9 @@ const handleFetchEvent: FetchEventCallback<DiscordRuntimeContext> = async (reque
             clientId: environment.secrets.CLIENT_ID,
             clientSecret: environment.secrets.CLIENT_SECRET,
             authorizeURL:
-                'https://discord.com/oauth2/authorize?response_type=code&permissions=274877958144',
-            accessTokenURL: 'https://discord.com/oauth2/token',
+                'https://discord.com/api/oauth2/authorize?response_type=code&permissions=2048',
+            accessTokenURL: 'https://discord.com/api/oauth2/token',
             scopes: ['applications.commands', 'bot', 'webhook.incoming'],
-            prompt: 'consent', // because we have bot scope the consent prompt is required - no prompt = skip the authorization screen and redirect back to your redirect URI without requesting the authorization
             extractCredentials,
         })
     );
