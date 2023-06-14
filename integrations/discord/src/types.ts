@@ -6,5 +6,14 @@ export interface DiscordInstallationConfiguration {
     };
 }
 
-export type DiscordRuntimeEnvironment = RuntimeEnvironment<DiscordInstallationConfiguration>;
+export interface DiscordSpaceInstallationConfiguration {
+    channel?: string;
+    notify_content_update?: boolean;
+    notify_visibility_update?: boolean;
+}
+
+export type DiscordRuntimeEnvironment = RuntimeEnvironment<
+    DiscordInstallationConfiguration,
+    DiscordSpaceInstallationConfiguration
+>;
 export type DiscordRuntimeContext = RuntimeContext<DiscordRuntimeEnvironment>;
