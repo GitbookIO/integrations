@@ -1,6 +1,7 @@
 name: discord
 title: Discord
-organization: the-delta-integration
+icon: ./assets/icon.png
+organization: the-delta-integrations
 visibility: private
 description: ''
 script: src/index.tsx
@@ -14,4 +15,17 @@ blocks:
   - id: discord
     title: Discord
     description: My GitBook Integration
-secrets: {}
+configurations:
+  account:
+    properties:
+      oauth_credentials:
+        type: button
+        title: Connection
+        description: Authorization between Discord and GitBook.
+        button_text: Authorize
+        callback_url: /oauth
+    required:
+      - oauth_credentials
+secrets:
+  CLIENT_ID: ${{ env.DISCORD_CLIENT_ID }}
+  CLIENT_SECRET: ${{ env.DISCORD_CLIENT_SECRET }}
