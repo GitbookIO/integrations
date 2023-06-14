@@ -59,7 +59,7 @@ const handleFetchEvent: FetchEventCallback<DiscordRuntimeContext> = async (reque
             authorizeURL:
                 'https://discord.com/oauth2/authorize?response_type=code&permissions=274877958144',
             accessTokenURL: 'https://discord.com/oauth2/token',
-            scopes: ['applications.commands', 'bot'],
+            scopes: ['applications.commands', 'bot', 'webhook.incoming'],
             prompt: 'consent', // because we have bot scope the consent prompt is required - no prompt = skip the authorization screen and redirect back to your redirect URI without requesting the authorization
             extractCredentials,
         })
@@ -159,3 +159,6 @@ export default createIntegration<DiscordRuntimeContext>({
 // state=9b70cd849580737041abf9a6f38e4eb73b8340af0dd8af836fef14419c6c7f72&
 // scope=applications.commands%20bot&
 // prompt=consent
+
+// Application ID: 1118461240851824660
+// Public Key: 43e4e8b45a9cb10c829d4bdd89093327bdba56a911f89e9239398cc17d6c4809
