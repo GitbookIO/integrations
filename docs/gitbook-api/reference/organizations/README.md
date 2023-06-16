@@ -25,9 +25,3 @@ description: >-
 {% swagger src="https://api.gitbook.com/openapi.json" path="/orgs/{organizationId}/spaces" method="get" expanded="true" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
-
-### `POST` an invite to an organization
-
-{% swagger src="https://api.gitbook.com/openapi.json" path="/orgs/{organizationId}/invites" method="post" expanded="true" %}
-[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
-{% endswagger %}
