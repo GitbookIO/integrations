@@ -29,3 +29,4 @@ configurations:
 secrets:
   CLIENT_ID: ${{ env.DISCORD_CLIENT_ID }}
   CLIENT_SECRET: ${{ env.DISCORD_CLIENT_SECRET }}
+  BOT_TOKEN: ${{ env.DISCORD_BOT_TOKEN }}

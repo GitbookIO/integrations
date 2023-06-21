@@ -28,6 +28,12 @@ const handleSpaceContentUpdated: EventCallback<
 
     const accessToken = environment.installation?.configuration.oauth_credentials?.access_token;
 
+    const botToken = environment.secrets.BOT_TOKEN;
+    console.log('-----------------------------');
+    console.log('BOT_TOKEN');
+    console.log('-----------------------------');
+    console.log(botToken);
+
     if (!accessToken) {
         throw new Error('No authentication token provided');
     } else console.log('-----------------------------');
@@ -49,33 +55,14 @@ const handleSpaceContentUpdated: EventCallback<
         environment.installation?.configuration.oauth_credentials?.webhook?.channel_id;
     console.log(channelId);
 
-    console.log('-----------------------------');
-    console.log('GUILD_ID');
-    console.log('-----------------------------');
-    const guildId = environment.installation?.configuration.oauth_credentials?.webhook?.guild_id;
-    console.log(guildId);
-
-    // <secret> - gitbook-test-discord-server [General - Voice Chanel]
-    // <secret> - gitbook-test-discord-server [updates - Text Chanel]
-    // <secret> - gitbook-test-discord-server [server_id]
-
     const url = `https://discord.com/api/v10/channels/${channelId}/messages`;
-    console.log('-----------------------------');
-    console.log('URL');
-    console.log('-----------------------------');
-    console.log(url);
     const headers = {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bot ${botToken}`,
     };
-    // const body = JSON.stringify({
-    //     content: 'Hello from the otter slide!! （ ^_^）o自自o（^_^ ',
-    // });
-
-    const body = {
-        content: 'Hello, World!',
-        tts: false,
-    };
+    const body = JSON.stringify({
+        content: 'Hello from the otter slide!! （ ^_^）o自自o（^_^ ',
+    });
 
     console.log('-----------------------------');
     console.log('BODY');
@@ -121,58 +108,13 @@ const handleFetchEvent: FetchEventCallback<DiscordRuntimeContext> = async (reque
             extractCredentials,
         })
     );
-    // BOT + APPLICATIONS.COMMANDS + WEBHOOK>INCOMING URL - happy
-    // https://discord.com/api/oauth2/authorize?
-    // client_id=1118102608226304020&
-    // permissions=2147485696&
-    // redirect_uri=https%3A%2F%2Fintegrations.gitbook.com%2Fv1%2Fintegrations%2Fdiscord%2Fintegration%2Foauth&
-    // response_type=code&
-    // scope=bot%20webhook.incoming%20applications.commands
-
-    // BOT_PERMISSIONS
-    // 8 - admin
-    // 534723950656 - all text permissions
-    // 2048 - ?
-    // 2147485696 -  send messages and use slash commands
-    //
-    // WEBHOOK TOKEN RESPONSE EXAMPLE
-    // {
-    //   "token_type": "Bearer",
-    //   "access_token": "GNaVzEtATqdh173tNHEXY9ZYAuhiYxvy",
-    //   "scope": "webhook.incoming",
-    //   "expires_in": 604800,
-    //   "refresh_token": "PvPL7ELyMDc1836457XCDh1Y8jPbRm",
-    //   "webhook": {
-    //     "application_id": "310954232226357250",
-    //     "name": "testwebhook",
-    //     "url": "https://discord.com/api/webhooks/347114750880120863/kKDdjXa1g9tKNs0-_yOwLyALC9gydEWP6gr9sHabuK1vuofjhQDDnlOclJeRIvYK-pj_",
-    //     "channel_id": "345626669224982402",
-    //     "token": "kKDdjXa1g9tKNs0-_yOwLyALC9gydEWP6gr9sHabuK1vuofjhQDDnlOclJeRIvYK-pj_",
-    //     "type": 1,
-    //     "avatar": null,
-    //     "guild_id": "290926792226357250",
-    //     "id": "347114750880120863"
-    //   }
-    // }
 
     const response = await router.handle(request, context);
-    console.log('-----------------------------');
-    console.log('request');
-    console.log('-----------------------------');
-    console.log(request);
-    console.log('-----------------------------');
-    console.log('context');
-    console.log('-----------------------------');
-    console.log(context);
     if (!response) {
         return new Response(`No route matching ${request.method} ${request.url}`, {
             status: 404,
         });
     }
-    console.log('-----------------------------');
-    console.log('RESPONSE - createOAuthHandler');
-    console.log('-----------------------------');
-    console.log(response);
     return response;
 };
 
