@@ -10,7 +10,7 @@ import {
     EventCallback,
 } from '@gitbook/runtime';
 
-import { DiscordRuntimeContext } from './types';
+import { DiscordRuntimeContext, OAuthResponseWebhook } from './types';
 
 /*
  * Handle content being updated: send a notification on Slack.
@@ -19,6 +19,7 @@ const handleSpaceContentUpdated: EventCallback<
     'space_content_updated',
     DiscordRuntimeContext
 > = async (event, context) => {
+    console.log('handleSpaceContentUpdated');
     const { environment, api } = context;
     const { data: space } = await api.spaces.getSpaceById(event.spaceId);
 
@@ -42,6 +43,7 @@ const handleSpaceContentUpdated: EventCallback<
     console.log('-----------------------------');
     console.log('CHANNEL_ID');
     console.log('-----------------------------');
+    console.log(environment.installation?.configuration.oauth_credentials);
     // this is a string because the MAX SAFE INTEGER constant is 16 characters and the channel_id is 19 characters
     const channelId =
         environment.installation?.configuration.oauth_credentials?.webhook?.channel_id;
@@ -175,15 +177,16 @@ const handleFetchEvent: FetchEventCallback<DiscordRuntimeContext> = async (reque
 };
 
 const extractCredentials = async (
-    response: OAuthResponse
+    response: OAuthResponseWebhook
 ): Promise<RequestUpdateIntegrationInstallation> => {
-    const { access_token } = response;
+    const { access_token, webhook } = response;
     return {
         configuration: {
             oauth_credentials: {
                 access_token,
                 expires_at: Date.now() + response.expires_in * 1000,
                 refresh_token: response.refresh_token,
+                webhook,
             },
         },
     };

@@ -1,4 +1,4 @@
-import { RuntimeEnvironment, RuntimeContext } from '@gitbook/runtime';
+import { RuntimeEnvironment, RuntimeContext, OAuthResponse } from '@gitbook/runtime';
 
 export interface DiscordInstallationConfiguration {
     oauth_credentials?: {
@@ -28,3 +28,17 @@ export type DiscordRuntimeEnvironment = RuntimeEnvironment<
     DiscordSpaceInstallationConfiguration
 >;
 export type DiscordRuntimeContext = RuntimeContext<DiscordRuntimeEnvironment>;
+
+export interface OAuthResponseWebhook extends OAuthResponse {
+    webhook: {
+        application_id: string;
+        name: string;
+        url: string;
+        channel_id: string;
+        token: string;
+        type: number;
+        avatar?: string;
+        guild_id: string;
+        id: string;
+    };
+}
