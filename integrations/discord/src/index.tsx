@@ -19,10 +19,6 @@ const handleSpaceContentUpdated: EventCallback<
     'space_content_updated',
     DiscordRuntimeContext
 > = async (event, context) => {
-    console.log('-----------------------------');
-    console.log('handleSpaceContentUpdated');
-    console.log('-----------------------------');
-
     const { environment, api } = context;
     const { data: space } = await api.spaces.getSpaceById(event.spaceId);
 
@@ -33,25 +29,65 @@ const handleSpaceContentUpdated: EventCallback<
 
     if (!accessToken) {
         throw new Error('No authentication token provided');
-    }
+    } else console.log('-----------------------------');
+    console.log('ACCESS TOKEN HAPPY');
+    console.log('-----------------------------');
 
-    const channelId = 0; // TODO: We need to figure out how to get the channel id when a user authorizes and then save that value.
+    console.log('-----------------------------');
+    console.log('WEBHOOK');
+    console.log('-----------------------------');
+    const webhook = environment.installation?.configuration.oauth_credentials?.webhook;
+    console.log(webhook);
+    //
+    console.log('-----------------------------');
+    console.log('CHANNEL_ID');
+    console.log('-----------------------------');
+    // this is a string because the MAX SAFE INTEGER constant is 16 characters and the channel_id is 19 characters
+    const channelId =
+        environment.installation?.configuration.oauth_credentials?.webhook?.channel_id;
+    console.log(channelId);
+
+    console.log('-----------------------------');
+    console.log('GUILD_ID');
+    console.log('-----------------------------');
+    const guildId = environment.installation?.configuration.oauth_credentials?.webhook?.guild_id;
+    console.log(guildId);
+
+    // <secret> - gitbook-test-discord-server [General - Voice Chanel]
+    // <secret> - gitbook-test-discord-server [updates - Text Chanel]
+    // <secret> - gitbook-test-discord-server [server_id]
 
     const url = `https://discord.com/api/v10/channels/${channelId}/messages`;
+    console.log('-----------------------------');
+    console.log('URL');
+    console.log('-----------------------------');
+    console.log(url);
     const headers = {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,
     };
-    const body = JSON.stringify({
-        content: 'Hello from the otter slide!! （ ^_^）o自自o（^_^ ）',
-    });
+    // const body = JSON.stringify({
+    //     content: 'Hello from the otter slide!! （ ^_^）o自自o（^_^ ',
+    // });
+
+    const body = {
+        content: 'Hello, World!',
+        tts: false,
+    };
+
+    console.log('-----------------------------');
+    console.log('BODY');
+    console.log('-----------------------------');
+    console.log(body);
 
     const res = await fetch(url, { method: 'POST', headers, body }).catch((err) => {
         throw new Error(`Error fetching content from ${url}. ${err}`);
     });
 
-    // TODO: Remove `res` as it is unnessary, but useful fro debugging to see what status id is returned.
-    console.log('RESPONSE');
+    // TODO: Remove `res` as it is unnecessary, but useful for debugging to see what status id is returned.
+    console.log('-----------------------------');
+    console.log('RESPONSE - handleSpaceContentUpdated');
+    console.log('-----------------------------');
     console.log(res);
 };
 
@@ -77,20 +113,64 @@ const handleFetchEvent: FetchEventCallback<DiscordRuntimeContext> = async (reque
             clientId: environment.secrets.CLIENT_ID,
             clientSecret: environment.secrets.CLIENT_SECRET,
             authorizeURL:
-                'https://discord.com/api/oauth2/authorize?response_type=code&permissions=2048',
+                'https://discord.com/api/oauth2/authorize?response_type=code&permissions=2147485696',
             accessTokenURL: 'https://discord.com/api/oauth2/token',
             scopes: ['applications.commands', 'bot', 'webhook.incoming'],
             extractCredentials,
         })
     );
+    // BOT + APPLICATIONS.COMMANDS + WEBHOOK>INCOMING URL - happy
+    // https://discord.com/api/oauth2/authorize?
+    // client_id=1118102608226304020&
+    // permissions=2147485696&
+    // redirect_uri=https%3A%2F%2Fintegrations.gitbook.com%2Fv1%2Fintegrations%2Fdiscord%2Fintegration%2Foauth&
+    // response_type=code&
+    // scope=bot%20webhook.incoming%20applications.commands
+
+    // BOT_PERMISSIONS
+    // 8 - admin
+    // 534723950656 - all text permissions
+    // 2048 - ?
+    // 2147485696 -  send messages and use slash commands
+    //
+    // WEBHOOK TOKEN RESPONSE EXAMPLE
+    // {
+    //   "token_type": "Bearer",
+    //   "access_token": "GNaVzEtATqdh173tNHEXY9ZYAuhiYxvy",
+    //   "scope": "webhook.incoming",
+    //   "expires_in": 604800,
+    //   "refresh_token": "PvPL7ELyMDc1836457XCDh1Y8jPbRm",
+    //   "webhook": {
+    //     "application_id": "310954232226357250",
+    //     "name": "testwebhook",
+    //     "url": "https://discord.com/api/webhooks/347114750880120863/kKDdjXa1g9tKNs0-_yOwLyALC9gydEWP6gr9sHabuK1vuofjhQDDnlOclJeRIvYK-pj_",
+    //     "channel_id": "345626669224982402",
+    //     "token": "kKDdjXa1g9tKNs0-_yOwLyALC9gydEWP6gr9sHabuK1vuofjhQDDnlOclJeRIvYK-pj_",
+    //     "type": 1,
+    //     "avatar": null,
+    //     "guild_id": "290926792226357250",
+    //     "id": "347114750880120863"
+    //   }
+    // }
 
     const response = await router.handle(request, context);
+    console.log('-----------------------------');
+    console.log('request');
+    console.log('-----------------------------');
+    console.log(request);
+    console.log('-----------------------------');
+    console.log('context');
+    console.log('-----------------------------');
+    console.log(context);
     if (!response) {
         return new Response(`No route matching ${request.method} ${request.url}`, {
             status: 404,
         });
     }
-
+    console.log('-----------------------------');
+    console.log('RESPONSE - createOAuthHandler');
+    console.log('-----------------------------');
+    console.log(response);
     return response;
 };
 
@@ -98,7 +178,6 @@ const extractCredentials = async (
     response: OAuthResponse
 ): Promise<RequestUpdateIntegrationInstallation> => {
     const { access_token } = response;
-
     return {
         configuration: {
             oauth_credentials: {

@@ -3,6 +3,17 @@ import { RuntimeEnvironment, RuntimeContext } from '@gitbook/runtime';
 export interface DiscordInstallationConfiguration {
     oauth_credentials?: {
         access_token: string;
+        webhook: {
+            application_id: string;
+            name: string;
+            url: string;
+            channel_id: string;
+            token: string;
+            type: number;
+            avatar?: string;
+            guild_id: string;
+            id: string;
+        };
     };
 }
 
