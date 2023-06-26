@@ -1,0 +1,46 @@
+name: discord
+title: Discord
+icon: ./assets/icon.png
+organization: gitbook
+visibility: public
+categories:
+    - collaboration
+description: Notify a server channel in Discord with real-time events from GitBook.
+summary: |
+    # Overview
+
+    The GitBook Discord integration brings the power of GitBook to your Discord Server. Your members have instant access to your GitBook knowledge base, without leaving the app.
+
+    # How it works
+
+    Get notified of what's important:
+    Receive real-time Discord notifications when something important happens to your content on GitBook. For example, when your content is updated or published.
+    Pick and choose what, where, and how you wish to be notified.
+
+    # Configure
+
+    You can install the integration on a single space by clicking the integrations button in sub-navigation panel. If you prefer to install the Discord integration on multiple on all spaces you can enable this through organization settings. To configure the integration you will have to authorize the connection between Discord and GitBook. You can also select the default server to post messages to.
+previewImages:
+    - ./assets/discord-preview.png
+externalLinks:
+    - label: Homepage
+      url: https://www.discord.com
+script: src/index.tsx
+scopes:
+    - space:content:read
+    - space:metadata:read
+configurations:
+    account:
+        properties:
+            oauth_credentials:
+                type: button
+                title: Connection
+                description: Authorization between Discord and GitBook.
+                button_text: Authorize
+                callback_url: /oauth
+        required:
+            - oauth_credentials
+secrets:
+    CLIENT_ID: ${{ env.DISCORD_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.DISCORD_CLIENT_SECRET }}
+    BOT_TOKEN: ${{ env.DISCORD_BOT_TOKEN }}
