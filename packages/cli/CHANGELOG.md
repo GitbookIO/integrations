@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.9.0
+
+### Minor Changes
+
+-   bd562ec: Update CLI template
+
 ## 0.8.0
 
 ### Minor Changes

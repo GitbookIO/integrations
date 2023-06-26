@@ -36,6 +36,12 @@ gitbook dev <spaceId>
 
 This will start a development server tied to the space specified in the command. You can find more information on Space ID's and where to find them in the [Concepts section](concepts.md).
 
+{% hint style="info" %}
+Running this command will start a development server for use by the integration only. You do not need to navigate to the port the server is running on. \
+\
+Instead, all integration traffic to the specified space will automatically be served from your local server.
+{% endhint %}
+
 Running this command will generate a `gitbook-dev.yaml` file that contains the `spaceId` needed to establish the connection while you continue to develop your app.
 
 After successfully starting the development server, you can add your integration to a page in your development GitBook space.
