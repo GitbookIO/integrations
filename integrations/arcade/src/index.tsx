@@ -74,6 +74,7 @@ const embedBlock = createComponent<{
                         url: `https://demo.arcade.software/${flowId}?embed`,
                     }}
                     aspectRatio={aspectRatio}
+                    allowFullScreen={true}
                 />
             </block>
         );
