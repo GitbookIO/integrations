@@ -30,10 +30,11 @@ const formspreeBlock = createComponent({
     action: async (element, action: FormspreeAction, context: FormspreeContext) => {
         switch (action.action) {
             case 'submit':
-                handleSubmit(
-                    context.environment.spaceInstallation?.configuration.formspree_id,
-                    element.state
-                );
+                handleSubmit(context.environment.spaceInstallation?.configuration.formspree_id, {
+                    email: element.state.email,
+                    name: element.state.name,
+                    message: element.state.message,
+                });
                 return {
                     state: {
                         formSubmitted: true,

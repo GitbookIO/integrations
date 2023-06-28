@@ -5,7 +5,7 @@ export async function handleSubmit(formspree_id, body) {
 
     fetch(formspree_id, {
         method: 'POST',
-        body: JSON.stringify({ cleanedFormBody, form: 'GitBook Integration' }),
+        body: JSON.stringify({ data: cleanedFormBody, form: 'GitBook Integration' }),
         headers: {
             Accept: 'application/json',
         },
@@ -32,4 +32,5 @@ export async function removeEmptyValues(object) {
             }
         }
     }
+    return object;
 }

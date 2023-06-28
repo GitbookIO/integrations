@@ -34,7 +34,7 @@ configurations:
                 type: boolean
                 title: Email
                 description: An email field for your form
-                default: false
+                default: true
             name:
                 type: boolean
                 title: Name
