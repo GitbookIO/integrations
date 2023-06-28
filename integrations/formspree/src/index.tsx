@@ -7,11 +7,9 @@ type FormspreeContext = {
         spaceInstallation: {
             configuration: {
                 formspree_id: string;
-            };
-        };
-        installation: {
-            configuration: {
-                formspree_id: string;
+                email: string;
+                name: string;
+                message: string;
             };
         };
     };
@@ -25,15 +23,16 @@ const formspreeBlock = createComponent({
     componentId: 'formspree',
     initialState: {
         email: '',
+        name: '',
+        message: '',
         formSubmitted: false,
     },
     action: async (element, action: FormspreeAction, context: FormspreeContext) => {
         switch (action.action) {
             case 'submit':
                 handleSubmit(
-                    context.environment.spaceInstallation?.configuration.formspree_id ||
-                        context.environment.installation.configuration.formspree_id,
-                    element.state.email
+                    context.environment.spaceInstallation?.configuration.formspree_id,
+                    element.state
                 );
                 return {
                     state: {
@@ -42,13 +41,48 @@ const formspreeBlock = createComponent({
                 };
         }
     },
-    render: async (element, context) => {
+    render: async (element, context: FormspreeContext) => {
         return (
             <block>
-                <input
-                    label="Email"
-                    element={<textinput state="email" placeholder="Type your email" />}
-                />
+                <hstack>
+                    {/* Email */}
+                    {context.environment.spaceInstallation?.configuration.email ? (
+                        <box grow={1}>
+                            <input
+                                label="Email"
+                                element={<textinput state="email" placeholder="Your email" />}
+                            />
+                        </box>
+                    ) : null}
+
+                    {/* Name */}
+                    {context.environment.spaceInstallation?.configuration.name ? (
+                        <box grow={1}>
+                            <input
+                                label="Name"
+                                element={<textinput state="name" placeholder="Your name" />}
+                            />
+                        </box>
+                    ) : null}
+                </hstack>
+
+                <vstack>
+                    {/* Message */}
+                    {context.environment.spaceInstallation?.configuration.message ? (
+                        <box grow={2}>
+                            <input
+                                label="Message"
+                                element={
+                                    <textinput
+                                        state="message"
+                                        placeholder="Your message"
+                                        multiline={true}
+                                    />
+                                }
+                            />
+                        </box>
+                    ) : null}
+                </vstack>
 
                 <button
                     label={element.state.formSubmitted ? 'Submitted' : 'Submit'}
