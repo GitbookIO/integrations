@@ -1,16 +1,6 @@
 # Working with Markdown
 
-GitBook can synchronize user content with Git repositories with content being formatted as Markdown. Integration blocks can be configured to leverage custom formatting and parsing of markdown content.
-
-## Default formatting and parsing
-
-GitBook will automatically support formatting and parsing all integration blocks with Markdown. By default the Liquid syntax is used:
-
-```markdown
-{% raw %}
-{% myintegration/block-name propA="A" %}
-{% endraw %}
-```
+Integration blocks can be configured to leverage custom formatting and parsing of markdown content.
 
 ## As a code block
 
