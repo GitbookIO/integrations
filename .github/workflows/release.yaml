@@ -65,6 +65,8 @@ jobs:
                   GITBOOK_ORGANIZATION: gitbookio
                   UNFURL_GITHUB_CLIENT_ID: ${{ secrets.GITHUB_UNFURL_CLIENT_ID }}
                   UNFURL_GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_UNFURL_CLIENT_SECRET }}
+                  GITLAB_CLIENT_ID: ${{ secrets.GITLAB_CLIENT_ID }}
+                  GITLAB_CLIENT_SECRET: ${{ secrets.GITLAB_CLIENT_SECRET }}
                   SLACK_CLIENT_ID: ${{ secrets.SLACK_STAGING_CLIENT_ID }}
                   SLACK_CLIENT_SECRET: ${{ secrets.SLACK_STAGING_CLIENT_SECRET }}
                   SLACK_SIGNING_SECRET: ${{ secrets.SLACK_STAGING_SIGNING_SECRET }}
@@ -93,6 +95,8 @@ jobs:
                   GITBOOK_ORGANIZATION: gitbook
                   UNFURL_GITHUB_CLIENT_ID: ${{ secrets.GITHUB_UNFURL_CLIENT_ID }}
                   UNFURL_GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_UNFURL_CLIENT_SECRET }}
+                  GITLAB_CLIENT_ID: ${{ secrets.GITLAB_CLIENT_ID }}
+                  GITLAB_CLIENT_SECRET: ${{ secrets.GITLAB_CLIENT_SECRET }}
                   SLACK_CLIENT_ID: ${{ secrets.SLACK_PROD_CLIENT_ID }}
                   SLACK_CLIENT_SECRET: ${{ secrets.SLACK_PROD_CLIENT_SECRET }}
                   SLACK_SIGNING_SECRET: ${{ secrets.SLACK_PROD_SIGNING_SECRET }}
