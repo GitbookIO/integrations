@@ -1,16 +1,16 @@
 {
-  "name": "discord",
-  "private": true,
-  "scripts": {
-    "lint": "eslint ./**/*.ts*",
-    "typecheck": "tsc --noEmit",
-    "publish-integrations-staging": "gitbook publish ."
-  },
-  "devDependencies": {
-    "@gitbook/cli": "^0.8.0",
-    "@gitbook/runtime": "latest"
-  },
-  "dependencies": {
-    "itty-router": "^4.0.9"
-  }
+    "name": "@gitbook/integration-discord",
+    "private": true,
+    "scripts": {
+        "lint": "eslint ./**/*.ts*",
+        "typecheck": "tsc --noEmit",
+        "publish-integrations-staging": "gitbook publish ."
+    },
+    "devDependencies": {
+        "@gitbook/cli": "^0.9.0",
+        "@gitbook/runtime": "latest"
+    },
+    "dependencies": {
+        "itty-router": "^4.0.9"
+    }
 }
