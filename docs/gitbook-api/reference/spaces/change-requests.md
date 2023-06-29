@@ -8,6 +8,12 @@ description: >-
 
 <figure><img src="../../../.gitbook/assets/Change Request.png" alt=""><figcaption></figcaption></figure>
 
+### `GET` a list of Change Requests in a space
+
+{% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/change-requests" method="get" expanded="true" %}
+[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
+{% endswagger %}
+
 ### `POST` a new Change Request in a space
 
 {% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/change-requests" method="post" expanded="true" %}
