@@ -4,6 +4,8 @@ icon: ./assets/icon.png
 description: Some test integration for injecting scripts
 visibility: private
 script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
     - space:script:inject
 summary: |

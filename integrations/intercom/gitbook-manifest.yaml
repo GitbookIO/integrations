@@ -9,6 +9,8 @@ externalLinks:
       url: https://www.gitbook.com/integrations/intercom
 visibility: public
 script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
     - space:script:inject
     - space:script:cookies
