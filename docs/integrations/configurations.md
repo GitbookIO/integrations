@@ -82,6 +82,14 @@ The scopes your integration has permissions for.
   - space:views:read
 </code></pre>
 
+{% hint style="danger" %}
+You may see the scope `space:script:inject` throughout GitBook owned integrations—This scope is only available for internal GitBook use.
+
+
+
+Building integrations that inject JavaScript into a space or page are not possible to build at this time.
+{% endhint %}
+
 ### Script
 
 The main script to execute for your integration. Should contain the call to [`createIntegration()`](reference/createintegration.md).
