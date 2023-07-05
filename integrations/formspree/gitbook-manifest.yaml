@@ -24,16 +24,25 @@ blocks:
       title: Formspree
       description: My GitBook Integration
 configurations:
-    account:
-        properties:
-            formspree_id:
-                type: string
-                title: Formspree endpoint
-                description: The endpoint your formspree lives at.
     space:
         properties:
             formspree_id:
                 type: string
                 title: Formspree endpoint
                 description: The endpoint your formspree lives at.
+            email:
+                type: boolean
+                title: Email
+                description: An email field for your form
+                default: true
+            name:
+                type: boolean
+                title: Name
+                description: A name field for your form
+                default: false
+            message:
+                type: boolean
+                title: Message
+                description: A message field for your form
+                default: false
 secrets: {}
