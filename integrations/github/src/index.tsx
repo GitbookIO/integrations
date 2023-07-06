@@ -12,6 +12,7 @@ import {
 
 import { getGithubContent, GithubProps } from './github';
 import { GithubRuntimeContext } from './types';
+import { getFileExtension } from './utils';
 
 const embedBlock = createComponent<{ url?: string }, {}, {}, GithubRuntimeContext>({
     componentId: 'github-code-block',
@@ -34,7 +35,8 @@ const embedBlock = createComponent<{ url?: string }, {}, {}, GithubRuntimeContex
 
     async render(element, context) {
         const { url } = element.props as GithubProps;
-        const content = await getGithubContent(url, context);
+        const [content, fileName] = await getGithubContent(url, context);
+        const fileExtension = await getFileExtension(fileName);
 
         if (!content) {
             return (
@@ -59,7 +61,18 @@ const embedBlock = createComponent<{ url?: string }, {}, {}, GithubRuntimeContex
         }
 
         return (
-            <block>
+            <block
+                controls={[
+                    {
+                        label: 'Show link',
+                        icon: 'edit',
+                        onPress: {
+                            action: 'toggleTitleVisibility',
+                            props: {},
+                        },
+                    },
+                ]}
+            >
                 <card
                     title={url}
                     onPress={{
@@ -75,7 +88,13 @@ const embedBlock = createComponent<{ url?: string }, {}, {}, GithubRuntimeContex
                         />
                     }
                 >
-                    {content ? <codeblock content={content.toString()} lineNumbers={true} /> : null}
+                    {content ? (
+                        <codeblock
+                            content={content.toString()}
+                            lineNumbers={true}
+                            syntax={fileExtension}
+                        />
+                    ) : null}
                 </card>
             </block>
         );
