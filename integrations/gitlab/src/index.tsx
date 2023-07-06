@@ -38,8 +38,8 @@ const gitlabCodeBlock = createComponent<
     async render(element, context) {
         const { url } = element.props as GitlabProps;
         const [content, filePath] = await getGitlabContent(url, context);
-        const fileExtension = await getFileExtension(filePath);=
-        
+        const fileExtension = await getFileExtension(filePath);
+
         if (!content) {
             return (
                 <block>
