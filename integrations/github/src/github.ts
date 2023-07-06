@@ -125,5 +125,5 @@ export const getGithubContent = async (url: string, context: GithubRuntimeContex
         }
     }
 
-    return content;
+    return [content, urlObject.fileName];
 };

@@ -12,9 +12,18 @@ import {
 
 import { getGithubContent, GithubProps } from './github';
 import { GithubRuntimeContext } from './types';
+import { getFileExtension } from './utils';
 
-const embedBlock = createComponent<{ url?: string }, {}, {}, GithubRuntimeContext>({
+const embedBlock = createComponent<
+    { url?: string },
+    { visible: boolean },
+    {},
+    GithubRuntimeContext
+>({
     componentId: 'github-code-block',
+    initialState: {
+        visible: true,
+    },
 
     async action(element, action) {
         switch (action.action) {
@@ -27,6 +36,12 @@ const embedBlock = createComponent<{ url?: string }, {}, {}, GithubRuntimeContex
                     },
                 };
             }
+            case 'show': {
+                return { state: { visible: true } };
+            }
+            case 'hide': {
+                return { state: { visible: false } };
+            }
         }
 
         return element;
@@ -34,7 +49,8 @@ const embedBlock = createComponent<{ url?: string }, {}, {}, GithubRuntimeContex
 
     async render(element, context) {
         const { url } = element.props as GithubProps;
-        const content = await getGithubContent(url, context);
+        const [content, fileName] = await getGithubContent(url, context);
+        const fileExtension = await getFileExtension(fileName);
 
         if (!content) {
             return (
@@ -59,13 +75,32 @@ const embedBlock = createComponent<{ url?: string }, {}, {}, GithubRuntimeContex
         }
 
         return (
-            <block>
+            <block
+                controls={[
+                    {
+                        label: 'Show title & link',
+                        onPress: {
+                            action: 'show',
+                        },
+                    },
+                    {
+                        label: 'Hide title & link',
+                        onPress: {
+                            action: 'hide',
+                        },
+                    },
+                ]}
+            >
                 <card
-                    title={url}
-                    onPress={{
-                        action: '@ui.url.open',
-                        url,
-                    }}
+                    title={element.state.visible ? url : ''}
+                    onPress={
+                        element.state.visible
+                            ? {
+                                  action: '@ui.url.open',
+                                  url,
+                              }
+                            : { action: 'null' }
+                    }
                     icon={
                         <image
                             source={{
@@ -75,7 +110,13 @@ const embedBlock = createComponent<{ url?: string }, {}, {}, GithubRuntimeContex
                         />
                     }
                 >
-                    {content ? <codeblock content={content.toString()} lineNumbers={true} /> : null}
+                    {content ? (
+                        <codeblock
+                            content={content.toString()}
+                            lineNumbers={true}
+                            syntax={fileExtension}
+                        />
+                    ) : null}
                 </card>
             </block>
         );

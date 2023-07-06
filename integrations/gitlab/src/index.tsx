@@ -2,9 +2,18 @@ import { createIntegration, createComponent, createOAuthHandler } from '@gitbook
 
 import { getGitlabContent, GitlabProps } from './gitlab';
 import { GitlabRuntimeContext } from './types';
+import { getFileExtension } from './utils';
 
-const gitlabCodeBlock = createComponent<{ url?: string }, {}, {}, GitlabRuntimeContext>({
+const gitlabCodeBlock = createComponent<
+    { url?: string },
+    { visible: boolean },
+    {},
+    GitlabRuntimeContext
+>({
     componentId: 'gitlab-code-block',
+    initialState: {
+        visible: true,
+    },
     async action(element, action) {
         switch (action.action) {
             case '@link.unfurl': {
@@ -16,13 +25,20 @@ const gitlabCodeBlock = createComponent<{ url?: string }, {}, {}, GitlabRuntimeC
                     },
                 };
             }
+            case 'show': {
+                return { state: { visible: true } };
+            }
+            case 'hide': {
+                return { state: { visible: false } };
+            }
         }
 
         return element;
     },
     async render(element, context) {
         const { url } = element.props as GitlabProps;
-        const content = await getGitlabContent(url, context);
+        const [content, filePath] = await getGitlabContent(url, context);
+        const fileExtension = await getFileExtension(filePath);
 
         if (!content) {
             return (
@@ -47,13 +63,32 @@ const gitlabCodeBlock = createComponent<{ url?: string }, {}, {}, GitlabRuntimeC
         }
 
         return (
-            <block>
+            <block
+                controls={[
+                    {
+                        label: 'Show title & link',
+                        onPress: {
+                            action: 'show',
+                        },
+                    },
+                    {
+                        label: 'Hide title & link',
+                        onPress: {
+                            action: 'hide',
+                        },
+                    },
+                ]}
+            >
                 <card
-                    title={url}
-                    onPress={{
-                        action: '@ui.url.open',
-                        url,
-                    }}
+                    title={element.state.visible ? url : ''}
+                    onPress={
+                        element.state.visible
+                            ? {
+                                  action: '@ui.url.open',
+                                  url,
+                              }
+                            : { action: 'null' }
+                    }
                     icon={
                         <image
                             source={{
@@ -76,7 +111,13 @@ const gitlabCodeBlock = createComponent<{ url?: string }, {}, {}, GitlabRuntimeC
                         />,
                     ]}
                 >
-                    {content ? <codeblock content={content.toString()} lineNumbers={true} /> : null}
+                    {content ? (
+                        <codeblock
+                            content={content.toString()}
+                            lineNumbers={true}
+                            syntax={fileExtension}
+                        />
+                    ) : null}
                 </card>
             </block>
         );
