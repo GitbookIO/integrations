@@ -14,8 +14,16 @@ import { getGithubContent, GithubProps } from './github';
 import { GithubRuntimeContext } from './types';
 import { getFileExtension } from './utils';
 
-const embedBlock = createComponent<{ url?: string }, {}, {}, GithubRuntimeContext>({
+const embedBlock = createComponent<
+    { url?: string },
+    { visible: boolean },
+    {},
+    GithubRuntimeContext
+>({
     componentId: 'github-code-block',
+    initialState: {
+        visible: true,
+    },
 
     async action(element, action) {
         switch (action.action) {
@@ -27,6 +35,12 @@ const embedBlock = createComponent<{ url?: string }, {}, {}, GithubRuntimeContex
                         url,
                     },
                 };
+            }
+            case 'show': {
+                return { state: { visible: true } };
+            }
+            case 'hide': {
+                return { state: { visible: false } };
             }
         }
 
@@ -64,21 +78,29 @@ const embedBlock = createComponent<{ url?: string }, {}, {}, GithubRuntimeContex
             <block
                 controls={[
                     {
-                        label: 'Show link',
-                        icon: 'edit',
+                        label: 'Show title & link',
                         onPress: {
-                            action: 'toggleTitleVisibility',
-                            props: {},
+                            action: 'show',
+                        },
+                    },
+                    {
+                        label: 'Hide title & link',
+                        onPress: {
+                            action: 'hide',
                         },
                     },
                 ]}
             >
                 <card
-                    title={url}
-                    onPress={{
-                        action: '@ui.url.open',
-                        url,
-                    }}
+                    title={element.state.visible ? url : ''}
+                    onPress={
+                        element.state.visible
+                            ? {
+                                  action: '@ui.url.open',
+                                  url,
+                              }
+                            : { action: 'null' }
+                    }
                     icon={
                         <image
                             source={{
