@@ -2,6 +2,7 @@ import { createIntegration, createComponent, createOAuthHandler } from '@gitbook
 
 import { getGitlabContent, GitlabProps } from './gitlab';
 import { GitlabRuntimeContext } from './types';
+import { getFileExtension } from './utils';
 
 const gitlabCodeBlock = createComponent<
     { url?: string },
@@ -36,8 +37,9 @@ const gitlabCodeBlock = createComponent<
     },
     async render(element, context) {
         const { url } = element.props as GitlabProps;
-        const content = await getGitlabContent(url, context);
-
+        const [content, filePath] = await getGitlabContent(url, context);
+        const fileExtension = await getFileExtension(filePath);=
+        
         if (!content) {
             return (
                 <block>
@@ -109,7 +111,13 @@ const gitlabCodeBlock = createComponent<
                         />,
                     ]}
                 >
-                    {content ? <codeblock content={content.toString()} lineNumbers={true} /> : null}
+                    {content ? (
+                        <codeblock
+                            content={content.toString()}
+                            lineNumbers={true}
+                            syntax={fileExtension}
+                        />
+                    ) : null}
                 </card>
             </block>
         );

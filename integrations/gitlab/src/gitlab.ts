@@ -132,5 +132,5 @@ export const getGitlabContent = async (url: string, context: GitlabRuntimeContex
         }
     }
 
-    return content;
+    return [content, urlObject.filePath.split('#')[0]];
 };
