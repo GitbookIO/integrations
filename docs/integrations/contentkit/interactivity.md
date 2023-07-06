@@ -1,6 +1,6 @@
 # Interactivity
 
-ContentKit components can be interactive, meaning the users visiting your site can do things like type or click in your components. Different components expose different action handlers—Like buttons exposing an `onPress` event.&#x20;
+ContentKit components can be interactive, meaning the users visiting your site can do things like type or click in your components. Different components expose different action handlers, like buttons exposing an `onPress` event.&#x20;
 
 See the [Actions Reference](reference/actions.md) to learn about the different actions GitBook exposes for you to hook into.
 
@@ -93,7 +93,7 @@ window.addEventListener("message", (event) => {
 
 ## Webframes and actions
 
-Webframes are powerful elements to integrate in GitBook external applications or complete UI. Passing data to the webframe can be done using the `data` prop. But the webframe also needs to be able to coomunicate data back to the top component. It can be achieved using the `window.postMessage`:
+Webframes are powerful elements to integrate in GitBook external applications or complete UI. Passing data to the webframe can be done using the `data` prop. But the webframe also needs to be able to communicate data back to the top component. It can be achieved using the `window.postMessage`:
 
 ```js
 window.parent.postMessage({
