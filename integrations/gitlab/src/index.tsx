@@ -3,8 +3,16 @@ import { createIntegration, createComponent, createOAuthHandler } from '@gitbook
 import { getGitlabContent, GitlabProps } from './gitlab';
 import { GitlabRuntimeContext } from './types';
 
-const gitlabCodeBlock = createComponent<{ url?: string }, {}, {}, GitlabRuntimeContext>({
+const gitlabCodeBlock = createComponent<
+    { url?: string },
+    { visible: boolean },
+    {},
+    GitlabRuntimeContext
+>({
     componentId: 'gitlab-code-block',
+    initialState: {
+        visible: true,
+    },
     async action(element, action) {
         switch (action.action) {
             case '@link.unfurl': {
@@ -15,6 +23,12 @@ const gitlabCodeBlock = createComponent<{ url?: string }, {}, {}, GitlabRuntimeC
                         url,
                     },
                 };
+            }
+            case 'show': {
+                return { state: { visible: true } };
+            }
+            case 'hide': {
+                return { state: { visible: false } };
             }
         }
 
@@ -47,13 +61,32 @@ const gitlabCodeBlock = createComponent<{ url?: string }, {}, {}, GitlabRuntimeC
         }
 
         return (
-            <block>
+            <block
+                controls={[
+                    {
+                        label: 'Show title & link',
+                        onPress: {
+                            action: 'show',
+                        },
+                    },
+                    {
+                        label: 'Hide title & link',
+                        onPress: {
+                            action: 'hide',
+                        },
+                    },
+                ]}
+            >
                 <card
-                    title={url}
-                    onPress={{
-                        action: '@ui.url.open',
-                        url,
-                    }}
+                    title={element.state.visible ? url : ''}
+                    onPress={
+                        element.state.visible
+                            ? {
+                                  action: '@ui.url.open',
+                                  url,
+                              }
+                            : { action: 'null' }
+                    }
                     icon={
                         <image
                             source={{
