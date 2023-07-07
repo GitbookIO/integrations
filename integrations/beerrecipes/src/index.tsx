@@ -44,11 +44,11 @@ const beerRecipesBlock = createComponent<
         };
     },
     action: async (element, action, context) => {
-        // console.log('action: ', action);
+        console.log('action: ', action);
         switch (action.action) {
             case 'click':
                 const resp = await getFromFetchRequest();
-                // console.log('clicked');
+                console.log('clicked');
                 return {
                     state: {
                         response: resp,
@@ -57,49 +57,49 @@ const beerRecipesBlock = createComponent<
         }
     },
     render: async (element, context) => {
-        // console.log(element);
-        // if (element.state.response.length > 0) {
-        //     return (
-        //         <block>
-        //             <text
-        //                 children={[
-        //                     `Ingredients for `,
-        //                     {
-        //                         type: 'text',
-        //                         style: 'bold',
-        //                         children: [`${element.state.response[0].name}`],
-        //                     },
-        //                 ]}
-        //             />
-        //             <text children={[`${element.state.response[0].description}`]} />
-        //             <input label="Show details" element={<switch state="details" />} />
+        console.log(element);
+        if (element.state.response.length > 0) {
+            return (
+                <block>
+                    <text
+                        children={[
+                            `Ingredients for `,
+                            {
+                                type: 'text',
+                                style: 'bold',
+                                children: [`${element.state.response[0].name}`],
+                            },
+                        ]}
+                    />
+                    <text children={[`${element.state.response[0].description}`]} />
+                    <input label="Show details" element={<switch state="details" />} />
 
-        //             <text children={[`Malts`]} style="bold" />
-        //             {element.state.response[0].ingredients.malt.map((malt) => (
-        //                 <vstack>
-        //                     <input
-        //                         label={`${malt.name}`}
-        //                         hint={`${malt.amount.value} ${malt.amount.unit}`}
-        //                         element={<checkbox state={`${malt.name}`} value={`${malt.name}`} />}
-        //                     />
-        //                 </vstack>
-        //             ))}
+                    <text children={[`Malts`]} style="bold" />
+                    {element.state.response[0].ingredients.malt.map((malt) => (
+                        <vstack>
+                            <input
+                                label={`${malt.name}`}
+                                hint={`${malt.amount.value} ${malt.amount.unit}`}
+                                element={<checkbox state={`${malt.name}`} value={`${malt.name}`} />}
+                            />
+                        </vstack>
+                    ))}
 
-        //             <text children={[`Hops`]} style="bold" />
-        //             {element.state.response[0].ingredients.hops.map((hop) => (
-        //                 <vstack>
-        //                     <input
-        //                         label={`${hop.name}`}
-        //                         hint={`${hop.amount.value} ${hop.amount.unit}`}
-        //                         element={<checkbox state={`${hop.name}`} value={`${hop.name}`} />}
-        //                     />
-        //                 </vstack>
-        //             ))}
+                    <text children={[`Hops`]} style="bold" />
+                    {element.state.response[0].ingredients.hops.map((hop) => (
+                        <vstack>
+                            <input
+                                label={`${hop.name}`}
+                                hint={`${hop.amount.value} ${hop.amount.unit}`}
+                                element={<checkbox state={`${hop.name}`} value={`${hop.name}`} />}
+                            />
+                        </vstack>
+                    ))}
 
-        //             <text children={[`${JSON.stringify(element.state)}`]}></text>
-        //         </block>
-        //     );
-        // }
+                    <text children={[`${JSON.stringify(element.state)}`]}></text>
+                </block>
+            );
+        }
 
         return (
             <block>
