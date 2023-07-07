@@ -1,0 +1,17 @@
+name: beerrecipes
+title: beerrecipes
+organization: iL4LPPegOcRArGBcIIuF
+visibility: private
+description: ''
+script: src/index.tsx
+scopes:
+  - space:content:read
+  - space:content:write
+  - space:metadata:read
+  - space:metadata:write
+  - space:views:read
+blocks:
+  - id: beerrecipes
+    title: beerrecipes
+    description: My GitBook Integration
+secrets: {}
