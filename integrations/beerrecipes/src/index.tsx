@@ -7,7 +7,7 @@ import {
 
 type IntegrationContext = {} & RuntimeContext;
 type IntegrationBlockProps = {};
-type IntegrationBlockState = { message: string };
+type IntegrationBlockState = { response: any };
 type IntegrationAction = { action: 'click' };
 
 const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request, context) => {
@@ -19,7 +19,7 @@ const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request,
 };
 
 async function getFromFetchRequest() {
-    const resp = await fetch('https://api.punkapi.com/v2/beers');
+    const resp = await fetch('https://api.punkapi.com/v2/beers/random');
 
     if (!resp.ok) {
         throw new Error(`Could not fetch JIRA sites ${resp.status} ${resp.statusText}`);
@@ -40,43 +40,71 @@ const beerRecipesBlock = createComponent<
     initialState: (props) => {
         return {
             message: 'Click Me',
+            response: {},
         };
     },
     action: async (element, action, context) => {
+        // console.log('action: ', action);
         switch (action.action) {
             case 'click':
                 const resp = await getFromFetchRequest();
-
+                // console.log('clicked');
                 return {
-                    props: {
+                    state: {
                         response: resp,
                     },
                 };
         }
     },
     render: async (element, context) => {
+        // console.log(element);
+        // if (element.state.response.length > 0) {
+        //     return (
+        //         <block>
+        //             <text
+        //                 children={[
+        //                     `Ingredients for `,
+        //                     {
+        //                         type: 'text',
+        //                         style: 'bold',
+        //                         children: [`${element.state.response[0].name}`],
+        //                     },
+        //                 ]}
+        //             />
+        //             <text children={[`${element.state.response[0].description}`]} />
+        //             <input label="Show details" element={<switch state="details" />} />
+
+        //             <text children={[`Malts`]} style="bold" />
+        //             {element.state.response[0].ingredients.malt.map((malt) => (
+        //                 <vstack>
+        //                     <input
+        //                         label={`${malt.name}`}
+        //                         hint={`${malt.amount.value} ${malt.amount.unit}`}
+        //                         element={<checkbox state={`${malt.name}`} value={`${malt.name}`} />}
+        //                     />
+        //                 </vstack>
+        //             ))}
+
+        //             <text children={[`Hops`]} style="bold" />
+        //             {element.state.response[0].ingredients.hops.map((hop) => (
+        //                 <vstack>
+        //                     <input
+        //                         label={`${hop.name}`}
+        //                         hint={`${hop.amount.value} ${hop.amount.unit}`}
+        //                         element={<checkbox state={`${hop.name}`} value={`${hop.name}`} />}
+        //                     />
+        //                 </vstack>
+        //             ))}
+
+        //             <text children={[`${JSON.stringify(element.state)}`]}></text>
+        //         </block>
+        //     );
+        // }
+
         return (
             <block>
-                <text children={['Request beer recipes.']}></text>
-
-                <text children={[`${JSON.stringify(element?.props?.response)}`]}></text>
-
-                <input
-                    element={
-                        <checkbox
-                            state="toppings"
-                            value="onions"
-                            confirm={{
-                                title: 'Are you sure?',
-                                text: 'Bla bla bla',
-                                confirm: 'Yes',
-                            }}
-                        />
-                    }
-                    label="Yes, I want to request images"
-                    hint="This will make an outgoing fetch request."
-                ></input>
-                <button label="Get data" onPress={{ action: 'click' }}></button>
+                <text children={['Give me a random beer recipe']}></text>
+                <button label="Generate recipe" onPress={{ action: 'click' }}></button>
             </block>
         );
     },
@@ -87,3 +115,5 @@ export default createIntegration({
     components: [beerRecipesBlock],
     events: {},
 });
+
+// return <text children={[`${JSON.stringify(beer.name)}`]}></text>;
