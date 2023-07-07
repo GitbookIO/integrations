@@ -16,7 +16,7 @@ description: A space in GitBook is the entity of a project you work in.
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
 
-## `GET` permissions for all users in a space
+### `GET` permissions for all users in a space
 
 {% swagger src="https://api.gitbook.com/openapi.json" path="/spaces/{spaceId}/permissions/aggregate" method="get" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
