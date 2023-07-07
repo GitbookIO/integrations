@@ -25,3 +25,9 @@ description: >-
 {% swagger src="https://api.gitbook.com/openapi.json" path="/orgs/{organizationId}/spaces" method="get" expanded="true" %}
 [https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
 {% endswagger %}
+
+### `GET` spaces of the organization including Git Sync metadata
+
+{% swagger src="https://api.gitbook.com/openapi.json" path="/orgs/{organizationId}/spaces/gitsync" method="get" %}
+[https://api.gitbook.com/openapi.json](https://api.gitbook.com/openapi.json)
+{% endswagger %}
