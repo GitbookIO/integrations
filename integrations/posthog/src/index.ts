@@ -30,7 +30,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     }
     if (!instanceAddress) {
         throw new Error(
-            `The PostHog instance address is missing from the configuration (ID: ${event.spaceId}).`
+            `The PostHog instance address is missing from the space configuration (ID: ${event.spaceId}).`
         );
     }
 
