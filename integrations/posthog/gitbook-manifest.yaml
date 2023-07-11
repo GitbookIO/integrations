@@ -43,8 +43,8 @@ configurations:
                 title: Instance address
                 description: Depends on your PostHog installation's location (either EU, or US)
                 enum:
-                    - https://eu.posthog.com
-                    - https://us.posthog.com
+                    - EU
+                    - US
         required:
             - projectApiKey
             - instanceAddress

@@ -21,6 +21,10 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
     { environment }: PostHogRuntimeContext
 ) => {
+    const instancesURLs = {
+        EU: 'https://eu.posthog.com',
+        US: 'https://us.posthog.com',
+    };
     const projectApiKey = environment.spaceInstallation.configuration.projectApiKey;
     const instanceAddress = environment.spaceInstallation.configuration.instanceAddress;
     if (!projectApiKey) {
@@ -37,7 +41,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     return new Response(
         script
             .replace('<ph_project_api_key>', projectApiKey)
-            .replace('<ph_instance_address>', instanceAddress),
+            .replace('<ph_instance_address>', instancesURLs[instanceAddress]),
         {
             headers: {
                 'Content-Type': 'application/javascript',
