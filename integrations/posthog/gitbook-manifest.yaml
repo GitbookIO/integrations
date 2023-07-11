@@ -2,8 +2,8 @@ name: posthog
 title: PostHog
 icon: ./assets/icon.png
 previewImages:
-    - ./assets/posthog-preview.png
-    - ./assets/posthog-preview-2.png
+    - ./assets/posthog-image-1.png
+    - ./assets/posthog-image-2.png
 description: Plug your GitBook site to your PostHog installation.
 externalLinks:
     - label: Documentation
