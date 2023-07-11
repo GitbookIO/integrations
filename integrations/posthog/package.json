@@ -1,5 +1,5 @@
 {
-    "name": "@gitbook/integration-hotjar",
+    "name": "@gitbook/integration-posthog",
     "version": "0.0.1",
     "private": true,
     "dependencies": {
