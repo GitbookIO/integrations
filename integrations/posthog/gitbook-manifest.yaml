@@ -1,0 +1,50 @@
+name: posthog
+title: PostHog
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/posthog-image-1.png
+    - ./assets/posthog-image-2.png
+description: Plug your GitBook site to your PostHog installation.
+externalLinks:
+    - label: Documentation
+      url: https://www.gitbook.com/integrations/posthog
+visibility: public
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - space:script:inject
+organization: d8f63b60-89ae-11e7-8574-5927d48c4877
+contentSecurityPolicy:
+    script-src: https://eu.posthog.com https://us.posthog.com;
+summary: |
+    # Overview
+    This integration allows to add the PostHog installation snippet on your published GitBook site.
+
+    # How it works
+    The integration injects the PostHog script on your page, using the configured project API key and instance address, 
+    so that you can get analytics information from your GitBook site directly inside of PostHog.
+
+    # Configure
+    Install the integration on the GitBook space of your choice.
+    Locate the PostHog project API key and instance address you are using, which is available in PostHog's installation section.
+
+categories:
+    - analytics
+configurations:
+    space:
+        properties:
+            projectApiKey:
+                type: string
+                title: Project API Key
+                description: Available in the PostHog installation snippet, as the first parameter, starting with 'phc_'
+            instanceAddress:
+                type: string
+                title: Instance address
+                description: Depends on your PostHog installation's location (either EU, or US)
+                enum:
+                    - EU
+                    - US
+        required:
+            - projectApiKey
+            - instanceAddress
