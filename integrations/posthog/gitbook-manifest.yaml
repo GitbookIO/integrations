@@ -16,7 +16,7 @@ scopes:
     - space:script:inject
 organization: d8f63b60-89ae-11e7-8574-5927d48c4877
 contentSecurityPolicy:
-    script-src: eu.posthog.com us.posthog.com;
+    script-src: https://eu.posthog.com https://us.posthog.com;
 summary: |
     # Overview
     This integration allows to add the PostHog installation snippet on your published GitBook site.

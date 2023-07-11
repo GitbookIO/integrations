@@ -7,34 +7,46 @@ import {
 
 import script from './script.raw.js';
 
-type HotjarRuntimeContext = RuntimeContext<
+type PostHogRuntimeContext = RuntimeContext<
     RuntimeEnvironment<
         {},
         {
-            tracking_id?: string;
+            projectApiKey?: string;
+            instanceAddress?: string;
         }
     >
 >;
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: HotjarRuntimeContext
+    { environment }: PostHogRuntimeContext
 ) => {
-    const trackingId = environment.spaceInstallation.configuration.tracking_id;
-    if (!trackingId) {
+    const projectApiKey = environment.spaceInstallation.configuration.projectApiKey;
+    const instanceAddress = environment.spaceInstallation.configuration.instanceAddress;
+    if (!projectApiKey) {
         throw new Error(
-            `The Hotjar Site ID is missing from the configuration (ID: ${event.spaceId}).`
+            `The PostHog project API key is missing from the configuration (ID: ${event.spaceId}).`
+        );
+    }
+    if (!instanceAddress) {
+        throw new Error(
+            `The PostHog instance address is missing from the configuration (ID: ${event.spaceId}).`
         );
     }
 
-    return new Response(script.replace('<TO_REPLACE>', trackingId), {
-        headers: {
-            'Content-Type': 'application/javascript',
-            'Cache-Control': 'max-age=604800',
-        },
-    });
+    return new Response(
+        script
+            .replace('<ph_project_api_key>', projectApiKey)
+            .replace('<ph_instance_address>', instanceAddress),
+        {
+            headers: {
+                'Content-Type': 'application/javascript',
+                'Cache-Control': 'max-age=604800',
+            },
+        }
+    );
 };
 
-export default createIntegration<HotjarRuntimeContext>({
+export default createIntegration<PostHogRuntimeContext>({
     fetch_published_script: handleFetchEvent,
 });
