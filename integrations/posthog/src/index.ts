@@ -25,7 +25,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     const instanceAddress = environment.spaceInstallation.configuration.instanceAddress;
     if (!projectApiKey) {
         throw new Error(
-            `The PostHog project API key is missing from the configuration (ID: ${event.spaceId}).`
+            `The PostHog project API key is missing from the space configuration (ID: ${event.spaceId}).`
         );
     }
     if (!instanceAddress) {
