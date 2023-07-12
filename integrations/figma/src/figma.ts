@@ -46,7 +46,9 @@ export function extractNodeFromURL(input: string): FileNodeId | undefined {
 
     let nodeId: string | undefined;
     if (url.searchParams.has('node-id')) {
-        nodeId = url.searchParams.get('node-id');
+        // some times the node-id in the URL has a dash instead of a colon but the figma API returns response
+        // of nodes-id(s) with a colon so we're adopting that format
+        nodeId = url.searchParams.get('node-id').replaceAll('-', ':');
     }
 
     return { fileId: parts[2], nodeId };
