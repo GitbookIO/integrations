@@ -177,30 +177,6 @@ with `align`:
 
 <mark style="color:red;">\*required</mark>
 
-
-
-### `spacer`
-
-A flexible space that expands along the major axis of its containing stack layout, or on both axes if not contained in a stack.
-
-{% tabs %}
-{% tab title="JSX" %}
-```tsx
-<spacer />
-```
-{% endtab %}
-
-{% tab title="JSON" %}
-```json
-{
-    "type": "spacer"
-}
-```
-{% endtab %}
-{% endtabs %}
-
-
-
 ### `divider`
 
 A visual delimiter between 2 elements of a containing stack layout.
