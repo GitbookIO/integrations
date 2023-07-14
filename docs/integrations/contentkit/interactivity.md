@@ -17,7 +17,7 @@ The most common interactive elements are buttons. Buttons can be use to trigger 
         action: 'hello',
         anotherProperty: 'something'
     }}
-    />
+/>
 ```
 
 When the user presses the button, the `action` is dispatched to the integration and can be handled in the `action` callback:
@@ -25,7 +25,7 @@ When the user presses the button, the `action` is dispatched to the integration 
 ```tsx
 const helloWorldBlock = createComponent({
     ...
-    action: async (previous, action) => {
+    async action(previous, action) {
         switch (action.action) {
             case 'hello':
                 return { state: { newStateProperty: action.anotherProperty } };
