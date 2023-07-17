@@ -67,9 +67,6 @@
   * [Link unfurling](integrations/blocks/link-unfurling.md)
   * [Editable blocks](integrations/blocks/editable-blocks.md)
   * [Working with Markdown](integrations/blocks/markdown.md)
-* [Examples](integrations/examples/README.md)
-  * [Segment](integrations/examples/segment.md)
-  * [Slack](integrations/examples/slack.md)
 
 ## Visitor Authentication
 
