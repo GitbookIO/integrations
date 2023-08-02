@@ -155,7 +155,7 @@ export async function extendPackageJson(dirPath: string, projectName: string): P
         },
     };
 
-    await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJsonObject, null, 4));
+    await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJsonObject, null, 2));
 }
 
 /**
