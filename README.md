@@ -45,6 +45,7 @@ It also hosts the default integrations provided by the GitBook team:
 - [`sentry`](./integrations/sentry/)
 - [`segment`](./integrations/segment/)
 - [`slack`](./integrations/slack/)
+- [`terraform`](./integrations/terraform/)
 - [`toucantoco`](./integrations/toucantoco/)
 
 ## Contributing

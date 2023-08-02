@@ -1,0 +1,16 @@
+name: terraform
+title: Terraform
+organization: gitbook
+visibility: private
+description: An integration to support syncing Terraform resources with GitBook.
+script: src/index.ts
+scopes:
+  - space:content:read
+  - space:content:write
+  - space:metadata:read
+  - space:metadata:write
+blocks:
+  - id: terraform
+    title: Terraform
+    description: Terraform Integration
+secrets: {}
