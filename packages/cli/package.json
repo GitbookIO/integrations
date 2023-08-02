@@ -20,6 +20,7 @@
     },
     "devDependencies": {
         "@gitbook/eslint-config": "*",
+        "@schemastore/package": "^0.0.10",
         "@types/node": "^17.0.33",
         "@types/prompts": "^2.0.14",
         "chokidar": "^3.5.3",
