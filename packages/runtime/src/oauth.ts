@@ -162,7 +162,12 @@ export function createOAuthHandler(
             logger.debug(`exchange code for credentials`, credentials);
 
             try {
-                // parse the JSON-encoded state parameter
+                /**
+                 * Parse the JSON encoded state parameter.
+                 * If the state contains a spaceId, then the Oauth flow was initiated from a space installation
+                 * public url and thus we need to update the space installation config otherwise fallback to
+                 * updating the installation config.
+                 */
                 const state = JSON.parse(url.searchParams.get('state')) as {
                     installationId: string;
                     spaceId?: string;
