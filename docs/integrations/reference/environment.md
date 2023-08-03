@@ -32,8 +32,8 @@ When reading information about your integration, you should default to using `sp
         };
         
         /** 
-        Custom configuration variables of the integration at the account level. 
-        See the Configurations section to learn more
+        Custom configuration variables of the integration at a space level. 
+        See the Configurations section to learn more.
         */
         configuration: {};
         
@@ -45,7 +45,7 @@ When reading information about your integration, you should default to using `sp
         };
     };
     
-    /** Installation of an integration on an account */
+    /** Installation of an integration on an organization */
     installation?: {
         id: string;
         
@@ -65,8 +65,8 @@ When reading information about your integration, you should default to using `sp
         };
         
         /** 
-        Custom configuration variables of the integration at the account level. 
-        See the Configurations section to learn more
+        Custom configuration variables of the integration at the organization level. 
+        See the Configurations section to learn more.
         */
         configuration: {};
         

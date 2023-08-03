@@ -296,8 +296,8 @@ secrets:
 
 ## Installation & Configuration flow
 
-During the installation flow, an event `installation:setup` is triggered as soon as the integration is installed for the first time. You can identify the configuration as being incomplete by checking `environment.installation.status != 'active'`.
+During the installation flow, an event `installation_setup` is triggered as soon as the integration is installed for the first time. You can identify the configuration as being incomplete by checking `environment.installation.status != 'active'`.
 
-This event (`installation:setup`) is triggered every time the user edits one property of the configuration. The status will become `active` once the configuration pass the validation with the schema.
+This event (`installation_setup`) is triggered every time the user edits one property of the configuration. The status will become `active` once the configuration pass the validation with the schema.
 
 <img src="../.gitbook/assets/install-flow.drawing.svg" alt="" class="gitbook-drawing">
