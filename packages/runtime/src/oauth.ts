@@ -99,7 +99,15 @@ export function createOAuthHandler(
             redirectTo.searchParams.set('client_id', config.clientId);
             redirectTo.searchParams.set('redirect_uri', redirectUri);
             redirectTo.searchParams.set('response_type', 'code');
-            redirectTo.searchParams.set('state', environment.installation.id);
+            redirectTo.searchParams.set(
+                'state',
+                JSON.stringify({
+                    installationId: environment.installation.id,
+                    ...(environment.spaceInstallation.space
+                        ? { spaceId: environment.spaceInstallation.space }
+                        : {}),
+                })
+            );
 
             if (config.scopes?.length) {
                 redirectTo.searchParams.set('scope', 'SCOPE_PLACEHOLDER');
@@ -120,8 +128,6 @@ export function createOAuthHandler(
         // Exchange the code for an access token
         //
         else {
-            const installationId = url.searchParams.get('state');
-
             logger.debug(`handle oauth access token exchange: ${config.accessTokenURL}`);
 
             const params = new URLSearchParams();
@@ -156,11 +162,31 @@ export function createOAuthHandler(
             logger.debug(`exchange code for credentials`, credentials);
 
             try {
-                await api.integrations.updateIntegrationInstallation(
-                    environment.integration.name,
-                    installationId,
-                    credentials
-                );
+                /**
+                 * Parse the JSON encoded state parameter.
+                 * If the state contains a spaceId, then the Oauth flow was initiated from a space installation
+                 * public url and thus we need to update the space installation config otherwise fallback to
+                 * updating the installation config.
+                 */
+                const state = JSON.parse(url.searchParams.get('state')) as {
+                    installationId: string;
+                    spaceId?: string;
+                };
+
+                if (state.spaceId) {
+                    await api.integrations.updateIntegrationSpaceInstallation(
+                        environment.integration.name,
+                        state.installationId,
+                        state.spaceId,
+                        credentials
+                    );
+                } else {
+                    await api.integrations.updateIntegrationInstallation(
+                        environment.integration.name,
+                        state.installationId,
+                        credentials
+                    );
+                }
             } catch (err) {
                 logger.error(err.stack);
                 throw err;
