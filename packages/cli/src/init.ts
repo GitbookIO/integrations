@@ -1,3 +1,4 @@
+import { JSONSchemaForNPMPackageJsonFiles2 as PackageJSON } from '@schemastore/package';
 import { spawn } from 'child_process';
 import detent from 'dedent-js';
 import * as fs from 'fs';
@@ -136,32 +137,25 @@ export async function initializeProject(
 export async function extendPackageJson(dirPath: string, projectName: string): Promise<void> {
     const packageJsonPath = path.join(dirPath, 'package.json');
 
-    const packageJsonObject: {
-        name?: string;
-        private?: boolean;
-        scripts?: { [key: string]: string };
-        devDependencies?: { [key: string]: string };
-    } = {};
-
-    packageJsonObject.name = projectName;
-    packageJsonObject.private = true;
-    packageJsonObject.scripts = {
-        lint: 'eslint ./**/*.ts*',
-        typecheck: 'tsc --noEmit',
-
-        // TODO: this is GitBook-specific
-        'publish-integrations-staging': 'gitbook publish .',
+    const packageJsonObject: PackageJSON = {
+        name: projectName,
+        private: true,
+        scripts: {
+            lint: 'eslint --ext .js,.jsx,.ts,.tsx .',
+            typecheck: 'tsc --noEmit',
+            publish: 'gitbook publish .',
+        },
+        dependencies: {
+            '@gitbook/runtime': 'latest',
+        },
+        devDependencies: {
+            [packageJSON.name]: `^${packageJSON.version}`,
+            '@gitbook/eslint-config': 'latest',
+            '@gitbook/tsconfig': 'latest',
+        },
     };
 
-    packageJsonObject.devDependencies = {
-        ...(packageJsonObject.devDependencies || {}),
-        [packageJSON.name]: `^${packageJSON.version}`,
-        [`@gitbook/runtime`]: 'latest',
-        '@cloudflare/workers-types': 'latest',
-        '@gitbook/tsconfig': 'latest',
-    };
-
-    await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJsonObject, null, 2));
+    await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJsonObject, null, 4));
 }
 
 /**
