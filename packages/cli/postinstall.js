@@ -111,6 +111,7 @@ function download(url, to, redirect = 0) {
             if (res.statusCode === 302 && res.headers.location !== undefined) {
                 const redirection = res.headers.location;
                 done = false;
+                request.destroy();
                 file.close(() => resolve(download(redirection, to, redirect + 1)));
                 return;
             }
@@ -137,6 +138,6 @@ function download(url, to, redirect = 0) {
 
 /**
  * Install the cloudflared binary inside the dist folder.
- * Locking the version to 2023.4.0 instead of latest to avoid breaking changes.
+ * Locking the version to 2023.4.1 instead of latest to avoid breaking changes.
  */
 installCloudflared(path.join(__dirname, 'dist', 'cloudflared'), '2023.4.1');
