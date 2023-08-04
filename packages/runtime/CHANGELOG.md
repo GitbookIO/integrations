@@ -1,5 +1,11 @@
 # @gitbook/runtime
 
+## 0.4.0
+
+### Minor Changes
+
+-   2b19969: Use a JSON encoded state for OAuth state
+
 ## 0.3.0
 
 ### Minor Changes

@@ -1,5 +1,12 @@
 # @gitbook/cli
 
+## 0.9.1
+
+### Patch Changes
+
+-   e2972b9: Fix `gitbook new` script to generate correct (dev) deps
+-   4f00cea: Destroy request during postinstall if there is a redirect
+
 ## 0.9.0
 
 ### Minor Changes
