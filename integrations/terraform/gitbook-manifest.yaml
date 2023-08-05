@@ -3,14 +3,25 @@ title: Terraform
 organization: gitbook
 visibility: private
 description: An integration to support syncing Terraform resources with GitBook.
-script: src/index.ts
+script: src/index.tsx
 scopes:
     - space:content:read
     - space:content:write
     - space:metadata:read
     - space:metadata:write
 blocks:
-    - id: terraform
-      title: Terraform
-      description: Terraform Integration
+    - id: jwt
+      title: JWT for Terraform Provider
+configurations:
+    account:
+        properties:
+            tokenSecret:
+                type: string
+                title: Token secret
+                description: |
+                    Secret used for signing and verifying long lived JWTs.
+        required:
+            - tokenSecret
+    space:
+        componentId: jwt
 secrets: {}

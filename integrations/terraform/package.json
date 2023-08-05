@@ -8,9 +8,11 @@
         "publish-integrations": "gitbook publish ."
     },
     "dependencies": {
-        "@gitbook/runtime": "*"
+        "@gitbook/runtime": "*",
+        "jose": "^4.14.4"
     },
     "devDependencies": {
+        "@gitbook/api": "^0.3.0",
         "@gitbook/cli": "^0.9.0",
         "@gitbook/eslint-config": "*",
         "@gitbook/tsconfig": "*"
