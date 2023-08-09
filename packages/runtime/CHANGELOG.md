@@ -1,5 +1,11 @@
 # @gitbook/runtime
 
+## 0.4.1
+
+### Patch Changes
+
+-   0768f10: Fix OAuth handler crashing due lack of optional chaining use while reading spaceInstallation
+
 ## 0.4.0
 
 ### Minor Changes
