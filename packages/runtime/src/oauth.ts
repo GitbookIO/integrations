@@ -103,8 +103,8 @@ export function createOAuthHandler(
                 'state',
                 JSON.stringify({
                     installationId: environment.installation.id,
-                    ...(environment.spaceInstallation.space
-                        ? { spaceId: environment.spaceInstallation.space }
+                    ...(environment.spaceInstallation?.space
+                        ? { spaceId: environment.spaceInstallation?.space }
                         : {}),
                 })
             );
