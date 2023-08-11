@@ -154,12 +154,12 @@ export async function extendPackageJson(dirPath: string, projectName: string): P
             publish: 'gitbook publish .',
         },
         dependencies: {
-            '@gitbook/runtime': 'latest',
+            '@gitbook/runtime': '*',
         },
         devDependencies: {
             [packageJSON.name]: `^${packageJSON.version}`,
-            '@gitbook/eslint-config': 'latest',
-            '@gitbook/tsconfig': 'latest',
+            '@gitbook/eslint-config': '*',
+            '@gitbook/tsconfig': '*',
         },
     };
 
