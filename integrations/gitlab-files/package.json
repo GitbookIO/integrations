@@ -1,5 +1,5 @@
 {
-    "name": "@gitbook/integration-gitlab",
+    "name": "@gitbook/integration-gitlab-files",
     "version": "0.1.0",
     "private": true,
     "dependencies": {
