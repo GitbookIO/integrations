@@ -7,10 +7,10 @@
         "itty-router": "^3.0.12"
     },
     "devDependencies": {
-        "@gitbook/api": "latest",
+        "@gitbook/api": "*",
         "@gitbook/cli": "^0.9.1",
         "@gitbook/eslint-config": "*",
-        "@gitbook/runtime": "latest",
+        "@gitbook/runtime": "*",
         "@gitbook/tsconfig": "*"
     },
     "scripts": {
