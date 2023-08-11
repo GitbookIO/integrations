@@ -7,6 +7,7 @@ import { unfurlLink } from './links';
 import { acknowledgeSlackRequest, verifySlackRequest } from './middlewares';
 import { getChannelsPaginated } from './slack';
 import { createSlackCommandsHandler, SlashEvent } from './commands';
+import { searchInGitBook } from './search';
 
 /**
  * Handle incoming HTTP requests:
@@ -70,11 +71,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         '/commands',
         verifySlackRequest,
         createSlackCommandsHandler({
-            '/gitbook_scazan': async (event: SlashEvent) => {
-                const { user_name } = event;
-
-                return { user_name };
-            },
+            '/gitbook_scazan': searchInGitBook,
         })
     );
 
