@@ -74,6 +74,8 @@ export default createIntegration({
 });
 ```
 
+After pasting in the code above, don't forget to configure the link unfurl action in your Integration's manifest file. See the [Link Unfurling](../../integrations/blocks/link-unfurling.md) section for more info.
+
 ### How it works
 
 Let's have a look at the workflow for a user when they use the unfurl example above. After the integration is installed, the flow is as follows:
