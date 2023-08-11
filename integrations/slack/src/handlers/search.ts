@@ -1,8 +1,8 @@
 import type { SearchPageResult, SearchSectionResult, SearchSpaceResult } from '@gitbook/api';
 
-import type { SlashEvent } from './commands';
-import { SlackInstallationConfiguration, SlackRuntimeContext } from './configuration';
-import { slackAPI } from './slack';
+import type { SlashEvent } from '../commands';
+import { SlackInstallationConfiguration, SlackRuntimeContext } from '../configuration';
+import { slackAPI } from '../slack';
 
 /**
  * Search for a query in GitBook and post a message to Slack.

@@ -6,8 +6,8 @@ import { createSlackEventsHandler } from './events';
 import { unfurlLink } from './links';
 import { acknowledgeSlackRequest, verifySlackRequest } from './middlewares';
 import { getChannelsPaginated } from './slack';
-import { createSlackCommandsHandler, SlashEvent } from './commands';
-import { searchInGitBook } from './search';
+import { createSlackCommandsHandler } from './commands';
+import { queryLensInGitBook } from './handlers/lens';
 
 /**
  * Handle incoming HTTP requests:
@@ -71,7 +71,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         '/commands',
         verifySlackRequest,
         createSlackCommandsHandler({
-            '/gitbook_scazan': searchInGitBook,
+            '/gitbook_scazan': queryLensInGitBook,
         })
     );
 
