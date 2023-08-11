@@ -1,0 +1,15 @@
+name: github
+title: GitHub
+organization: gitbook
+visibility: private
+description: ''
+script: src/index.tsx
+scopes:
+  - space:metadata:read
+  - space:metadata:write
+  - space:git:sync
+blocks:
+  - id: github
+    title: GitHub
+    description: My GitBook Integration
+secrets: {}

@@ -1,0 +1,19 @@
+{
+    "name": "github",
+    "private": true,
+    "scripts": {
+        "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
+        "typecheck": "tsc --noEmit",
+        "publish": "gitbook publish ."
+    },
+    "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+        "itty-router": "^4.0.14"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "^0.10.0",
+        "@gitbook/eslint-config": "*",
+        "@gitbook/tsconfig": "*"
+    }
+}
