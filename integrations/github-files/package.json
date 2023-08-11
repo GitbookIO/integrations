@@ -1,10 +1,10 @@
 {
-    "name": "@gitbook/integration-github",
+    "name": "@gitbook/integration-github-files",
     "version": "0.1.2",
     "private": true,
     "dependencies": {
-        "@gitbook/api": "^0.4.0",
-        "@gitbook/runtime": "^0.4.0",
+        "@gitbook/api": "latest",
+        "@gitbook/runtime": "latest",
         "dotenv": "^16.0.3",
         "itty-router": "^3.0.12"
     },
