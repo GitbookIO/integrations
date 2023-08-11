@@ -64,6 +64,10 @@ export async function promptNewIntegration(dir?: string): Promise<void> {
                     title: IntegrationScope.SpaceGitSync,
                     value: IntegrationScope.SpaceGitSync,
                 },
+                {
+                    title: IntegrationScope.OrganizationEntitiesWrite,
+                    value: IntegrationScope.OrganizationEntitiesWrite,
+                },
             ],
         },
     ]);
