@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.5.0
+
+### Minor Changes
+
+-   a2d3bc3: - Bump @gitbook/api client to use the latest Gitbook API spec
+
 ## 0.4.0
 
 ### Minor Changes

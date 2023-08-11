@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.10.0
+
+### Minor Changes
+
+-   Update CLI to include new scopes during the `init` command
+
 ## 0.9.1
 
 ### Patch Changes
