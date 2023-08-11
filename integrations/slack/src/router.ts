@@ -6,7 +6,7 @@ import { createSlackEventsHandler } from './events';
 import { unfurlLink } from './links';
 import { acknowledgeSlackRequest, verifySlackRequest } from './middlewares';
 import { getChannelsPaginated } from './slack';
-import { createSlackCommandsHandler } from './commands';
+import { createSlackCommandsHandler, SlashEvent } from './commands';
 
 /**
  * Handle incoming HTTP requests:
@@ -70,8 +70,10 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         '/commands',
         verifySlackRequest,
         createSlackCommandsHandler({
-            url_verification: async (event: { challenge: string }) => {
-                return { challenge: event.challenge };
+            '/gitbook_scazan': async (event: SlashEvent) => {
+                const { user_name } = event;
+
+                return { user_name };
             },
         })
     );
