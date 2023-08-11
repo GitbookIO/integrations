@@ -34,6 +34,8 @@ export function createSlackCommandsHandler(handlers: {
             slashEvent[key] = value;
         });
 
+        console.log('slashEvent', slashEvent);
+
         if (!slashEvent.command) {
             return new Response(`Invalid slash command`, {
                 status: 422,

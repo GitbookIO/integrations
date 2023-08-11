@@ -6,6 +6,7 @@ import { createSlackEventsHandler } from './events';
 import { unfurlLink } from './links';
 import { acknowledgeSlackRequest, verifySlackRequest } from './middlewares';
 import { getChannelsPaginated } from './slack';
+import { createSlackCommandsHandler } from './commands';
 
 /**
  * Handle incoming HTTP requests:
@@ -63,6 +64,16 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             },
             acknowledgeSlackRequest
         )
+    );
+
+    router.post(
+        '/commands',
+        verifySlackRequest,
+        createSlackCommandsHandler({
+            url_verification: async (event: { challenge: string }) => {
+                return { challenge: event.challenge };
+            },
+        })
     );
 
     /*
