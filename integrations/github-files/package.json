@@ -3,14 +3,14 @@
     "version": "0.1.2",
     "private": true,
     "dependencies": {
-        "@gitbook/api": "latest",
-        "@gitbook/runtime": "latest",
         "dotenv": "^16.0.3",
         "itty-router": "^3.0.12"
     },
     "devDependencies": {
+        "@gitbook/api": "latest",
         "@gitbook/cli": "^0.9.1",
         "@gitbook/eslint-config": "*",
+        "@gitbook/runtime": "latest",
         "@gitbook/tsconfig": "*"
     },
     "scripts": {
