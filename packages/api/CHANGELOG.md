@@ -5,11 +5,6 @@
 ### Minor Changes
 
 -   a2d3bc3: - Bump @gitbook/api client to use the latest Gitbook API spec
-    -   Update CLI to include new scopes during the `init` command
--   2aefc0b: - Bump @gitbook/api client to use the latest Gitbook API spec
-    -   Update CLI to include new scopes during the `init` command
--   649f52b: - Bump @gitbook/api client to use the latest Gitbook API spec
-    -   Update CLI to include new scopes during the `init` command
 
 ## 0.4.0
 
