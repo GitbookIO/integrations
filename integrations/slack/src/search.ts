@@ -23,7 +23,6 @@ export async function searchInGitBook(slashEvent: SlashEvent, context: SlackRunt
      * by showing org names in a dropdown and asking user to pick one
      */
     const installation = installations[0];
-    console.log('here and starting search', !installation);
     if (!installation) {
         return {};
     }
