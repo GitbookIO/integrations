@@ -4,6 +4,16 @@ import type { SlashEvent } from '../commands';
 import { SlackInstallationConfiguration, SlackRuntimeContext } from '../configuration';
 import { slackAPI } from '../slack';
 
+interface IQueryResult {
+    data: {
+        answer: {
+            text?: string;
+            pages: Array<Array<any>>;
+            followupQuestions: Array<string>;
+        };
+    };
+}
+
 /**
  * Search for a query in GitBook and post a message to Slack.
  */
@@ -51,9 +61,10 @@ export async function queryLensInGitBook(slashEvent: SlashEvent, context: SlackR
         installation.id
     );
 
-    const { answer = {} } = await installationApiClient.search.askQuery({ query: text });
+    const result: IQueryResult = await installationApiClient.search.askQuery({ query: text });
 
-    console.log('got an answer', JSON.stringify(answer));
+    const answer = result.data.answer;
+    console.log('>>>', result.data);
 
     await slackAPI(
         context,
@@ -62,17 +73,40 @@ export async function queryLensInGitBook(slashEvent: SlashEvent, context: SlackR
             path: 'chat.postMessage',
             payload: {
                 channel: channel_id,
+                response_type: 'in_channel',
                 // blocks: buildSearchContentBlocks(text, items),
                 blocks: [
+                    {
+                        type: 'header',
+                        text: {
+                            type: 'plain_text',
+                            text,
+                        },
+                    },
                     {
                         type: 'section',
                         text: {
                             type: 'mrkdwn',
-                            text:
+                            text: `${
                                 answer.text ||
-                                'Are you sure you enabled GitBook AI Lens on your workspace?',
+                                "I couldn't find anything related to your question. Perhaps try rephrasing it."
+                            }`,
                         },
                     },
+                    {
+                        type: 'section',
+                        text: {
+                            type: 'mrkdwn',
+                            text: 'Some followup questions to try:',
+                        },
+                    },
+                    ...answer.followupQuestions.map((question) => ({
+                        type: 'section',
+                        text: {
+                            type: 'mrkdwn',
+                            text: `\`\\gitbook_scazan ${question}\``,
+                        },
+                    })),
                 ],
                 unfurl_links: false,
                 unfurl_media: false,
