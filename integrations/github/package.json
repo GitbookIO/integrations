@@ -9,11 +9,13 @@
     "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
+        "http-link-header": "^1.1.1",
         "itty-router": "^4.0.14"
     },
     "devDependencies": {
         "@gitbook/cli": "^0.10.0",
         "@gitbook/eslint-config": "*",
-        "@gitbook/tsconfig": "*"
+        "@gitbook/tsconfig": "*",
+        "@types/http-link-header": "^1.0.3"
     }
 }

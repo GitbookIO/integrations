@@ -5,19 +5,10 @@ import {
     createIntegration,
     createComponent,
     FetchEventCallback,
-    RuntimeContext,
-    RuntimeEnvironment,
     createOAuthHandler,
 } from '@gitbook/runtime';
 
-export interface GithubInstallationConfiguration {
-    oauth_credentials?: {
-        access_token?: string;
-    };
-}
-
-export type GithubRuntimeEnvironment = RuntimeEnvironment<{}, GithubInstallationConfiguration>;
-export type GithubRuntimeContext = RuntimeContext<GithubRuntimeEnvironment>;
+import { GithubRuntimeContext } from './types';
 
 const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (request, context) => {
     const { environment } = context;
@@ -37,8 +28,8 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         '/oauth',
         createOAuthHandler({
             redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
-            clientId: 'Iv1.dda2d2ac7939fdb4',
-            clientSecret: 'af82594f749178af80b1282128ea6f360bb01701',
+            clientId: context.environment.secrets.CLIENT_ID,
+            clientSecret: context.environment.secrets.CLIENT_SECRET,
             authorizeURL: 'https://github.com/login/oauth/authorize',
             accessTokenURL: 'https://github.com/login/oauth/access_token',
             scopes: [],

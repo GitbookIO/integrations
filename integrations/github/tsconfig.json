@@ -2,6 +2,6 @@
     "extends": "@gitbook/tsconfig/integration.json",
     "compilerOptions": {
         "strict": true,
-        "lib": ["ES6", "DOM"]
+        "lib": ["ESNext", "DOM"]
     }
 }
