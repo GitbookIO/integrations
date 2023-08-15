@@ -1,6 +1,6 @@
 import LinkHeader from 'http-link-header';
 
-import type { GithubRuntimeContext } from './types';
+import type { ConfigureState, GithubRuntimeContext } from './types';
 
 /**
  * NOTE: These GH types are not complete, they are just what we need for now.
@@ -79,6 +79,42 @@ export async function fetchRepositoryBranches(
     });
 
     return branches;
+}
+
+export async function saveGitHubConfig(
+    context: GithubRuntimeContext,
+    existing: object,
+    config: ConfigureState
+) {
+    const { api, environment } = context;
+    if (!environment.installation) {
+        throw new Error('Missing installation');
+    }
+
+    if (!environment.spaceInstallation) {
+        throw new Error('Missing space installation');
+    }
+
+    if (!config.installation || !config.repository || !config.branch) {
+        throw new Error('Incomplete configuration');
+    }
+
+    await api.integrations.updateIntegrationSpaceInstallation(
+        environment.integration.name,
+        environment.installation.id,
+        environment.spaceInstallation.space,
+        {
+            configuration: {
+                ...existing,
+                installation: config.installation,
+                repository: config.repository,
+                branch: config.branch,
+                commitMessageTemplate: config.commitMessageTemplate,
+                previewExternalBranches: config.previewExternalBranches,
+                priority: config.priority,
+            },
+        }
+    );
 }
 
 /**

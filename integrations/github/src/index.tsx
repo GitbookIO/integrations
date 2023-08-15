@@ -8,7 +8,12 @@ import {
     createOAuthHandler,
 } from '@gitbook/runtime';
 
-import { fetchInstallationRepositories, fetchInstallations, fetchRepositoryBranches } from './api';
+import {
+    fetchInstallationRepositories,
+    fetchInstallations,
+    fetchRepositoryBranches,
+    saveGitHubConfig,
+} from './api';
 import type {
     GithubRuntimeContext,
     ConfigureProps,
@@ -196,6 +201,7 @@ const configBlock = createComponent<
                     },
                 };
             case '@save':
+                await saveGitHubConfig(context, element.props.configuration, element.state);
                 return element;
         }
     },
@@ -416,10 +422,12 @@ const configBlock = createComponent<
 
                                 <markdown content={`### Initial sync`} />
 
-                                <text>
-                                    Which content should be used for{' '}
-                                    <text style="bold">first synchronization?</text>
-                                </text>
+                                <hint>
+                                    <text>
+                                        Which content should be used for{' '}
+                                        <text style="bold">first synchronization?</text>
+                                    </text>
+                                </hint>
 
                                 <card>
                                     <input
