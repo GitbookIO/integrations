@@ -89,9 +89,12 @@ export async function fetchRepositoryBranches(
     return branches;
 }
 
-export async function saveConfiguration(
+/**
+ * Save the space configuration for the current space installation.
+ */
+export async function saveSpaceConfiguration(
     context: GithubRuntimeContext,
-    existing: object,
+    existingConfiguration: object,
     config: ConfigureState
 ) {
     const { api, environment } = context;
@@ -130,7 +133,7 @@ export async function saveConfiguration(
         {
             externalIds,
             configuration: {
-                ...existing,
+                ...existingConfiguration,
                 key: config.key || crypto.randomUUID(),
                 installation: config.installation,
                 repository: config.repository,
@@ -143,6 +146,10 @@ export async function saveConfiguration(
     );
 }
 
+/**
+ * List space installations that match the given external ID. It takes
+ * care of pagination and returns all space installations at once.
+ */
 export async function querySpaceInstallations(
     context: GithubRuntimeContext,
     externalId: string,

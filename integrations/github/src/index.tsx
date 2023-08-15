@@ -13,7 +13,7 @@ import {
     fetchInstallationRepositories,
     fetchInstallations,
     fetchRepositoryBranches,
-    saveConfiguration,
+    saveSpaceConfiguration,
 } from './api';
 import { getGitHubApp } from './provider';
 import type {
@@ -269,7 +269,7 @@ const configBlock = createComponent<
                     },
                 };
             case '@save':
-                await saveConfiguration(context, element.props.configuration, element.state);
+                await saveSpaceConfiguration(context, element.props.configuration, element.state);
                 return element;
         }
     },
