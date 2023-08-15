@@ -162,7 +162,7 @@ const configBlock = createComponent<
     },
     action: async (element, action, context) => {
         switch (action.action) {
-            case '@select.account':
+            case '@select.installation':
                 return element;
             case '@select.repository':
                 return element;
@@ -204,6 +204,12 @@ const configBlock = createComponent<
             context.environment.spaceInstallation?.configuration.oauth_credentials?.access_token;
         const buttonLabel = accessToken ? 'Connected' : 'Connect with GitHub';
 
+        const spaceInstallationPublicEndpoint =
+            context.environment.spaceInstallation?.urls.publicEndpoint;
+        if (!spaceInstallationPublicEndpoint) {
+            throw new Error('Missing space installation public endpoint');
+        }
+
         return (
             <block>
                 <input
@@ -234,20 +240,17 @@ const configBlock = createComponent<
                                 hint="Choose the GitHub installation, user or organization."
                                 element={
                                     <select
-                                        state="account"
+                                        state="installation"
                                         onValueChange={{
-                                            action: '@select.account',
+                                            action: '@select.installation',
                                         }}
                                         options={{
                                             url: {
-                                                host: new URL(
-                                                    context.environment.spaceInstallation?.urls.publicEndpoint!
-                                                ).host,
+                                                host: new URL(spaceInstallationPublicEndpoint).host,
                                                 pathname: `${
-                                                    new URL(
-                                                        context.environment.spaceInstallation?.urls.publicEndpoint!
-                                                    ).pathname
-                                                }/accounts`,
+                                                    new URL(spaceInstallationPublicEndpoint)
+                                                        .pathname
+                                                }/installations`,
                                             },
                                         }}
                                     />
@@ -268,12 +271,11 @@ const configBlock = createComponent<
                                                 options={{
                                                     url: {
                                                         host: new URL(
-                                                            context.environment.spaceInstallation?.urls.publicEndpoint!
+                                                            spaceInstallationPublicEndpoint
                                                         ).host,
                                                         pathname: `${
-                                                            new URL(
-                                                                context.environment.spaceInstallation?.urls.publicEndpoint!
-                                                            ).pathname
+                                                            new URL(spaceInstallationPublicEndpoint)
+                                                                .pathname
                                                         }/repos`,
                                                         query: {
                                                             installation:
@@ -302,12 +304,11 @@ const configBlock = createComponent<
                                                 options={{
                                                     url: {
                                                         host: new URL(
-                                                            context.environment.spaceInstallation?.urls.publicEndpoint!
+                                                            spaceInstallationPublicEndpoint
                                                         ).host,
                                                         pathname: `${
-                                                            new URL(
-                                                                context.environment.spaceInstallation?.urls.publicEndpoint!
-                                                            ).pathname
+                                                            new URL(spaceInstallationPublicEndpoint)
+                                                                .pathname
                                                         }/branches`,
                                                         query: {
                                                             installation:
@@ -414,12 +415,11 @@ const configBlock = createComponent<
                                 <divider size="large" />
 
                                 <markdown content={`### Initial sync`} />
-                                <hint>
-                                    <text>
-                                        Which content should be used for{' '}
-                                        <text style="bold">first synchronization?</text>
-                                    </text>
-                                </hint>
+
+                                <text>
+                                    Which content should be used for{' '}
+                                    <text style="bold">first synchronization?</text>
+                                </text>
 
                                 <card>
                                     <input

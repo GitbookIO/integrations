@@ -12,7 +12,7 @@ export type GithubRuntimeEnvironment = RuntimeEnvironment<{}, GithubSpaceInstall
 export type GithubRuntimeContext = RuntimeContext<GithubRuntimeEnvironment>;
 
 export type ConfigureAction =
-    | { action: '@select.account' }
+    | { action: '@select.installation' }
     | { action: '@select.repository' }
     | { action: '@select.branch' }
     | { action: '@toggle.customTemplate' }

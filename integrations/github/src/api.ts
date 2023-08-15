@@ -71,7 +71,7 @@ export async function fetchRepositoryBranches(
     repositoryName: string
 ) {
     const branches = await fetchGitHubAPI<Array<GHBranch>>(context, {
-        path: `/repos/${accountName}/${repositoryName}/branche`,
+        path: `/repos/${accountName}/${repositoryName}/branches`,
         params: {
             per_page: 100,
             page: 1,
@@ -133,6 +133,8 @@ async function fetchGitHubAPI<T>(
                 data = [...data, ...(paginatedListProperty ? nextData[listProperty] : nextData)];
                 res = nextResponse;
             }
+        } else {
+            break;
         }
     }
 
