@@ -25,9 +25,12 @@ export interface SlashEvent {
     response_url: string;
 }
 
-export function createSlackCommandsHandler(handlers: {
-    [type: string]: (slashEvent: SlashEvent, context: SlackRuntimeContext) => Promise<any>;
-}): FetchEventCallback {
+export function createSlackCommandsHandler(
+    handlers: {
+        [type: string]: (slashEvent: SlashEvent, context: SlackRuntimeContext) => Promise<any>;
+    },
+    CFEvent: FetchEvent
+): FetchEventCallback {
     return async (request, context) => {
         const requestText = await request.text();
         const slashEvent: SlashEvent = Object.fromEntries(
@@ -49,7 +52,7 @@ export function createSlackCommandsHandler(handlers: {
             });
         }
 
-        const data = await handler(slashEvent, context);
+        CFEvent.waitUntil(handler(slashEvent, context));
 
         return new Response(null, {
             status: 200,

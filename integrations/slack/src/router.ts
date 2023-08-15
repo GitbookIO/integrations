@@ -2,19 +2,19 @@ import { Router } from 'itty-router';
 
 import { createOAuthHandler, FetchEventCallback } from '@gitbook/runtime';
 
+import { createSlackCommandsHandler } from './commands';
 import { createSlackEventsHandler } from './events';
+import { queryLensInGitBook } from './handlers';
 import { unfurlLink } from './links';
 import { acknowledgeSlackRequest, verifySlackRequest } from './middlewares';
 import { getChannelsPaginated } from './slack';
-import { createSlackCommandsHandler } from './commands';
-import { queryLensInGitBook } from './handlers/lens';
 
 /**
  * Handle incoming HTTP requests:
  * - OAuth requests
  * - Slack webhook requests
  */
-export const handleFetchEvent: FetchEventCallback = async (request, context) => {
+export const handleFetchEvent: FetchEventCallback = async (request, context, CFEvent) => {
     const { environment } = context;
 
     const router = Router({
@@ -70,9 +70,12 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
     router.post(
         '/commands',
         verifySlackRequest,
-        createSlackCommandsHandler({
-            '/gitbook_scazan': queryLensInGitBook,
-        })
+        createSlackCommandsHandler(
+            {
+                '/gitbooklens': queryLensInGitBook,
+            },
+            CFEvent
+        )
     );
 
     /*

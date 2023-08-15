@@ -8,7 +8,14 @@ interface IQueryResult {
     data: {
         answer: {
             text?: string;
-            pages: Array<Array<any>>;
+            pages: Array<
+                Array<{
+                    page: string;
+                    revision: string;
+                    sections: Array<string>;
+                    space: string;
+                }>
+            >;
             followupQuestions: Array<string>;
         };
     };
@@ -47,7 +54,7 @@ export async function queryLensInGitBook(slashEvent: SlashEvent, context: SlackR
             path: 'chat.postMessage',
             payload: {
                 channel: channel_id,
-                text: `_Searching for query: ${text}_ in GitBook installation ${installation.id}_`,
+                text: `_Asking GitBook Lens: ${text}_`,
             },
         },
         {
@@ -63,106 +70,119 @@ export async function queryLensInGitBook(slashEvent: SlashEvent, context: SlackR
 
     const result: IQueryResult = await installationApiClient.search.askQuery({ query: text });
 
-    const answer = result.data.answer;
-    console.log('>>>', result.data);
+    const answer = result.data?.answer;
 
-    await slackAPI(
-        context,
-        {
-            method: 'POST',
-            path: 'chat.postMessage',
-            payload: {
-                channel: channel_id,
-                response_type: 'in_channel',
-                // blocks: buildSearchContentBlocks(text, items),
-                blocks: [
-                    {
-                        type: 'header',
-                        text: {
-                            type: 'plain_text',
-                            text,
-                        },
-                    },
-                    {
-                        type: 'section',
-                        text: {
-                            type: 'mrkdwn',
-                            text: `${
-                                answer.text ||
-                                "I couldn't find anything related to your question. Perhaps try rephrasing it."
-                            }`,
-                        },
-                    },
-                    {
-                        type: 'section',
-                        text: {
-                            type: 'mrkdwn',
-                            text: 'Some followup questions to try:',
-                        },
-                    },
-                    ...answer.followupQuestions.map((question) => ({
-                        type: 'section',
-                        text: {
-                            type: 'mrkdwn',
-                            text: `\`\\gitbook_scazan ${question}\``,
-                        },
-                    })),
-                ],
-                unfurl_links: false,
-                unfurl_media: false,
-            },
-        },
-        {
-            accessToken,
-        }
+    const pageRequests = await Promise.all(
+        answer?.pages?.map((page) =>
+            installationApiClient.spaces.getPageById(page.space, page.page)
+        ) ?? []
     );
-}
 
-function buildSearchContentBlocks(query: string, items: SearchSpaceResult[]) {
-    const queryBlock = {
-        type: 'section',
-        text: {
-            type: 'mrkdwn',
-            text: `Showing results for query: *${query}*`,
+    const resolvedPages = pageRequests.map((pageRequest, i) => ({
+        ...pageRequest.data,
+        ...(answer?.pages[i] ?? []),
+    }));
+
+    const blocks = {
+        method: 'POST',
+        path: 'chat.postMessage',
+        payload: {
+            channel: channel_id,
+            response_type: 'in_channel',
+            blocks: [
+                {
+                    type: 'divider',
+                },
+                {
+                    type: 'header',
+                    text: {
+                        type: 'plain_text',
+                        text,
+                    },
+                },
+                {
+                    type: 'section',
+                    text: {
+                        type: 'mrkdwn',
+                        text: `${
+                            answer?.text ||
+                            "I couldn't find anything related to your question. Perhaps try rephrasing it."
+                        }`,
+                    },
+                },
+
+                {
+                    type: 'divider',
+                },
+                {
+                    type: 'header',
+                    text: {
+                        type: 'plain_text',
+                        text: 'More information:',
+                    },
+                },
+                ...buildSearchContentBlocks(resolvedPages),
+                {
+                    type: 'divider',
+                },
+                {
+                    type: 'section',
+                    text: {
+                        type: 'mrkdwn',
+                        text: 'Some followup questions you might try:',
+                    },
+                },
+                ...(answer?.followupQuestions?.map((question) => ({
+                    type: 'section',
+                    text: {
+                        type: 'mrkdwn',
+                        text: `\`/gitbooklens ${question}\``,
+                    },
+                })) ?? []),
+                {
+                    type: 'divider',
+                },
+            ],
+            unfurl_links: false,
+            unfurl_media: false,
         },
     };
+    await slackAPI(context, blocks, {
+        accessToken,
+    });
+}
 
-    const blocks = items
-        .flatMap((space) => space.pages)
-        .reduce<Array<any>>(
-            (acc, page) => {
-                const pageResultBlock = buildSearchPageBlock(page);
-                if (page.sections) {
-                    const sectionBlocks = page.sections.map(buildSearchSectionBlock);
-                    acc.push(...pageResultBlock, ...sectionBlocks);
-                }
-                return acc;
-            },
-            [queryBlock]
-        );
+function buildSearchContentBlocks(items: Array<any>) {
+    const blocks = items.reduce<Array<any>>((acc, page) => {
+        const pageResultBlock = buildSearchPageBlock(page);
+        // if (page.sections) {
+        // const sectionBlocks = page.sections.map(buildSearchSectionBlock);
+        acc.push(pageResultBlock);
+        // }
+        return acc;
+    }, []);
 
     return blocks.flat();
 }
 
 function buildSearchPageBlock(page: SearchPageResult) {
+    // TODO: @scazan this is hardcoded, we need to get the org as well (assuming from the context)
+    const url = `https://gitbook-x-dev-scazan.firebaseapp.com/o/Uhi13uaBRmvSt6UGc5br/s/${page.space}/${page.slug}`;
     return [
-        {
-            type: 'divider',
-        },
         {
             type: 'section',
             text: {
                 type: 'mrkdwn',
-                text: `*<${page.urls.app}|:page_facing_up: ${page.title}>*`,
+                text: `* <${url}|:page_facing_up: ${page.title}>* `,
             },
         },
     ];
 }
 
 function buildSearchSectionBlock(section: SearchSectionResult) {
-    const title = section.title ? `*${section.title.replace(/"/g, '')}*` : ``;
-    const body = ` - _${section.body.replace(/"/g, '').split('\n').join('').slice(0, 128)}_`;
-    const text = `:hash: ${title}${body}`;
+    const title = section.title ? `* ${section.title.replace(/"/g, '')}* ` : ``;
+    const body = ` - _${section.body.replace(/"/g, '').split('\n').join('').slice(0, 128)} _`;
+    const text = `: hash: ${title}${body} `;
     return [
         {
             type: 'section',
