@@ -6,6 +6,8 @@ import {
     computeConfigQueryKeyBase,
     computeConfigQueryKeyPreviewExternalBranches,
     getGitRef,
+    triggerExport,
+    triggerImport,
 } from './provider';
 import type { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
 import { parseInstallation, parseRepository } from './utils';
@@ -126,24 +128,40 @@ export async function saveSpaceConfiguration(
         );
     }
 
+    const configurationBody = {
+        ...existingConfiguration,
+        key: config.key || crypto.randomUUID(),
+        installation: config.installation,
+        repository: config.repository,
+        branch: config.branch,
+        commitMessageTemplate: config.commitMessageTemplate,
+        previewExternalBranches: config.previewExternalBranches,
+        priority: config.priority,
+    };
+
     await api.integrations.updateIntegrationSpaceInstallation(
         environment.integration.name,
         environment.installation.id,
         environment.spaceInstallation.space,
         {
             externalIds,
-            configuration: {
-                ...existingConfiguration,
-                key: config.key || crypto.randomUUID(),
-                installation: config.installation,
-                repository: config.repository,
-                branch: config.branch,
-                commitMessageTemplate: config.commitMessageTemplate,
-                previewExternalBranches: config.previewExternalBranches,
-                priority: config.priority,
-            },
+            configuration: configurationBody,
         }
     );
+
+    if (config.priority === 'github') {
+        // Import from GitHub
+        await triggerImport(context, configurationBody, {
+            force: true,
+            updateGitInfo: true,
+        });
+    } else {
+        // Export to GitHub
+        await triggerExport(context, configurationBody, {
+            force: true,
+            updateGitInfo: true,
+        });
+    }
 }
 
 /**
