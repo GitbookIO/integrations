@@ -7,7 +7,6 @@
         "publish": "gitbook publish ."
     },
     "dependencies": {
-        "@gitbook/api": "*",
         "@gitbook/runtime": "*",
         "http-link-header": "^1.1.1",
         "itty-router": "^4.0.14"

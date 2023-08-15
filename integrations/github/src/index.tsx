@@ -8,7 +8,9 @@ import {
     createOAuthHandler,
 } from '@gitbook/runtime';
 
+import { fetchInstallationRepositories, fetchInstallations, fetchRepositoryBranches } from './api';
 import { GithubRuntimeContext } from './types';
+import { GITSYNC_DEFAULT_COMMIT_MESSAGE, getGitSyncCommitMessage } from './utils';
 
 const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (request, context) => {
     const { environment } = context;
@@ -22,7 +24,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
     });
 
     /*
-     * Authenticate the user using OAuth.
+     * Authenticate using GitHub OAuth
      */
     router.get(
         '/oauth',
@@ -37,44 +39,80 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         })
     );
 
-    router.get('/accounts', async () => {
-        const accounts = await fetchAccounts(context);
+    /**
+     * API to fetch all GitHub installations
+     */
+    router.get('/installations', async () => {
+        const installations = await fetchInstallations(context);
 
-        return new Response(JSON.stringify(accounts), {
+        const data = installations.map(
+            (installation): ContentKitSelectOption => ({
+                id: `${installation.id}:${installation.account.login}`,
+                label: installation.account.login,
+            })
+        );
+
+        return new Response(JSON.stringify(data), {
             headers: {
                 'Content-Type': 'application/json',
             },
         });
     });
 
+    /**
+     * API to fetch all repositories of an installation
+     */
     router.get('/repos', async (req) => {
-        const { account } = req.query;
-        const accountId =
-            account && typeof account === 'string' ? account.split(':')[0] : undefined;
+        const { installation } = req.query;
+        const installationId =
+            installation && typeof installation === 'string'
+                ? installation.split(':')[0]
+                : undefined;
 
-        const repositories = accountId ? await fetchRepositories(accountId, context) : [];
+        const repositories = installationId
+            ? await fetchInstallationRepositories(context, installationId)
+            : [];
 
-        return new Response(JSON.stringify(repositories), {
+        const data = repositories.map(
+            (repository): ContentKitSelectOption => ({
+                id: `${repository.id}:${repository.name}`,
+                label: repository.name,
+            })
+        );
+
+        return new Response(JSON.stringify(data), {
             headers: {
                 'Content-Type': 'application/json',
             },
         });
     });
 
+    /**
+     * API to fetch all branches of an account's repository
+     */
     router.get('/branches', async (req) => {
-        const { account, repository } = req.query;
+        const { installation, repository } = req.query;
 
         const accountName =
-            account && typeof account === 'string' ? account.split(':')[1] : undefined;
+            installation && typeof installation === 'string'
+                ? installation.split(':')[1]
+                : undefined;
         const repositoryName =
             repository && typeof repository === 'string' ? repository.split(':')[1] : undefined;
 
         const branches =
             accountName && repositoryName
-                ? await fetchBranches(accountName, repositoryName, context)
+                ? await fetchRepositoryBranches(context, accountName, repositoryName)
                 : [];
 
-        return new Response(JSON.stringify(branches), {
+        const data = branches.map(
+            (branch): ContentKitSelectOption => ({
+                id: branch.name,
+                label: branch.name,
+            })
+        );
+
+        return new Response(JSON.stringify(data), {
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -102,7 +140,7 @@ type ConfigAction =
 
 type Props = {
     configuration: {
-        account?: string;
+        installation?: string;
         repository?: string;
         branch?: string;
         projectDirectory?: string;
@@ -121,7 +159,7 @@ const configBlock = createComponent<Props, State, ConfigAction, GithubRuntimeCon
     componentId: '$configure',
     initialState: (props) => {
         return {
-            account: props.configuration.account,
+            installation: props.configuration.installation,
             repository: props.configuration.repository,
             branch: props.configuration.branch,
             projectDirectory: props.configuration.projectDirectory,
@@ -231,7 +269,7 @@ const configBlock = createComponent<Props, State, ConfigAction, GithubRuntimeCon
                                 }
                             />
 
-                            {element.state.account ? (
+                            {element.state.installation ? (
                                 <>
                                     <input
                                         label="Select repository"
@@ -253,8 +291,10 @@ const configBlock = createComponent<Props, State, ConfigAction, GithubRuntimeCon
                                                             ).pathname
                                                         }/repos`,
                                                         query: {
-                                                            account:
-                                                                element.dynamicState('account'),
+                                                            installation:
+                                                                element.dynamicState(
+                                                                    'installation'
+                                                                ),
                                                         },
                                                     },
                                                 }}
@@ -285,8 +325,10 @@ const configBlock = createComponent<Props, State, ConfigAction, GithubRuntimeCon
                                                             ).pathname
                                                         }/branches`,
                                                         query: {
-                                                            account:
-                                                                element.dynamicState('account'),
+                                                            installation:
+                                                                element.dynamicState(
+                                                                    'installation'
+                                                                ),
                                                             repository:
                                                                 element.dynamicState('repository'),
                                                         },
@@ -419,109 +461,6 @@ const configBlock = createComponent<Props, State, ConfigAction, GithubRuntimeCon
         );
     },
 });
-
-const GITSYNC_DEFAULT_COMMIT_MESSAGE = 'GITBOOK-{change_request_number}: {change_request_subject}';
-
-function getGitSyncCommitMessage(
-    templateInput: string | undefined,
-    context: {
-        change_request_number: number;
-        change_request_subject: string;
-    }
-): string {
-    const usingCustomTemplate = !!templateInput;
-    const template = usingCustomTemplate ? templateInput : GITSYNC_DEFAULT_COMMIT_MESSAGE;
-    const subject =
-        context.change_request_subject ||
-        (usingCustomTemplate ? 'No subject' : 'change request with no subject merged in GitBook');
-
-    return template
-        .replace('{change_request_number}', String(context.change_request_number || ''))
-        .replace('{change_request_subject}', subject);
-}
-
-async function fetchAccounts(
-    context: GithubRuntimeContext
-): Promise<Array<ContentKitSelectOption>> {
-    const accessToken =
-        context.environment.spaceInstallation?.configuration?.oauth_credentials?.access_token;
-
-    if (!accessToken) {
-        return [];
-    }
-
-    const data = await fetch('https://api.github.com/user/installations', {
-        headers: {
-            Accept: 'application/json',
-            'User-Agent': 'GitHub-Integration-Worker',
-            Authorization: `Bearer ${accessToken}`,
-        },
-    }).then((res) => res.json());
-
-    return data.installations.map((installation) => ({
-        id: `${installation.id}:${installation.account.login}`,
-        label: installation.account.login,
-    }));
-}
-
-async function fetchRepositories(
-    account: string,
-    context: GithubRuntimeContext
-): Promise<Array<ContentKitSelectOption>> {
-    const accessToken =
-        context.environment.spaceInstallation?.configuration.oauth_credentials?.access_token;
-
-    if (!accessToken) {
-        return [];
-    }
-
-    const res = await fetch(`https://api.github.com/user/installations/${account}/repositories`, {
-        headers: {
-            Accept: 'application/json',
-            'User-Agent': 'GitHub-Integration-Worker',
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
-
-    if (!res.ok) {
-        return [];
-    }
-
-    const data = await res.json();
-    return data.repositories.map((repository) => ({
-        id: `${repository.id}:${repository.name}`,
-        label: repository.name,
-    }));
-}
-
-async function fetchBranches(
-    accountName: string,
-    repositoryName: string,
-    context: GithubRuntimeContext
-): Promise<Array<ContentKitSelectOption>> {
-    const accessToken =
-        context.environment.spaceInstallation?.configuration.oauth_credentials?.access_token;
-
-    if (!accessToken) {
-        return [];
-    }
-
-    const data = await fetch(
-        `https://api.github.com/repos/${accountName}/${repositoryName}/branches`,
-        {
-            headers: {
-                Accept: 'application/json',
-                'User-Agent': 'GitHub-Integration-Worker',
-                Authorization: `Bearer ${accessToken}`,
-            },
-        }
-    ).then((res) => res.json());
-
-    return data.map((branch) => ({
-        id: branch.name,
-        label: branch.name,
-    }));
-}
 
 export default createIntegration({
     fetch: handleFetchEvent,
