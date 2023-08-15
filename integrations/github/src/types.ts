@@ -10,3 +10,28 @@ export interface GithubSpaceInstallationConfiguration {
 
 export type GithubRuntimeEnvironment = RuntimeEnvironment<{}, GithubSpaceInstallationConfiguration>;
 export type GithubRuntimeContext = RuntimeContext<GithubRuntimeEnvironment>;
+
+export type ConfigureAction =
+    | { action: '@select.account' }
+    | { action: '@select.repository' }
+    | { action: '@select.branch' }
+    | { action: '@toggle.customTemplate' }
+    | { action: '@preview.commitMessage' }
+    | { action: '@save' };
+
+export type ConfigureProps = {
+    configuration: {
+        installation?: string;
+        repository?: string;
+        branch?: string;
+        projectDirectory?: string;
+        commitMessageTemplate?: string;
+        previewExternalBranches?: boolean;
+        priority: 'github' | 'gitbook';
+    };
+};
+
+export type ConfigureState = ConfigureProps['configuration'] & {
+    withCustomTemplate?: boolean;
+    commitMessagePreview?: string;
+};

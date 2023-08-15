@@ -9,7 +9,12 @@ import {
 } from '@gitbook/runtime';
 
 import { fetchInstallationRepositories, fetchInstallations, fetchRepositoryBranches } from './api';
-import { GithubRuntimeContext } from './types';
+import type {
+    GithubRuntimeContext,
+    ConfigureProps,
+    ConfigureAction,
+    ConfigureState,
+} from './types';
 import { GITSYNC_DEFAULT_COMMIT_MESSAGE, getGitSyncCommitMessage } from './utils';
 
 const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (request, context) => {
@@ -130,33 +135,13 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
     return response;
 };
 
-type ConfigAction =
-    | { action: '@select.account' }
-    | { action: '@select.repository' }
-    | { action: '@select.branch' }
-    | { action: '@toggle.customTemplate' }
-    | { action: '@preview.commitMessage' }
-    | { action: '@save' };
-
-type Props = {
-    configuration: {
-        installation?: string;
-        repository?: string;
-        branch?: string;
-        projectDirectory?: string;
-        commitMessageTemplate?: string;
-        previewExternalBranches?: boolean;
-        priority: 'github' | 'gitbook';
-    };
-};
-
-type State = Props['configuration'] & {
-    withCustomTemplate?: boolean;
-    commitMessagePreview?: string;
-};
-
-const configBlock = createComponent<Props, State, ConfigAction, GithubRuntimeContext>({
-    componentId: '$configure',
+const configBlock = createComponent<
+    ConfigureProps,
+    ConfigureState,
+    ConfigureAction,
+    GithubRuntimeContext
+>({
+    componentId: 'configure',
     initialState: (props) => {
         return {
             installation: props.configuration.installation,
@@ -387,25 +372,33 @@ const configBlock = createComponent<Props, State, ConfigAction, GithubRuntimeCon
                                                 }}
                                             />
                                         </hstack>
-                                        <vstack>
-                                            <text style="hint">
-                                                Hint: you can use the{' '}
-                                                <text style="code">{'{change_request_number'}</text>{' '}
-                                                and{' '}
-                                                <text style="code">
-                                                    {'{change_request_subject}'}
-                                                </text>{' '}
-                                                placeholders.
-                                            </text>
-                                            <text style="hint">
-                                                <text style="bold">
-                                                    Preview:{' '}
-                                                    <text style="code">
-                                                        {element.state.commitMessagePreview}
+                                        {element.state.commitMessagePreview ? (
+                                            <vstack>
+                                                <hint>
+                                                    <text>
+                                                        Hint: you can use the{' '}
+                                                        <text style="code">
+                                                            {'{change_request_number'}
+                                                        </text>{' '}
+                                                        and{' '}
+                                                        <text style="code">
+                                                            {'{change_request_subject}'}
+                                                        </text>{' '}
+                                                        placeholders.
                                                     </text>
-                                                </text>
-                                            </text>
-                                        </vstack>
+                                                </hint>
+                                                <hint>
+                                                    <text>
+                                                        <text style="bold">
+                                                            Preview:{' '}
+                                                            <text style="code">
+                                                                {element.state.commitMessagePreview}
+                                                            </text>
+                                                        </text>
+                                                    </text>
+                                                </hint>
+                                            </vstack>
+                                        ) : null}
                                     </>
                                 ) : null}
 
@@ -421,10 +414,12 @@ const configBlock = createComponent<Props, State, ConfigAction, GithubRuntimeCon
                                 <divider size="large" />
 
                                 <markdown content={`### Initial sync`} />
-                                <text style="hint">
-                                    Which content should be used for{' '}
-                                    <text style="bold">first synchronization?</text>
-                                </text>
+                                <hint>
+                                    <text>
+                                        Which content should be used for{' '}
+                                        <text style="bold">first synchronization?</text>
+                                    </text>
+                                </hint>
 
                                 <card>
                                     <input
