@@ -13,7 +13,7 @@ import {
     fetchInstallationRepositories,
     fetchInstallations,
     fetchRepositoryBranches,
-    saveGitHubConfig,
+    saveConfiguration,
 } from './api';
 import { getGitHubApp } from './provider';
 import type {
@@ -22,11 +22,8 @@ import type {
     ConfigureAction,
     ConfigureState,
 } from './types';
-import {
-    GITSYNC_DEFAULT_COMMIT_MESSAGE,
-    getGitSyncCommitMessage,
-    verifyGitHubWebhookSignature,
-} from './utils';
+import { GITSYNC_DEFAULT_COMMIT_MESSAGE, getGitSyncCommitMessage } from './utils';
+import { handlePullRequestEvents, handlePushEvent, verifyGitHubWebhookSignature } from './webhooks';
 
 const logger = Logger('github');
 
@@ -41,9 +38,11 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         ).pathname,
     });
 
-    router.post('/hooks/github-app', async (request) => {
+    /**
+     * Handle GitHub App webhooks
+     */
+    router.post('/hooks/github', async (request) => {
         const githubApp = await getGitHubApp(context);
-
         const id = request.headers.get('x-github-delivery');
         const name = request.headers.get('x-github-event');
         const signature = request.headers.get('x-hub-signature-256') ?? '';
@@ -64,17 +63,24 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
             });
         }
 
-        /**
-         * Push on the main branch of an installation triggers a sync.
-         */
-        githubApp.webhooks.on('push', async ({ payload }) => {
-            logger.info('receiving push event', payload);
-            if (payload.installation) {
-                // Trigger import for all installations that match this repository
-            }
+        githubApp.webhooks.onAny(({ id, name, payload }) => {
+            logger.debug('received event', { id, name, payload });
         });
 
-        // handle the webhook
+        githubApp.webhooks.on('push', async ({ payload }) => {
+            logger.info('receiving push event', payload);
+            await handlePushEvent(context, payload);
+        });
+
+        githubApp.webhooks.on(
+            ['pull_request.synchronize', 'pull_request.opened'],
+            async ({ payload }) => {
+                logger.info('receiving pull_request event', payload);
+                await handlePullRequestEvents(context, payload);
+            }
+        );
+
+        // Hand the webhook
         try {
             await githubApp.webhooks.receive({
                 id: id as string,
@@ -84,6 +90,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
             });
 
             return new Response(JSON.stringify({ ok: true }), {
+                status: 200,
                 headers: { 'content-type': 'application/json' },
             });
         } catch (error: any) {
@@ -262,7 +269,7 @@ const configBlock = createComponent<
                     },
                 };
             case '@save':
-                await saveGitHubConfig(context, element.props.configuration, element.state);
+                await saveConfiguration(context, element.props.configuration, element.state);
                 return element;
         }
     },

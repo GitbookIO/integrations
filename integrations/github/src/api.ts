@@ -1,6 +1,14 @@
 import LinkHeader from 'http-link-header';
 
+import { IntegrationSpaceInstallation } from '@gitbook/api';
+
+import {
+    computeConfigQueryKeyBase,
+    computeConfigQueryKeyPreviewExternalBranches,
+    getGitRef,
+} from './provider';
 import type { ConfigureState, GithubRuntimeContext } from './types';
+import { parseInstallation, parseRepository } from './utils';
 
 /**
  * NOTE: These GH types are not complete, they are just what we need for now.
@@ -81,7 +89,7 @@ export async function fetchRepositoryBranches(
     return branches;
 }
 
-export async function saveGitHubConfig(
+export async function saveConfiguration(
     context: GithubRuntimeContext,
     existing: object,
     config: ConfigureState
@@ -99,11 +107,28 @@ export async function saveGitHubConfig(
         throw new Error('Incomplete configuration');
     }
 
+    const { installationId } = parseInstallation(config);
+    const { repoID } = parseRepository(config);
+
+    const externalIds: string[] = [];
+
+    externalIds.push(computeConfigQueryKeyBase(installationId, repoID, getGitRef(config.branch)));
+    if (config.previewExternalBranches) {
+        externalIds.push(
+            computeConfigQueryKeyPreviewExternalBranches(
+                installationId,
+                repoID,
+                getGitRef(config.branch)
+            )
+        );
+    }
+
     await api.integrations.updateIntegrationSpaceInstallation(
         environment.integration.name,
         environment.installation.id,
         environment.spaceInstallation.space,
         {
+            externalIds,
             configuration: {
                 ...existing,
                 key: config.key || crypto.randomUUID(),
@@ -116,6 +141,37 @@ export async function saveGitHubConfig(
             },
         }
     );
+}
+
+export async function querySpaceInstallations(
+    context: GithubRuntimeContext,
+    externalId: string,
+    page?: string
+): Promise<Array<IntegrationSpaceInstallation>> {
+    const { api, environment } = context;
+
+    const { data } = await api.integrations.listIntegrationSpaceInstallations(
+        environment.integration.name,
+        {
+            limit: 100,
+            externalId,
+            page,
+        }
+    );
+
+    const spaceInstallations = [...data.items];
+
+    // Recursively fetch next pages
+    if (data.next) {
+        const nextSpaceInstallations = await querySpaceInstallations(
+            context,
+            externalId,
+            data.next.page
+        );
+        spaceInstallations.push(...nextSpaceInstallations);
+    }
+
+    return spaceInstallations;
 }
 
 /**

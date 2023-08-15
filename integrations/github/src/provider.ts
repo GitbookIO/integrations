@@ -22,59 +22,6 @@ export async function getGitHubApp(context: GithubRuntimeContext) {
     return githubApp;
 }
 
-function getRepositoryUrl(config: ConfigureState, withExtension = false) {
-    const installation = parseInstallation(config);
-    const repository = parseRepository(config);
-
-    return `https://github.com/${installation.accountName}/${repository.repoName}${
-        withExtension ? '.git' : ''
-    }`;
-}
-
-async function getRepositoryAuth(context: GithubRuntimeContext, config: ConfigureState) {
-    const githubApp = await getGitHubApp(context);
-
-    const { token } = (await githubApp.octokit.auth({
-        type: 'installation',
-        installationId: parseInstallation(config).installationId,
-    })) as { token: string };
-
-    return {
-        url: getRepositoryUrl(config, true),
-        username: 'x-access-token',
-        password: token,
-    };
-}
-
-export async function updateCommitStatus(
-    context: GithubRuntimeContext,
-    config: ConfigureState,
-    commitSha: string,
-    update: {
-        context?: string;
-        state: 'running' | 'success' | 'failure';
-        url: string;
-        description: string;
-    }
-) {
-    const githubApp = await getGitHubApp(context);
-
-    const installation = parseInstallation(config);
-    const repository = parseRepository(config);
-
-    const octokit = await githubApp.getInstallationOctokit(installation.installationId);
-
-    await octokit.repos.createCommitStatus({
-        owner: installation.accountName,
-        repo: repository.repoName,
-        sha: commitSha,
-        state: update.state === 'running' ? 'pending' : update.state,
-        target_url: update.url,
-        description: update.description,
-        context: update.context || 'GitBook',
-    });
-}
-
 export async function triggerImport(
     context: GithubRuntimeContext,
     config: ConfigureState,
@@ -110,7 +57,7 @@ export async function triggerImport(
 
     await context.api.spaces.importGitRepository(environment.spaceInstallation?.space, {
         url: urlWithAuth.toString(),
-        ref: standalone?.ref || `refs/heads/${config.branch}`,
+        ref: standalone?.ref || getGitRef(config),
         repoTreeURL: getGitTreeURL(config),
         repoCommitURL: getGitCommitURL(config),
         repoProjectDirectory: config.projectDirectory,
@@ -148,7 +95,7 @@ export async function triggerExport(
 
     await context.api.spaces.exportToGitRepository(environment.spaceInstallation?.space, {
         url: urlWithAuth.toString(),
-        ref: `refs/heads/${config.branch}`,
+        ref: getGitRef(config),
         repoTreeURL: getGitTreeURL(config),
         repoCommitURL: getGitCommitURL(config),
         repoProjectDirectory: config.projectDirectory,
@@ -157,6 +104,95 @@ export async function triggerExport(
         commitMessage: 'export',
         ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoURL } } : {}),
     });
+}
+
+export async function updateCommitStatus(
+    context: GithubRuntimeContext,
+    config: ConfigureState,
+    commitSha: string,
+    update: {
+        context?: string;
+        state: 'running' | 'success' | 'failure';
+        url: string;
+        description: string;
+    }
+) {
+    const githubApp = await getGitHubApp(context);
+
+    const installation = parseInstallation(config);
+    const repository = parseRepository(config);
+
+    const octokit = await githubApp.getInstallationOctokit(installation.installationId);
+
+    await octokit.repos.createCommitStatus({
+        owner: installation.accountName,
+        repo: repository.repoName,
+        sha: commitSha,
+        state: update.state === 'running' ? 'pending' : update.state,
+        target_url: update.url,
+        description: update.description,
+        context: update.context || 'GitBook',
+    });
+}
+
+/**
+ * Compute the query key for the configuration. This will be useful to list or find
+ * all configuration(s) that match this combination of installation, repository and ref.
+ */
+export function computeConfigQueryKeyBase(
+    installationId: number,
+    repoID: number,
+    ref: string
+): string {
+    return `${installationId}/${repoID}/${ref}`;
+}
+
+/**
+ * Same as computeConfigQueryKeyBase, but with the previewExternalBranches flag.
+ */
+export function computeConfigQueryKeyPreviewExternalBranches(
+    installationId: number,
+    repoID: number,
+    ref: string
+): string {
+    return `${computeConfigQueryKeyBase(installationId, repoID, ref)}/previewExternalBranches:true`;
+}
+
+/**
+ * Returns the Git ref to use for the synchronization.
+ */
+export function getGitRef(branch: string): string {
+    return `refs/heads/${branch}`;
+}
+
+/**
+ * Returns the URL of the Git repository.
+ */
+function getRepositoryUrl(config: ConfigureState, withExtension = false): string {
+    const installation = parseInstallation(config);
+    const repository = parseRepository(config);
+
+    return `https://github.com/${installation.accountName}/${repository.repoName}${
+        withExtension ? '.git' : ''
+    }`;
+}
+
+/**
+ * Returns the authentication information for the Git repository.
+ */
+async function getRepositoryAuth(context: GithubRuntimeContext, config: ConfigureState) {
+    const githubApp = await getGitHubApp(context);
+
+    const { token } = (await githubApp.octokit.auth({
+        type: 'installation',
+        installationId: parseInstallation(config).installationId,
+    })) as { token: string };
+
+    return {
+        url: getRepositoryUrl(config, true),
+        username: 'x-access-token',
+        password: token,
+    };
 }
 
 /**
@@ -170,7 +206,7 @@ function getGitTreeURL(config: ConfigureState): string {
 /**
  * Returns the absolute URL for a commit.
  */
-export function getGitCommitURL(config: ConfigureState): string {
+function getGitCommitURL(config: ConfigureState): string {
     const base = getRepositoryUrl(config);
     return `${base}/commit`;
 }

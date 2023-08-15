@@ -10,6 +10,7 @@
         "@gitbook/runtime": "*",
         "@octokit/app": "^14.0.0",
         "@octokit/rest": "^20.0.1",
+        "@octokit/webhooks-types": "^7.2.0",
         "http-link-header": "^1.1.1",
         "itty-router": "^4.0.14"
     },
