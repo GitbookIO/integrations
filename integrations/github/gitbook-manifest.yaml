@@ -12,5 +12,8 @@ configurations:
     space:
         componentId: configure
 secrets:
+    APP_ID: ${{ env.GITHUB_APP_ID }}
+    PRIVATE_KEY: ${{ env.GITHUB_PRIVATE_KEY }}
     CLIENT_ID: ${{ env.GITHUB_CLIENT_ID }}
     CLIENT_SECRET: ${{ env.GITHUB_CLIENT_SECRET }}
+    WEBHOOK_SECRET: ${{ env.GITHUB_WEBHOOK_SECRET }}

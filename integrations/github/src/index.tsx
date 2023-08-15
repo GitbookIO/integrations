@@ -6,6 +6,7 @@ import {
     createComponent,
     FetchEventCallback,
     createOAuthHandler,
+    Logger,
 } from '@gitbook/runtime';
 
 import {
@@ -14,13 +15,20 @@ import {
     fetchRepositoryBranches,
     saveGitHubConfig,
 } from './api';
+import { getGitHubApp } from './provider';
 import type {
     GithubRuntimeContext,
     ConfigureProps,
     ConfigureAction,
     ConfigureState,
 } from './types';
-import { GITSYNC_DEFAULT_COMMIT_MESSAGE, getGitSyncCommitMessage } from './utils';
+import {
+    GITSYNC_DEFAULT_COMMIT_MESSAGE,
+    getGitSyncCommitMessage,
+    verifyGitHubWebhookSignature,
+} from './utils';
+
+const logger = Logger('github');
 
 const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (request, context) => {
     const { environment } = context;
@@ -31,6 +39,59 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                 environment.installation?.urls.publicEndpoint ||
                 environment.integration.urls.publicEndpoint
         ).pathname,
+    });
+
+    router.post('/hooks/github-app', async (request) => {
+        const githubApp = await getGitHubApp(context);
+
+        const id = request.headers.get('x-github-delivery');
+        const name = request.headers.get('x-github-event');
+        const signature = request.headers.get('x-hub-signature-256') ?? '';
+        const payloadString = await request.text();
+        const payload = JSON.parse(payloadString);
+
+        // Verify webhook signature
+        try {
+            await verifyGitHubWebhookSignature(
+                payloadString,
+                signature,
+                environment.secrets.WEBHOOK_SECRET
+            );
+        } catch (error: any) {
+            return new Response(JSON.stringify({ error: error.message }), {
+                status: 400,
+                headers: { 'content-type': 'application/json' },
+            });
+        }
+
+        /**
+         * Push on the main branch of an installation triggers a sync.
+         */
+        githubApp.webhooks.on('push', async ({ payload }) => {
+            logger.info('receiving push event', payload);
+            if (payload.installation) {
+                // Trigger import for all installations that match this repository
+            }
+        });
+
+        // handle the webhook
+        try {
+            await githubApp.webhooks.receive({
+                id: id as string,
+                // @ts-ignore
+                name,
+                payload,
+            });
+
+            return new Response(JSON.stringify({ ok: true }), {
+                headers: { 'content-type': 'application/json' },
+            });
+        } catch (error: any) {
+            return new Response(JSON.stringify({ error: error.message }), {
+                status: 500,
+                headers: { 'content-type': 'application/json' },
+            });
+        }
     });
 
     /*

@@ -4,7 +4,7 @@ import { Octokit } from '@octokit/rest';
 import { ConfigureState, GithubRuntimeContext } from './types';
 import { parseInstallation, parseRepository } from './utils';
 
-async function createGitHubApp(context: GithubRuntimeContext) {
+export async function getGitHubApp(context: GithubRuntimeContext) {
     const { environment } = context;
     const githubApp = new GitHubApp({
         appId: environment.secrets.APP_ID,
@@ -32,7 +32,7 @@ function getRepositoryUrl(config: ConfigureState, withExtension = false) {
 }
 
 async function getRepositoryAuth(context: GithubRuntimeContext, config: ConfigureState) {
-    const githubApp = await createGitHubApp(context);
+    const githubApp = await getGitHubApp(context);
 
     const { token } = (await githubApp.octokit.auth({
         type: 'installation',
@@ -57,7 +57,7 @@ export async function updateCommitStatus(
         description: string;
     }
 ) {
-    const githubApp = await createGitHubApp(context);
+    const githubApp = await getGitHubApp(context);
 
     const installation = parseInstallation(config);
     const repository = parseRepository(config);
