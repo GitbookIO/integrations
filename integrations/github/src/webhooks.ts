@@ -12,7 +12,7 @@ import {
     computeConfigQueryKeyPreviewExternalBranches,
     triggerImport,
 } from './provider';
-import { GithubRuntimeContext } from './types';
+import { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
 import { arrayToHex, safeCompare } from './utils';
 
 const logger = Logger('github:webhooks');
@@ -75,8 +75,10 @@ export async function handlePushEvent(
 
         await Promise.all(
             spaceInstallations.map((spaceInstallation) => {
-                // @ts-ignore
-                return triggerImport(context, spaceInstallation.configuration);
+                return triggerImport(
+                    context,
+                    spaceInstallation.configuration as GitHubSpaceConfiguration
+                );
             })
         );
     }
@@ -115,10 +117,13 @@ export async function handlePullRequestEvents(
 
         await Promise.all(
             spaceInstallations.map((spaceInstallation) => {
-                // @ts-ignore
-                return triggerImport(context, spaceInstallation.configuration, {
-                    standalone: headRef,
-                });
+                return triggerImport(
+                    context,
+                    spaceInstallation.configuration as GitHubSpaceConfiguration,
+                    {
+                        standalone: { ref: headRef },
+                    }
+                );
             })
         );
     }
