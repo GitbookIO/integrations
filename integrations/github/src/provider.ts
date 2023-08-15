@@ -148,7 +148,7 @@ export async function triggerExport(
 
     await context.api.spaces.exportToGitRepository(environment.spaceInstallation?.space, {
         url: urlWithAuth.toString(),
-        ref: standalone?.ref || `refs/heads/${config.branch}`,
+        ref: `refs/heads/${config.branch}`,
         repoTreeURL: getGitTreeURL(config),
         repoCommitURL: getGitCommitURL(config),
         repoProjectDirectory: config.projectDirectory,
