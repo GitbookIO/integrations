@@ -5,11 +5,12 @@ visibility: private
 description: ''
 script: src/index.tsx
 scopes:
-  - space:metadata:read
-  - space:metadata:write
-  - space:git:sync
-blocks:
-  - id: github
-    title: GitHub
-    description: My GitBook Integration
-secrets: {}
+    - space:metadata:read
+    - space:metadata:write
+    - space:git:sync
+configurations:
+    space:
+        componentId: configure
+secrets:
+    CLIENT_ID: ${{ env.GITHUB_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.GITHUB_CLIENT_SECRET }}
