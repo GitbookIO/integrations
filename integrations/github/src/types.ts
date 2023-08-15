@@ -21,6 +21,7 @@ export type ConfigureAction =
 
 export type ConfigureProps = {
     configuration: {
+        key?: string;
         installation?: string;
         repository?: string;
         branch?: string;

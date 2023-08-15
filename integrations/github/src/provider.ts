@@ -22,14 +22,16 @@ async function createGitHubApp(context: GithubRuntimeContext) {
     return githubApp;
 }
 
-export function getRepositoryUrl(config: ConfigureState) {
+function getRepositoryUrl(config: ConfigureState, withExtension = false) {
     const installation = parseInstallation(config);
     const repository = parseRepository(config);
 
-    return `https://github.com/${installation.accountName}/${repository.repoName}.git`;
+    return `https://github.com/${installation.accountName}/${repository.repoName}${
+        withExtension ? '.git' : ''
+    }`;
 }
 
-export async function getRepositoryAuth(context: GithubRuntimeContext, config: ConfigureState) {
+async function getRepositoryAuth(context: GithubRuntimeContext, config: ConfigureState) {
     const githubApp = await createGitHubApp(context);
 
     const { token } = (await githubApp.octokit.auth({
@@ -38,7 +40,7 @@ export async function getRepositoryAuth(context: GithubRuntimeContext, config: C
     })) as { token: string };
 
     return {
-        url: getRepositoryUrl(config),
+        url: getRepositoryUrl(config, true),
         username: 'x-access-token',
         password: token,
     };
@@ -71,4 +73,104 @@ export async function updateCommitStatus(
         description: update.description,
         context: update.context || 'GitBook',
     });
+}
+
+export async function triggerImport(
+    context: GithubRuntimeContext,
+    config: ConfigureState,
+    options: {
+        /**
+         * To import from the provider a standalone content.
+         * Main space content will not be updated.
+         */
+        standalone?: {
+            ref: string;
+        };
+
+        /** Force the synchronization even if content has already been imported */
+        force?: boolean;
+
+        /** Whether the git info should be updated on the space */
+        updateGitInfo?: boolean;
+    } = {}
+) {
+    const { environment } = context;
+    const { force = false, updateGitInfo = false, standalone } = options;
+
+    if (!environment.spaceInstallation) {
+        throw new Error('Expected an installation on the space');
+    }
+
+    const repoURL = getRepositoryUrl(config, true);
+    const auth = await getRepositoryAuth(context, config);
+
+    const urlWithAuth = new URL(repoURL);
+    urlWithAuth.username = auth.username;
+    urlWithAuth.password = auth.password;
+
+    await context.api.spaces.importGitRepository(environment.spaceInstallation?.space, {
+        url: urlWithAuth.toString(),
+        ref: standalone?.ref || `refs/heads/${config.branch}`,
+        repoTreeURL: getGitTreeURL(config),
+        repoCommitURL: getGitCommitURL(config),
+        repoProjectDirectory: config.projectDirectory,
+        repoCacheID: config.key,
+        force,
+        standalone: !!standalone,
+        ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoURL } } : {}),
+    });
+}
+
+export async function triggerExport(
+    context: GithubRuntimeContext,
+    config: ConfigureState,
+    options: {
+        /** Force the synchronization even if content has already been exported */
+        force?: boolean;
+
+        /** Whether the git info should be updated on the space */
+        updateGitInfo?: boolean;
+    } = {}
+) {
+    const { environment } = context;
+    const { force = false, updateGitInfo = false } = options;
+
+    if (!environment.spaceInstallation) {
+        throw new Error('Expected an installation on the space');
+    }
+
+    const repoURL = getRepositoryUrl(config, true);
+    const auth = await getRepositoryAuth(context, config);
+
+    const urlWithAuth = new URL(repoURL);
+    urlWithAuth.username = auth.username;
+    urlWithAuth.password = auth.password;
+
+    await context.api.spaces.exportToGitRepository(environment.spaceInstallation?.space, {
+        url: urlWithAuth.toString(),
+        ref: standalone?.ref || `refs/heads/${config.branch}`,
+        repoTreeURL: getGitTreeURL(config),
+        repoCommitURL: getGitCommitURL(config),
+        repoProjectDirectory: config.projectDirectory,
+        repoCacheID: config.key,
+        force,
+        commitMessage: 'export',
+        ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoURL } } : {}),
+    });
+}
+
+/**
+ * Returns the base URL of the Git tree in the provider.
+ */
+function getGitTreeURL(config: ConfigureState): string {
+    const base = getRepositoryUrl(config);
+    return `${base}/blob/${config.branch}`;
+}
+
+/**
+ * Returns the absolute URL for a commit.
+ */
+export function getGitCommitURL(config: ConfigureState): string {
+    const base = getRepositoryUrl(config);
+    return `${base}/commit`;
 }

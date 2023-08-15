@@ -106,6 +106,7 @@ export async function saveGitHubConfig(
         {
             configuration: {
                 ...existing,
+                key: config.key || crypto.randomUUID(),
                 installation: config.installation,
                 repository: config.repository,
                 branch: config.branch,
