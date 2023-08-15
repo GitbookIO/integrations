@@ -1,13 +1,17 @@
 import { App as GitHubApp } from '@octokit/app';
 import { Octokit } from '@octokit/rest';
 
+import { ContentVisibility, GitSyncOperationState } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
 
 import { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
-import { parseInstallation, parseRepository } from './utils';
+import { getGitSyncStateDescription, parseInstallation, parseRepository } from './utils';
 
 const logger = Logger('github:provider');
 
+/**
+ * Return the GitHub App instance.
+ */
 export async function getGitHubApp(context: GithubRuntimeContext) {
     const { environment } = context;
     const githubApp = new GitHubApp({
@@ -26,6 +30,9 @@ export async function getGitHubApp(context: GithubRuntimeContext) {
     return githubApp;
 }
 
+/**
+ * Trigger an import to GitBook space.
+ */
 export async function triggerImport(
     context: GithubRuntimeContext,
     config: GitHubSpaceConfiguration,
@@ -74,6 +81,9 @@ export async function triggerImport(
     });
 }
 
+/**
+ * Trigger an export to GitHub.
+ */
 export async function triggerExport(
     context: GithubRuntimeContext,
     config: GitHubSpaceConfiguration,
@@ -114,13 +124,55 @@ export async function triggerExport(
     });
 }
 
-export async function updateCommitStatus(
+/**
+ * Update the commit status on GitHub with the given state.
+ * If the space is public, we also add a link to the public content.
+ */
+export async function updateCommitWithPreviewLinks(
+    runtime: GithubRuntimeContext,
+    spaceId: string,
+    revisionId: string,
+    config: GitHubSpaceConfiguration,
+    commitSha: string,
+    state: GitSyncOperationState
+) {
+    const { data: space } = await runtime.api.spaces.getSpaceById(spaceId);
+
+    const context = `GitBook${config.projectDirectory ? ` (${config.projectDirectory})` : ''}`;
+
+    const mainStatus = updateCommitStatus(runtime, config, commitSha, {
+        state,
+        description: getGitSyncStateDescription(state),
+        url: `${space.urls.app}~/revisions/${revisionId}/`,
+        context,
+    });
+
+    let publicStatus: Promise<any> | undefined;
+    if (space.visibility === ContentVisibility.Public) {
+        const publicUrl = space.urls.public;
+        if (publicUrl) {
+            publicStatus = updateCommitStatus(runtime, config, commitSha, {
+                state,
+                description: getGitSyncStateDescription(state),
+                url: `${publicUrl}~/revisions/${revisionId}/`,
+                context: `${context} - ${new URL(publicUrl).hostname}`,
+            });
+        }
+    }
+
+    await Promise.all([mainStatus, publicStatus]);
+}
+
+/**
+ * Update the commit status
+ */
+async function updateCommitStatus(
     context: GithubRuntimeContext,
     config: GitHubSpaceConfiguration,
     commitSha: string,
     update: {
         context?: string;
-        state: 'running' | 'success' | 'failure';
+        state: GitSyncOperationState;
         url: string;
         description: string;
     }

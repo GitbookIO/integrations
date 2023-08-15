@@ -1,3 +1,5 @@
+import { GitSyncOperationState } from '@gitbook/api';
+
 import type { GitHubSpaceConfiguration } from './types';
 
 /**
@@ -26,6 +28,20 @@ export function getGitSyncCommitMessage(
     return template
         .replace('{change_request_number}', String(context.change_request_number || ''))
         .replace('{change_request_subject}', subject);
+}
+
+/**
+ * Get description for a Git Sync operationstate.
+ */
+export function getGitSyncStateDescription(state: GitSyncOperationState): string {
+    switch (state) {
+        case 'success':
+            return 'Content is live on GitBook';
+        case 'failure':
+            return 'Error while updating content, contact GitBook support';
+        default:
+            return 'Updating content on GitBook...';
+    }
 }
 
 export function parseInstallation(config: GitHubSpaceConfiguration) {
