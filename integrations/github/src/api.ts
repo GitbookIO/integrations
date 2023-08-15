@@ -7,7 +7,7 @@ import {
     computeConfigQueryKeyPreviewExternalBranches,
     getGitRef,
 } from './provider';
-import type { ConfigureState, GithubRuntimeContext } from './types';
+import type { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
 import { parseInstallation, parseRepository } from './utils';
 
 /**
@@ -95,7 +95,7 @@ export async function fetchRepositoryBranches(
 export async function saveSpaceConfiguration(
     context: GithubRuntimeContext,
     existingConfiguration: object,
-    config: ConfigureState
+    config: GitHubSpaceConfiguration
 ) {
     const { api, environment } = context;
     if (!environment.installation) {

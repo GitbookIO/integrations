@@ -1,4 +1,4 @@
-import { ConfigureState } from './types';
+import type { GitHubSpaceConfiguration } from './types';
 
 /**
  * The default commit message to use when a change request is merged in GitBook
@@ -28,7 +28,7 @@ export function getGitSyncCommitMessage(
         .replace('{change_request_subject}', subject);
 }
 
-export function parseInstallation(config: ConfigureState) {
+export function parseInstallation(config: GitHubSpaceConfiguration) {
     const { installation } = config;
     if (!installation) {
         throw new Error('Expected an installation');
@@ -38,7 +38,7 @@ export function parseInstallation(config: ConfigureState) {
     return { installationId: parseInt(installationId, 10), accountName };
 }
 
-export function parseRepository(config: ConfigureState) {
+export function parseRepository(config: GitHubSpaceConfiguration) {
     const { repository } = config;
     if (!repository) {
         throw new Error('Expected a repository');

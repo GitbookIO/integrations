@@ -7,6 +7,7 @@ import {
     FetchEventCallback,
     createOAuthHandler,
     Logger,
+    EventCallback,
 } from '@gitbook/runtime';
 
 import {
@@ -15,7 +16,7 @@ import {
     fetchRepositoryBranches,
     saveSpaceConfiguration,
 } from './api';
-import { getGitHubApp } from './provider';
+import { getGitHubApp, triggerExport } from './provider';
 import type {
     GithubRuntimeContext,
     ConfigureProps,
@@ -206,6 +207,33 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
     }
 
     return response;
+};
+
+/*
+ * Handle content being updated: Trigger an export to GitHub
+ */
+const handleSpaceContentUpdated: EventCallback<
+    'space_content_updated',
+    GithubRuntimeContext
+> = async (event, context) => {
+    const { data: revision } = await context.api.spaces.getRevisionById(
+        event.spaceId,
+        event.revisionId
+    );
+    if (revision.git?.oid) {
+        const revisionStatus = revision.git.createdByGitBook ? 'exported' : 'imported';
+        logger.info(
+            `skipping Git Sync for space ${event.spaceId} revision ${revision.id} as it was already ${revisionStatus}`
+        );
+        return;
+    }
+
+    if (!context.environment.spaceInstallation?.configuration) {
+        logger.debug(`missing space installation configuration, skipping Git Sync`);
+        return;
+    }
+
+    await triggerExport(context, context.environment.spaceInstallation.configuration);
 };
 
 const configBlock = createComponent<
@@ -536,5 +564,5 @@ const configBlock = createComponent<
 export default createIntegration({
     fetch: handleFetchEvent,
     components: [configBlock],
-    events: {},
+    events: { space_content_updated: handleSpaceContentUpdated },
 });

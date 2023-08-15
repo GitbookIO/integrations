@@ -1,14 +1,14 @@
 import type { RuntimeContext, RuntimeEnvironment } from '@gitbook/runtime';
 
-export interface GithubSpaceInstallationConfiguration {
+export type GitHubSpaceConfiguration = {
     oauth_credentials?: {
         access_token: string;
         expires_at: number;
         refresh_token: string;
     };
-}
+} & ConfigureState;
 
-export type GithubRuntimeEnvironment = RuntimeEnvironment<{}, GithubSpaceInstallationConfiguration>;
+export type GithubRuntimeEnvironment = RuntimeEnvironment<{}, GitHubSpaceConfiguration>;
 export type GithubRuntimeContext = RuntimeContext<GithubRuntimeEnvironment>;
 
 export type ConfigureAction =

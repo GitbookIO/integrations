@@ -1,8 +1,12 @@
 import { App as GitHubApp } from '@octokit/app';
 import { Octokit } from '@octokit/rest';
 
-import { ConfigureState, GithubRuntimeContext } from './types';
+import { Logger } from '@gitbook/runtime';
+
+import { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
 import { parseInstallation, parseRepository } from './utils';
+
+const logger = Logger('github:provider');
 
 export async function getGitHubApp(context: GithubRuntimeContext) {
     const { environment } = context;
@@ -24,7 +28,7 @@ export async function getGitHubApp(context: GithubRuntimeContext) {
 
 export async function triggerImport(
     context: GithubRuntimeContext,
-    config: ConfigureState,
+    config: GitHubSpaceConfiguration,
     options: {
         /**
          * To import from the provider a standalone content.
@@ -44,6 +48,8 @@ export async function triggerImport(
     const { environment } = context;
     const { force = false, updateGitInfo = false, standalone } = options;
 
+    logger.info('Initiating an import to GitBook');
+
     if (!environment.spaceInstallation) {
         throw new Error('Expected an installation on the space');
     }
@@ -57,7 +63,7 @@ export async function triggerImport(
 
     await context.api.spaces.importGitRepository(environment.spaceInstallation?.space, {
         url: urlWithAuth.toString(),
-        ref: standalone?.ref || getGitRef(config),
+        ref: standalone?.ref ?? getGitRef(config.branch ?? ''),
         repoTreeURL: getGitTreeURL(config),
         repoCommitURL: getGitCommitURL(config),
         repoProjectDirectory: config.projectDirectory,
@@ -70,7 +76,7 @@ export async function triggerImport(
 
 export async function triggerExport(
     context: GithubRuntimeContext,
-    config: ConfigureState,
+    config: GitHubSpaceConfiguration,
     options: {
         /** Force the synchronization even if content has already been exported */
         force?: boolean;
@@ -81,6 +87,8 @@ export async function triggerExport(
 ) {
     const { environment } = context;
     const { force = false, updateGitInfo = false } = options;
+
+    logger.info('Initiating an export to GitHub');
 
     if (!environment.spaceInstallation) {
         throw new Error('Expected an installation on the space');
@@ -95,7 +103,7 @@ export async function triggerExport(
 
     await context.api.spaces.exportToGitRepository(environment.spaceInstallation?.space, {
         url: urlWithAuth.toString(),
-        ref: getGitRef(config),
+        ref: getGitRef(config.branch ?? ''),
         repoTreeURL: getGitTreeURL(config),
         repoCommitURL: getGitCommitURL(config),
         repoProjectDirectory: config.projectDirectory,
@@ -108,7 +116,7 @@ export async function triggerExport(
 
 export async function updateCommitStatus(
     context: GithubRuntimeContext,
-    config: ConfigureState,
+    config: GitHubSpaceConfiguration,
     commitSha: string,
     update: {
         context?: string;
@@ -168,7 +176,7 @@ export function getGitRef(branch: string): string {
 /**
  * Returns the URL of the Git repository.
  */
-function getRepositoryUrl(config: ConfigureState, withExtension = false): string {
+function getRepositoryUrl(config: GitHubSpaceConfiguration, withExtension = false): string {
     const installation = parseInstallation(config);
     const repository = parseRepository(config);
 
@@ -180,7 +188,7 @@ function getRepositoryUrl(config: ConfigureState, withExtension = false): string
 /**
  * Returns the authentication information for the Git repository.
  */
-async function getRepositoryAuth(context: GithubRuntimeContext, config: ConfigureState) {
+async function getRepositoryAuth(context: GithubRuntimeContext, config: GitHubSpaceConfiguration) {
     const githubApp = await getGitHubApp(context);
 
     const { token } = (await githubApp.octokit.auth({
@@ -198,7 +206,7 @@ async function getRepositoryAuth(context: GithubRuntimeContext, config: Configur
 /**
  * Returns the base URL of the Git tree in the provider.
  */
-function getGitTreeURL(config: ConfigureState): string {
+function getGitTreeURL(config: GitHubSpaceConfiguration): string {
     const base = getRepositoryUrl(config);
     return `${base}/blob/${config.branch}`;
 }
@@ -206,7 +214,7 @@ function getGitTreeURL(config: ConfigureState): string {
 /**
  * Returns the absolute URL for a commit.
  */
-function getGitCommitURL(config: ConfigureState): string {
+function getGitCommitURL(config: GitHubSpaceConfiguration): string {
     const base = getRepositoryUrl(config);
     return `${base}/commit`;
 }
