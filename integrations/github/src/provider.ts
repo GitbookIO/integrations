@@ -119,6 +119,7 @@ export async function triggerExport(
         repoProjectDirectory: config.projectDirectory,
         repoCacheID: config.key,
         force,
+        // FIXME: compute proper commitMessage using revision.mergedFrom
         commitMessage: 'export',
         ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoURL } } : {}),
     });
