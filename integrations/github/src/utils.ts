@@ -1,3 +1,5 @@
+import { ConfigureState } from './types';
+
 /**
  * The default commit message to use when a change request is merged in GitBook
  */
@@ -24,4 +26,24 @@ export function getGitSyncCommitMessage(
     return template
         .replace('{change_request_number}', String(context.change_request_number || ''))
         .replace('{change_request_subject}', subject);
+}
+
+export function parseInstallation(config: ConfigureState) {
+    const { installation } = config;
+    if (!installation) {
+        throw new Error('Expected an installation');
+    }
+
+    const [installationId, accountName] = installation.split(':');
+    return { installationId: parseInt(installationId, 10), accountName };
+}
+
+export function parseRepository(config: ConfigureState) {
+    const { repository } = config;
+    if (!repository) {
+        throw new Error('Expected a repository');
+    }
+
+    const [repoID, repoName] = repository.split(':');
+    return { repoID: parseInt(repoID, 10), repoName };
 }
