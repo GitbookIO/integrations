@@ -53,10 +53,11 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
             });
         }
 
-        logger.debug('received webhook event', { id, name });
+        logger.debug('received webhook event', { id, event });
 
-        // Hand the webhook
-
+        /**
+         * Handle Webhook events
+         */
         if (event === 'push') {
             await handlePushEvent(context, payload);
         } else if (
