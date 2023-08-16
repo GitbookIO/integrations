@@ -15,7 +15,6 @@ import {
  */
 export async function saveSpaceConfiguration(
     context: GithubRuntimeContext,
-    existingConfiguration: object,
     config: GitHubSpaceConfiguration
 ) {
     const { api, environment } = context;
@@ -39,6 +38,7 @@ export async function saveSpaceConfiguration(
      * we can query it later when there is a webhook event.
      */
     const externalIds: string[] = [];
+
     externalIds.push(computeConfigQueryKeyBase(installationId, repoID, getGitRef(config.branch)));
     if (config.previewExternalBranches) {
         externalIds.push(
@@ -51,7 +51,7 @@ export async function saveSpaceConfiguration(
     }
 
     const configurationBody = {
-        ...existingConfiguration,
+        ...environment.spaceInstallation.configuration,
         key: config.key || crypto.randomUUID(),
         installation: config.installation,
         repository: config.repository,

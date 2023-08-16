@@ -17,20 +17,22 @@ export const configBlock = createComponent<
     componentId: 'configure',
     initialState: (props) => {
         return {
-            installation: props.configuration.installation,
-            repository: props.configuration.repository,
-            branch: props.configuration.branch,
-            projectDirectory: props.configuration.projectDirectory,
+            installation: props.spaceInstallation.configuration?.installation,
+            repository: props.spaceInstallation.configuration?.repository,
+            branch: props.spaceInstallation.configuration?.branch,
+            projectDirectory: props.spaceInstallation.configuration?.projectDirectory,
             withCustomTemplate: Boolean(
-                props.configuration.commitMessageTemplate &&
-                    props.configuration.commitMessageTemplate.length > 0 &&
-                    props.configuration.commitMessageTemplate !== GITSYNC_DEFAULT_COMMIT_MESSAGE
+                props.spaceInstallation.configuration?.commitMessageTemplate &&
+                    props.spaceInstallation.configuration?.commitMessageTemplate.length > 0 &&
+                    props.spaceInstallation.configuration?.commitMessageTemplate !==
+                        GITSYNC_DEFAULT_COMMIT_MESSAGE
             ),
             commitMessageTemplate:
-                props.configuration.commitMessageTemplate || GITSYNC_DEFAULT_COMMIT_MESSAGE,
+                props.spaceInstallation.configuration?.commitMessageTemplate ||
+                GITSYNC_DEFAULT_COMMIT_MESSAGE,
             commitMessagePreview: '',
-            previewExternalBranches: props.configuration.previewExternalBranches,
-            priority: props.configuration.priority || 'github',
+            previewExternalBranches: props.spaceInstallation.configuration?.previewExternalBranches,
+            priority: props.spaceInstallation.configuration?.priority || 'github',
         };
     },
     action: async (element, action, context) => {
@@ -69,7 +71,7 @@ export const configBlock = createComponent<
                     },
                 };
             case 'save':
-                await saveSpaceConfiguration(context, element.props.configuration, element.state);
+                await saveSpaceConfiguration(context, element.state);
                 return element;
         }
     },

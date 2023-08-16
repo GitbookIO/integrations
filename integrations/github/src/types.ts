@@ -20,19 +20,21 @@ export type ConfigureAction =
     | { action: 'save' };
 
 export type ConfigureProps = {
-    configuration: {
-        key?: string;
-        installation?: string;
-        repository?: string;
-        branch?: string;
-        projectDirectory?: string;
-        commitMessageTemplate?: string;
-        previewExternalBranches?: boolean;
-        priority: 'github' | 'gitbook';
+    spaceInstallation: {
+        configuration?: {
+            key?: string;
+            installation?: string;
+            repository?: string;
+            branch?: string;
+            projectDirectory?: string;
+            commitMessageTemplate?: string;
+            previewExternalBranches?: boolean;
+            priority: 'github' | 'gitbook';
+        };
     };
 };
 
-export type ConfigureState = ConfigureProps['configuration'] & {
+export type ConfigureState = ConfigureProps['spaceInstallation']['configuration'] & {
     withCustomTemplate?: boolean;
     commitMessagePreview?: string;
 };
