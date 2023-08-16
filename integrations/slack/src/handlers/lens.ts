@@ -1,28 +1,44 @@
-import type { SearchPageResult, SearchSectionResult, SearchSpaceResult } from '@gitbook/api';
+import type { RevisionPage, SearchSectionResult, SearchAIAnswer, GitBookAPI } from '@gitbook/api';
 
 import type { SlashEvent } from '../commands';
-import { SlackInstallationConfiguration, SlackRuntimeContext } from '../configuration';
+import {
+    SlackInstallationConfiguration,
+    SlackRuntimeContext,
+    SlackRuntimeEnvironment,
+} from '../configuration';
 import { slackAPI } from '../slack';
 
-interface IQueryResult {
-    data: {
-        answer: {
-            text?: string;
-            pages: Array<
-                Array<{
-                    page: string;
-                    revision: string;
-                    sections: Array<string>;
-                    space: string;
-                }>
-            >;
-            followupQuestions: Array<string>;
-        };
+async function getRelatedPages(params: {
+    answer?: SearchAIAnswer;
+    client: GitBookAPI;
+    environment: SlackRuntimeEnvironment;
+}) {
+    const { answer, client, environment } = params;
+
+    // TODO: Need to find why there is no spaceInstalation in the environment
+    const spaceId =
+        environment.spaceInstallation?.space || (answer?.pages?.length > 0 && answer.pages[0].space);
+
+    // get current revision for the space
+    const { data: currentRevision } = await client.spaces.getCurrentRevision(spaceId);
+
+    const pageIds = answer?.pages?.map((page) => page.page);
+
+    // possible undefined here
+
+    const publicUrl = currentRevision.urls.public || currentRevision.urls.app;
+
+    // filter related pages from current revision
+    return {
+        publicUrl,
+        relatedPages: currentRevision.pages.filter((revisionPage) =>
+            pageIds.includes(revisionPage.id)
+        ),
     };
 }
 
 /**
- * Search for a query in GitBook and post a message to Slack.
+ * Query GitBook Lens and post a message back to Slack.
  */
 export async function queryLensInGitBook(slashEvent: SlashEvent, context: SlackRuntimeContext) {
     const { environment, api } = context;
@@ -68,20 +84,14 @@ export async function queryLensInGitBook(slashEvent: SlashEvent, context: SlackR
         installation.id
     );
 
-    const result: IQueryResult = await installationApiClient.search.askQuery({ query: text });
-
+    const result = await installationApiClient.search.askQuery({ query: text });
     const answer = result.data?.answer;
 
-    const pageRequests = await Promise.all(
-        answer?.pages?.map((page) =>
-            installationApiClient.spaces.getPageById(page.space, page.page)
-        ) ?? []
-    );
-
-    const resolvedPages = pageRequests.map((pageRequest, i) => ({
-        ...pageRequest.data,
-        ...(answer?.pages[i] ?? []),
-    }));
+    const { publicUrl, relatedPages } = await getRelatedPages({
+        answer,
+        client: installationApiClient,
+        environment,
+    });
 
     const blocks = {
         method: 'POST',
@@ -121,7 +131,7 @@ export async function queryLensInGitBook(slashEvent: SlashEvent, context: SlackR
                         text: 'More information:',
                     },
                 },
-                ...buildSearchContentBlocks(resolvedPages),
+                ...buildSearchContentBlocks(relatedPages, publicUrl),
                 {
                     type: 'divider',
                 },
@@ -152,9 +162,9 @@ export async function queryLensInGitBook(slashEvent: SlashEvent, context: SlackR
     });
 }
 
-function buildSearchContentBlocks(items: Array<any>) {
+function buildSearchContentBlocks(items: Array<RevisionPage>, publicUrl: string) {
     const blocks = items.reduce<Array<any>>((acc, page) => {
-        const pageResultBlock = buildSearchPageBlock(page);
+        const pageResultBlock = buildSearchPageBlock(page, publicUrl);
         // if (page.sections) {
         // const sectionBlocks = page.sections.map(buildSearchSectionBlock);
         acc.push(pageResultBlock);
@@ -165,9 +175,9 @@ function buildSearchContentBlocks(items: Array<any>) {
     return blocks.flat();
 }
 
-function buildSearchPageBlock(page: SearchPageResult) {
+function buildSearchPageBlock(page: RevisionPage, publicUrl: string) {
     // TODO: @scazan this is hardcoded, we need to get the org as well (assuming from the context)
-    const url = `https://gitbook-x-dev-scazan.firebaseapp.com/o/Uhi13uaBRmvSt6UGc5br/s/${page.space}/${page.slug}`;
+    const url = `${publicUrl}/${page.slug}`;
     return [
         {
             type: 'section',
