@@ -56,28 +56,22 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         logger.debug('received webhook event', { id, name });
 
         // Hand the webhook
-        try {
-            if (event === 'push') {
-                await handlePushEvent(context, payload);
-            } else if (
-                event === 'pull_request' &&
-                (payload.action === 'opened' || payload.action === 'synchronize')
-            ) {
-                await handlePullRequestEvents(context, payload);
-            } else {
-                logger.debug('ignoring webhook event', { id, event });
-            }
 
-            return new Response(JSON.stringify({ ok: true }), {
-                status: 200,
-                headers: { 'content-type': 'application/json' },
-            });
-        } catch (error: any) {
-            return new Response(JSON.stringify({ error: error.message }), {
-                status: 500,
-                headers: { 'content-type': 'application/json' },
-            });
+        if (event === 'push') {
+            await handlePushEvent(context, payload);
+        } else if (
+            event === 'pull_request' &&
+            (payload.action === 'opened' || payload.action === 'synchronize')
+        ) {
+            await handlePullRequestEvents(context, payload);
+        } else {
+            logger.debug('ignoring webhook event', { id, event });
         }
+
+        return new Response(JSON.stringify({ ok: true }), {
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+        });
     });
 
     /*
