@@ -178,12 +178,15 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         });
     });
 
-    const response = await router.handle(request, context).catch((error) => {
+    let response;
+    try {
+        response = await router.handle(request, context);
+    } catch (error: any) {
         logger.error('error handling request', error);
         return new Response(error.message, {
             status: error.status || 500,
         });
-    });
+    }
 
     if (!response) {
         return new Response(`No route matching ${request.method} ${request.url}`, {

@@ -9,7 +9,7 @@
     "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
-        "@octokit/webhooks-types": "^7.2.0",
+        "http-errors": "^2.0.0",
         "http-link-header": "^1.1.1",
         "itty-router": "^4.0.14",
         "jose": "^4.14.4"
@@ -18,6 +18,8 @@
         "@gitbook/cli": "^0.10.0",
         "@gitbook/eslint-config": "*",
         "@gitbook/tsconfig": "*",
+        "@octokit/webhooks-types": "^7.2.0",
+        "@types/http-errors": "^2.0.1",
         "@types/http-link-header": "^1.0.3"
     }
 }

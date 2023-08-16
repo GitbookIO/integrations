@@ -1,3 +1,4 @@
+import httpError from 'http-errors';
 import LinkHeader from 'http-link-header';
 
 import type { GithubRuntimeContext } from './types';
@@ -214,7 +215,7 @@ async function requestGitHub(
     });
 
     if (!response.ok) {
-        throw new Error(`GitHub API error: ${response.statusText}`);
+        throw httpError(response.status, `GitHub API error: ${response.statusText}`);
     }
 
     return response;
@@ -226,7 +227,7 @@ async function requestGitHub(
 function parseOAuthCredentials({ environment }: GithubRuntimeContext): TokenCredentials {
     const oAuthCredentials = environment.spaceInstallation?.configuration.oauth_credentials;
     if (!oAuthCredentials?.access_token) {
-        throw new Error(`Missing access token`);
+        throw httpError(401, 'UnAuthorized: Missing OAuth access token');
     }
 
     return {

@@ -83,7 +83,7 @@ export const configBlock = createComponent<
         const spaceInstallationPublicEndpoint =
             context.environment.spaceInstallation?.urls.publicEndpoint;
         if (!spaceInstallationPublicEndpoint) {
-            throw new Error('Missing space installation public endpoint');
+            throw new Error('Expected space installation public endpoint');
         }
 
         return (

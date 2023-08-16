@@ -1,3 +1,5 @@
+import httpError from 'http-errors';
+
 import { IntegrationSpaceInstallation } from '@gitbook/api';
 
 import { getGitRef } from './provider';
@@ -19,15 +21,15 @@ export async function saveSpaceConfiguration(
 ) {
     const { api, environment } = context;
     if (!environment.installation) {
-        throw new Error('Missing installation');
+        throw new Error('Expected installation');
     }
 
     if (!environment.spaceInstallation) {
-        throw new Error('Missing space installation');
+        throw new Error('Expected space installation');
     }
 
     if (!config.installation || !config.repository || !config.branch) {
-        throw new Error('Incomplete configuration');
+        throw httpError(400, 'Incomplete configuration');
     }
 
     const { installationId } = parseInstallation(config);
