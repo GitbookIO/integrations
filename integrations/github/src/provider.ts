@@ -11,7 +11,6 @@ import { parseInstallation, parseRepository } from './utils';
  */
 async function getGitHubAppJWT(context: GithubRuntimeContext) {
     const { environment } = context;
-    environment.secrets.GXX;
 
     const privateKeyBuffer = new Uint8Array(environment.secrets.PRIVATE_KEY.length);
     for (let i = 0; i < privateKeyBuffer.length; i++) {

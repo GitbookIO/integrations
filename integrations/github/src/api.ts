@@ -223,8 +223,9 @@ async function requestGitHub(
 
 /**
  * Parse the OAuth credentials from the space configuration.
+ * throws an error if the credentials are missing.
  */
-function parseOAuthCredentials({ environment }: GithubRuntimeContext): TokenCredentials {
+export function parseOAuthCredentials({ environment }: GithubRuntimeContext): TokenCredentials {
     const oAuthCredentials = environment.spaceInstallation?.configuration.oauth_credentials;
     if (!oAuthCredentials?.access_token) {
         throw httpError(401, 'UnAuthorized: Missing OAuth access token');

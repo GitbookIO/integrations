@@ -1,3 +1,4 @@
+import { IntegrationInstallationConfiguration } from '@gitbook/api';
 import type { RuntimeContext, RuntimeEnvironment } from '@gitbook/runtime';
 
 export type GitHubSpaceConfiguration = {
@@ -20,6 +21,9 @@ export type ConfigureAction =
     | { action: 'save' };
 
 export type ConfigureProps = {
+    installation: {
+        configuration?: IntegrationInstallationConfiguration;
+    };
     spaceInstallation: {
         configuration?: {
             key?: string;

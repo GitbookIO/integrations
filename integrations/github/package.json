@@ -9,6 +9,7 @@
     "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
+        "hash-sum": "^2.0.0",
         "http-errors": "^2.0.0",
         "http-link-header": "^1.1.1",
         "itty-router": "^4.0.14",
@@ -19,6 +20,7 @@
         "@gitbook/eslint-config": "*",
         "@gitbook/tsconfig": "*",
         "@octokit/webhooks-types": "^7.2.0",
+        "@types/hash-sum": "^1.0.0",
         "@types/http-errors": "^2.0.1",
         "@types/http-link-header": "^1.0.3"
     }

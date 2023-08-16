@@ -1,6 +1,9 @@
+import hash from 'hash-sum';
+
 import { ContentKitIcon } from '@gitbook/api';
 import { createComponent } from '@gitbook/runtime';
 
+import { parseOAuthCredentials } from './api';
 import { saveSpaceConfiguration } from './installation';
 import { ConfigureAction, ConfigureProps, ConfigureState, GithubRuntimeContext } from './types';
 import { getGitSyncCommitMessage, GITSYNC_DEFAULT_COMMIT_MESSAGE } from './utils';
@@ -76,15 +79,26 @@ export const configBlock = createComponent<
         }
     },
     render: async (element, context) => {
-        const accessToken =
-            context.environment.spaceInstallation?.configuration.oauth_credentials?.access_token;
-        const buttonLabel = accessToken ? 'Connected' : 'Connect with GitHub';
-
         const spaceInstallationPublicEndpoint =
             context.environment.spaceInstallation?.urls.publicEndpoint;
         if (!spaceInstallationPublicEndpoint) {
             throw new Error('Expected space installation public endpoint');
         }
+
+        /**
+         * The version hash will be used to invalidate the cache of the select components
+         * on the frontend when the input props to the component change.
+         */
+        const versionHash = hash(element.props);
+
+        let accessToken: string | undefined;
+        try {
+            const tokenCredentials = parseOAuthCredentials(context);
+            accessToken = tokenCredentials.token;
+        } catch (error) {
+            // Ignore: We will show the button to connect
+        }
+        const buttonLabel = accessToken ? 'Connected' : 'Connect with GitHub';
 
         return (
             <block>
@@ -127,6 +141,9 @@ export const configBlock = createComponent<
                                                     new URL(spaceInstallationPublicEndpoint)
                                                         .pathname
                                                 }/installations`,
+                                                query: {
+                                                    v: versionHash,
+                                                },
                                             },
                                         }}
                                     />
@@ -158,6 +175,7 @@ export const configBlock = createComponent<
                                                                 element.dynamicState(
                                                                     'installation'
                                                                 ),
+                                                            v: versionHash,
                                                         },
                                                     },
                                                 }}
@@ -193,6 +211,7 @@ export const configBlock = createComponent<
                                                                 ),
                                                             repository:
                                                                 element.dynamicState('repository'),
+                                                            v: versionHash,
                                                         },
                                                     },
                                                 }}
