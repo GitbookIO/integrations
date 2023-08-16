@@ -9,6 +9,7 @@
     "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
+        "@octokit/webhooks-types": "^7.2.0",
         "http-link-header": "^1.1.1",
         "itty-router": "^4.0.14",
         "jose": "^4.14.4"

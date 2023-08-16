@@ -33,9 +33,8 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
      * Handle GitHub App webhooks
      */
     router.post('/hooks/github', async (request) => {
-        const githubApp = await getGitHubApp(context);
         const id = request.headers.get('x-github-delivery');
-        const name = request.headers.get('x-github-event');
+        const event = request.headers.get('x-github-event');
         const signature = request.headers.get('x-hub-signature-256') ?? '';
         const payloadString = await request.text();
         const payload = JSON.parse(payloadString);
@@ -54,31 +53,20 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
             });
         }
 
-        githubApp.webhooks.onAny(({ id, name, payload }) => {
-            logger.debug('received event', { id, name, payload });
-        });
-
-        githubApp.webhooks.on('push', async ({ payload }) => {
-            logger.info('receiving push event', payload);
-            await handlePushEvent(context, payload);
-        });
-
-        githubApp.webhooks.on(
-            ['pull_request.synchronize', 'pull_request.opened'],
-            async ({ payload }) => {
-                logger.info('receiving pull_request event', payload);
-                await handlePullRequestEvents(context, payload);
-            }
-        );
+        logger.debug('received webhook event', { id, name });
 
         // Hand the webhook
         try {
-            await githubApp.webhooks.receive({
-                id: id as string,
-                // @ts-ignore
-                name,
-                payload,
-            });
+            if (event === 'push') {
+                await handlePushEvent(context, payload);
+            } else if (
+                event === 'pull_request' &&
+                (payload.action === 'opened' || payload.action === 'synchronize')
+            ) {
+                await handlePullRequestEvents(context, payload);
+            } else {
+                logger.debug('ignoring webhook event', { id, event });
+            }
 
             return new Response(JSON.stringify({ ok: true }), {
                 status: 200,
