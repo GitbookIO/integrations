@@ -8,6 +8,7 @@
     },
     "dependencies": {
         "@gitbook/runtime": "*",
+        "@gitbook/api": "*",
         "@octokit/app": "^14.0.0",
         "@octokit/rest": "^20.0.1",
         "@octokit/webhooks-types": "^7.2.0",

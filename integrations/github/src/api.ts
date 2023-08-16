@@ -115,8 +115,11 @@ export async function saveSpaceConfiguration(
     const { installationId } = parseInstallation(config);
     const { repoID } = parseRepository(config);
 
+    /**
+     * We need to update the space installation external IDs to make sure
+     * we can query it later when there is a webhook event.
+     */
     const externalIds: string[] = [];
-
     externalIds.push(computeConfigQueryKeyBase(installationId, repoID, getGitRef(config.branch)));
     if (config.previewExternalBranches) {
         externalIds.push(
@@ -139,6 +142,7 @@ export async function saveSpaceConfiguration(
         priority: config.priority,
     };
 
+    // Save the space installation configuration
     await api.integrations.updateIntegrationSpaceInstallation(
         environment.integration.name,
         environment.installation.id,
@@ -149,6 +153,7 @@ export async function saveSpaceConfiguration(
         }
     );
 
+    // Force a synchronization
     if (config.priority === 'github') {
         // Import from GitHub
         await triggerImport(context, configurationBody, {
