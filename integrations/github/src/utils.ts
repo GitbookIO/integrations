@@ -44,8 +44,11 @@ export function getGitSyncStateDescription(state: GitSyncOperationState): string
     }
 }
 
-export function parseInstallation(config: GitHubSpaceConfiguration) {
-    const { installation } = config;
+/**
+ * Parse the installation ID and account name from the installation string
+ */
+export function parseInstallation(input: GitHubSpaceConfiguration | string) {
+    const installation = typeof input === 'string' ? input : input.installation;
     if (!installation) {
         throw new Error('Expected an installation');
     }
@@ -54,8 +57,11 @@ export function parseInstallation(config: GitHubSpaceConfiguration) {
     return { installationId: parseInt(installationId, 10), accountName };
 }
 
-export function parseRepository(config: GitHubSpaceConfiguration) {
-    const { repository } = config;
+/**
+ * Parse the repository ID and repository name from the repository string
+ */
+export function parseRepository(input: GitHubSpaceConfiguration | string) {
+    const repository = typeof input === 'string' ? input : input.repository;
     if (!repository) {
         throw new Error('Expected a repository');
     }

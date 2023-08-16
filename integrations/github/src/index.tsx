@@ -13,6 +13,7 @@ import { fetchInstallationRepositories, fetchInstallations, fetchRepositoryBranc
 import { configBlock } from './components';
 import { getGitHubApp, triggerExport, updateCommitWithPreviewLinks } from './provider';
 import type { GithubRuntimeContext } from './types';
+import { parseInstallation, parseRepository } from './utils';
 import { handlePullRequestEvents, handlePushEvent, verifyGitHubWebhookSignature } from './webhooks';
 
 const logger = Logger('github');
@@ -134,7 +135,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         const { installation } = req.query;
         const installationId =
             installation && typeof installation === 'string'
-                ? installation.split(':')[0]
+                ? parseInstallation(installation).installationId.toString()
                 : undefined;
 
         const repositories = installationId
@@ -163,10 +164,12 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
 
         const accountName =
             installation && typeof installation === 'string'
-                ? installation.split(':')[1]
+                ? parseInstallation(installation).accountName
                 : undefined;
         const repositoryName =
-            repository && typeof repository === 'string' ? repository.split(':')[1] : undefined;
+            repository && typeof repository === 'string'
+                ? parseRepository(repository).repoName
+                : undefined;
 
         const branches =
             accountName && repositoryName
