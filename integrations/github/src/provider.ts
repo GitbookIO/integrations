@@ -1,5 +1,4 @@
-import { App as GitHubApp } from '@octokit/app';
-import { Octokit } from '@octokit/rest';
+import * as jose from 'jose';
 
 import { ContentVisibility, GitSyncOperationState } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
@@ -12,22 +11,26 @@ const logger = Logger('github:provider');
 /**
  * Return the GitHub App instance.
  */
-export async function getGitHubApp(context: GithubRuntimeContext) {
+export async function getGitHubAppJWT(context: GithubRuntimeContext) {
     const { environment } = context;
-    const githubApp = new GitHubApp({
-        appId: environment.secrets.APP_ID,
-        privateKey: environment.secrets.PRIVATE_KEY,
-        webhooks: {
-            secret: environment.secrets.WEBHOOK_SECRET,
-        },
-        oauth: {
-            clientId: environment.secrets.CLIENT_ID,
-            clientSecret: environment.secrets.CLIENT_SECRET,
-        },
-        Octokit,
-    });
+    environment.secrets.GXX;
 
-    return githubApp;
+    const privateKeyBuffer = new Uint8Array(environment.secrets.PRIVATE_KEY.length);
+    for (let i = 0; i < privateKeyBuffer.length; i++) {
+        privateKeyBuffer[i] = environment.secrets.PRIVATE_KEY.charCodeAt(i);
+    }
+
+    const now = Math.floor(Date.now() / 1000);
+
+    const token = await new jose.SignJWT({
+        iat: now - 60,
+        exp: now + 60 * 10,
+        iss: environment.secrets.APP_ID,
+    })
+        .setProtectedHeader({ alg: 'RS256' })
+        .sign(privateKeyBuffer);
+
+    return token;
 }
 
 /**
@@ -185,7 +188,7 @@ async function updateCommitStatus(
 
     const octokit = await githubApp.getInstallationOctokit(installation.installationId);
 
-    await octokit.repos.createCommitStatus({
+    await octokit.rest.repos.createCommitStatus({
         owner: installation.accountName,
         repo: repository.repoName,
         sha: commitSha,

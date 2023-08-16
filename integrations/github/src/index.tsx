@@ -11,7 +11,7 @@ import {
 
 import { fetchInstallationRepositories, fetchInstallations, fetchRepositoryBranches } from './api';
 import { configBlock } from './components';
-import { getGitHubApp, triggerExport, updateCommitWithPreviewLinks } from './provider';
+import { triggerExport, updateCommitWithPreviewLinks } from './provider';
 import type { GithubRuntimeContext } from './types';
 import { parseInstallation, parseRepository } from './utils';
 import { handlePullRequestEvents, handlePushEvent, verifyGitHubWebhookSignature } from './webhooks';

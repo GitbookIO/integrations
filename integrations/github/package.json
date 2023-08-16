@@ -7,13 +7,11 @@
         "publish": "gitbook publish ."
     },
     "dependencies": {
-        "@gitbook/runtime": "*",
         "@gitbook/api": "*",
-        "@octokit/app": "^14.0.0",
-        "@octokit/rest": "^20.0.1",
-        "@octokit/webhooks-types": "^7.2.0",
+        "@gitbook/runtime": "*",
         "http-link-header": "^1.1.1",
-        "itty-router": "^4.0.14"
+        "itty-router": "^4.0.14",
+        "jose": "^4.14.4"
     },
     "devDependencies": {
         "@gitbook/cli": "^0.10.0",
