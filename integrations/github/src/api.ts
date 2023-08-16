@@ -114,20 +114,20 @@ export async function createAppInstallationAccessToken(
 }
 
 /**
- * Get an access token for the GitHub App installation.
+ * Create a commit status for a commit SHA.
  */
 export async function createCommitStatus(
     appJWT: string,
     owner: string,
     repo: string,
     sha: string,
-    body: object
+    status: object
 ): Promise<void> {
     await fetchGitHubAPI<{ token: string }>(
         {
             method: 'POST',
             path: `/repos/${owner}/${repo}/statuses/${sha}`,
-            body,
+            body: status,
         },
         { token: appJWT }
     );
