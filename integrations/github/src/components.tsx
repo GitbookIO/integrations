@@ -35,13 +35,13 @@ export const configBlock = createComponent<
     },
     action: async (element, action, context) => {
         switch (action.action) {
-            case '@select.installation':
+            case 'select.installation':
                 return element;
-            case '@select.repository':
+            case 'select.repository':
                 return element;
-            case '@select.branch':
+            case 'select.branch':
                 return element;
-            case '@toggle.customTemplate':
+            case 'toggle.customTemplate':
                 return {
                     ...element,
                     state: {
@@ -54,7 +54,7 @@ export const configBlock = createComponent<
                             : undefined,
                     },
                 };
-            case '@preview.commitMessage':
+            case 'preview.commitMessage':
                 return {
                     ...element,
                     state: {
@@ -68,7 +68,7 @@ export const configBlock = createComponent<
                         ),
                     },
                 };
-            case '@save':
+            case 'save':
                 await saveSpaceConfiguration(context, element.props.configuration, element.state);
                 return element;
         }
@@ -318,6 +318,11 @@ export const configBlock = createComponent<
                                     element={
                                         <button
                                             style="primary"
+                                            disabled={
+                                                !element.state.installation ||
+                                                !element.state.repository ||
+                                                !element.state.branch
+                                            }
                                             label="Save"
                                             tooltip="Save configuration"
                                             onPress={{ action: '@save' }}
