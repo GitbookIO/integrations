@@ -11,7 +11,7 @@ import {
 
 import { fetchInstallationRepositories, fetchInstallations, fetchRepositoryBranches } from './api';
 import { configBlock } from './components';
-import { triggerExport, updateCommitWithPreviewLinks } from './provider';
+import { triggerExport, updateCommitWithPreviewLinks } from './sync';
 import type { GithubRuntimeContext } from './types';
 import { parseInstallation, parseRepository } from './utils';
 import { handlePullRequestEvents, handlePushEvent, verifyGitHubWebhookSignature } from './webhooks';
@@ -135,7 +135,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         const { installation } = req.query;
         const installationId =
             installation && typeof installation === 'string'
-                ? parseInstallation(installation).installationId.toString()
+                ? parseInstallation(installation).installationId
                 : undefined;
 
         const repositories = installationId

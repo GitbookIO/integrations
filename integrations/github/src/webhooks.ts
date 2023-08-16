@@ -6,14 +6,15 @@ import type {
 
 import { Logger } from '@gitbook/runtime';
 
-import { querySpaceInstallations } from './api';
+import { querySpaceInstallations } from './installation';
+import { triggerImport } from './sync';
+import { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
 import {
+    arrayToHex,
+    safeCompare,
     computeConfigQueryKeyBase,
     computeConfigQueryKeyPreviewExternalBranches,
-    triggerImport,
-} from './provider';
-import { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
-import { arrayToHex, safeCompare } from './utils';
+} from './utils';
 
 const logger = Logger('github:webhooks');
 

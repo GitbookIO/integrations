@@ -71,6 +71,29 @@ export function parseRepository(input: GitHubSpaceConfiguration | string) {
 }
 
 /**
+ * Compute the query key for the configuration. This will be useful to list or find
+ * all configuration(s) that match this combination of installation, repository and ref.
+ */
+export function computeConfigQueryKeyBase(
+    installationId: number,
+    repoID: number,
+    ref: string
+): string {
+    return `${installationId}/${repoID}/${ref}`;
+}
+
+/**
+ * Same as computeConfigQueryKeyBase, but with the previewExternalBranches flag.
+ */
+export function computeConfigQueryKeyPreviewExternalBranches(
+    installationId: number,
+    repoID: number,
+    ref: string
+): string {
+    return `${computeConfigQueryKeyBase(installationId, repoID, ref)}/previewExternalBranches:true`;
+}
+
+/**
  * Convert an array buffer to a hex string
  */
 export function arrayToHex(arr: ArrayBuffer) {
