@@ -140,7 +140,22 @@ export const configBlock = createComponent<
             <block>
                 <input
                     label="Connect your GitLab account"
-                    hint="The access token used to read and write data on GitLab."
+                    hint={
+                        <text>
+                            The access token used to read and write data on GitLab. You can create
+                            one at{' '}
+                            <link
+                                target={{
+                                    url: 'https://gitlab.com/-/profile/personal_access_tokens',
+                                }}
+                            >
+                                User Settings → Access Tokens.
+                            </link>
+                            The token requires the{' '}
+                            <text style="bold">api, read_repository, write_repository</text> scope
+                            for the integration to work.
+                        </text>
+                    }
                     element={
                         <button
                             label="Connect"
@@ -272,7 +287,19 @@ export const configBlock = createComponent<
                                 <markdown content="### Monorepo" />
                                 <input
                                     label="Project directory"
-                                    hint="Optional directory of the project to sync with this space in your repository."
+                                    hint={
+                                        <text>
+                                            Optional directory of the project to sync with this
+                                            space in your repository.{' '}
+                                            <link
+                                                target={{
+                                                    url: 'https://docs.gitbook.com/getting-started/git-sync/monorepos',
+                                                }}
+                                            >
+                                                Learn more.
+                                            </link>
+                                        </text>
+                                    }
                                     element={
                                         <textinput state="projectDirectory" placeholder="./" />
                                     }
@@ -283,7 +310,19 @@ export const configBlock = createComponent<
                                 <markdown content="### Commit messages" />
                                 <input
                                     label="Use a custom template"
-                                    hint="Replace the commit message formatting used during export from GitBook by a custom template."
+                                    hint={
+                                        <text>
+                                            Replace the commit message formatting used during export
+                                            from GitBook by a custom template.{' '}
+                                            <link
+                                                target={{
+                                                    url: 'https://docs.gitbook.com/getting-started/git-sync/commits',
+                                                }}
+                                            >
+                                                Learn more.
+                                            </link>
+                                        </text>
+                                    }
                                     element={
                                         <switch
                                             state="withCustomTemplate"
