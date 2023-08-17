@@ -14,7 +14,7 @@ import { getChannelsPaginated } from './slack';
  * - OAuth requests
  * - Slack webhook requests
  */
-export const handleFetchEvent: FetchEventCallback = async (request, context, CFEvent) => {
+export const handleFetchEvent: FetchEventCallback = async (request, context) => {
     const { environment } = context;
 
     const router = Router({
@@ -70,12 +70,10 @@ export const handleFetchEvent: FetchEventCallback = async (request, context, CFE
     router.post(
         '/commands',
         verifySlackRequest,
-        createSlackCommandsHandler(
-            {
-                '/gitbooklens': queryLensInGitBook,
-            },
-            CFEvent
-        )
+        acknowledgeSlackRequest,
+        createSlackCommandsHandler({
+            '/gitbooklens': queryLensInGitBook,
+        })
     );
 
     /*

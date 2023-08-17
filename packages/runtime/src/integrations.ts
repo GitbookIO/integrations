@@ -74,7 +74,7 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                     body: fetchBody,
                 });
 
-                const resp = await definition.fetch(request, context, ev);
+                const resp = await definition.fetch(request, context);
                 logger.debug(
                     `response ${resp.status} ${resp.statusText} Content-Type: ${resp.headers.get(
                         'content-type'

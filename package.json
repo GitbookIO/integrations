@@ -18,8 +18,7 @@
         "changeset": "changeset",
         "release": "turbo run build && changeset publish",
         "build-assets": "ts-node ./scripts/build-assets.ts",
-        "publish-assets": "./scripts/publish-assets.sh",
-        "logs:dispatcher": "wrangler tail gitbook-x-dev-integrations-dispatcher"
+        "publish-assets": "./scripts/publish-assets.sh"
     },
     "devDependencies": {
         "assert": "^2.0.0",
