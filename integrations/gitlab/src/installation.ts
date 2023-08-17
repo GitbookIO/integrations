@@ -45,31 +45,28 @@ export async function saveSpaceConfiguration(
         customInstanceUrl: config.customInstanceUrl,
     };
 
-    // Save the space installation configuration
-    await api.integrations.updateIntegrationSpaceInstallation(
-        environment.integration.name,
-        installation.id,
-        spaceInstallation.space,
-        {
-            externalIds,
-            configuration: configurationBody,
-        }
-    );
-
-    // Force a synchronization
-    if (config.priority === 'gitlab') {
-        // Import from GitHub
-        await triggerImport(context, configurationBody, {
-            force: true,
-            updateGitInfo: true,
-        });
-    } else {
-        // Export to GitHub
-        await triggerExport(context, configurationBody, {
-            force: true,
-            updateGitInfo: true,
-        });
-    }
+    await Promise.all([
+        // Save the space installation configuration
+        api.integrations.updateIntegrationSpaceInstallation(
+            environment.integration.name,
+            installation.id,
+            spaceInstallation.space,
+            {
+                externalIds,
+                configuration: configurationBody,
+            }
+        ),
+        // Force a synchronization
+        config.priority === 'gitlab'
+            ? triggerImport(context, configurationBody, {
+                  force: true,
+                  updateGitInfo: true,
+              })
+            : triggerExport(context, configurationBody, {
+                  force: true,
+                  updateGitInfo: true,
+              }),
+    ]);
 }
 
 /**
