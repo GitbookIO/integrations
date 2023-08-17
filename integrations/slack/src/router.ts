@@ -67,10 +67,11 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         )
     );
 
+    router.post('/commands', acknowledgeSlackRequest);
+
     router.post(
-        '/commands',
+        '/commands_task',
         verifySlackRequest,
-        acknowledgeSlackRequest,
         createSlackCommandsHandler({
             '/gitbooklens': queryLensInGitBook,
         })
