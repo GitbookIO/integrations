@@ -1,6 +1,6 @@
 import { FetchEventCallback } from '@gitbook/runtime';
 
-import { recordThread } from './actions/gitbook';
+import { createMessageThreadRecording } from './actions/gitbook';
 import { SlackRuntimeContext } from './configuration';
 import { slackAPI } from './slack';
 
@@ -22,20 +22,19 @@ export function createSlackShortcutsHandler(
         // Clone the request so its body is still available to the fallback
         // const event = await request.clone().json<{ event?: { type: string }; type?: string }>();
 
-        console.log('shortcutPayload', shortcutPayload);
         const { channel, message, team, user, response_url } = shortcutPayload;
 
         // console.log('event', event);
 
         // await addRecording(api, event.event, environment.secrets.BOT_TOKEN);
 
-        const recordThreadRes = await recordThread(context, {
+        const recording = await createMessageThreadRecording(context, {
             team_id: team.id,
             channel: channel.id,
             thread_ts: message.thread_ts,
         });
 
-        const res = await slackAPI(
+        await slackAPI(
             context,
             {
                 method: 'POST',
