@@ -7,7 +7,7 @@ import {
     SlackRuntimeEnvironment,
 } from '../configuration';
 import { slackAPI } from '../slack';
-import { PagesBlock } from '../ui/blocks';
+import { PagesBlock, QueryDisplayBlock } from '../ui/blocks';
 
 async function getRelatedPages(params: {
     answer?: SearchAIAnswer;
@@ -122,28 +122,8 @@ export async function queryLensInGitBook(slashEvent: SlashEvent, context: SlackR
                         }`,
                     },
                 },
-
-                {
-                    type: 'divider',
-                },
                 ...PagesBlock({ title: 'More information', items: relatedPages, publicUrl }),
-                {
-                    type: 'divider',
-                },
-                {
-                    type: 'section',
-                    text: {
-                        type: 'mrkdwn',
-                        text: 'Some followup questions you might try:',
-                    },
-                },
-                ...(answer?.followupQuestions?.map((question) => ({
-                    type: 'section',
-                    text: {
-                        type: 'mrkdwn',
-                        text: `\`/gitbooklens ${question}\``,
-                    },
-                })) ?? []),
+                ...QueryDisplayBlock({ queries: answer?.followupQuestions }),
                 {
                     type: 'divider',
                 },
@@ -156,28 +136,3 @@ export async function queryLensInGitBook(slashEvent: SlashEvent, context: SlackR
         accessToken,
     });
 }
-
-// function buildSearchSectionBlock(section: SearchSectionResult) {
-// const title = section.title ? `* ${section.title.replace(/"/g, '')}* ` : ``;
-// const body = ` - _${section.body.replace(/"/g, '').split('\n').join('').slice(0, 128)} _`;
-// const text = `: hash: ${title}${body} `;
-// return [
-// {
-// type: 'section',
-// text: {
-// type: 'mrkdwn',
-// text,
-// },
-// accessory: {
-// type: 'button',
-// text: {
-// type: 'plain_text',
-// text: 'View',
-// emoji: true,
-// },
-// url: section.urls.app,
-// action_id: section.id,
-// },
-// },
-// ];
-// }
