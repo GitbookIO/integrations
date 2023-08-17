@@ -34,15 +34,11 @@ export function createSlackEventsHandler(
 
         // await addRecording(api, event.event, environment.secrets.BOT_TOKEN);
 
-        const recordingOutput = await recordThread(
-            api,
-            {
-                team_id,
-                channel,
-                thread_ts,
-            },
-            environment.secrets.BOT_TOKEN
-        );
+        const recordingOutput = await recordThread(context, {
+            team_id,
+            channel,
+            thread_ts,
+        });
 
         recordingOutput.url;
 

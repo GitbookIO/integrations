@@ -62,7 +62,10 @@ async function postMessage(channel, thread_ts, stopRecordingUrl, slackBotToken) 
     return slackPostRes;
 }
 
-export async function recordThread(api, slackEvent, slackBotToken) {
+export async function recordThread(context, slackEvent) {
+    const { api, environment } = context;
+    const slackBotToken = environment.secrets.BOT_TOKEN;
+
     const { team_id, channel, thread_ts } = slackEvent;
     // Lookup the concerned installations
 
