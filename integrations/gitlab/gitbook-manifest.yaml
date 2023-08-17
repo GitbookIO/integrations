@@ -1,0 +1,15 @@
+name: gitlab
+title: GitLab
+organization: gitbook
+visibility: private
+description: ''
+script: src/index.ts
+scopes:
+    - space:metadata:read
+    - space:git:sync
+configurations:
+    space:
+        componentId: configure
+secrets:
+    CLIENT_ID: ${{ env.GITLAB_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.GITLAB_CLIENT_SECRET }}
