@@ -7,7 +7,7 @@ export type GitHubSpaceConfiguration = {
         expires_at: number;
         refresh_token: string;
     };
-} & ConfigureState;
+} & ConfigureProps['spaceInstallation']['configuration'];
 
 export type GithubRuntimeEnvironment = RuntimeEnvironment<{}, GitHubSpaceConfiguration>;
 export type GithubRuntimeContext = RuntimeContext<GithubRuntimeEnvironment>;

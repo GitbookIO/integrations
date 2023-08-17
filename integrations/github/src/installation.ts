@@ -6,6 +6,7 @@ import { getGitRef } from './provider';
 import { triggerExport, triggerImport } from './sync';
 import { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
 import {
+    assertIsDefined,
     computeConfigQueryKeyBase,
     computeConfigQueryKeyPreviewExternalBranches,
     parseInstallation,
@@ -20,13 +21,11 @@ export async function saveSpaceConfiguration(
     config: GitHubSpaceConfiguration
 ) {
     const { api, environment } = context;
-    if (!environment.installation) {
-        throw new Error('Expected installation');
-    }
+    const installation = environment.installation;
+    const spaceInstallation = environment.spaceInstallation;
 
-    if (!environment.spaceInstallation) {
-        throw new Error('Expected space installation');
-    }
+    assertIsDefined(installation);
+    assertIsDefined(spaceInstallation);
 
     if (!config.installation || !config.repository || !config.branch) {
         throw httpError(400, 'Incomplete configuration');
@@ -52,22 +51,23 @@ export async function saveSpaceConfiguration(
         );
     }
 
-    const configurationBody = {
-        ...environment.spaceInstallation.configuration,
+    const configurationBody: GitHubSpaceConfiguration = {
+        ...spaceInstallation.configuration,
         key: config.key || crypto.randomUUID(),
         installation: config.installation,
         repository: config.repository,
         branch: config.branch,
         commitMessageTemplate: config.commitMessageTemplate,
         previewExternalBranches: config.previewExternalBranches,
+        projectDirectory: config.projectDirectory,
         priority: config.priority,
     };
 
     // Save the space installation configuration
     await api.integrations.updateIntegrationSpaceInstallation(
         environment.integration.name,
-        environment.installation.id,
-        environment.spaceInstallation.space,
+        installation.id,
+        spaceInstallation.space,
         {
             externalIds,
             configuration: configurationBody,

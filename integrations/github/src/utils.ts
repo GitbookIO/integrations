@@ -1,6 +1,6 @@
 import { GitSyncOperationState } from '@gitbook/api';
 
-import type { GitHubSpaceConfiguration } from './types';
+import type { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
 
 /**
  * The default commit message to use when a change request is merged in GitBook
@@ -42,6 +42,16 @@ export function getGitSyncStateDescription(state: GitSyncOperationState): string
         default:
             return 'Updating content on GitBook...';
     }
+}
+
+/**
+ * Get the space configuration for the current space installation from the context.
+ * This will throw an error if the space installation configuration is not defined.
+ */
+export function getSpaceConfig(context: GithubRuntimeContext): GitHubSpaceConfiguration {
+    const spaceInstallation = context.environment.spaceInstallation;
+    assertIsDefined(spaceInstallation);
+    return spaceInstallation.configuration;
 }
 
 /**
@@ -117,4 +127,10 @@ export function safeCompare(expected: string, actual: string) {
     }
 
     return result === 0;
+}
+
+export function assertIsDefined<T>(value: T): asserts value is NonNullable<T> {
+    if (value === undefined || value === null) {
+        throw new Error(`Expected value to be defined, but received ${value}`);
+    }
 }

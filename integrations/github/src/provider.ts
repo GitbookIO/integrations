@@ -19,7 +19,7 @@ async function getGitHubAppJWT(context: GithubRuntimeContext) {
 
     const now = Math.floor(Date.now() / 1000);
 
-    const token = await new jose.SignJWT({
+    const jwt = await new jose.SignJWT({
         iat: now - 60,
         exp: now + 60 * 10,
         iss: environment.secrets.APP_ID,
@@ -27,7 +27,7 @@ async function getGitHubAppJWT(context: GithubRuntimeContext) {
         .setProtectedHeader({ alg: 'RS256' })
         .sign(privateKeyBuffer);
 
-    return token;
+    return jwt;
 }
 
 /**

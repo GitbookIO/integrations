@@ -10,7 +10,7 @@ import {
     updateCommitStatus,
 } from './provider';
 import { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
-import { getGitSyncStateDescription } from './utils';
+import { assertIsDefined, getGitSyncStateDescription } from './utils';
 
 const logger = Logger('github:sync');
 
@@ -41,9 +41,9 @@ export async function triggerImport(
 
     logger.info('Initiating an import to GitBook');
 
-    if (!environment.spaceInstallation) {
-        throw new Error('Expected an installation on the space');
-    }
+    const spaceInstallation = environment.spaceInstallation;
+
+    assertIsDefined(spaceInstallation);
 
     const repoURL = getRepositoryUrl(config, true);
     const auth = await getRepositoryAuth(context, config);
@@ -52,7 +52,7 @@ export async function triggerImport(
     urlWithAuth.username = auth.username;
     urlWithAuth.password = auth.password;
 
-    await context.api.spaces.importGitRepository(environment.spaceInstallation?.space, {
+    await context.api.spaces.importGitRepository(spaceInstallation.space, {
         url: urlWithAuth.toString(),
         ref: standalone?.ref ?? getGitRef(config.branch ?? ''),
         repoTreeURL: getGitTreeURL(config),
@@ -84,9 +84,9 @@ export async function triggerExport(
 
     logger.info('Initiating an export to GitHub');
 
-    if (!environment.spaceInstallation) {
-        throw new Error('Expected an installation on the space');
-    }
+    const spaceInstallation = environment.spaceInstallation;
+
+    assertIsDefined(spaceInstallation);
 
     const repoURL = getRepositoryUrl(config, true);
     const auth = await getRepositoryAuth(context, config);
@@ -95,7 +95,7 @@ export async function triggerExport(
     urlWithAuth.username = auth.username;
     urlWithAuth.password = auth.password;
 
-    await context.api.spaces.exportToGitRepository(environment.spaceInstallation?.space, {
+    await context.api.spaces.exportToGitRepository(spaceInstallation.space, {
         url: urlWithAuth.toString(),
         ref: getGitRef(config.branch ?? ''),
         repoTreeURL: getGitTreeURL(config),

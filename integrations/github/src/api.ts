@@ -1,7 +1,7 @@
 import httpError from 'http-errors';
 import LinkHeader from 'http-link-header';
 
-import type { GithubRuntimeContext } from './types';
+import type { GitHubSpaceConfiguration } from './types';
 
 /**
  * NOTE: These GH types are not complete, they are just what we need for now.
@@ -27,27 +27,19 @@ interface GHBranch {
     protected: boolean;
 }
 
-interface TokenCredentials {
-    token: string;
-    refreshToken?: string;
-}
-
 /**
  * Fetch all installations for the current GitHub authentication. It will use
  * the access token from the environment.
  */
-export async function fetchInstallations(context: GithubRuntimeContext) {
-    const installations = await fetchGitHubAPI<Array<GHInstallation>>(
-        {
-            path: '/user/installations',
-            params: {
-                per_page: 100,
-                page: 1,
-            },
-            listProperty: 'installations',
+export async function fetchInstallations(config: GitHubSpaceConfiguration) {
+    const installations = await fetchGitHubAPI<Array<GHInstallation>>(config, {
+        path: '/user/installations',
+        params: {
+            per_page: 100,
+            page: 1,
         },
-        parseOAuthCredentials(context)
-    );
+        listProperty: 'installations',
+    });
 
     return installations;
 }
@@ -56,20 +48,17 @@ export async function fetchInstallations(context: GithubRuntimeContext) {
  * Fetch all repositories for a given installation.
  */
 export async function fetchInstallationRepositories(
-    context: GithubRuntimeContext,
+    config: GitHubSpaceConfiguration,
     installationId: number
 ) {
-    const repositories = await fetchGitHubAPI<Array<GHRepository>>(
-        {
-            path: `/user/installations/${installationId}/repositories`,
-            params: {
-                per_page: 100,
-                page: 1,
-            },
-            listProperty: 'repositories',
+    const repositories = await fetchGitHubAPI<Array<GHRepository>>(config, {
+        path: `/user/installations/${installationId}/repositories`,
+        params: {
+            per_page: 100,
+            page: 1,
         },
-        parseOAuthCredentials(context)
-    );
+        listProperty: 'repositories',
+    });
 
     return repositories;
 }
@@ -78,20 +67,17 @@ export async function fetchInstallationRepositories(
  * Fetch all branches for a given account repository.
  */
 export async function fetchRepositoryBranches(
-    context: GithubRuntimeContext,
+    config: GitHubSpaceConfiguration,
     accountName: string,
     repositoryName: string
 ) {
-    const branches = await fetchGitHubAPI<Array<GHBranch>>(
-        {
-            path: `/repos/${accountName}/${repositoryName}/branches`,
-            params: {
-                per_page: 100,
-                page: 1,
-            },
+    const branches = await fetchGitHubAPI<Array<GHBranch>>(config, {
+        path: `/repos/${accountName}/${repositoryName}/branches`,
+        params: {
+            per_page: 100,
+            page: 1,
         },
-        parseOAuthCredentials(context)
-    );
+    });
 
     return branches;
 }
@@ -103,13 +89,10 @@ export async function createAppInstallationAccessToken(
     appJWT: string,
     installationId: number
 ): Promise<string> {
-    const { token } = await fetchGitHubAPI<{ token: string }>(
-        {
-            method: 'POST',
-            path: `/app/installations/${installationId}/access_tokens`,
-        },
-        { token: appJWT }
-    );
+    const { token } = await fetchGitHubAPI<{ token: string }>(appJWT, {
+        method: 'POST',
+        path: `/app/installations/${installationId}/access_tokens`,
+    });
 
     return token;
 }
@@ -124,20 +107,22 @@ export async function createCommitStatus(
     sha: string,
     status: object
 ): Promise<void> {
-    await fetchGitHubAPI<{ token: string }>(
-        {
-            method: 'POST',
-            path: `/repos/${owner}/${repo}/statuses/${sha}`,
-            body: status,
-        },
-        { token: appJWT }
-    );
+    await fetchGitHubAPI<{ token: string }>(appJWT, {
+        method: 'POST',
+        path: `/repos/${owner}/${repo}/statuses/${sha}`,
+        body: status,
+    });
 }
 
 /**
  * Execute a GitHub API request.
  */
 async function fetchGitHubAPI<T>(
+    /**
+     * The credential source can be either a string (a token) or a GitHubSpaceConfiguration
+     * (from which we will extract the token)
+     */
+    credentialSource: GitHubSpaceConfiguration | string,
     request: {
         method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
         path: string;
@@ -145,10 +130,14 @@ async function fetchGitHubAPI<T>(
         params?: object;
         /** Property to get an array for pagination */
         listProperty?: string;
-    },
-    credentials: TokenCredentials
+    }
 ): Promise<T> {
     const { method = 'GET', path, body, params, listProperty = '' } = request;
+
+    const tokenCredentials =
+        typeof credentialSource === 'string'
+            ? { token: credentialSource }
+            : getTokenCredentials(credentialSource);
 
     const url = new URL(`https://api.github.com${path}`);
     Object.entries(params || {}).forEach(([key, value]) => {
@@ -159,7 +148,7 @@ async function fetchGitHubAPI<T>(
         body: body ? JSON.stringify(body) : undefined,
     };
 
-    const response = await requestGitHub(url, credentials, options);
+    const response = await requestGitHub(url, tokenCredentials, options);
 
     let data = await response.json();
 
@@ -179,7 +168,7 @@ async function fetchGitHubAPI<T>(
             const nextURLSearchParams = Object.fromEntries(nextURL.searchParams);
             if (nextURLSearchParams.page) {
                 url.searchParams.set('page', nextURLSearchParams.page as string);
-                const nextResponse = await requestGitHub(url, credentials, options);
+                const nextResponse = await requestGitHub(url, tokenCredentials, options);
                 const nextData = await nextResponse.json();
                 // @ts-ignore
                 data = [...data, ...(paginatedListProperty ? nextData[listProperty] : nextData)];
@@ -221,14 +210,25 @@ async function requestGitHub(
     return response;
 }
 
+interface TokenCredentials {
+    /**
+     * The access token to use for the request.
+     */
+    token: string;
+    /**
+     * Optional refresh token to use for the request.
+     */
+    refreshToken?: string;
+}
+
 /**
- * Parse the OAuth credentials from the space configuration.
- * throws an error if the credentials are missing.
+ * Return the token credentials from the configuration.
+ * This will throw an error if the access token is not defined.
  */
-export function parseOAuthCredentials({ environment }: GithubRuntimeContext): TokenCredentials {
-    const oAuthCredentials = environment.spaceInstallation?.configuration.oauth_credentials;
+export function getTokenCredentials(config: GitHubSpaceConfiguration): TokenCredentials {
+    const oAuthCredentials = config?.oauth_credentials;
     if (!oAuthCredentials?.access_token) {
-        throw httpError(401, 'UnAuthorized: Missing OAuth access token');
+        throw httpError(401, 'Unauthorized: Missing OAuth access token');
     }
 
     return {
