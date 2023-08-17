@@ -5,7 +5,7 @@ import { IntegrationSpaceInstallation } from '@gitbook/api';
 import { getGitRef } from './provider';
 import { triggerExport, triggerImport } from './sync';
 import { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { computeConfigQueryKeyBase, parseProject } from './utils';
+import { assertIsDefined, computeConfigQueryKeyBase, parseProject } from './utils';
 
 /**
  * Save the space configuration for the current space installation.
@@ -15,13 +15,11 @@ export async function saveSpaceConfiguration(
     config: GitLabSpaceConfiguration
 ) {
     const { api, environment } = context;
-    if (!environment.installation) {
-        throw new Error('Expected installation');
-    }
+    const installation = environment.installation;
+    const spaceInstallation = environment.spaceInstallation;
 
-    if (!environment.spaceInstallation) {
-        throw new Error('Expected space installation');
-    }
+    assertIsDefined(installation);
+    assertIsDefined(spaceInstallation);
 
     if (!config.project || !config.branch) {
         throw httpError(400, 'Incomplete configuration');
@@ -37,7 +35,7 @@ export async function saveSpaceConfiguration(
     externalIds.push(computeConfigQueryKeyBase(projectId, getGitRef(config.branch)));
 
     const configurationBody: GitLabSpaceConfiguration = {
-        ...environment.spaceInstallation.configuration,
+        ...spaceInstallation.configuration,
         key: config.key || crypto.randomUUID(),
         project: config.project,
         branch: config.branch,
@@ -50,8 +48,8 @@ export async function saveSpaceConfiguration(
     // Save the space installation configuration
     await api.integrations.updateIntegrationSpaceInstallation(
         environment.integration.name,
-        environment.installation.id,
-        environment.spaceInstallation.space,
+        installation.id,
+        spaceInstallation.space,
         {
             externalIds,
             configuration: configurationBody,

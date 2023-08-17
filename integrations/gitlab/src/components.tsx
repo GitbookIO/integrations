@@ -5,7 +5,12 @@ import { createComponent } from '@gitbook/runtime';
 
 import { getAccessToken } from './api';
 import { ConfigureAction, ConfigureProps, ConfigureState, GitLabRuntimeContext } from './types';
-import { getGitSyncCommitMessage, getSpaceConfig, GITSYNC_DEFAULT_COMMIT_MESSAGE } from './utils';
+import {
+    assertIsDefined,
+    getGitSyncCommitMessage,
+    getSpaceConfig,
+    GITSYNC_DEFAULT_COMMIT_MESSAGE,
+} from './utils';
 
 /**
  * ContentKit component to configure the GitLab integration.
@@ -102,9 +107,7 @@ export const configBlock = createComponent<
     render: async (element, context) => {
         const spaceInstallationPublicEndpoint =
             context.environment.spaceInstallation?.urls.publicEndpoint;
-        if (!spaceInstallationPublicEndpoint) {
-            throw new Error('Expected space installation public endpoint');
-        }
+        assertIsDefined(spaceInstallationPublicEndpoint);
 
         /**
          * The version hash will be used to invalidate the cache of the select components
