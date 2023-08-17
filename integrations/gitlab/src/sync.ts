@@ -1,4 +1,4 @@
-import { ContentVisibility, GitSyncOperationState } from '@gitbook/api';
+import { ContentVisibility, GitSyncOperationState, Revision } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
 
 import {
@@ -10,7 +10,7 @@ import {
     updateCommitStatus,
 } from './provider';
 import { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { assertIsDefined, getGitSyncStateDescription } from './utils';
+import { assertIsDefined, getGitSyncCommitMessage, getGitSyncStateDescription } from './utils';
 
 const logger = Logger('github:sync');
 
@@ -36,13 +36,12 @@ export async function triggerImport(
         updateGitInfo?: boolean;
     } = {}
 ) {
-    const { environment } = context;
+    const { environment, api } = context;
     const { force = false, updateGitInfo = false, standalone } = options;
 
     logger.info('Initiating an import to GitBook');
 
     const spaceInstallation = environment.spaceInstallation;
-
     assertIsDefined(spaceInstallation);
 
     const repoURL = getRepositoryUrl(config, true);
@@ -52,7 +51,7 @@ export async function triggerImport(
     urlWithAuth.username = auth.username;
     urlWithAuth.password = auth.password;
 
-    await context.api.spaces.importGitRepository(spaceInstallation.space, {
+    await api.spaces.importGitRepository(spaceInstallation.space, {
         url: urlWithAuth.toString(),
         ref: standalone?.ref ?? getGitRef(config.branch ?? ''),
         repoTreeURL: getGitTreeURL(config),
@@ -79,14 +78,15 @@ export async function triggerExport(
         updateGitInfo?: boolean;
     } = {}
 ) {
-    const { environment } = context;
+    const { environment, api } = context;
     const { force = false, updateGitInfo = false } = options;
 
     logger.info('Initiating an export to GitHub');
 
     const spaceInstallation = environment.spaceInstallation;
-
     assertIsDefined(spaceInstallation);
+
+    const { data: revision } = await api.spaces.getCurrentRevision(spaceInstallation.space);
 
     const repoURL = getRepositoryUrl(config, true);
     const auth = await getRepositoryAuth(config);
@@ -95,7 +95,7 @@ export async function triggerExport(
     urlWithAuth.username = auth.username;
     urlWithAuth.password = auth.password;
 
-    await context.api.spaces.exportToGitRepository(spaceInstallation.space, {
+    await api.spaces.exportToGitRepository(spaceInstallation.space, {
         url: urlWithAuth.toString(),
         ref: getGitRef(config.branch ?? ''),
         repoTreeURL: getGitTreeURL(config),
@@ -103,9 +103,8 @@ export async function triggerExport(
         repoProjectDirectory: config.projectDirectory,
         repoCacheID: config.key,
         force,
-        // FIXME: compute proper commitMessage using revision.mergedFrom
-        commitMessage: 'export',
-        ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoURL } } : {}),
+        commitMessage: getCommitMessageForRevision(config, revision),
+        ...(updateGitInfo ? { gitInfo: { provider: 'gitlab', url: repoURL } } : {}),
     });
 }
 
@@ -146,4 +145,20 @@ export async function updateCommitWithPreviewLinks(
     }
 
     await Promise.all([mainStatus, publicStatus]);
+}
+
+/**
+ * Get the commit message for the export of a revision.
+ */
+function getCommitMessageForRevision(config: GitLabSpaceConfiguration, revision: Revision): string {
+    const changeRequest = revision.type === 'merge' ? revision.mergedFrom : null;
+
+    if (!changeRequest) {
+        return `GitBook: No commit message`;
+    }
+
+    return getGitSyncCommitMessage(config.commitMessageTemplate, {
+        change_request_number: changeRequest.number,
+        change_request_subject: changeRequest.subject,
+    });
 }

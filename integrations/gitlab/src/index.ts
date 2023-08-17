@@ -136,13 +136,13 @@ const handleSpaceContentUpdated: EventCallback<
         return;
     }
 
-    try {
-        const spaceInstallationConfiguration = getSpaceConfig(context);
-        await triggerExport(context, spaceInstallationConfiguration);
-    } catch (error) {
+    const spaceInstallationConfiguration = context.environment.spaceInstallation?.configuration;
+    if (!spaceInstallationConfiguration) {
         logger.debug(`missing space installation configuration, skipping`);
         return;
     }
+
+    await triggerExport(context, spaceInstallationConfiguration);
 };
 
 /*
@@ -156,20 +156,20 @@ const handleGitSyncStarted: EventCallback<'space_gitsync_started', GitLabRuntime
         `Git Sync started for space ${event.spaceId} revision ${event.revisionId}, updating commit status`
     );
 
-    try {
-        const spaceInstallationConfiguration = getSpaceConfig(context);
-        await updateCommitWithPreviewLinks(
-            context,
-            event.spaceId,
-            event.revisionId,
-            spaceInstallationConfiguration,
-            event.commitId,
-            GitSyncOperationState.Running
-        );
-    } catch (error) {
+    const spaceInstallationConfiguration = context.environment.spaceInstallation?.configuration;
+    if (!spaceInstallationConfiguration) {
         logger.debug(`missing space installation configuration, skipping`);
         return;
     }
+
+    await updateCommitWithPreviewLinks(
+        context,
+        event.spaceId,
+        event.revisionId,
+        spaceInstallationConfiguration,
+        event.commitId,
+        GitSyncOperationState.Running
+    );
 };
 
 /**
@@ -183,20 +183,20 @@ const handleGitSyncCompleted: EventCallback<
         `Git Sync completed (${event.state}) for space ${event.spaceId} revision ${event.revisionId}, updating commit status`
     );
 
-    try {
-        const spaceInstallationConfiguration = getSpaceConfig(context);
-        await updateCommitWithPreviewLinks(
-            context,
-            event.spaceId,
-            event.revisionId,
-            spaceInstallationConfiguration,
-            event.commitId,
-            event.state as GitSyncOperationState
-        );
-    } catch (error) {
+    const spaceInstallationConfiguration = context.environment.spaceInstallation?.configuration;
+    if (!spaceInstallationConfiguration) {
         logger.debug(`missing space installation configuration, skipping`);
         return;
     }
+
+    await updateCommitWithPreviewLinks(
+        context,
+        event.spaceId,
+        event.revisionId,
+        spaceInstallationConfiguration,
+        event.commitId,
+        event.state as GitSyncOperationState
+    );
 };
 
 export default createIntegration({
