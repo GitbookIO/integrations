@@ -43,31 +43,11 @@ async function fetchThreadPosts(channel, thread_ts, slackBotToken) {
     return (await slackRes.json()).messages ?? [];
 }
 
-async function postMessage(channel, thread_ts, stopRecordingUrl, slackBotToken) {
-    const params = new URLSearchParams();
-    params.set('channel', channel);
-    params.set('thread_ts', thread_ts);
-    params.set('text', stopRecordingUrl);
-    console.log('post message start === ');
-    const slackPostRes = await fetch(`https://slack.com/api/chat.postMessage`, {
-        method: 'POST',
-        headers: {
-            Authorization: `Bearer ${slackBotToken}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: params.toString(),
-    });
-
-    console.log('post message end === ', slackPostRes);
-    return slackPostRes;
-}
-
-export async function recordThread(context, slackEvent) {
+export async function createMessageThreadRecording(context, slackEvent) {
     const { api, environment } = context;
     const slackBotToken = environment.secrets.BOT_TOKEN;
 
     const { team_id, channel, thread_ts } = slackEvent;
-    // Lookup the concerned installations
 
     const installationApiClient = await getInstallationApiClient(api, team_id);
     const threadPosts = await fetchThreadPosts(channel, thread_ts, slackBotToken);
@@ -95,7 +75,7 @@ export async function recordThread(context, slackEvent) {
         };
     });
 
-    console.log('events', events);
+    // add all messages in a thread to a recording
 
     await installationApiClient.orgs.addEventsToRecording(orgId, recording.id, {
         events,
@@ -107,9 +87,6 @@ export async function recordThread(context, slackEvent) {
     });
 
     const outputRecording = stopRecordingRes.data;
-    console.log('stopRecording', outputRecording);
 
     return outputRecording;
-
-    // postMessage(channel, thread_ts, stopRecording.url, slackBotToken);
 }
