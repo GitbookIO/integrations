@@ -2,22 +2,21 @@ import { IntegrationInstallationConfiguration } from '@gitbook/api';
 import type { RuntimeContext, RuntimeEnvironment } from '@gitbook/runtime';
 
 export type GitLabSpaceConfiguration = {
-    oauth_credentials?: {
-        access_token: string;
-        expires_at: number;
-        refresh_token: string;
-    };
-} & ConfigureState;
+    webhookId?: number;
+} & ConfigureProps['spaceInstallation']['configuration'];
 
 export type GitLabRuntimeEnvironment = RuntimeEnvironment<{}, GitLabSpaceConfiguration>;
 export type GitLabRuntimeContext = RuntimeContext<GitLabRuntimeEnvironment>;
 
 export type ConfigureAction =
+    | { action: 'connect.gitlab' }
+    | { action: 'save.token'; token: string }
     | { action: 'select.project' }
     | { action: 'select.branch' }
     | { action: 'toggle.customTemplate' }
+    | { action: 'toggle.customInstanceUrl' }
     | { action: 'preview.commitMessage' }
-    | { action: 'save' };
+    | { action: 'save.configuration' };
 
 export type ConfigureProps = {
     installation: {
@@ -26,6 +25,7 @@ export type ConfigureProps = {
     spaceInstallation: {
         configuration?: {
             key?: string;
+            accessToken?: string;
             customInstanceUrl?: string;
             project?: string;
             branch?: string;
@@ -38,5 +38,7 @@ export type ConfigureProps = {
 
 export type ConfigureState = ConfigureProps['spaceInstallation']['configuration'] & {
     withCustomTemplate?: boolean;
+    withCustomInstanceUrl?: boolean;
+    withConnectGitLab?: boolean;
     commitMessagePreview?: string;
 };

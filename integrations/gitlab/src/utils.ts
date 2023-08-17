@@ -1,6 +1,6 @@
 import { GitSyncOperationState } from '@gitbook/api';
 
-import { GitLabSpaceConfiguration } from './types';
+import { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
 
 /**
  * The default commit message to use when a change request is merged in GitBook
@@ -53,6 +53,34 @@ export function parseProject(input: GitLabSpaceConfiguration | string) {
         throw new Error('Expected a project');
     }
 
-    const [projectId, projectName] = project.split(':');
+    const [projectId, , projectName] = project.split(':');
     return { projectId: parseInt(projectId, 10), projectName };
+}
+
+/**
+ * Get the space configuration for the current space installation from the context.
+ */
+export function getSpaceConfig(context: GitLabRuntimeContext): GitLabSpaceConfiguration {
+    const spaceInstallation = context.environment.spaceInstallation;
+    assertIsDefined(spaceInstallation);
+    return spaceInstallation.configuration;
+}
+
+/**
+ * Compute the query key for the configuration. This will be useful to list or find
+ * all configuration(s) that match this combination of project ID and ref.
+ */
+export function computeConfigQueryKeyBase(projectId: number, ref: string): string {
+    return `${projectId}/${ref}`;
+}
+
+/** Create the webhook url for GitLab */
+export function createGitLabWebhookURL(context: GitLabRuntimeContext): string {
+    return `https://${context.environment.integration.urls.publicEndpoint}/hooks/gitlab?space=${context.environment.spaceInstallation?.space}`;
+}
+
+export function assertIsDefined<T>(value: T): asserts value is NonNullable<T> {
+    if (value === undefined || value === null) {
+        throw new Error(`Expected value to be defined, but received ${value}`);
+    }
 }

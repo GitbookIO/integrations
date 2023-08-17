@@ -3,9 +3,9 @@ import hash from 'hash-sum';
 import { ContentKitIcon } from '@gitbook/api';
 import { createComponent } from '@gitbook/runtime';
 
-import { parseOAuthCredentials } from './api';
+import { getAccessToken } from './api';
 import { ConfigureAction, ConfigureProps, ConfigureState, GitLabRuntimeContext } from './types';
-import { getGitSyncCommitMessage, GITSYNC_DEFAULT_COMMIT_MESSAGE } from './utils';
+import { getGitSyncCommitMessage, getSpaceConfig, GITSYNC_DEFAULT_COMMIT_MESSAGE } from './utils';
 
 /**
  * ContentKit component to configure the GitLab integration.
@@ -19,6 +19,13 @@ export const configBlock = createComponent<
     componentId: 'configure',
     initialState: (props) => {
         return {
+            withConnectGitLab: props.spaceInstallation.configuration?.accessToken !== undefined,
+            accessToken: props.spaceInstallation.configuration?.accessToken,
+            withCustomInstanceUrl: Boolean(
+                props.spaceInstallation.configuration?.customInstanceUrl &&
+                    props.spaceInstallation.configuration?.customInstanceUrl.length > 0
+            ),
+            customInstanceUrl: props.spaceInstallation.configuration?.customInstanceUrl,
             project: props.spaceInstallation.configuration?.project,
             branch: props.spaceInstallation.configuration?.branch,
             projectDirectory: props.spaceInstallation.configuration?.projectDirectory,
@@ -37,9 +44,28 @@ export const configBlock = createComponent<
     },
     action: async (element, action, context) => {
         switch (action.action) {
+            case 'connect.gitlab':
+                return {
+                    ...element,
+                    state: {
+                        ...element.state,
+                        withConnectGitLab: true,
+                    },
+                };
+            case 'save.token':
+                return {
+                    ...element,
+                    state: {
+                        ...element.state,
+                        accessToken: action.token,
+                    },
+                };
+
             case 'select.project':
                 return element;
             case 'select.branch':
+                return element;
+            case 'toggle.customInstanceUrl':
                 return element;
             case 'toggle.customTemplate':
                 return {
@@ -68,7 +94,7 @@ export const configBlock = createComponent<
                         ),
                     },
                 };
-            case 'save':
+            case 'save.configuration':
                 // await saveSpaceConfiguration(context, element.state);
                 return element;
         }
@@ -88,33 +114,76 @@ export const configBlock = createComponent<
 
         let accessToken: string | undefined;
         try {
-            const tokenCredentials = parseOAuthCredentials(context);
-            accessToken = tokenCredentials.token;
+            accessToken = getAccessToken(getSpaceConfig(context));
         } catch (error) {
             // Ignore: We will show the button to connect
         }
-        const buttonLabel = accessToken ? 'Connected' : 'Connect with GitLab';
 
         return (
             <block>
                 <input
-                    label="Authenticate"
-                    hint="Connect your GitLab account to start set up"
+                    label="Connect your GitLab account"
+                    hint="The access token used to read and write data on GitLab."
                     element={
                         <button
-                            label={buttonLabel}
-                            icon={ContentKitIcon.Github}
-                            tooltip={buttonLabel}
+                            label="Connect"
+                            icon={ContentKitIcon.Gitlab}
+                            disabled={element.state.withConnectGitLab}
+                            tooltip="Connect your GitLab account using an access token"
                             onPress={{
-                                action: '@ui.url.open',
-                                url: `${context.environment.spaceInstallation?.urls.publicEndpoint}/oauth`,
+                                action: 'connect.gitlab',
                             }}
                         />
                     }
                 />
 
+                {element.state.withConnectGitLab ? (
+                    <hstack>
+                        <box grow={1}>
+                            <textinput
+                                state="accessToken"
+                                placeholder="Enter your GitLab access token"
+                            />
+                        </box>
+                        <button
+                            style="secondary"
+                            tooltip="Save access token"
+                            label="Save"
+                            onPress={{
+                                action: 'save.token',
+                                token: element.dynamicState('accessToken'),
+                            }}
+                        />
+                    </hstack>
+                ) : null}
+
                 {accessToken ? (
                     <>
+                        <divider size="medium" />
+
+                        <vstack>
+                            <input
+                                label="Custom GitLab URL"
+                                hint="If your GitLab instance is self-hosted, enter its publicly accessible URL"
+                                element={
+                                    <switch
+                                        state="withCustomInstanceUrl"
+                                        onValueChange={{
+                                            action: 'toggle.customInstanceUrl',
+                                        }}
+                                    />
+                                }
+                            />
+                            {element.state.withCustomInstanceUrl ? (
+                                <box grow={1}>
+                                    <textinput
+                                        state="customInstanceUrl"
+                                        placeholder="https://gitlab.mycompany.com"
+                                    />
+                                </box>
+                            ) : null}
+                        </vstack>
+
                         <divider size="medium" />
 
                         <markdown content="### Project" />
@@ -127,7 +196,7 @@ export const configBlock = createComponent<
                                     <select
                                         state="project"
                                         onValueChange={{
-                                            action: '@select.project',
+                                            action: 'select.project',
                                         }}
                                         options={{
                                             url: {
@@ -154,7 +223,7 @@ export const configBlock = createComponent<
                                             <select
                                                 state="branch"
                                                 onValueChange={{
-                                                    action: '@select.branch',
+                                                    action: 'select.branch',
                                                 }}
                                                 options={{
                                                     url: {
@@ -202,7 +271,7 @@ export const configBlock = createComponent<
                                         <switch
                                             state="withCustomTemplate"
                                             onValueChange={{
-                                                action: '@toggle.customTemplate',
+                                                action: 'toggle.customTemplate',
                                             }}
                                         />
                                     }
@@ -222,7 +291,7 @@ export const configBlock = createComponent<
                                                 icon={ContentKitIcon.Eye}
                                                 label=""
                                                 onPress={{
-                                                    action: '@preview.commitMessage',
+                                                    action: 'preview.commitMessage',
                                                 }}
                                             />
                                         </hstack>
@@ -289,11 +358,13 @@ export const configBlock = createComponent<
                                         <button
                                             style="primary"
                                             disabled={
-                                                !element.state.project || !element.state.branch
+                                                !element.state.accessToken ||
+                                                !element.state.project ||
+                                                !element.state.branch
                                             }
-                                            label="Save"
+                                            label="Configure"
                                             tooltip="Save configuration"
-                                            onPress={{ action: '@save' }}
+                                            onPress={{ action: 'save.configuration' }}
                                         />
                                     }
                                 />

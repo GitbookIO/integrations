@@ -1,7 +1,8 @@
 import httpError from 'http-errors';
 import LinkHeader from 'http-link-header';
 
-import type { GitLabRuntimeContext } from './types';
+import type { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
+import { getSpaceConfig } from './utils';
 
 /**
  * NOTE: These GL types are not complete, they are just what we need for now.
@@ -28,11 +29,12 @@ export async function fetchProjects(context: GitLabRuntimeContext) {
         {
             path: '/projects',
             params: {
+                membership: true,
                 per_page: 100,
                 page: 1,
             },
         },
-        parseOAuthCredentials(context)
+        getAccessToken(getSpaceConfig(context))
     );
 
     return projects;
@@ -46,34 +48,15 @@ export async function fetchProjectBranches(context: GitLabRuntimeContext, projec
         {
             path: `/projects/${projectId}/repository/branches`,
             params: {
-                membership: true,
                 per_page: 100,
                 page: 1,
             },
         },
-        parseOAuthCredentials(context)
+        getAccessToken(getSpaceConfig(context))
     );
 
     return branches;
 }
-
-// /**
-//  * Get an access token for the GitHub App installation.
-//  */
-// export async function createAppInstallationAccessToken(
-//     appJWT: string,
-//     installationId: number
-// ): Promise<string> {
-//     const { token } = await fetchGitHubAPI<{ token: string }>(
-//         {
-//             method: 'POST',
-//             path: `/app/installations/${installationId}/access_tokens`,
-//         },
-//         { token: appJWT }
-//     );
-
-//     return token;
-// }
 
 // /**
 //  * Create a commit status for a commit SHA.
@@ -108,7 +91,7 @@ async function fetchGitLabAPI<T>(
         /** Property to get an array for pagination */
         listProperty?: string;
     },
-    credentials: TokenCredentials
+    token: string
 ): Promise<T> {
     const { method = 'GET', endpoint, path, body, params, listProperty = '' } = request;
 
@@ -123,7 +106,7 @@ async function fetchGitLabAPI<T>(
         body: body ? JSON.stringify(body) : undefined,
     };
 
-    const response = await requestGitLab(url, credentials, options);
+    const response = await requestGitLab(url, token, options);
 
     let data = await response.json();
 
@@ -143,7 +126,7 @@ async function fetchGitLabAPI<T>(
             const nextURLSearchParams = Object.fromEntries(nextURL.searchParams);
             if (nextURLSearchParams.page) {
                 url.searchParams.set('page', nextURLSearchParams.page as string);
-                const nextResponse = await requestGitLab(url, credentials, options);
+                const nextResponse = await requestGitLab(url, token, options);
                 const nextData = await nextResponse.json();
                 // @ts-ignore
                 data = [...data, ...(paginatedListProperty ? nextData[listProperty] : nextData)];
@@ -163,10 +146,9 @@ async function fetchGitLabAPI<T>(
  */
 async function requestGitLab(
     url: URL,
-    tokenCredentials: TokenCredentials,
+    token: string,
     options: RequestInit = {}
 ): Promise<Response> {
-    const { token } = tokenCredentials;
     const response = await fetch(url.toString(), {
         ...options,
         headers: {
@@ -184,22 +166,15 @@ async function requestGitLab(
     return response;
 }
 
-interface TokenCredentials {
-    token: string;
-    refreshToken?: string;
-}
 /**
- * Parse the OAuth credentials from the space configuration.
- * throws an error if the credentials are missing.
+ * Return the access token from the configuration.
+ * This will throw an error if the access token is not defined.
  */
-export function parseOAuthCredentials({ environment }: GitLabRuntimeContext): TokenCredentials {
-    const oAuthCredentials = environment.spaceInstallation?.configuration.oauth_credentials;
-    if (!oAuthCredentials?.access_token) {
-        throw httpError(401, 'Unauthorized: Missing OAuth access token');
+export function getAccessToken(config: GitLabSpaceConfiguration): string {
+    const { accessToken } = config;
+    if (!accessToken) {
+        throw httpError(401, 'Unauthorized: Missing access token');
     }
 
-    return {
-        token: oAuthCredentials.access_token,
-        refreshToken: oAuthCredentials.refresh_token,
-    };
+    return accessToken;
 }
