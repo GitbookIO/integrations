@@ -1,4 +1,4 @@
-import type { RevisionPage, SearchSectionResult, SearchAIAnswer, GitBookAPI } from '@gitbook/api';
+import type { SearchAIAnswer, GitBookAPI } from '@gitbook/api';
 
 import type { SlashEvent } from '../commands';
 import {
@@ -7,6 +7,7 @@ import {
     SlackRuntimeEnvironment,
 } from '../configuration';
 import { slackAPI } from '../slack';
+import { PagesBlock } from '../ui/blocks';
 
 async function getRelatedPages(params: {
     answer?: SearchAIAnswer;
@@ -17,7 +18,8 @@ async function getRelatedPages(params: {
 
     // TODO: Need to find why there is no spaceInstalation in the environment
     const spaceId =
-        environment.spaceInstallation?.space || (answer?.pages?.length > 0 && answer.pages[0].space);
+        environment.spaceInstallation?.space ||
+        (answer?.pages?.length > 0 && answer.pages[0].space);
 
     // get current revision for the space
     const { data: currentRevision } = await client.spaces.getCurrentRevision(spaceId);
@@ -124,14 +126,7 @@ export async function queryLensInGitBook(slashEvent: SlashEvent, context: SlackR
                 {
                     type: 'divider',
                 },
-                {
-                    type: 'header',
-                    text: {
-                        type: 'plain_text',
-                        text: 'More information:',
-                    },
-                },
-                ...buildSearchContentBlocks(relatedPages, publicUrl),
+                ...PagesBlock({ title: 'More information', items: relatedPages, publicUrl }),
                 {
                     type: 'divider',
                 },
@@ -162,54 +157,27 @@ export async function queryLensInGitBook(slashEvent: SlashEvent, context: SlackR
     });
 }
 
-function buildSearchContentBlocks(items: Array<RevisionPage>, publicUrl: string) {
-    const blocks = items.reduce<Array<any>>((acc, page) => {
-        const pageResultBlock = buildSearchPageBlock(page, publicUrl);
-        // if (page.sections) {
-        // const sectionBlocks = page.sections.map(buildSearchSectionBlock);
-        acc.push(pageResultBlock);
-        // }
-        return acc;
-    }, []);
-
-    return blocks.flat();
-}
-
-function buildSearchPageBlock(page: RevisionPage, publicUrl: string) {
-    // TODO: @scazan this is hardcoded, we need to get the org as well (assuming from the context)
-    const url = `${publicUrl}/${page.slug}`;
-    return [
-        {
-            type: 'section',
-            text: {
-                type: 'mrkdwn',
-                text: `* <${url}|:page_facing_up: ${page.title}>* `,
-            },
-        },
-    ];
-}
-
-function buildSearchSectionBlock(section: SearchSectionResult) {
-    const title = section.title ? `* ${section.title.replace(/"/g, '')}* ` : ``;
-    const body = ` - _${section.body.replace(/"/g, '').split('\n').join('').slice(0, 128)} _`;
-    const text = `: hash: ${title}${body} `;
-    return [
-        {
-            type: 'section',
-            text: {
-                type: 'mrkdwn',
-                text,
-            },
-            accessory: {
-                type: 'button',
-                text: {
-                    type: 'plain_text',
-                    text: 'View',
-                    emoji: true,
-                },
-                url: section.urls.app,
-                action_id: section.id,
-            },
-        },
-    ];
-}
+// function buildSearchSectionBlock(section: SearchSectionResult) {
+// const title = section.title ? `* ${section.title.replace(/"/g, '')}* ` : ``;
+// const body = ` - _${section.body.replace(/"/g, '').split('\n').join('').slice(0, 128)} _`;
+// const text = `: hash: ${title}${body} `;
+// return [
+// {
+// type: 'section',
+// text: {
+// type: 'mrkdwn',
+// text,
+// },
+// accessory: {
+// type: 'button',
+// text: {
+// type: 'plain_text',
+// text: 'View',
+// emoji: true,
+// },
+// url: section.urls.app,
+// action_id: section.id,
+// },
+// },
+// ];
+// }

@@ -75,19 +75,6 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
 
     router.post('/shortcuts', verifySlackRequest, acknowledgeSlackShortcut);
 
-    router.post(
-        '/commands',
-        verifySlackRequest,
-        createSlackCommandsHandler({
-            url_verification: async (event: { challenge: string }) => {
-                return { challenge: event.challenge };
-            },
-            '/gitbook_valentino': async (event) => {
-                console.log('command event', event);
-            },
-        })
-    );
-
     router.post('/commands', acknowledgeSlackRequest);
 
     router.post(
@@ -95,6 +82,12 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         verifySlackRequest,
         createSlackCommandsHandler({
             '/gitbooklens': queryLensInGitBook,
+            '/gitbook_valentino': async (event) => {
+                console.log('command event', event);
+            },
+            url_verification: async (event: { challenge: string }) => {
+                return { challenge: event.challenge };
+            },
         })
     );
 
