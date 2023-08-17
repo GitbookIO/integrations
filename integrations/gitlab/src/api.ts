@@ -181,7 +181,7 @@ async function requestGitLab(
             ...options.headers,
             Accept: 'application/json',
             Authorization: `Bearer ${token}`,
-            'User-Agent': 'GitHub-Integration-Worker',
+            'User-Agent': 'GitLab-Integration-Worker',
         },
     });
 

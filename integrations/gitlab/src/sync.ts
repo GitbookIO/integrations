@@ -12,7 +12,7 @@ import {
 import { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
 import { assertIsDefined, getGitSyncCommitMessage, getGitSyncStateDescription } from './utils';
 
-const logger = Logger('github:sync');
+const logger = Logger('gitlab:sync');
 
 /**
  * Trigger an import to GitBook space.
@@ -65,7 +65,7 @@ export async function triggerImport(
 }
 
 /**
- * Trigger an export to GitHub.
+ * Trigger an export to GitLab.
  */
 export async function triggerExport(
     context: GitLabRuntimeContext,
@@ -81,7 +81,7 @@ export async function triggerExport(
     const { environment, api } = context;
     const { force = false, updateGitInfo = false } = options;
 
-    logger.info('Initiating an export to GitHub');
+    logger.info('Initiating an export to GitLab');
 
     const spaceInstallation = environment.spaceInstallation;
     assertIsDefined(spaceInstallation);
@@ -109,7 +109,7 @@ export async function triggerExport(
 }
 
 /**
- * Update the commit status on GitHub with the given state.
+ * Update the commit status on GitLab with the given state.
  * If the space is public, we also add a link to the public content.
  */
 export async function updateCommitWithPreviewLinks(

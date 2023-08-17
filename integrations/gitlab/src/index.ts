@@ -118,7 +118,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
 };
 
 /*
- * Handle content being updated: Trigger an export to GitHub
+ * Handle content being updated: Trigger an export to GitLab
  */
 const handleSpaceContentUpdated: EventCallback<
     'space_content_updated',
