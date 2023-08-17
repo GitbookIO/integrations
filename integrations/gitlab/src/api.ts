@@ -1,8 +1,7 @@
 import httpError from 'http-errors';
 import LinkHeader from 'http-link-header';
 
-import type { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { getSpaceConfig } from './utils';
+import type { GitLabSpaceConfiguration } from './types';
 
 /**
  * NOTE: These GL types are not complete, they are just what we need for now.
@@ -24,18 +23,15 @@ interface GLBranch {
  * Fetch all projects for the current GitLab authentication. It will use
  * the access token from the environment.
  */
-export async function fetchProjects(context: GitLabRuntimeContext) {
-    const projects = await fetchGitLabAPI<Array<GLProject>>(
-        {
-            path: '/projects',
-            params: {
-                membership: true,
-                per_page: 100,
-                page: 1,
-            },
+export async function fetchProjects(config: GitLabSpaceConfiguration) {
+    const projects = await fetchGitLabAPI<Array<GLProject>>(config, {
+        path: '/projects',
+        params: {
+            membership: true,
+            per_page: 100,
+            page: 1,
         },
-        getAccessToken(getSpaceConfig(context))
-    );
+    });
 
     return projects;
 }
@@ -43,57 +39,87 @@ export async function fetchProjects(context: GitLabRuntimeContext) {
 /**
  * Fetch all branches for a given project repository.
  */
-export async function fetchProjectBranches(context: GitLabRuntimeContext, projectId: number) {
-    const branches = await fetchGitLabAPI<Array<GLBranch>>(
-        {
-            path: `/projects/${projectId}/repository/branches`,
-            params: {
-                per_page: 100,
-                page: 1,
-            },
+export async function fetchProjectBranches(config: GitLabSpaceConfiguration, projectId: number) {
+    const branches = await fetchGitLabAPI<Array<GLBranch>>(config, {
+        path: `/projects/${projectId}/repository/branches`,
+        params: {
+            per_page: 100,
+            page: 1,
         },
-        getAccessToken(getSpaceConfig(context))
-    );
+    });
 
     return branches;
 }
 
-// /**
-//  * Create a commit status for a commit SHA.
-//  */
-// export async function createCommitStatus(
-//     appJWT: string,
-//     owner: string,
-//     repo: string,
-//     sha: string,
-//     status: object
-// ): Promise<void> {
-//     await fetchGitHubAPI<{ token: string }>(
-//         {
-//             method: 'POST',
-//             path: `/repos/${owner}/${repo}/statuses/${sha}`,
-//             body: status,
-//         },
-//         { token: appJWT }
-//     );
-// }
+/**
+ * Configure a GitLab webhook for a given project.
+ */
+export async function addProjectWebhook(
+    config: GitLabSpaceConfiguration,
+    projectId: number,
+    webhook: string
+) {
+    const { id } = await fetchGitLabAPI<{ id: number }>(config, {
+        method: 'POST',
+        path: `/projects/${projectId}/hooks`,
+        body: {
+            url: webhook,
+            push_events: true,
+            merge_requests_events: true,
+        },
+    });
+
+    return id;
+}
+
+/**
+ * Delete a GitLab webhook for a given project.
+ */
+export async function deleteProjectWebhook(
+    config: GitLabSpaceConfiguration,
+    projectId: number,
+    webhookId: number
+) {
+    await fetchGitLabAPI(config, {
+        method: 'DELETE',
+        path: `/projects/${projectId}/hooks/${webhookId}`,
+    });
+}
+
+/**
+ * Create a commit status for a commit SHA.
+ */
+export async function editCommitStatus(
+    config: GitLabSpaceConfiguration,
+    projectId: number,
+    sha: string,
+    status: object
+): Promise<void> {
+    await fetchGitLabAPI(config, {
+        method: 'POST',
+        path: `/projects/${projectId}/statuses/${sha}`,
+        body: status,
+    });
+}
 
 /**
  * Execute a GitLab API request.
  */
-async function fetchGitLabAPI<T>(
+export async function fetchGitLabAPI<T>(
+    config: GitLabSpaceConfiguration,
     request: {
-        endpoint?: string;
         method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
         path: string;
         body?: object;
         params?: object;
         /** Property to get an array for pagination */
         listProperty?: string;
-    },
-    token: string
+    }
 ): Promise<T> {
-    const { method = 'GET', endpoint, path, body, params, listProperty = '' } = request;
+    const { method = 'GET', path, body, params, listProperty = '' } = request;
+
+    const endpoint = getEndpoint(config);
+    const token = getAccessToken(config);
 
     const baseEndpoint = `${endpoint || 'https://gitlab.com'}/api/v4`;
 
@@ -164,6 +190,14 @@ async function requestGitLab(
     }
 
     return response;
+}
+
+/**
+ * Return the GitLab endpoint to be used from the configuration.
+ */
+export function getEndpoint(config: GitLabSpaceConfiguration): string {
+    const { customInstanceUrl } = config;
+    return customInstanceUrl || 'https://gitlab.com';
 }
 
 /**

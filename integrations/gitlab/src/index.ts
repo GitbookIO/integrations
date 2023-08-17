@@ -1,13 +1,7 @@
 import { Router } from 'itty-router';
 
 import { ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
-import {
-    createIntegration,
-    FetchEventCallback,
-    createOAuthHandler,
-    Logger,
-    EventCallback,
-} from '@gitbook/runtime';
+import { createIntegration, FetchEventCallback, Logger, EventCallback } from '@gitbook/runtime';
 
 import { fetchProjectBranches, fetchProjects } from './api';
 import { configBlock } from './components';
@@ -57,27 +51,11 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
         });
     });
 
-    /*
-     * Authenticate using GitLab OAuth
-     */
-    router.get(
-        '/oauth',
-        createOAuthHandler({
-            redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
-            clientId: context.environment.secrets.CLIENT_ID,
-            clientSecret: context.environment.secrets.CLIENT_SECRET,
-            authorizeURL: 'https://gitlab.com/oauth/authorize',
-            accessTokenURL: 'https://gitlab.com/oauth/token',
-            scopes: ['api', 'read_repository', 'write_repository'],
-            prompt: 'consent',
-        })
-    );
-
     /**
      * API to fetch all GitLab projects under current authentication
      */
     router.get('/projects', async () => {
-        const projects = await fetchProjects(context);
+        const projects = await fetchProjects(getSpaceConfig(context));
 
         const data = projects.map(
             (project): ContentKitSelectOption => ({
@@ -102,7 +80,9 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
         const projectId =
             project && typeof project === 'string' ? parseProject(project).projectId : undefined;
 
-        const branches = projectId ? await fetchProjectBranches(context, projectId) : [];
+        const branches = projectId
+            ? await fetchProjectBranches(getSpaceConfig(context), projectId)
+            : [];
 
         const data = branches.map(
             (branch): ContentKitSelectOption => ({

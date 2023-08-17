@@ -1,23 +1,11 @@
-import { Gitlab } from '@gitbeaker/rest';
-
 import { GitSyncOperationState } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
 
-import { getAccessToken } from './api';
+import { getAccessToken, addProjectWebhook, deleteProjectWebhook, editCommitStatus } from './api';
 import { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { assertIsDefined, createGitLabWebhookURL, parseProject } from './utils';
+import { assertIsDefined, parseProject } from './utils';
 
 const logger = Logger('gitlab:provider');
-
-/**
- * Returns the GitLab client for the currently configured project.
- */
-function getGitLabClient(config: GitLabSpaceConfiguration) {
-    return new Gitlab({
-        token: getAccessToken(config),
-        host: config.customInstanceUrl || 'https://gitlab.com',
-    });
-}
 
 /**
  * Setup the GitLab webhook for the currently configured project.
@@ -26,13 +14,9 @@ export async function installWebhook(
     context: GitLabRuntimeContext,
     config: GitLabSpaceConfiguration
 ) {
-    const gitlab = getGitLabClient(config);
     const { projectId } = parseProject(config);
 
-    const { id } = await gitlab.ProjectHooks.add(projectId, createGitLabWebhookURL(context), {
-        pushEvents: true,
-        mergeRequestsEvents: true,
-    });
+    const id = await addProjectWebhook(config, projectId, createGitLabWebhookURL(context));
 
     assertIsDefined(context.environment.installation);
     assertIsDefined(context.environment.spaceInstallation);
@@ -63,14 +47,13 @@ export async function uninstallWebhook(
         return;
     }
 
-    const gitlab = getGitLabClient(config);
     const { projectId } = parseProject(config);
 
     assertIsDefined(context.environment.installation);
     assertIsDefined(context.environment.spaceInstallation);
 
     await Promise.all([
-        gitlab.ProjectHooks.remove(projectId, config.webhookId),
+        deleteProjectWebhook(config, projectId, config.webhookId),
         context.api.integrations.updateIntegrationSpaceInstallation(
             context.environment.integration.name,
             context.environment.installation.id,
@@ -85,6 +68,31 @@ export async function uninstallWebhook(
     ]);
 
     logger.info(`Webhook ${config.webhookId} uninstalled from GitLab project ${projectId}`);
+}
+
+/**
+ * Update the commit status
+ */
+export async function updateCommitStatus(
+    config: GitLabSpaceConfiguration,
+    commitSha: string,
+    update: {
+        context?: string;
+        state: GitSyncOperationState;
+        url: string;
+        description: string;
+    }
+) {
+    const { projectId } = parseProject(config);
+
+    await editCommitStatus(config, projectId, commitSha, {
+        name: update.context || 'GitBook',
+        state: update.state === 'failure' ? 'failed' : update.state,
+        targetUrl: update.url,
+        description: update.description,
+    });
+
+    logger.info(`Commit status updated for ${commitSha} on GitLab project ${projectId}`);
 }
 
 /**
@@ -108,34 +116,6 @@ export async function getRepositoryAuth(config: GitLabSpaceConfiguration) {
 }
 
 /**
- * Update the commit status
- */
-export async function updateCommitStatus(
-    config: GitLabSpaceConfiguration,
-    commitSha: string,
-    update: {
-        context?: string;
-        state: GitSyncOperationState;
-        url: string;
-        description: string;
-    }
-) {
-    const gitlab = getGitLabClient(config);
-    const { projectId } = parseProject(config);
-
-    await gitlab.Commits.editStatus(
-        projectId,
-        commitSha,
-        update.state === 'failure' ? 'failed' : update.state,
-        {
-            name: update.context || 'GitBook',
-            targetUrl: update.url,
-            description: update.description,
-        }
-    );
-}
-
-/**
  * Returns the base URL of the Git tree in the provider.
  */
 export function getGitTreeURL(config: GitLabSpaceConfiguration): string {
@@ -156,4 +136,9 @@ export function getGitCommitURL(config: GitLabSpaceConfiguration): string {
  */
 export function getGitRef(branch: string): string {
     return `refs/heads/${branch}`;
+}
+
+/** Create the webhook url for GitLab */
+export function createGitLabWebhookURL(context: GitLabRuntimeContext): string {
+    return `https://${context.environment.integration.urls.publicEndpoint}/hooks/gitlab?space=${context.environment.spaceInstallation?.space}`;
 }

@@ -1,6 +1,6 @@
-import { GitSyncOperationState } from '@gitbook/api';
+import type { GitSyncOperationState } from '@gitbook/api';
 
-import { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
+import type { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
 
 /**
  * The default commit message to use when a change request is merged in GitBook
@@ -73,11 +73,6 @@ export function getSpaceConfig(context: GitLabRuntimeContext): GitLabSpaceConfig
  */
 export function computeConfigQueryKeyBase(projectId: number, ref: string): string {
     return `${projectId}/${ref}`;
-}
-
-/** Create the webhook url for GitLab */
-export function createGitLabWebhookURL(context: GitLabRuntimeContext): string {
-    return `https://${context.environment.integration.urls.publicEndpoint}/hooks/gitlab?space=${context.environment.spaceInstallation?.space}`;
 }
 
 export function assertIsDefined<T>(value: T): asserts value is NonNullable<T> {
