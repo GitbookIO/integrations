@@ -1,7 +1,6 @@
 import { Router } from 'itty-router';
 
-// import { ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
-import { ContentKitSelectOption } from '@gitbook/api';
+import { ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
 import {
     createIntegration,
     FetchEventCallback,
@@ -10,14 +9,12 @@ import {
     EventCallback,
 } from '@gitbook/runtime';
 
-// import { fetchInstallationRepositories, fetchInstallations, fetchRepositoryBranches } from './api';
 import { fetchProjectBranches, fetchProjects } from './api';
 import { configBlock } from './components';
-// import { triggerExport, updateCommitWithPreviewLinks } from './sync';
+import { triggerExport, updateCommitWithPreviewLinks } from './sync';
 import type { GitLabRuntimeContext } from './types';
-import { parseProject } from './utils';
-// import { parseInstallation, parseRepository } from './utils';
-// import { handlePullRequestEvents, handlePushEvent, verifyGitHubWebhookSignature } from './webhooks';
+import { getSpaceConfig, parseProject } from './utils';
+import { handleMergeRequestEvent, handlePushEvent } from './webhooks';
 
 const logger = Logger('gitlab');
 
@@ -35,48 +32,30 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
     /**
      * Handle GitLab webhooks
      */
-    // router.post('/hooks/gitlab', async (request) => {
-    //     const id = request.headers.get('x-github-delivery');
-    //     const event = request.headers.get('x-github-event');
-    //     const signature = request.headers.get('x-hub-signature-256') ?? '';
-    //     const payloadString = await request.text();
-    //     const payload = JSON.parse(payloadString);
+    router.post('/hooks/gitlab', async (request) => {
+        const id = request.headers.get('x-gitlab-event-uuid');
+        const event = request.headers.get('x-gitlab-event');
+        const payloadString = await request.text();
+        const payload = JSON.parse(payloadString);
 
-    //     // Verify webhook signature
-    //     try {
-    //         await verifyGitHubWebhookSignature(
-    //             payloadString,
-    //             signature,
-    //             environment.secrets.WEBHOOK_SECRET
-    //         );
-    //     } catch (error: any) {
-    //         return new Response(JSON.stringify({ error: error.message }), {
-    //             status: 400,
-    //             headers: { 'content-type': 'application/json' },
-    //         });
-    //     }
+        logger.debug('received webhook event', { id, event });
 
-    //     logger.debug('received webhook event', { id, event });
+        /**
+         * Handle Webhook events
+         */
+        if (event === 'Push Hook') {
+            await handlePushEvent(context, payload);
+        } else if (event === 'Merge Request Hook') {
+            await handleMergeRequestEvent(context, payload);
+        } else {
+            logger.debug('ignoring webhook event', { id, event });
+        }
 
-    //     /**
-    //      * Handle Webhook events
-    //      */
-    //     if (event === 'push') {
-    //         await handlePushEvent(context, payload);
-    //     } else if (
-    //         event === 'pull_request' &&
-    //         (payload.action === 'opened' || payload.action === 'synchronize')
-    //     ) {
-    //         await handlePullRequestEvents(context, payload);
-    //     } else {
-    //         logger.debug('ignoring webhook event', { id, event });
-    //     }
-
-    //     return new Response(JSON.stringify({ ok: true }), {
-    //         status: 200,
-    //         headers: { 'content-type': 'application/json' },
-    //     });
-    // });
+        return new Response(JSON.stringify({ ok: true }), {
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+        });
+    });
 
     /*
      * Authenticate using GitLab OAuth
@@ -177,12 +156,13 @@ const handleSpaceContentUpdated: EventCallback<
         return;
     }
 
-    if (!context.environment.spaceInstallation?.configuration) {
+    try {
+        const spaceInstallationConfiguration = getSpaceConfig(context);
+        await triggerExport(context, spaceInstallationConfiguration);
+    } catch (error) {
         logger.debug(`missing space installation configuration, skipping`);
         return;
     }
-
-    // await triggerExport(context, context.environment.spaceInstallation.configuration);
 };
 
 /*
@@ -196,20 +176,20 @@ const handleGitSyncStarted: EventCallback<'space_gitsync_started', GitLabRuntime
         `Git Sync started for space ${event.spaceId} revision ${event.revisionId}, updating commit status`
     );
 
-    const spaceInstallationConfiguration = context.environment.spaceInstallation?.configuration;
-    if (!spaceInstallationConfiguration) {
+    try {
+        const spaceInstallationConfiguration = getSpaceConfig(context);
+        await updateCommitWithPreviewLinks(
+            context,
+            event.spaceId,
+            event.revisionId,
+            spaceInstallationConfiguration,
+            event.commitId,
+            GitSyncOperationState.Running
+        );
+    } catch (error) {
         logger.debug(`missing space installation configuration, skipping`);
         return;
     }
-
-    // await updateCommitWithPreviewLinks(
-    //     context,
-    //     event.spaceId,
-    //     event.revisionId,
-    //     spaceInstallationConfiguration,
-    //     event.commitId,
-    //     GitSyncOperationState.Running
-    // );
 };
 
 /**
@@ -223,20 +203,20 @@ const handleGitSyncCompleted: EventCallback<
         `Git Sync completed (${event.state}) for space ${event.spaceId} revision ${event.revisionId}, updating commit status`
     );
 
-    const spaceInstallationConfiguration = context.environment.spaceInstallation?.configuration;
-    if (!spaceInstallationConfiguration) {
+    try {
+        const spaceInstallationConfiguration = getSpaceConfig(context);
+        await updateCommitWithPreviewLinks(
+            context,
+            event.spaceId,
+            event.revisionId,
+            spaceInstallationConfiguration,
+            event.commitId,
+            event.state as GitSyncOperationState
+        );
+    } catch (error) {
         logger.debug(`missing space installation configuration, skipping`);
         return;
     }
-
-    // await updateCommitWithPreviewLinks(
-    //     context,
-    //     event.spaceId,
-    //     event.revisionId,
-    //     spaceInstallationConfiguration,
-    //     event.commitId,
-    //     event.state as GitSyncOperationState
-    // );
 };
 
 export default createIntegration({

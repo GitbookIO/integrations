@@ -59,6 +59,7 @@ export function parseProject(input: GitLabSpaceConfiguration | string) {
 
 /**
  * Get the space configuration for the current space installation from the context.
+ * This will throw an error if the space installation configuration is not defined.
  */
 export function getSpaceConfig(context: GitLabRuntimeContext): GitLabSpaceConfiguration {
     const spaceInstallation = context.environment.spaceInstallation;
