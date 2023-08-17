@@ -3,7 +3,7 @@ title: GitHub
 organization: gitbook
 visibility: private
 description: ''
-script: src/index.tsx
+script: src/index.ts
 scopes:
     - space:metadata:read
     - space:metadata:write

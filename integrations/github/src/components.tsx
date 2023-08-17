@@ -347,7 +347,7 @@ export const configBlock = createComponent<
                                                 !element.state.repository ||
                                                 !element.state.branch
                                             }
-                                            label="Save"
+                                            label="Configure"
                                             tooltip="Save configuration"
                                             onPress={{ action: 'save' }}
                                         />
