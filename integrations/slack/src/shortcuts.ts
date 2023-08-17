@@ -66,15 +66,11 @@ export function createSlackShortcutsHandler(
 
         // await addRecording(api, event.event, environment.secrets.BOT_TOKEN);
 
-        const recordThreadRes = await recordThread(
-            api,
-            {
-                team_id: team.id,
-                channel: channel.id,
-                thread_ts: message.thread_ts,
-            },
-            environment.secrets.BOT_TOKEN
-        );
+        const recordThreadRes = await recordThread(context, {
+            team_id: team.id,
+            channel: channel.id,
+            thread_ts: message.thread_ts,
+        });
 
         // await fetch(response_url, {
         //     method: 'POST',
