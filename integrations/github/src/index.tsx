@@ -13,7 +13,7 @@ import { fetchInstallationRepositories, fetchInstallations, fetchRepositoryBranc
 import { configBlock } from './components';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
 import type { GithubRuntimeContext } from './types';
-import { parseInstallation, parseRepository } from './utils';
+import { getSpaceConfig, parseInstallation, parseRepository } from './utils';
 import { handlePullRequestEvents, handlePushEvent, verifyGitHubWebhookSignature } from './webhooks';
 
 const logger = Logger('github');
@@ -95,7 +95,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
      * API to fetch all GitHub installations
      */
     router.get('/installations', async () => {
-        const installations = await fetchInstallations(context);
+        const installations = await fetchInstallations(getSpaceConfig(context));
 
         const data = installations.map(
             (installation): ContentKitSelectOption => ({
@@ -122,7 +122,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                 : undefined;
 
         const repositories = installationId
-            ? await fetchInstallationRepositories(context, installationId)
+            ? await fetchInstallationRepositories(getSpaceConfig(context), installationId)
             : [];
 
         const data = repositories.map(
@@ -156,7 +156,11 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
 
         const branches =
             accountName && repositoryName
-                ? await fetchRepositoryBranches(context, accountName, repositoryName)
+                ? await fetchRepositoryBranches(
+                      getSpaceConfig(context),
+                      accountName,
+                      repositoryName
+                  )
                 : [];
 
         const data = branches.map(
