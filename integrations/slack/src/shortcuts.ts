@@ -85,71 +85,75 @@ export function createSlackShortcutsHandler(
         //     }),
         // });
 
-        const res = await slackAPI(context, {
-            method: 'POST',
-            path: 'chat.postEphemeral',
-            payload: {
-                channel: channel.id,
-                blocks: [
-                    {
-                        type: 'section',
-                        text: {
-                            type: 'mrkdwn',
-                            text: 'Your new docs are ready :tada\n',
-                        },
-                    },
-                    {
-                        type: 'section',
-                        text: {
-                            type: 'mrkdwn',
-                            text: 'Have a look for your yourself and share in the thread',
-                        },
-                        accessory: {
-                            type: 'button',
+        const res = await slackAPI(
+            context,
+            {
+                method: 'POST',
+                path: 'chat.postEphemeral',
+                payload: {
+                    channel: channel.id,
+                    blocks: [
+                        {
+                            type: 'section',
                             text: {
-                                type: 'plain_text',
-                                text: 'Preview',
-                                emoji: true,
+                                type: 'mrkdwn',
+                                text: 'Your new docs are ready :tada\n',
                             },
-                            value: 'click_me_123',
-                            action_id: 'button-action',
                         },
-                    },
-                    {
-                        type: 'divider',
-                    },
-                    {
-                        type: 'actions',
-                        elements: [
-                            {
+                        {
+                            type: 'section',
+                            text: {
+                                type: 'mrkdwn',
+                                text: 'Have a look for your yourself and share in the thread',
+                            },
+                            accessory: {
                                 type: 'button',
                                 text: {
                                     type: 'plain_text',
+                                    text: 'Preview',
                                     emoji: true,
-                                    text: 'Approve',
                                 },
-                                style: 'primary',
                                 value: 'click_me_123',
+                                action_id: 'button-action',
                             },
-                            {
-                                type: 'button',
-                                text: {
-                                    type: 'plain_text',
-                                    emoji: true,
-                                    text: 'Delete',
+                        },
+                        {
+                            type: 'divider',
+                        },
+                        {
+                            type: 'actions',
+                            elements: [
+                                {
+                                    type: 'button',
+                                    text: {
+                                        type: 'plain_text',
+                                        emoji: true,
+                                        text: 'Approve',
+                                    },
+                                    style: 'primary',
+                                    value: 'click_me_123',
                                 },
-                                style: 'danger',
-                                value: 'click_me_123',
-                            },
-                        ],
-                    },
-                ],
+                                {
+                                    type: 'button',
+                                    text: {
+                                        type: 'plain_text',
+                                        emoji: true,
+                                        text: 'Delete',
+                                    },
+                                    style: 'danger',
+                                    value: 'click_me_123',
+                                },
+                            ],
+                        },
+                    ],
 
-                // text: `All done, check it out ${recordThreadRes.url}`,
-                thread_ts: message.thread_ts,
-                user: user.id,
+                    // text: `All done, check it out ${recordThreadRes.url}`,
+                    thread_ts: message.thread_ts,
+                    user: user.id,
+                },
             },
-        });
+            { accessToken: environment.secrets.BOT_TOKEN }
+        );
 
         // Add custom header(s)
         return new Response(null, {

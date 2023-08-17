@@ -76,8 +76,7 @@ export async function slackAPI(
 
     const accessToken =
         options.accessToken ||
-        environment.installation?.configuration.oauth_credentials?.access_token ||
-        environment.secrets.BOT_TOKEN;
+        environment.installation?.configuration.oauth_credentials?.access_token;
 
     if (!accessToken) {
         throw new Error('No authentication token provided');
