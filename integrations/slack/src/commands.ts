@@ -30,17 +30,33 @@ export function createSlackCommandsHandler(handlers: {
 }): FetchEventCallback {
     return async (request, context) => {
         const requestText = await request.text();
+
         const slashEvent: SlashEvent = Object.fromEntries(
             new URLSearchParams(requestText).entries()
         );
 
-        if (!slashEvent.command) {
+        let event: SlashEvent;
+
+        if (slashEvent.payload) {
+            const payload = JSON.parse(slashEvent.payload);
+            const value = JSON.parse(payload.actions[0].value);
+            // TODO: constructing a faux-SlashEvent here
+            event = {
+                channel_id: payload.container.channel_id,
+                team_id: payload.team.id,
+                ...value,
+            };
+        } else {
+            event = slashEvent;
+        }
+
+        const { command } = event;
+
+        if (!command) {
             return new Response(`Invalid slash command`, {
                 status: 422,
             });
         }
-
-        const { command } = slashEvent;
 
         const handler = handlers[command];
         if (!handler) {
@@ -49,7 +65,7 @@ export function createSlackCommandsHandler(handlers: {
             });
         }
 
-        const data = await handler(slashEvent, context);
+        const data = await handler(event, context);
 
         return new Response(null, {
             status: 200,
