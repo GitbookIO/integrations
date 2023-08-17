@@ -62,13 +62,19 @@ export function QueryDisplayBlock(params: { queries: Array<string> }) {
                 text: 'Some followup questions you might try:',
             },
         },
-        ...(queries.map((question) => ({
-            type: 'section',
-            text: {
-                type: 'mrkdwn',
-                text: `\`/gitbooklens ${question}\``,
-            },
-        })) ?? []),
+
+        {
+            type: 'actions',
+            elements: queries.map((question) => ({
+                type: 'button',
+                text: {
+                    type: 'plain_text',
+                    text: question,
+                    emoji: true,
+                },
+                value: JSON.stringify({ command: '/gitbooklens', text: question }),
+            })),
+        },
     ];
 }
 
