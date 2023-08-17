@@ -72,16 +72,20 @@ export async function acknowledgeSlackShortcut(req: Request, context: SlackRunti
 
     console.log('shortcutPayload', shortcutPayload);
 
-    const res = await slackAPI(context, {
-        method: 'POST',
-        path: 'chat.postEphemeral',
-        payload: {
-            channel: channel.id,
-            text: 'Docs being generated',
-            thread_ts: message.thread_ts,
-            user: user.id,
+    const res = await slackAPI(
+        context,
+        {
+            method: 'POST',
+            path: 'chat.postEphemeral',
+            payload: {
+                channel: channel.id,
+                text: 'Docs being generated',
+                thread_ts: message.thread_ts,
+                user: user.id,
+            },
         },
-    });
+        { accessToken: context.environment.secrets.BOT_TOKEN }
+    );
 
     fetch(`${req.url}_task`, {
         method: 'POST',
