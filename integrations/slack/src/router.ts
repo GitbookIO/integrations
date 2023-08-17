@@ -6,7 +6,12 @@ import { createSlackCommandsHandler } from './commands';
 import { createSlackEventsHandler } from './events';
 import { queryLensInGitBook } from './handlers';
 import { unfurlLink } from './links';
-import { acknowledgeSlackRequest, verifySlackRequest } from './middlewares';
+import {
+    acknowledgeSlackRequest,
+    acknowledgeSlackShortcut,
+    verifySlackRequest,
+} from './middlewares';
+import { createSlackShortcutsHandler } from './shortcuts';
 import { getChannelsPaginated } from './slack';
 
 /**
@@ -15,7 +20,7 @@ import { getChannelsPaginated } from './slack';
  * - Slack webhook requests
  */
 export const handleFetchEvent: FetchEventCallback = async (request, context) => {
-    const { environment } = context;
+    const { environment, api } = context;
 
     const router = Router({
         base: new URL(
@@ -24,6 +29,19 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
                 environment.integration.urls.publicEndpoint
         ).pathname,
     });
+
+    const encodedScopes = encodeURIComponent(
+        [
+            'chat:write',
+            'channels:join',
+            'channels:read',
+            'channels:history',
+            'groups:read',
+            'links:read',
+            'links:write',
+            'commands',
+        ].join(' ')
+    );
 
     /*
      * Authenticate the user using OAuth.
@@ -34,8 +52,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             clientId: environment.secrets.CLIENT_ID,
             clientSecret: environment.secrets.CLIENT_SECRET,
             // TODO: use the yaml as SoT for scopes
-            authorizeURL:
-                'https://slack.com/oauth/v2/authorize?scope=chat:write%20channels:join%20channels:read%20%20groups:read%20links:read%20links:write%20commands',
+            authorizeURL: `https://slack.com/oauth/v2/authorize?scope=${encodedScopes}`,
             accessTokenURL: 'https://slack.com/api/oauth.v2.access',
             extractCredentials: (response) => {
                 if (!response.ok) {
@@ -54,17 +71,21 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         })
     );
 
+    router.post('/events', verifySlackRequest, acknowledgeSlackRequest);
+
+    router.post('/shortcuts', verifySlackRequest, acknowledgeSlackShortcut);
+
     router.post(
-        '/events',
+        '/commands',
         verifySlackRequest,
-        createSlackEventsHandler(
-            {
-                url_verification: async (event: { challenge: string }) => {
-                    return { challenge: event.challenge };
-                },
+        createSlackCommandsHandler({
+            url_verification: async (event: { challenge: string }) => {
+                return { challenge: event.challenge };
             },
-            acknowledgeSlackRequest
-        )
+            '/gitbook_valentino': async (event) => {
+                console.log('command event', event);
+            },
+        })
     );
 
     router.post('/commands', acknowledgeSlackRequest);
@@ -102,6 +123,14 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         '/events_task',
         verifySlackRequest,
         createSlackEventsHandler({
+            link_shared: unfurlLink,
+        })
+    );
+
+    router.post(
+        '/shortcuts_task',
+        verifySlackRequest,
+        createSlackShortcutsHandler({
             link_shared: unfurlLink,
         })
     );
