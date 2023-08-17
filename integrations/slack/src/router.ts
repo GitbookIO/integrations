@@ -2,7 +2,9 @@ import { Router } from 'itty-router';
 
 import { createOAuthHandler, FetchEventCallback } from '@gitbook/runtime';
 
+import { createSlackCommandsHandler } from './commands';
 import { createSlackEventsHandler } from './events';
+import { queryLensInGitBook } from './handlers';
 import { unfurlLink } from './links';
 import { acknowledgeSlackRequest, verifySlackRequest } from './middlewares';
 import { getChannelsPaginated } from './slack';
@@ -63,6 +65,16 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             },
             acknowledgeSlackRequest
         )
+    );
+
+    router.post('/commands', acknowledgeSlackRequest);
+
+    router.post(
+        '/commands_task',
+        verifySlackRequest,
+        createSlackCommandsHandler({
+            '/gitbooklens': queryLensInGitBook,
+        })
     );
 
     /*

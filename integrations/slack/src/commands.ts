@@ -29,10 +29,10 @@ export function createSlackCommandsHandler(handlers: {
     [type: string]: (slashEvent: SlashEvent, context: SlackRuntimeContext) => Promise<any>;
 }): FetchEventCallback {
     return async (request, context) => {
-        const slashEvent = {} as SlashEvent;
-        new URLSearchParams(await request.text()).forEach((value, key) => {
-            slashEvent[key] = value;
-        });
+        const requestText = await request.text();
+        const slashEvent: SlashEvent = Object.fromEntries(
+            new URLSearchParams(requestText).entries()
+        );
 
         if (!slashEvent.command) {
             return new Response(`Invalid slash command`, {
@@ -49,7 +49,7 @@ export function createSlackCommandsHandler(handlers: {
             });
         }
 
-        await handler(slashEvent, context);
+        const data = await handler(slashEvent, context);
 
         return new Response(null, {
             status: 200,
