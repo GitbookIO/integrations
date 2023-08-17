@@ -4,6 +4,7 @@ import { ContentKitIcon } from '@gitbook/api';
 import { createComponent } from '@gitbook/runtime';
 
 import { getAccessToken } from './api';
+import { saveSpaceConfiguration } from './installation';
 import { ConfigureAction, ConfigureProps, ConfigureState, GitLabRuntimeContext } from './types';
 import {
     assertIsDefined,
@@ -58,14 +59,27 @@ export const configBlock = createComponent<
                     },
                 };
             case 'save.token':
-                return {
-                    ...element,
-                    state: {
-                        ...element.state,
-                        accessToken: action.token,
-                    },
-                };
+                const { api, environment } = context;
+                const installation = environment.installation;
+                const spaceInstallation = environment.spaceInstallation;
 
+                assertIsDefined(installation);
+                assertIsDefined(spaceInstallation);
+
+                const existing = element.props.spaceInstallation.configuration;
+
+                await api.integrations.updateIntegrationSpaceInstallation(
+                    environment.integration.name,
+                    installation.id,
+                    spaceInstallation.space,
+                    {
+                        configuration: {
+                            ...existing,
+                            accessToken: action.token,
+                        },
+                    }
+                );
+                return element;
             case 'select.project':
                 return element;
             case 'select.branch':
@@ -100,7 +114,7 @@ export const configBlock = createComponent<
                     },
                 };
             case 'save.configuration':
-                // await saveSpaceConfiguration(context, element.state);
+                await saveSpaceConfiguration(context, element.state);
                 return element;
         }
     },
@@ -109,18 +123,18 @@ export const configBlock = createComponent<
             context.environment.spaceInstallation?.urls.publicEndpoint;
         assertIsDefined(spaceInstallationPublicEndpoint);
 
-        /**
-         * The version hash will be used to invalidate the cache of the select components
-         * on the frontend when the input props to the component change.
-         */
-        const versionHash = hash(element.props);
-
         let accessToken: string | undefined;
         try {
             accessToken = getAccessToken(getSpaceConfig(context));
         } catch (error) {
             // Ignore: We will show the button to connect
         }
+
+        /**
+         * The version hash will be used to invalidate the cache of the select components
+         * on the frontend when the input props to the component change.
+         */
+        const versionHash = hash(element.props);
 
         return (
             <block>
