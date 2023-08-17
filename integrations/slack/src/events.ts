@@ -19,17 +19,6 @@ export function createSlackEventsHandler(
 
         // console.log('event', event);
 
-        // client_msg_id: '43f363f5-fc93-4611-b9b5-2fcd81d23c49',
-        // type: 'app_mention',
-        // text: '<@U05M85YEXQA> test',
-        // user: 'U03S41KSY8M',
-        // ts: '1691811465.130489',
-        // blocks: [ [Object] ],
-        // team: 'T032HV6MF',
-        // thread_ts: '1691771028.338399',
-        // parent_user_id: 'U03S41KSY8M',
-        // channel: 'C05M1K6RTD4',
-        // event_ts: '1691811465.130489'
         const { ts, thread_ts, parent_user_id, channel, event_ts, team_id } = event.event;
 
         // await addRecording(api, event.event, environment.secrets.BOT_TOKEN);
@@ -46,34 +35,17 @@ export function createSlackEventsHandler(
         return new Response(null, {
             status: 200,
         });
-
-        // const eventType = event.event?.type || event.type;
-        // // Find the handle for the event type, or use the fallback if that's missing
-        // const handler = handlers[eventType];
-        // if (!handler) {
-        //     if (fallback) {
-        //         return fallback(request, context);
-        //     }
-
-        //     return new Response(`No handler for event type "${eventType}"`, {
-        //         status: 404,
-        //     });
-        // }
-
-        // const data = await handler(event, context);
-
-        // if (typeof data === 'string') {
-        //     return new Response(data, {
-        //         headers: {
-        //             'Content-Type': 'text/plain',
-        //         },
-        //     });
-        // }
-
-        // return new Response(JSON.stringify(data), {
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        // });
     };
 }
+
+// client_msg_id: '43f363f5-fc93-4611-b9b5-2fcd81d23c49',
+// type: 'app_mention',
+// text: '<@U05M85YEXQA> test',
+// user: 'U03S41KSY8M',
+// ts: '1691811465.130489',
+// blocks: [ [Object] ],
+// team: 'T032HV6MF',
+// thread_ts: '1691771028.338399',
+// parent_user_id: 'U03S41KSY8M',
+// channel: 'C05M1K6RTD4',
+// event_ts: '1691811465.130489'
