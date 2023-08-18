@@ -119,6 +119,9 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         '/events_task',
         verifySlackRequest,
         createSlackEventsHandler({
+            // url_verification: async (event: { challenge: string }) => {
+            // return { challenge: event.challenge };
+            // },
             link_shared: unfurlLink,
         })
     );

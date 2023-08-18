@@ -1,6 +1,7 @@
 import { FetchEventCallback } from '@gitbook/runtime';
 
 import { createMessageThreadRecording } from './actions/gitbook';
+import { queryLens } from './actions/queryLens';
 import { SlackRuntimeContext } from './configuration';
 
 /**
@@ -17,15 +18,30 @@ export function createSlackEventsHandler(
         // Clone the request so its body is still available to the fallback
         const event = await request.clone().json<{ event?: { type: string }; type?: string }>();
 
-        // console.log('event', event);
+        console.log('event===', JSON.stringify(event));
 
-        const { ts, thread_ts, parent_user_id, channel, event_ts, team_id } = event.event;
+        const { type, ts, thread_ts, parent_user_id, channel, event_ts, team_id } = event.event;
 
-        const recording = await createMessageThreadRecording(context, {
-            team_id,
-            channel,
-            thread_ts,
-        });
+        if (type === 'message') {
+            const { text } = event.event;
+            const isCuration = text.split(' ')[0] === 'save';
+
+            if (!isCuration) {
+                // send to Lens
+                const data = await queryLens({
+                    teamId: event.team_id,
+                    channelId: event.event.channel,
+                    text,
+                    context,
+                });
+            }
+        } else {
+            const recording = await createMessageThreadRecording(context, {
+                team_id,
+                channel,
+                thread_ts,
+            });
+        }
 
         // Add custom header(s)
         return new Response(null, {

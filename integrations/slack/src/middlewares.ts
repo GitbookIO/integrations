@@ -51,10 +51,10 @@ export async function acknowledgeSlackRequest(req: Request) {
         },
     });
 
-    return new Response(JSON.stringify({ acknowledged: true }), {
-        headers: {
-            'Content-Type': 'application/json',
-        },
+    console.log('acknowledging', req.url);
+    // return new Response(JSON.stringify({ acknowledged: true }), {
+    return new Response(null, {
+        status: 200,
     });
 }
 

@@ -49,6 +49,7 @@ interface IQueryLens {
 export async function queryLens({ channelId, teamId, text, context }: IQueryLens) {
     const { environment, api } = context;
 
+    console.log('queryLens called', channelId, teamId, text);
     const { client, installation } = await getInstallationApiClient(api, teamId);
     if (!installation) {
         throw new Error('Installation not found');
