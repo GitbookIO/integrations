@@ -3,14 +3,14 @@ import { QueryDisplayBlock } from '../ui/blocks';
 import { getInstallationConfig } from '../utils';
 import { createMessageThreadRecording } from './gitbook';
 
-export async function documentConversation({ team, channelId, message, user, context }) {
+export async function documentConversation({ team, channelId, thread_ts, user, context }) {
     const { environment } = context;
     console.log('start recording=======');
 
     const recording = await createMessageThreadRecording(context, {
         team_id: team.id,
         channel: channelId,
-        thread_ts: message.thread_ts,
+        thread_ts,
     });
 
     console.log('end recording=======', recording);
@@ -38,8 +38,7 @@ export async function documentConversation({ team, channelId, message, user, con
                     }),
                 ],
 
-                // text: `All done, check it out ${recordThreadRes.url}`,
-                thread_ts: message.thread_ts,
+                thread_ts,
                 user: user.id,
             },
         },

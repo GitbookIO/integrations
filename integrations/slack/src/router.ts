@@ -8,12 +8,7 @@ import { createSlackCommandsHandler } from './commands';
 import { createSlackEventsHandler } from './events';
 import { queryLensInGitBook, queryLensSlashHandler } from './handlers';
 import { unfurlLink } from './links';
-import {
-    acknowledgeSlackRequest,
-    acknowledgeSlackShortcut,
-    verifySlackRequest,
-} from './middlewares';
-import { createSlackShortcutsHandler } from './shortcuts';
+import { acknowledgeSlackRequest, acknowledgeSlackAction, verifySlackRequest } from './middlewares';
 import { getChannelsPaginated } from './slack';
 
 /**
@@ -73,11 +68,13 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         })
     );
 
+    // event triggers, e.g app_mention
     router.post('/events', verifySlackRequest, acknowledgeSlackRequest);
 
-    // router.post('/shortcuts', verifySlackRequest, acknowledgeSlackShortcut);
-    router.post('/actions', verifySlackRequest, acknowledgeSlackShortcut);
+    // shortcuts & interactivity
+    router.post('/actions', verifySlackRequest, acknowledgeSlackAction);
 
+    // /gitbook
     router.post('/commands', acknowledgeSlackRequest);
 
     router.post(
@@ -122,14 +119,6 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             link_shared: unfurlLink,
         })
     );
-
-    // router.post(
-    //     '/shortcuts_task',
-    //     verifySlackRequest,
-    //     createSlackShortcutsHandler({
-    //         link_shared: unfurlLink,
-    //     })
-    // );
 
     router.post(
         '/actions_task',

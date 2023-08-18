@@ -1,5 +1,6 @@
 import { FetchEventCallback } from '@gitbook/runtime';
 
+import { documentConversation } from './actions/documentConversation';
 import { createMessageThreadRecording } from './actions/gitbook';
 import { queryLens } from './actions/queryLens';
 import { SlackRuntimeContext } from './configuration';
@@ -20,15 +21,24 @@ export function createSlackEventsHandler(
 
         console.log('event===', JSON.stringify(event));
 
-        const { type, bot_id, ts, thread_ts, parent_user_id, channel, event_ts, team_id } =
+        const { type, bot_id, ts, thread_ts, parent_user_id, channel, user, event_ts, team_id } =
             event.event;
 
-        console.log('TYPE', type);
-        if (['message', 'app_mention'].includes(type) && !bot_id) {
-            const { text } = event.event;
-            const isCuration = text.split(' ')[0] === 'save';
+        const isCuration = type === 'app_mention' && event.event?.text.split(' ')[0] === 'save';
 
-            if (!isCuration) {
+        console.log('TYPE', type);
+        if (['message', 'app_mention'].includes(type)) {
+            const { text } = event.event;
+
+            if (isCuration) {
+                documentConversation({
+                    team: team_id,
+                    channelId: channel,
+                    thread_ts,
+                    user,
+                    context,
+                });
+            } else {
                 // stript out the bot-name in the mention and account for user mentions within the query
                 const parsedQuery = text
                     .split(new RegExp(`^.+<@${event.authorizations[0]?.user_id}> `))
@@ -40,12 +50,6 @@ export function createSlackEventsHandler(
                     channelId: event.event.channel,
                     text: parsedQuery,
                     context,
-                });
-            } else {
-                const recording = await createMessageThreadRecording(context, {
-                    team_id,
-                    channel,
-                    thread_ts,
                 });
             }
         }
