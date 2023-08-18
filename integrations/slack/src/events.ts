@@ -18,7 +18,7 @@ export function createSlackEventsHandler(
         // Clone the request so its body is still available to the fallback
         const event = await request.clone().json<{ event?: { type: string }; type?: string }>();
 
-        // console.log('event===', JSON.stringify(event));
+        console.log('event===', JSON.stringify(event));
 
         const { type, bot_id, ts, thread_ts, parent_user_id, channel, event_ts, team_id } =
             event.event;
@@ -29,9 +29,10 @@ export function createSlackEventsHandler(
             const isCuration = text.split(' ')[0] === 'save';
 
             if (!isCuration) {
-                console.log('text', text);
-                // TODO: need to handle this better in case of user mentions within the query
-                const parsedQuery = text.split(/.+<@.+> /).join('');
+                // stript out the bot-name in the mention and account for user mentions within the query
+                const parsedQuery = text
+                    .split(new RegExp(`^.+<@${event.authorizations[0]?.user_id}> `))
+                    .join('');
 
                 // send to Lens
                 const data = await queryLens({
