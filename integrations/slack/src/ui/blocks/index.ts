@@ -43,8 +43,8 @@ export function PagesBlock(params: {
     }
 }
 
-export function QueryDisplayBlock(params: { queries: Array<string> }) {
-    const { queries } = params;
+export function QueryDisplayBlock(params: { queries: Array<string>; heading?: string }) {
+    const { queries, heading } = params;
 
     if (queries?.length === 0) {
         return [];
@@ -59,7 +59,7 @@ export function QueryDisplayBlock(params: { queries: Array<string> }) {
             type: 'section',
             text: {
                 type: 'mrkdwn',
-                text: 'Some followup questions you might try:',
+                text: heading ?? 'Some followup questions you might try:',
             },
         },
 

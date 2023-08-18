@@ -17,17 +17,11 @@ export async function documentConversation({ team, channelId, message, user, con
 
     const { accessToken } = await getInstallationConfig(context, team.id);
 
-    const followupQuestions = [
-        'How do I install FireStore?',
-        'What is FireBase?',
-        'Can I emulate FireStore?',
-    ];
-
     await slackAPI(
         context,
         {
             method: 'POST',
-            path: 'chat.postEphemeral',
+            path: 'chat.postMessage',
             payload: {
                 channel: user.id,
                 blocks: [
@@ -38,7 +32,10 @@ export async function documentConversation({ team, channelId, message, user, con
                             text: 'Thread saved successfully! :tada:\n',
                         },
                     },
-                    ...QueryDisplayBlock({ queries: recording.followupQuestions }),
+                    ...QueryDisplayBlock({
+                        queries: recording.followupQuestions,
+                        heading: 'Try it out to with one of these questsions:',
+                    }),
                 ],
 
                 // text: `All done, check it out ${recordThreadRes.url}`,
