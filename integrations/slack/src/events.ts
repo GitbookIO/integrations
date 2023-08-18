@@ -30,7 +30,9 @@ export function createSlackEventsHandler(
 
             if (!isCuration) {
                 console.log('text', text);
-                const parsedQuery = text.split(/.+<@.+> /)[1];
+                // TODO: need to handle this better in case of user mentions within the query
+                const parsedQuery = text.split(/.+<@.+> /).join('');
+
                 // send to Lens
                 const data = await queryLens({
                     teamId: event.team_id,
