@@ -4,7 +4,7 @@ import { createOAuthHandler, FetchEventCallback } from '@gitbook/runtime';
 
 import { createSlackCommandsHandler } from './commands';
 import { createSlackEventsHandler } from './events';
-import { queryLensInGitBook } from './handlers';
+import { queryLensInGitBook, queryLensSlashHandler } from './handlers';
 import { unfurlLink } from './links';
 import {
     acknowledgeSlackRequest,
@@ -13,6 +13,7 @@ import {
 } from './middlewares';
 import { createSlackShortcutsHandler } from './shortcuts';
 import { getChannelsPaginated } from './slack';
+import { createSlackActionsHandler } from './actions';
 
 /**
  * Handle incoming HTTP requests:
@@ -74,6 +75,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
     router.post('/events', verifySlackRequest, acknowledgeSlackRequest);
 
     router.post('/shortcuts', verifySlackRequest, acknowledgeSlackShortcut);
+    router.post('/actions', verifySlackRequest, acknowledgeSlackShortcut);
 
     router.post('/commands', acknowledgeSlackRequest);
 
@@ -81,7 +83,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         '/commands_task',
         verifySlackRequest,
         createSlackCommandsHandler({
-            '/gitbooklens': queryLensInGitBook,
+            '/gitbooklens': queryLensSlashHandler,
             '/gitbook_valentino': async (event) => {
                 console.log('command event', event);
             },
@@ -124,6 +126,14 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         '/shortcuts_task',
         verifySlackRequest,
         createSlackShortcutsHandler({
+            link_shared: unfurlLink,
+        })
+    );
+
+    router.post(
+        '/actions_task',
+        verifySlackRequest,
+        createSlackActionsHandler({
             link_shared: unfurlLink,
         })
     );

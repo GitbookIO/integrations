@@ -37,18 +37,7 @@ export function createSlackCommandsHandler(handlers: {
 
         let event: SlashEvent;
 
-        if (slashEvent.payload) {
-            const payload = JSON.parse(slashEvent.payload);
-            const value = JSON.parse(payload.actions[0].value);
-            // TODO: constructing a faux-SlashEvent here
-            event = {
-                channel_id: payload.container.channel_id,
-                team_id: payload.team.id,
-                ...value,
-            };
-        } else {
-            event = slashEvent;
-        }
+        event = slashEvent;
 
         const { command } = event;
 
