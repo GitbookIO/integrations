@@ -4,13 +4,7 @@
 
 ### Minor Changes
 
--   d7d3f37: - Bump @gitbook/api client to use the latest Gitbook API spec
-    -   Update JSX for @gitbook/runtime
-
-### Patch Changes
-
--   Updated dependencies [d7d3f37]
-    -   @gitbook/api@0.6.0
+- Update JSX for @gitbook/runtime
 
 ## 0.4.1
 
