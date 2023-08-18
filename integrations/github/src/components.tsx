@@ -11,6 +11,7 @@ import {
     getGitSyncCommitMessage,
     getSpaceConfig,
     GITSYNC_DEFAULT_COMMIT_MESSAGE,
+    parseInstallation,
 } from './utils';
 
 /**
@@ -78,7 +79,7 @@ export const configBlock = createComponent<
                         ),
                     },
                 };
-            case 'save':
+            case 'save.config':
                 await saveSpaceConfiguration(context, element.state);
                 return element;
         }
@@ -107,7 +108,7 @@ export const configBlock = createComponent<
             <block>
                 <input
                     label="Authenticate"
-                    hint="Connect your GitHub account to start set up"
+                    hint="Connect your GitHub account"
                     element={
                         <button
                             label={buttonLabel}
@@ -130,7 +131,19 @@ export const configBlock = createComponent<
                         <vstack>
                             <input
                                 label="Select account"
-                                hint="Choose the GitHub installation, user or organization."
+                                hint={
+                                    <text>
+                                        Choose the GitHub installation, user or organization.
+                                        <link
+                                            target={{
+                                                url: 'https://github.com/apps/gitbook-com/installations/new',
+                                            }}
+                                        >
+                                            {' '}
+                                            Install the GitHub app.
+                                        </link>
+                                    </text>
+                                }
                                 element={
                                     <select
                                         state="installation"
@@ -157,7 +170,23 @@ export const configBlock = createComponent<
                                 <>
                                     <input
                                         label="Select repository"
-                                        hint="Choose the GitHub repository to sync this space with."
+                                        hint={
+                                            <text>
+                                                Choose the GitHub repository to sync this space
+                                                with. This repository should be authorized in the
+                                                <link
+                                                    target={{
+                                                        url: `https://github.com/settings/installations/${
+                                                            parseInstallation(
+                                                                element.state.installation
+                                                            ).installationId
+                                                        }`,
+                                                    }}
+                                                >
+                                                    GitHub installation.
+                                                </link>
+                                            </text>
+                                        }
                                         element={
                                             <select
                                                 state="repository"
@@ -231,7 +260,19 @@ export const configBlock = createComponent<
                                 <markdown content="### Monorepo" />
                                 <input
                                     label="Project directory"
-                                    hint="Optional directory of the project to sync with this space in your repository."
+                                    hint={
+                                        <text>
+                                            Optional directory of the project to sync with this
+                                            space in your repository.{' '}
+                                            <link
+                                                target={{
+                                                    url: 'https://docs.gitbook.com/getting-started/git-sync/monorepos',
+                                                }}
+                                            >
+                                                Learn More.
+                                            </link>
+                                        </text>
+                                    }
                                     element={
                                         <textinput state="projectDirectory" placeholder="./" />
                                     }
@@ -242,7 +283,19 @@ export const configBlock = createComponent<
                                 <markdown content="### Commit messages" />
                                 <input
                                     label="Use a custom template"
-                                    hint="Replace the commit message formatting used during export from GitBook by a custom template."
+                                    hint={
+                                        <text>
+                                            Replace the commit message formatting used during export
+                                            from GitBook by a custom template.{' '}
+                                            <link
+                                                target={{
+                                                    url: 'https://docs.gitbook.com/getting-started/git-sync/commits',
+                                                }}
+                                            >
+                                                Learn More.
+                                            </link>
+                                        </text>
+                                    }
                                     element={
                                         <switch
                                             state="withCustomTemplate"
@@ -306,7 +359,18 @@ export const configBlock = createComponent<
                                 <markdown content="### Forks" />
                                 <input
                                     label="Pull request preview"
-                                    hint="Allow Pull request previews from forked respositories."
+                                    hint={
+                                        <text>
+                                            Allow Pull request previews from forked respositories.{' '}
+                                            <link
+                                                target={{
+                                                    url: 'https://docs.gitbook.com/integrations/git-sync/github-pull-request-preview#security-considerations',
+                                                }}
+                                            >
+                                                Learn More.
+                                            </link>
+                                        </text>
+                                    }
                                     element={<switch state="previewExternalBranches" />}
                                 />
 
@@ -349,7 +413,7 @@ export const configBlock = createComponent<
                                             }
                                             label="Configure"
                                             tooltip="Save configuration"
-                                            onPress={{ action: 'save' }}
+                                            onPress={{ action: 'save.config' }}
                                         />
                                     }
                                 />
