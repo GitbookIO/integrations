@@ -18,6 +18,8 @@ import {
     ContentKitCheckbox,
     ContentKitModal,
     ContentKitInput,
+    ContentKitHint,
+    ContentKitLink,
 } from '@gitbook/api';
 
 // eslint-disable-next-line import/no-internal-modules
@@ -51,6 +53,8 @@ declare global {
             hstack: OmitType<ContentKitHStack>;
             divider: OmitType<ContentKitDivider>;
             text: OmitType<ContentKitText>;
+            hint: OmitType<ContentKitHint>;
+            link: OmitType<ContentKitLink>;
             codeblock: OmitType<ContentKitCodeBlock>;
             markdown: OmitType<ContentKitMarkdown>;
             webframe: OmitType<ContentKitWebFrame>;
