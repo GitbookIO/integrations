@@ -1,6 +1,7 @@
 import httpError from 'http-errors';
 
 import { IntegrationSpaceInstallation } from '@gitbook/api';
+import { Logger } from '@gitbook/runtime';
 
 import { getGitRef } from './provider';
 import { triggerExport, triggerImport } from './sync';
@@ -12,6 +13,8 @@ import {
     parseInstallation,
     parseRepository,
 } from './utils';
+
+const logger = Logger('github:installation');
 
 /**
  * Save the space configuration for the current space installation.
@@ -63,6 +66,10 @@ export async function saveSpaceConfiguration(
         priority: config.priority,
     };
 
+    logger.info(
+        `Saving config for space ${spaceInstallation.space} (installation: ${installation.id})`
+    );
+
     await Promise.all([
         // Save the space installation configuration
         api.integrations.updateIntegrationSpaceInstallation(
@@ -97,6 +104,8 @@ export async function querySpaceInstallations(
     page?: string
 ): Promise<Array<IntegrationSpaceInstallation>> {
     const { api, environment } = context;
+
+    logger.debug(`Querying space installations for external ID ${externalId} (page: ${page ?? 1})`);
 
     const { data } = await api.integrations.listIntegrationSpaceInstallations(
         environment.integration.name,

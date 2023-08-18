@@ -13,7 +13,7 @@
         "http-errors": "^2.0.0",
         "http-link-header": "^1.1.1",
         "itty-router": "^4.0.14",
-        "@tsndr/cloudflare-worker-jwt": "^2.2.1"
+        "jose": "^4.14.4"
     },
     "devDependencies": {
         "@gitbook/cli": "^0.10.0",

@@ -1,4 +1,4 @@
-import jwt from '@tsndr/cloudflare-worker-jwt';
+import * as jose from 'jose';
 
 import { GitSyncOperationState } from '@gitbook/api';
 
@@ -14,17 +14,22 @@ async function getGitHubAppJWT(context: GithubRuntimeContext): Promise<string> {
 
     const now = Math.floor(Date.now() / 1000);
 
-    const token = await jwt.sign(
-        {
-            iat: now - 60,
-            exp: now + 60 * 10,
-            iss: environment.secrets.APP_ID,
-        },
-        environment.secrets.PRIVATE_KEY,
-        { algorithm: 'RS256' }
-    );
+    const appId = environment.secrets.APP_ID;
+    const pkcs8 = environment.secrets.PRIVATE_KEY;
 
-    return token;
+    const alg = 'RS256';
+
+    const privateKey = await jose.importPKCS8(pkcs8, alg);
+
+    const jwt = await new jose.SignJWT({
+        iat: now - 60,
+        exp: now + 60 * 10,
+        iss: appId,
+    })
+        .setProtectedHeader({ alg })
+        .sign(privateKey);
+
+    return jwt;
 }
 
 /**
