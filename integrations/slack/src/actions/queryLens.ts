@@ -1,7 +1,8 @@
 import type { SearchAIAnswer, GitBookAPI } from '@gitbook/api';
 
-import { SlackRuntimeEnvironment } from '../configuration';
+import { SlackInstallationConfiguration, SlackRuntimeEnvironment } from '../configuration';
 import { slackAPI } from '../slack';
+import { getInstallationApiClient } from './gitbook';
 import { PagesBlock, QueryDisplayBlock } from '../ui/blocks';
 
 async function getRelatedPages(params: {
@@ -34,8 +35,14 @@ async function getRelatedPages(params: {
     };
 }
 
-export async function queryLens({ accessToken, channelId, text, context, installation }) {
+export async function queryLens({ channelId, teamId, text, context }) {
     const { environment, api } = context;
+
+    const { client, installation } = await getInstallationApiClient(api, teamId);
+
+    // Authenticate as the installation
+    const accessToken = (installation.configuration as SlackInstallationConfiguration)
+        .oauth_credentials?.access_token;
 
     await slackAPI(
         context,
@@ -52,18 +59,12 @@ export async function queryLens({ accessToken, channelId, text, context, install
         }
     );
 
-    // Authentify as the installation
-    const installationApiClient = await api.createInstallationClient(
-        environment.integration.name,
-        installation.id
-    );
-
-    const result = await installationApiClient.search.askQuery({ query: text });
+    const result = await client.search.askQuery({ query: text });
     const answer = result.data?.answer;
 
     const { publicUrl, relatedPages } = await getRelatedPages({
         answer,
-        client: installationApiClient,
+        client,
         environment,
     });
 

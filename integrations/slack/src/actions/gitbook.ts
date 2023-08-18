@@ -26,11 +26,10 @@ export async function getInstallationApiClient(api, externalId: string) {
         return {};
     }
 
-    // console.log('installation id ', installation.id);
     // Authentify as the installation
     const installationApiClient = await api.createInstallationClient('slack', installation.id);
 
-    return installationApiClient;
+    return { client: installationApiClient, installation };
 }
 
 export async function createMessageThreadRecording(context, slackEvent) {
@@ -38,7 +37,7 @@ export async function createMessageThreadRecording(context, slackEvent) {
 
     const { team_id, channel, thread_ts } = slackEvent;
 
-    const installationApiClient = await getInstallationApiClient(api, team_id);
+    const { client: installationApiClient } = await getInstallationApiClient(api, team_id);
 
     const { accessToken } = await getInstallationConfig(context, team_id);
 
@@ -92,5 +91,5 @@ export async function createMessageThreadRecording(context, slackEvent) {
 
     const outputRecording = stopRecordingRes.data;
 
-    return outputRecording;
+  rn outputRecording;
 }

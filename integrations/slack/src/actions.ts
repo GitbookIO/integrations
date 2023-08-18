@@ -17,7 +17,9 @@ export function createSlackActionsHandler(
         const shortcutEvent = Object.fromEntries(new URLSearchParams(requestText).entries());
         const actionPayload = JSON.parse(shortcutEvent.payload);
 
-        const { channel, message, team, user, response_url } = actionPayload;
+        const { actions, channel, message, team, user, response_url } = actionPayload;
+
+        // TODO: go through all actions sent and call the action from './actions/index.ts'
 
         return documentConversation({ team, channelId: channel.id, message, user, context });
     };
