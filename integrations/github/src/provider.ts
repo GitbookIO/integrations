@@ -1,4 +1,4 @@
-import * as jose from 'jose';
+import jwt from '@tsndr/cloudflare-worker-jwt';
 
 import { GitSyncOperationState } from '@gitbook/api';
 
@@ -9,25 +9,22 @@ import { parseInstallation, parseRepository } from './utils';
 /**
  * Return the GitHub App JWT
  */
-async function getGitHubAppJWT(context: GithubRuntimeContext) {
+async function getGitHubAppJWT(context: GithubRuntimeContext): Promise<string> {
     const { environment } = context;
-
-    const privateKeyBuffer = new Uint8Array(environment.secrets.PRIVATE_KEY.length);
-    for (let i = 0; i < privateKeyBuffer.length; i++) {
-        privateKeyBuffer[i] = environment.secrets.PRIVATE_KEY.charCodeAt(i);
-    }
 
     const now = Math.floor(Date.now() / 1000);
 
-    const jwt = await new jose.SignJWT({
-        iat: now - 60,
-        exp: now + 60 * 10,
-        iss: environment.secrets.APP_ID,
-    })
-        .setProtectedHeader({ alg: 'RS256' })
-        .sign(privateKeyBuffer);
+    const token = await jwt.sign(
+        {
+            iat: now - 60,
+            exp: now + 60 * 10,
+            iss: environment.secrets.APP_ID,
+        },
+        environment.secrets.PRIVATE_KEY,
+        { algorithm: 'RS256' }
+    );
 
-    return jwt;
+    return token;
 }
 
 /**

@@ -173,7 +173,7 @@ export const configBlock = createComponent<
                                         hint={
                                             <text>
                                                 Choose the GitHub repository to sync this space
-                                                with. This repository should be authorized in the
+                                                with. This repository should be authorized in the{' '}
                                                 <link
                                                     target={{
                                                         url: `https://github.com/settings/installations/${
