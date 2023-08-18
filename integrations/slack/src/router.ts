@@ -14,6 +14,7 @@ import {
 import { createSlackShortcutsHandler } from './shortcuts';
 import { getChannelsPaginated } from './slack';
 import { createSlackActionsHandler } from './actions';
+import { queryLens } from './actions/queryLens';
 
 /**
  * Handle incoming HTTP requests:
@@ -134,7 +135,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         '/actions_task',
         verifySlackRequest,
         createSlackActionsHandler({
-            link_shared: unfurlLink,
+            queryLens,
         })
     );
 

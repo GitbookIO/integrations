@@ -2,11 +2,7 @@ import { FetchEventCallback } from '@gitbook/runtime';
 
 import { documentConversation } from './actions/documentConversation';
 import { SlackRuntimeContext } from './configuration';
-import { queryLens, type IQueryLens } from './actions/queryLens';
-
-const gitBookActions = {
-    queryLens,
-};
+import { type IQueryLens } from './actions/queryLens';
 
 /**
 
@@ -14,9 +10,11 @@ const gitBookActions = {
  */
 export function createSlackActionsHandler(
     handlers: {
-        [type: string]: (event: object, context: SlackRuntimeContext) => Promise<any>;
+        // [type: string]: (event: object, context: SlackRuntimeContext) => Promise<any>;
+        [type: string]: (...any) => Promise<any>;
     },
     fallback?: FetchEventCallback
+    //TODO: type output
 ): any {
     return async (request, context) => {
         const requestText = await request.text();
@@ -25,9 +23,10 @@ export function createSlackActionsHandler(
 
         const { actions, channel, message, team, user } = actionPayload;
 
-        // TODO: go through all actions sent and call the action from './actions/index.ts'
+        // go through all actions sent and call the action from './actions/index.ts'
         if (actions.length > 0) {
             const actionPromises = actions.map((action) => {
+                // TODO: need a more polymorphic solve here if possible
                 const params: IQueryLens = {
                     channelId: channel.id,
                     teamId: team.id,
@@ -35,12 +34,13 @@ export function createSlackActionsHandler(
                     context,
                 };
 
-                return gitBookActions[action.value](params);
+                return handlers[action.value](params);
             });
 
             return await Promise.allSettled(actionPromises);
         }
 
+        // TODO: here to not break the current documenting of conversations
         return documentConversation({ team, channelId: channel.id, message, user, context });
     };
 }
