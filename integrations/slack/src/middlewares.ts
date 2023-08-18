@@ -62,7 +62,7 @@ export async function acknowledgeSlackRequest(req: Request) {
  * We acknowledge the slack request immediately to avoid failures
  * and "queue" the actual task to be executed in a subsequent request.
  */
-export async function acknowledgeSlackShortcut(req: Request, context: SlackRuntimeContext) {
+export async function acknowledgeSlackAction(req: Request, context: SlackRuntimeContext) {
     const requestText = await req.clone().text();
     const shortcutEvent = Object.fromEntries(new URLSearchParams(requestText).entries());
     const shortcutPayload = JSON.parse(shortcutEvent.payload);

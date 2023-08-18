@@ -41,7 +41,13 @@ export function createSlackActionsHandler(
         }
 
         // TODO: here to not break the current documenting of conversations
-        return documentConversation({ team, channelId: channel.id, message, user, context });
+        return documentConversation({
+            team,
+            channelId: channel.id,
+            thread_ts: message.thread_ts,
+            user,
+            context,
+        });
     };
 }
 
