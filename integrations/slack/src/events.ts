@@ -18,29 +18,33 @@ export function createSlackEventsHandler(
         // Clone the request so its body is still available to the fallback
         const event = await request.clone().json<{ event?: { type: string }; type?: string }>();
 
-        console.log('event===', JSON.stringify(event));
+        // console.log('event===', JSON.stringify(event));
 
-        const { type, ts, thread_ts, parent_user_id, channel, event_ts, team_id } = event.event;
+        const { type, bot_id, ts, thread_ts, parent_user_id, channel, event_ts, team_id } =
+            event.event;
 
-        if (type === 'message') {
+        console.log('TYPE', type);
+        if (['message', 'app_mention'].includes(type) && !bot_id) {
             const { text } = event.event;
             const isCuration = text.split(' ')[0] === 'save';
 
             if (!isCuration) {
+                console.log('text', text);
+                const parsedQuery = text.split(/.+<@.+> /)[1];
                 // send to Lens
                 const data = await queryLens({
                     teamId: event.team_id,
                     channelId: event.event.channel,
-                    text,
+                    text: parsedQuery,
                     context,
                 });
+            } else {
+                const recording = await createMessageThreadRecording(context, {
+                    team_id,
+                    channel,
+                    thread_ts,
+                });
             }
-        } else {
-            const recording = await createMessageThreadRecording(context, {
-                team_id,
-                channel,
-                thread_ts,
-            });
         }
 
         // Add custom header(s)
