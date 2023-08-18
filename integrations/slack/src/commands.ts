@@ -35,11 +35,7 @@ export function createSlackCommandsHandler(handlers: {
             new URLSearchParams(requestText).entries()
         );
 
-        let event: SlashEvent;
-
-        event = slashEvent;
-
-        const { command } = event;
+        const { command } = slashEvent;
 
         if (!command) {
             return new Response(`Invalid slash command`, {
@@ -54,7 +50,7 @@ export function createSlackCommandsHandler(handlers: {
             });
         }
 
-        const data = await handler(event, context);
+        const data = await handler(slashEvent, context);
 
         return new Response(null, {
             status: 200,

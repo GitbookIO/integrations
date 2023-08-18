@@ -3,27 +3,11 @@ import type { SlashEvent } from '../commands';
 import { SlackRuntimeContext } from '../configuration';
 
 /**
- * Query GitBook Lens and post a message back to Slack.
+ * Handle a slash request and route it to the GitBook Lens' query function.
  */
 export async function queryLensSlashHandler(slashEvent: SlashEvent, context: SlackRuntimeContext) {
-    const { environment, api } = context;
+    // pull out required params from the slashEvent for queryLens
     const { team_id, channel_id, text } = slashEvent;
-
-    // Lookup the concerned installations
-    const {
-        data: { items: installations },
-    } = await api.integrations.listIntegrationInstallations(environment.integration.name, {
-        externalId: team_id,
-    });
-
-    /**
-     * TODO: Prompt user to select a GitBook installation if there is more than one.
-     * by showing org names in a dropdown and asking user to pick one
-     */
-    const installation = installations[0];
-    if (!installation) {
-        return {};
-    }
 
     try {
         return queryLens({

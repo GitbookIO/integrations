@@ -91,5 +91,5 @@ export async function createMessageThreadRecording(context, slackEvent) {
 
     const outputRecording = stopRecordingRes.data;
 
-  rn outputRecording;
+    return outputRecording;
 }
