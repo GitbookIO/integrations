@@ -69,44 +69,48 @@ export async function acknowledgeSlackShortcut(req: Request, context: SlackRunti
     // Clone the request so its body is still available to the fallback
     // const event = await request.clone().json<{ event?: { type: string }; type?: string }>();
 
-    const { channel, message, team, user, response_url } = shortcutPayload;
+    const { type, channel, message, team, user, response_url } = shortcutPayload;
 
     console.log('shortcutPayload', shortcutPayload);
 
     const { accessToken } = await getInstallationConfig(context, team.id);
 
-    const resLink = await slackAPI(
-        context,
-        {
-            method: 'GET',
-            path: 'chat.getPermalink',
-            payload: {
-                channel: channel.id,
-                message_ts: message.ts,
+    if (!['block_actions'].includes(type)) {
+        const resLink = await slackAPI(
+            context,
+            {
+                method: 'GET',
+                path: 'chat.getPermalink',
+                payload: {
+                    channel: channel.id,
+                    message_ts: message.ts,
+                },
             },
-        },
-        { accessToken }
-    );
+            { accessToken }
+        );
 
-    console.log('resLink', resLink);
+        console.log('resLink', resLink);
 
-    const parsedUrl = new URL(resLink.permalink);
-    const permalink = parsedUrl.origin + parsedUrl.pathname;
+        const parsedUrl = new URL(resLink.permalink);
+        const permalink = parsedUrl.origin + parsedUrl.pathname;
 
-    const res = await slackAPI(
-        context,
-        {
-            method: 'POST',
-            path: 'chat.postEphemeral',
-            payload: {
-                channel: user.id,
-                text: `Docs being generated for thread ${permalink}`,
-                thread_ts: message.thread_ts,
-                user: user.id,
+        const res = await slackAPI(
+            context,
+            {
+                method: 'POST',
+                path: 'chat.postEphemeral',
+                payload: {
+                    channel: user.id,
+                    text: `Docs being generated for thread ${permalink}`,
+                    thread_ts: message.thread_ts,
+                    user: user.id,
+                },
             },
-        },
-        { accessToken }
-    );
+            { accessToken }
+        );
+
+        console.log('acknowledgeSlackShortcut==========', res);
+    }
 
     fetch(`${req.url}_task`, {
         method: 'POST',
@@ -117,21 +121,6 @@ export async function acknowledgeSlackShortcut(req: Request, context: SlackRunti
             'x-slack-request-timestamp': req.headers.get('x-slack-request-timestamp'),
         },
     });
-
-    // const res = await fetch(response_url, {
-    //     method: 'POST',
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //         text: `Docs being generated...`,
-    //         replace_original: false,
-    //         thread_ts: message.thread_ts,
-    //         // response_type: 'in_channel',
-    //     }),
-    // });
-
-    console.log('acknowledgeSlackShortcut==========', await res);
 
     return new Response(JSON.stringify({ acknowledged: true }), {
         headers: {
