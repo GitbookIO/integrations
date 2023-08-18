@@ -57,24 +57,20 @@ export async function createMessageThreadRecording(context, slackEvent) {
 
     const startRecordingRes = await installationApiClient.orgs.startRecording(orgId, {
         space: spaceId,
-        context: 'chat',
+        context: 'thread',
     });
 
     const recording = startRecordingRes.data;
 
-    const events = messages.map((post) => {
-        const { text, user, ts, thread_ts } = post;
-
-        let messageType = 'message.reply';
-        if (ts === thread_ts) {
-            messageType = 'message';
-        }
+    const events = messages.map((message) => {
+        const { text, user, ts, thread_ts } = message;
 
         return {
-            type: messageType,
+            type: 'thread.message',
             text,
             user: user ?? '',
             timestamp: slackTimestampToISOFormat(ts),
+            ...(ts === thread_ts ? { isFirst: true } : {}),
         };
     });
 

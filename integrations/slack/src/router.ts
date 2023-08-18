@@ -2,6 +2,8 @@ import { Router } from 'itty-router';
 
 import { createOAuthHandler, FetchEventCallback } from '@gitbook/runtime';
 
+import { createSlackActionsHandler } from './actions';
+import { queryLens } from './actions/queryLens';
 import { createSlackCommandsHandler } from './commands';
 import { createSlackEventsHandler } from './events';
 import { queryLensInGitBook, queryLensSlashHandler } from './handlers';
@@ -13,8 +15,6 @@ import {
 } from './middlewares';
 import { createSlackShortcutsHandler } from './shortcuts';
 import { getChannelsPaginated } from './slack';
-import { createSlackActionsHandler } from './actions';
-import { queryLens } from './actions/queryLens';
 
 /**
  * Handle incoming HTTP requests:
@@ -75,7 +75,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
 
     router.post('/events', verifySlackRequest, acknowledgeSlackRequest);
 
-    router.post('/shortcuts', verifySlackRequest, acknowledgeSlackShortcut);
+    // router.post('/shortcuts', verifySlackRequest, acknowledgeSlackShortcut);
     router.post('/actions', verifySlackRequest, acknowledgeSlackShortcut);
 
     router.post('/commands', acknowledgeSlackRequest);
@@ -123,13 +123,13 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         })
     );
 
-    router.post(
-        '/shortcuts_task',
-        verifySlackRequest,
-        createSlackShortcutsHandler({
-            link_shared: unfurlLink,
-        })
-    );
+    // router.post(
+    //     '/shortcuts_task',
+    //     verifySlackRequest,
+    //     createSlackShortcutsHandler({
+    //         link_shared: unfurlLink,
+    //     })
+    // );
 
     router.post(
         '/actions_task',

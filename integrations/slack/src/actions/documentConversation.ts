@@ -1,8 +1,11 @@
 import { slackAPI } from '../slack';
+import { QueryDisplayBlock } from '../ui/blocks';
+import { getInstallationConfig } from '../utils';
 import { createMessageThreadRecording } from './gitbook';
 
 export async function documentConversation({ team, channelId, message, user, context }) {
     const { environment } = context;
+    console.log('start recording=======');
 
     const recording = await createMessageThreadRecording(context, {
         team_id: team.id,
@@ -10,66 +13,32 @@ export async function documentConversation({ team, channelId, message, user, con
         thread_ts: message.thread_ts,
     });
 
+    console.log('end recording=======', recording);
+
+    const { accessToken } = await getInstallationConfig(context, team.id);
+
+    const followupQuestions = [
+        'How do I install FireStore?',
+        'What is FireBase?',
+        'Can I emulate FireStore?',
+    ];
+
     await slackAPI(
         context,
         {
             method: 'POST',
             path: 'chat.postEphemeral',
             payload: {
-                channel: channelId,
+                channel: user.id,
                 blocks: [
                     {
                         type: 'section',
                         text: {
                             type: 'mrkdwn',
-                            text: 'Your new docs are ready :tada\n',
+                            text: 'Thread saved successfully! :tada:\n',
                         },
                     },
-                    {
-                        type: 'section',
-                        text: {
-                            type: 'mrkdwn',
-                            text: 'Have a look for your yourself and share in the thread',
-                        },
-                        accessory: {
-                            type: 'button',
-                            text: {
-                                type: 'plain_text',
-                                text: 'Preview',
-                                emoji: true,
-                            },
-                            value: 'click_me_123',
-                            action_id: 'button-action',
-                        },
-                    },
-                    {
-                        type: 'divider',
-                    },
-                    {
-                        type: 'actions',
-                        elements: [
-                            {
-                                type: 'button',
-                                text: {
-                                    type: 'plain_text',
-                                    emoji: true,
-                                    text: 'Approve',
-                                },
-                                style: 'primary',
-                                value: 'click_me_123',
-                            },
-                            {
-                                type: 'button',
-                                text: {
-                                    type: 'plain_text',
-                                    emoji: true,
-                                    text: 'Delete',
-                                },
-                                style: 'danger',
-                                value: 'click_me_123',
-                            },
-                        ],
-                    },
+                    ...QueryDisplayBlock({ queries: recording.followupQuestions }),
                 ],
 
                 // text: `All done, check it out ${recordThreadRes.url}`,
@@ -77,7 +46,7 @@ export async function documentConversation({ team, channelId, message, user, con
                 user: user.id,
             },
         },
-        { accessToken: environment.secrets.BOT_TOKEN }
+        { accessToken }
     );
 
     // Add custom header(s)
