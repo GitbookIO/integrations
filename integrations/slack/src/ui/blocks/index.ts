@@ -72,7 +72,7 @@ export function QueryDisplayBlock(params: { queries: Array<string> }) {
                     text: question,
                     emoji: true,
                 },
-                value: JSON.stringify({ command: '/gitbooklens', text: question }),
+                value: 'queryLens',
             })),
         },
     ];

@@ -1,6 +1,12 @@
 import { FetchEventCallback } from '@gitbook/runtime';
+
 import { documentConversation } from './actions/documentConversation';
 import { SlackRuntimeContext } from './configuration';
+import { queryLens, type IQueryLens } from './actions/queryLens';
+
+const gitBookActions = {
+    queryLens,
+};
 
 /**
 
@@ -11,15 +17,29 @@ export function createSlackActionsHandler(
         [type: string]: (event: object, context: SlackRuntimeContext) => Promise<any>;
     },
     fallback?: FetchEventCallback
-): FetchEventCallback {
+): any {
     return async (request, context) => {
         const requestText = await request.text();
         const shortcutEvent = Object.fromEntries(new URLSearchParams(requestText).entries());
         const actionPayload = JSON.parse(shortcutEvent.payload);
 
-        const { actions, channel, message, team, user, response_url } = actionPayload;
+        const { actions, channel, message, team, user } = actionPayload;
 
         // TODO: go through all actions sent and call the action from './actions/index.ts'
+        if (actions.length > 0) {
+            const actionPromises = actions.map((action) => {
+                const params: IQueryLens = {
+                    channelId: channel.id,
+                    teamId: team.id,
+                    text: action.text.text,
+                    context,
+                };
+
+                return gitBookActions[action.value](params);
+            });
+
+            return await Promise.allSettled(actionPromises);
+        }
 
         return documentConversation({ team, channelId: channel.id, message, user, context });
     };
@@ -63,13 +83,3 @@ export function createSlackActionsHandler(
 //     thread_ts: '1692106894.088119',
 //     parent_user_id: 'U03S41KSY8M'
 //
-
-// const payload = JSON.parse(slashEvent.payload);
-// const value = JSON.parse(payload.actions[0].value);
-// // TODO: constructing a faux-SlashEvent here
-// event = {
-// channel_id: payload.container.channel_id,
-// team_id: payload.team.id,
-// ...value,
-// };
-// }
