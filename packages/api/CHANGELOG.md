@@ -1,5 +1,12 @@
 # @gitbook/api
 
+## 0.6.0
+
+### Minor Changes
+
+-   d7d3f37: - Bump @gitbook/api client to use the latest Gitbook API spec
+    -   Update JSX for @gitbook/runtime
+
 ## 0.5.0
 
 ### Minor Changes
