@@ -6,8 +6,8 @@ import {
     SlackRuntimeContext,
 } from '../configuration';
 import { slackAPI } from '../slack';
-import { getInstallationApiClient } from './gitbook';
 import { PagesBlock, QueryDisplayBlock } from '../ui/blocks';
+import { getInstallationApiClient } from './gitbook';
 
 async function getRelatedPages(params: {
     answer?: SearchAIAnswer;

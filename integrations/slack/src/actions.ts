@@ -1,8 +1,8 @@
 import { FetchEventCallback } from '@gitbook/runtime';
 
 import { documentConversation } from './actions/documentConversation';
-import { SlackRuntimeContext } from './configuration';
 import { type IQueryLens } from './actions/queryLens';
+import { SlackRuntimeContext } from './configuration';
 
 /**
 
@@ -14,7 +14,7 @@ export function createSlackActionsHandler(
         [type: string]: (...any) => Promise<any>;
     },
     fallback?: FetchEventCallback
-    //TODO: type output
+    // TODO: type output
 ): any {
     return async (request, context) => {
         const requestText = await request.text();
@@ -24,7 +24,7 @@ export function createSlackActionsHandler(
         const { actions, channel, message, team, user } = actionPayload;
 
         // go through all actions sent and call the action from './actions/index.ts'
-        if (actions.length > 0) {
+        if (actions?.length > 0) {
             const actionPromises = actions.map((action) => {
                 // TODO: need a more polymorphic solve here if possible
                 const params: IQueryLens = {
