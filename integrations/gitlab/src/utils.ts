@@ -1,6 +1,15 @@
-import type { GitSyncOperationState } from '@gitbook/api';
+import type { ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
 
 import type { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
+
+/**
+ * Object after parsing the project string which is a concatenation
+ * of the project ID and project name separated by a colon (:)
+ */
+export interface ParsedProject {
+    projectId: number;
+    projectName: string;
+}
 
 /**
  * The default commit message to use when a change request is merged in GitBook
@@ -45,15 +54,18 @@ export function getGitSyncStateDescription(state: GitSyncOperationState): string
 }
 
 /**
- * Parse the project ID and project name from the project string
+ * Parse the project ID and project name from the project input string or
+ * configuration. This will `throw an error` if the project is not defined.
  */
-export function parseProject(input: GitLabSpaceConfiguration | string) {
+export function parseProjectOrThow(input: string | GitLabSpaceConfiguration): ParsedProject {
     const project = typeof input === 'string' ? input : input.project;
     if (!project) {
         throw new Error('Expected a project');
     }
 
-    const [projectId, , projectName] = project.split(':');
+    // Split at first occurrence of colon
+    const [projectId, ...rest] = project.split(':');
+    const projectName = rest.join(':');
     return { projectId: parseInt(projectId, 10), projectName };
 }
 
@@ -61,7 +73,7 @@ export function parseProject(input: GitLabSpaceConfiguration | string) {
  * Get the space configuration for the current space installation from the context.
  * This will throw an error if the space installation configuration is not defined.
  */
-export function getSpaceConfig(context: GitLabRuntimeContext): GitLabSpaceConfiguration {
+export function getSpaceConfigOrThrow(context: GitLabRuntimeContext): GitLabSpaceConfiguration {
     const spaceInstallation = context.environment.spaceInstallation;
     assertIsDefined(spaceInstallation);
     return spaceInstallation.configuration;
@@ -73,6 +85,43 @@ export function getSpaceConfig(context: GitLabRuntimeContext): GitLabSpaceConfig
  */
 export function computeConfigQueryKeyBase(projectId: number, ref: string): string {
     return `${projectId}/${ref}`;
+}
+
+/**
+ * Utility to map an array of data items to an array of select options.
+ *
+ * It also takes an optional predicate to push a default option to the result
+ * if the predicate is **not** satisfied by any of the data items.
+ *
+ * The predicate is satisfied if the value of the key in the data item
+ * is equal to the value provided in the predicate.
+ */
+export function mapDataToOptions<T extends object>(
+    data: T[],
+    mapper: (item: T) => ContentKitSelectOption,
+    defaultPredicate?: {
+        key: keyof T;
+        value: T[keyof T];
+        option: ContentKitSelectOption;
+    }
+): ContentKitSelectOption[] {
+    const options: ContentKitSelectOption[] = [];
+    let satisfiesPredicate = false;
+
+    for (const item of data) {
+        options.push(mapper(item));
+
+        if (defaultPredicate && item[defaultPredicate.key] === defaultPredicate.value) {
+            satisfiesPredicate = true;
+        }
+    }
+
+    // If the predicate is not satisfied, we push the default option
+    if (defaultPredicate && !satisfiesPredicate) {
+        options.push(defaultPredicate.option);
+    }
+
+    return options;
 }
 
 export function assertIsDefined<T>(value: T): asserts value is NonNullable<T> {

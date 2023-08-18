@@ -39,10 +39,10 @@ export async function triggerImport(
     const { environment, api } = context;
     const { force = false, updateGitInfo = false, standalone } = options;
 
-    logger.info('Initiating an import to GitBook');
-
     const spaceInstallation = environment.spaceInstallation;
     assertIsDefined(spaceInstallation);
+
+    logger.info(`Initiating an import from GitLab to GitBook space ${spaceInstallation.space}`);
 
     const repoURL = getRepositoryUrl(config, true);
     const auth = await getRepositoryAuth(config);
@@ -81,10 +81,10 @@ export async function triggerExport(
     const { environment, api } = context;
     const { force = false, updateGitInfo = false } = options;
 
-    logger.info('Initiating an export to GitLab');
-
     const spaceInstallation = environment.spaceInstallation;
     assertIsDefined(spaceInstallation);
+
+    logger.info(`Initiating an export from space ${spaceInstallation.space} to GitLab`);
 
     const { data: revision } = await api.spaces.getCurrentRevision(spaceInstallation.space);
 

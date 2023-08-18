@@ -1,13 +1,18 @@
 import { Router } from 'itty-router';
 
-import { ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
+import { GitSyncOperationState } from '@gitbook/api';
 import { createIntegration, FetchEventCallback, Logger, EventCallback } from '@gitbook/runtime';
 
 import { fetchProjectBranches, fetchProjects } from './api';
 import { configBlock } from './components';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
 import type { GitLabRuntimeContext } from './types';
-import { getSpaceConfig, parseProject } from './utils';
+import {
+    getSpaceConfigOrThrow,
+    mapDataToOptions,
+    parseProjectOrThow,
+    ParsedProject,
+} from './utils';
 import { handleMergeRequestEvent, handlePushEvent } from './webhooks';
 
 const logger = Logger('gitlab');
@@ -55,16 +60,36 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
      * API to fetch all GitLab projects under current authentication
      */
     router.get('/projects', async () => {
-        const projects = await fetchProjects(getSpaceConfig(context));
+        const config = getSpaceConfigOrThrow(context);
 
-        const data = projects.map(
-            (project): ContentKitSelectOption => ({
-                id: `${project.id}:${project.name}`,
-                label: project.name_with_namespace,
-            })
+        const projects = await fetchProjects(config);
+
+        let configProject: ParsedProject | undefined;
+        try {
+            configProject = parseProjectOrThow(config);
+        } catch (error) {
+            // Ignore
+        }
+
+        const options = mapDataToOptions(
+            projects,
+            (project) => ({
+                id: `${project.id}:${project.path_with_namespace}`,
+                label: project.path_with_namespace,
+            }),
+            configProject
+                ? {
+                      key: 'id',
+                      value: configProject.projectId,
+                      option: {
+                          id: `${configProject.projectId}:${configProject.projectName}`,
+                          label: configProject.projectName,
+                      },
+                  }
+                : undefined
         );
 
-        return new Response(JSON.stringify(data), {
+        return new Response(JSON.stringify(options), {
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -76,22 +101,33 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
      */
     router.get('/branches', async (req) => {
         const { project } = req.query;
+        const config = getSpaceConfigOrThrow(context);
 
         const projectId =
-            project && typeof project === 'string' ? parseProject(project).projectId : undefined;
+            project && typeof project === 'string'
+                ? parseProjectOrThow(project).projectId
+                : undefined;
 
-        const branches = projectId
-            ? await fetchProjectBranches(getSpaceConfig(context), projectId)
-            : [];
+        const branches = projectId ? await fetchProjectBranches(config, projectId) : [];
 
-        const data = branches.map(
-            (branch): ContentKitSelectOption => ({
+        const configBranch = config.branch;
+
+        const options = mapDataToOptions(
+            branches,
+            (branch) => ({
                 id: branch.name,
                 label: branch.name,
-            })
+            }),
+            configBranch
+                ? {
+                      key: 'name',
+                      value: configBranch,
+                      option: { id: configBranch, label: configBranch },
+                  }
+                : undefined
         );
 
-        return new Response(JSON.stringify(data), {
+        return new Response(JSON.stringify(options), {
             headers: {
                 'Content-Type': 'application/json',
             },

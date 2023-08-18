@@ -3,10 +3,10 @@ import httpError from 'http-errors';
 import { IntegrationSpaceInstallation } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
 
-import { getGitRef } from './provider';
+import { getGitRef, installWebhook } from './provider';
 import { triggerExport, triggerImport } from './sync';
 import { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { assertIsDefined, computeConfigQueryKeyBase, parseProject } from './utils';
+import { assertIsDefined, computeConfigQueryKeyBase, parseProjectOrThow } from './utils';
 
 const logger = Logger('gitlab:installation');
 
@@ -28,7 +28,7 @@ export async function saveSpaceConfiguration(
         throw httpError(400, 'Incomplete configuration');
     }
 
-    const { projectId } = parseProject(config);
+    const { projectId } = parseProjectOrThow(config);
 
     /**
      * We need to update the space installation external IDs to make sure
@@ -74,6 +74,13 @@ export async function saveSpaceConfiguration(
                   updateGitInfo: true,
               }),
     ]);
+
+    logger.info(`Configuration saved for space ${spaceInstallation.space}`);
+
+    // Install the webhook if needed
+    if (!configurationBody.webhookId) {
+        await installWebhook(context, configurationBody);
+    }
 }
 
 /**

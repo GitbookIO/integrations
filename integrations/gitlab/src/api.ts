@@ -11,6 +11,7 @@ interface GLProject {
     id: number;
     name: string;
     name_with_namespace: string;
+    path_with_namespace: string;
     visibility: 'public' | 'private' | 'internal';
 }
 
@@ -119,7 +120,7 @@ export async function fetchGitLabAPI<T>(
     const { method = 'GET', path, body, params, listProperty = '' } = request;
 
     const endpoint = getEndpoint(config);
-    const token = getAccessToken(config);
+    const token = getAccessTokenOrThrow(config);
 
     const baseEndpoint = `${endpoint || 'https://gitlab.com'}/api/v4`;
 
@@ -179,6 +180,7 @@ async function requestGitLab(
         ...options,
         headers: {
             ...options.headers,
+            ...(options.body ? { 'Content-Type': 'application/json' } : {}),
             Accept: 'application/json',
             Authorization: `Bearer ${token}`,
             'User-Agent': 'GitLab-Integration-Worker',
@@ -202,9 +204,9 @@ export function getEndpoint(config: GitLabSpaceConfiguration): string {
 
 /**
  * Return the access token from the configuration.
- * This will throw an error if the access token is not defined.
+ * This will throw a 401 if the access token is not defined.
  */
-export function getAccessToken(config: GitLabSpaceConfiguration): string {
+export function getAccessTokenOrThrow(config: GitLabSpaceConfiguration): string {
     const { accessToken } = config;
     if (!accessToken) {
         throw httpError(401, 'Unauthorized: Missing access token');

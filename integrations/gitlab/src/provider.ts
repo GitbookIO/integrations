@@ -1,9 +1,14 @@
 import { GitSyncOperationState } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
 
-import { getAccessToken, addProjectWebhook, deleteProjectWebhook, editCommitStatus } from './api';
+import {
+    getAccessTokenOrThrow,
+    addProjectWebhook,
+    deleteProjectWebhook,
+    editCommitStatus,
+} from './api';
 import { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { assertIsDefined, parseProject } from './utils';
+import { assertIsDefined, parseProjectOrThow } from './utils';
 
 const logger = Logger('gitlab:provider');
 
@@ -14,7 +19,7 @@ export async function installWebhook(
     context: GitLabRuntimeContext,
     config: GitLabSpaceConfiguration
 ) {
-    const { projectId } = parseProject(config);
+    const { projectId } = parseProjectOrThow(config);
 
     const id = await addProjectWebhook(config, projectId, createGitLabWebhookURL(context));
 
@@ -47,14 +52,17 @@ export async function uninstallWebhook(
         return;
     }
 
-    const { projectId } = parseProject(config);
+    const { projectId } = parseProjectOrThow(config);
 
     assertIsDefined(context.environment.installation);
     assertIsDefined(context.environment.spaceInstallation);
 
-    await Promise.all([
-        deleteProjectWebhook(config, projectId, config.webhookId),
-        context.api.integrations.updateIntegrationSpaceInstallation(
+    await deleteProjectWebhook(config, projectId, config.webhookId);
+
+    // Remove the webhook ID from the configuration
+    // There are chances the config won't exist when the webhook is deleted, so we ignore errors
+    await context.api.integrations
+        .updateIntegrationSpaceInstallation(
             context.environment.integration.name,
             context.environment.installation.id,
             context.environment.spaceInstallation!.space,
@@ -64,8 +72,8 @@ export async function uninstallWebhook(
                     webhookId: undefined,
                 },
             }
-        ),
-    ]);
+        )
+        .catch(() => {});
 
     logger.info(`Webhook ${config.webhookId} uninstalled from GitLab project ${projectId}`);
 }
@@ -83,7 +91,7 @@ export async function updateCommitStatus(
         description: string;
     }
 ) {
-    const { projectId } = parseProject(config);
+    const { projectId } = parseProjectOrThow(config);
 
     await editCommitStatus(config, projectId, commitSha, {
         name: update.context || 'GitBook',
@@ -99,7 +107,7 @@ export async function updateCommitStatus(
  * Returns the URL of the Git repository.
  */
 export function getRepositoryUrl(config: GitLabSpaceConfiguration, withExtension = false): string {
-    const { projectName } = parseProject(config);
+    const { projectName } = parseProjectOrThow(config);
     return `${config.customInstanceUrl || 'https://gitlab.com'}/${projectName}${
         withExtension ? '.git' : ''
     }`;
@@ -111,7 +119,7 @@ export function getRepositoryUrl(config: GitLabSpaceConfiguration, withExtension
 export async function getRepositoryAuth(config: GitLabSpaceConfiguration) {
     return {
         username: 'oauth2',
-        password: getAccessToken(config),
+        password: getAccessTokenOrThrow(config),
     };
 }
 
@@ -140,5 +148,5 @@ export function getGitRef(branch: string): string {
 
 /** Create the webhook url for GitLab */
 export function createGitLabWebhookURL(context: GitLabRuntimeContext): string {
-    return `https://${context.environment.integration.urls.publicEndpoint}/hooks/gitlab?space=${context.environment.spaceInstallation?.space}`;
+    return `${context.environment.integration.urls.publicEndpoint}/hooks/gitlab?space=${context.environment.spaceInstallation?.space}`;
 }

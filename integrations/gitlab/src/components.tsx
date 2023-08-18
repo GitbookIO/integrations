@@ -3,13 +3,13 @@ import hash from 'hash-sum';
 import { ContentKitIcon } from '@gitbook/api';
 import { createComponent } from '@gitbook/runtime';
 
-import { getAccessToken } from './api';
+import { getAccessTokenOrThrow } from './api';
 import { saveSpaceConfiguration } from './installation';
 import { ConfigureAction, ConfigureProps, ConfigureState, GitLabRuntimeContext } from './types';
 import {
     assertIsDefined,
     getGitSyncCommitMessage,
-    getSpaceConfig,
+    getSpaceConfigOrThrow,
     GITSYNC_DEFAULT_COMMIT_MESSAGE,
 } from './utils';
 
@@ -125,7 +125,7 @@ export const configBlock = createComponent<
 
         let accessToken: string | undefined;
         try {
-            accessToken = getAccessToken(getSpaceConfig(context));
+            accessToken = getAccessTokenOrThrow(getSpaceConfigOrThrow(context));
         } catch (error) {
             // Ignore: We will show the button to connect
         }
@@ -142,8 +142,9 @@ export const configBlock = createComponent<
                     label="Connect your GitLab account"
                     hint={
                         <text>
-                            The access token used to read and write data on GitLab. You can create
-                            one at{' '}
+                            The access token requires the{' '}
+                            <text style="bold">api, read_repository, write_repository</text> scope
+                            for the integration to work. You can create one at{' '}
                             <link
                                 target={{
                                     url: 'https://gitlab.com/-/profile/personal_access_tokens',
@@ -151,9 +152,6 @@ export const configBlock = createComponent<
                             >
                                 User Settings → Access Tokens.
                             </link>
-                            The token requires the{' '}
-                            <text style="bold">api, read_repository, write_repository</text> scope
-                            for the integration to work.
                         </text>
                     }
                     element={
@@ -161,7 +159,7 @@ export const configBlock = createComponent<
                             label="Connect"
                             icon={ContentKitIcon.Gitlab}
                             disabled={element.state.withConnectGitLab}
-                            tooltip="Connect your GitLab account using an access token"
+                            tooltip="Connect using an access token"
                             onPress={{
                                 action: 'connect.gitlab',
                             }}
