@@ -25,10 +25,15 @@ export async function queryLensSlashHandler(slashEvent: SlashEvent, context: Sla
         return {};
     }
 
-    return queryLens({
-        channelId: channel_id,
-        teamId: team_id,
-        text,
-        context,
-    });
+    try {
+        return queryLens({
+            channelId: channel_id,
+            teamId: team_id,
+            text,
+            context,
+        });
+    } catch (e) {
+        // Error state. Probably no installation was found
+        return {};
+    }
 }

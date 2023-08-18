@@ -1,6 +1,10 @@
 import type { SearchAIAnswer, GitBookAPI } from '@gitbook/api';
 
-import { SlackInstallationConfiguration, SlackRuntimeEnvironment } from '../configuration';
+import {
+    SlackInstallationConfiguration,
+    SlackRuntimeEnvironment,
+    SlackRuntimeContext,
+} from '../configuration';
 import { slackAPI } from '../slack';
 import { getInstallationApiClient } from './gitbook';
 import { PagesBlock, QueryDisplayBlock } from '../ui/blocks';
@@ -35,10 +39,20 @@ async function getRelatedPages(params: {
     };
 }
 
-export async function queryLens({ channelId, teamId, text, context }) {
+interface IQueryLens {
+    channelId: string;
+    teamId: string;
+    text: string;
+    context: SlackRuntimeContext;
+}
+
+export async function queryLens({ channelId, teamId, text, context }: IQueryLens) {
     const { environment, api } = context;
 
     const { client, installation } = await getInstallationApiClient(api, teamId);
+    if (!installation) {
+        throw new Error('Installation not found');
+    }
 
     // Authenticate as the installation
     const accessToken = (installation.configuration as SlackInstallationConfiguration)
