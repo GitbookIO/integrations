@@ -1,8 +1,9 @@
 import { FetchEventCallback } from '@gitbook/runtime';
 
-import { createMessageThreadRecording } from './actions/gitbook';
+import { createMessageThreadRecording, getInstallationApiClient } from './actions/gitbook';
 import { SlackRuntimeContext } from './configuration';
 import { slackAPI } from './slack';
+import { getInstallationConfig } from './utils';
 
 /**
 
@@ -26,13 +27,24 @@ export function createSlackShortcutsHandler(
 
         // console.log('event', event);
 
-        // await addRecording(api, event.event, environment.secrets.BOT_TOKEN);
-
         const recording = await createMessageThreadRecording(context, {
             team_id: team.id,
             channel: channel.id,
             thread_ts: message.thread_ts,
         });
+
+        // console.log('recording', recording);
+
+        const { space, page } = recording;
+
+        const installationApiClient = await getInstallationApiClient(api, team.id);
+        const pageRes = await installationApiClient.spaces.getPageByPath(space.id, page.path, {
+            format: 'markdown',
+        });
+
+        const pageDoc = pageRes.data;
+
+        const { accessToken } = await getInstallationConfig(context, team.id);
 
         await slackAPI(
             context,
@@ -40,60 +52,50 @@ export function createSlackShortcutsHandler(
                 method: 'POST',
                 path: 'chat.postEphemeral',
                 payload: {
-                    channel: channel.id,
+                    channel: user.id,
                     blocks: [
                         {
                             type: 'section',
                             text: {
                                 type: 'mrkdwn',
-                                text: 'Your new docs are ready :tada\n',
+                                text: 'Your new docs are ready \n',
                             },
                         },
                         {
                             type: 'section',
                             text: {
                                 type: 'mrkdwn',
-                                text: 'Have a look for your yourself and share in the thread',
-                            },
-                            accessory: {
-                                type: 'button',
-                                text: {
-                                    type: 'plain_text',
-                                    text: 'Preview',
-                                    emoji: true,
-                                },
-                                value: 'click_me_123',
-                                action_id: 'button-action',
+                                text: pageDoc.markdown,
                             },
                         },
                         {
                             type: 'divider',
                         },
-                        {
-                            type: 'actions',
-                            elements: [
-                                {
-                                    type: 'button',
-                                    text: {
-                                        type: 'plain_text',
-                                        emoji: true,
-                                        text: 'Approve',
-                                    },
-                                    style: 'primary',
-                                    value: 'click_me_123',
-                                },
-                                {
-                                    type: 'button',
-                                    text: {
-                                        type: 'plain_text',
-                                        emoji: true,
-                                        text: 'Delete',
-                                    },
-                                    style: 'danger',
-                                    value: 'click_me_123',
-                                },
-                            ],
-                        },
+                        // {
+                        //     type: 'actions',
+                        //     elements: [
+                        //         {
+                        //             type: 'button',
+                        //             text: {
+                        //                 type: 'plain_text',
+                        //                 emoji: true,
+                        //                 text: 'Approve',
+                        //             },
+                        //             style: 'primary',
+                        //             value: 'click_me_123',
+                        //         },
+                        //         {
+                        //             type: 'button',
+                        //             text: {
+                        //                 type: 'plain_text',
+                        //                 emoji: true,
+                        //                 text: 'Delete',
+                        //             },
+                        //             style: 'danger',
+                        //             value: 'click_me_123',
+                        //         },
+                        //     ],
+                        // },
                     ],
 
                     // text: `All done, check it out ${recordThreadRes.url}`,
@@ -101,7 +103,7 @@ export function createSlackShortcutsHandler(
                     user: user.id,
                 },
             },
-            { accessToken: environment.secrets.BOT_TOKEN }
+            { accessToken }
         );
 
         // Add custom header(s)

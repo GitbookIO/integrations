@@ -2,6 +2,7 @@ import { sha256 } from 'js-sha256';
 
 import { SlackRuntimeContext } from './configuration';
 import { slackAPI } from './slack';
+import { getInstallationConfig } from './utils';
 
 /**
  * Verify the authenticity of a Slack request.
@@ -72,19 +73,39 @@ export async function acknowledgeSlackShortcut(req: Request, context: SlackRunti
 
     console.log('shortcutPayload', shortcutPayload);
 
+    const { accessToken } = await getInstallationConfig(context, team.id);
+
+    const resLink = await slackAPI(
+        context,
+        {
+            method: 'GET',
+            path: 'chat.getPermalink',
+            payload: {
+                channel: channel.id,
+                message_ts: message.ts,
+            },
+        },
+        { accessToken }
+    );
+
+    console.log('resLink', resLink);
+
+    const parsedUrl = new URL(resLink.permalink);
+    const permalink = parsedUrl.origin + parsedUrl.pathname;
+
     const res = await slackAPI(
         context,
         {
             method: 'POST',
             path: 'chat.postEphemeral',
             payload: {
-                channel: channel.id,
-                text: 'Docs being generated',
+                channel: user.id,
+                text: `Docs being generated for thread ${permalink}`,
                 thread_ts: message.thread_ts,
                 user: user.id,
             },
         },
-        { accessToken: context.environment.secrets.BOT_TOKEN }
+        { accessToken }
     );
 
     fetch(`${req.url}_task`, {

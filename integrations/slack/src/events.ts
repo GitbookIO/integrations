@@ -21,8 +21,6 @@ export function createSlackEventsHandler(
 
         const { ts, thread_ts, parent_user_id, channel, event_ts, team_id } = event.event;
 
-        // await addRecording(api, event.event, environment.secrets.BOT_TOKEN);
-
         const recording = await createMessageThreadRecording(context, {
             team_id,
             channel,

@@ -1,3 +1,6 @@
+import { slackAPI } from '../slack';
+import { getInstallationConfig } from '../utils';
+
 const orgId = 'TdvOhBZeNlhXIANE35Zl';
 const spaceId = 'sobfe0QALfpHjq2hgfhd';
 
@@ -11,7 +14,7 @@ function slackTimestampToISOFormat(slackTs) {
     return formattedDate;
 }
 
-async function getInstallationApiClient(api, externalId: string) {
+export async function getInstallationApiClient(api, externalId: string) {
     const {
         data: { items: installations },
     } = await api.integrations.listIntegrationInstallations('slack', {
@@ -30,27 +33,28 @@ async function getInstallationApiClient(api, externalId: string) {
     return installationApiClient;
 }
 
-async function fetchThreadPosts(channel, thread_ts, slackBotToken) {
-    const slackRes = await fetch(
-        `https://slack.com/api/conversations.replies?channel=${channel}&ts=${thread_ts}`,
-        {
-            headers: {
-                Authorization: `Bearer ${slackBotToken}`,
-            },
-        }
-    );
-
-    return (await slackRes.json()).messages ?? [];
-}
-
 export async function createMessageThreadRecording(context, slackEvent) {
     const { api, environment } = context;
-    const slackBotToken = environment.secrets.BOT_TOKEN;
 
     const { team_id, channel, thread_ts } = slackEvent;
 
     const installationApiClient = await getInstallationApiClient(api, team_id);
-    const threadPosts = await fetchThreadPosts(channel, thread_ts, slackBotToken);
+
+    const { accessToken } = await getInstallationConfig(context, team_id);
+
+    const messageReplies = await slackAPI(
+        context,
+        {
+            method: 'GET',
+            path: 'conversations.replies',
+            payload: {
+                channel,
+                ts: thread_ts,
+            },
+        },
+        { accessToken }
+    );
+    const { messages = [] } = messageReplies;
 
     const startRecordingRes = await installationApiClient.orgs.startRecording(orgId, {
         space: spaceId,
@@ -59,7 +63,7 @@ export async function createMessageThreadRecording(context, slackEvent) {
 
     const recording = startRecordingRes.data;
 
-    const events = threadPosts.map((post) => {
+    const events = messages.map((post) => {
         const { text, user, ts, thread_ts } = post;
 
         let messageType = 'message.reply';
