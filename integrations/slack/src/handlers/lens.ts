@@ -1,6 +1,6 @@
-import { queryLens } from '../actions';
+import { queryLens } from '../actions/queryLens';
 import type { SlashEvent } from '../commands';
-import { SlackInstallationConfiguration, SlackRuntimeContext } from '../configuration';
+import { SlackRuntimeContext } from '../configuration';
 
 /**
  * Query GitBook Lens and post a message back to Slack.
@@ -25,8 +25,10 @@ export async function queryLensSlashHandler(slashEvent: SlashEvent, context: Sla
         return {};
     }
 
-    const accessToken = (installation.configuration as SlackInstallationConfiguration)
-        .oauth_credentials?.access_token;
-
-    queryLens({ accessToken, channelId: channel_id, text, context, installation });
+    return queryLens({
+        channelId: channel_id,
+        teamId: team_id,
+        text,
+        context,
+    });
 }
