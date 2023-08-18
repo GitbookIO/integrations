@@ -1,5 +1,11 @@
 # @gitbook/runtime
 
+## 0.5.0
+
+### Minor Changes
+
+- Update JSX for @gitbook/runtime
+
 ## 0.4.1
 
 ### Patch Changes
