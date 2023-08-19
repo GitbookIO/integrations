@@ -38,6 +38,7 @@ export async function publishIntegration(
         visibility: manifest.visibility,
         organization: manifest.organization,
         externalLinks: manifest.externalLinks,
+        entities: manifest.entities,
         previewImages: await Promise.all(
             (manifest.previewImages || []).map(async (imageFilePath) =>
                 readImage(resolveFile(specFilePath, imageFilePath), 'preview')
