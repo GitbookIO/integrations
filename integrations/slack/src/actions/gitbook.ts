@@ -2,7 +2,7 @@ import { slackAPI } from '../slack';
 import { getInstallationConfig } from '../utils';
 
 const orgId = 'TdvOhBZeNlhXIANE35Zl';
-const spaceId = 'sobfe0QALfpHjq2hgfhd';
+const spaceId = 'mpu06z75jn9wS83SndrV';
 
 function slackTimestampToISOFormat(slackTs) {
     const timestampInMilliseconds = parseFloat(slackTs) * 1000;
@@ -37,10 +37,13 @@ export async function createMessageThreadRecording(context, slackEvent) {
 
     const { team_id, channel, thread_ts } = slackEvent;
 
+    console.log('getInstallationApiClient======');
     const { client: installationApiClient } = await getInstallationApiClient(api, team_id);
 
+    console.log('getInstallationConfig======');
     const { accessToken } = await getInstallationConfig(context, team_id);
 
+    console.log('conversation.replies======');
     const messageReplies = await slackAPI(
         context,
         {
@@ -55,6 +58,7 @@ export async function createMessageThreadRecording(context, slackEvent) {
     );
     const { messages = [] } = messageReplies;
 
+    console.log('actual start recording======');
     const startRecordingRes = await installationApiClient.orgs.startRecording(orgId, {
         space: spaceId,
         context: 'thread',
@@ -73,6 +77,7 @@ export async function createMessageThreadRecording(context, slackEvent) {
             ...(ts === thread_ts ? { isFirst: true } : {}),
         };
     });
+    console.log('events======', events);
 
     // add all messages in a thread to a recording
 

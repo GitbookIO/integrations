@@ -7,12 +7,13 @@ import { SlackRuntimeContext } from '../configuration';
  */
 export async function queryLensSlashHandler(slashEvent: SlashEvent, context: SlackRuntimeContext) {
     // pull out required params from the slashEvent for queryLens
-    const { team_id, channel_id, text } = slashEvent;
+    const { team_id, channel_id, thread_ts, text } = slashEvent;
 
     try {
         return queryLens({
             channelId: channel_id,
             teamId: team_id,
+            threadId: thread_ts,
             text,
             context,
         });

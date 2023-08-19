@@ -100,7 +100,7 @@ export async function acknowledgeSlackAction(req: Request, context: SlackRuntime
                 method: 'POST',
                 path: 'chat.postEphemeral',
                 payload: {
-                    channel: user.id,
+                    channel: channel.id,
                     text: `Docs being generated for thread ${permalink}`,
                     thread_ts: message.thread_ts,
                     user: user.id,

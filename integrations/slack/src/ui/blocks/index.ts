@@ -43,40 +43,105 @@ export function PagesBlock(params: {
     }
 }
 
-export function QueryDisplayBlock(params: { queries: Array<string>; heading?: string }) {
-    const { queries, heading } = params;
+export function QueryDisplayBlock(params: {
+    queries: Array<string>;
+    heading?: string;
+    displayFullQuery?: boolean;
+}) {
+    const { queries, heading, displayFullQuery } = params;
 
     if (queries?.length === 0) {
         return [];
     }
 
     return [
-        {
-            type: 'divider',
-        },
-
-        {
-            type: 'section',
-            text: {
-                type: 'mrkdwn',
-                text: heading ?? 'Some followup questions you might try:',
+        ...[
+            {
+                type: 'divider',
             },
-        },
 
-        {
-            type: 'actions',
-            elements: queries.map((question) => ({
-                type: 'button',
+            {
+                type: 'section',
                 text: {
-                    type: 'plain_text',
-                    text: question,
-                    emoji: true,
+                    type: 'mrkdwn',
+                    text: heading ?? 'Some followup questions you might try:',
                 },
-                value: 'queryLens',
-            })),
-        },
+            },
+        ],
+
+        ...(displayFullQuery
+            ? FollowUpQueryList({ queries })
+            : [FollowUpQueryButtons({ queries })]),
     ];
 }
+
+export function FollowUpQueryButtons(props: { queries: Array<string> }) {
+    const { queries } = props;
+
+    return {
+        type: 'actions',
+        elements: queries.map((question) => ({
+            type: 'button',
+            text: {
+                type: 'plain_text',
+                text: question, // note! there's a 76 character limit
+                emoji: true,
+            },
+            value: 'queryLens',
+        })),
+    };
+}
+
+export function FollowUpQueryList(props: { queries: Array<string> }) {
+    const { queries } = props;
+
+    return queries.map((query) => ({
+        type: 'section',
+        text: {
+            type: 'mrkdwn',
+            text: query,
+        },
+        accessory: {
+            type: 'button',
+            text: {
+                type: 'plain_text',
+                text: 'Ask Lens',
+                emoji: true,
+            },
+            value: query,
+            action_id: 'queryLens',
+        },
+    }));
+
+    // type: 'actions',
+    // elements: queries.map((question) => ({
+    //     type: 'button',
+    //     text: {
+    //         type: 'plain_text',
+    //         text: question.slice(0, 75),
+    //         emoji: true,
+    //     },
+    //     value: 'queryLens',
+    // })),
+}
+
+// {
+//     "type": "section",
+//     "text": {
+//         "type": "mrkdwn",
+//         "text": "This is a section block with a button that can be veryyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy long."
+//     },
+//     "accessory": {
+//         "type": "button",
+//         "text": {
+//             "type": "plain_text",
+//             "text": "Click Me",
+//             "emoji": true
+//         },
+//         "value": "click_me_123",
+//         "action_id": "button-action"
+//     }
+// },
 
 // function buildSearchSectionBlock(section: SearchSectionResult) {
 // const title = section.title ? `* ${section.title.replace(/"/g, '')}* ` : ``;

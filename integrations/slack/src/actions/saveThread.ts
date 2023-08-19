@@ -3,19 +3,19 @@ import { QueryDisplayBlock } from '../ui/blocks';
 import { getInstallationConfig } from '../utils';
 import { createMessageThreadRecording } from './gitbook';
 
-export async function documentConversation({ team, channelId, thread_ts, user, context }) {
+export async function saveThread({ teamId, channelId, thread_ts, userId, context }) {
     const { environment } = context;
     console.log('start recording=======');
 
     const recording = await createMessageThreadRecording(context, {
-        team_id: team.id,
+        team_id: teamId,
         channel: channelId,
         thread_ts,
     });
 
     console.log('end recording=======', recording);
 
-    const { accessToken } = await getInstallationConfig(context, team.id);
+    const { accessToken } = await getInstallationConfig(context, teamId);
 
     await slackAPI(
         context,
@@ -23,23 +23,24 @@ export async function documentConversation({ team, channelId, thread_ts, user, c
             method: 'POST',
             path: 'chat.postMessage',
             payload: {
-                channel: user.id,
+                channel: channelId,
                 blocks: [
                     {
                         type: 'section',
                         text: {
                             type: 'mrkdwn',
-                            text: 'Thread saved successfully! :tada:\n',
+                            text: 'Thread saved in GitBook :white_check_mark:',
                         },
                     },
                     ...QueryDisplayBlock({
                         queries: recording.followupQuestions,
-                        heading: 'Try it out to with one of these questsions:',
+                        heading: 'Here some questions this thread can help answer:',
+                        displayFullQuery: true,
                     }),
                 ],
 
                 thread_ts,
-                user: user.id,
+                user: userId,
             },
         },
         { accessToken }
