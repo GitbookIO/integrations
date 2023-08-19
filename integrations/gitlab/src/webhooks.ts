@@ -94,11 +94,18 @@ export async function handlePushEvent(context: GitLabRuntimeContext, payload: Gi
     );
 
     await Promise.all(
-        spaceInstallations.map((spaceInstallation) => {
-            return triggerImport(
-                context,
-                spaceInstallation.configuration as GitLabSpaceConfiguration
-            );
+        spaceInstallations.map(async (spaceInstallation) => {
+            try {
+                await triggerImport(
+                    context,
+                    spaceInstallation.configuration as GitLabSpaceConfiguration
+                );
+            } catch (error) {
+                logger.error(
+                    `error while triggering import for space ${spaceInstallation.space}`,
+                    error
+                );
+            }
         })
     );
 }
@@ -129,19 +136,26 @@ export async function handleMergeRequestEvent(
         logger.info(`
             handling merge request event "${payload.object_attributes.action}" on ref "${targetRef}" of "${payload.repository.id}" (project "${payload.project.id}"):
             ${spaceInstallations.length} space configurations are affected
-            `);
+        `);
 
         await Promise.all(
-            spaceInstallations.map((spaceInstallation) => {
-                return triggerImport(
-                    context,
-                    spaceInstallation.configuration as GitLabSpaceConfiguration,
-                    {
-                        standalone: {
-                            ref: sourceRef,
-                        },
-                    }
-                );
+            spaceInstallations.map(async (spaceInstallation) => {
+                try {
+                    await triggerImport(
+                        context,
+                        spaceInstallation.configuration as GitLabSpaceConfiguration,
+                        {
+                            standalone: {
+                                ref: sourceRef,
+                            },
+                        }
+                    );
+                } catch (error) {
+                    logger.error(
+                        `error while triggering standalone (${sourceRef}) import for space ${spaceInstallation.space}`,
+                        error
+                    );
+                }
             })
         );
     } else {

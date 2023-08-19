@@ -5,7 +5,7 @@ visibility: private
 description: ''
 script: src/index.ts
 scopes:
-    - space:metadata:read
+    - space:content:read
     - space:git:sync
 configurations:
     space:
