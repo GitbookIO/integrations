@@ -69,9 +69,11 @@ export function QueryDisplayBlock(params: {
             },
         ],
 
-        ...(displayFullQuery
-            ? FollowUpQueryList({ queries })
-            : [FollowUpQueryButtons({ queries })]),
+        // ...(displayFullQuery
+        //     ? FollowUpQueryList({ queries })
+        //     : [FollowUpQueryButtons({ queries })]),
+
+        ...FollowUpQueryList({ queries }),
     ];
 }
 
@@ -87,7 +89,8 @@ export function FollowUpQueryButtons(props: { queries: Array<string> }) {
                 text: question, // note! there's a 76 character limit
                 emoji: true,
             },
-            value: 'queryLens',
+            value: question,
+            action_id: 'queryLens',
         })),
     };
 }

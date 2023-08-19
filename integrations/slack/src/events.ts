@@ -61,6 +61,7 @@ export function createSlackEventsHandler(
                     teamId: event.team_id,
                     channelId: event.event.channel,
                     threadId: thread_ts,
+                    userId: user,
                     text: parsedQuery,
                     context,
                 });
