@@ -29,28 +29,62 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
     });
 
     /**
-     * Handle GitLab webhooks
+     * Handle task for GitLab webhook events
      */
-    router.post('/hooks/gitlab', async (request) => {
-        const id = request.headers.get('x-gitlab-event-uuid');
+    router.post('/hooks/gitlab/task', async (request) => {
+        const eventUuid = request.headers.get('x-gitlab-event-uuid');
         const event = request.headers.get('x-gitlab-event');
         const payloadString = await request.text();
         const payload = JSON.parse(payloadString);
 
-        logger.debug('received webhook event', { id, event });
+        logger.debug('received task for webhook event', { eventUuid, event });
 
-        /**
-         * Handle Webhook events
-         */
+        // Event handling
         if (event === 'Push Hook') {
             await handlePushEvent(context, payload);
         } else if (event === 'Merge Request Hook') {
             await handleMergeRequestEvent(context, payload);
         } else {
-            logger.debug('ignoring webhook event', { id, event });
+            logger.debug('ignoring task for webhook event', { eventUuid, event });
         }
 
-        return new Response(JSON.stringify({ ok: true }), {
+        return new Response(JSON.stringify({ handled: true }), {
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+        });
+    });
+
+    /**
+     * Acknowledge GitLab webhook event and queue a task to handle it
+     * in a subsequent request. This is to avoid GitLab timeouts.
+     * https://docs.gitlab.com/ee/user/gitlab_com/index.html#other-limits
+     */
+    router.post('/hooks/gitlab', async (request) => {
+        const event = request.headers.get('x-gitlab-event') as string;
+        const eventUuid = request.headers.get('x-gitlab-event-uuid') as string;
+        const webhookUuid = request.headers.get('x-gitlab-webhook-uuid') as string;
+        const token = request.headers.get('x-gitlab-token') as string;
+        const instance = request.headers.get('x-gitlab-instance') as string;
+
+        logger.debug('acknowledging webhook event', { eventUuid, webhookUuid, event });
+
+        const taskUrl = new URL(request.url);
+        taskUrl.pathname += '/task';
+
+        fetch(taskUrl.toString(), {
+            method: 'POST',
+            body: await request.text(),
+            headers: {
+                'content-type': request.headers.get('content-type') || 'application/text',
+                'x-gitlab-event': event,
+                'x-gitlab-event-uuid': eventUuid,
+                'x-gitlab-webhook-uuid': webhookUuid,
+                'x-gitlab-token': token,
+                'x-gitlab-instance': instance,
+            },
+        });
+
+        return new Response(JSON.stringify({ acknowledged: true }), {
             status: 200,
             headers: { 'content-type': 'application/json' },
         });

@@ -159,7 +159,7 @@ export const configBlock = createComponent<
                             label="Connect"
                             icon={ContentKitIcon.Gitlab}
                             disabled={element.state.withConnectGitLab}
-                            tooltip="Connect using an access token"
+                            tooltip="Connect your GitLab account"
                             onPress={{
                                 action: 'connect.gitlab',
                             }}
