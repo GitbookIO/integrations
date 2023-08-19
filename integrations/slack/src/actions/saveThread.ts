@@ -5,15 +5,12 @@ import { createMessageThreadRecording } from './gitbook';
 
 export async function saveThread({ teamId, channelId, thread_ts, userId, context }) {
     const { environment } = context;
-    console.log('start recording=======');
 
     const recording = await createMessageThreadRecording(context, {
         team_id: teamId,
         channel: channelId,
         thread_ts,
     });
-
-    console.log('end recording=======', recording);
 
     const { accessToken } = await getInstallationConfig(context, teamId);
 

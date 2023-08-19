@@ -20,7 +20,8 @@ export function createSlackActionsHandler(
         const shortcutEvent = Object.fromEntries(new URLSearchParams(requestText).entries());
         const actionPayload = JSON.parse(shortcutEvent.payload);
 
-        const { actions, channel, message, team, user } = actionPayload;
+        console.log('actions payload====', actionPayload);
+        const { actions, container, channel, message, team, user } = actionPayload;
 
         console.log('actions handler=====', actions);
 
@@ -33,6 +34,12 @@ export function createSlackActionsHandler(
                 channelId: channel.id,
                 teamId: team.id,
                 text: action.value ?? action.text.text,
+
+                // pass thread if exists
+                ...(container.thread_ts ? { threadId: container.thread_ts } : {}),
+                // pass user if exists
+                ...(user.id ? { userId: user.id } : {}),
+
                 context,
             };
 
@@ -44,6 +51,12 @@ export function createSlackActionsHandler(
             //         channelId: channel.id,
             //         teamId: team.id,
             //         text: action.value ?? action.text.text,
+
+            //         // pass thread if exists
+            //         ...(container.thread_ts ? { threadId: container.thread_ts } : {}),
+            //         // pass user if exists
+            //         ...(user.id ? { userId: user.id } : {}),
+
             //         context,
             //     };
 

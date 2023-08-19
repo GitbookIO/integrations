@@ -45,14 +45,23 @@ interface IQueryLens {
     text: string;
     context: SlackRuntimeContext;
 
+    /* needed for postEphemeral */
+    userId?: string;
+
     /* Get lens reply in thread */
     threadId?: string;
 }
 
-export async function queryLens({ channelId, teamId, threadId, text, context }: IQueryLens) {
+export async function queryLens({
+    channelId,
+    teamId,
+    threadId,
+    userId,
+    text,
+    context,
+}: IQueryLens) {
     const { environment, api } = context;
 
-    console.log('queryLens called with query', text);
     const { client, installation } = await getInstallationApiClient(api, teamId);
     if (!installation) {
         throw new Error('Installation not found');
@@ -62,15 +71,16 @@ export async function queryLens({ channelId, teamId, threadId, text, context }: 
     const accessToken = (installation.configuration as SlackInstallationConfiguration)
         .oauth_credentials?.access_token;
 
-    const res = await slackAPI(
+    await slackAPI(
         context,
         {
             method: 'POST',
-            path: 'chat.postMessage',
+            path: userId ? 'chat.postEphemeral' : 'chat.postMessage', // probably alwasy ephemeral? or otherwise have replies in same thread
             payload: {
                 channel: channelId,
                 text: `_Asking GitBook Lens: ${text}_`,
                 thread_ts: threadId,
+                ...(userId ? { user: userId } : {}), // actually shouldn't be optional
             },
         },
         {
@@ -78,9 +88,9 @@ export async function queryLens({ channelId, teamId, threadId, text, context }: 
         }
     );
 
-    const result = await api.search.askQuery({ query: text });
+    const result = await client.search.askQuery({ query: text });
     const answer = result.data?.answer;
-    console.log('askQuery answer', result.data);
+    console.log('lens answer====', answer);
 
     // do something if there's no answer from lens
     if (answer) {
@@ -95,7 +105,7 @@ export async function queryLens({ channelId, teamId, threadId, text, context }: 
             path: 'chat.postMessage',
             payload: {
                 channel: channelId,
-                response_type: 'in_channel',
+                // response_type: 'in_channel',
                 thread_ts: threadId,
                 blocks: [
                     {
