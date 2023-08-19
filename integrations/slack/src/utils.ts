@@ -27,3 +27,10 @@ export async function getInstallationConfig(context, externalId) {
         accessToken,
     };
 }
+
+/**
+ * @gitbook save
+ */
+export function isAppMentionSave(event) {
+    return event.type === 'app_mention' && event.text.split(' ')[1] === 'save';
+}

@@ -44,12 +44,15 @@ interface IQueryLens {
     teamId: string;
     text: string;
     context: SlackRuntimeContext;
+
+    /* Get lens reply in thread */
+    threadId?: string;
 }
 
-export async function queryLens({ channelId, teamId, text, context }: IQueryLens) {
+export async function queryLens({ channelId, teamId, threadId, text, context }: IQueryLens) {
     const { environment, api } = context;
 
-    console.log('queryLens called', channelId, teamId, text);
+    console.log('queryLens called with query', text);
     const { client, installation } = await getInstallationApiClient(api, teamId);
     if (!installation) {
         throw new Error('Installation not found');
@@ -59,7 +62,7 @@ export async function queryLens({ channelId, teamId, text, context }: IQueryLens
     const accessToken = (installation.configuration as SlackInstallationConfiguration)
         .oauth_credentials?.access_token;
 
-    await slackAPI(
+    const res = await slackAPI(
         context,
         {
             method: 'POST',
@@ -67,6 +70,7 @@ export async function queryLens({ channelId, teamId, text, context }: IQueryLens
             payload: {
                 channel: channelId,
                 text: `_Asking GitBook Lens: ${text}_`,
+                thread_ts: threadId,
             },
         },
         {
@@ -74,54 +78,59 @@ export async function queryLens({ channelId, teamId, text, context }: IQueryLens
         }
     );
 
-    const result = await client.search.askQuery({ query: text });
+    const result = await api.search.askQuery({ query: text });
     const answer = result.data?.answer;
+    console.log('askQuery answer', result.data);
 
-    const { publicUrl, relatedPages } = await getRelatedPages({
-        answer,
-        client,
-        environment,
-    });
+    // do something if there's no answer from lens
+    if (answer) {
+        const { publicUrl, relatedPages } = await getRelatedPages({
+            answer,
+            client,
+            environment,
+        });
 
-    const blocks = {
-        method: 'POST',
-        path: 'chat.postMessage',
-        payload: {
-            channel: channelId,
-            response_type: 'in_channel',
-            blocks: [
-                {
-                    type: 'divider',
-                },
-                {
-                    type: 'header',
-                    text: {
-                        type: 'plain_text',
-                        text,
+        const blocks = {
+            method: 'POST',
+            path: 'chat.postMessage',
+            payload: {
+                channel: channelId,
+                response_type: 'in_channel',
+                thread_ts: threadId,
+                blocks: [
+                    {
+                        type: 'divider',
                     },
-                },
-                {
-                    type: 'section',
-                    text: {
-                        type: 'mrkdwn',
-                        text: `${
-                            answer?.text ||
-                            "I couldn't find anything related to your question. Perhaps try rephrasing it."
-                        }`,
+                    {
+                        type: 'header',
+                        text: {
+                            type: 'plain_text',
+                            text,
+                        },
                     },
-                },
-                ...PagesBlock({ title: 'More information', items: relatedPages, publicUrl }),
-                ...QueryDisplayBlock({ queries: answer?.followupQuestions }),
-                {
-                    type: 'divider',
-                },
-            ],
-            unfurl_links: false,
-            unfurl_media: false,
-        },
-    };
+                    {
+                        type: 'section',
+                        text: {
+                            type: 'mrkdwn',
+                            text: `${
+                                answer?.text ||
+                                "I couldn't find anything related to your question. Perhaps try rephrasing it."
+                            }`,
+                        },
+                    },
+                    ...PagesBlock({ title: 'More information', items: relatedPages, publicUrl }),
+                    ...QueryDisplayBlock({ queries: answer?.followupQuestions }),
+                    {
+                        type: 'divider',
+                    },
+                ],
+                unfurl_links: false,
+                unfurl_media: false,
+            },
+        };
 
-    await slackAPI(context, blocks, {
-        accessToken,
-    });
+        await slackAPI(context, blocks, {
+            accessToken,
+        });
+    }
 }

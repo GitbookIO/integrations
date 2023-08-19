@@ -1,7 +1,7 @@
 import { FetchEventCallback } from '@gitbook/runtime';
 
-import { documentConversation } from './actions/documentConversation';
 import { type IQueryLens } from './actions/queryLens';
+import { saveThread } from './actions/saveThread';
 import { SlackRuntimeContext } from './configuration';
 
 /**
@@ -12,8 +12,7 @@ export function createSlackActionsHandler(
     handlers: {
         // [type: string]: (event: object, context: SlackRuntimeContext) => Promise<any>;
         [type: string]: (...any) => Promise<any>;
-    },
-    fallback?: FetchEventCallback
+    }
     // TODO: type output
 ): any {
     return async (request, context) => {
@@ -23,29 +22,43 @@ export function createSlackActionsHandler(
 
         const { actions, channel, message, team, user } = actionPayload;
 
+        console.log('actions handler=====', actions);
+
         // go through all actions sent and call the action from './actions/index.ts'
         if (actions?.length > 0) {
-            const actionPromises = actions.map((action) => {
-                // TODO: need a more polymorphic solve here if possible
-                const params: IQueryLens = {
-                    channelId: channel.id,
-                    teamId: team.id,
-                    text: action.text.text,
-                    context,
-                };
+            const action = actions[0];
+            console.log('action handler=====', action);
+            // TODO: need a more polymorphic solve here if possible
+            const params: IQueryLens = {
+                channelId: channel.id,
+                teamId: team.id,
+                text: action.value ?? action.text.text,
+                context,
+            };
 
-                return handlers[action.value](params);
-            });
+            return await handlers[action.action_id](params);
+            // const actionPromises = actions.map((action) => {
+            //     console.log('action handler=====', action);
+            //     // TODO: need a more polymorphic solve here if possible
+            //     const params: IQueryLens = {
+            //         channelId: channel.id,
+            //         teamId: team.id,
+            //         text: action.value ?? action.text.text,
+            //         context,
+            //     };
 
-            return await Promise.allSettled(actionPromises);
+            //     return handlers[action.action_id](params);
+            // });
+
+            // return await Promise.allSettled(actionPromises);
         }
 
         // TODO: here to not break the current documenting of conversations
-        return documentConversation({
-            team,
+        return saveThread({
+            teamId: team.id,
             channelId: channel.id,
             thread_ts: message.thread_ts,
-            user,
+            userId: user.id,
             context,
         });
     };
