@@ -12,6 +12,7 @@ import {
     mapDataToOptions,
     parseProjectOrThow,
     ParsedProject,
+    assertIsDefined,
 } from './utils';
 import { handleMergeRequestEvent, handlePushEvent } from './webhooks';
 
@@ -95,7 +96,10 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
      * API to fetch all GitLab projects under current authentication
      */
     router.get('/projects', async () => {
-        const config = getSpaceConfigOrThrow(context);
+        const spaceInstallation = environment.spaceInstallation;
+        assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
+
+        const config = getSpaceConfigOrThrow(spaceInstallation);
 
         const projects = await fetchProjects(config);
 
@@ -136,7 +140,11 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
      */
     router.get('/branches', async (req) => {
         const { project } = req.query;
-        const config = getSpaceConfigOrThrow(context);
+
+        const spaceInstallation = environment.spaceInstallation;
+        assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
+
+        const config = getSpaceConfigOrThrow(spaceInstallation);
 
         const projectId =
             project && typeof project === 'string'

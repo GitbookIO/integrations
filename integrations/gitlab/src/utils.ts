@@ -1,6 +1,10 @@
-import type { ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
+import type {
+    ContentKitSelectOption,
+    GitSyncOperationState,
+    IntegrationSpaceInstallation,
+} from '@gitbook/api';
 
-import type { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
+import type { GitLabSpaceConfiguration } from './types';
 
 /**
  * Object after parsing the project string which is a concatenation
@@ -60,6 +64,9 @@ export function getGitSyncStateDescription(state: GitSyncOperationState): string
 export function parseProjectOrThow(input: string | GitLabSpaceConfiguration): ParsedProject {
     const project = typeof input === 'string' ? input : input.project;
     assertIsDefined(project, { label: 'project' });
+    if (!project) {
+        throw new Error('Expected a project');
+    }
 
     // Split at first occurrence of colon
     const [projectId, ...rest] = project.split(':');
@@ -68,13 +75,15 @@ export function parseProjectOrThow(input: string | GitLabSpaceConfiguration): Pa
 }
 
 /**
- * Get the space configuration for the current space installation from the context.
+ * Get the space configuration for the current space installation.
  * This will throw an error if the space installation configuration is not defined.
  */
-export function getSpaceConfigOrThrow(context: GitLabRuntimeContext): GitLabSpaceConfiguration {
-    const spaceInstallation = context.environment.spaceInstallation;
-    assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
-    return spaceInstallation.configuration;
+export function getSpaceConfigOrThrow(
+    spaceInstallation: IntegrationSpaceInstallation
+): GitLabSpaceConfiguration {
+    const config = spaceInstallation.configuration as GitLabSpaceConfiguration | undefined;
+    assertIsDefined(config, { label: 'spaceInstallationConfiguration' });
+    return config;
 }
 
 /**

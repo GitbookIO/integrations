@@ -8,7 +8,7 @@ import {
     editCommitStatus,
 } from './api';
 import { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { parseProjectOrThow } from './utils';
+import { getSpaceConfigOrThrow, parseProjectOrThow } from './utils';
 
 const logger = Logger('gitlab:provider');
 
@@ -17,10 +17,10 @@ const logger = Logger('gitlab:provider');
  * project
  */
 export async function installWebhook(
-    spaceInstallation: IntegrationSpaceInstallation,
     context: GitLabRuntimeContext,
-    config: GitLabSpaceConfiguration
+    spaceInstallation: IntegrationSpaceInstallation
 ) {
+    const config = getSpaceConfigOrThrow(spaceInstallation);
     const { projectId } = parseProjectOrThow(config);
 
     const id = await addProjectWebhook(config, projectId, createGitLabWebhookURL(context));
@@ -45,10 +45,11 @@ export async function installWebhook(
  * project.
  */
 export async function uninstallWebhook(
-    spaceInstallation: IntegrationSpaceInstallation,
     context: GitLabRuntimeContext,
-    config: GitLabSpaceConfiguration
+    spaceInstallation: IntegrationSpaceInstallation
 ) {
+    const config = getSpaceConfigOrThrow(spaceInstallation);
+
     if (!config.webhookId) {
         return;
     }
@@ -106,7 +107,11 @@ export async function updateCommitStatus(
 /**
  * Returns the URL of the Git repository.
  */
-export function getRepositoryUrl(config: GitLabSpaceConfiguration, withExtension = false): string {
+export function getRepositoryUrl(
+    spaceInstallation: IntegrationSpaceInstallation,
+    withExtension = false
+): string {
+    const config = getSpaceConfigOrThrow(spaceInstallation);
     const { projectName } = parseProjectOrThow(config);
     return `${config.customInstanceUrl || 'https://gitlab.com'}/${projectName}${
         withExtension ? '.git' : ''
@@ -116,7 +121,8 @@ export function getRepositoryUrl(config: GitLabSpaceConfiguration, withExtension
 /**
  * Returns the authentication information for the Git repository.
  */
-export async function getRepositoryAuth(config: GitLabSpaceConfiguration) {
+export async function getRepositoryAuth(spaceInstallation: IntegrationSpaceInstallation) {
+    const config = getSpaceConfigOrThrow(spaceInstallation);
     return {
         username: 'oauth2',
         password: getAccessTokenOrThrow(config),
@@ -126,16 +132,17 @@ export async function getRepositoryAuth(config: GitLabSpaceConfiguration) {
 /**
  * Returns the base URL of the Git tree in the provider.
  */
-export function getGitTreeURL(config: GitLabSpaceConfiguration): string {
-    const base = getRepositoryUrl(config);
+export function getGitTreeURL(spaceInstallation: IntegrationSpaceInstallation): string {
+    const base = getRepositoryUrl(spaceInstallation);
+    const config = getSpaceConfigOrThrow(spaceInstallation);
     return `${base}/-/blob/${config.branch}`;
 }
 
 /**
  * Returns the absolute URL for a commit.
  */
-export function getGitCommitURL(config: GitLabSpaceConfiguration): string {
-    const base = getRepositoryUrl(config);
+export function getGitCommitURL(spaceInstallation: IntegrationSpaceInstallation): string {
+    const base = getRepositoryUrl(spaceInstallation);
     return `${base}/-/commit`;
 }
 

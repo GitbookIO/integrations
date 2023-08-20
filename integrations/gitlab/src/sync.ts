@@ -15,7 +15,12 @@ import {
     updateCommitStatus,
 } from './provider';
 import { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { assertIsDefined, getGitSyncCommitMessage, getGitSyncStateDescription } from './utils';
+import {
+    assertIsDefined,
+    getGitSyncCommitMessage,
+    getGitSyncStateDescription,
+    getSpaceConfigOrThrow,
+} from './utils';
 
 const logger = Logger('gitlab:sync');
 
@@ -44,13 +49,12 @@ export async function triggerImport(
     const { api } = context;
     const { force = false, updateGitInfo = false, standalone } = options;
 
-    const config = spaceInstallation.configuration as GitLabSpaceConfiguration | undefined;
-    assertIsDefined(config, { label: 'spaceInstallationConfiguration' });
+    const config = getSpaceConfigOrThrow(spaceInstallation);
 
     logger.info(`Initiating an import from GitLab to GitBook space ${spaceInstallation.space}`);
 
-    const repoURL = getRepositoryUrl(config, true);
-    const auth = await getRepositoryAuth(config);
+    const repoURL = getRepositoryUrl(spaceInstallation, true);
+    const auth = await getRepositoryAuth(spaceInstallation);
 
     const urlWithAuth = new URL(repoURL);
     urlWithAuth.username = auth.username;
@@ -59,8 +63,8 @@ export async function triggerImport(
     await api.spaces.importGitRepository(spaceInstallation.space, {
         url: urlWithAuth.toString(),
         ref: standalone?.ref ?? getGitRef(config.branch ?? ''),
-        repoTreeURL: getGitTreeURL(config),
-        repoCommitURL: getGitCommitURL(config),
+        repoTreeURL: getGitTreeURL(spaceInstallation),
+        repoCommitURL: getGitCommitURL(spaceInstallation),
         repoProjectDirectory: config.projectDirectory,
         repoCacheID: config.key,
         force,
@@ -86,15 +90,14 @@ export async function triggerExport(
     const { api } = context;
     const { force = false, updateGitInfo = false } = options;
 
-    const config = spaceInstallation.configuration as GitLabSpaceConfiguration | undefined;
-    assertIsDefined(config, { label: 'spaceInstallationConfiguration' });
+    const config = getSpaceConfigOrThrow(spaceInstallation);
 
     logger.info(`Initiating an export from space ${spaceInstallation.space} to GitLab`);
 
     const { data: revision } = await api.spaces.getCurrentRevision(spaceInstallation.space);
 
-    const repoURL = getRepositoryUrl(config, true);
-    const auth = await getRepositoryAuth(config);
+    const repoURL = getRepositoryUrl(spaceInstallation, true);
+    const auth = await getRepositoryAuth(spaceInstallation);
 
     const urlWithAuth = new URL(repoURL);
     urlWithAuth.username = auth.username;
@@ -103,8 +106,8 @@ export async function triggerExport(
     await api.spaces.exportToGitRepository(spaceInstallation.space, {
         url: urlWithAuth.toString(),
         ref: getGitRef(config.branch ?? ''),
-        repoTreeURL: getGitTreeURL(config),
-        repoCommitURL: getGitCommitURL(config),
+        repoTreeURL: getGitTreeURL(spaceInstallation),
+        repoCommitURL: getGitCommitURL(spaceInstallation),
         repoProjectDirectory: config.projectDirectory,
         repoCacheID: config.key,
         force,

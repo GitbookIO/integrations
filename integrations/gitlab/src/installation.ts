@@ -81,7 +81,7 @@ export async function saveSpaceConfiguration(
 
     // Install the webhook if needed
     if (!configurationBody.webhookId) {
-        await installWebhook(spaceInstallation, context, configurationBody);
+        await installWebhook(context, updatedSpaceInstallation);
     }
 }
 
