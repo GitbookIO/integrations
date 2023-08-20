@@ -13,7 +13,12 @@ import { fetchInstallationRepositories, fetchInstallations, fetchRepositoryBranc
 import { configBlock } from './components';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
 import type { GithubRuntimeContext } from './types';
-import { getSpaceConfig, parseInstallation, parseRepository } from './utils';
+import {
+    assertIsDefined,
+    getSpaceConfigOrThrow,
+    parseInstallationOrThrow,
+    parseRepositoryOrThrow,
+} from './utils';
 import { handlePullRequestEvents, handlePushEvent, verifyGitHubWebhookSignature } from './webhooks';
 
 const logger = Logger('github');
@@ -95,7 +100,10 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
      * API to fetch all GitHub installations
      */
     router.get('/installations', async () => {
-        const installations = await fetchInstallations(getSpaceConfig(context));
+        const spaceInstallation = environment.spaceInstallation;
+        assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
+
+        const installations = await fetchInstallations(getSpaceConfigOrThrow(spaceInstallation));
 
         const data = installations.map(
             (installation): ContentKitSelectOption => ({
@@ -115,14 +123,20 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
      * API to fetch all repositories of an installation
      */
     router.get('/repos', async (req) => {
+        const spaceInstallation = environment.spaceInstallation;
+        assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
+
         const { installation } = req.query;
         const installationId =
             installation && typeof installation === 'string'
-                ? parseInstallation(installation).installationId
+                ? parseInstallationOrThrow(installation).installationId
                 : undefined;
 
         const repositories = installationId
-            ? await fetchInstallationRepositories(getSpaceConfig(context), installationId)
+            ? await fetchInstallationRepositories(
+                  getSpaceConfigOrThrow(spaceInstallation),
+                  installationId
+              )
             : [];
 
         const data = repositories.map(
@@ -143,21 +157,24 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
      * API to fetch all branches of an account's repository
      */
     router.get('/branches', async (req) => {
+        const spaceInstallation = environment.spaceInstallation;
+        assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
+
         const { installation, repository } = req.query;
 
         const accountName =
             installation && typeof installation === 'string'
-                ? parseInstallation(installation).accountName
+                ? parseInstallationOrThrow(installation).accountName
                 : undefined;
         const repositoryName =
             repository && typeof repository === 'string'
-                ? parseRepository(repository).repoName
+                ? parseRepositoryOrThrow(repository).repoName
                 : undefined;
 
         const branches =
             accountName && repositoryName
                 ? await fetchRepositoryBranches(
-                      getSpaceConfig(context),
+                      getSpaceConfigOrThrow(spaceInstallation),
                       accountName,
                       repositoryName
                   )
@@ -215,12 +232,13 @@ const handleSpaceContentUpdated: EventCallback<
         return;
     }
 
-    if (!context.environment.spaceInstallation?.configuration) {
-        logger.debug(`missing space installation configuration, skipping`);
+    const spaceInstallation = context.environment.spaceInstallation;
+    if (!spaceInstallation) {
+        logger.debug(`missing space installation, skipping`);
         return;
     }
 
-    await triggerExport(context, context.environment.spaceInstallation.configuration);
+    await triggerExport(context, spaceInstallation);
 };
 
 /*
@@ -234,17 +252,16 @@ const handleGitSyncStarted: EventCallback<'space_gitsync_started', GithubRuntime
         `Git Sync started for space ${event.spaceId} revision ${event.revisionId}, updating commit status`
     );
 
-    const spaceInstallationConfiguration = context.environment.spaceInstallation?.configuration;
-    if (!spaceInstallationConfiguration) {
-        logger.debug(`missing space installation configuration, skipping`);
+    const spaceInstallation = context.environment.spaceInstallation;
+    if (!spaceInstallation) {
+        logger.debug(`missing space installation, skipping`);
         return;
     }
 
     await updateCommitWithPreviewLinks(
         context,
-        event.spaceId,
+        spaceInstallation,
         event.revisionId,
-        spaceInstallationConfiguration,
         event.commitId,
         GitSyncOperationState.Running
     );
@@ -261,17 +278,16 @@ const handleGitSyncCompleted: EventCallback<
         `Git Sync completed (${event.state}) for space ${event.spaceId} revision ${event.revisionId}, updating commit status`
     );
 
-    const spaceInstallationConfiguration = context.environment.spaceInstallation?.configuration;
-    if (!spaceInstallationConfiguration) {
-        logger.debug(`missing space installation configuration, skipping`);
+    const spaceInstallation = context.environment.spaceInstallation;
+    if (!spaceInstallation) {
+        logger.debug(`missing space installation, skipping`);
         return;
     }
 
     await updateCommitWithPreviewLinks(
         context,
-        event.spaceId,
+        spaceInstallation,
         event.revisionId,
-        spaceInstallationConfiguration,
         event.commitId,
         event.state as GitSyncOperationState
     );

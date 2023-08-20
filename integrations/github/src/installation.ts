@@ -10,8 +10,8 @@ import {
     assertIsDefined,
     computeConfigQueryKeyBase,
     computeConfigQueryKeyPreviewExternalBranches,
-    parseInstallation,
-    parseRepository,
+    parseInstallationOrThrow,
+    parseRepositoryOrThrow,
 } from './utils';
 
 const logger = Logger('github:installation');
@@ -24,18 +24,16 @@ export async function saveSpaceConfiguration(
     config: GitHubSpaceConfiguration
 ) {
     const { api, environment } = context;
-    const installation = environment.installation;
     const spaceInstallation = environment.spaceInstallation;
 
-    assertIsDefined(installation);
-    assertIsDefined(spaceInstallation);
+    assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
     if (!config.installation || !config.repository || !config.branch) {
         throw httpError(400, 'Incomplete configuration');
     }
 
-    const { installationId } = parseInstallation(config);
-    const { repoID } = parseRepository(config);
+    const { installationId } = parseInstallationOrThrow(config);
+    const { repoID } = parseRepositoryOrThrow(config);
 
     /**
      * We need to update the space installation external IDs to make sure
@@ -66,32 +64,38 @@ export async function saveSpaceConfiguration(
         priority: config.priority,
     };
 
-    logger.info(
-        `Saving config for space ${spaceInstallation.space} (installation: ${installation.id})`
+    logger.debug(
+        `Saving config for space ${spaceInstallation.space} of integration-installation ${spaceInstallation.installation}`
     );
 
-    await Promise.all([
-        // Save the space installation configuration
-        api.integrations.updateIntegrationSpaceInstallation(
-            environment.integration.name,
-            installation.id,
+    // Save the space installation configuration
+    const { data: updatedSpaceInstallation } =
+        await api.integrations.updateIntegrationSpaceInstallation(
+            spaceInstallation.integration,
+            spaceInstallation.installation,
             spaceInstallation.space,
             {
                 externalIds,
                 configuration: configurationBody,
             }
-        ),
-        // Force a synchronization
-        config.priority === 'github'
-            ? triggerImport(context, configurationBody, {
-                  force: true,
-                  updateGitInfo: true,
-              })
-            : triggerExport(context, configurationBody, {
-                  force: true,
-                  updateGitInfo: true,
-              }),
-    ]);
+        );
+
+    logger.info(`Saved config for space ${spaceInstallation.space}`);
+
+    // Force a synchronization
+    if (config.priority === 'github') {
+        logger.debug(`Forcing import for space ${spaceInstallation.space}`);
+        await triggerImport(context, updatedSpaceInstallation, {
+            force: true,
+            updateGitInfo: true,
+        });
+    } else {
+        logger.debug(`Forcing export for space ${spaceInstallation.space}`);
+        await triggerExport(context, updatedSpaceInstallation, {
+            force: true,
+            updateGitInfo: true,
+        });
+    }
 }
 
 /**

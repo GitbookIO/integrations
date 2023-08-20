@@ -5,11 +5,12 @@ import type {
 } from '@octokit/webhooks-types';
 import httpError from 'http-errors';
 
+import { GitBookAPI } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
 
 import { querySpaceInstallations } from './installation';
 import { triggerImport } from './sync';
-import { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
+import { GithubRuntimeContext } from './types';
 import { computeConfigQueryKeyBase, computeConfigQueryKeyPreviewExternalBranches } from './utils';
 
 const logger = Logger('github:webhooks');
@@ -71,11 +72,29 @@ export async function handlePushEvent(
         );
 
         await Promise.all(
-            spaceInstallations.map((spaceInstallation) => {
-                return triggerImport(
-                    context,
-                    spaceInstallation.configuration as GitHubSpaceConfiguration
-                );
+            spaceInstallations.map(async (spaceInstallation) => {
+                try {
+                    // Obtain the installation API token needed to trigger the import
+                    const { data: installationAPIToken } =
+                        await context.api.integrations.createIntegrationInstallationToken(
+                            spaceInstallation.integration,
+                            spaceInstallation.installation
+                        );
+
+                    // Set the token in the context to be used by the API client
+                    context.environment.authToken = installationAPIToken.token;
+                    context.api = new GitBookAPI({
+                        endpoint: context.environment.apiEndpoint,
+                        authToken: installationAPIToken.token,
+                    });
+
+                    await triggerImport(context, spaceInstallation);
+                } catch (error) {
+                    logger.error(
+                        `error while triggering import for space ${spaceInstallation.space}`,
+                        error
+                    );
+                }
             })
         );
     }
@@ -113,14 +132,33 @@ export async function handlePullRequestEvents(
         );
 
         await Promise.all(
-            spaceInstallations.map((spaceInstallation) => {
-                return triggerImport(
-                    context,
-                    spaceInstallation.configuration as GitHubSpaceConfiguration,
-                    {
-                        standalone: { ref: headRef },
-                    }
-                );
+            spaceInstallations.map(async (spaceInstallation) => {
+                try {
+                    // Obtain the installation API token needed to trigger the import
+                    const { data: installationAPIToken } =
+                        await context.api.integrations.createIntegrationInstallationToken(
+                            spaceInstallation.integration,
+                            spaceInstallation.installation
+                        );
+
+                    // Set the token in the context to be used by the API client
+                    context.environment.authToken = installationAPIToken.token;
+                    context.api = new GitBookAPI({
+                        endpoint: context.environment.apiEndpoint,
+                        authToken: installationAPIToken.token,
+                    });
+
+                    await triggerImport(context, spaceInstallation, {
+                        standalone: {
+                            ref: headRef,
+                        },
+                    });
+                } catch (error) {
+                    logger.error(
+                        `error while triggering standalone (${headRef}) import for space ${spaceInstallation.space}`,
+                        error
+                    );
+                }
             })
         );
     }

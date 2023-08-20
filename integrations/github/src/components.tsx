@@ -85,15 +85,17 @@ export const configBlock = createComponent<
         }
     },
     render: async (element, context) => {
-        const spaceInstallationPublicEndpoint =
-            context.environment.spaceInstallation?.urls.publicEndpoint;
-        assertIsDefined(spaceInstallationPublicEndpoint, {
-            label: 'spaceInstallationPublicEndpoint',
+        const spaceInstallation = context.environment.spaceInstallation;
+        assertIsDefined(spaceInstallation, {
+            label: 'spaceInstallation',
         });
+        const spaceInstallationPublicEndpoint = spaceInstallation.urls.publicEndpoint;
 
         let accessToken: string | undefined;
         try {
-            const tokenCredentials = getTokenCredentialsOrThrow(getSpaceConfigOrThrow(context));
+            const tokenCredentials = getTokenCredentialsOrThrow(
+                getSpaceConfigOrThrow(spaceInstallation)
+            );
             accessToken = tokenCredentials.token;
         } catch (error) {
             // Ignore: We will show the button to connect
