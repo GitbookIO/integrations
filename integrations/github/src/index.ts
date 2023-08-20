@@ -35,9 +35,9 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
     });
 
     /**
-     * Handle GitHub App webhooks
+     * Handle task for GitHub App webhook events
      */
-    router.post('/hooks/github', async (request) => {
+    router.post('/hooks/github/task', async (request) => {
         const id = request.headers.get('x-github-delivery');
         const event = request.headers.get('x-github-event');
         const signature = request.headers.get('x-hub-signature-256') ?? '';
@@ -75,6 +75,39 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         }
 
         return new Response(JSON.stringify({ ok: true }), {
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+        });
+    });
+
+    /**
+     * Acknowledge GitHub App webhook event and queue a task to handle it
+     * in a subsequent request. This is to avoid GitHub timeouts.
+     * https://docs.github.com/en/rest/guides/best-practices-for-integrators?#favor-asynchronous-work-over-synchronous
+     */
+    router.post('/hooks/github', async (request) => {
+        const id = request.headers.get('x-github-delivery') as string;
+        const event = request.headers.get('x-github-event') as string;
+        const signature = request.headers.get('x-hub-signature-256') ?? '';
+
+        logger.debug('acknowledging webhook event', { id, event });
+
+        const taskUrl = new URL(request.url);
+        taskUrl.pathname += '/task';
+
+        fetch(taskUrl.toString(), {
+            keepalive: true,
+            method: 'POST',
+            body: await request.text(),
+            headers: {
+                'content-type': request.headers.get('content-type') || 'application/text',
+                'x-github-delivery': id,
+                'x-github-event': event,
+                'x-hub-signature-256': signature,
+            },
+        });
+
+        return new Response(JSON.stringify({ acknowledged: true }), {
             status: 200,
             headers: { 'content-type': 'application/json' },
         });
