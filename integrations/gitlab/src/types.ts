@@ -24,12 +24,34 @@ export type ConfigureProps = {
     };
     spaceInstallation: {
         configuration?: {
+            /**
+             * A key to uniquely identify the configuration.
+             */
             key?: string;
+            /**
+             * GitLab access token with specific scopes.
+             */
             accessToken?: string;
+            /**
+             * Self hosted GitLab instance (if not defined, we use gitlab.com)
+             */
             customInstanceUrl?: string;
+            /**
+             * The project to be used for the integration. The string is a concatenation
+             * of the project ID and the project name, separated by a colon (eg. 123456:foo/bar-project).
+             */
             project?: string;
+            /**
+             * The branch to be used for the integration.
+             */
             branch?: string;
+            /**
+             * Root folder to use for monorepos with multiple spaces synced.
+             */
             projectDirectory?: string;
+            /**
+             * Template to use for commit messages.
+             */
             commitMessageTemplate?: string;
             priority: 'gitlab' | 'gitbook';
         };
