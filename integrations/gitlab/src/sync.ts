@@ -119,13 +119,15 @@ export async function triggerExport(
  */
 export async function updateCommitWithPreviewLinks(
     runtime: GitLabRuntimeContext,
-    spaceId: string,
+    spaceInstallation: IntegrationSpaceInstallation,
     revisionId: string,
-    config: GitLabSpaceConfiguration,
     commitSha: string,
     state: GitSyncOperationState
 ) {
-    const { data: space } = await runtime.api.spaces.getSpaceById(spaceId);
+    const { data: space } = await runtime.api.spaces.getSpaceById(spaceInstallation.space);
+
+    const config = spaceInstallation.configuration as GitLabSpaceConfiguration | undefined;
+    assertIsDefined(config, { label: 'spaceInstallationConfiguration' });
 
     const context = `GitBook${config.projectDirectory ? ` (${config.projectDirectory})` : ''}`;
 

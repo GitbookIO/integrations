@@ -227,17 +227,16 @@ const handleGitSyncStarted: EventCallback<'space_gitsync_started', GitLabRuntime
         `Git Sync started for space ${event.spaceId} revision ${event.revisionId}, updating commit status`
     );
 
-    const spaceInstallationConfiguration = context.environment.spaceInstallation?.configuration;
-    if (!spaceInstallationConfiguration) {
-        logger.debug(`missing space installation configuration, skipping`);
+    const spaceInstallation = context.environment.spaceInstallation;
+    if (!spaceInstallation) {
+        logger.debug(`missing space installation, skipping`);
         return;
     }
 
     await updateCommitWithPreviewLinks(
         context,
-        event.spaceId,
+        spaceInstallation,
         event.revisionId,
-        spaceInstallationConfiguration,
         event.commitId,
         GitSyncOperationState.Running
     );
@@ -254,17 +253,16 @@ const handleGitSyncCompleted: EventCallback<
         `Git Sync completed (${event.state}) for space ${event.spaceId} revision ${event.revisionId}, updating commit status`
     );
 
-    const spaceInstallationConfiguration = context.environment.spaceInstallation?.configuration;
-    if (!spaceInstallationConfiguration) {
-        logger.debug(`missing space installation configuration, skipping`);
+    const spaceInstallation = context.environment.spaceInstallation;
+    if (!spaceInstallation) {
+        logger.debug(`missing space installation, skipping`);
         return;
     }
 
     await updateCommitWithPreviewLinks(
         context,
-        event.spaceId,
+        spaceInstallation,
         event.revisionId,
-        spaceInstallationConfiguration,
         event.commitId,
         event.state as GitSyncOperationState
     );
