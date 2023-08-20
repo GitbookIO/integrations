@@ -168,7 +168,7 @@ export async function fetchGitLabAPI<T>(
 }
 
 /**
- * Execute the GitLab API request using the given token credentials
+ * Execute the GitLab API request using the given token
  * It will throw an error if the response is not ok.
  */
 async function requestGitLab(
