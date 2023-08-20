@@ -96,6 +96,16 @@ export async function handlePushEvent(context: GitLabRuntimeContext, payload: Gi
     await Promise.all(
         spaceInstallations.map(async (spaceInstallation) => {
             try {
+                // Obtain the installation API token needed to trigger the import
+                const { data: installationAPIToken } =
+                    await context.api.integrations.createIntegrationInstallationToken(
+                        spaceInstallation.integration,
+                        spaceInstallation.installation
+                    );
+
+                // Set the token in the context to be used by the API client
+                context.environment.authToken = installationAPIToken.token;
+
                 await triggerImport(context, spaceInstallation);
             } catch (error) {
                 logger.error(
@@ -138,6 +148,16 @@ export async function handleMergeRequestEvent(
         await Promise.all(
             spaceInstallations.map(async (spaceInstallation) => {
                 try {
+                    // Obtain the installation API token needed to trigger the import
+                    const { data: installationAPIToken } =
+                        await context.api.integrations.createIntegrationInstallationToken(
+                            spaceInstallation.integration,
+                            spaceInstallation.installation
+                        );
+
+                    // Set the token in the context to be used by the API client
+                    context.environment.authToken = installationAPIToken.token;
+
                     await triggerImport(context, spaceInstallation, {
                         standalone: {
                             ref: sourceRef,
