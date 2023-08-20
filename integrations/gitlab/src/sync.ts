@@ -1,4 +1,9 @@
-import { ContentVisibility, GitSyncOperationState, Revision } from '@gitbook/api';
+import {
+    ContentVisibility,
+    GitSyncOperationState,
+    IntegrationSpaceInstallation,
+    Revision,
+} from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
 
 import {
@@ -10,7 +15,7 @@ import {
     updateCommitStatus,
 } from './provider';
 import { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { assertIsDefined, getGitSyncCommitMessage, getGitSyncStateDescription } from './utils';
+import { getGitSyncCommitMessage, getGitSyncStateDescription } from './utils';
 
 const logger = Logger('gitlab:sync');
 
@@ -18,6 +23,7 @@ const logger = Logger('gitlab:sync');
  * Trigger an import to GitBook space.
  */
 export async function triggerImport(
+    spaceInstallation: IntegrationSpaceInstallation,
     context: GitLabRuntimeContext,
     config: GitLabSpaceConfiguration,
     options: {
@@ -36,11 +42,8 @@ export async function triggerImport(
         updateGitInfo?: boolean;
     } = {}
 ) {
-    const { environment, api } = context;
+    const { api } = context;
     const { force = false, updateGitInfo = false, standalone } = options;
-
-    const spaceInstallation = environment.spaceInstallation;
-    assertIsDefined(spaceInstallation);
 
     logger.info(`Initiating an import from GitLab to GitBook space ${spaceInstallation.space}`);
 
@@ -68,6 +71,7 @@ export async function triggerImport(
  * Trigger an export to GitLab.
  */
 export async function triggerExport(
+    spaceInstallation: IntegrationSpaceInstallation,
     context: GitLabRuntimeContext,
     config: GitLabSpaceConfiguration,
     options: {
@@ -78,11 +82,8 @@ export async function triggerExport(
         updateGitInfo?: boolean;
     } = {}
 ) {
-    const { environment, api } = context;
+    const { api } = context;
     const { force = false, updateGitInfo = false } = options;
-
-    const spaceInstallation = environment.spaceInstallation;
-    assertIsDefined(spaceInstallation);
 
     logger.info(`Initiating an export from space ${spaceInstallation.space} to GitLab`);
 

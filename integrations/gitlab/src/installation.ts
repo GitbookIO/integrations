@@ -18,11 +18,9 @@ export async function saveSpaceConfiguration(
     config: GitLabSpaceConfiguration
 ) {
     const { api, environment } = context;
-    const installation = environment.installation;
     const spaceInstallation = environment.spaceInstallation;
 
-    assertIsDefined(installation);
-    assertIsDefined(spaceInstallation);
+    assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
     if (!config.project || !config.branch) {
         throw httpError(400, 'Incomplete configuration');
@@ -49,14 +47,14 @@ export async function saveSpaceConfiguration(
     };
 
     logger.info(
-        `Saving config for space ${spaceInstallation.space} (installation: ${installation.id})`
+        `Saving config for space ${spaceInstallation.space} of integration-installation ${spaceInstallation.installation}`
     );
 
     await Promise.all([
         // Save the space installation configuration
         api.integrations.updateIntegrationSpaceInstallation(
-            environment.integration.name,
-            installation.id,
+            spaceInstallation.integration,
+            spaceInstallation.installation,
             spaceInstallation.space,
             {
                 externalIds,
@@ -65,11 +63,11 @@ export async function saveSpaceConfiguration(
         ),
         // Force a synchronization
         config.priority === 'gitlab'
-            ? triggerImport(context, configurationBody, {
+            ? triggerImport(spaceInstallation, context, configurationBody, {
                   force: true,
                   updateGitInfo: true,
               })
-            : triggerExport(context, configurationBody, {
+            : triggerExport(spaceInstallation, context, configurationBody, {
                   force: true,
                   updateGitInfo: true,
               }),
@@ -79,7 +77,7 @@ export async function saveSpaceConfiguration(
 
     // Install the webhook if needed
     if (!configurationBody.webhookId) {
-        await installWebhook(context, configurationBody);
+        await installWebhook(spaceInstallation, context, configurationBody);
     }
 }
 

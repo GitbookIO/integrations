@@ -59,9 +59,7 @@ export function getGitSyncStateDescription(state: GitSyncOperationState): string
  */
 export function parseProjectOrThow(input: string | GitLabSpaceConfiguration): ParsedProject {
     const project = typeof input === 'string' ? input : input.project;
-    if (!project) {
-        throw new Error('Expected a project');
-    }
+    assertIsDefined(project, { label: 'project' });
 
     // Split at first occurrence of colon
     const [projectId, ...rest] = project.split(':');
@@ -75,7 +73,7 @@ export function parseProjectOrThow(input: string | GitLabSpaceConfiguration): Pa
  */
 export function getSpaceConfigOrThrow(context: GitLabRuntimeContext): GitLabSpaceConfiguration {
     const spaceInstallation = context.environment.spaceInstallation;
-    assertIsDefined(spaceInstallation);
+    assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
     return spaceInstallation.configuration;
 }
 
@@ -124,8 +122,11 @@ export function mapDataToOptions<T extends object>(
     return options;
 }
 
-export function assertIsDefined<T>(value: T): asserts value is NonNullable<T> {
+export function assertIsDefined<T>(
+    value: T,
+    options: { label: string }
+): asserts value is NonNullable<T> {
     if (value === undefined || value === null) {
-        throw new Error(`Expected value to be defined, but received ${value}`);
+        throw new Error(`Expected value (${options.label}) to be defined, but received ${value}`);
     }
 }

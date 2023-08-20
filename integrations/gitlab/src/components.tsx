@@ -63,8 +63,8 @@ export const configBlock = createComponent<
                 const installation = environment.installation;
                 const spaceInstallation = environment.spaceInstallation;
 
-                assertIsDefined(installation);
-                assertIsDefined(spaceInstallation);
+                assertIsDefined(installation, { label: 'installation' });
+                assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
                 const existing = element.props.spaceInstallation.configuration;
 
@@ -121,7 +121,9 @@ export const configBlock = createComponent<
     render: async (element, context) => {
         const spaceInstallationPublicEndpoint =
             context.environment.spaceInstallation?.urls.publicEndpoint;
-        assertIsDefined(spaceInstallationPublicEndpoint);
+        assertIsDefined(spaceInstallationPublicEndpoint, {
+            label: 'spaceInstallationPublicEndpoint',
+        });
 
         let accessToken: string | undefined;
         try {
