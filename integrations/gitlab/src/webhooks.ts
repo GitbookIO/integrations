@@ -1,3 +1,4 @@
+import { GitBookAPI } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
 
 import { querySpaceInstallations } from './installation';
@@ -105,6 +106,10 @@ export async function handlePushEvent(context: GitLabRuntimeContext, payload: Gi
 
                 // Set the token in the context to be used by the API client
                 context.environment.authToken = installationAPIToken.token;
+                context.api = new GitBookAPI({
+                    endpoint: context.environment.apiEndpoint,
+                    authToken: installationAPIToken.token,
+                });
 
                 await triggerImport(context, spaceInstallation);
             } catch (error) {
@@ -157,6 +162,10 @@ export async function handleMergeRequestEvent(
 
                     // Set the token in the context to be used by the API client
                     context.environment.authToken = installationAPIToken.token;
+                    context.api = new GitBookAPI({
+                        endpoint: context.environment.apiEndpoint,
+                        authToken: installationAPIToken.token,
+                    });
 
                     await triggerImport(context, spaceInstallation, {
                         standalone: {
