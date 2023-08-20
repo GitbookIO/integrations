@@ -3,15 +3,15 @@ import hash from 'hash-sum';
 import { ContentKitIcon } from '@gitbook/api';
 import { createComponent } from '@gitbook/runtime';
 
-import { getTokenCredentials } from './api';
+import { getTokenCredentialsOrThrow } from './api';
 import { saveSpaceConfiguration } from './installation';
 import { ConfigureAction, ConfigureProps, ConfigureState, GithubRuntimeContext } from './types';
 import {
     assertIsDefined,
     getGitSyncCommitMessage,
-    getSpaceConfig,
+    getSpaceConfigOrThrow,
     GITSYNC_DEFAULT_COMMIT_MESSAGE,
-    parseInstallation,
+    parseInstallationOrThrow,
 } from './utils';
 
 /**
@@ -87,11 +87,13 @@ export const configBlock = createComponent<
     render: async (element, context) => {
         const spaceInstallationPublicEndpoint =
             context.environment.spaceInstallation?.urls.publicEndpoint;
-        assertIsDefined(spaceInstallationPublicEndpoint);
+        assertIsDefined(spaceInstallationPublicEndpoint, {
+            label: 'spaceInstallationPublicEndpoint',
+        });
 
         let accessToken: string | undefined;
         try {
-            const tokenCredentials = getTokenCredentials(getSpaceConfig(context));
+            const tokenCredentials = getTokenCredentialsOrThrow(getSpaceConfigOrThrow(context));
             accessToken = tokenCredentials.token;
         } catch (error) {
             // Ignore: We will show the button to connect
@@ -177,7 +179,7 @@ export const configBlock = createComponent<
                                                 <link
                                                     target={{
                                                         url: `https://github.com/settings/installations/${
-                                                            parseInstallation(
+                                                            parseInstallationOrThrow(
                                                                 element.state.installation
                                                             ).installationId
                                                         }`,

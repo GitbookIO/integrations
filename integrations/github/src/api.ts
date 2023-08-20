@@ -107,7 +107,7 @@ export async function createCommitStatus(
     sha: string,
     status: object
 ): Promise<void> {
-    await fetchGitHubAPI<{ token: string }>(appJWT, {
+    await fetchGitHubAPI(appJWT, {
         method: 'POST',
         path: `/repos/${owner}/${repo}/statuses/${sha}`,
         body: status,
@@ -137,7 +137,7 @@ async function fetchGitHubAPI<T>(
     const tokenCredentials =
         typeof credentialSource === 'string'
             ? { token: credentialSource }
-            : getTokenCredentials(credentialSource);
+            : getTokenCredentialsOrThrow(credentialSource);
 
     const url = new URL(`https://api.github.com${path}`);
     Object.entries(params || {}).forEach(([key, value]) => {
@@ -183,7 +183,7 @@ async function fetchGitHubAPI<T>(
 }
 
 /**
- * Execute the GitHub API request using the given access token.
+ * Execute the GitHub API request using the given token credentials.
  * It will throw an error if the response is not ok.
  */
 async function requestGitHub(
@@ -225,10 +225,10 @@ interface TokenCredentials {
  * Return the token credentials from the configuration.
  * This will throw an error if the access token is not defined.
  */
-export function getTokenCredentials(config: GitHubSpaceConfiguration): TokenCredentials {
+export function getTokenCredentialsOrThrow(config: GitHubSpaceConfiguration): TokenCredentials {
     const oAuthCredentials = config?.oauth_credentials;
     if (!oAuthCredentials?.access_token) {
-        throw httpError(401, 'Unauthorized: Missing OAuth access token');
+        throw httpError(401, 'Unauthorized: Missing access token');
     }
 
     return {

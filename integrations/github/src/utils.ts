@@ -1,4 +1,4 @@
-import { GitSyncOperationState } from '@gitbook/api';
+import { ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
 
 import type { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
 
@@ -48,35 +48,37 @@ export function getGitSyncStateDescription(state: GitSyncOperationState): string
  * Get the space configuration for the current space installation from the context.
  * This will throw an error if the space installation configuration is not defined.
  */
-export function getSpaceConfig(context: GithubRuntimeContext): GitHubSpaceConfiguration {
+export function getSpaceConfigOrThrow(context: GithubRuntimeContext): GitHubSpaceConfiguration {
     const spaceInstallation = context.environment.spaceInstallation;
-    assertIsDefined(spaceInstallation);
+    assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
     return spaceInstallation.configuration;
 }
 
 /**
- * Parse the installation ID and account name from the installation string
+ * Parse the GitHub installation ID and account name from the installation string.
+ * This will `throw an error` if the installation is not defined.
  */
-export function parseInstallation(input: GitHubSpaceConfiguration | string) {
+export function parseInstallationOrThrow(input: GitHubSpaceConfiguration | string) {
     const installation = typeof input === 'string' ? input : input.installation;
-    if (!installation) {
-        throw new Error('Expected an installation');
-    }
+    assertIsDefined(installation, { label: 'installation' });
 
-    const [installationId, accountName] = installation.split(':');
+    // Split at first occurrence of colon
+    const [installationId, ...rest] = installation.split(':');
+    const accountName = rest.join(':');
     return { installationId: parseInt(installationId, 10), accountName };
 }
 
 /**
- * Parse the repository ID and repository name from the repository string
+ * Parse the repository ID and repository name from the repository string.
+ * This will `throw an error` if the repository is not defined.
  */
-export function parseRepository(input: GitHubSpaceConfiguration | string) {
+export function parseRepositoryOrThrow(input: GitHubSpaceConfiguration | string) {
     const repository = typeof input === 'string' ? input : input.repository;
-    if (!repository) {
-        throw new Error('Expected a repository');
-    }
+    assertIsDefined(repository, { label: 'repository' });
 
-    const [repoID, repoName] = repository.split(':');
+    // Split at first occurrence of colon
+    const [repoID, ...rest] = repository.split(':');
+    const repoName = rest.join(':');
     return { repoID: parseInt(repoID, 10), repoName };
 }
 
@@ -104,33 +106,49 @@ export function computeConfigQueryKeyPreviewExternalBranches(
 }
 
 /**
- * Convert an array buffer to a hex string
+ * Utility to map an array of data items to an array of select options.
+ *
+ * It also takes an optional predicate to push a default option to the result
+ * if the predicate is **not** satisfied by any of the data items.
+ *
+ * The predicate is satisfied if the value of the key in the data item
+ * is equal to the value provided in the predicate.
  */
-export function arrayToHex(arr: ArrayBuffer) {
-    return [...new Uint8Array(arr)].map((x) => x.toString(16).padStart(2, '0')).join('');
-}
+export function mapDataToOptions<T extends object>(
+    data: T[],
+    mapper: (item: T) => ContentKitSelectOption,
+    defaultPredicate?: {
+        key: keyof T;
+        value: T[keyof T];
+        option: ContentKitSelectOption;
+    }
+): ContentKitSelectOption[] {
+    const options: ContentKitSelectOption[] = [];
+    let satisfiesPredicate = false;
 
-/**
- * Constant-time string comparison. Equivalent of `crypto.timingSafeEqual`.
- **/
-export function safeCompare(expected: string, actual: string) {
-    const lenExpected = expected.length;
-    let result = 0;
+    for (const item of data) {
+        options.push(mapper(item));
 
-    if (lenExpected !== actual.length) {
-        actual = expected;
-        result = 1;
+        if (defaultPredicate && item[defaultPredicate.key] === defaultPredicate.value) {
+            satisfiesPredicate = true;
+        }
     }
 
-    for (let i = 0; i < lenExpected; i++) {
-        result |= expected.charCodeAt(i) ^ actual.charCodeAt(i);
+    // If the predicate is not satisfied, we push the default option
+    if (defaultPredicate && !satisfiesPredicate) {
+        options.push(defaultPredicate.option);
     }
 
-    return result === 0;
+    return options;
 }
 
-export function assertIsDefined<T>(value: T): asserts value is NonNullable<T> {
+export function assertIsDefined<T>(
+    value: T,
+    options: {
+        label: string;
+    }
+): asserts value is NonNullable<T> {
     if (value === undefined || value === null) {
-        throw new Error(`Expected value to be defined, but received ${value}`);
+        throw new Error(`Expected value (${options.label}) to be defined, but received ${value}`);
     }
 }

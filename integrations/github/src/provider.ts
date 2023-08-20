@@ -1,10 +1,13 @@
 import * as jose from 'jose';
 
 import { GitSyncOperationState } from '@gitbook/api';
+import { Logger } from '@gitbook/runtime';
 
 import { createAppInstallationAccessToken, createCommitStatus } from './api';
 import { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
-import { parseInstallation, parseRepository } from './utils';
+import { parseInstallationOrThrow, parseRepositoryOrThrow } from './utils';
+
+const logger = Logger('github:provider');
 
 /**
  * Return the GitHub App JWT
@@ -36,8 +39,8 @@ async function getGitHubAppJWT(context: GithubRuntimeContext): Promise<string> {
  * Returns the URL of the Git repository.
  */
 export function getRepositoryUrl(config: GitHubSpaceConfiguration, withExtension = false): string {
-    const installation = parseInstallation(config);
-    const repository = parseRepository(config);
+    const installation = parseInstallationOrThrow(config);
+    const repository = parseRepositoryOrThrow(config);
 
     return `https://github.com/${installation.accountName}/${repository.repoName}${
         withExtension ? '.git' : ''
@@ -55,7 +58,7 @@ export async function getRepositoryAuth(
 
     const installationAccessToken = await createAppInstallationAccessToken(
         appJWT,
-        parseInstallation(config).installationId
+        parseInstallationOrThrow(config).installationId
     );
 
     return {
@@ -81,8 +84,8 @@ export async function updateCommitStatus(
 ) {
     const appJWT = await getGitHubAppJWT(context);
 
-    const installation = parseInstallation(config);
-    const repository = parseRepository(config);
+    const installation = parseInstallationOrThrow(config);
+    const repository = parseRepositoryOrThrow(config);
 
     await createCommitStatus(appJWT, installation.accountName, repository.repoName, commitSha, {
         state: update.state === 'running' ? 'pending' : update.state,
@@ -90,6 +93,10 @@ export async function updateCommitStatus(
         description: update.description,
         context: update.context || 'GitBook',
     });
+
+    logger.info(
+        `Commit status updated for ${commitSha} on GitHub repo (${installation.accountName}/${repository.repoName})`
+    );
 }
 
 /**
