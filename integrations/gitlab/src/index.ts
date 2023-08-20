@@ -206,13 +206,13 @@ const handleSpaceContentUpdated: EventCallback<
         return;
     }
 
-    const spaceInstallationConfiguration = context.environment.spaceInstallation?.configuration;
-    if (!spaceInstallationConfiguration) {
-        logger.debug(`missing space installation configuration, skipping`);
+    const spaceInstallation = context.environment.spaceInstallation;
+    if (!spaceInstallation) {
+        logger.debug(`missing space installation, skipping`);
         return;
     }
 
-    await triggerExport(context, spaceInstallationConfiguration);
+    await triggerExport(context, spaceInstallation);
 };
 
 /*

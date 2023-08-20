@@ -46,13 +46,13 @@ export async function saveSpaceConfiguration(
         customInstanceUrl: config.customInstanceUrl,
     };
 
-    logger.info(
+    logger.debug(
         `Saving config for space ${spaceInstallation.space} of integration-installation ${spaceInstallation.installation}`
     );
 
-    await Promise.all([
-        // Save the space installation configuration
-        api.integrations.updateIntegrationSpaceInstallation(
+    // Save the space installation configuration
+    const { data: updatedSpaceInstallation } =
+        await api.integrations.updateIntegrationSpaceInstallation(
             spaceInstallation.integration,
             spaceInstallation.installation,
             spaceInstallation.space,
@@ -60,20 +60,24 @@ export async function saveSpaceConfiguration(
                 externalIds,
                 configuration: configurationBody,
             }
-        ),
-        // Force a synchronization
-        config.priority === 'gitlab'
-            ? triggerImport(spaceInstallation, context, configurationBody, {
-                  force: true,
-                  updateGitInfo: true,
-              })
-            : triggerExport(spaceInstallation, context, configurationBody, {
-                  force: true,
-                  updateGitInfo: true,
-              }),
-    ]);
+        );
 
-    logger.info(`Configuration saved for space ${spaceInstallation.space}`);
+    logger.info(`Saved config for space ${spaceInstallation.space}`);
+
+    // Force a synchronization
+    if (config.priority === 'gitlab') {
+        logger.debug(`Forcing import for space ${spaceInstallation.space}`);
+        await triggerImport(context, updatedSpaceInstallation, {
+            force: true,
+            updateGitInfo: true,
+        });
+    } else {
+        logger.debug(`Forcing export for space ${spaceInstallation.space}`);
+        await triggerExport(context, updatedSpaceInstallation, {
+            force: true,
+            updateGitInfo: true,
+        });
+    }
 
     // Install the webhook if needed
     if (!configurationBody.webhookId) {

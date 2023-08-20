@@ -2,7 +2,7 @@ import { Logger } from '@gitbook/runtime';
 
 import { querySpaceInstallations } from './installation';
 import { triggerImport } from './sync';
-import { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
+import { GitLabRuntimeContext } from './types';
 import { computeConfigQueryKeyBase } from './utils';
 
 interface GitLabPushEvent {
@@ -96,10 +96,7 @@ export async function handlePushEvent(context: GitLabRuntimeContext, payload: Gi
     await Promise.all(
         spaceInstallations.map(async (spaceInstallation) => {
             try {
-                await triggerImport(
-                    context,
-                    spaceInstallation.configuration as GitLabSpaceConfiguration
-                );
+                await triggerImport(context, spaceInstallation);
             } catch (error) {
                 logger.error(
                     `error while triggering import for space ${spaceInstallation.space}`,
@@ -141,15 +138,11 @@ export async function handleMergeRequestEvent(
         await Promise.all(
             spaceInstallations.map(async (spaceInstallation) => {
                 try {
-                    await triggerImport(
-                        context,
-                        spaceInstallation.configuration as GitLabSpaceConfiguration,
-                        {
-                            standalone: {
-                                ref: sourceRef,
-                            },
-                        }
-                    );
+                    await triggerImport(context, spaceInstallation, {
+                        standalone: {
+                            ref: sourceRef,
+                        },
+                    });
                 } catch (error) {
                     logger.error(
                         `error while triggering standalone (${sourceRef}) import for space ${spaceInstallation.space}`,

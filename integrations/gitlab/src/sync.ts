@@ -15,7 +15,7 @@ import {
     updateCommitStatus,
 } from './provider';
 import { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { getGitSyncCommitMessage, getGitSyncStateDescription } from './utils';
+import { assertIsDefined, getGitSyncCommitMessage, getGitSyncStateDescription } from './utils';
 
 const logger = Logger('gitlab:sync');
 
@@ -23,9 +23,8 @@ const logger = Logger('gitlab:sync');
  * Trigger an import to GitBook space.
  */
 export async function triggerImport(
-    spaceInstallation: IntegrationSpaceInstallation,
     context: GitLabRuntimeContext,
-    config: GitLabSpaceConfiguration,
+    spaceInstallation: IntegrationSpaceInstallation,
     options: {
         /**
          * To import from the provider a standalone content.
@@ -44,6 +43,9 @@ export async function triggerImport(
 ) {
     const { api } = context;
     const { force = false, updateGitInfo = false, standalone } = options;
+
+    const config = spaceInstallation.configuration as GitLabSpaceConfiguration | undefined;
+    assertIsDefined(config, { label: 'spaceInstallationConfiguration' });
 
     logger.info(`Initiating an import from GitLab to GitBook space ${spaceInstallation.space}`);
 
@@ -71,9 +73,8 @@ export async function triggerImport(
  * Trigger an export to GitLab.
  */
 export async function triggerExport(
-    spaceInstallation: IntegrationSpaceInstallation,
     context: GitLabRuntimeContext,
-    config: GitLabSpaceConfiguration,
+    spaceInstallation: IntegrationSpaceInstallation,
     options: {
         /** Force the synchronization even if content has already been exported */
         force?: boolean;
@@ -84,6 +85,9 @@ export async function triggerExport(
 ) {
     const { api } = context;
     const { force = false, updateGitInfo = false } = options;
+
+    const config = spaceInstallation.configuration as GitLabSpaceConfiguration | undefined;
+    assertIsDefined(config, { label: 'spaceInstallationConfiguration' });
 
     logger.info(`Initiating an export from space ${spaceInstallation.space} to GitLab`);
 
