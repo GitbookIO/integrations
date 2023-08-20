@@ -72,6 +72,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
         taskUrl.pathname += '/task';
 
         fetch(taskUrl.toString(), {
+            keepalive: true,
             method: 'POST',
             body: await request.text(),
             headers: {
