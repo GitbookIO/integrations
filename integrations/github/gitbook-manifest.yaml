@@ -6,7 +6,7 @@ description: ''
 script: src/index.ts
 scopes:
     - space:metadata:read
-    - space:metadata:write
+    - space:content:read
     - space:git:sync
 configurations:
     space:

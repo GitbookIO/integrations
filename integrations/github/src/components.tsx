@@ -112,7 +112,7 @@ export const configBlock = createComponent<
             <block>
                 <input
                     label="Authenticate"
-                    hint="Connect your GitHub account"
+                    hint="Authenticate using your GitHub account"
                     element={
                         <button
                             label={buttonLabel}
