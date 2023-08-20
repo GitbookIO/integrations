@@ -10,7 +10,7 @@ import { parseInstallationOrThrow, parseRepositoryOrThrow } from './utils';
 const logger = Logger('github:provider');
 
 /**
- * Return the GitHub App JWT
+ * Return the GitHub App JWT signed with the private key.
  */
 async function getGitHubAppJWT(context: GithubRuntimeContext): Promise<string> {
     const { environment } = context;
@@ -55,7 +55,6 @@ export async function getRepositoryAuth(
     config: GitHubSpaceConfiguration
 ) {
     const appJWT = await getGitHubAppJWT(context);
-
     const installationAccessToken = await createAppInstallationAccessToken(
         appJWT,
         parseInstallationOrThrow(config).installationId
@@ -82,17 +81,27 @@ export async function updateCommitStatus(
         description: string;
     }
 ) {
-    const appJWT = await getGitHubAppJWT(context);
-
     const installation = parseInstallationOrThrow(config);
     const repository = parseRepositoryOrThrow(config);
 
-    await createCommitStatus(appJWT, installation.accountName, repository.repoName, commitSha, {
-        state: update.state === 'running' ? 'pending' : update.state,
-        target_url: update.url,
-        description: update.description,
-        context: update.context || 'GitBook',
-    });
+    const appJWT = await getGitHubAppJWT(context);
+    const installationAccessToken = await createAppInstallationAccessToken(
+        appJWT,
+        parseInstallationOrThrow(config).installationId
+    );
+
+    await createCommitStatus(
+        installationAccessToken,
+        installation.accountName,
+        repository.repoName,
+        commitSha,
+        {
+            state: update.state === 'running' ? 'pending' : update.state,
+            target_url: update.url,
+            description: update.description,
+            context: update.context || 'GitBook',
+        }
+    );
 
     logger.info(
         `Commit status updated for ${commitSha} on GitHub repo (${installation.accountName}/${repository.repoName})`

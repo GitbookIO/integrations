@@ -83,7 +83,8 @@ export async function fetchRepositoryBranches(
 }
 
 /**
- * Get an access token for the GitHub App installation.
+ * Get an access token for the GitHub App installation
+ * using the GitHub App JWT.
  */
 export async function createAppInstallationAccessToken(
     appJWT: string,
@@ -98,16 +99,17 @@ export async function createAppInstallationAccessToken(
 }
 
 /**
- * Create a commit status for a commit SHA.
+ * Create a commit status for a commit SHA using the GitHub
+ * installation access token.
  */
 export async function createCommitStatus(
-    appJWT: string,
+    installationAccessToken: string,
     owner: string,
     repo: string,
     sha: string,
     status: object
 ): Promise<void> {
-    await fetchGitHubAPI(appJWT, {
+    await fetchGitHubAPI(installationAccessToken, {
         method: 'POST',
         path: `/repos/${owner}/${repo}/statuses/${sha}`,
         body: status,
