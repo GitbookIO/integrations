@@ -1,4 +1,9 @@
-import { ContentVisibility, GitSyncOperationState, Revision } from '@gitbook/api';
+import {
+    ContentVisibility,
+    GitSyncOperationState,
+    IntegrationSpaceInstallation,
+    Revision,
+} from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
 
 import {
@@ -10,7 +15,11 @@ import {
     updateCommitStatus,
 } from './provider';
 import { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
-import { assertIsDefined, getGitSyncCommitMessage, getGitSyncStateDescription } from './utils';
+import {
+    getGitSyncCommitMessage,
+    getGitSyncStateDescription,
+    getSpaceConfigOrThrow,
+} from './utils';
 
 const logger = Logger('github:sync');
 
@@ -19,7 +28,7 @@ const logger = Logger('github:sync');
  */
 export async function triggerImport(
     context: GithubRuntimeContext,
-    config: GitHubSpaceConfiguration,
+    spaceInstallation: IntegrationSpaceInstallation,
     options: {
         /**
          * To import from the provider a standalone content.
@@ -36,14 +45,12 @@ export async function triggerImport(
         updateGitInfo?: boolean;
     } = {}
 ) {
-    const { environment } = context;
+    const { api } = context;
     const { force = false, updateGitInfo = false, standalone } = options;
 
-    logger.info('Initiating an import to GitBook');
+    const config = getSpaceConfigOrThrow(spaceInstallation);
 
-    const spaceInstallation = environment.spaceInstallation;
-
-    assertIsDefined(spaceInstallation);
+    logger.info(`Initiating an import from GitHub to GitBook space ${spaceInstallation.space}`);
 
     const repoURL = getRepositoryUrl(config, true);
     const auth = await getRepositoryAuth(context, config);
@@ -52,7 +59,7 @@ export async function triggerImport(
     urlWithAuth.username = auth.username;
     urlWithAuth.password = auth.password;
 
-    await context.api.spaces.importGitRepository(spaceInstallation.space, {
+    await api.spaces.importGitRepository(spaceInstallation.space, {
         url: urlWithAuth.toString(),
         ref: standalone?.ref ?? getGitRef(config.branch ?? ''),
         repoTreeURL: getGitTreeURL(config),
@@ -70,7 +77,7 @@ export async function triggerImport(
  */
 export async function triggerExport(
     context: GithubRuntimeContext,
-    config: GitHubSpaceConfiguration,
+    spaceInstallation: IntegrationSpaceInstallation,
     options: {
         /** Force the synchronization even if content has already been exported */
         force?: boolean;
@@ -79,13 +86,12 @@ export async function triggerExport(
         updateGitInfo?: boolean;
     } = {}
 ) {
-    const { environment, api } = context;
+    const { api } = context;
     const { force = false, updateGitInfo = false } = options;
 
-    logger.info('Initiating an export to GitHub');
+    const config = getSpaceConfigOrThrow(spaceInstallation);
 
-    const spaceInstallation = environment.spaceInstallation;
-    assertIsDefined(spaceInstallation);
+    logger.info(`Initiating an export from space ${spaceInstallation.space} to GitHub`);
 
     const { data: revision } = await api.spaces.getCurrentRevision(spaceInstallation.space);
 
@@ -115,13 +121,14 @@ export async function triggerExport(
  */
 export async function updateCommitWithPreviewLinks(
     runtime: GithubRuntimeContext,
-    spaceId: string,
+    spaceInstallation: IntegrationSpaceInstallation,
     revisionId: string,
-    config: GitHubSpaceConfiguration,
     commitSha: string,
     state: GitSyncOperationState
 ) {
-    const { data: space } = await runtime.api.spaces.getSpaceById(spaceId);
+    const config = getSpaceConfigOrThrow(spaceInstallation);
+
+    const { data: space } = await runtime.api.spaces.getSpaceById(spaceInstallation.space);
 
     const context = `GitBook${config.projectDirectory ? ` (${config.projectDirectory})` : ''}`;
 

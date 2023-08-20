@@ -1,6 +1,10 @@
-import { ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
+import {
+    ContentKitSelectOption,
+    GitSyncOperationState,
+    IntegrationSpaceInstallation,
+} from '@gitbook/api';
 
-import type { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
+import type { GitHubSpaceConfiguration } from './types';
 
 /**
  * The default commit message to use when a change request is merged in GitBook
@@ -45,13 +49,15 @@ export function getGitSyncStateDescription(state: GitSyncOperationState): string
 }
 
 /**
- * Get the space configuration for the current space installation from the context.
+ * Get the space configuration for the current space installation.
  * This will throw an error if the space installation configuration is not defined.
  */
-export function getSpaceConfigOrThrow(context: GithubRuntimeContext): GitHubSpaceConfiguration {
-    const spaceInstallation = context.environment.spaceInstallation;
-    assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
-    return spaceInstallation.configuration;
+export function getSpaceConfigOrThrow(
+    spaceInstallation: IntegrationSpaceInstallation
+): GitHubSpaceConfiguration {
+    const config = spaceInstallation.configuration as GitHubSpaceConfiguration | undefined;
+    assertIsDefined(config, { label: 'spaceInstallationConfiguration' });
+    return config;
 }
 
 /**
