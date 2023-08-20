@@ -96,7 +96,7 @@ export async function updateCommitStatus(
     await editCommitStatus(config, projectId, commitSha, {
         name: update.context || 'GitBook',
         state: update.state === 'failure' ? 'failed' : update.state,
-        targetUrl: update.url,
+        target_url: update.url,
         description: update.description,
     });
 
