@@ -33,7 +33,9 @@ export async function getInstallationApiClient(api, externalId: string) {
 
 export async function createMessageThreadRecording(context, slackEvent) {
     const { api, environment } = context;
-    const spaceId = environment.installation.configuration.recordings_space;
+    const { installation } = await getInstallationApiClient(api, slackEvent.team_id);
+    const spaceId = installation.configuration.recordings_space;
+    console.log('space Id', spaceId);
 
     const { team_id, channel, thread_ts } = slackEvent;
 
