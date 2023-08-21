@@ -7,6 +7,8 @@ import {
     isSaveThreadEvent,
     parseActionPayload,
     parseEventPayload,
+    parseCommandPayload,
+    stripBotName,
 } from './utils';
 
 /**
@@ -41,6 +43,24 @@ export async function verifySlackRequest(request: Request, { environment }: Slac
     }
 }
 
+const acknowledgeQuery = async ({ context, text, userId, channelId, accessToken }) =>
+    slackAPI(
+        context,
+        {
+            method: 'POST',
+            path: userId ? 'chat.postEphemeral' : 'chat.postMessage', // probably alwasy ephemeral? or otherwise have replies in same thread
+            payload: {
+                channel: channelId,
+                text: `_Asking: ${text}_`,
+                // thread_ts: message.thread_ts,
+                ...(userId ? { user: userId } : {}), // actually shouldn't be optional
+            },
+        },
+        {
+            accessToken,
+        }
+    );
+
 /**
  * We acknowledge the slack request immediately to avoid failures
  * and "queue" the actual task to be executed in a subsequent request.
@@ -69,6 +89,18 @@ export async function acknowledgeSlackEvent(req: Request, context: SlackRuntimeC
                 },
                 { accessToken }
             );
+        } else if (['message', 'app_mention'].includes(type) && !bot_id) {
+            // check for bot_id so that the bot doesn't trigger itself
+            // stript out the bot-name in the mention and account for user mentions within the query
+            const parsedQuery = stripBotName(text, eventPayload.authorizations[0]?.user_id);
+
+            await acknowledgeQuery({
+                context,
+                text: parsedQuery,
+                userId: user.id,
+                channelId: channel,
+                accessToken,
+            });
         }
     }
 
@@ -82,9 +114,30 @@ export async function acknowledgeSlackEvent(req: Request, context: SlackRuntimeC
         },
     });
 
-    console.log('acknowledgeSlackEvent==========');
-
     // return new Response(JSON.stringify({ acknowledged: true }), {
+    return new Response(null, {
+        status: 200,
+    });
+}
+
+export async function acknowledgeSlackCommand(req: Request, context: SlackRuntimeContext) {
+    const eventPayload = await parseCommandPayload(req);
+    const { team_id, user_id, channel_id, text } = eventPayload;
+
+    const { accessToken } = await getInstallationConfig(context, team_id);
+
+    const data = fetch(`${req.url}_task`, {
+        method: 'POST',
+        body: await req.text(),
+        headers: {
+            'content-type': req.headers.get('content-type'),
+            'x-slack-signature': req.headers.get('x-slack-signature'),
+            'x-slack-request-timestamp': req.headers.get('x-slack-request-timestamp'),
+        },
+    });
+
+    await acknowledgeQuery({ context, text, userId: user_id, channelId: channel_id, accessToken });
+
     return new Response(null, {
         status: 200,
     });
@@ -98,8 +151,6 @@ export async function acknowledgeSlackAction(req: Request, context: SlackRuntime
     const actionPayload = await parseActionPayload(req);
 
     const { type, channel, message, team, user, response_url } = actionPayload;
-
-    console.log('shortcutPayload', actionPayload);
 
     const { accessToken } = await getInstallationConfig(context, team.id);
 
@@ -139,8 +190,6 @@ export async function acknowledgeSlackAction(req: Request, context: SlackRuntime
                 { accessToken }
             );
         }
-
-        console.log('acknowledgeSlackShortcut==========');
     }
 
     fetch(`${req.url}_task`, {

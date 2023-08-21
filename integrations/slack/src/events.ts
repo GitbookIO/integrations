@@ -3,7 +3,7 @@ import { FetchEventCallback } from '@gitbook/runtime';
 import { queryLens } from './actions/queryLens';
 import { saveThread } from './actions/saveThread';
 import { SlackRuntimeContext } from './configuration';
-import { isSaveThreadEvent, parseEventPayload } from './utils';
+import { isSaveThreadEvent, parseEventPayload, stripBotName } from './utils';
 
 /**
  * Handle an event from Slack.
@@ -33,10 +33,9 @@ export function createSlackEventsHandler(
 
         const saveThreadEvent = isSaveThreadEvent(type, text);
 
-        console.log('TYPE', type);
-        if (['message', 'app_mention'].includes(type)) {
+        // check for bot_id so that the bot doesn't trigger itself
+        if (['message', 'app_mention'].includes(type) && !bot_id) {
             if (saveThreadEvent) {
-                console.log('isCuration====');
                 await saveThread({
                     teamId: team_id,
                     channelId: channel,
@@ -45,16 +44,13 @@ export function createSlackEventsHandler(
                     context,
                 });
             } else {
-                console.log('isQuery====');
                 // stript out the bot-name in the mention and account for user mentions within the query
-                const parsedQuery = text
-                    .split(new RegExp(`^.*<@${eventPayload.authorizations[0]?.user_id}> `))
-                    .join('');
+                const parsedQuery = stripBotName(text, eventPayload.authorizations[0]?.user_id);
 
                 // send to Lens
                 const data = await queryLens({
-                    teamId: eventPayload.team_id,
-                    channelId: eventPayload.event.channel,
+                    teamId: team_id,
+                    channelId: channel,
                     threadId: thread_ts,
                     userId: user,
                     text: parsedQuery,

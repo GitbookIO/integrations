@@ -74,26 +74,8 @@ export async function queryLens({
     const accessToken = (installation.configuration as SlackInstallationConfiguration)
         .oauth_credentials?.access_token;
 
-    await slackAPI(
-        context,
-        {
-            method: 'POST',
-            path: userId ? 'chat.postEphemeral' : 'chat.postMessage', // probably alwasy ephemeral? or otherwise have replies in same thread
-            payload: {
-                channel: channelId,
-                text: `_Asking: ${text}_`,
-                thread_ts: threadId,
-                ...(userId ? { user: userId } : {}), // actually shouldn't be optional
-            },
-        },
-        {
-            accessToken,
-        }
-    );
-
     const result = await client.search.askQuery({ query: text });
     const answer = result.data?.answer;
-    console.log('lens answer====', answer);
 
     // do something if there's no answer from lens
     if (answer) {
@@ -122,7 +104,7 @@ export async function queryLens({
                         type: 'header',
                         text: {
                             type: 'plain_text',
-                            text,
+                            text: capitalizeFirstLetter(text),
                         },
                     },
                     {
