@@ -125,7 +125,7 @@ export function FollowUpQueryList(props: { queries: Array<string> }) {
     //     type: 'button',
     //     text: {
     //         type: 'plain_text',
-           text: question.slice(0, 75),
+    //    text: question.slice(0, 75),
     //         emoji: true,
     //     },
     //     value: 'queryLens',
