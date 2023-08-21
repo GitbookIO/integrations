@@ -6,13 +6,13 @@ import { createMessageThreadRecording } from './gitbook';
 export async function saveThread({ teamId, channelId, thread_ts, userId, context }) {
     const { environment } = context;
 
-    const { recording } = await createMessageThreadRecording(context, {
+    const { recording, followupQuestions } = await createMessageThreadRecording(context, {
         team_id: teamId,
         channel: channelId,
         thread_ts,
     });
 
-    console.log('recording===', recording);
+    console.log('recording===', recording, followupQuestions);
 
     const { accessToken } = await getInstallationConfig(context, teamId);
 
@@ -26,7 +26,7 @@ export async function saveThread({ teamId, channelId, thread_ts, userId, context
                 blocks: [
                     ...GeneratedDocLinkBlock({ url: recording.url }),
                     ...QueryDisplayBlock({
-                        queries: recording.followupQuestions ?? [],
+                        queries: followupQuestions,
                         heading: 'Here some questions this thread can help answer:',
                     }),
                 ],
