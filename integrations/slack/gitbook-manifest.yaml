@@ -52,9 +52,14 @@ configurations:
                 title: Default Channel
                 description: Select a channel to post messages to, when none is configured for a specific space.
                 completion_url: /channels
+            recordings_space:
+                type: string
+                title: Recordings Space
+                description: Select the space where recordings will be stored.
         required:
             - oauth_credentials
             - default_channel
+            - recordings_space
     space:
         properties:
             channel:
