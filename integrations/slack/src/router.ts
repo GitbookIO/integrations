@@ -131,7 +131,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         verifySlackRequest,
         createSlackActionsHandler({
             queryLens,
-            shareMessage,
+            // shareMessage,
         })
     );
 

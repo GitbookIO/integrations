@@ -44,6 +44,7 @@ export async function saveThread({ teamId, channelId, thread_ts, userId, context
                 // ],
                 thread_ts,
                 user: userId,
+                unfurl_links: false,
             },
         },
         { accessToken }
