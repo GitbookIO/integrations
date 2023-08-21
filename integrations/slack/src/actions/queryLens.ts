@@ -114,7 +114,7 @@ export async function queryLens({
             payload: {
                 channel: channelId,
                 thread_ts: threadId,
-                attachments: [{ blocks: [...blocks, ...ShareTools(blocks)] }],
+                blocks: [...blocks, ...ShareTools(blocks)],
                 user: userId,
             },
         };
