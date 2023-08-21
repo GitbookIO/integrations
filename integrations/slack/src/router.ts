@@ -4,6 +4,7 @@ import { createOAuthHandler, FetchEventCallback } from '@gitbook/runtime';
 
 import { createSlackActionsHandler } from './actions';
 import { queryLens } from './actions/queryLens';
+import { shareMessage } from './actions/shareMessage';
 import { createSlackCommandsHandler } from './commands';
 import { createSlackEventsHandler } from './events';
 import { queryLensSlashHandler } from './handlers';
@@ -130,6 +131,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         verifySlackRequest,
         createSlackActionsHandler({
             queryLens,
+            shareMessage,
         })
     );
 

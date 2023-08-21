@@ -152,7 +152,7 @@ export async function acknowledgeSlackCommand(req: Request, context: SlackRuntim
 export async function acknowledgeSlackAction(req: Request, context: SlackRuntimeContext) {
     const actionPayload = await parseActionPayload(req);
 
-    const { type, channel, message, team, user, response_url, actions } = actionPayload;
+    const { type, channel, message, team, user, actions } = actionPayload;
 
     const { accessToken } = await getInstallationConfig(context, team.id);
 
@@ -176,17 +176,34 @@ export async function acknowledgeSlackAction(req: Request, context: SlackRuntime
         }
     } else if (actions.length > 0) {
         await Promise.all(
-            actions.map((action) => {
+            actions.map(async (action) => {
                 const { action_id, value } = actions[0];
 
                 // TODO: check if we are actually trying to query via the action_id. setting this up for demo
-                return acknowledgeQuery({
-                    context,
-                    text: value,
-                    userId: user.id,
-                    channelId: channel.id,
-                    accessToken,
-                });
+                if (action_id === 'queryLens') {
+                    return acknowledgeQuery({
+                        context,
+                        text: value,
+                        userId: user.id,
+                        channelId: channel.id,
+                        accessToken,
+                    });
+                } else {
+                    await slackAPI(
+                        context,
+                        {
+                            method: 'POST',
+                            path: 'chat.postEphemeral',
+                            payload: {
+                                channel: channel.id,
+                                text: `Sharing...`,
+                                user: user.id,
+                                thread_ts: message?.thread_ts,
+                            },
+                        },
+                        { accessToken }
+                    );
+                }
             })
         );
     }

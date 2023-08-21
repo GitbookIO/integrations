@@ -86,56 +86,48 @@ export async function queryLens({
 
         const answerText = capitalizeFirstLetter(answer.text);
 
-        const blocks = {
+        const blocks = [
+            {
+                color: '#346ddb',
+                type: 'header',
+                text: {
+                    type: 'plain_text',
+                    text: capitalizeFirstLetter(text),
+                },
+            },
+            {
+                type: 'section',
+                text: {
+                    type: 'mrkdwn',
+                    text: answerText,
+                },
+            },
+            ...PagesBlock({ title: 'More information', items: relatedPages, publicUrl }),
+            ...QueryDisplayBlock({ queries: answer?.followupQuestions ?? [] }),
+            {
+                type: 'divider',
+            },
+        ];
+
+        const slackData = {
             method: 'POST',
             path: 'chat.postEphemeral',
             payload: {
                 channel: channelId,
                 thread_ts: threadId,
-                attachments: [
-                    {
-                        color: '#346ddb',
-                        blocks: [
-                            {
-                                type: 'header',
-                                text: {
-                                    type: 'plain_text',
-                                    text: capitalizeFirstLetter(text),
-                                },
-                            },
-                            {
-                                type: 'section',
-                                text: {
-                                    type: 'mrkdwn',
-                                    text: answerText,
-                                },
-                            },
-                            ...PagesBlock({
-                                title: 'More information',
-                                items: relatedPages,
-                                publicUrl,
-                            }),
-                            ...QueryDisplayBlock({ queries: answer?.followupQuestions ?? [] }),
-                            {
-                                type: 'divider',
-                            },
-                            ...ShareTools(),
-                        ],
-                    },
-                ],
-
+                attachments: [{ blocks: [...blocks, ...ShareTools(blocks)] }],
                 user: userId,
             },
         };
 
-        await slackAPI(context, blocks, {
+        await slackAPI(context, slackData, {
             accessToken,
         });
     } else {
         const text =
             "I couldn't find anything related to your question. Perhaps try rephrasing it.";
 
-        const blocks = {
+        const slackData = {
             method: 'POST',
             path: 'chat.postEphemeral',
             payload: {
@@ -143,7 +135,6 @@ export async function queryLens({
                 thread_ts: threadId,
                 attachments: [
                     {
-                        color: '#346ddb',
                         blocks: [
                             {
                                 type: 'section',
@@ -160,7 +151,7 @@ export async function queryLens({
             },
         };
 
-        await slackAPI(context, blocks, {
+        await slackAPI(context, slackData, {
             accessToken,
         });
     }

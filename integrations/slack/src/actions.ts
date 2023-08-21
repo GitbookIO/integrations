@@ -19,15 +19,12 @@ export function createSlackActionsHandler(
     return async (request, context) => {
         const actionPayload = await parseActionPayload(request);
 
-        console.log('actions payload====', actionPayload);
         const { actions, container, channel, message, team, user } = actionPayload;
-
-        console.log('actions handler=====', actions);
 
         // go through all actions sent and call the action from './actions/index.ts'
         if (actions?.length > 0) {
             const action = actions[0];
-            console.log('action handler=====', action);
+
             // TODO: need a more polymorphic solve here if possible
             const params: IQueryLens = {
                 channelId: channel.id,
