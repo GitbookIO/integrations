@@ -1,8 +1,4 @@
-import type {
-    ContentKitSelectOption,
-    GitSyncOperationState,
-    IntegrationSpaceInstallation,
-} from '@gitbook/api';
+import type { GitSyncOperationState, IntegrationSpaceInstallation } from '@gitbook/api';
 
 import type { GitLabSpaceConfiguration } from './types';
 
