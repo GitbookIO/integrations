@@ -74,6 +74,7 @@ export async function acknowledgeSlackEvent(req: Request, context: SlackRuntimeC
 
     if (!['block_actions'].includes(type)) {
         const saveThreadEvent = isSaveThreadEvent(type, text);
+
         if (saveThreadEvent) {
             await slackAPI(
                 context,
@@ -156,24 +157,6 @@ export async function acknowledgeSlackAction(req: Request, context: SlackRuntime
     const { accessToken } = await getInstallationConfig(context, team.id);
 
     if (!['block_actions'].includes(type)) {
-        // const resLink = await slackAPI(
-        //     context,
-        //     {
-        //         method: 'GET',
-        //         path: 'chat.getPermalink',
-        //         payload: {
-        //             channel: channel.id,
-        //             message_ts: message.ts,
-        //         },
-        //     },
-        //     { accessToken }
-        // );
-
-        // console.log('resLink', resLink);
-
-        // const parsedUrl = new URL(resLink.permalink);
-        // const permalink = parsedUrl.origin + parsedUrl.pathname;
-
         const saveThreadEvent = isSaveThreadEvent(type, message.text);
         if (saveThreadEvent) {
             await slackAPI(
@@ -208,7 +191,7 @@ export async function acknowledgeSlackAction(req: Request, context: SlackRuntime
         );
     }
 
-    fetch(`${req.url}_task`, {
+    const data = fetch(`${req.url}_task`, {
         method: 'POST',
         body: await req.text(),
         headers: {
@@ -218,7 +201,7 @@ export async function acknowledgeSlackAction(req: Request, context: SlackRuntime
         },
     });
 
-    return new Response(JSON.stringify({ acknowledged: true }), {
+    return new Response(null, {
         headers: {
             'Content-Type': 'application/json',
         },

@@ -77,17 +77,14 @@ export async function queryLens({
     const result = await client.search.askQuery({ query: text });
     const answer = result.data?.answer;
 
-    // do something if there's no answer from lens
-    if (answer) {
+    if (answer && answer.text) {
         const { publicUrl, relatedPages } = await getRelatedPages({
             answer,
             client,
             environment,
         });
 
-        const answerText = answer?.text
-            ? capitalizeFirstLetter(answer.text)
-            : "I couldn't find anything related to your question. Perhaps try rephrasing it.";
+        const answerText = capitalizeFirstLetter(answer.text);
 
         const blocks = {
             method: 'POST',
@@ -123,6 +120,38 @@ export async function queryLens({
                                 type: 'divider',
                             },
                             ...ShareTools(),
+                        ],
+                    },
+                ],
+
+                user: userId,
+            },
+        };
+
+        await slackAPI(context, blocks, {
+            accessToken,
+        });
+    } else {
+        const text =
+            "I couldn't find anything related to your question. Perhaps try rephrasing it.";
+
+        const blocks = {
+            method: 'POST',
+            path: 'chat.postEphemeral',
+            payload: {
+                channel: channelId,
+                thread_ts: threadId,
+                attachments: [
+                    {
+                        color: '#346ddb',
+                        blocks: [
+                            {
+                                type: 'section',
+                                text: {
+                                    type: 'mrkdwn',
+                                    text,
+                                },
+                            },
                         ],
                     },
                 ],
