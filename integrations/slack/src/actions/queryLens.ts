@@ -98,9 +98,6 @@ export async function queryLens({
                 thread_ts: threadId,
                 blocks: [
                     {
-                        type: 'divider',
-                    },
-                    {
                         type: 'header',
                         text: {
                             type: 'plain_text',

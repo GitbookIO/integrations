@@ -39,8 +39,6 @@ export async function parseEventPayload(req: Request) {
     // Clone the request so its body is still available to the fallback
     const event = await req.clone().json<{ event?: { type: string }; type?: string }>();
 
-    console.log('event===', JSON.stringify(event));
-
     return event;
 }
 
