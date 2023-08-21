@@ -78,7 +78,7 @@ export function QueryDisplayBlock(params: { queries: Array<string>; heading?: st
                 type: 'section',
                 text: {
                     type: 'mrkdwn',
-                    text: heading ?? 'Some followup questions you might try:',
+                    text: heading ?? '*Some followup questions you might want to try:*',
                 },
             },
         ],
@@ -100,7 +100,7 @@ export function FollowUpQueryList(props: { queries: Array<string> }) {
             type: 'button',
             text: {
                 type: 'plain_text',
-                text: 'Ask Lens',
+                text: 'Ask GitBook',
                 emoji: true,
             },
             value: query,
