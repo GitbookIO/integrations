@@ -95,28 +95,38 @@ export async function queryLens({
             payload: {
                 channel: channelId,
                 thread_ts: threadId,
-                blocks: [
+                attachments: [
                     {
-                        type: 'header',
-                        text: {
-                            type: 'plain_text',
-                            text: capitalizeFirstLetter(text),
-                        },
+                        color: '#346ddb',
+                        blocks: [
+                            {
+                                type: 'header',
+                                text: {
+                                    type: 'plain_text',
+                                    text: capitalizeFirstLetter(text),
+                                },
+                            },
+                            {
+                                type: 'section',
+                                text: {
+                                    type: 'mrkdwn',
+                                    text: answerText,
+                                },
+                            },
+                            ...PagesBlock({
+                                title: 'More information',
+                                items: relatedPages,
+                                publicUrl,
+                            }),
+                            ...QueryDisplayBlock({ queries: answer?.followupQuestions ?? [] }),
+                            {
+                                type: 'divider',
+                            },
+                            ...ShareTools(),
+                        ],
                     },
-                    {
-                        type: 'section',
-                        text: {
-                            type: 'mrkdwn',
-                            text: answerText,
-                        },
-                    },
-                    ...PagesBlock({ title: 'More information', items: relatedPages, publicUrl }),
-                    ...QueryDisplayBlock({ queries: answer?.followupQuestions ?? [] }),
-                    {
-                        type: 'divider',
-                    },
-                    ...ShareTools(),
                 ],
+
                 user: userId,
             },
         };
