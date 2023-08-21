@@ -139,6 +139,7 @@ export async function queryLens({
                     ...(threadId ? { thread_ts: threadId } : {}),
                     blocks,
                     user: userId,
+                    unfurl_links: false,
                 },
             };
         }
