@@ -64,3 +64,9 @@ export async function parseActionPayload(req: Request) {
 export function stripBotName(text: string, botName: string) {
     return text.split(new RegExp(`^.*<@${botName}> `)).join('');
 }
+
+export function getActionNameAndType(actionId: string) {
+    const [actionName, actionPostType = 'ephemeral'] = actionId.split(':');
+
+    return { actionName, actionPostType };
+}

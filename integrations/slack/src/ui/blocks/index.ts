@@ -3,11 +3,8 @@ import { RevisionPage } from '@gitbook/api';
 export function PageBlock(page: RevisionPage, publicUrl: string) {
     const url = `${publicUrl}/${page.slug}`;
     return {
-        type: 'section',
-        text: {
-            type: 'mrkdwn',
-            text: `*<${url}|:page_facing_up: ${page.title}>*`,
-        },
+        type: 'mrkdwn',
+        text: `*<${url}|:page_facing_up: ${page.title}>*`,
     };
 }
 
@@ -20,8 +17,6 @@ export function PagesBlock(params: {
 
     const blocks = items.reduce<Array<any>>((acc, page) => {
         const pageResultBlock = PageBlock(page, publicUrl);
-        // if (page.sections) {
-        // const sectionBlocks = page.sections.map(buildSearchSectionBlock);
         acc.push(pageResultBlock);
         return acc;
     }, []);
@@ -29,20 +24,23 @@ export function PagesBlock(params: {
     if (title) {
         return [
             {
-                type: 'header',
+                type: 'section',
                 text: {
                     type: 'plain_text',
                     text: title,
                 },
             },
-            ...blocks.flat(),
             {
-                type: 'section',
-                text: {
-                    type: 'plain_text',
-                    text: ' ',
-                },
+                type: 'context',
+                elements: blocks.slice(0, 9), // block kit limit of 10
             },
+            // {
+            //     type: 'section',
+            //     text: {
+            //         type: 'plain_text',
+            //         text: ' ',
+            //     },
+            // },
         ];
     }
 }
@@ -94,7 +92,7 @@ export function FollowUpQueryList(props: { queries: Array<string> }) {
         type: 'section',
         text: {
             type: 'mrkdwn',
-            text: query,
+            text: `_${query}_`,
         },
         accessory: {
             type: 'button',
@@ -104,12 +102,12 @@ export function FollowUpQueryList(props: { queries: Array<string> }) {
                 emoji: true,
             },
             value: query,
-            action_id: 'queryLens',
+            action_id: 'queryLens:ephemeral',
         },
     }));
 }
 
-export function ShareTools(blocks) {
+export function ShareTools(text) {
     return [
         {
             type: 'actions',
@@ -118,23 +116,22 @@ export function ShareTools(blocks) {
                     type: 'button',
                     text: {
                         type: 'plain_text',
-                        text: 'Send',
+                        text: 'Share',
                         emoji: true,
                     },
-                    value: JSON.stringify(blocks),
-                    action_id: 'shareMessage',
+                    value: text,
+                    action_id: 'queryLens:permanent',
                     style: 'primary',
                 },
                 // {
-                // type: 'button',
-                // text: {
-                // type: 'plain_text',
-                // text: 'Not Relevant',
-                // emoji: true,
-                // },
-                // value: 'share',
-                // action_id: 'setOutdated',
-                // style: 'danger',
+                //     type: 'button',
+                //     text: {
+                //         type: 'plain_text',
+                //         text: 'Cancel',
+                //         emoji: true,
+                //     },
+                //     value: 'share',
+                //     action_id: 'deleteQueryMessage',
                 // },
             ],
         },

@@ -18,6 +18,7 @@ export function createSlackEventsHandler(
         const { api, environment } = context;
         const eventPayload = await parseEventPayload(request);
 
+        console.log('events handler', eventPayload);
         const {
             type,
             text,
@@ -36,7 +37,7 @@ export function createSlackEventsHandler(
         // check for bot_id so that the bot doesn't trigger itself
         if (['message', 'app_mention'].includes(type) && !bot_id) {
             if (saveThreadEvent) {
-                await saveThread({
+                const data = await saveThread({
                     teamId: team_id,
                     channelId: channel,
                     thread_ts,
@@ -53,6 +54,7 @@ export function createSlackEventsHandler(
                     channelId: channel,
                     threadId: thread_ts,
                     userId: user,
+                    messageType: 'ephemeral',
                     text: parsedQuery,
                     context,
                 });
