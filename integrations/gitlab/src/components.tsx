@@ -55,7 +55,7 @@ export const configBlock = createComponent<
                     ...element,
                     state: {
                         ...element.state,
-                        withConnectGitLab: true,
+                        withConnectGitLab: action.withConnectGitLab,
                     },
                 };
             case 'save.token':
@@ -81,17 +81,37 @@ export const configBlock = createComponent<
                 );
                 return element;
             case 'select.project':
-                return element;
-            case 'select.branch':
-                return element;
-            case 'toggle.customInstanceUrl':
-                return element;
-            case 'toggle.customTemplate':
                 return {
                     ...element,
                     state: {
                         ...element.state,
-                        commitMessagePreview: element.state.withCustomTemplate
+                        project: action.project,
+                    },
+                };
+            case 'select.branch':
+                return {
+                    ...element,
+                    state: {
+                        ...element.state,
+                        branch: action.branch,
+                    },
+                };
+            case 'toggle.customInstanceUrl':
+                return {
+                    ...element,
+                    state: {
+                        ...element.state,
+                        withCustomInstanceUrl: action.withCustomInstanceUrl,
+                    },
+                };
+            case 'toggle.customTemplate':
+                const withCustomTemplate = action.withCustomTemplate;
+                return {
+                    ...element,
+                    state: {
+                        ...element.state,
+                        withCustomTemplate,
+                        commitMessagePreview: withCustomTemplate
                             ? getGitSyncCommitMessage(element.state.commitMessageTemplate, {
                                   change_request_number: 123,
                                   change_request_subject: 'Fix documentation for /user/me',
@@ -164,6 +184,7 @@ export const configBlock = createComponent<
                             tooltip="Connect your GitLab account"
                             onPress={{
                                 action: 'connect.gitlab',
+                                withConnectGitLab: true,
                             }}
                         />
                     }
@@ -202,6 +223,8 @@ export const configBlock = createComponent<
                                         state="withCustomInstanceUrl"
                                         onValueChange={{
                                             action: 'toggle.customInstanceUrl',
+                                            withCustomInstanceUrl:
+                                                element.dynamicState('withCustomInstanceUrl'),
                                         }}
                                     />
                                 }
@@ -229,6 +252,7 @@ export const configBlock = createComponent<
                                         state="project"
                                         onValueChange={{
                                             action: 'select.project',
+                                            project: element.dynamicState('project'),
                                         }}
                                         options={{
                                             url: {
@@ -256,6 +280,7 @@ export const configBlock = createComponent<
                                                 state="branch"
                                                 onValueChange={{
                                                     action: 'select.branch',
+                                                    branch: element.dynamicState('branch'),
                                                 }}
                                                 options={{
                                                     url: {
@@ -328,6 +353,8 @@ export const configBlock = createComponent<
                                             state="withCustomTemplate"
                                             onValueChange={{
                                                 action: 'toggle.customTemplate',
+                                                withCustomTemplate:
+                                                    element.dynamicState('withCustomTemplate'),
                                             }}
                                         />
                                     }

@@ -4,7 +4,7 @@ import { Logger } from '@gitbook/runtime';
 import { querySpaceInstallations } from './installation';
 import { triggerImport } from './sync';
 import { GitLabRuntimeContext } from './types';
-import { computeConfigQueryKeyBase } from './utils';
+import { computeConfigQueryKey } from './utils';
 
 interface GitLabPushEvent {
     object_kind: string;
@@ -86,7 +86,7 @@ export async function handlePushEvent(context: GitLabRuntimeContext, payload: Gi
     const gitlabProjectId = payload.project.id;
     const gitlabRef = payload.ref;
 
-    const queryKey = computeConfigQueryKeyBase(gitlabProjectId, gitlabRef);
+    const queryKey = computeConfigQueryKey(gitlabProjectId, gitlabRef);
     // Trigger import for all installations that match this repository
     const spaceInstallations = await querySpaceInstallations(context, queryKey);
 
@@ -141,7 +141,7 @@ export async function handleMergeRequestEvent(
         payload.object_attributes.action === 'open' ||
         payload.object_attributes.action === 'update'
     ) {
-        const queryKey = computeConfigQueryKeyBase(gitlabProjectId, targetRef);
+        const queryKey = computeConfigQueryKey(gitlabProjectId, targetRef);
         // Trigger import for all installations that match this repository
         const spaceInstallations = await querySpaceInstallations(context, queryKey);
 

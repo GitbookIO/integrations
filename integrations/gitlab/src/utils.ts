@@ -90,8 +90,11 @@ export function getSpaceConfigOrThrow(
  * Compute the query key for the configuration. This will be useful to list or find
  * all configuration(s) that match this combination of project ID and ref.
  */
-export function computeConfigQueryKeyBase(projectId: number, ref: string): string {
-    return `${projectId}/${ref}`;
+export function computeConfigQueryKey(projectId: number, ref: string): string {
+    return JSON.stringify({
+        projectId,
+        ref,
+    });
 }
 
 /**

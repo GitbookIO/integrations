@@ -6,7 +6,7 @@ import { Logger } from '@gitbook/runtime';
 import { getGitRef, installWebhook } from './provider';
 import { triggerExport, triggerImport } from './sync';
 import { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { assertIsDefined, computeConfigQueryKeyBase, parseProjectOrThow } from './utils';
+import { assertIsDefined, computeConfigQueryKey, parseProjectOrThow } from './utils';
 
 const logger = Logger('gitlab:installation');
 
@@ -33,7 +33,7 @@ export async function saveSpaceConfiguration(
      * we can query it later when there is a webhook event.
      */
     const externalIds: string[] = [];
-    externalIds.push(computeConfigQueryKeyBase(projectId, getGitRef(config.branch)));
+    externalIds.push(computeConfigQueryKey(projectId, getGitRef(config.branch)));
 
     const configurationBody: GitLabSpaceConfiguration = {
         ...spaceInstallation.configuration,
@@ -65,7 +65,7 @@ export async function saveSpaceConfiguration(
     logger.info(`Saved config for space ${spaceInstallation.space}`);
 
     // Force a synchronization
-    if (config.priority === 'gitlab') {
+    if (configurationBody.priority === 'gitlab') {
         logger.debug(`Forcing import for space ${spaceInstallation.space}`);
         await triggerImport(context, updatedSpaceInstallation, {
             force: true,
@@ -81,7 +81,19 @@ export async function saveSpaceConfiguration(
 
     // Install the webhook if needed
     if (!configurationBody.webhookId) {
-        await installWebhook(context, updatedSpaceInstallation);
+        await installWebhook(context, updatedSpaceInstallation).then(async (id) => {
+            return api.integrations.updateIntegrationSpaceInstallation(
+                spaceInstallation.integration,
+                spaceInstallation.installation,
+                spaceInstallation.space,
+                {
+                    configuration: {
+                        ...configurationBody,
+                        webhookId: id,
+                    },
+                }
+            );
+        });
     }
 }
 
