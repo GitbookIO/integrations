@@ -3,7 +3,7 @@ import { FetchEventCallback } from '@gitbook/runtime';
 import { queryLens } from './actions/queryLens';
 import { saveThread } from './actions/saveThread';
 import { SlackRuntimeContext } from './configuration';
-import { isAppMentionSave, parseEventPayload } from './utils';
+import { isSaveThreadEvent, parseEventPayload } from './utils';
 
 /**
  * Handle an event from Slack.
@@ -31,12 +31,12 @@ export function createSlackEventsHandler(
             team_id,
         } = eventPayload.event;
 
-        const isCuration = isAppMentionSave(eventPayload.event);
-        console.log('isCuration====', isCuration);
+        const saveThreadEvent = isSaveThreadEvent(eventPayload.event);
+        console.log('isCuration====', isSaveThreadEvent);
 
         console.log('TYPE', type);
         if (['message', 'app_mention'].includes(type)) {
-            if (isCuration) {
+            if (saveThreadEvent) {
                 await saveThread({
                     teamId: team_id,
                     channelId: channel,
