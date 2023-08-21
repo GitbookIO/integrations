@@ -31,7 +31,7 @@ export function createSlackEventsHandler(
             team_id,
         } = eventPayload.event;
 
-        const saveThreadEvent = isSaveThreadEvent(eventPayload.event);
+        const saveThreadEvent = isSaveThreadEvent(type, text);
 
         console.log('TYPE', type);
         if (['message', 'app_mention'].includes(type)) {
