@@ -2,7 +2,12 @@ import { sha256 } from 'js-sha256';
 
 import { SlackRuntimeContext } from './configuration';
 import { slackAPI } from './slack';
-import { getInstallationConfig, parseActionPayload, parseEventPayload } from './utils';
+import {
+    getInstallationConfig,
+    isSaveThreadEvent,
+    parseActionPayload,
+    parseEventPayload,
+} from './utils';
 
 /**
  * Verify the authenticity of a Slack request.
@@ -48,21 +53,23 @@ export async function acknowledgeSlackEvent(req: Request, context: SlackRuntimeC
     const { accessToken } = await getInstallationConfig(context, team_id);
 
     if (!['block_actions'].includes(type)) {
-        console.log('postEphemeral===', channel, thread_ts, user.id);
-        await slackAPI(
-            context,
-            {
-                method: 'POST',
-                path: 'chat.postEphemeral',
-                payload: {
-                    channel,
-                    text: `Saving thread in GitBook`,
-                    thread_ts,
-                    user,
+        const saveThreadEvent = isSaveThreadEvent(type, text);
+        if (saveThreadEvent) {
+            await slackAPI(
+                context,
+                {
+                    method: 'POST',
+                    path: 'chat.postEphemeral',
+                    payload: {
+                        channel,
+                        text: `Saving thread in GitBook`,
+                        thread_ts,
+                        user,
+                    },
                 },
-            },
-            { accessToken }
-        );
+                { accessToken }
+            );
+        }
     }
 
     fetch(`${req.url}_task`, {
@@ -115,20 +122,23 @@ export async function acknowledgeSlackAction(req: Request, context: SlackRuntime
         // const parsedUrl = new URL(resLink.permalink);
         // const permalink = parsedUrl.origin + parsedUrl.pathname;
 
-        await slackAPI(
-            context,
-            {
-                method: 'POST',
-                path: 'chat.postEphemeral',
-                payload: {
-                    channel: channel.id,
-                    text: `Saving thread in GitBook`,
-                    thread_ts: message.thread_ts,
-                    user: user.id,
+        const saveThreadEvent = isSaveThreadEvent(type, message.text);
+        if (saveThreadEvent) {
+            await slackAPI(
+                context,
+                {
+                    method: 'POST',
+                    path: 'chat.postEphemeral',
+                    payload: {
+                        channel: channel.id,
+                        text: `Saving thread in GitBook`,
+                        thread_ts: message.thread_ts,
+                        user: user.id,
+                    },
                 },
-            },
-            { accessToken }
-        );
+                { accessToken }
+            );
+        }
 
         console.log('acknowledgeSlackShortcut==========');
     }

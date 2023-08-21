@@ -31,8 +31,8 @@ export async function getInstallationConfig(context, externalId) {
 /**
  * @gitbook save
  */
-export function isSaveThreadEvent(event) {
-    return event.type === 'app_mention' && event.text.split(' ')[1] === 'save';
+export function isSaveThreadEvent(type: string, text: string) {
+    return type === 'app_mention' && text.split(' ')[1] === 'save';
 }
 
 export async function parseEventPayload(req: Request) {
