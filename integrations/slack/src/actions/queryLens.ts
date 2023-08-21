@@ -48,6 +48,9 @@ interface IQueryLens {
     text: string;
     context: SlackRuntimeContext;
 
+    /* postEphemeral vs postMessage */
+    messageType: 'ephemeral' | 'permanent';
+
     /* needed for postEphemeral */
     userId?: string;
 
@@ -61,6 +64,7 @@ export async function queryLens({
     threadId,
     userId,
     text,
+    messageType,
     context,
 }: IQueryLens) {
     const { environment, api } = context;
@@ -69,7 +73,6 @@ export async function queryLens({
     if (!installation) {
         throw new Error('Installation not found');
     }
-
     // Authenticate as the installation
     const accessToken = (installation.configuration as SlackInstallationConfiguration)
         .oauth_credentials?.access_token;
@@ -86,12 +89,13 @@ export async function queryLens({
 
         const answerText = capitalizeFirstLetter(answer.text);
 
+        const header = text.length > 150 ? `${text.slice(0, 140)}...` : text;
         const blocks = [
             {
                 type: 'header',
                 text: {
                     type: 'plain_text',
-                    text: capitalizeFirstLetter(text),
+                    text: capitalizeFirstLetter(header),
                 },
             },
             {
@@ -101,23 +105,43 @@ export async function queryLens({
                     text: answerText,
                 },
             },
-            ...PagesBlock({ title: 'More information', items: relatedPages, publicUrl }),
             ...QueryDisplayBlock({ queries: answer?.followupQuestions ?? [] }),
             {
                 type: 'divider',
             },
+            ...PagesBlock({
+                title: 'Sources',
+                items: relatedPages,
+                publicUrl,
+            }),
         ];
 
-        const slackData = {
-            method: 'POST',
-            path: 'chat.postEphemeral',
-            payload: {
-                channel: channelId,
-                thread_ts: threadId,
-                blocks: [...blocks, ...ShareTools(blocks)],
-                user: userId,
-            },
-        };
+        let slackData = {};
+        if (messageType === 'ephemeral') {
+            slackData = {
+                method: 'POST',
+                path: 'chat.postEphemeral',
+                payload: {
+                    channel: channelId,
+                    blocks: [...blocks, ...ShareTools(text)],
+                    // attachments: [{ color: '#346ddb', blocks: [...blocks, ...ShareTools(text)] }],
+                    user: userId,
+
+                    ...(threadId ? { thread_ts: threadId } : {}),
+                },
+            };
+        } else {
+            slackData = {
+                method: 'POST',
+                path: 'chat.postMessage',
+                payload: {
+                    channel: channelId,
+                    ...(threadId ? { thread_ts: threadId } : {}),
+                    blocks,
+                    user: userId,
+                },
+            };
+        }
 
         await slackAPI(context, slackData, {
             accessToken,

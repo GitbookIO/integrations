@@ -9,6 +9,7 @@ import {
     parseEventPayload,
     parseCommandPayload,
     stripBotName,
+    getActionNameAndType,
 } from './utils';
 
 /**
@@ -43,8 +44,9 @@ export async function verifySlackRequest(request: Request, { environment }: Slac
     }
 }
 
-const acknowledgeQuery = async ({ context, text, userId, channelId, accessToken }) =>
-    slackAPI(
+const acknowledgeQuery = async ({ context, text, userId, channelId, threadId, accessToken }) => {
+    console.log('acknowledgeQuer userId', userId);
+    return slackAPI(
         context,
         {
             method: 'POST',
@@ -54,12 +56,14 @@ const acknowledgeQuery = async ({ context, text, userId, channelId, accessToken 
                 text: `_Asking: ${text}_`,
                 // thread_ts: message.thread_ts,
                 ...(userId ? { user: userId } : {}), // actually shouldn't be optional
+                ...(threadId ? { thread_ts: threadId } : {}),
             },
         },
         {
             accessToken,
         }
     );
+};
 
 /**
  * We acknowledge the slack request immediately to avoid failures
@@ -98,7 +102,8 @@ export async function acknowledgeSlackEvent(req: Request, context: SlackRuntimeC
             await acknowledgeQuery({
                 context,
                 text: parsedQuery,
-                userId: user.id,
+                userId: user,
+                threadId: thread_ts,
                 channelId: channel,
                 accessToken,
             });
@@ -152,7 +157,9 @@ export async function acknowledgeSlackCommand(req: Request, context: SlackRuntim
 export async function acknowledgeSlackAction(req: Request, context: SlackRuntimeContext) {
     const actionPayload = await parseActionPayload(req);
 
-    const { type, channel, message, team, user, actions } = actionPayload;
+    const { type, channel, message, team, user, actions, container } = actionPayload;
+
+    console.log('actions payload====', actionPayload);
 
     const { accessToken } = await getInstallationConfig(context, team.id);
 
@@ -179,13 +186,16 @@ export async function acknowledgeSlackAction(req: Request, context: SlackRuntime
             actions.map(async (action) => {
                 const { action_id, value } = actions[0];
 
+                const { actionName } = getActionNameAndType(action_id);
+
                 // TODO: check if we are actually trying to query via the action_id. setting this up for demo
-                if (action_id === 'queryLens') {
+                if (actionName === 'queryLens') {
                     return acknowledgeQuery({
                         context,
                         text: value,
                         userId: user.id,
                         channelId: channel.id,
+                        threadId: container?.thread_ts,
                         accessToken,
                     });
                 } else {
