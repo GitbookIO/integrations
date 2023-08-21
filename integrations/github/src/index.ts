@@ -16,6 +16,8 @@ import type { GithubRuntimeContext } from './types';
 import {
     assertIsDefined,
     getSpaceConfigOrThrow,
+    ParsedInstallation,
+    ParsedRepository,
     parseInstallationOrThrow,
     parseRepositoryOrThrow,
 } from './utils';
@@ -24,7 +26,7 @@ import { handlePullRequestEvents, handlePushEvent, verifyGitHubWebhookSignature 
 const logger = Logger('github');
 
 const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (request, context) => {
-    const { environment } = context;
+    const { api, environment } = context;
 
     const router = Router({
         base: new URL(
@@ -136,14 +138,53 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         const spaceInstallation = environment.spaceInstallation;
         assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
-        const installations = await fetchInstallations(getSpaceConfigOrThrow(spaceInstallation));
+        const config = getSpaceConfigOrThrow(spaceInstallation);
+        const installations = await fetchInstallations(config);
 
-        const data = installations.map(
-            (installation): ContentKitSelectOption => ({
-                id: `${installation.id}:${installation.account.login}`,
-                label: installation.account.login,
-            })
-        );
+        let configInstallation: ParsedInstallation | undefined;
+        try {
+            configInstallation = parseInstallationOrThrow(config);
+        } catch (error) {
+            // Ignore
+        }
+
+        const data: ContentKitSelectOption[] = [];
+        for (const installation of installations) {
+            const id = `${installation.id}:${installation.account.login}`;
+            const label = installation.account.login;
+
+            if (
+                configInstallation &&
+                configInstallation.installationId === installation.id &&
+                configInstallation.accountName !== installation.account.login
+            ) {
+                logger.debug(
+                    `installation account name mismatch for installation ${installation.id}, expected ${configInstallation.accountName} but got ${installation.account.login}, reconciling`
+                );
+
+                await api.integrations.updateIntegrationSpaceInstallation(
+                    spaceInstallation.integration,
+                    spaceInstallation.installation,
+                    spaceInstallation.space,
+                    {
+                        configuration: {
+                            ...spaceInstallation.configuration,
+                            // Update instllation in configuration to the one found in list
+                            installation: id,
+                        },
+                    }
+                );
+
+                // return as we'll need to re-fetch the installations with updated config state
+                return new Response(JSON.stringify([]), {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+            }
+
+            data.push({ id, label });
+        }
 
         return new Response(JSON.stringify(data), {
             headers: {
@@ -165,19 +206,55 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                 ? parseInstallationOrThrow(installation).installationId
                 : undefined;
 
+        const config = getSpaceConfigOrThrow(spaceInstallation);
         const repositories = installationId
-            ? await fetchInstallationRepositories(
-                  getSpaceConfigOrThrow(spaceInstallation),
-                  installationId
-              )
+            ? await fetchInstallationRepositories(config, installationId)
             : [];
 
-        const data = repositories.map(
-            (repository): ContentKitSelectOption => ({
-                id: `${repository.id}:${repository.name}`,
-                label: repository.name,
-            })
-        );
+        let configRepository: ParsedRepository | undefined;
+        try {
+            configRepository = parseRepositoryOrThrow(config);
+        } catch (error) {
+            // Ignore
+        }
+
+        const data: ContentKitSelectOption[] = [];
+        for (const repository of repositories) {
+            const id = `${repository.id}:${repository.name}`;
+            const label = repository.name;
+
+            if (
+                configRepository &&
+                configRepository.repoID === repository.id &&
+                configRepository.repoName !== repository.name
+            ) {
+                logger.debug(
+                    `repository name mismatch for repository ${repository.id}, expected ${configRepository.repoName} but got ${repository.name}, reconciling`
+                );
+
+                await api.integrations.updateIntegrationSpaceInstallation(
+                    spaceInstallation.integration,
+                    spaceInstallation.installation,
+                    spaceInstallation.space,
+                    {
+                        configuration: {
+                            ...spaceInstallation.configuration,
+                            // Update repository in configuration to the one found in list
+                            repository: id,
+                        },
+                    }
+                );
+
+                // return as we'll need to re-fetch the installations with updated config state
+                return new Response(JSON.stringify([]), {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+            }
+
+            data.push({ id, label });
+        }
 
         return new Response(JSON.stringify(data), {
             headers: {
