@@ -88,7 +88,6 @@ export async function queryLens({
 
         const blocks = [
             {
-                color: '#346ddb',
                 type: 'header',
                 text: {
                     type: 'plain_text',
