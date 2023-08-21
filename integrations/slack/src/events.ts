@@ -48,7 +48,7 @@ export function createSlackEventsHandler(
                 console.log('isQuery====');
                 // stript out the bot-name in the mention and account for user mentions within the query
                 const parsedQuery = text
-                    .split(new RegExp(`^.+<@${eventPayload.authorizations[0]?.user_id}> `))
+                    .split(new RegExp(`^.*<@${eventPayload.authorizations[0]?.user_id}> `))
                     .join('');
 
                 // send to Lens
