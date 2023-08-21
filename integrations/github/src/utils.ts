@@ -1,10 +1,24 @@
-import {
-    ContentKitSelectOption,
-    GitSyncOperationState,
-    IntegrationSpaceInstallation,
-} from '@gitbook/api';
+import { GitSyncOperationState, IntegrationSpaceInstallation } from '@gitbook/api';
 
 import type { GitHubSpaceConfiguration } from './types';
+
+/**
+ * Object after parsing the installation string which is a concatenation
+ * of the installation ID and account name separated by a colon (:)
+ */
+export interface ParsedInstallation {
+    installationId: number;
+    accountName: string;
+}
+
+/**
+ * Object after parsing the repository string which is a concatenation
+ * of the repo ID and repo name separated by a colon (:)
+ */
+export interface ParsedRepository {
+    repoID: number;
+    repoName: string;
+}
 
 /**
  * The default commit message to use when a change request is merged in GitBook
@@ -64,7 +78,9 @@ export function getSpaceConfigOrThrow(
  * Parse the GitHub installation ID and account name from the installation string.
  * This will `throw an error` if the installation is not defined.
  */
-export function parseInstallationOrThrow(input: GitHubSpaceConfiguration | string) {
+export function parseInstallationOrThrow(
+    input: GitHubSpaceConfiguration | string
+): ParsedInstallation {
     const installation = typeof input === 'string' ? input : input.installation;
     assertIsDefined(installation, { label: 'installation' });
 
@@ -78,7 +94,7 @@ export function parseInstallationOrThrow(input: GitHubSpaceConfiguration | strin
  * Parse the repository ID and repository name from the repository string.
  * This will `throw an error` if the repository is not defined.
  */
-export function parseRepositoryOrThrow(input: GitHubSpaceConfiguration | string) {
+export function parseRepositoryOrThrow(input: GitHubSpaceConfiguration | string): ParsedRepository {
     const repository = typeof input === 'string' ? input : input.repository;
     assertIsDefined(repository, { label: 'repository' });
 
@@ -90,62 +106,21 @@ export function parseRepositoryOrThrow(input: GitHubSpaceConfiguration | string)
 
 /**
  * Compute the query key for the configuration. This will be useful to list or find
- * all configuration(s) that match this combination of installation, repository and ref.
+ * all configuration(s) that match this combination of installationId, repositoryId
+ * ref and previewExternalBranches flag.
  */
-export function computeConfigQueryKeyBase(
+export function computeConfigQueryKey(
     installationId: number,
     repoID: number,
-    ref: string
+    ref: string,
+    previewExternalBranches?: boolean
 ): string {
-    return `${installationId}/${repoID}/${ref}`;
-}
-
-/**
- * Same as computeConfigQueryKeyBase, but with the previewExternalBranches flag.
- */
-export function computeConfigQueryKeyPreviewExternalBranches(
-    installationId: number,
-    repoID: number,
-    ref: string
-): string {
-    return `${computeConfigQueryKeyBase(installationId, repoID, ref)}/previewExternalBranches:true`;
-}
-
-/**
- * Utility to map an array of data items to an array of select options.
- *
- * It also takes an optional predicate to push a default option to the result
- * if the predicate is **not** satisfied by any of the data items.
- *
- * The predicate is satisfied if the value of the key in the data item
- * is equal to the value provided in the predicate.
- */
-export function mapDataToOptions<T extends object>(
-    data: T[],
-    mapper: (item: T) => ContentKitSelectOption,
-    defaultPredicate?: {
-        key: keyof T;
-        value: T[keyof T];
-        option: ContentKitSelectOption;
-    }
-): ContentKitSelectOption[] {
-    const options: ContentKitSelectOption[] = [];
-    let satisfiesPredicate = false;
-
-    for (const item of data) {
-        options.push(mapper(item));
-
-        if (defaultPredicate && item[defaultPredicate.key] === defaultPredicate.value) {
-            satisfiesPredicate = true;
-        }
-    }
-
-    // If the predicate is not satisfied, we push the default option
-    if (defaultPredicate && !satisfiesPredicate) {
-        options.push(defaultPredicate.option);
-    }
-
-    return options;
+    return JSON.stringify({
+        installationId,
+        repoID,
+        ref,
+        ...(typeof previewExternalBranches === 'boolean' ? { previewExternalBranches } : {}),
+    });
 }
 
 export function assertIsDefined<T>(

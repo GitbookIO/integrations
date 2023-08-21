@@ -8,8 +8,7 @@ import { triggerExport, triggerImport } from './sync';
 import { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
 import {
     assertIsDefined,
-    computeConfigQueryKeyBase,
-    computeConfigQueryKeyPreviewExternalBranches,
+    computeConfigQueryKey,
     parseInstallationOrThrow,
     parseRepositoryOrThrow,
 } from './utils';
@@ -40,15 +39,10 @@ export async function saveSpaceConfiguration(
      * we can query it later when there is a webhook event.
      */
     const externalIds: string[] = [];
-
-    externalIds.push(computeConfigQueryKeyBase(installationId, repoID, getGitRef(config.branch)));
+    externalIds.push(computeConfigQueryKey(installationId, repoID, getGitRef(config.branch)));
     if (config.previewExternalBranches) {
         externalIds.push(
-            computeConfigQueryKeyPreviewExternalBranches(
-                installationId,
-                repoID,
-                getGitRef(config.branch)
-            )
+            computeConfigQueryKey(installationId, repoID, getGitRef(config.branch), true)
         );
     }
 

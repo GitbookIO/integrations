@@ -13,10 +13,10 @@ export type GithubRuntimeEnvironment = RuntimeEnvironment<{}, GitHubSpaceConfigu
 export type GithubRuntimeContext = RuntimeContext<GithubRuntimeEnvironment>;
 
 export type ConfigureAction =
-    | { action: 'select.installation' }
-    | { action: 'select.repository' }
-    | { action: 'select.branch' }
-    | { action: 'toggle.customTemplate' }
+    | { action: 'select.installation'; installation: string }
+    | { action: 'select.repository'; repository: string }
+    | { action: 'select.branch'; branch: string }
+    | { action: 'toggle.customTemplate'; withCustomTemplate: boolean }
     | { action: 'preview.commitMessage' }
     | { action: 'save.config' };
 

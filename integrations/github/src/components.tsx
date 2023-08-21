@@ -47,17 +47,37 @@ export const configBlock = createComponent<
     action: async (element, action, context) => {
         switch (action.action) {
             case 'select.installation':
-                return element;
-            case 'select.repository':
-                return element;
-            case 'select.branch':
-                return element;
-            case 'toggle.customTemplate':
                 return {
                     ...element,
                     state: {
                         ...element.state,
-                        commitMessagePreview: element.state.withCustomTemplate
+                        installation: action.installation,
+                    },
+                };
+            case 'select.repository':
+                return {
+                    ...element,
+                    state: {
+                        ...element.state,
+                        repository: action.repository,
+                    },
+                };
+            case 'select.branch':
+                return {
+                    ...element,
+                    state: {
+                        ...element.state,
+                        branch: action.branch,
+                    },
+                };
+            case 'toggle.customTemplate':
+                const withCustomTemplate = action.withCustomTemplate;
+                return {
+                    ...element,
+                    state: {
+                        ...element.state,
+                        withCustomTemplate,
+                        commitMessagePreview: withCustomTemplate
                             ? getGitSyncCommitMessage(element.state.commitMessageTemplate, {
                                   change_request_number: 123,
                                   change_request_subject: 'Fix documentation for /user/me',
@@ -153,6 +173,7 @@ export const configBlock = createComponent<
                                         state="installation"
                                         onValueChange={{
                                             action: 'select.installation',
+                                            installation: element.dynamicState('installation'),
                                         }}
                                         options={{
                                             url: {
@@ -196,6 +217,7 @@ export const configBlock = createComponent<
                                                 state="repository"
                                                 onValueChange={{
                                                     action: 'select.repository',
+                                                    repository: element.dynamicState('repository'),
                                                 }}
                                                 options={{
                                                     url: {
@@ -230,6 +252,7 @@ export const configBlock = createComponent<
                                                 state="branch"
                                                 onValueChange={{
                                                     action: 'select.branch',
+                                                    branch: element.dynamicState('branch'),
                                                 }}
                                                 options={{
                                                     url: {
@@ -305,6 +328,8 @@ export const configBlock = createComponent<
                                             state="withCustomTemplate"
                                             onValueChange={{
                                                 action: 'toggle.customTemplate',
+                                                withCustomTemplate:
+                                                    element.dynamicState('withCustomTemplate'),
                                             }}
                                         />
                                     }
