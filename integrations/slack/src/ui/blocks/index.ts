@@ -6,7 +6,7 @@ export function PageBlock(page: RevisionPage, publicUrl: string) {
         type: 'section',
         text: {
             type: 'mrkdwn',
-            text: `* <${url}|:page_facing_up: ${page.title}>* `,
+            text: `*<${url}|:page_facing_up: ${page.title}>*`,
         },
     };
 }
@@ -107,4 +107,36 @@ export function FollowUpQueryList(props: { queries: Array<string> }) {
             action_id: 'queryLens',
         },
     }));
+}
+
+export function ShareTools() {
+    return [
+        {
+            type: 'actions',
+            elements: [
+                {
+                    type: 'button',
+                    text: {
+                        type: 'plain_text',
+                        text: 'Share in Channel',
+                        emoji: true,
+                    },
+                    value: 'share',
+                    action_id: 'postToChannel',
+                    style: 'primary',
+                },
+                // {
+                // type: 'button',
+                // text: {
+                // type: 'plain_text',
+                // text: 'Not Relevant',
+                // emoji: true,
+                // },
+                // value: 'share',
+                // action_id: 'setOutdated',
+                // style: 'danger',
+                // },
+            ],
+        },
+    ];
 }

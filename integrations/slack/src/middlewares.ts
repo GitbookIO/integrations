@@ -125,10 +125,11 @@ export async function acknowledgeSlackCommand(req: Request, context: SlackRuntim
     const { team_id, user_id, channel_id, text } = eventPayload;
 
     const { accessToken } = await getInstallationConfig(context, team_id);
+    const textBody = await req.text();
 
     const data = fetch(`${req.url}_task`, {
         method: 'POST',
-        body: await req.text(),
+        body: textBody,
         headers: {
             'content-type': req.headers.get('content-type'),
             'x-slack-signature': req.headers.get('x-slack-signature'),
@@ -150,7 +151,7 @@ export async function acknowledgeSlackCommand(req: Request, context: SlackRuntim
 export async function acknowledgeSlackAction(req: Request, context: SlackRuntimeContext) {
     const actionPayload = await parseActionPayload(req);
 
-    const { type, channel, message, team, user, response_url } = actionPayload;
+    const { type, channel, message, team, user, response_url, actions } = actionPayload;
 
     const { accessToken } = await getInstallationConfig(context, team.id);
 
@@ -190,6 +191,21 @@ export async function acknowledgeSlackAction(req: Request, context: SlackRuntime
                 { accessToken }
             );
         }
+    } else if (actions.length > 0) {
+        await Promise.all(
+            actions.map((action) => {
+                const { action_id, value } = actions[0];
+
+                // TODO: check if we are actually trying to query via the action_id. setting this up for demo
+                return acknowledgeQuery({
+                    context,
+                    text: value,
+                    userId: user.id,
+                    channelId: channel.id,
+                    accessToken,
+                });
+            })
+        );
     }
 
     fetch(`${req.url}_task`, {
