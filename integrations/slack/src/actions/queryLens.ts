@@ -78,7 +78,7 @@ export async function queryLens({
             path: userId ? 'chat.postEphemeral' : 'chat.postMessage', // probably alwasy ephemeral? or otherwise have replies in same thread
             payload: {
                 channel: channelId,
-                text: `_Asking GitBook Lens: ${text}_`,
+                text: `_Asking: ${text}_`,
                 thread_ts: threadId,
                 ...(userId ? { user: userId } : {}), // actually shouldn't be optional
             },
@@ -99,6 +99,10 @@ export async function queryLens({
             client,
             environment,
         });
+
+        const answerText = answer?.text
+            ? answer.text.charAt(0).toUpperCase() + answer.text.slice(1)
+            : "I couldn't find anything related to your question. Perhaps try rephrasing it.";
 
         const blocks = {
             method: 'POST',
@@ -122,10 +126,7 @@ export async function queryLens({
                         type: 'section',
                         text: {
                             type: 'mrkdwn',
-                            text: `${
-                                answer?.text ||
-                                "I couldn't find anything related to your question. Perhaps try rephrasing it."
-                            }`,
+                            text: answerText,
                         },
                     },
                     ...PagesBlock({ title: 'More information', items: relatedPages, publicUrl }),
