@@ -29,9 +29,6 @@ export function PagesBlock(params: {
     if (title) {
         return [
             {
-                type: 'divider',
-            },
-            {
                 type: 'header',
                 text: {
                     type: 'plain_text',
@@ -39,6 +36,13 @@ export function PagesBlock(params: {
                 },
             },
             ...blocks.flat(),
+            {
+                type: 'section',
+                text: {
+                    type: 'plain_text',
+                    text: ' ',
+                },
+            },
         ];
     }
 }
@@ -121,7 +125,7 @@ export function FollowUpQueryList(props: { queries: Array<string> }) {
     //     type: 'button',
     //     text: {
     //         type: 'plain_text',
-    //         text: question.slice(0, 75),
+           text: question.slice(0, 75),
     //         emoji: true,
     //     },
     //     value: 'queryLens',
