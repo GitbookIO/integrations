@@ -1,16 +1,18 @@
 import { slackAPI } from '../slack';
-import { QueryDisplayBlock } from '../ui/blocks';
+import { GeneratedDocLinkBlock, QueryDisplayBlock } from '../ui/blocks';
 import { getInstallationConfig } from '../utils';
 import { createMessageThreadRecording } from './gitbook';
 
 export async function saveThread({ teamId, channelId, thread_ts, userId, context }) {
     const { environment } = context;
 
-    const recording = await createMessageThreadRecording(context, {
+    const { recording } = await createMessageThreadRecording(context, {
         team_id: teamId,
         channel: channelId,
         thread_ts,
     });
+
+    console.log('recording===', recording);
 
     const { accessToken } = await getInstallationConfig(context, teamId);
 
@@ -22,17 +24,10 @@ export async function saveThread({ teamId, channelId, thread_ts, userId, context
             payload: {
                 channel: channelId,
                 blocks: [
-                    {
-                        type: 'section',
-                        text: {
-                            type: 'mrkdwn',
-                            text: 'Thread saved in GitBook :white_check_mark:',
-                        },
-                    },
+                    ...GeneratedDocLinkBlock({ url: recording.url }),
                     ...QueryDisplayBlock({
-                        queries: recording.followupQuestions,
+                        queries: recording.followupQuestions ?? [],
                         heading: 'Here some questions this thread can help answer:',
-                        displayFullQuery: true,
                     }),
                 ],
 

@@ -47,14 +47,24 @@ export function PagesBlock(params: {
     }
 }
 
-export function QueryDisplayBlock(params: {
-    queries: Array<string>;
-    heading?: string;
-    displayFullQuery?: boolean;
-}) {
-    const { queries, heading, displayFullQuery } = params;
+export function GeneratedDocLinkBlock(props: { url: string }) {
+    const { url } = props;
 
-    if (queries?.length === 0) {
+    return [
+        {
+            type: 'section',
+            text: {
+                type: 'mrkdwn',
+                text: `Thread saved in <${url}|GitBook>`,
+            },
+        },
+    ];
+}
+
+export function QueryDisplayBlock(params: { queries: Array<string>; heading?: string }) {
+    const { queries, heading } = params;
+
+    if (queries.length === 0) {
         return [];
     }
 
@@ -73,30 +83,8 @@ export function QueryDisplayBlock(params: {
             },
         ],
 
-        // ...(displayFullQuery
-        //     ? FollowUpQueryList({ queries })
-        //     : [FollowUpQueryButtons({ queries })]),
-
         ...FollowUpQueryList({ queries }),
     ];
-}
-
-export function FollowUpQueryButtons(props: { queries: Array<string> }) {
-    const { queries } = props;
-
-    return {
-        type: 'actions',
-        elements: queries.map((question) => ({
-            type: 'button',
-            text: {
-                type: 'plain_text',
-                text: question, // note! there's a 76 character limit
-                emoji: true,
-            },
-            value: question,
-            action_id: 'queryLens',
-        })),
-    };
 }
 
 export function FollowUpQueryList(props: { queries: Array<string> }) {

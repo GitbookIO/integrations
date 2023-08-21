@@ -62,7 +62,7 @@ export async function acknowledgeSlackEvent(req: Request, context: SlackRuntimeC
                     path: 'chat.postEphemeral',
                     payload: {
                         channel,
-                        text: `Saving thread in GitBook`,
+                        text: `Saving thread in GitBook. Hang tight, this will take a sec.`,
                         thread_ts,
                         user,
                     },
@@ -131,7 +131,7 @@ export async function acknowledgeSlackAction(req: Request, context: SlackRuntime
                     path: 'chat.postEphemeral',
                     payload: {
                         channel: channel.id,
-                        text: `Saving thread in GitBook`,
+                        text: `Saving thread in GitBook. Hang tight, this will take a sec.`,
                         thread_ts: message.thread_ts,
                         user: user.id,
                     },
