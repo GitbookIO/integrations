@@ -6,7 +6,7 @@ import {
     SlackRuntimeContext,
 } from '../configuration';
 import { slackAPI } from '../slack';
-import { PagesBlock, QueryDisplayBlock } from '../ui/blocks';
+import { PagesBlock, QueryDisplayBlock, ShareTools } from '../ui/blocks';
 import { getInstallationApiClient } from './gitbook';
 
 async function getRelatedPages(params: {
@@ -91,10 +91,9 @@ export async function queryLens({
 
         const blocks = {
             method: 'POST',
-            path: 'chat.postMessage',
+            path: 'chat.postEphemeral',
             payload: {
                 channel: channelId,
-                // response_type: 'in_channel',
                 thread_ts: threadId,
                 blocks: [
                     {
@@ -116,9 +115,9 @@ export async function queryLens({
                     {
                         type: 'divider',
                     },
+                    ...ShareTools(),
                 ],
-                unfurl_links: false,
-                unfurl_media: false,
+                user: userId,
             },
         };
 

@@ -6,7 +6,7 @@ import { createSlackActionsHandler } from './actions';
 import { queryLens } from './actions/queryLens';
 import { createSlackCommandsHandler } from './commands';
 import { createSlackEventsHandler } from './events';
-import { queryLensInGitBook, queryLensSlashHandler } from './handlers';
+import { queryLensSlashHandler } from './handlers';
 import { unfurlLink } from './links';
 import {
     acknowledgeSlackEvent,
