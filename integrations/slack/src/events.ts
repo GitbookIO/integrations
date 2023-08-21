@@ -32,11 +32,11 @@ export function createSlackEventsHandler(
         } = eventPayload.event;
 
         const saveThreadEvent = isSaveThreadEvent(eventPayload.event);
-        console.log('isCuration====', isSaveThreadEvent);
 
         console.log('TYPE', type);
         if (['message', 'app_mention'].includes(type)) {
             if (saveThreadEvent) {
+                console.log('isCuration====');
                 await saveThread({
                     teamId: team_id,
                     channelId: channel,
@@ -45,6 +45,7 @@ export function createSlackEventsHandler(
                     context,
                 });
             } else {
+                console.log('isQuery====');
                 // stript out the bot-name in the mention and account for user mentions within the query
                 const parsedQuery = text
                     .split(new RegExp(`^.+<@${eventPayload.authorizations[0]?.user_id}> `))
