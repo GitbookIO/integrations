@@ -55,7 +55,7 @@ export function GeneratedDocLinkBlock(props: { url: string }) {
             type: 'section',
             text: {
                 type: 'mrkdwn',
-                text: `Thread saved in <${url}|GitBook>`,
+                text: `:white_check_mark: Conversation saved in <${url}|GitBook>`,
             },
         },
     ];
