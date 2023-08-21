@@ -119,15 +119,4 @@ export function FollowUpQueryList(props: { queries: Array<string> }) {
             action_id: 'queryLens',
         },
     }));
-
-    // type: 'actions',
-    // elements: queries.map((question) => ({
-    //     type: 'button',
-    //     text: {
-    //         type: 'plain_text',
-    //    text: question.slice(0, 75),
-    //         emoji: true,
-    //     },
-    //     value: 'queryLens',
-   })),
 }

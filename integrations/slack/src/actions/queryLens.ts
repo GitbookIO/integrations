@@ -39,6 +39,9 @@ async function getRelatedPages(params: {
     };
 }
 
+const capitalizeFirstLetter = (text: string) =>
+    text?.trim().charAt(0).toUpperCase() + text?.trim().slice(1);
+
 interface IQueryLens {
     channelId: string;
     teamId: string;
@@ -101,7 +104,7 @@ export async function queryLens({
         });
 
         const answerText = answer?.text
-            ? answer.text.charAt(0).toUpperCase() + answer.text.slice(1)
+            ? capitalizeFirstLetter(answer.text)
             : "I couldn't find anything related to your question. Perhaps try rephrasing it.";
 
         const blocks = {
