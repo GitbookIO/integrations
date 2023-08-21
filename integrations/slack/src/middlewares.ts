@@ -120,6 +120,8 @@ export async function acknowledgeSlackEvent(req: Request, context: SlackRuntimeC
         },
     });
 
+    context.event.waitUntil(data);
+
     // return new Response(JSON.stringify({ acknowledged: true }), {
     return new Response(null, {
         status: 200,
@@ -142,6 +144,8 @@ export async function acknowledgeSlackCommand(req: Request, context: SlackRuntim
             'x-slack-request-timestamp': req.headers.get('x-slack-request-timestamp'),
         },
     });
+
+    context.event.waitUntil(data);
 
     await acknowledgeQuery({ context, text, userId: user_id, channelId: channel_id, accessToken });
 
@@ -227,6 +231,8 @@ export async function acknowledgeSlackAction(req: Request, context: SlackRuntime
             'x-slack-request-timestamp': req.headers.get('x-slack-request-timestamp'),
         },
     });
+
+    context.event.waitUntil(data);
 
     return new Response(null, {
         headers: {
