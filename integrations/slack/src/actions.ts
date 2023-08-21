@@ -17,7 +17,7 @@ export function createSlackActionsHandler(
     // TODO: type output
 ): any {
     return async (request, context) => {
-        const actionPayload = await parseActionPayload(req);
+        const actionPayload = await parseActionPayload(request);
 
         console.log('actions payload====', actionPayload);
         const { actions, container, channel, message, team, user } = actionPayload;
