@@ -23,14 +23,18 @@ export async function saveThread({ teamId, channelId, thread_ts, userId, context
             path: 'chat.postMessage',
             payload: {
                 channel: channelId,
-                blocks: [
-                    ...GeneratedDocLinkBlock({ url: recording.url }),
-                    ...QueryDisplayBlock({
-                        queries: followupQuestions,
-                        heading: 'Here some questions this thread can help answer:',
-                    }),
+                attachments: [
+                    {
+                        color: '#346ddb',
+                        blocks: [
+                            ...GeneratedDocLinkBlock({ url: recording.url }),
+                            ...QueryDisplayBlock({
+                                queries: followupQuestions,
+                                heading: 'Here some questions this thread can help answer:',
+                            }),
+                        ],
+                    },
                 ],
-
                 thread_ts,
                 user: userId,
             },
