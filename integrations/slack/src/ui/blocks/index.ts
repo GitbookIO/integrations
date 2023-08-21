@@ -118,7 +118,7 @@ export function ShareTools(blocks) {
                     type: 'button',
                     text: {
                         type: 'plain_text',
-                        text: 'Share',
+                        text: 'Send',
                         emoji: true,
                     },
                     value: JSON.stringify(blocks),

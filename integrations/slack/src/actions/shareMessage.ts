@@ -27,6 +27,8 @@ export async function shareMessage({ channelId, teamId, threadId, userId, text, 
                     blocks,
                     thread_ts: threadId,
                     user: userId,
+                    unfurl_links: false,
+                    unfurl_media: false,
                 },
             },
             { accessToken }
