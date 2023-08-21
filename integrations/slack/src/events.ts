@@ -1,10 +1,9 @@
 import { FetchEventCallback } from '@gitbook/runtime';
 
-import { createMessageThreadRecording } from './actions/gitbook';
 import { queryLens } from './actions/queryLens';
 import { saveThread } from './actions/saveThread';
 import { SlackRuntimeContext } from './configuration';
-import { isAppMentionSave } from './utils';
+import { isAppMentionSave, parseEventPayload } from './utils';
 
 /**
  * Handle an event from Slack.
@@ -17,10 +16,7 @@ export function createSlackEventsHandler(
 ): FetchEventCallback {
     return async (request, context) => {
         const { api, environment } = context;
-        // Clone the request so its body is still available to the fallback
-        const event = await request.clone().json<{ event?: { type: string }; type?: string }>();
-
-        console.log('event===', JSON.stringify(event));
+        const eventPayload = await parseEventPayload(request);
 
         const {
             type,
@@ -33,15 +29,13 @@ export function createSlackEventsHandler(
             user,
             event_ts,
             team_id,
-        } = event.event;
+        } = eventPayload.event;
 
-        const isCuration = isAppMentionSave(event.event);
+        const isCuration = isAppMentionSave(eventPayload.event);
         console.log('isCuration====', isCuration);
 
         console.log('TYPE', type);
         if (['message', 'app_mention'].includes(type)) {
-            const { text } = event.event;
-
             if (isCuration) {
                 await saveThread({
                     teamId: team_id,
@@ -53,13 +47,13 @@ export function createSlackEventsHandler(
             } else {
                 // stript out the bot-name in the mention and account for user mentions within the query
                 const parsedQuery = text
-                    .split(new RegExp(`^.+<@${event.authorizations[0]?.user_id}> `))
+                    .split(new RegExp(`^.+<@${eventPayload.authorizations[0]?.user_id}> `))
                     .join('');
 
                 // send to Lens
                 const data = await queryLens({
-                    teamId: event.team_id,
-                    channelId: event.event.channel,
+                    teamId: eventPayload.team_id,
+                    channelId: eventPayload.event.channel,
                     threadId: thread_ts,
                     userId: user,
                     text: parsedQuery,

@@ -3,6 +3,7 @@ import { FetchEventCallback } from '@gitbook/runtime';
 import { type IQueryLens } from './actions/queryLens';
 import { saveThread } from './actions/saveThread';
 import { SlackRuntimeContext } from './configuration';
+import { parseActionPayload } from './utils';
 
 /**
 
@@ -16,9 +17,7 @@ export function createSlackActionsHandler(
     // TODO: type output
 ): any {
     return async (request, context) => {
-        const requestText = await request.text();
-        const shortcutEvent = Object.fromEntries(new URLSearchParams(requestText).entries());
-        const actionPayload = JSON.parse(shortcutEvent.payload);
+        const actionPayload = await parseActionPayload(req);
 
         console.log('actions payload====', actionPayload);
         const { actions, container, channel, message, team, user } = actionPayload;
