@@ -31,7 +31,7 @@ export async function getInstallationConfig(context, externalId) {
 /**
  * @gitbook save
  */
-export function isAppMentionSave(event) {
+export function isSaveThreadEvent(event) {
     return event.type === 'app_mention' && event.text.split(' ')[1] === 'save';
 }
 
