@@ -44,6 +44,15 @@ export async function parseEventPayload(req: Request) {
     return event;
 }
 
+export async function parseCommandPayload(req: Request) {
+    // Clone the request so its body is still available to the fallback
+    const requestText = await req.clone().text();
+
+    const event = Object.fromEntries(new URLSearchParams(requestText).entries());
+
+    return event;
+}
+
 export async function parseActionPayload(req: Request) {
     // Clone the request so its body is still available to the fallback// Clone the request so its body is still available to the fallback
     const requestText = await req.clone().text();
@@ -52,4 +61,8 @@ export async function parseActionPayload(req: Request) {
     const shortcutPayload = JSON.parse(shortcutEvent.payload);
 
     return shortcutPayload;
+}
+
+export function stripBotName(text: string, botName: string) {
+    return text.split(new RegExp(`^.*<@${botName}> `)).join('');
 }
