@@ -109,7 +109,7 @@ export function FollowUpQueryList(props: { queries: Array<string> }) {
     }));
 }
 
-export function ShareTools() {
+export function ShareTools(blocks) {
     return [
         {
             type: 'actions',
@@ -118,11 +118,11 @@ export function ShareTools() {
                     type: 'button',
                     text: {
                         type: 'plain_text',
-                        text: 'Share in Channel',
+                        text: 'Share',
                         emoji: true,
                     },
-                    value: 'share',
-                    action_id: 'postToChannel',
+                    value: JSON.stringify(blocks),
+                    action_id: 'shareMessage',
                     style: 'primary',
                 },
                 // {
