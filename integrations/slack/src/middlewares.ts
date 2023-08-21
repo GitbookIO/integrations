@@ -2,7 +2,7 @@ import { sha256 } from 'js-sha256';
 
 import { SlackRuntimeContext } from './configuration';
 import { slackAPI } from './slack';
-import { getInstallationConfig } from './utils';
+import { getInstallationConfig, parseActionPayload, parseEventPayload } from './utils';
 
 /**
  * Verify the authenticity of a Slack request.
@@ -40,7 +40,31 @@ export async function verifySlackRequest(request: Request, { environment }: Slac
  * We acknowledge the slack request immediately to avoid failures
  * and "queue" the actual task to be executed in a subsequent request.
  */
-export async function acknowledgeSlackRequest(req: Request) {
+export async function acknowledgeSlackEvent(req: Request, context: SlackRuntimeContext) {
+    const eventPayload = await parseEventPayload(req);
+    const { type, team_id, text, bot_id, ts, thread_ts, parent_user_id, channel, user, event_ts } =
+        eventPayload.event;
+
+    const { accessToken } = await getInstallationConfig(context, team_id);
+
+    if (!['block_actions'].includes(type)) {
+        console.log('postEphemeral===', channel, thread_ts, user.id);
+        await slackAPI(
+            context,
+            {
+                method: 'POST',
+                path: 'chat.postEphemeral',
+                payload: {
+                    channel,
+                    text: `Saving thread in GitBook`,
+                    thread_ts,
+                    user,
+                },
+            },
+            { accessToken }
+        );
+    }
+
     fetch(`${req.url}_task`, {
         method: 'POST',
         body: await req.text(),
@@ -51,7 +75,8 @@ export async function acknowledgeSlackRequest(req: Request) {
         },
     });
 
-    console.log('acknowledging', req.url);
+    console.log('acknowledgeSlackEvent==========');
+
     // return new Response(JSON.stringify({ acknowledged: true }), {
     return new Response(null, {
         status: 200,
@@ -63,45 +88,41 @@ export async function acknowledgeSlackRequest(req: Request) {
  * and "queue" the actual task to be executed in a subsequent request.
  */
 export async function acknowledgeSlackAction(req: Request, context: SlackRuntimeContext) {
-    const requestText = await req.clone().text();
-    const shortcutEvent = Object.fromEntries(new URLSearchParams(requestText).entries());
-    const shortcutPayload = JSON.parse(shortcutEvent.payload);
-    // Clone the request so its body is still available to the fallback
-    // const event = await request.clone().json<{ event?: { type: string }; type?: string }>();
+    const actionPayload = await parseActionPayload(req);
 
-    const { type, channel, message, team, user, response_url } = shortcutPayload;
+    const { type, channel, message, team, user, response_url } = actionPayload;
 
-    console.log('shortcutPayload', shortcutPayload);
+    console.log('shortcutPayload', actionPayload);
 
     const { accessToken } = await getInstallationConfig(context, team.id);
 
     if (!['block_actions'].includes(type)) {
-        const resLink = await slackAPI(
-            context,
-            {
-                method: 'GET',
-                path: 'chat.getPermalink',
-                payload: {
-                    channel: channel.id,
-                    message_ts: message.ts,
-                },
-            },
-            { accessToken }
-        );
+        // const resLink = await slackAPI(
+        //     context,
+        //     {
+        //         method: 'GET',
+        //         path: 'chat.getPermalink',
+        //         payload: {
+        //             channel: channel.id,
+        //             message_ts: message.ts,
+        //         },
+        //     },
+        //     { accessToken }
+        // );
 
-        console.log('resLink', resLink);
+        // console.log('resLink', resLink);
 
-        const parsedUrl = new URL(resLink.permalink);
-        const permalink = parsedUrl.origin + parsedUrl.pathname;
+        // const parsedUrl = new URL(resLink.permalink);
+        // const permalink = parsedUrl.origin + parsedUrl.pathname;
 
-        const res = await slackAPI(
+        await slackAPI(
             context,
             {
                 method: 'POST',
                 path: 'chat.postEphemeral',
                 payload: {
                     channel: channel.id,
-                    text: `Docs being generated for thread ${permalink}`,
+                    text: `Saving thread in GitBook`,
                     thread_ts: message.thread_ts,
                     user: user.id,
                 },
@@ -109,7 +130,7 @@ export async function acknowledgeSlackAction(req: Request, context: SlackRuntime
             { accessToken }
         );
 
-        console.log('acknowledgeSlackShortcut==========', res);
+        console.log('acknowledgeSlackShortcut==========');
     }
 
     fetch(`${req.url}_task`, {
