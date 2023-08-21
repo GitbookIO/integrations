@@ -97,43 +97,6 @@ export function computeConfigQueryKey(projectId: number, ref: string): string {
     });
 }
 
-/**
- * Utility to map an array of data items to an array of select options.
- *
- * It also takes an optional predicate to push a default option to the result
- * if the predicate is **not** satisfied by any of the data items.
- *
- * The predicate is satisfied if the value of the key in the data item
- * is equal to the value provided in the predicate.
- */
-export function mapDataToOptions<T extends object>(
-    data: T[],
-    mapper: (item: T) => ContentKitSelectOption,
-    defaultPredicate?: {
-        key: keyof T;
-        value: T[keyof T];
-        option: ContentKitSelectOption;
-    }
-): ContentKitSelectOption[] {
-    const options: ContentKitSelectOption[] = [];
-    let satisfiesPredicate = false;
-
-    for (const item of data) {
-        options.push(mapper(item));
-
-        if (defaultPredicate && item[defaultPredicate.key] === defaultPredicate.value) {
-            satisfiesPredicate = true;
-        }
-    }
-
-    // If the predicate is not satisfied, we push the default option
-    if (defaultPredicate && !satisfiesPredicate) {
-        options.push(defaultPredicate.option);
-    }
-
-    return options;
-}
-
 export function assertIsDefined<T>(
     value: T,
     options: { label: string }

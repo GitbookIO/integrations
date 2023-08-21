@@ -7,13 +7,7 @@ import { fetchProjectBranches, fetchProjects } from './api';
 import { configBlock } from './components';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
 import type { GitLabRuntimeContext } from './types';
-import {
-    getSpaceConfigOrThrow,
-    mapDataToOptions,
-    parseProjectOrThow,
-    ParsedProject,
-    assertIsDefined,
-} from './utils';
+import { getSpaceConfigOrThrow, parseProjectOrThow, ParsedProject, assertIsDefined } from './utils';
 import { handleMergeRequestEvent, handlePushEvent } from './webhooks';
 
 const logger = Logger('gitlab');
@@ -171,24 +165,14 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
 
         const branches = projectId ? await fetchProjectBranches(config, projectId) : [];
 
-        const configBranch = config.branch;
-
-        const options = mapDataToOptions(
-            branches,
-            (branch) => ({
+        const data = branches.map(
+            (branch): ContentKitSelectOption => ({
                 id: branch.name,
                 label: branch.name,
-            }),
-            configBranch
-                ? {
-                      key: 'name',
-                      value: configBranch,
-                      option: { id: configBranch, label: configBranch },
-                  }
-                : undefined
+            })
         );
 
-        return new Response(JSON.stringify(options), {
+        return new Response(JSON.stringify(data), {
             headers: {
                 'Content-Type': 'application/json',
             },
