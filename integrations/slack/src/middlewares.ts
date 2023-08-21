@@ -72,7 +72,7 @@ export async function acknowledgeSlackEvent(req: Request, context: SlackRuntimeC
         }
     }
 
-    fetch(`${req.url}_task`, {
+    const data = fetch(`${req.url}_task`, {
         method: 'POST',
         body: await req.text(),
         headers: {

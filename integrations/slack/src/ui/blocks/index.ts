@@ -129,48 +129,5 @@ export function FollowUpQueryList(props: { queries: Array<string> }) {
     //         emoji: true,
     //     },
     //     value: 'queryLens',
-    // })),
+   })),
 }
-
-// {
-//     "type": "section",
-//     "text": {
-//         "type": "mrkdwn",
-//         "text": "This is a section block with a button that can be veryyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy long."
-//     },
-//     "accessory": {
-//         "type": "button",
-//         "text": {
-//             "type": "plain_text",
-//             "text": "Click Me",
-//             "emoji": true
-//         },
-//         "value": "click_me_123",
-//         "action_id": "button-action"
-//     }
-// },
-
-// function buildSearchSectionBlock(section: SearchSectionResult) {
-// const title = section.title ? `* ${section.title.replace(/"/g, '')}* ` : ``;
-// const body = ` - _${section.body.replace(/"/g, '').split('\n').join('').slice(0, 128)} _`;
-// const text = `: hash: ${title}${body} `;
-// return [
-// {
-// type: 'section',
-// text: {
-// type: 'mrkdwn',
-// text,
-// },
-// accessory: {
-// type: 'button',
-// text: {
-// type: 'plain_text',
-// text: 'View',
-// emoji: true,
-// },
-// url: section.urls.app,
-// action_id: section.id,
-// },
-// },
-// ];
-// }
