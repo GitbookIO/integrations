@@ -2,7 +2,6 @@ import { slackAPI } from '../slack';
 import { getInstallationConfig } from '../utils';
 
 const orgId = 'TdvOhBZeNlhXIANE35Zl';
-const spaceId = 'mpu06z75jn9wS83SndrV';
 
 function slackTimestampToISOFormat(slackTs) {
     const timestampInMilliseconds = parseFloat(slackTs) * 1000;
@@ -34,6 +33,7 @@ export async function getInstallationApiClient(api, externalId: string) {
 
 export async function createMessageThreadRecording(context, slackEvent) {
     const { api, environment } = context;
+    const spaceId = environment.installation.configuration.recordings_space;
 
     const { team_id, channel, thread_ts } = slackEvent;
 
