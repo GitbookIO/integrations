@@ -1,6 +1,6 @@
 import { Router } from 'itty-router';
 
-import { GitSyncOperationState } from '@gitbook/api';
+import { ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
 import { createIntegration, FetchEventCallback, Logger, EventCallback } from '@gitbook/runtime';
 
 import { fetchProjectBranches, fetchProjects } from './api';
@@ -19,7 +19,7 @@ import { handleMergeRequestEvent, handlePushEvent } from './webhooks';
 const logger = Logger('gitlab');
 
 const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (request, context) => {
-    const { environment } = context;
+    const { api, environment } = context;
 
     const router = Router({
         base: new URL(
@@ -100,7 +100,6 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
         assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
         const config = getSpaceConfigOrThrow(spaceInstallation);
-
         const projects = await fetchProjects(config);
 
         let configProject: ParsedProject | undefined;
@@ -110,25 +109,44 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
             // Ignore
         }
 
-        const options = mapDataToOptions(
-            projects,
-            (project) => ({
-                id: `${project.id}:${project.path_with_namespace}`,
-                label: project.path_with_namespace,
-            }),
-            configProject
-                ? {
-                      key: 'id',
-                      value: configProject.projectId,
-                      option: {
-                          id: `${configProject.projectId}:${configProject.projectName}`,
-                          label: configProject.projectName,
-                      },
-                  }
-                : undefined
-        );
+        const data: ContentKitSelectOption[] = [];
+        for (const project of projects) {
+            const id = `${project.id}:${project.path_with_namespace}`;
+            const label = project.path_with_namespace;
 
-        return new Response(JSON.stringify(options), {
+            if (
+                configProject &&
+                configProject.projectId === project.id &&
+                configProject.projectName !== project.path_with_namespace
+            ) {
+                logger.debug(
+                    `project name mismatch for project ${project.id}, expected ${configProject.projectName} but got ${project.path_with_namespace}, reconciling`
+                );
+                await api.integrations.updateIntegrationSpaceInstallation(
+                    spaceInstallation.integration,
+                    spaceInstallation.installation,
+                    spaceInstallation.space,
+                    {
+                        configuration: {
+                            ...spaceInstallation.configuration,
+                            // Update project in configuration to the one found in list
+                            project: id,
+                        },
+                    }
+                );
+
+                // return as we'll need to re-fetch the projects with updated config state
+                return new Response(JSON.stringify([]), {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+            }
+
+            data.push({ id, label });
+        }
+
+        return new Response(JSON.stringify(data), {
             headers: {
                 'Content-Type': 'application/json',
             },
