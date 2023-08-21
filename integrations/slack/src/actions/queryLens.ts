@@ -133,7 +133,7 @@ export async function queryLens({
                         },
                     },
                     ...PagesBlock({ title: 'More information', items: relatedPages, publicUrl }),
-                    ...QueryDisplayBlock({ queries: answer?.followupQuestions }),
+                    ...QueryDisplayBlock({ queries: answer?.followupQuestions ?? [] }),
                     {
                         type: 'divider',
                     },
