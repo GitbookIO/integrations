@@ -1,8 +1,6 @@
 import { slackAPI } from '../slack';
 import { getInstallationConfig } from '../utils';
 
-const orgId = 'TdvOhBZeNlhXIANE35Zl';
-
 function slackTimestampToISOFormat(slackTs) {
     const timestampInMilliseconds = parseFloat(slackTs) * 1000;
 
@@ -18,8 +16,11 @@ export async function getInstallationApiClient(api, externalId: string) {
         data: { items: installations },
     } = await api.integrations.listIntegrationInstallations('slack', {
         externalId,
+
+        // we need to pass installation.target.organization
     });
 
+    // won't work for multiple installations accross orgs and same slack team
     const installation = installations[0];
     if (!installation) {
         return {};
@@ -34,8 +35,9 @@ export async function getInstallationApiClient(api, externalId: string) {
 export async function createMessageThreadRecording(context, slackEvent) {
     const { api, environment } = context;
     const { installation } = await getInstallationApiClient(api, slackEvent.team_id);
+
+    const orgId = installation.target.organization;
     const spaceId = installation.configuration.recordings_space;
-    console.log('space Id', spaceId);
 
     const { team_id, channel, thread_ts } = slackEvent;
 
