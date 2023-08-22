@@ -50,7 +50,7 @@ export const configBlock = createComponent<
     },
     action: async (element, action, context) => {
         switch (action.action) {
-            case 'connect.gitlab':
+            case 'connect.gitlab': {
                 return {
                     ...element,
                     state: {
@@ -58,6 +58,7 @@ export const configBlock = createComponent<
                         withConnectGitLab: action.withConnectGitLab,
                     },
                 };
+            }
             case 'save.token': {
                 const spaceInstallation = context.environment.spaceInstallation;
                 assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
@@ -75,7 +76,7 @@ export const configBlock = createComponent<
                 );
                 return element;
             }
-            case 'select.project':
+            case 'select.project': {
                 const spaceInstallation = context.environment.spaceInstallation;
                 assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
@@ -92,7 +93,8 @@ export const configBlock = createComponent<
                         projectName: glProject.path_with_namespace,
                     },
                 };
-            case 'select.branch':
+            }
+            case 'select.branch': {
                 return {
                     ...element,
                     state: {
@@ -100,7 +102,8 @@ export const configBlock = createComponent<
                         branch: action.branch,
                     },
                 };
-            case 'toggle.customInstanceUrl':
+            }
+            case 'toggle.customInstanceUrl': {
                 return {
                     ...element,
                     state: {
@@ -108,7 +111,9 @@ export const configBlock = createComponent<
                         withCustomInstanceUrl: action.withCustomInstanceUrl,
                     },
                 };
-            case 'toggle.customTemplate':
+            }
+
+            case 'toggle.customTemplate': {
                 const withCustomTemplate = action.withCustomTemplate;
                 return {
                     ...element,
@@ -123,7 +128,9 @@ export const configBlock = createComponent<
                             : undefined,
                     },
                 };
-            case 'preview.commitMessage':
+            }
+
+            case 'preview.commitMessage': {
                 return {
                     ...element,
                     state: {
@@ -137,6 +144,8 @@ export const configBlock = createComponent<
                         ),
                     },
                 };
+            }
+
             case 'save.configuration':
                 await saveSpaceConfiguration(context, element.state);
                 return element;
