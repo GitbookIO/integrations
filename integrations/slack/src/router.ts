@@ -115,6 +115,29 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         });
     });
 
+    router.get('/spaces', async () => {
+        let spaces: { value: string; label: string }[];
+
+        if (!('organization' in environment.installation.target)) {
+            spaces = [];
+        } else {
+            const resp = await api.orgs.listSpacesInOrganizationById(
+                environment.installation.target.organization
+            );
+
+            spaces = resp.data.items.map((space) => ({
+                value: space.id,
+                label: space.title,
+            }));
+        }
+
+        return new Response(JSON.stringify(spaces), {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+    });
+
     /*
      * Handle incoming webhooks from Slack.
      */
