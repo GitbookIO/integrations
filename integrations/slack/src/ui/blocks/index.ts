@@ -116,7 +116,7 @@ export function ShareTools(text) {
                     type: 'button',
                     text: {
                         type: 'plain_text',
-                        text: 'Share',
+                        text: 'Send',
                         emoji: true,
                     },
                     value: text,
