@@ -11,7 +11,7 @@ import { Logger } from '@gitbook/runtime';
 import { querySpaceInstallations } from './installation';
 import { triggerImport } from './sync';
 import { GithubRuntimeContext } from './types';
-import { computeConfigQueryKeyBase, computeConfigQueryKeyPreviewExternalBranches } from './utils';
+import { computeConfigQueryKey } from './utils';
 
 const logger = Logger('github:webhooks');
 
@@ -59,11 +59,7 @@ export async function handlePushEvent(
         const githubRepositoryId = payload.repository.id;
         const githubRef = payload.ref;
 
-        const queryKey = computeConfigQueryKeyBase(
-            githubInstallationId,
-            githubRepositoryId,
-            githubRef
-        );
+        const queryKey = computeConfigQueryKey(githubInstallationId, githubRepositoryId, githubRef);
 
         const spaceInstallations = await querySpaceInstallations(context, queryKey);
 
@@ -117,13 +113,12 @@ export async function handlePullRequestEvents(
         const githubInstallationId = payload.installation.id;
         const githubRepositoryId = payload.repository.id;
 
-        const queryKey = isPRFromFork
-            ? computeConfigQueryKeyPreviewExternalBranches(
-                  githubInstallationId,
-                  githubRepositoryId,
-                  baseRef
-              )
-            : computeConfigQueryKeyBase(githubInstallationId, githubRepositoryId, baseRef);
+        const queryKey = computeConfigQueryKey(
+            githubInstallationId,
+            githubRepositoryId,
+            baseRef,
+            isPRFromFork ? true : undefined
+        );
 
         const spaceInstallations = await querySpaceInstallations(context, queryKey);
 
