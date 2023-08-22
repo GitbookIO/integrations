@@ -56,7 +56,6 @@ configurations:
                 type: string
                 title: Recordings Space
                 description: Select the space where recordings will be stored.
-                completion_url: /spaces
         required:
             - oauth_credentials
             - default_channel
