@@ -37,10 +37,13 @@ export type ConfigureProps = {
              */
             customInstanceUrl?: string;
             /**
-             * The project to be used for the integration. The string is a concatenation
-             * of the project ID and the project name, separated by a colon (eg. 123456:foo/bar-project).
+             * Unique identifier of the GitLab project.
              */
             project?: string;
+            /**
+             * Full name of the GitLab project with namespace.
+             */
+            projectName?: string;
             /**
              * The branch to be used for the integration.
              */

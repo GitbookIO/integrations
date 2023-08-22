@@ -22,11 +22,11 @@ export async function saveSpaceConfiguration(
 
     assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
-    if (!config.project || !config.branch) {
+    if (!config.project || !config.projectName || !config.branch) {
         throw httpError(400, 'Incomplete configuration');
     }
 
-    const { projectId } = parseProjectOrThow(config);
+    const projectId = parseProjectOrThow(config);
 
     /**
      * We need to update the space installation external IDs to make sure

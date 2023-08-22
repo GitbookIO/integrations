@@ -3,15 +3,6 @@ import type { GitSyncOperationState, IntegrationSpaceInstallation } from '@gitbo
 import type { GitLabSpaceConfiguration } from './types';
 
 /**
- * Object after parsing the project string which is a concatenation
- * of the project ID and project name separated by a colon (:)
- */
-export interface ParsedProject {
-    projectId: number;
-    projectName: string;
-}
-
-/**
  * The default commit message to use when a change request is merged in GitBook
  */
 export const GITSYNC_DEFAULT_COMMIT_MESSAGE =
@@ -54,20 +45,17 @@ export function getGitSyncStateDescription(state: GitSyncOperationState): string
 }
 
 /**
- * Parse the project ID and project name from the project input string or
- * configuration. This will `throw an error` if the project is not defined.
+ * Parse the numeric project ID from the project input string or configuration.
+ * This will `throw an error` if the project is not defined.
  */
-export function parseProjectOrThow(input: string | GitLabSpaceConfiguration): ParsedProject {
+export function parseProjectOrThow(input: string | GitLabSpaceConfiguration): number {
     const project = typeof input === 'string' ? input : input.project;
     assertIsDefined(project, { label: 'project' });
     if (!project) {
         throw new Error('Expected a project');
     }
 
-    // Split at first occurrence of colon
-    const [projectId, ...rest] = project.split(':');
-    const projectName = rest.join(':');
-    return { projectId: parseInt(projectId, 10), projectName };
+    return parseInt(project, 10);
 }
 
 /**

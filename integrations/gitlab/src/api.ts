@@ -38,6 +38,17 @@ export async function fetchProjects(config: GitLabSpaceConfiguration) {
 }
 
 /**
+ * Fetch a GitLab project by its ID.
+ */
+export async function fetchProject(config: GitLabSpaceConfiguration, projectId: number) {
+    const project = await fetchGitLabAPI<GLProject>(config, {
+        path: `/projects/${projectId}`,
+    });
+
+    return project;
+}
+
+/**
  * Fetch all branches for a given project repository.
  */
 export async function fetchProjectBranches(config: GitLabSpaceConfiguration, projectId: number) {

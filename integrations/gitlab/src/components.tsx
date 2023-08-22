@@ -3,7 +3,7 @@ import hash from 'hash-sum';
 import { ContentKitIcon } from '@gitbook/api';
 import { createComponent } from '@gitbook/runtime';
 
-import { getAccessTokenOrThrow } from './api';
+import { fetchProject, getAccessTokenOrThrow } from './api';
 import { saveSpaceConfiguration } from './installation';
 import { ConfigureAction, ConfigureProps, ConfigureState, GitLabRuntimeContext } from './types';
 import {
@@ -58,34 +58,38 @@ export const configBlock = createComponent<
                         withConnectGitLab: action.withConnectGitLab,
                     },
                 };
-            case 'save.token':
-                const { api, environment } = context;
-                const installation = environment.installation;
-                const spaceInstallation = environment.spaceInstallation;
-
-                assertIsDefined(installation, { label: 'installation' });
+            case 'save.token': {
+                const spaceInstallation = context.environment.spaceInstallation;
                 assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
-                const existing = element.props.spaceInstallation.configuration;
-
-                await api.integrations.updateIntegrationSpaceInstallation(
-                    environment.integration.name,
-                    installation.id,
+                await context.api.integrations.updateIntegrationSpaceInstallation(
+                    spaceInstallation.integration,
+                    spaceInstallation.installation,
                     spaceInstallation.space,
                     {
                         configuration: {
-                            ...existing,
+                            ...spaceInstallation.configuration,
                             accessToken: action.token,
                         },
                     }
                 );
                 return element;
+            }
             case 'select.project':
+                const spaceInstallation = context.environment.spaceInstallation;
+                assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
+
+                const glProject = await fetchProject(
+                    spaceInstallation.configuration,
+                    parseInt(action.project, 10)
+                );
+
                 return {
                     ...element,
                     state: {
                         ...element.state,
                         project: action.project,
+                        projectName: glProject.path_with_namespace,
                     },
                 };
             case 'select.branch':

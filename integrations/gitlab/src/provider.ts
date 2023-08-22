@@ -21,7 +21,7 @@ export async function installWebhook(
     spaceInstallation: IntegrationSpaceInstallation
 ) {
     const config = getSpaceConfigOrThrow(spaceInstallation);
-    const { projectId } = parseProjectOrThow(config);
+    const projectId = parseProjectOrThow(config);
 
     const id = await addProjectWebhook(config, projectId, createGitLabWebhookURL(context));
 
@@ -39,7 +39,7 @@ export async function uninstallWebhook(spaceInstallation: IntegrationSpaceInstal
         return;
     }
 
-    const { projectId } = parseProjectOrThow(config);
+    const projectId = parseProjectOrThow(config);
 
     await deleteProjectWebhook(config, projectId, config.webhookId);
 
@@ -59,7 +59,7 @@ export async function updateCommitStatus(
         description: string;
     }
 ) {
-    const { projectId } = parseProjectOrThow(config);
+    const projectId = parseProjectOrThow(config);
 
     await editCommitStatus(config, projectId, commitSha, {
         name: update.context || 'GitBook',
@@ -75,8 +75,7 @@ export async function updateCommitStatus(
  * Returns the URL of the Git repository.
  */
 export function getRepositoryUrl(config: GitLabSpaceConfiguration, withExtension = false): string {
-    const { projectName } = parseProjectOrThow(config);
-    return `${config.customInstanceUrl || 'https://gitlab.com'}/${projectName}${
+    return `${config.customInstanceUrl || 'https://gitlab.com'}/${config.projectName}${
         withExtension ? '.git' : ''
     }`;
 }

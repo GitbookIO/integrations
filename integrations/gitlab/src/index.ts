@@ -7,13 +7,13 @@ import { fetchProjectBranches, fetchProjects } from './api';
 import { configBlock } from './components';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
 import type { GitLabRuntimeContext } from './types';
-import { getSpaceConfigOrThrow, parseProjectOrThow, ParsedProject, assertIsDefined } from './utils';
+import { getSpaceConfigOrThrow, assertIsDefined, parseProjectOrThow } from './utils';
 import { handleMergeRequestEvent, handlePushEvent } from './webhooks';
 
 const logger = Logger('gitlab');
 
 const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (request, context) => {
-    const { api, environment } = context;
+    const { environment } = context;
 
     const router = Router({
         base: new URL(
@@ -93,52 +93,14 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
         const spaceInstallation = environment.spaceInstallation;
         assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
-        const config = getSpaceConfigOrThrow(spaceInstallation);
-        const projects = await fetchProjects(config);
+        const projects = await fetchProjects(getSpaceConfigOrThrow(spaceInstallation));
 
-        let configProject: ParsedProject | undefined;
-        try {
-            configProject = parseProjectOrThow(config);
-        } catch (error) {
-            // Ignore
-        }
-
-        const data: ContentKitSelectOption[] = [];
-        for (const project of projects) {
-            const id = `${project.id}:${project.path_with_namespace}`;
-            const label = project.path_with_namespace;
-
-            if (
-                configProject &&
-                configProject.projectId === project.id &&
-                configProject.projectName !== project.path_with_namespace
-            ) {
-                logger.debug(
-                    `project name mismatch for project ${project.id}, expected ${configProject.projectName} but got ${project.path_with_namespace}, reconciling`
-                );
-                await api.integrations.updateIntegrationSpaceInstallation(
-                    spaceInstallation.integration,
-                    spaceInstallation.installation,
-                    spaceInstallation.space,
-                    {
-                        configuration: {
-                            ...spaceInstallation.configuration,
-                            // Update project in configuration to the one found in list
-                            project: id,
-                        },
-                    }
-                );
-
-                // return as we'll need to re-fetch the projects with updated config state
-                return new Response(JSON.stringify([]), {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-            }
-
-            data.push({ id, label });
-        }
+        const data = projects.map(
+            (project): ContentKitSelectOption => ({
+                id: `${project.id}`,
+                label: project.path_with_namespace,
+            })
+        );
 
         return new Response(JSON.stringify(data), {
             headers: {
@@ -151,7 +113,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
      * API to fetch all branches of a project's repository
      */
     router.get('/branches', async (req) => {
-        const { project } = req.query;
+        const { project: queryProject } = req.query;
 
         const spaceInstallation = environment.spaceInstallation;
         assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
@@ -159,8 +121,8 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
         const config = getSpaceConfigOrThrow(spaceInstallation);
 
         const projectId =
-            project && typeof project === 'string'
-                ? parseProjectOrThow(project).projectId
+            queryProject && typeof queryProject === 'string'
+                ? parseProjectOrThow(queryProject)
                 : undefined;
 
         const branches = projectId ? await fetchProjectBranches(config, projectId) : [];
