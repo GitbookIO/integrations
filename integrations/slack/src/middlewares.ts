@@ -117,6 +117,7 @@ export async function acknowledgeSlackEvent(req: Request, context: SlackRuntimeC
                 threadId: thread_ts,
                 channelId: channel,
                 accessToken,
+                messageType: 'permanent',
             });
         }
     }
@@ -133,7 +134,6 @@ export async function acknowledgeSlackEvent(req: Request, context: SlackRuntimeC
 
     context.event.waitUntil(data);
 
-    // return new Response(JSON.stringify({ acknowledged: true }), {
     return new Response(null, {
         status: 200,
     });
@@ -165,7 +165,6 @@ export async function acknowledgeSlackCommand(req: Request, context: SlackRuntim
         channelId: channel_id,
         threadId: thread_ts,
         accessToken,
-        messageType: 'permanent',
     });
 
     return new Response(null, {
