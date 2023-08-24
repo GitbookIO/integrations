@@ -17,6 +17,7 @@ export async function queryLensSlashHandler(slashEvent: SlashEvent, context: Sla
             text,
             context,
             userId: user_id,
+            messageType: 'ephemeral',
         });
     } catch (e) {
         // Error state. Probably no installation was found

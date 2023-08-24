@@ -10,14 +10,14 @@ export function PageBlock(page: RevisionPage, publicUrl: string) {
 
 export function PagesBlock(params: {
     title?: string;
-    items: Array<RevisionPage>;
-    publicUrl: string;
+    items: Array<{ publicUrl: string; page: RevisionPage }>;
 }) {
-    const { title, items, publicUrl } = params;
+    const { title, items } = params;
 
-    const blocks = items.reduce<Array<any>>((acc, page) => {
-        const pageResultBlock = PageBlock(page, publicUrl);
+    const blocks = items.reduce<Array<any>>((acc, pageData) => {
+        const pageResultBlock = PageBlock(pageData.page, pageData.publicUrl);
         acc.push(pageResultBlock);
+
         return acc;
     }, []);
 
@@ -34,13 +34,6 @@ export function PagesBlock(params: {
                 type: 'context',
                 elements: blocks.slice(0, 9), // block kit limit of 10
             },
-            // {
-            //     type: 'section',
-            //     text: {
-            //         type: 'plain_text',
-            //         text: ' ',
-            //     },
-            // },
         ];
     }
 }
