@@ -44,7 +44,6 @@ async function getRelatedPages(params: {
 
             if (currentRevision) {
                 const publicUrl = currentRevision.urls.public || currentRevision.urls.app;
-                const publicUrl = currentRevision.urls.public || currentRevision.urls.app;
                 const revisionPage = currentRevision.pages.find((page) => page.id === page.id);
 
                 accum.push({
