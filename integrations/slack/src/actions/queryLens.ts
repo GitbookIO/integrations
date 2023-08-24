@@ -35,6 +35,11 @@ async function getRelatedPages(params: {
         return accum;
     }, []);
 
+    // console.log(
+    // 'ALL REVISIONS',
+    // allRevisions.map((rev) => rev.pages.map((page) => JSON.stringify(page)))
+    // );
+
     // extract all related pages from the Revisions along with the related public URL
     const relatedPages: Array<{ publicUrl: string; page: RevisionPage }> = pages.reduce(
         (accum, page) => {
@@ -44,6 +49,7 @@ async function getRelatedPages(params: {
 
             if (currentRevision) {
                 const publicUrl = currentRevision.urls.public || currentRevision.urls.app;
+                // TODO: @scazan this needs to be recursive
                 const revisionPage = currentRevision.pages.find((page) => page.id === page.id);
 
                 accum.push({
@@ -64,7 +70,7 @@ async function getRelatedPages(params: {
 const capitalizeFirstLetter = (text: string) =>
     text?.trim().charAt(0).toUpperCase() + text?.trim().slice(1);
 
-interface IQueryLens {
+export interface IQueryLens {
     channelId: string;
     teamId: string;
     text: string;
@@ -185,6 +191,14 @@ export async function queryLens({
                                 text: {
                                     type: 'mrkdwn',
                                     text,
+                                },
+                            },
+                            // spacer at the bottom
+                            {
+                                type: 'section',
+                                text: {
+                                    type: 'plain_text',
+                                    text: '\n\n\n ',
                                 },
                             },
                         ],
