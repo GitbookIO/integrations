@@ -42,28 +42,7 @@ export function createSlackActionsHandler(
             };
 
             // queryLens:ephemeral, queryLens:permanent
-
             return await handlers[actionName](params);
-            // const actionPromises = actions.map((action) => {
-            //     console.log('action handler=====', action);
-            //     // TODO: need a more polymorphic solve here if possible
-            //     const params: IQueryLens = {
-            //         channelId: channel.id,
-            //         teamId: team.id,
-            //         text: action.value ?? action.text.text,
-
-            //         // pass thread if exists
-            //         ...(container.thread_ts ? { threadId: container.thread_ts } : {}),
-            //         // pass user if exists
-            //         ...(user.id ? { userId: user.id } : {}),
-
-            //         context,
-            //     };
-
-            //     return handlers[action.action_id](params);
-            // });
-
-            // return await Promise.allSettled(actionPromises);
         }
 
         // TODO: here to not break the current documenting of conversations

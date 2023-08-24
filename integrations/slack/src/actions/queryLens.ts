@@ -136,7 +136,7 @@ export async function queryLens({
             }),
         ];
 
-        let slackData = {};
+        let slackData;
         if (messageType === 'ephemeral') {
             slackData = {
                 method: 'POST',

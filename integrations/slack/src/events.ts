@@ -15,22 +15,9 @@ export function createSlackEventsHandler(
     fallback?: FetchEventCallback
 ): FetchEventCallback {
     return async (request, context) => {
-        const { api, environment } = context;
         const eventPayload = await parseEventPayload(request);
 
-        console.log('events handler', eventPayload);
-        const {
-            type,
-            text,
-            bot_id,
-            ts,
-            thread_ts,
-            parent_user_id,
-            channel,
-            user,
-            event_ts,
-            team_id,
-        } = eventPayload.event;
+        const { type, text, bot_id, thread_ts, channel, user, team_id } = eventPayload.event;
 
         const saveThreadEvent = isSaveThreadEvent(type, text);
 
@@ -45,16 +32,16 @@ export function createSlackEventsHandler(
                     context,
                 });
             } else {
-                // stript out the bot-name in the mention and account for user mentions within the query
+                // strip out the bot-name in the mention and account for user mentions within the query
                 const parsedQuery = stripBotName(text, eventPayload.authorizations[0]?.user_id);
 
                 // send to Lens
-                const data = await queryLens({
+                await queryLens({
                     teamId: team_id,
                     channelId: channel,
                     threadId: thread_ts,
                     userId: user,
-                    messageType: 'ephemeral',
+                    messageType: 'permanent',
                     text: parsedQuery,
                     context,
                 });
@@ -67,15 +54,3 @@ export function createSlackEventsHandler(
         });
     };
 }
-
-// client_msg_id: '43f363f5-fc93-4611-b9b5-2fcd81d23c49',
-// type: 'app_mention',
-// text: '<@U05M85YEXQA> test',
-// user: 'U03S41KSY8M',
-// ts: '1691811465.130489',
-// blocks: [ [Object] ],
-// team: 'T032HV6MF',
-// thread_ts: '1691771028.338399',
-// parent_user_id: 'U03S41KSY8M',
-// channel: 'C05M1K6RTD4',
-// event_ts: '1691811465.130489'
