@@ -21,21 +21,23 @@ export function PagesBlock(params: {
         return acc;
     }, []);
 
-    if (title) {
-        return [
-            {
-                type: 'section',
-                text: {
-                    type: 'plain_text',
-                    text: title,
-                },
-            },
-            {
-                type: 'context',
-                elements: blocks.slice(0, 9), // block kit limit of 10
-            },
-        ];
+    if (blocks.length === 0) {
+        return [];
     }
+
+    return [
+        {
+            type: 'section',
+            text: {
+                type: 'plain_text',
+                text: title,
+            },
+        },
+        {
+            type: 'context',
+            elements: blocks.slice(0, 9), // block kit limit of 10
+        },
+    ];
 }
 
 export function GeneratedDocLinkBlock(props: { url: string }) {
