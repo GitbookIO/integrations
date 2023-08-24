@@ -24,7 +24,7 @@ export function createSlackEventsHandler(
         // check for bot_id so that the bot doesn't trigger itself
         if (['message', 'app_mention'].includes(type) && !bot_id) {
             if (saveThreadEvent) {
-                const data = await saveThread({
+                await saveThread({
                     teamId: team_id,
                     channelId: channel,
                     thread_ts,

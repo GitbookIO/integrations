@@ -4,7 +4,6 @@ import { createOAuthHandler, FetchEventCallback } from '@gitbook/runtime';
 
 import { createSlackActionsHandler } from './actions';
 import { queryLens } from './actions/queryLens';
-import { shareMessage } from './actions/shareMessage';
 import { createSlackCommandsHandler } from './commands';
 import { createSlackEventsHandler } from './events';
 import { queryLensSlashHandler } from './handlers';
@@ -88,12 +87,9 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         verifySlackRequest,
         createSlackCommandsHandler({
             '/gitbooklens': queryLensSlashHandler,
-            '/gitbook_valentino': async (event) => {
-                console.log('command event', event);
-            },
-            url_verification: async (event: { challenge: string }) => {
-                return { challenge: event.challenge };
-            },
+            // url_verification: async (event: { challenge: string }) => {
+            // return { challenge: event.challenge };
+            // },
         })
     );
 
@@ -154,7 +150,6 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         verifySlackRequest,
         createSlackActionsHandler({
             queryLens,
-            // shareMessage,
         })
     );
 
