@@ -44,13 +44,25 @@ export async function verifySlackRequest(request: Request, { environment }: Slac
     }
 }
 
-const acknowledgeQuery = async ({ context, text, userId, channelId, threadId, accessToken }) => {
-    console.log('acknowledgeQuer userId', userId);
+const acknowledgeQuery = async ({
+    context,
+    text,
+    userId,
+    channelId,
+    threadId,
+    accessToken,
+    messageType = 'ephemeral',
+}) => {
+    const slackMessageTypes = {
+        ephemeral: 'chat.postEphemeral',
+        permanent: 'chat.postMessage',
+    };
+
     return slackAPI(
         context,
         {
             method: 'POST',
-            path: userId ? 'chat.postEphemeral' : 'chat.postMessage', // probably alwasy ephemeral? or otherwise have replies in same thread
+            path: slackMessageTypes[messageType], // probably alwasy ephemeral? or otherwise have replies in same thread
             payload: {
                 channel: channelId,
                 text: `_Asking: ${text}_`,
@@ -71,8 +83,7 @@ const acknowledgeQuery = async ({ context, text, userId, channelId, threadId, ac
  */
 export async function acknowledgeSlackEvent(req: Request, context: SlackRuntimeContext) {
     const eventPayload = await parseEventPayload(req);
-    const { type, team_id, text, bot_id, ts, thread_ts, parent_user_id, channel, user, event_ts } =
-        eventPayload.event;
+    const { type, team_id, text, bot_id, thread_ts, channel, user } = eventPayload.event;
 
     const { accessToken } = await getInstallationConfig(context, team_id);
 
@@ -130,7 +141,7 @@ export async function acknowledgeSlackEvent(req: Request, context: SlackRuntimeC
 
 export async function acknowledgeSlackCommand(req: Request, context: SlackRuntimeContext) {
     const eventPayload = await parseCommandPayload(req);
-    const { team_id, user_id, channel_id, text } = eventPayload;
+    const { team_id, user_id, channel_id, text, thread_ts } = eventPayload;
 
     const { accessToken } = await getInstallationConfig(context, team_id);
     const textBody = await req.text();
@@ -147,7 +158,15 @@ export async function acknowledgeSlackCommand(req: Request, context: SlackRuntim
 
     context.event.waitUntil(data);
 
-    await acknowledgeQuery({ context, text, userId: user_id, channelId: channel_id, accessToken });
+    await acknowledgeQuery({
+        context,
+        text,
+        userId: user_id,
+        channelId: channel_id,
+        threadId: thread_ts,
+        accessToken,
+        messageType: 'permanent',
+    });
 
     return new Response(null, {
         status: 200,
@@ -162,8 +181,6 @@ export async function acknowledgeSlackAction(req: Request, context: SlackRuntime
     const actionPayload = await parseActionPayload(req);
 
     const { type, channel, message, team, user, actions, container } = actionPayload;
-
-    console.log('actions payload====', actionPayload);
 
     const { accessToken } = await getInstallationConfig(context, team.id);
 

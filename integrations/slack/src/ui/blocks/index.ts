@@ -102,7 +102,7 @@ export function FollowUpQueryList(props: { queries: Array<string> }) {
     }));
 }
 
-export function ShareTools(text) {
+export function ShareTools(text: string) {
     return [
         {
             type: 'actions',
@@ -118,16 +118,6 @@ export function ShareTools(text) {
                     action_id: 'queryLens:permanent',
                     style: 'primary',
                 },
-                // {
-                //     type: 'button',
-                //     text: {
-                //         type: 'plain_text',
-                //         text: 'Cancel',
-                //         emoji: true,
-                //     },
-                //     value: 'share',
-                //     action_id: 'deleteQueryMessage',
-                // },
             ],
         },
     ];
