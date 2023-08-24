@@ -37,7 +37,9 @@ export function isSaveThreadEvent(type: string, text: string) {
 
 export async function parseEventPayload(req: Request) {
     // Clone the request so its body is still available to the fallback
-    const event = await req.clone().json<{ event?: { type: string }; type?: string }>();
+    const event = await req
+        .clone()
+        .json<{ event?: { type: string; [key: string]: any }; type?: string }>(); // TODO: untyping this for now
 
     return event;
 }
