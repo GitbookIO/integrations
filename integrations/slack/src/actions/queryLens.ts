@@ -1,4 +1,4 @@
-import type { SearchAIAnswer, GitBookAPI } from '@gitbook/api';
+import type { SearchAIAnswer, GitBookAPI, Revision, RevisionPage } from '@gitbook/api';
 
 import {
     SlackInstallationConfiguration,
@@ -10,33 +10,56 @@ import { PagesBlock, QueryDisplayBlock, ShareTools } from '../ui/blocks';
 import { getInstallationApiClient } from './gitbook';
 
 async function getRelatedPages(params: {
-    answer?: SearchAIAnswer;
+    pages?: SearchAIAnswer['pages'];
     client: GitBookAPI;
     environment: SlackRuntimeEnvironment;
 }) {
-    const { answer, client, environment } = params;
+    const { pages, client } = params;
 
-    // TODO: Need to find why there is no spaceInstalation in the environment
-    const spaceId =
-        environment.spaceInstallation?.space ||
-        (answer?.pages?.length > 0 && answer.pages[0].space);
+    // collect all spaces from page results (and de-dupe)
+    const allSpaces = pages.reduce((accum, page) => {
+        accum.add(page.space);
 
-    // get current revision for the space
-    const { data: currentRevision } = await client.spaces.getCurrentRevision(spaceId);
+        return accum;
+    }, new Set<string>());
 
-    const pageIds = answer?.pages?.map((page) => page.page);
+    // query for all Revisions (accounting for spaces that might not exist or any errors)
+    const allRevisions: Array<Revision> = (
+        await Promise.allSettled(
+            Array.from(allSpaces).map((space) => client.spaces.getCurrentRevision(space))
+        )
+    ).reduce((accum, result) => {
+        if (result.status === 'fulfilled') {
+            accum.push(result.value.data);
+        }
+        return accum;
+    }, []);
 
-    // possible undefined here
+    // extract all related pages from the Revisions along with the related public URL
+    const relatedPages: Array<{ publicUrl: string; page: RevisionPage }> = pages.reduce(
+        (accum, page) => {
+            const currentRevision = allRevisions.find((revision: Revision) =>
+                revision.pages.find((revisionPage) => revisionPage.id === page.page)
+            );
 
-    const publicUrl = currentRevision.urls.public || currentRevision.urls.app;
+            if (currentRevision) {
+                const publicUrl = currentRevision.urls.public || currentRevision.urls.app;
+                const publicUrl = currentRevision.urls.public || currentRevision.urls.app;
+                const revisionPage = currentRevision.pages.find((page) => page.id === page.id);
+
+                accum.push({
+                    publicUrl,
+                    page: revisionPage,
+                });
+            }
+
+            return accum;
+        },
+        []
+    );
 
     // filter related pages from current revision
-    return {
-        publicUrl,
-        relatedPages: currentRevision.pages.filter((revisionPage) =>
-            pageIds.includes(revisionPage.id)
-        ),
-    };
+    return relatedPages;
 }
 
 const capitalizeFirstLetter = (text: string) =>
@@ -68,7 +91,6 @@ export async function queryLens({
     context,
 }: IQueryLens) {
     const { environment, api } = context;
-
     const { client, installation } = await getInstallationApiClient(api, teamId);
     if (!installation) {
         throw new Error('Installation not found');
@@ -81,8 +103,8 @@ export async function queryLens({
     const answer = result.data?.answer;
 
     if (answer && answer.text) {
-        const { publicUrl, relatedPages } = await getRelatedPages({
-            answer,
+        const relatedPages = await getRelatedPages({
+            pages: answer.pages,
             client,
             environment,
         });
@@ -112,7 +134,6 @@ export async function queryLens({
             ...PagesBlock({
                 title: 'Sources',
                 items: relatedPages,
-                publicUrl,
             }),
         ];
 
