@@ -6,7 +6,7 @@ import {
     SlackRuntimeContext,
 } from '../configuration';
 import { slackAPI } from '../slack';
-import { PagesBlock, QueryDisplayBlock, ShareTools } from '../ui/blocks';
+import { PagesBlock, QueryDisplayBlock, ShareTools, decodeSlackEscapeChars } from '../ui/blocks';
 
 function extractAllPages(rootPages: Array<RevisionPage>) {
     const result: Array<RevisionPage> = [];
@@ -158,7 +158,7 @@ export async function queryLens({
                 type: 'header',
                 text: {
                     type: 'plain_text',
-                    text: capitalizeFirstLetter(header),
+                    text: capitalizeFirstLetter(decodeSlackEscapeChars(header)),
                 },
             },
             {

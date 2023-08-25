@@ -1,5 +1,16 @@
 import { RevisionPage } from '@gitbook/api';
 
+// Slack only encodes these specific characters so we need to remove them in the output (specifically used for inputs to slack)
+export function decodeSlackEscapeChars(text: string) {
+    return [
+        ['&amp;', '&'],
+        ['&lt;', '<'],
+        ['&gt;', '>'],
+    ].reduce((accum, entityMap) => {
+        return accum.split(entityMap[0]).join(entityMap[1]);
+    }, text);
+}
+
 export function PageBlock(page: RevisionPage, publicUrl: string) {
     // TODO: note for review. is this the best way to do this?
     const nonRevisionPublicUrl = publicUrl.split('~/')[0];

@@ -104,9 +104,10 @@ export async function acknowledgeSlackEvent(req: Request, context: SlackRuntimeC
         }
     }
 
+    const textBody = await req.text();
     const data = fetch(`${req.url}_task`, {
         method: 'POST',
-        body: await req.text(),
+        body: textBody,
         headers: {
             'content-type': req.headers.get('content-type'),
             'x-slack-signature': req.headers.get('x-slack-signature'),
