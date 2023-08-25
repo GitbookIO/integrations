@@ -1,7 +1,7 @@
 import { RevisionPage } from '@gitbook/api';
 
 export function PageBlock(page: RevisionPage, publicUrl: string) {
-    const url = `${publicUrl}/${page.slug}`;
+    const url = `${publicUrl}${page.path}`;
     return {
         type: 'mrkdwn',
         text: `*<${url}|:page_facing_up: ${page.title}>*`,

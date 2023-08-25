@@ -8,6 +8,23 @@ import {
 import { slackAPI } from '../slack';
 import { PagesBlock, QueryDisplayBlock, ShareTools } from '../ui/blocks';
 
+function extractAllPages(rootPages: Array<RevisionPage>) {
+    const result: Array<RevisionPage> = [];
+
+    function recurse(pages: Array<RevisionPage>) {
+        for (const page of pages) {
+            result.push(page);
+            if (page.pages?.length > 0) {
+                recurse(page.pages);
+            }
+        }
+    }
+
+    recurse(rootPages);
+
+    return result;
+}
+
 async function getRelatedPages(params: {
     pages?: SearchAIAnswer['pages'];
     client: GitBookAPI;
@@ -34,22 +51,21 @@ async function getRelatedPages(params: {
         return accum;
     }, []);
 
-    // console.log(
-    // 'ALL REVISIONS',
-    // allRevisions.map((rev) => rev.pages.map((page) => JSON.stringify(page)))
-    // );
-
     // extract all related pages from the Revisions along with the related public URL
     const relatedPages: Array<{ publicUrl: string; page: RevisionPage }> = pages.reduce(
         (accum, page) => {
+            // TODO: we can probably combine finding the currentRevision with extracting the appropriate page
             const currentRevision = allRevisions.find((revision: Revision) =>
-                revision.pages.find((revisionPage) => revisionPage.id === page.page)
+                extractAllPages(revision.pages).find(
+                    (revisionPage) => revisionPage.id === page.page
+                )
             );
 
             if (currentRevision) {
                 const publicUrl = currentRevision.urls.public || currentRevision.urls.app;
-                // TODO: @scazan this needs to be recursive
-                const revisionPage = currentRevision.pages.find((page) => page.id === page.id);
+
+                const allRevisionPages = extractAllPages(currentRevision.pages);
+                const revisionPage = allRevisionPages.find((revPage) => revPage.id === page.page);
 
                 accum.push({
                     publicUrl,
