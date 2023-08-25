@@ -128,7 +128,7 @@ export function ShareTools(text: string) {
                         emoji: true,
                     },
                     value: text,
-                    action_id: 'queryLens:permanent',
+                    action_id: 'queryLens:permanent', // sharing requeries for the same question verbatim which will then be pulled from cache
                     style: 'primary',
                 },
             ],

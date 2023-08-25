@@ -166,43 +166,40 @@ export async function acknowledgeSlackAction(req: Request, context: SlackRuntime
 
     const { accessToken } = await getInstallationConfig(context, team.id);
 
-    if (!['block_actions'].includes(type)) {
-        if (actions.length > 0) {
-            await Promise.all(
-                actions.map(async (action) => {
-                    const { action_id, value } = actions[0];
+    if (actions.length > 0) {
+        await Promise.all(
+            actions.map(async (action) => {
+                const { action_id, value } = actions[0];
 
-                    const { actionName } = getActionNameAndType(action_id);
+                const { actionName } = getActionNameAndType(action_id);
 
-                    // TODO: check if we are actually trying to query via the action_id. setting this up for demo
-                    if (actionName === 'queryLens') {
-                        return acknowledgeQuery({
-                            context,
-                            text: value,
-                            userId: user.id,
-                            channelId: channel.id,
-                            threadId: container?.thread_ts,
-                            accessToken,
-                        });
-                    } else {
-                        await slackAPI(
-                            context,
-                            {
-                                method: 'POST',
-                                path: 'chat.postEphemeral',
-                                payload: {
-                                    channel: channel.id,
-                                    text: `Sharing...`,
-                                    user: user.id,
-                                    thread_ts: message?.thread_ts,
-                                },
+                if (actionName === 'queryLens') {
+                    return acknowledgeQuery({
+                        context,
+                        text: value,
+                        userId: user.id,
+                        channelId: channel.id,
+                        threadId: container?.thread_ts,
+                        accessToken,
+                    });
+                } else {
+                    await slackAPI(
+                        context,
+                        {
+                            method: 'POST',
+                            path: 'chat.postEphemeral',
+                            payload: {
+                                channel: channel.id,
+                                text: `Sharing...`,
+                                user: user.id,
+                                thread_ts: message?.thread_ts,
                             },
-                            { accessToken }
-                        );
-                    }
-                })
-            );
-        }
+                        },
+                        { accessToken }
+                    );
+                }
+            })
+        );
     }
 
     const data = fetch(`${req.url}_task`, {
