@@ -6,7 +6,6 @@ export interface SlackInstallationConfiguration {
     };
 
     default_channel?: string;
-    recordings_space?: string;
 }
 
 export interface SlackSpaceInstallationConfiguration {

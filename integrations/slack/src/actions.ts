@@ -1,5 +1,4 @@
 import { type IQueryLens } from './actions/queryLens';
-import { saveThread } from './actions/saveThread';
 import { getActionNameAndType, parseActionPayload } from './utils';
 
 /**
@@ -41,14 +40,5 @@ export function createSlackActionsHandler(
             // queryLens:ephemeral, queryLens:permanent
             return await handlers[actionName](params);
         }
-
-        // TODO: here to not break the current documenting of conversations
-        return saveThread({
-            teamId: team.id,
-            channelId: channel.id,
-            thread_ts: message.thread_ts,
-            userId: user.id,
-            context,
-        });
     };
 }

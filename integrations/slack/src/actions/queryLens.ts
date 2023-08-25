@@ -7,7 +7,6 @@ import {
 } from '../configuration';
 import { slackAPI } from '../slack';
 import { PagesBlock, QueryDisplayBlock, ShareTools } from '../ui/blocks';
-import { getInstallationApiClient } from './gitbook';
 
 async function getRelatedPages(params: {
     pages?: SearchAIAnswer['pages'];
@@ -84,6 +83,27 @@ export interface IQueryLens {
 
     /* Get lens reply in thread */
     threadId?: string;
+}
+
+async function getInstallationApiClient(api, externalId: string) {
+    const {
+        data: { items: installations },
+    } = await api.integrations.listIntegrationInstallations('slack', {
+        externalId,
+
+        // we need to pass installation.target.organization
+    });
+
+    // won't work for multiple installations accross orgs and same slack team
+    const installation = installations[0];
+    if (!installation) {
+        return {};
+    }
+
+    // Authentify as the installation
+    const installationApiClient = await api.createInstallationClient('slack', installation.id);
+
+    return { client: installationApiClient, installation };
 }
 
 export async function queryLens({

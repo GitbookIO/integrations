@@ -4,7 +4,6 @@ import { SlackRuntimeContext } from './configuration';
 import { slackAPI } from './slack';
 import {
     getInstallationConfig,
-    isSaveThreadEvent,
     parseActionPayload,
     parseEventPayload,
     parseCommandPayload,
@@ -88,24 +87,7 @@ export async function acknowledgeSlackEvent(req: Request, context: SlackRuntimeC
     const { accessToken } = await getInstallationConfig(context, team_id);
 
     if (!['block_actions'].includes(type)) {
-        const saveThreadEvent = isSaveThreadEvent(type, text);
-
-        if (saveThreadEvent) {
-            await slackAPI(
-                context,
-                {
-                    method: 'POST',
-                    path: 'chat.postEphemeral',
-                    payload: {
-                        channel,
-                        text: `Saving thread in GitBook. Hang tight, this will take a sec.`,
-                        thread_ts,
-                        user,
-                    },
-                },
-                { accessToken }
-            );
-        } else if (['message', 'app_mention'].includes(type) && !bot_id) {
+        if (['message', 'app_mention'].includes(type) && !bot_id) {
             // check for bot_id so that the bot doesn't trigger itself
             // stript out the bot-name in the mention and account for user mentions within the query
             const parsedQuery = stripBotName(text, eventPayload.authorizations[0]?.user_id);
@@ -184,58 +166,42 @@ export async function acknowledgeSlackAction(req: Request, context: SlackRuntime
     const { accessToken } = await getInstallationConfig(context, team.id);
 
     if (!['block_actions'].includes(type)) {
-        const saveThreadEvent = isSaveThreadEvent(type, message.text);
-        if (saveThreadEvent) {
-            await slackAPI(
-                context,
-                {
-                    method: 'POST',
-                    path: 'chat.postEphemeral',
-                    payload: {
-                        channel: channel.id,
-                        text: `Saving thread in GitBook. Hang tight, this will take a sec.`,
-                        thread_ts: message.thread_ts,
-                        user: user.id,
-                    },
-                },
-                { accessToken }
+        if (actions.length > 0) {
+            await Promise.all(
+                actions.map(async (action) => {
+                    const { action_id, value } = actions[0];
+
+                    const { actionName } = getActionNameAndType(action_id);
+
+                    // TODO: check if we are actually trying to query via the action_id. setting this up for demo
+                    if (actionName === 'queryLens') {
+                        return acknowledgeQuery({
+                            context,
+                            text: value,
+                            userId: user.id,
+                            channelId: channel.id,
+                            threadId: container?.thread_ts,
+                            accessToken,
+                        });
+                    } else {
+                        await slackAPI(
+                            context,
+                            {
+                                method: 'POST',
+                                path: 'chat.postEphemeral',
+                                payload: {
+                                    channel: channel.id,
+                                    text: `Sharing...`,
+                                    user: user.id,
+                                    thread_ts: message?.thread_ts,
+                                },
+                            },
+                            { accessToken }
+                        );
+                    }
+                })
             );
         }
-    } else if (actions.length > 0) {
-        await Promise.all(
-            actions.map(async (action) => {
-                const { action_id, value } = actions[0];
-
-                const { actionName } = getActionNameAndType(action_id);
-
-                // TODO: check if we are actually trying to query via the action_id. setting this up for demo
-                if (actionName === 'queryLens') {
-                    return acknowledgeQuery({
-                        context,
-                        text: value,
-                        userId: user.id,
-                        channelId: channel.id,
-                        threadId: container?.thread_ts,
-                        accessToken,
-                    });
-                } else {
-                    await slackAPI(
-                        context,
-                        {
-                            method: 'POST',
-                            path: 'chat.postEphemeral',
-                            payload: {
-                                channel: channel.id,
-                                text: `Sharing...`,
-                                user: user.id,
-                                thread_ts: message?.thread_ts,
-                            },
-                        },
-                        { accessToken }
-                    );
-                }
-            })
-        );
     }
 
     const data = fetch(`${req.url}_task`, {
