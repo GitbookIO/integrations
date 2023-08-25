@@ -141,7 +141,7 @@ export async function queryLens({
         .oauth_credentials?.access_token;
 
     const result = await client.search.askQuery({ query: text });
-    const answer = result.data?.answer;
+    const answer: SearchAIAnswer = result.data?.answer;
 
     if (answer && answer.text) {
         const relatedPages = await getRelatedPages({

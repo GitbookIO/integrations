@@ -86,7 +86,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         '/commands_task',
         verifySlackRequest,
         createSlackCommandsHandler({
-            '/gitbooklens': queryLensSlashHandler,
+            '/gitbook': queryLensSlashHandler,
             // url_verification: async (event: { challenge: string }) => {
             // return { challenge: event.challenge };
             // },

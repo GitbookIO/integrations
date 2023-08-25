@@ -1,7 +1,9 @@
 import { RevisionPage } from '@gitbook/api';
 
 export function PageBlock(page: RevisionPage, publicUrl: string) {
-    const url = `${publicUrl}${page.path}`;
+    // TODO: note for review. is this the best way to do this?
+    const nonRevisionPublicUrl = publicUrl.split('~/')[0];
+    const url = `${nonRevisionPublicUrl}${page.path}`;
     return {
         type: 'mrkdwn',
         text: `*<${url}|:page_facing_up: ${page.title}>*`,
@@ -29,8 +31,8 @@ export function PagesBlock(params: {
         {
             type: 'section',
             text: {
-                type: 'plain_text',
-                text: title,
+                type: 'mrkdwn',
+                text: `*${title}:*`,
             },
         },
         {
