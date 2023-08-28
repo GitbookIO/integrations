@@ -6,7 +6,13 @@ import {
     SlackRuntimeContext,
 } from '../configuration';
 import { slackAPI } from '../slack';
-import { PagesBlock, QueryDisplayBlock, ShareTools, decodeSlackEscapeChars } from '../ui/blocks';
+import {
+    PagesBlock,
+    QueryDisplayBlock,
+    ShareTools,
+    decodeSlackEscapeChars,
+    Spacer,
+} from '../ui/blocks';
 import { stripMarkdown } from '../utils';
 
 function extractAllPages(rootPages: Array<RevisionPage>) {
@@ -186,6 +192,7 @@ export async function queryLens({
                 title: 'Sources',
                 items: relatedPages,
             }),
+            Spacer,
         ];
 
         let slackData;
@@ -239,14 +246,7 @@ export async function queryLens({
                                     text,
                                 },
                             },
-                            // spacer at the bottom
-                            {
-                                type: 'section',
-                                text: {
-                                    type: 'plain_text',
-                                    text: '\n\n\n ',
-                                },
-                            },
+                            Spacer,
                         ],
                     },
                 ],

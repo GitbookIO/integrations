@@ -135,3 +135,11 @@ export function ShareTools(text: string) {
         },
     ];
 }
+
+export const Spacer = {
+    type: 'section',
+    text: {
+        type: 'plain_text',
+        text: '\n\n\n ',
+    },
+};
