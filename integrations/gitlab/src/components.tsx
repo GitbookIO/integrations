@@ -3,7 +3,7 @@ import hash from 'hash-sum';
 import { ContentKitIcon } from '@gitbook/api';
 import { createComponent } from '@gitbook/runtime';
 
-import { fetchProject, getAccessTokenOrThrow } from './api';
+import { getAccessTokenOrThrow } from './api';
 import { saveSpaceConfiguration } from './installation';
 import { ConfigureAction, ConfigureProps, ConfigureState, GitLabRuntimeContext } from './types';
 import {
@@ -80,17 +80,11 @@ export const configBlock = createComponent<
                 const spaceInstallation = context.environment.spaceInstallation;
                 assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
-                const glProject = await fetchProject(
-                    spaceInstallation.configuration,
-                    parseInt(action.project, 10)
-                );
-
                 return {
                     ...element,
                     state: {
                         ...element.state,
                         project: action.project,
-                        projectName: glProject.path_with_namespace,
                     },
                 };
             }

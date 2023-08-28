@@ -3,6 +3,7 @@ import httpError from 'http-errors';
 import { IntegrationSpaceInstallation } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
 
+import { fetchProject } from './api';
 import { getGitRef, installWebhook } from './provider';
 import { triggerExport, triggerImport } from './sync';
 import { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
@@ -35,10 +36,13 @@ export async function saveSpaceConfiguration(
     const externalIds: string[] = [];
     externalIds.push(computeConfigQueryKey(projectId, getGitRef(config.branch)));
 
+    const glProject = await fetchProject(spaceInstallation.configuration, projectId);
+
     const configurationBody: GitLabSpaceConfiguration = {
         ...spaceInstallation.configuration,
         key: config.key || crypto.randomUUID(),
         project: config.project,
+        projectName: glProject.path_with_namespace,
         branch: config.branch,
         projectDirectory: config.projectDirectory,
         commitMessageTemplate: config.commitMessageTemplate,
