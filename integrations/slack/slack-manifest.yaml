@@ -1,58 +1,83 @@
 display_information:
-    name: GitBook
+    name: GitBook Lens
     description: GitBook helps you publish beautiful docs for your users and centralize your teams' knowledge for advanced collaboration.
     background_color: '#346DDB'
-    long_description: |
-        The GitBook Slack integration brings the power of GitBook to your Slack workspace. Your teams have instant access to your GitBook knowledge base, without leaving Slack.
+    long_description:
+        "The GitBook Slack integration brings the power of GitBook to your Slack workspace. Your teams have instant access to your GitBook knowledge base, without leaving Slack.\r
 
-        *Get notified of what's important:*
+        \r
 
-        Receive real-time Slack notifications when something important happens to your content on GitBook. For example, when your content is updated, published, etc.
+        *Get notified of what's important:*\r
 
-        Pick and choose what, where, and how you wish to be notified.
+        \r
 
-        *Searching made simple:*
+        Receive real-time Slack notifications when something important happens to your content on GitBook. For example, when your content is updated, published, etc.\r
 
-        Searching has never been easier. Use Slack global shortcuts to search within your content: Type "/gitbook [search]".
+        \r
 
-        *Improved links sharing:*
+        Pick and choose what, where, and how you wish to be notified.\r
 
-        The GitBook Slack integration will automatically generate a nice-looking preview for all GitBook links shared in Slack.
+        \r
+
+        *Searching made simple:*\r
+
+        \r
+
+        Searching has never been easier. Use Slack global shortcuts to search within your content: Type \"/gitbook [search]\".\r
+
+        \r
+
+        *Improved links sharing:*\r
+
+        \r
+
+        The GitBook Slack integration will automatically generate a nice-looking preview for all GitBook links shared in Slack."
 features:
     bot_user:
         display_name: GitBook
-        always_online: false
+        always_online: true
+    # shortcuts:
+    # - name: Summarize thread
+    # type: message
+    # callback_id: summarize_thread
+    # description: Create a summary of this thread that will be stored on GitBook. You can use Lens AI to ask questions on this thread or combine with your knowledge bas
+    slash_commands:
+        - command: /gitbook
+          # UPDATE url here to match your env
+          url: https://integrations.gitbook.com/v1/integrations/slack/integration/commands
+          description: Ask GitBook for information from your docs
+          usage_hint: '[question]'
+          should_escape: false
     unfurl_domains:
         - app.gitbook.com
-    # slash_commands:
-    #     - command: /gitbook
-    #       # UPDATE url here to match your env
-    #       url: https://integrations.gitbook.com/v1/integrations/slack/integration/commands
-    #       description: Search your documentation
-    #       usage_hint: '[search query]'
-    #       should_escape: false
 oauth_config:
     redirect_urls:
         # UPDATE url here to match your env
         - https://integrations.gitbook.com/v1/integrations/slack/
     scopes:
         bot:
+            - app_mentions:read
             - channels:join
             - channels:read
-            - groups:read
             - chat:write
+            - commands
+            - groups:read
             - links:read
             - links:write
-            - commands
+            # - channels:history
+            # - im:history
 settings:
     event_subscriptions:
         # UPDATE url here to match your env
         request_url: https://integrations.gitbook.com/v1/integrations/slack/integration/events
         bot_events:
+            - app_mention
             - link_shared
+            - message.im
     interactivity:
         is_enabled: true
-        request_url: https://gitbook.com
+        # UPDATE url here to match your env
+        request_url: https://integrations.gitbook.com/v1/integrations/slack/integration/actions
     org_deploy_enabled: false
     socket_mode_enabled: false
     token_rotation_enabled: false
