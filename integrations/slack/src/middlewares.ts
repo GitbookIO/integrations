@@ -44,7 +44,7 @@ export async function verifySlackRequest(request: Request, { environment }: Slac
     }
 }
 
-const acknowledgeQuery = async ({
+function acknowledgeQuery({
     context,
     text,
     userId,
@@ -52,7 +52,7 @@ const acknowledgeQuery = async ({
     threadId,
     accessToken,
     messageType = 'ephemeral',
-}) => {
+}) {
     const slackMessageTypes = {
         ephemeral: 'chat.postEphemeral',
         permanent: 'chat.postMessage',
@@ -66,7 +66,6 @@ const acknowledgeQuery = async ({
             payload: {
                 channel: channelId,
                 text: `_Asking: ${stripMarkdown(text)}_`,
-                // thread_ts: message.thread_ts,
                 ...(userId ? { user: userId } : {}), // actually shouldn't be optional
                 ...(threadId ? { thread_ts: threadId } : {}),
             },
@@ -75,7 +74,7 @@ const acknowledgeQuery = async ({
             accessToken,
         }
     );
-};
+}
 
 /**
  * We acknowledge the slack request immediately to avoid failures
@@ -91,9 +90,11 @@ export async function acknowledgeSlackEvent(req: Request, context: SlackRuntimeC
         if (['message', 'app_mention'].includes(type) && !bot_id) {
             // check for bot_id so that the bot doesn't trigger itself
             // stript out the bot-name in the mention and account for user mentions within the query
-            const parsedQuery = stripMarkdown(stripBotName(text, eventPayload.authorizations[0]?.user_id));
+            const parsedQuery = stripMarkdown(
+                stripBotName(text, eventPayload.authorizations[0]?.user_id)
+            );
 
-            await acknowledgeQuery({
+            acknowledgeQuery({
                 context,
                 text: parsedQuery,
                 userId: user,
@@ -142,7 +143,7 @@ export async function acknowledgeSlackCommand(req: Request, context: SlackRuntim
 
     context.event.waitUntil(data);
 
-    await acknowledgeQuery({
+    acknowledgeQuery({
         context,
         text,
         userId: user_id,

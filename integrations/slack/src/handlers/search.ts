@@ -37,7 +37,7 @@ export async function searchInGitBook(slashEvent: SlashEvent, context: SlackRunt
             path: 'chat.postMessage',
             payload: {
                 channel: channel_id,
-                text: `_Searching for query: ${text}_ in GitBook installation ${installation.id}_`,
+                text: `_Searching for query: ${text}_`,
             },
         },
         {

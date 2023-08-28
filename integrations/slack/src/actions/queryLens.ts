@@ -1,4 +1,10 @@
-import type { SearchAIAnswer, GitBookAPI, Revision, RevisionPage } from '@gitbook/api';
+import type {
+    SearchAIAnswer,
+    GitBookAPI,
+    Revision,
+    RevisionPage,
+    RevisionPageGroup,
+} from '@gitbook/api';
 
 import {
     SlackInstallationConfiguration,
@@ -21,8 +27,8 @@ function extractAllPages(rootPages: Array<RevisionPage>) {
     function recurse(pages: Array<RevisionPage>) {
         for (const page of pages) {
             result.push(page);
-            if (page.pages?.length > 0) {
-                recurse(page.pages);
+            if ((page as RevisionPageGroup).pages?.length > 0) {
+                recurse((page as RevisionPageGroup).pages);
             }
         }
     }
@@ -44,7 +50,7 @@ async function getRelatedPages(params: {
     }
 
     // pull out the highest matches as low matches are fairly useless
-    const highScorePages = pages.filter((page) => page.matchScore >= 0.8);
+    const highScorePages = pages.filter((page) => page.matchScore >= 0.8).slice(0, 10); // only show up to 10 GOOD results
     // if there are no high scores, return top 3 as it still would have pulled data from the related pages
     const sourcePages = highScorePages.length > 0 ? highScorePages : pages.slice(0, 3);
 
