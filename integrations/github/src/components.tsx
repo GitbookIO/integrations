@@ -201,11 +201,9 @@ export const configBlock = createComponent<
                                                 with. This repository should be authorized in the{' '}
                                                 <link
                                                     target={{
-                                                        url: `https://github.com/settings/installations/${
-                                                            parseInstallationOrThrow(
-                                                                element.state.installation
-                                                            ).installationId
-                                                        }`,
+                                                        url: `https://github.com/settings/installations/${parseInstallationOrThrow(
+                                                            element.state.installation
+                                                        )}`,
                                                     }}
                                                 >
                                                     GitHub installation.
@@ -264,10 +262,6 @@ export const configBlock = createComponent<
                                                                 .pathname
                                                         }/branches`,
                                                         query: {
-                                                            installation:
-                                                                element.dynamicState(
-                                                                    'installation'
-                                                                ),
                                                             repository:
                                                                 element.dynamicState('repository'),
                                                             v: versionHash,

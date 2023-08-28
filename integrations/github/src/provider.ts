@@ -5,7 +5,7 @@ import { Logger } from '@gitbook/runtime';
 
 import { createAppInstallationAccessToken, createCommitStatus } from './api';
 import { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
-import { parseInstallationOrThrow, parseRepositoryOrThrow } from './utils';
+import { assertIsDefined, parseInstallationOrThrow } from './utils';
 
 const logger = Logger('github:provider');
 
@@ -39,10 +39,10 @@ async function getGitHubAppJWT(context: GithubRuntimeContext): Promise<string> {
  * Returns the URL of the Git repository.
  */
 export function getRepositoryUrl(config: GitHubSpaceConfiguration, withExtension = false): string {
-    const installation = parseInstallationOrThrow(config);
-    const repository = parseRepositoryOrThrow(config);
+    assertIsDefined(config.accountName, { label: 'config.accountName' });
+    assertIsDefined(config.repoName, { label: 'config.repoName' });
 
-    return `https://github.com/${installation.accountName}/${repository.repoName}${
+    return `https://github.com/${config.accountName}/${config.repoName}${
         withExtension ? '.git' : ''
     }`;
 }
@@ -57,7 +57,7 @@ export async function getRepositoryAuth(
     const appJWT = await getGitHubAppJWT(context);
     const installationAccessToken = await createAppInstallationAccessToken(
         appJWT,
-        parseInstallationOrThrow(config).installationId
+        parseInstallationOrThrow(config)
     );
 
     return {
@@ -81,19 +81,19 @@ export async function updateCommitStatus(
         description: string;
     }
 ) {
-    const installation = parseInstallationOrThrow(config);
-    const repository = parseRepositoryOrThrow(config);
+    assertIsDefined(config.accountName, { label: 'config.accountName' });
+    assertIsDefined(config.repoName, { label: 'config.repoName' });
 
     const appJWT = await getGitHubAppJWT(context);
     const installationAccessToken = await createAppInstallationAccessToken(
         appJWT,
-        parseInstallationOrThrow(config).installationId
+        parseInstallationOrThrow(config)
     );
 
     await createCommitStatus(
         installationAccessToken,
-        installation.accountName,
-        repository.repoName,
+        config.accountName,
+        config.repoName,
         commitSha,
         {
             state: update.state === 'running' ? 'pending' : update.state,
@@ -104,7 +104,7 @@ export async function updateCommitStatus(
     );
 
     logger.info(
-        `Commit status updated for ${commitSha} on GitHub repo (${installation.accountName}/${repository.repoName})`
+        `Commit status updated for ${commitSha} on GitHub repo (${config.accountName}/${config.repoName})`
     );
 }
 

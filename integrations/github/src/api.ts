@@ -19,6 +19,11 @@ interface GHInstallation {
 interface GHRepository {
     id: number;
     name: string;
+    full_name: string;
+    owner: {
+        id: number;
+        login: string;
+    };
     visibility: 'public' | 'private';
 }
 
@@ -64,15 +69,25 @@ export async function fetchInstallationRepositories(
 }
 
 /**
+ * Fetch a repository by its ID.
+ */
+export async function fetchRepository(config: GitHubSpaceConfiguration, repositoryId: number) {
+    const repository = await fetchGitHubAPI<GHRepository>(config, {
+        path: `/repositories/${repositoryId}`,
+    });
+
+    return repository;
+}
+
+/**
  * Fetch all branches for a given account repository.
  */
 export async function fetchRepositoryBranches(
     config: GitHubSpaceConfiguration,
-    accountName: string,
-    repositoryName: string
+    repositoryId: number
 ) {
     const branches = await fetchGitHubAPI<Array<GHBranch>>(config, {
-        path: `/repos/${accountName}/${repositoryName}/branches`,
+        path: `/repositories/${repositoryId}/branches`,
         params: {
             per_page: 100,
             page: 1,

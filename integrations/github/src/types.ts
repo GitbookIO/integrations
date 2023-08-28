@@ -31,15 +31,21 @@ export type ConfigureProps = {
              */
             key?: string;
             /**
-             * The installation of the GitHub App. The string is a concatenation of the installation id and
-             * the account name, separated by a colon (e.g. 123456:my-account-name)
+             * The installation ID of the GitHub App.
              */
             installation?: string;
             /**
-             * The repository to be used for the integration. The string is a concatenation of the repository id and
-             * the repository name, separated by a colon (e.g. 123456:my-repository-name)
+             * Owner of the repository
+             */
+            accountName?: string;
+            /**
+             * The repository ID to be used for the integration.
              */
             repository?: string;
+            /**
+             * Name of the repository for the selected repository ID.
+             */
+            repoName?: string;
             /**
              * The branch to be used for the integration.
              */

@@ -3,24 +3,6 @@ import { GitSyncOperationState, IntegrationSpaceInstallation } from '@gitbook/ap
 import type { GitHubSpaceConfiguration } from './types';
 
 /**
- * Object after parsing the installation string which is a concatenation
- * of the installation ID and account name separated by a colon (:)
- */
-export interface ParsedInstallation {
-    installationId: number;
-    accountName: string;
-}
-
-/**
- * Object after parsing the repository string which is a concatenation
- * of the repo ID and repo name separated by a colon (:)
- */
-export interface ParsedRepository {
-    repoID: number;
-    repoName: string;
-}
-
-/**
  * The default commit message to use when a change request is merged in GitBook
  */
 export const GITSYNC_DEFAULT_COMMIT_MESSAGE =
@@ -78,30 +60,22 @@ export function getSpaceConfigOrThrow(
  * Parse the GitHub installation ID and account name from the installation string.
  * This will `throw an error` if the installation is not defined.
  */
-export function parseInstallationOrThrow(
-    input: GitHubSpaceConfiguration | string
-): ParsedInstallation {
+export function parseInstallationOrThrow(input: GitHubSpaceConfiguration | string): number {
     const installation = typeof input === 'string' ? input : input.installation;
     assertIsDefined(installation, { label: 'installation' });
 
-    // Split at first occurrence of colon
-    const [installationId, ...rest] = installation.split(':');
-    const accountName = rest.join(':');
-    return { installationId: parseInt(installationId, 10), accountName };
+    return parseInt(installation, 10);
 }
 
 /**
- * Parse the repository ID and repository name from the repository string.
+ * Parse the repository ID from the repository string.
  * This will `throw an error` if the repository is not defined.
  */
-export function parseRepositoryOrThrow(input: GitHubSpaceConfiguration | string): ParsedRepository {
+export function parseRepositoryOrThrow(input: GitHubSpaceConfiguration | string): number {
     const repository = typeof input === 'string' ? input : input.repository;
     assertIsDefined(repository, { label: 'repository' });
 
-    // Split at first occurrence of colon
-    const [repoID, ...rest] = repository.split(':');
-    const repoName = rest.join(':');
-    return { repoID: parseInt(repoID, 10), repoName };
+    return parseInt(repository, 10);
 }
 
 /**

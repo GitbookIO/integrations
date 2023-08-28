@@ -3,6 +3,7 @@ import httpError from 'http-errors';
 import { IntegrationSpaceInstallation } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
 
+import { fetchRepository } from './api';
 import { getGitRef } from './provider';
 import { triggerExport, triggerImport } from './sync';
 import { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
@@ -31,8 +32,8 @@ export async function saveSpaceConfiguration(
         throw httpError(400, 'Incomplete configuration');
     }
 
-    const { installationId } = parseInstallationOrThrow(config);
-    const { repoID } = parseRepositoryOrThrow(config);
+    const installationId = parseInstallationOrThrow(config);
+    const repoID = parseRepositoryOrThrow(config);
 
     /**
      * We need to update the space installation external IDs to make sure
@@ -46,11 +47,15 @@ export async function saveSpaceConfiguration(
         );
     }
 
+    const githubRepo = await fetchRepository(config, repoID);
+
     const configurationBody: GitHubSpaceConfiguration = {
         ...spaceInstallation.configuration,
         key: config.key || crypto.randomUUID(),
         installation: config.installation,
         repository: config.repository,
+        accountName: githubRepo.owner.login,
+        repoName: githubRepo.name,
         branch: config.branch,
         commitMessageTemplate: config.commitMessageTemplate,
         previewExternalBranches: config.previewExternalBranches,
