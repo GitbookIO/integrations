@@ -21,51 +21,49 @@ const logger = Logger('github:installation');
  */
 export async function saveSpaceConfiguration(
     context: GithubRuntimeContext,
-    config: GitHubSpaceConfiguration
+    state: GitHubSpaceConfiguration
 ) {
     const { api, environment } = context;
     const spaceInstallation = environment.spaceInstallation;
 
     assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
-    if (!config.installation || !config.repository || !config.branch) {
+    if (!state.installation || !state.repository || !state.branch) {
         throw httpError(400, 'Incomplete configuration');
     }
 
-    const installationId = parseInstallationOrThrow(config);
-    const repoID = parseRepositoryOrThrow(config);
+    const installationId = parseInstallationOrThrow(state);
+    const repoID = parseRepositoryOrThrow(state);
 
     /**
      * We need to update the space installation external IDs to make sure
      * we can query it later when there is a webhook event.
      */
     const externalIds: string[] = [];
-    externalIds.push(computeConfigQueryKey(installationId, repoID, getGitRef(config.branch)));
-    if (config.previewExternalBranches) {
+    externalIds.push(computeConfigQueryKey(installationId, repoID, getGitRef(state.branch)));
+    if (state.previewExternalBranches) {
         externalIds.push(
-            computeConfigQueryKey(installationId, repoID, getGitRef(config.branch), true)
+            computeConfigQueryKey(installationId, repoID, getGitRef(state.branch), true)
         );
     }
 
-    const githubRepo = await fetchRepository(config, repoID);
-
     const configurationBody: GitHubSpaceConfiguration = {
         ...spaceInstallation.configuration,
-        key: config.key || crypto.randomUUID(),
-        installation: config.installation,
-        repository: config.repository,
-        accountName: githubRepo.owner.login,
-        repoName: githubRepo.name,
-        branch: config.branch,
-        commitMessageTemplate: config.commitMessageTemplate,
-        previewExternalBranches: config.previewExternalBranches,
-        projectDirectory: config.projectDirectory,
-        priority: config.priority,
+        key: crypto.randomUUID(),
+        installation: state.installation,
+        repository: state.repository,
+        branch: state.branch,
+        commitMessageTemplate: state.commitMessageTemplate,
+        previewExternalBranches: state.previewExternalBranches,
+        projectDirectory: state.projectDirectory,
+        priority: state.priority,
     };
 
     logger.debug(
         `Saving config for space ${spaceInstallation.space} of integration-installation ${spaceInstallation.installation}`
     );
+
+    const githubRepo = await fetchRepository(configurationBody, repoID);
 
     // Save the space installation configuration
     const { data: updatedSpaceInstallation } =
@@ -75,14 +73,18 @@ export async function saveSpaceConfiguration(
             spaceInstallation.space,
             {
                 externalIds,
-                configuration: configurationBody,
+                configuration: {
+                    ...configurationBody,
+                    accountName: githubRepo.owner.login,
+                    repoName: githubRepo.name,
+                },
             }
         );
 
     logger.info(`Saved config for space ${spaceInstallation.space}`);
 
     // Force a synchronization
-    if (config.priority === 'github') {
+    if (state.priority === 'github') {
         logger.debug(`Forcing import for space ${spaceInstallation.space}`);
         await triggerImport(context, updatedSpaceInstallation, {
             force: true,
