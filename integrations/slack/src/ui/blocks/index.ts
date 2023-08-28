@@ -17,7 +17,7 @@ export function PageBlock(page: RevisionPage, publicUrl: string) {
     const url = `${nonRevisionPublicUrl}${page.path}`;
     return {
         type: 'mrkdwn',
-        text: `*<${url}|:page_facing_up: ${page.title}>*`,
+        text: `*<${url}|:spiral_note_pad: ${page.title}>*`,
     };
 }
 
