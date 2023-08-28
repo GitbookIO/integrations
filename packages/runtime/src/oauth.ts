@@ -83,11 +83,11 @@ export function createOAuthHandler(
          * with the new oauth credentials.
          * @default true
          */
-        overwrite?: boolean;
+        replace?: boolean;
     } = {}
 ): RuntimeCallback<[Request], Promise<Response>> {
     const { extractCredentials = defaultExtractCredentials } = config;
-    const { overwrite = true } = options;
+    const { replace = true } = options;
 
     return async (request, { api, environment }) => {
         const url = new URL(request.url);
@@ -187,7 +187,7 @@ export function createOAuthHandler(
                 };
 
                 if (state.spaceId) {
-                    if (!overwrite) {
+                    if (!replace) {
                         const { data: spaceInstallation } =
                             await api.integrations.getIntegrationSpaceInstallation(
                                 environment.integration.name,
@@ -209,7 +209,7 @@ export function createOAuthHandler(
                         }
                     );
                 } else {
-                    if (!overwrite) {
+                    if (!replace) {
                         const { data: installation } =
                             await api.integrations.getIntegrationInstallationById(
                                 environment.integration.name,
