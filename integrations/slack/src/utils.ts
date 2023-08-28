@@ -1,4 +1,9 @@
 import { SlackInstallationConfiguration } from './configuration';
+import removeMarkdown from 'remove-markdown';
+
+export function stripMarkdown(text: string) {
+  return removeMarkdown(text);
+}
 
 export async function getInstallationConfig(context, externalId) {
     const { api, environment } = context;

@@ -7,6 +7,7 @@ import {
 } from '../configuration';
 import { slackAPI } from '../slack';
 import { PagesBlock, QueryDisplayBlock, ShareTools, decodeSlackEscapeChars } from '../ui/blocks';
+import { stripMarkdown } from '../utils';
 
 function extractAllPages(rootPages: Array<RevisionPage>) {
     const result: Array<RevisionPage> = [];
@@ -32,8 +33,17 @@ async function getRelatedPages(params: {
 }) {
     const { pages, client } = params;
 
+    if (!pages || pages.length === 0) {
+        return [];
+    }
+
+    // pull out the highest matches as low matches are fairly useless
+    const highScorePages = pages.filter((page) => page.matchScore >= 0.8);
+    // if there are no high scores, return top 3 as it still would have pulled data from the related pages
+    const sourcePages = highScorePages.length > 0 ? highScorePages : pages.slice(0, 3);
+
     // collect all spaces from page results (and de-dupe)
-    const allSpaces = pages.reduce((accum, page) => {
+    const allSpaces = sourcePages.reduce((accum, page) => {
         accum.add(page.space);
 
         return accum;
@@ -52,7 +62,7 @@ async function getRelatedPages(params: {
     }, []);
 
     // extract all related pages from the Revisions along with the related public URL
-    const relatedPages: Array<{ publicUrl: string; page: RevisionPage }> = pages.reduce(
+    const relatedPages: Array<{ publicUrl: string; page: RevisionPage }> = sourcePages.reduce(
         (accum, page) => {
             // TODO: we can probably combine finding the currentRevision with extracting the appropriate page
             const currentRevision = allRevisions.find((revision: Revision) =>
@@ -140,7 +150,7 @@ export async function queryLens({
     const accessToken = (installation.configuration as SlackInstallationConfiguration)
         .oauth_credentials?.access_token;
 
-    const result = await client.search.askQuery({ query: text });
+    const result = await client.search.askQuery({ query: stripMarkdown(text) });
     const answer: SearchAIAnswer = result.data?.answer;
 
     if (answer && answer.text) {

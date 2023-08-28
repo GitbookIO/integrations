@@ -9,6 +9,7 @@ import {
     parseCommandPayload,
     stripBotName,
     getActionNameAndType,
+    stripMarkdown,
 } from './utils';
 
 /**
@@ -64,7 +65,7 @@ const acknowledgeQuery = async ({
             path: slackMessageTypes[messageType], // probably alwasy ephemeral? or otherwise have replies in same thread
             payload: {
                 channel: channelId,
-                text: `_Asking: ${text}_`,
+                text: `_Asking: ${stripMarkdown(text)}_`,
                 // thread_ts: message.thread_ts,
                 ...(userId ? { user: userId } : {}), // actually shouldn't be optional
                 ...(threadId ? { thread_ts: threadId } : {}),
@@ -90,7 +91,7 @@ export async function acknowledgeSlackEvent(req: Request, context: SlackRuntimeC
         if (['message', 'app_mention'].includes(type) && !bot_id) {
             // check for bot_id so that the bot doesn't trigger itself
             // stript out the bot-name in the mention and account for user mentions within the query
-            const parsedQuery = stripBotName(text, eventPayload.authorizations[0]?.user_id);
+            const parsedQuery = stripMarkdown(stripBotName(text, eventPayload.authorizations[0]?.user_id));
 
             await acknowledgeQuery({
                 context,
