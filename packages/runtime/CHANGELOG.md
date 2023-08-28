@@ -1,5 +1,17 @@
 # @gitbook/runtime
 
+## 0.6.0
+
+### Minor Changes
+
+-   fecaf55: Update createOAuthHandler signature to allow passing an optional options object
+
+## 0.5.0
+
+### Minor Changes
+
+-   Update JSX for @gitbook/runtime
+
 ## 0.4.1
 
 ### Patch Changes
