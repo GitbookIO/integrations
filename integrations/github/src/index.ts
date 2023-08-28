@@ -94,11 +94,12 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
 
         const taskUrl = new URL(request.url);
         taskUrl.pathname += '/task';
+        const body = await request.text();
 
         fetch(taskUrl.toString(), {
             keepalive: true,
             method: 'POST',
-            body: await request.text(),
+            body,
             headers: {
                 'content-type': request.headers.get('content-type') || 'application/text',
                 'x-github-delivery': id,
