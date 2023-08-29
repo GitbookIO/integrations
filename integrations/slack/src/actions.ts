@@ -22,23 +22,25 @@ export function createSlackActionsHandler(
             const action = actions[0];
             const { actionName, actionPostType } = getActionNameAndType(action.action_id);
 
-            // TODO: need a more polymorphic solve here if possible
-            const params: IQueryLens = {
-                channelId: channel.id,
-                teamId: team.id,
-                text: action.value ?? action.text.text,
-                messageType: actionPostType,
+            // dispatch the action to an appropriate action function
+            if (actionName === 'queryLens') {
+                const params: IQueryLens = {
+                    channelId: channel.id,
+                    teamId: team.id,
+                    text: action.value ?? action.text.text,
+                    messageType: actionPostType,
 
-                // pass thread if exists
-                ...(container.thread_ts ? { threadId: container.thread_ts } : {}),
-                // pass user if exists
-                ...(user.id ? { userId: user.id } : {}),
+                    // pass thread if exists
+                    ...(container.thread_ts ? { threadId: container.thread_ts } : {}),
+                    // pass user if exists
+                    ...(user.id ? { userId: user.id } : {}),
 
-                context,
-            };
+                    context,
+                };
 
-            // queryLens:ephemeral, queryLens:permanent
-            return await handlers[actionName](params);
+                // queryLens:ephemeral, queryLens:permanent
+                return await handlers[actionName](params);
+            }
         }
     };
 }
