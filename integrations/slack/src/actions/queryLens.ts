@@ -50,10 +50,8 @@ async function getRelatedPages(params: {
         return [];
     }
 
-    // pull out the highest matches as low matches are fairly useless
-    const highScorePages = pages.filter((page) => page.matchScore >= 0.8).slice(0, 10); // only show up to 10 GOOD results
-    // if there are no high scores, return top 3 as it still would have pulled data from the related pages
-    const sourcePages = highScorePages.length > 0 ? highScorePages : pages.slice(0, 3);
+    // return top 3 pages (pages are ordered by score)
+    const sourcePages = pages.slice(0, 3);
 
     // collect all spaces from page results (and de-dupe)
     const allSpaces = sourcePages.reduce((accum, page) => {
