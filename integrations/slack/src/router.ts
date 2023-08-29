@@ -74,7 +74,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
     router.post('/actions', verifySlackRequest, acknowledgeSlackRequest);
 
     // /gitbook
-    router.post('/commands', acknowledgeSlackRequest);
+    router.post('/commands', verifySlackRequest, acknowledgeSlackRequest);
 
     router.post(
         '/commands_task',
