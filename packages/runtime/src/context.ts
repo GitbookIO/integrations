@@ -22,6 +22,8 @@ export interface RuntimeContext<Environment extends RuntimeEnvironment = Integra
      * Authenticated client to the GitBook API.
      */
     api: GitBookAPI;
+
+    event: FetchEvent;
 }
 
 /**
@@ -36,12 +38,16 @@ export type RuntimeCallback<
 /**
  * Create a new runtime context from an environment.
  */
-export function createContext(environment: IntegrationEnvironment): RuntimeContext {
+export function createContext(
+    environment: IntegrationEnvironment,
+    event: FetchEvent
+): RuntimeContext {
     return {
         environment,
         api: new GitBookAPI({
             endpoint: environment.apiEndpoint,
             authToken: environment.authToken,
         }),
+        event,
     };
 }

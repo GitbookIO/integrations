@@ -61,7 +61,8 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
             const event = JSON.parse(formData.get('event') as string) as Event;
             const fetchBody = formData.get('fetch-body');
             const context = createContext(
-                JSON.parse(formData.get('environment') as string) as IntegrationEnvironment
+                JSON.parse(formData.get('environment') as string) as IntegrationEnvironment,
+                ev
             ) as Context;
 
             if (event.type === 'fetch' && definition.fetch) {
