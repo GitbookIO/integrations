@@ -23,7 +23,7 @@ export interface RuntimeContext<Environment extends RuntimeEnvironment = Integra
      */
     api: GitBookAPI;
 
-    event: FetchEvent;
+    waitUntil: FetchEvent['waitUntil'];
 }
 
 /**
@@ -40,7 +40,7 @@ export type RuntimeCallback<
  */
 export function createContext(
     environment: IntegrationEnvironment,
-    event: FetchEvent
+    waitUntil: FetchEvent['waitUntil']
 ): RuntimeContext {
     return {
         environment,
@@ -48,6 +48,6 @@ export function createContext(
             endpoint: environment.apiEndpoint,
             authToken: environment.authToken,
         }),
-        event,
+        waitUntil,
     };
 }
