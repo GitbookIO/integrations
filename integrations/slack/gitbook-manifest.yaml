@@ -16,7 +16,6 @@ script: ./src/index.ts
 scopes:
     - space:content:read
     - space:metadata:read
-    - space:content:write
 summary: |
     # Overview
 
@@ -29,7 +28,7 @@ summary: |
     Pick and choose what, where, and how you wish to be notified.
 
     Searching made simple:
-    Searching has never been easier. Use Slack global shortcuts to search within your content: Type "/gitbook [search]".
+    Searching for answers has never been easier. Use Slack global shortcuts to ask questions that are answered based on your content: Type \"/gitbook [question]\" or invite our bot to your channel to ask questions and see answers together.
 
     Improved links sharing:
     The GitBook Slack integration will automatically generate a nice-looking preview for all GitBook links shared in Slack.

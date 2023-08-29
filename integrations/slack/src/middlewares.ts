@@ -44,7 +44,7 @@ export async function verifySlackRequest(request: Request, { environment }: Slac
     }
 }
 
-function acknowledgeQuery({
+export function acknowledgeQuery({
     context,
     text,
     userId,
@@ -220,6 +220,24 @@ export async function acknowledgeSlackAction(req: Request, context: SlackRuntime
         headers: {
             'Content-Type': 'application/json',
         },
+    });
+}
+
+export async function acknowledgeSlackRequest(req: Request, context: SlackRuntimeContext) {
+    const data = fetch(`${req.url}_task`, {
+        method: 'POST',
+        body: await req.text(),
+        headers: {
+            'content-type': req.headers.get('content-type'),
+            'x-slack-signature': req.headers.get('x-slack-signature'),
+            'x-slack-request-timestamp': req.headers.get('x-slack-request-timestamp'),
+        },
+    });
+
+    context.event.waitUntil(data);
+
+    return new Response(null, {
+        status: 200,
     });
 }
 

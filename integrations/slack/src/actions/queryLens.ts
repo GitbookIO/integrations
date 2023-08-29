@@ -11,6 +11,7 @@ import {
     SlackRuntimeEnvironment,
     SlackRuntimeContext,
 } from '../configuration';
+import { acknowledgeQuery } from '../middlewares';
 import { slackAPI } from '../slack';
 import {
     PagesBlock,
@@ -19,7 +20,7 @@ import {
     decodeSlackEscapeChars,
     Spacer,
 } from '../ui/blocks';
-import { stripMarkdown } from '../utils';
+import { stripBotName, stripMarkdown } from '../utils';
 
 function extractAllPages(rootPages: Array<RevisionPage>) {
     const result: Array<RevisionPage> = [];
@@ -121,6 +122,8 @@ export interface IQueryLens {
 
     /* Get lens reply in thread */
     threadId?: string;
+
+    authorization: string;
 }
 
 async function getInstallationApiClient(api, externalId: string) {
@@ -152,6 +155,7 @@ export async function queryLens({
     text,
     messageType,
     context,
+    authorization,
 }: IQueryLens) {
     const { environment, api } = context;
     const { client, installation } = await getInstallationApiClient(api, teamId);
@@ -162,7 +166,20 @@ export async function queryLens({
     const accessToken = (installation.configuration as SlackInstallationConfiguration)
         .oauth_credentials?.access_token;
 
-    const result = await client.search.askQuery({ query: stripMarkdown(text) });
+    const parsedQuery = stripMarkdown(stripBotName(text, authorization?.user_id));
+
+    // async acknowledge the request to the end user early
+    acknowledgeQuery({
+        context,
+        text: parsedQuery,
+        userId,
+        threadId,
+        channelId,
+        accessToken,
+        messageType,
+    });
+
+    const result = await client.search.askQuery({ query: parsedQuery });
     const answer: SearchAIAnswer = result.data?.answer;
 
     if (answer && answer.text) {

@@ -2,7 +2,7 @@ import { FetchEventCallback } from '@gitbook/runtime';
 
 import { queryLens } from './actions/queryLens';
 import { SlackRuntimeContext } from './configuration';
-import { parseEventPayload, stripBotName } from './utils';
+import { parseEventPayload, stripBotName, stripMarkdown } from './utils';
 
 /**
  * Handle an event from Slack.
@@ -32,6 +32,7 @@ export function createSlackEventsHandler(
                 messageType: 'permanent',
                 text: parsedQuery,
                 context,
+                authorization: eventPayload.authorizations[0],
             });
         }
 

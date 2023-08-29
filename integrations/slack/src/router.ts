@@ -8,12 +8,7 @@ import { createSlackCommandsHandler } from './commands';
 import { createSlackEventsHandler } from './events';
 import { queryLensSlashHandler } from './handlers';
 import { unfurlLink } from './links';
-import {
-    acknowledgeSlackEvent,
-    acknowledgeSlackAction,
-    verifySlackRequest,
-    acknowledgeSlackCommand,
-} from './middlewares';
+import { verifySlackRequest, acknowledgeSlackRequest } from './middlewares';
 import { getChannelsPaginated } from './slack';
 
 /**
@@ -74,22 +69,19 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
     );
 
     // event triggers, e.g app_mention
-    router.post('/events', verifySlackRequest, acknowledgeSlackEvent);
+    router.post('/events', verifySlackRequest, acknowledgeSlackRequest);
 
     // shortcuts & interactivity
-    router.post('/actions', verifySlackRequest, acknowledgeSlackAction);
+    router.post('/actions', verifySlackRequest, acknowledgeSlackRequest);
 
     // /gitbook
-    router.post('/commands', acknowledgeSlackCommand);
+    router.post('/commands', acknowledgeSlackRequest);
 
     router.post(
         '/commands_task',
         verifySlackRequest,
         createSlackCommandsHandler({
             '/gitbook': queryLensSlashHandler,
-            // url_verification: async (event: { challenge: string }) => {
-            // return { challenge: event.challenge };
-            // },
         })
     );
 
@@ -105,29 +97,6 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         }));
 
         return new Response(JSON.stringify(completions), {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-    });
-
-    router.get('/spaces', async () => {
-        let spaces: { value: string; label: string }[];
-
-        if (!('organization' in environment.installation.target)) {
-            spaces = [];
-        } else {
-            const resp = await api.orgs.listSpacesInOrganizationById(
-                environment.installation.target.organization
-            );
-
-            spaces = resp.data.items.map((space) => ({
-                value: space.id,
-                label: space.title,
-            }));
-        }
-
-        return new Response(JSON.stringify(spaces), {
             headers: {
                 'Content-Type': 'application/json',
             },
