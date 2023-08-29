@@ -36,11 +36,6 @@ features:
     bot_user:
         display_name: GitBook
         always_online: true
-    # shortcuts:
-    # - name: Summarize thread
-    # type: message
-    # callback_id: summarize_thread
-    # description: Create a summary of this thread that will be stored on GitBook. You can use Lens AI to ask questions on this thread or combine with your knowledge bas
     slash_commands:
         - command: /gitbook
           # UPDATE url here to match your env
@@ -64,8 +59,6 @@ oauth_config:
             - groups:read
             - links:read
             - links:write
-            # - channels:history
-            # - im:history
 settings:
     event_subscriptions:
         # UPDATE url here to match your env
