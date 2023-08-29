@@ -226,7 +226,6 @@ export async function queryLens({
                 payload: {
                     channel: channelId,
                     blocks: [...blocks, ...ShareTools(text)],
-                    // attachments: [{ color: '#346ddb', blocks: [...blocks, ...ShareTools(text)] }],
                     user: userId,
 
                     ...(threadId ? { thread_ts: threadId } : {}),
@@ -259,19 +258,15 @@ export async function queryLens({
             payload: {
                 channel: channelId,
                 thread_ts: threadId,
-                attachments: [
+                blocks: [
                     {
-                        blocks: [
-                            {
-                                type: 'section',
-                                text: {
-                                    type: 'mrkdwn',
-                                    text,
-                                },
-                            },
-                            Spacer,
-                        ],
+                        type: 'section',
+                        text: {
+                            type: 'mrkdwn',
+                            text,
+                        },
                     },
+                    Spacer,
                 ],
 
                 user: userId,
