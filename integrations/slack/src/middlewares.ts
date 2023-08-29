@@ -164,14 +164,14 @@ export async function acknowledgeSlackCommand(req: Request, context: SlackRuntim
 export async function acknowledgeSlackAction(req: Request, context: SlackRuntimeContext) {
     const actionPayload = await parseActionPayload(req);
 
-    const { type, channel, message, team, user, actions, container } = actionPayload;
+    const { channel, message, team, user, actions, container } = actionPayload;
 
     const { accessToken } = await getInstallationConfig(context, team.id);
 
     if (actions.length > 0) {
         await Promise.all(
             actions.map(async (action) => {
-                const { action_id, value } = actions[0];
+                const { action_id, value } = action;
 
                 const { actionName } = getActionNameAndType(action_id);
 

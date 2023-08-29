@@ -1,5 +1,6 @@
-import { SlackInstallationConfiguration } from './configuration';
 import removeMarkdown from 'remove-markdown';
+
+import { SlackInstallationConfiguration } from './configuration';
 
 export function stripMarkdown(text: string) {
     return removeMarkdown(text);

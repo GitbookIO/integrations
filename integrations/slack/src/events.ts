@@ -2,7 +2,7 @@ import { FetchEventCallback } from '@gitbook/runtime';
 
 import { queryLens } from './actions/queryLens';
 import { SlackRuntimeContext } from './configuration';
-import { parseEventPayload, stripBotName, stripMarkdown } from './utils';
+import { parseEventPayload, stripBotName } from './utils';
 
 /**
  * Handle an event from Slack.
