@@ -4,18 +4,18 @@ import { getActionNameAndType, parseActionPayload } from './utils';
 /**
 
  * Handle an action from Slack.
+ * Actions are defined within a block using Slack's "action_id" and are usually in the form of "functionName:messageType"
  */
 export function createSlackActionsHandler(
     handlers: {
-        // [type: string]: (event: object, context: SlackRuntimeContext) => Promise<any>;
-        [type: string]: (...args: any) => Promise<any>;
+        [type: string]: (event: object) => Promise<any>;
     }
     // TODO: type output
 ): any {
     return async (request, context) => {
         const actionPayload = await parseActionPayload(request);
 
-        const { actions, container, channel, message, team, user } = actionPayload;
+        const { actions, container, channel, team, user } = actionPayload;
 
         // go through all actions sent and call the action from './actions/index.ts'
         if (actions?.length > 0) {

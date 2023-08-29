@@ -32,7 +32,6 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             'chat:write',
             'channels:join',
             'channels:read',
-            'channels:history',
             'groups:read',
             'links:read',
             'links:write',

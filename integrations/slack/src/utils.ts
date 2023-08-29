@@ -2,7 +2,7 @@ import { SlackInstallationConfiguration } from './configuration';
 import removeMarkdown from 'remove-markdown';
 
 export function stripMarkdown(text: string) {
-  return removeMarkdown(text);
+    return removeMarkdown(text);
 }
 
 export async function getInstallationConfig(context, externalId) {
@@ -31,13 +31,6 @@ export async function getInstallationConfig(context, externalId) {
     return {
         accessToken,
     };
-}
-
-/**
- * @gitbook save
- */
-export function isSaveThreadEvent(type: string, text: string) {
-    return type === 'app_mention' && text.split(' ')[1] === 'save';
 }
 
 export async function parseEventPayload(req: Request) {
