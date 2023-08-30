@@ -23,7 +23,7 @@ export async function saveSpaceConfiguration(
 
     assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
-    if (!config.project || !config.projectName || !config.branch) {
+    if (!config.project || !config.branch) {
         throw httpError(400, 'Incomplete configuration');
     }
 

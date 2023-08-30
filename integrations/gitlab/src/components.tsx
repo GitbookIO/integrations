@@ -70,6 +70,7 @@ export const configBlock = createComponent<
                     {
                         configuration: {
                             ...spaceInstallation.configuration,
+                            key: crypto.randomUUID(),
                             accessToken: action.token,
                         },
                     }
