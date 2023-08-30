@@ -121,7 +121,7 @@ export interface IQueryLens {
     /* Get lens reply in thread */
     threadId?: string;
 
-    authorization: string;
+    authorization?: string;
 }
 
 async function getInstallationApiClient(api, externalId: string) {
@@ -164,6 +164,7 @@ export async function queryLens({
     const accessToken = (installation.configuration as SlackInstallationConfiguration)
         .oauth_credentials?.access_token;
 
+    // strip a bot name if the user_id from the request is present in the query itself (specifically for a bot mention)
     const parsedQuery = stripMarkdown(stripBotName(text, authorization?.user_id));
 
     // async acknowledge the request to the end user early

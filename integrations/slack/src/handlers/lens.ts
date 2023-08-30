@@ -1,6 +1,10 @@
+import { Logger } from '@gitbook/runtime';
+
 import { queryLens } from '../actions/queryLens';
 import type { SlashEvent } from '../commands';
 import { SlackRuntimeContext } from '../configuration';
+
+const logger = Logger('slack:api');
 
 /**
  * Handle a slash request and route it to the GitBook Lens' query function.
@@ -21,6 +25,7 @@ export async function queryLensSlashHandler(slashEvent: SlashEvent, context: Sla
         });
     } catch (e) {
         // Error state. Probably no installation was found
+        logger.error('Error calling queryLens. Perhasp no installation was found?');
         return {};
     }
 }
