@@ -1,6 +1,6 @@
 import { Router } from 'itty-router';
 
-import { ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
+import { ContentKitIcon, ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
 import { createIntegration, FetchEventCallback, Logger, EventCallback } from '@gitbook/runtime';
 
 import { fetchProjectBranches, fetchProjects } from './api';
@@ -66,19 +66,20 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
         const taskUrl = new URL(request.url);
         taskUrl.pathname += '/task';
 
-        fetch(taskUrl.toString(), {
-            keepalive: true,
-            method: 'POST',
-            body: await request.text(),
-            headers: {
-                'content-type': request.headers.get('content-type') || 'application/text',
-                'x-gitlab-event': event,
-                'x-gitlab-event-uuid': eventUuid,
-                'x-gitlab-webhook-uuid': webhookUuid,
-                'x-gitlab-token': token,
-                'x-gitlab-instance': instance,
-            },
-        });
+        context.waitUntil(
+            fetch(taskUrl.toString(), {
+                method: 'POST',
+                body: await request.text(),
+                headers: {
+                    'content-type': request.headers.get('content-type') || 'application/text',
+                    'x-gitlab-event': event,
+                    'x-gitlab-event-uuid': eventUuid,
+                    'x-gitlab-webhook-uuid': webhookUuid,
+                    'x-gitlab-token': token,
+                    'x-gitlab-instance': instance,
+                },
+            })
+        );
 
         return new Response(JSON.stringify({ acknowledged: true }), {
             status: 200,
@@ -99,6 +100,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
             (project): ContentKitSelectOption => ({
                 id: `${project.id}`,
                 label: project.path_with_namespace,
+                icon: project.visibility === 'public' ? undefined : ContentKitIcon.Lock,
             })
         );
 
@@ -131,6 +133,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
             (branch): ContentKitSelectOption => ({
                 id: branch.name,
                 label: branch.name,
+                icon: branch.protected ? ContentKitIcon.Lock : undefined,
             })
         );
 
