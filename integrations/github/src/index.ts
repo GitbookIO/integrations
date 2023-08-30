@@ -1,6 +1,6 @@
 import { Router } from 'itty-router';
 
-import { ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
+import { ContentKitIcon, ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
 import {
     createIntegration,
     FetchEventCallback,
@@ -96,17 +96,18 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         taskUrl.pathname += '/task';
         const body = await request.text();
 
-        fetch(taskUrl.toString(), {
-            keepalive: true,
-            method: 'POST',
-            body,
-            headers: {
-                'content-type': request.headers.get('content-type') || 'application/text',
-                'x-github-delivery': id,
-                'x-github-event': event,
-                'x-hub-signature-256': signature,
-            },
-        });
+        context.waitUntil(
+            fetch(taskUrl.toString(), {
+                method: 'POST',
+                body,
+                headers: {
+                    'content-type': request.headers.get('content-type') || 'application/text',
+                    'x-github-delivery': id,
+                    'x-github-event': event,
+                    'x-hub-signature-256': signature,
+                },
+            })
+        );
 
         return new Response(JSON.stringify({ acknowledged: true }), {
             status: 200,
@@ -183,6 +184,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
             (repository): ContentKitSelectOption => ({
                 id: `${repository.id}`,
                 label: repository.name,
+                icon: repository.visibility === 'private' ? ContentKitIcon.Lock : undefined,
             })
         );
 
@@ -215,6 +217,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
             (branch): ContentKitSelectOption => ({
                 id: branch.name,
                 label: branch.name,
+                icon: branch.protected ? ContentKitIcon.Lock : undefined,
             })
         );
 
