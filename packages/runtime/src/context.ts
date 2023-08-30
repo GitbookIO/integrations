@@ -23,6 +23,11 @@ export interface RuntimeContext<Environment extends RuntimeEnvironment = Integra
      */
     api: GitBookAPI;
 
+    /**
+     * Wait for any pending promises to complete before finishing the execution.
+     * Use this function for any side-effects in your handlers that are not awaited, but must finish before
+     * the execution context is closed.
+     */
     waitUntil: FetchEvent['waitUntil'];
 }
 
