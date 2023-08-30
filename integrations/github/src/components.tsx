@@ -247,6 +247,7 @@ export const configBlock = createComponent<
                                         hint="Choose a Git branch to sync your content with. If the branch doesn't exist it'd be created during the sync."
                                         element={
                                             <select
+                                                acceptInput
                                                 state="branch"
                                                 onValueChange={{
                                                     action: 'select.branch',
