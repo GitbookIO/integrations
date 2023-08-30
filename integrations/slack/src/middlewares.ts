@@ -73,7 +73,7 @@ export function acknowledgeQuery({
  * and "queue" the actual task to be executed in a subsequent request.
  */
 export async function acknowledgeSlackRequest(req: Request, context: SlackRuntimeContext) {
-    fetch(`${req.url}_task`, {
+    const fetchPromise = fetch(`${req.url}_task`, {
         method: 'POST',
         body: await req.text(),
         headers: {
@@ -81,8 +81,9 @@ export async function acknowledgeSlackRequest(req: Request, context: SlackRuntim
             'x-slack-signature': req.headers.get('x-slack-signature'),
             'x-slack-request-timestamp': req.headers.get('x-slack-request-timestamp'),
         },
-        keepalive: true,
     });
+
+    context.waitUntil(fetchPromise);
 
     return new Response(null, {
         status: 200,
