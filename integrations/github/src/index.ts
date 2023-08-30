@@ -144,6 +144,13 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
             (installation): ContentKitSelectOption => ({
                 id: `${installation.id}`,
                 label: installation.account.login,
+                icon: {
+                    type: 'image',
+                    aspectRatio: 1,
+                    source: {
+                        url: installation.account.avatar_url,
+                    },
+                },
             })
         );
 
