@@ -25,7 +25,7 @@ interface GLBranch {
  * the access token from the environment.
  */
 export async function fetchProjects(config: GitLabSpaceConfiguration) {
-    const projects = await fetchGitLabAPI<Array<GLProject>>(config, {
+    const projects = await gitlabAPI<Array<GLProject>>(config, {
         path: '/projects',
         params: {
             membership: true,
@@ -41,7 +41,7 @@ export async function fetchProjects(config: GitLabSpaceConfiguration) {
  * Fetch a GitLab project by its ID.
  */
 export async function fetchProject(config: GitLabSpaceConfiguration, projectId: number) {
-    const project = await fetchGitLabAPI<GLProject>(config, {
+    const project = await gitlabAPI<GLProject>(config, {
         path: `/projects/${projectId}`,
     });
 
@@ -52,7 +52,7 @@ export async function fetchProject(config: GitLabSpaceConfiguration, projectId: 
  * Fetch all branches for a given project repository.
  */
 export async function fetchProjectBranches(config: GitLabSpaceConfiguration, projectId: number) {
-    const branches = await fetchGitLabAPI<Array<GLBranch>>(config, {
+    const branches = await gitlabAPI<Array<GLBranch>>(config, {
         path: `/projects/${projectId}/repository/branches`,
         params: {
             per_page: 100,
@@ -71,7 +71,7 @@ export async function addProjectWebhook(
     projectId: number,
     webhook: string
 ) {
-    const { id } = await fetchGitLabAPI<{ id: number }>(config, {
+    const { id } = await gitlabAPI<{ id: number }>(config, {
         method: 'POST',
         path: `/projects/${projectId}/hooks`,
         body: {
@@ -92,7 +92,7 @@ export async function deleteProjectWebhook(
     projectId: number,
     webhookId: number
 ) {
-    await fetchGitLabAPI(config, {
+    await gitlabAPI(config, {
         method: 'DELETE',
         path: `/projects/${projectId}/hooks/${webhookId}`,
     });
@@ -107,7 +107,7 @@ export async function editCommitStatus(
     sha: string,
     status: object
 ): Promise<void> {
-    await fetchGitLabAPI(config, {
+    await gitlabAPI(config, {
         method: 'POST',
         path: `/projects/${projectId}/statuses/${sha}`,
         body: status,
@@ -117,7 +117,7 @@ export async function editCommitStatus(
 /**
  * Execute a GitLab API request.
  */
-export async function fetchGitLabAPI<T>(
+export async function gitlabAPI<T>(
     config: GitLabSpaceConfiguration,
     request: {
         method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
@@ -130,8 +130,8 @@ export async function fetchGitLabAPI<T>(
 ): Promise<T> {
     const { method = 'GET', path, body, params, listProperty = '' } = request;
 
-    const endpoint = getEndpoint(config);
     const token = getAccessTokenOrThrow(config);
+    const endpoint = getEndpoint(config);
 
     const baseEndpoint = `${endpoint || 'https://gitlab.com'}/api/v4`;
 
@@ -144,7 +144,7 @@ export async function fetchGitLabAPI<T>(
         body: body ? JSON.stringify(body) : undefined,
     };
 
-    const response = await requestGitLab(url, token, options);
+    const response = await requestGitLab(token, url, options);
 
     let data = await response.json();
 
@@ -164,7 +164,7 @@ export async function fetchGitLabAPI<T>(
             const nextURLSearchParams = Object.fromEntries(nextURL.searchParams);
             if (nextURLSearchParams.page) {
                 url.searchParams.set('page', nextURLSearchParams.page as string);
-                const nextResponse = await requestGitLab(url, token, options);
+                const nextResponse = await requestGitLab(token, url, options);
                 const nextData = await nextResponse.json();
                 // @ts-ignore
                 data = [...data, ...(paginatedListProperty ? nextData[listProperty] : nextData)];
@@ -183,8 +183,8 @@ export async function fetchGitLabAPI<T>(
  * It will throw an error if the response is not ok.
  */
 async function requestGitLab(
-    url: URL,
     token: string,
+    url: URL,
     options: RequestInit = {}
 ): Promise<Response> {
     const response = await fetch(url.toString(), {
@@ -208,7 +208,7 @@ async function requestGitLab(
 /**
  * Return the GitLab endpoint to be used from the configuration.
  */
-export function getEndpoint(config: GitLabSpaceConfiguration): string {
+function getEndpoint(config: GitLabSpaceConfiguration): string {
     const { customInstanceUrl } = config;
     return customInstanceUrl || 'https://gitlab.com';
 }
@@ -220,7 +220,7 @@ export function getEndpoint(config: GitLabSpaceConfiguration): string {
 export function getAccessTokenOrThrow(config: GitLabSpaceConfiguration): string {
     const { accessToken } = config;
     if (!accessToken) {
-        throw httpError(401, 'Unauthorized: Missing access token');
+        throw httpError(401, 'Unauthorized: kindly re-authenticate with a new access token.');
     }
 
     return accessToken;

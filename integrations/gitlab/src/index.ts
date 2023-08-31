@@ -5,6 +5,7 @@ import { createIntegration, FetchEventCallback, Logger, EventCallback } from '@g
 
 import { fetchProjectBranches, fetchProjects } from './api';
 import { configBlock } from './components';
+import { uninstallWebhook } from './provider';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
 import type { GitLabRuntimeContext } from './types';
 import { getSpaceConfigOrThrow, assertIsDefined, parseProjectOrThow } from './utils';
@@ -243,6 +244,24 @@ const handleGitSyncCompleted: EventCallback<
     );
 };
 
+/**
+ * Handle git sync completed: Update commit status
+ */
+const handleSpaceInstallationDeleted: EventCallback<
+    'space_installation_deleted',
+    GitLabRuntimeContext
+> = async (event, context) => {
+    logger.debug(`space installation deleted for space ${event.spaceId}, removing webhook`);
+
+    const spaceInstallation = context.environment.spaceInstallation;
+    if (!spaceInstallation) {
+        logger.debug(`missing space installation, skipping`);
+        return;
+    }
+
+    await uninstallWebhook(spaceInstallation);
+};
+
 export default createIntegration({
     fetch: handleFetchEvent,
     components: [configBlock],
@@ -250,5 +269,6 @@ export default createIntegration({
         space_content_updated: handleSpaceContentUpdated,
         space_gitsync_started: handleGitSyncStarted,
         space_gitsync_completed: handleGitSyncCompleted,
+        space_installation_deleted: handleSpaceInstallationDeleted,
     },
 });
