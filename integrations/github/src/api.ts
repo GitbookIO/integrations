@@ -219,9 +219,6 @@ async function requestGitHubAPI(
     options: RequestInit = {},
     retriesLeft = 1
 ): Promise<Response> {
-    const spaceInstallation = context.environment.spaceInstallation;
-    assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
-
     const { access_token } = credentials;
     const response = await fetch(url.toString(), {
         ...options,
@@ -237,6 +234,9 @@ async function requestGitHubAPI(
     if (!response.ok) {
         // If the access token is expired, we try to refresh it
         if (response.status === 401 && retriesLeft > 0 && credentials?.refresh_token) {
+            const spaceInstallation = context.environment.spaceInstallation;
+            assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
+
             logger.debug(`refreshing OAuth credentials for space ${spaceInstallation.space}`);
 
             const refreshed = await refreshCredentials(

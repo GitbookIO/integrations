@@ -55,10 +55,11 @@ export async function getRepositoryAuth(
     config: GitHubSpaceConfiguration
 ) {
     const appJWT = await getGitHubAppJWT(context);
+    const installationId = parseInstallationOrThrow(config);
     const installationAccessToken = await createAppInstallationAccessToken(
         context,
         appJWT,
-        parseInstallationOrThrow(config)
+        installationId
     );
 
     return {
