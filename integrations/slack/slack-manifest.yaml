@@ -2,36 +2,20 @@ display_information:
     name: GitBook
     description: GitBook helps you publish beautiful docs for your users and centralize your teams' knowledge for advanced collaboration.
     background_color: '#346DDB'
-    long_description:
-        "The GitBook Slack integration brings the power of GitBook to your Slack workspace. Your teams have instant access to your GitBook knowledge base, without leaving Slack.\r
+    long_description: |
+        Bring the power of GitBook to your Slack workspace with our AI-powered integration. Now your teams have instant access to all the knowledge in your GitBook org, right in Slack.
 
-        \r
+        *Search made simple:*
 
-        *Get notified of what's important:*\r
+        Getting answers has never been easier. Just type /gitbook [question] or invite the GitBook bot to your channel, and our AI will scan your knowledge base and give you a summarized answer in seconds.
 
-        \r
+        *Get notified about the important stuff:*
 
-        Receive real-time Slack notifications when something important happens to your content on GitBook. For example, when your content is updated, published, etc.\r
+        You’ll get a ping when something important happens to your GitBook content. And you choose what’s important — such as when your content is updated or published — so you only get the notifications you need.
 
-        \r
+        *Improved link-sharing:*
 
-        Pick and choose what, where, and how you wish to be notified.\r
-
-        \r
-
-        *Searching made simple:*\r
-
-        \r
-
-        Searching for answers has never been easier. Use Slack global shortcuts to ask questions that are answered based on your content: Type \"/gitbook [question]\" or invite our bot to your channel to ask questions and see answers together.
-
-        \r
-
-        *Improved links sharing:*\r
-
-        \r
-
-        The GitBook Slack integration will automatically generate a nice-looking preview for all GitBook links shared in Slack."
+        The GitBook integration automatically generates a nifty preview for any GitBook links you share in Slack.
 features:
     bot_user:
         display_name: GitBook
