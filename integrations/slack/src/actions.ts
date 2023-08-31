@@ -1,4 +1,4 @@
-import { type IQueryLens } from './actions/queryLens';
+import { type IQueryLens } from './actions/queryLens'; // eslint-disable-line import/no-internal-modules
 import { getActionNameAndType, parseActionPayload } from './utils';
 
 /**
@@ -28,7 +28,7 @@ export function createSlackActionsHandler(
                     channelId: channel.id,
                     teamId: team.id,
                     text: action.value ?? action.text.text,
-                    messageType: actionPostType,
+                    messageType: actionPostType as 'ephemeral' | 'permanent',
 
                     // pass thread if exists
                     ...(container.thread_ts ? { threadId: container.thread_ts } : {}),

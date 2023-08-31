@@ -1,6 +1,6 @@
 import { FetchEventCallback } from '@gitbook/runtime';
 
-import { queryLens } from './actions/queryLens';
+import { queryLens } from './actions/queryLens'; // eslint-disable-line import/no-internal-modules
 import { SlackRuntimeContext } from './configuration';
 import { parseEventPayload, stripBotName } from './utils';
 
@@ -21,6 +21,7 @@ export function createSlackEventsHandler(
         // check for bot_id so that the bot doesn't trigger itself
         if (['message', 'app_mention'].includes(type) && !bot_id) {
             // strip out the bot-name in the mention and account for user mentions within the query
+            // @ts-ignore
             const parsedQuery = stripBotName(text, eventPayload.authorizations[0]?.user_id);
 
             // send to Lens
@@ -32,6 +33,7 @@ export function createSlackEventsHandler(
                 messageType: 'permanent',
                 text: parsedQuery,
                 context,
+                // @ts-ignore
                 authorization: eventPayload.authorizations[0],
             });
         }

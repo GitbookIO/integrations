@@ -19,7 +19,7 @@ import {
     ShareTools,
     decodeSlackEscapeChars,
     Spacer,
-} from '../ui/blocks';
+} from '../ui/blocks'; // eslint-disable-line import/no-internal-modules
 import { stripBotName, stripMarkdown } from '../utils';
 
 function extractAllPages(rootPages: Array<RevisionPage>) {
@@ -165,6 +165,7 @@ export async function queryLens({
         .oauth_credentials?.access_token;
 
     // strip a bot name if the user_id from the request is present in the query itself (specifically for a bot mention)
+  // @ts-ignore
     const parsedQuery = stripMarkdown(stripBotName(text, authorization?.user_id));
 
     // async acknowledge the request to the end user early

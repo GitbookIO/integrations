@@ -3,7 +3,7 @@ import { Router } from 'itty-router';
 import { createOAuthHandler, FetchEventCallback } from '@gitbook/runtime';
 
 import { createSlackActionsHandler } from './actions';
-import { queryLens } from './actions/queryLens';
+import { queryLens } from './actions/queryLens'; // eslint-disable-line import/no-internal-modules
 import { createSlackCommandsHandler } from './commands';
 import { createSlackEventsHandler } from './events';
 import { queryLensSlashHandler } from './handlers';
@@ -17,7 +17,7 @@ import { getChannelsPaginated } from './slack';
  * - Slack webhook requests
  */
 export const handleFetchEvent: FetchEventCallback = async (request, context) => {
-    const { environment, api } = context;
+    const { environment } = context;
 
     const router = Router({
         base: new URL(
