@@ -238,6 +238,7 @@ async function requestGitHubAPI(
         // If the access token is expired, we try to refresh it
         if (response.status === 401 && retriesLeft > 0 && credentials?.refresh_token) {
             logger.debug(`refreshing OAuth credentials for space ${spaceInstallation.space}`);
+
             const refreshed = await refreshCredentials(
                 context.environment.secrets.CLIENT_ID,
                 context.environment.secrets.CLIENT_SECRET,
@@ -293,16 +294,12 @@ async function refreshCredentials(
         throw httpError(401, `Unauthorized: kindly re-authenticate!`);
     }
 
-    const data = await resp.json<{
-        access_token: string;
-        refresh_token: string;
-        expires_in: number;
-    }>();
+    const data = await resp.formData();
 
     return {
-        access_token: data.access_token,
-        refresh_token: data.refresh_token,
-        expires_at: Math.floor(Date.now() / 1000) + data.expires_in,
+        access_token: data.get('access_token') as string,
+        refresh_token: data.get('refresh_token') as string,
+        expires_at: Math.floor(Date.now() / 1000) + parseInt(data.get('expires_in') as string, 10),
     };
 }
 

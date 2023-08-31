@@ -115,15 +115,20 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
      */
     router.get(
         '/oauth',
-        createOAuthHandler({
-            redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
-            clientId: context.environment.secrets.CLIENT_ID,
-            clientSecret: context.environment.secrets.CLIENT_SECRET,
-            authorizeURL: 'https://github.com/login/oauth/authorize',
-            accessTokenURL: 'https://github.com/login/oauth/access_token',
-            scopes: [],
-            prompt: 'consent',
-        })
+        createOAuthHandler(
+            {
+                redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
+                clientId: context.environment.secrets.CLIENT_ID,
+                clientSecret: context.environment.secrets.CLIENT_SECRET,
+                authorizeURL: 'https://github.com/login/oauth/authorize',
+                accessTokenURL: 'https://github.com/login/oauth/access_token',
+                scopes: [],
+                prompt: 'consent',
+            },
+            {
+                replace: false,
+            }
+        )
     );
 
     /**
