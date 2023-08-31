@@ -13,12 +13,7 @@ import { fetchInstallationRepositories, fetchInstallations, fetchRepositoryBranc
 import { configBlock } from './components';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
 import type { GithubRuntimeContext } from './types';
-import {
-    assertIsDefined,
-    getSpaceConfigOrThrow,
-    parseInstallationOrThrow,
-    parseRepositoryOrThrow,
-} from './utils';
+import { parseInstallationOrThrow, parseRepositoryOrThrow } from './utils';
 import { handlePullRequestEvents, handlePushEvent, verifyGitHubWebhookSignature } from './webhooks';
 
 const logger = Logger('github');
@@ -135,11 +130,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
      * API to fetch all GitHub installations
      */
     router.get('/installations', async () => {
-        const spaceInstallation = environment.spaceInstallation;
-        assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
-
-        const config = getSpaceConfigOrThrow(spaceInstallation);
-        const installations = await fetchInstallations(config);
+        const installations = await fetchInstallations(context);
 
         const data = installations.map(
             (installation): ContentKitSelectOption => ({
@@ -166,18 +157,14 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
      * API to fetch all repositories of an installation
      */
     router.get('/repos', async (req) => {
-        const spaceInstallation = environment.spaceInstallation;
-        assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
-
         const { installation: queryInstallation } = req.query;
         const installationId =
             queryInstallation && typeof queryInstallation === 'string'
                 ? parseInstallationOrThrow(queryInstallation)
                 : undefined;
 
-        const config = getSpaceConfigOrThrow(spaceInstallation);
         const repositories = installationId
-            ? await fetchInstallationRepositories(config, installationId)
+            ? await fetchInstallationRepositories(context, installationId)
             : [];
 
         const data = repositories.map(
@@ -199,9 +186,6 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
      * API to fetch all branches of an account's repository
      */
     router.get('/branches', async (req) => {
-        const spaceInstallation = environment.spaceInstallation;
-        assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
-
         const { repository: queryRepository } = req.query;
 
         const repositoryId =
@@ -209,9 +193,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                 ? parseRepositoryOrThrow(queryRepository)
                 : undefined;
 
-        const branches = repositoryId
-            ? await fetchRepositoryBranches(getSpaceConfigOrThrow(spaceInstallation), repositoryId)
-            : [];
+        const branches = repositoryId ? await fetchRepositoryBranches(context, repositoryId) : [];
 
         const data = branches.map(
             (branch): ContentKitSelectOption => ({

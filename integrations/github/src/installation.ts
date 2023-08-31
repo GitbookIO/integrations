@@ -63,7 +63,7 @@ export async function saveSpaceConfiguration(
         `Saving config for space ${spaceInstallation.space} of integration-installation ${spaceInstallation.installation}`
     );
 
-    const githubRepo = await fetchRepository(configurationBody, repoID);
+    const githubRepo = await fetchRepository(context, repoID);
 
     // Save the space installation configuration
     const { data: updatedSpaceInstallation } =

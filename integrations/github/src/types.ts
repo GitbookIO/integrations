@@ -5,7 +5,7 @@ export type GitHubSpaceConfiguration = {
     oauth_credentials?: {
         access_token: string;
         expires_at: number;
-        refresh_token: string;
+        refresh_token?: string;
     };
 } & ConfigureProps['spaceInstallation']['configuration'];
 

@@ -56,6 +56,7 @@ export async function getRepositoryAuth(
 ) {
     const appJWT = await getGitHubAppJWT(context);
     const installationAccessToken = await createAppInstallationAccessToken(
+        context,
         appJWT,
         parseInstallationOrThrow(config)
     );
@@ -86,11 +87,13 @@ export async function updateCommitStatus(
 
     const appJWT = await getGitHubAppJWT(context);
     const installationAccessToken = await createAppInstallationAccessToken(
+        context,
         appJWT,
         parseInstallationOrThrow(config)
     );
 
     await createCommitStatus(
+        context,
         installationAccessToken,
         config.accountName,
         config.repoName,

@@ -3,13 +3,12 @@ import hash from 'hash-sum';
 import { ContentKitIcon } from '@gitbook/api';
 import { createComponent } from '@gitbook/runtime';
 
-import { getTokenCredentialsOrThrow } from './api';
+import { extractTokenCredentialsOrThrow } from './api';
 import { saveSpaceConfiguration } from './installation';
 import { ConfigureAction, ConfigureProps, ConfigureState, GithubRuntimeContext } from './types';
 import {
     assertIsDefined,
     getGitSyncCommitMessage,
-    getSpaceConfigOrThrow,
     GITSYNC_DEFAULT_COMMIT_MESSAGE,
     parseInstallationOrThrow,
 } from './utils';
@@ -113,10 +112,8 @@ export const configBlock = createComponent<
 
         let accessToken: string | undefined;
         try {
-            const tokenCredentials = getTokenCredentialsOrThrow(
-                getSpaceConfigOrThrow(spaceInstallation)
-            );
-            accessToken = tokenCredentials.token;
+            const tokenCredentials = extractTokenCredentialsOrThrow(context);
+            accessToken = tokenCredentials.access_token;
         } catch (error) {
             // Ignore: We will show the button to connect
         }
