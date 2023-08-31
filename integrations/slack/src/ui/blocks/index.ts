@@ -11,9 +11,9 @@ export function decodeSlackEscapeChars(text: string) {
     }, text);
 }
 
-export function PageBlock(page: RevisionPage, publicUrl: string) {
+export function PageBlock(page: RevisionPage, sourceUrl: string) {
     // TODO: note for review. is this the best way to do this?
-    const nonRevisionPublicUrl = publicUrl.split('~/')[0];
+    const nonRevisionPublicUrl = sourceUrl.split('~/')[0];
     const url = `${nonRevisionPublicUrl}${page.path}`;
     return {
         type: 'mrkdwn',
@@ -23,12 +23,12 @@ export function PageBlock(page: RevisionPage, publicUrl: string) {
 
 export function PagesBlock(params: {
     title?: string;
-    items: Array<{ publicUrl: string; page: RevisionPage }>;
+    items: Array<{ sourceUrl: string; page: RevisionPage }>;
 }) {
     const { title, items } = params;
 
     const blocks = items.reduce<Array<any>>((acc, pageData) => {
-        const pageResultBlock = PageBlock(pageData.page, pageData.publicUrl);
+        const pageResultBlock = PageBlock(pageData.page, pageData.sourceUrl);
         acc.push(pageResultBlock);
 
         return acc;

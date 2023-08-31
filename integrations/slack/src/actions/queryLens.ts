@@ -73,7 +73,7 @@ async function getRelatedPages(params: {
     }, []);
 
     // extract all related pages from the Revisions along with the related public URL
-    const relatedPages: Array<{ publicUrl: string; page: RevisionPage }> = sourcePages.reduce(
+    const relatedPages: Array<{ sourceUrl: string; page: RevisionPage }> = sourcePages.reduce(
         (accum, page) => {
             // TODO: we can probably combine finding the currentRevision with extracting the appropriate page
             const currentRevision = allRevisions.find((revision: Revision) =>
@@ -83,13 +83,13 @@ async function getRelatedPages(params: {
             );
 
             if (currentRevision) {
-                const publicUrl = currentRevision.urls.public || currentRevision.urls.app;
+                const sourceUrl = currentRevision.urls.public || currentRevision.urls.app;
 
                 const allRevisionPages = extractAllPages(currentRevision.pages);
                 const revisionPage = allRevisionPages.find((revPage) => revPage.id === page.page);
 
                 accum.push({
-                    publicUrl,
+                    sourceUrl,
                     page: revisionPage,
                 });
             }
