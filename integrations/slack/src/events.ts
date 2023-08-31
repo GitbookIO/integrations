@@ -1,8 +1,7 @@
 import { FetchEventCallback } from '@gitbook/runtime';
 
-import { queryLens } from './actions/queryLens'; // eslint-disable-line import/no-internal-modules
 import { SlackRuntimeContext } from './configuration';
-import { parseEventPayload, stripBotName } from './utils';
+import { parseEventPayload } from './utils';
 
 /**
  * Handle an event from Slack.
@@ -15,32 +14,28 @@ export function createSlackEventsHandler(
 ): FetchEventCallback {
     return async (request, context) => {
         const eventPayload = await parseEventPayload(request);
+        const { type, bot_id } = eventPayload.event;
 
-        const { type, text, bot_id, thread_ts, channel, user, team_id } = eventPayload.event;
+        const handler = handlers[type];
 
-        // check for bot_id so that the bot doesn't trigger itself
-        if (['message', 'app_mention'].includes(type) && !bot_id) {
-            // strip out the bot-name in the mention and account for user mentions within the query
-            // @ts-ignore
-            const parsedQuery = stripBotName(text, eventPayload.authorizations[0]?.user_id);
+        // check if we are handling this event at this stage. if not, forward on to the fallback
+        if (!handler) {
+            if (fallback) {
+                return fallback(request, context);
+            }
 
-            // send to Lens
-            await queryLens({
-                teamId: team_id,
-                channelId: channel,
-                threadId: thread_ts,
-                userId: user,
-                messageType: 'permanent',
-                text: parsedQuery,
-                context,
-                // @ts-ignore
-                authorization: eventPayload.authorizations[0],
+            return new Response(`No handler for event type "${type}"`, {
+                status: 404,
             });
         }
 
-        // Add custom header(s)
-        return new Response(null, {
-            status: 200,
-        });
+        // check for bot_id so that the bot doesn't trigger itself
+        if (bot_id) {
+            return new Response(null, {
+                status: 200,
+            });
+        }
+
+        return handler(eventPayload, context);
     };
 }

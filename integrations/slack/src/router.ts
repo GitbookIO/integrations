@@ -6,7 +6,7 @@ import { createSlackActionsHandler } from './actions';
 import { queryLens } from './actions/queryLens'; // eslint-disable-line import/no-internal-modules
 import { createSlackCommandsHandler } from './commands';
 import { createSlackEventsHandler } from './events';
-import { queryLensSlashHandler } from './handlers';
+import { queryLensSlashHandler, queryLensEventHandler } from './handlers';
 import { unfurlLink } from './links';
 import { verifySlackRequest, acknowledgeSlackRequest } from './middlewares';
 import { getChannelsPaginated } from './slack';
@@ -68,12 +68,23 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
     );
 
     // event triggers, e.g app_mention
-    router.post('/events', verifySlackRequest, acknowledgeSlackRequest);
+    router.post(
+        '/events',
+        verifySlackRequest,
+        createSlackEventsHandler(
+            {
+                url_verification: async (event: { challenge: string }) => {
+                    return { challenge: event.challenge };
+                },
+            },
+            acknowledgeSlackRequest
+        )
+    );
 
     // shortcuts & interactivity
     router.post('/actions', verifySlackRequest, acknowledgeSlackRequest);
 
-    // /gitbook
+    // /gitbook slash commands
     router.post('/commands', verifySlackRequest, acknowledgeSlackRequest);
 
     router.post(
@@ -109,6 +120,8 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         '/events_task',
         verifySlackRequest,
         createSlackEventsHandler({
+            message: queryLensEventHandler,
+            app_mention: queryLensEventHandler,
             link_shared: unfurlLink,
         })
     );
