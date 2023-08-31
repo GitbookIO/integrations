@@ -2,9 +2,13 @@ import { Router } from 'itty-router';
 
 import { createOAuthHandler, FetchEventCallback } from '@gitbook/runtime';
 
+import { createSlackActionsHandler } from './actions';
+import { queryLens } from './actions/queryLens'; // eslint-disable-line import/no-internal-modules
+import { createSlackCommandsHandler } from './commands';
 import { createSlackEventsHandler } from './events';
+import { queryLensSlashHandler } from './handlers';
 import { unfurlLink } from './links';
-import { acknowledgeSlackRequest, verifySlackRequest } from './middlewares';
+import { verifySlackRequest, acknowledgeSlackRequest } from './middlewares';
 import { getChannelsPaginated } from './slack';
 
 /**
@@ -23,6 +27,18 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         ).pathname,
     });
 
+    const encodedScopes = encodeURIComponent(
+        [
+            'chat:write',
+            'channels:join',
+            'channels:read',
+            'groups:read',
+            'links:read',
+            'links:write',
+            'commands',
+        ].join(' ')
+    );
+
     /*
      * Authenticate the user using OAuth.
      */
@@ -32,8 +48,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             clientId: environment.secrets.CLIENT_ID,
             clientSecret: environment.secrets.CLIENT_SECRET,
             // TODO: use the yaml as SoT for scopes
-            authorizeURL:
-                'https://slack.com/oauth/v2/authorize?scope=chat:write%20channels:join%20channels:read%20%20groups:read%20links:read%20links:write%20commands',
+            authorizeURL: `https://slack.com/oauth/v2/authorize?scope=${encodedScopes}`,
             accessTokenURL: 'https://slack.com/api/oauth.v2.access',
             extractCredentials: (response) => {
                 if (!response.ok) {
@@ -52,17 +67,21 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         })
     );
 
+    // event triggers, e.g app_mention
+    router.post('/events', verifySlackRequest, acknowledgeSlackRequest);
+
+    // shortcuts & interactivity
+    router.post('/actions', verifySlackRequest, acknowledgeSlackRequest);
+
+    // /gitbook
+    router.post('/commands', verifySlackRequest, acknowledgeSlackRequest);
+
     router.post(
-        '/events',
+        '/commands_task',
         verifySlackRequest,
-        createSlackEventsHandler(
-            {
-                url_verification: async (event: { challenge: string }) => {
-                    return { challenge: event.challenge };
-                },
-            },
-            acknowledgeSlackRequest
-        )
+        createSlackCommandsHandler({
+            '/gitbook': queryLensSlashHandler,
+        })
     );
 
     /*
@@ -91,6 +110,14 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         verifySlackRequest,
         createSlackEventsHandler({
             link_shared: unfurlLink,
+        })
+    );
+
+    router.post(
+        '/actions_task',
+        verifySlackRequest,
+        createSlackActionsHandler({
+            queryLens,
         })
     );
 

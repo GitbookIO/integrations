@@ -1,6 +1,8 @@
 import { sha256 } from 'js-sha256';
 
 import { SlackRuntimeContext } from './configuration';
+import { slackAPI } from './slack';
+import { stripMarkdown } from './utils';
 
 /**
  * Verify the authenticity of a Slack request.
@@ -34,12 +36,44 @@ export async function verifySlackRequest(request: Request, { environment }: Slac
     }
 }
 
+export function acknowledgeQuery({
+    context,
+    text,
+    userId,
+    channelId,
+    threadId,
+    accessToken,
+    messageType = 'ephemeral',
+}) {
+    const slackMessageTypes = {
+        ephemeral: 'chat.postEphemeral',
+        permanent: 'chat.postMessage',
+    };
+
+    return slackAPI(
+        context,
+        {
+            method: 'POST',
+            path: slackMessageTypes[messageType], // probably alwasy ephemeral? or otherwise have replies in same thread
+            payload: {
+                channel: channelId,
+                text: `_Asking: ${stripMarkdown(text)}_`,
+                ...(userId ? { user: userId } : {}), // actually shouldn't be optional
+                ...(threadId ? { thread_ts: threadId } : {}),
+            },
+        },
+        {
+            accessToken,
+        }
+    );
+}
+
 /**
  * We acknowledge the slack request immediately to avoid failures
  * and "queue" the actual task to be executed in a subsequent request.
  */
-export async function acknowledgeSlackRequest(req: Request) {
-    fetch(`${req.url}_task`, {
+export async function acknowledgeSlackRequest(req: Request, context: SlackRuntimeContext) {
+    const fetchPromise = fetch(`${req.url}_task`, {
         method: 'POST',
         body: await req.text(),
         headers: {
@@ -49,10 +83,10 @@ export async function acknowledgeSlackRequest(req: Request) {
         },
     });
 
-    return new Response(JSON.stringify({ acknowledged: true }), {
-        headers: {
-            'Content-Type': 'application/json',
-        },
+    context.waitUntil(fetchPromise);
+
+    return new Response(null, {
+        status: 200,
     });
 }
 

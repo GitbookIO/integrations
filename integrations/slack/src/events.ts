@@ -1,6 +1,8 @@
 import { FetchEventCallback } from '@gitbook/runtime';
 
+import { queryLens } from './actions/queryLens'; // eslint-disable-line import/no-internal-modules
 import { SlackRuntimeContext } from './configuration';
+import { parseEventPayload, stripBotName } from './utils';
 
 /**
  * Handle an event from Slack.
@@ -12,42 +14,33 @@ export function createSlackEventsHandler(
     fallback?: FetchEventCallback
 ): FetchEventCallback {
     return async (request, context) => {
-        // Clone the request so its body is still available to the fallback
-        const event = await request.clone().json<{ event?: { type: string }; type?: string }>();
+        const eventPayload = await parseEventPayload(request);
 
-        if (!event.type) {
-            return new Response(`Invalid event`, {
-                status: 422,
+        const { type, text, bot_id, thread_ts, channel, user, team_id } = eventPayload.event;
+
+        // check for bot_id so that the bot doesn't trigger itself
+        if (['message', 'app_mention'].includes(type) && !bot_id) {
+            // strip out the bot-name in the mention and account for user mentions within the query
+            // @ts-ignore
+            const parsedQuery = stripBotName(text, eventPayload.authorizations[0]?.user_id);
+
+            // send to Lens
+            await queryLens({
+                teamId: team_id,
+                channelId: channel,
+                threadId: thread_ts,
+                userId: user,
+                messageType: 'permanent',
+                text: parsedQuery,
+                context,
+                // @ts-ignore
+                authorization: eventPayload.authorizations[0],
             });
         }
 
-        const eventType = event.event?.type || event.type;
-        // Find the handle for the event type, or use the fallback if that's missing
-        const handler = handlers[eventType];
-        if (!handler) {
-            if (fallback) {
-                return fallback(request, context);
-            }
-
-            return new Response(`No handler for event type "${eventType}"`, {
-                status: 404,
-            });
-        }
-
-        const data = await handler(event, context);
-
-        if (typeof data === 'string') {
-            return new Response(data, {
-                headers: {
-                    'Content-Type': 'text/plain',
-                },
-            });
-        }
-
-        return new Response(JSON.stringify(data), {
-            headers: {
-                'Content-Type': 'application/json',
-            },
+        // Add custom header(s)
+        return new Response(null, {
+            status: 200,
         });
     };
 }
