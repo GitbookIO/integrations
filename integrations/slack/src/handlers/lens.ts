@@ -1,9 +1,9 @@
 import { Logger } from '@gitbook/runtime';
 
-import { queryLens } from '../actions/queryLens'; // eslint-disable-line import/no-internal-modules
-import type { SlashEvent } from '../commands';
+import { queryLens } from '../actions';
 import { SlackRuntimeContext } from '../configuration';
 import { stripBotName } from '../utils';
+import type { SlashEvent } from './commands';
 
 const logger = Logger('slack:api');
 

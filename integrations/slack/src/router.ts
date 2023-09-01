@@ -2,11 +2,14 @@ import { Router } from 'itty-router';
 
 import { createOAuthHandler, FetchEventCallback } from '@gitbook/runtime';
 
-import { createSlackActionsHandler } from './actions';
-import { queryLens } from './actions/queryLens'; // eslint-disable-line import/no-internal-modules
-import { createSlackCommandsHandler } from './commands';
-import { createSlackEventsHandler } from './events';
-import { queryLensSlashHandler, queryLensEventHandler } from './handlers';
+import { queryLens } from './actions';
+import {
+    createSlackEventsHandler,
+    createSlackCommandsHandler,
+    createSlackActionsHandler,
+    queryLensSlashHandler,
+    queryLensEventHandler,
+} from './handlers';
 import { unfurlLink } from './links';
 import { verifySlackRequest, acknowledgeSlackRequest } from './middlewares';
 import { getChannelsPaginated } from './slack';

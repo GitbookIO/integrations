@@ -1,6 +1,6 @@
 import { FetchEventCallback } from '@gitbook/runtime';
 
-import { SlackRuntimeContext } from './configuration';
+import { SlackRuntimeContext } from '../configuration';
 
 export interface SlashEvent {
     /** Slack App's unique ID */

@@ -1,7 +1,7 @@
 import { FetchEventCallback } from '@gitbook/runtime';
 
-import { SlackRuntimeContext } from './configuration';
-import { parseEventPayload } from './utils';
+import { SlackRuntimeContext } from '../configuration';
+import { parseEventPayload } from '../utils';
 
 /**
  * Handle an event from Slack.
