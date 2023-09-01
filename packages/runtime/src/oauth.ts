@@ -197,6 +197,11 @@ export function createOAuthHandler(
                         existing.configuration = spaceInstallation.configuration;
                     }
 
+                    // We need to make sure that properties outside of the credentials configuration are also passed when updating the installation (such as externalIds)
+                    const {
+                        configuration: credentialsConfiguration,
+                        ...credentialsMinusConfiguration
+                    } = credentials;
                     await api.integrations.updateIntegrationSpaceInstallation(
                         environment.integration.name,
                         state.installationId,
@@ -204,8 +209,9 @@ export function createOAuthHandler(
                         {
                             configuration: {
                                 ...existing.configuration,
-                                ...credentials.configuration,
+                                ...credentialsConfiguration,
                             },
+                            ...credentialsMinusConfiguration,
                         }
                     );
                 } else {
@@ -218,14 +224,21 @@ export function createOAuthHandler(
                         existing.configuration = installation.configuration;
                     }
 
+                    // We need to make sure that properties outside of the credentials configuration are also passed when updating the installation (such as externalIds)
+                    const {
+                        configuration: credentialsConfiguration,
+                        ...credentialsMinusConfiguration
+                    } = credentials;
+
                     await api.integrations.updateIntegrationInstallation(
                         environment.integration.name,
                         state.installationId,
                         {
                             configuration: {
                                 ...existing.configuration,
-                                ...credentials.configuration,
+                                ...credentialsConfiguration,
                             },
+                            ...credentialsMinusConfiguration,
                         }
                     );
                 }
