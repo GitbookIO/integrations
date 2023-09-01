@@ -165,7 +165,7 @@ export async function queryLens({
         .oauth_credentials?.access_token;
 
     // strip a bot name if the user_id from the request is present in the query itself (specifically for a bot mention)
-  // @ts-ignore
+    // @ts-ignore
     const parsedQuery = stripMarkdown(stripBotName(text, authorization?.user_id));
 
     // async acknowledge the request to the end user early

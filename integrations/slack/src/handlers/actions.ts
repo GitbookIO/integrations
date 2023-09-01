@@ -1,5 +1,5 @@
-import { type IQueryLens } from './actions/queryLens'; // eslint-disable-line import/no-internal-modules
-import { getActionNameAndType, parseActionPayload } from './utils';
+import { type IQueryLens } from '../actions';
+import { getActionNameAndType, parseActionPayload } from '../utils';
 
 /**
 
