@@ -1,5 +1,15 @@
 # @gitbook/runtime
 
+## 0.8.0
+
+### Minor Changes
+
+-   4b40290: Pass FetchEvent down to the integration
+
+### Patch Changes
+
+-   e828239: Fixes that externalIds and space_selection is passed to the install
+
 ## 0.7.0
 
 ### Minor Changes
