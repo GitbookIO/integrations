@@ -50,10 +50,8 @@ export function createSlackCommandsHandler(handlers: {
             });
         }
 
-        await handler(slashEvent, context);
+        const handlerPromise = handler(slashEvent, context);
 
-        return new Response(null, {
-            status: 200,
-        });
+        context.waitUntil(handlerPromise);
     };
 }
