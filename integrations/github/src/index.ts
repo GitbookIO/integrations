@@ -11,6 +11,7 @@ import {
 
 import { fetchInstallationRepositories, fetchInstallations, fetchRepositoryBranches } from './api';
 import { configBlock } from './components';
+import { createReleaseEntitySchema } from './entities';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
 import type { GithubRuntimeContext } from './types';
 import { parseInstallationOrThrow, parseRepositoryOrThrow } from './utils';
@@ -314,10 +315,25 @@ const handleGitSyncCompleted: EventCallback<
     );
 };
 
+/**
+ * Handle space installation setup: Create Entity schemas
+ */
+const handleInstallationSetup: EventCallback<
+    'space_installation_setup',
+    GithubRuntimeContext
+> = async (event, context) => {
+    const { environment } = context;
+
+    if (environment.installation && 'organization' in environment.installation.target) {
+        await createReleaseEntitySchema(context, environment.installation.target.organization);
+    }
+};
+
 export default createIntegration({
     fetch: handleFetchEvent,
     components: [configBlock],
     events: {
+        space_installation_setup: handleInstallationSetup,
         space_content_updated: handleSpaceContentUpdated,
         space_gitsync_started: handleGitSyncStarted,
         space_gitsync_completed: handleGitSyncCompleted,

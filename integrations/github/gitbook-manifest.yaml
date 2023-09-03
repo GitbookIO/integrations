@@ -8,6 +8,7 @@ scopes:
     - space:metadata:read
     - space:content:read
     - space:git:sync
+    - entities:write
 configurations:
     space:
         componentId: configure
