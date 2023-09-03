@@ -22,6 +22,7 @@ import {
 } from '../ui/blocks'; // eslint-disable-line import/no-internal-modules
 import { stripBotName, stripMarkdown } from '../utils';
 
+// Recursively extracts all pages from a collection of RevisionPages
 function extractAllPages(rootPages: Array<RevisionPage>) {
     const result: Array<RevisionPage> = [];
 
@@ -39,6 +40,9 @@ function extractAllPages(rootPages: Array<RevisionPage>) {
     return result;
 }
 
+/*
+ * Pulls out the top related pages from page IDs returned from Lens and resolves them using a provided GitBook API client.
+ */
 async function getRelatedPages(params: {
     pages?: SearchAIAnswer['pages'];
     client: GitBookAPI;
@@ -50,7 +54,7 @@ async function getRelatedPages(params: {
         return [];
     }
 
-    // return top 3 pages (pages are ordered by score)
+    // return top 3 pages (pages are ordered by score by default)
     const sourcePages = pages.slice(0, 3);
 
     // collect all spaces from page results (and de-dupe)
@@ -124,6 +128,9 @@ export interface IQueryLens {
     authorization?: string;
 }
 
+/*
+ * Gets an API client and tied to installation that the Slack installation was installed on. This also returns the installation associated.
+ */
 async function getInstallationApiClient(api, externalId: string) {
     const {
         data: { items: installations },
@@ -133,7 +140,7 @@ async function getInstallationApiClient(api, externalId: string) {
         // we need to pass installation.target.organization
     });
 
-    // won't work for multiple installations accross orgs and same slack team
+    // won't work for multiple installations across orgs and same slack team
     const installation = installations[0];
     if (!installation) {
         return {};
@@ -145,6 +152,9 @@ async function getInstallationApiClient(api, externalId: string) {
     return { client: installationApiClient, installation };
 }
 
+/*
+ * Queries GitBook Lens via the GitBook API and posts the answer in the form of Slack UI Blocks back to the original channel/conversation/thread.
+ */
 export async function queryLens({
     channelId,
     teamId,
