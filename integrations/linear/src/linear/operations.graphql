@@ -94,9 +94,55 @@ fragment Issue on Issue {
     }
 }
 
+fragment PageInfo on PageInfo {
+    __typename
+    # Cursor representing the first result in the paginated results.
+    startCursor
+    # Cursor representing the last result in the paginated results.
+    endCursor
+    # Indicates if there are more results when paginating backward.
+    hasPreviousPage
+    # Indicates if there are more results when paginating forward.
+    hasNextPage
+}
+
+fragment IssueConnection on IssueConnection {
+    __typename
+    nodes {
+        ...Issue
+    }
+    pageInfo {
+        ...PageInfo
+    }
+}
+
 # One specific issue.
 query issue($id: String!) {
     issue(id: $id) {
         ...Issue
+    }
+}
+
+# All issues.
+query issues(
+    # A cursor to be used with first for forward pagination
+    $after: String
+    # A cursor to be used with last for backward pagination.
+    $before: String
+    # The number of items to forward paginate (used with after). Defaults to 50.
+    $first: Int
+    # Should archived resources be included (default: false)
+    $includeArchived: Boolean
+    # The number of items to backward paginate (used with before). Defaults to 50.
+    $last: Int
+) {
+    issues(
+        after: $after
+        before: $before
+        first: $first
+        includeArchived: $includeArchived
+        last: $last
+    ) {
+        ...IssueConnection
     }
 }

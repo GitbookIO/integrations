@@ -1,8 +1,10 @@
+import { Hono } from 'hono';
 import { ContentKitBlock, ContentKitIcon, ContentKitModal } from '@gitbook/api';
 import { createIntegration, createComponent, createOAuthHandler, Logger } from '@gitbook/runtime';
 import { extractLinearIssueIdFromLink, getLinearAPIClient } from './linear';
 import { IssueQuery } from './linear/gql/graphql';
 import { LinearRuntimeContext } from './types';
+import { indexAccount } from './indexAccount';
 
 const logger = Logger('linear');
 
@@ -263,7 +265,25 @@ export default createIntegration<LinearRuntimeContext>({
             accessTokenURL: 'https://api.linear.app/oauth/token',
         });
 
-        return oauthHandler(request, context);
+        const app = new Hono().basePath(
+            new URL(
+                environment.spaceInstallation?.urls?.publicEndpoint ||
+                    environment.installation?.urls.publicEndpoint ||
+                    environment.integration.urls.publicEndpoint
+            ).pathname
+        );
+
+        app.all('/oauth', () => {
+            return oauthHandler(request, context);
+        });
+
+        app.get('/refresh', async (c) => {
+            const result = await indexAccount(context);
+
+            return c.json(result);
+        });
+
+        return app.fetch(request, context);
     },
     components: [embedBlock, previewModal],
 });

@@ -20,7 +20,8 @@ summary: |
     Once the Linear integration has been installed, you will have to authorize the connection between GitBook and Linear. You can select specific spaces you which you would like the integration to run on, or select all spaces.
 visibility: public
 script: ./src/index.tsx
-scopes: []
+scopes:
+    - entities:write
 blocks:
     - id: embed
       title: Linear
@@ -36,8 +37,44 @@ configurations:
                 description: Authorization between Linear and GitBook.
                 button_text: Authorize
                 callback_url: /oauth
+            refresh:
+                type: button
+                title: Refresh
+                description: Refresh all entities.
+                button_text: Refresh
+                callback_url: /refresh
         required:
             - oauth_credentials
 secrets:
     CLIENT_ID: ${{ env.LINEAR_CLIENT_ID }}
     CLIENT_SECRET: ${{ env.LINEAR_CLIENT_SECRET }}
+entities:
+    - type: linear:issue
+      title:
+          singular: Issue
+          plural: Issues
+      properties:
+          - name: identifier
+            title: Identifier
+            type: text
+          - name: number
+            title: Number
+            type: number
+          - name: title
+            title: Title
+            type: text
+            role: title
+          - name: description
+            title: Description
+            type: longtext
+            role: body
+          - name: workflow_state
+            title: State
+            type: text
+          - name: created_at
+            title: Created at
+            type: date
+          - name: url
+            title: URL
+            type: url
+            role: target
