@@ -15,12 +15,16 @@ export function createSlackActionsHandler(
     return async (request, context) => {
         const actionPayload = await parseActionPayload(request);
 
-        const { actions, container, channel, team, user } = actionPayload;
+        const { actions, container, channel, channel_name, team, user, response_url } =
+            actionPayload;
 
         // go through all actions sent and call the action from './actions/index.ts'
         if (actions?.length > 0) {
             const action = actions[0];
             const { actionName, actionPostType } = getActionNameAndType(action.action_id);
+
+            const dontUseResponseUrl =
+                channel_name !== 'directmessage' && actionPostType !== 'ephemeral';
 
             // dispatch the action to an appropriate action function
             if (actionName === 'queryLens') {
@@ -35,6 +39,9 @@ export function createSlackActionsHandler(
                     // pass user if exists
                     ...(user.id ? { userId: user.id } : {}),
 
+                    // if we have a response_url, we can reply safely using that
+                    responseUrl: dontUseResponseUrl ? null : response_url,
+                    // responseUrl: response_url,
                     context,
                 };
 

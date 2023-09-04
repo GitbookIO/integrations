@@ -112,6 +112,8 @@ const capitalizeFirstLetter = (text: string) =>
 
 export interface IQueryLens {
     channelId: string;
+    channelName?: string;
+    responseUrl?: string;
     teamId: string;
     text: string;
     context: SlackRuntimeContext;
@@ -129,7 +131,7 @@ export interface IQueryLens {
 }
 
 /*
- * Gets an API client and tied to installation that the Slack installation was installed on. This also returns the installation associated.
+ * Gets an API client tied to an installation that the Slack installation was installed on. This also returns the installation associated.
  */
 async function getInstallationApiClient(api, externalId: string) {
     const {
@@ -164,6 +166,9 @@ export async function queryLens({
     messageType,
     context,
     authorization,
+
+    responseUrl,
+    channelName,
 }: IQueryLens) {
     const { environment, api } = context;
     const { client, installation } = await getInstallationApiClient(api, teamId);
@@ -185,6 +190,7 @@ export async function queryLens({
         userId,
         threadId,
         channelId,
+        responseUrl,
         accessToken,
         messageType,
     });
@@ -233,9 +239,13 @@ export async function queryLens({
             slackData = {
                 method: 'POST',
                 path: 'chat.postEphemeral',
+                responseUrl,
                 payload: {
                     channel: channelId,
-                    blocks: [...blocks, ...ShareTools(text)],
+                    blocks: [
+                        ...blocks,
+                        ...(channelName !== 'directmessage' ? ShareTools(text) : []),
+                    ],
                     user: userId,
 
                     ...(threadId ? { thread_ts: threadId } : {}),
@@ -245,6 +255,7 @@ export async function queryLens({
             slackData = {
                 method: 'POST',
                 path: 'chat.postMessage',
+                responseUrl,
                 payload: {
                     channel: channelId,
                     ...(threadId ? { thread_ts: threadId } : {}),
@@ -265,6 +276,7 @@ export async function queryLens({
         const slackData = {
             method: 'POST',
             path: 'chat.postEphemeral',
+            responseUrl,
             payload: {
                 channel: channelId,
                 thread_ts: threadId,
