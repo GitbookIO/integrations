@@ -26,7 +26,7 @@ export async function queryLensSlashHandler(slashEvent: SlashEvent, context: Sla
         });
     } catch (e) {
         // Error state. Probably no installation was found
-        logger.error('Error calling queryLens. Perhasp no installation was found?');
+        logger.error('Error calling queryLens. Perhaps no installation was found?');
         return {};
     }
 }
@@ -36,7 +36,7 @@ export async function queryLensSlashHandler(slashEvent: SlashEvent, context: Sla
  */
 export async function queryLensEventHandler(eventPayload: any, context: SlackRuntimeContext) {
     // pull out required params from the slashEvent for queryLens
-    const { type, text, bot_id, thread_ts, channel, user, team_id } = eventPayload.event;
+    const { type, text, bot_id, thread_ts, channel, user, team } = eventPayload.event;
 
     // check for bot_id so that the bot doesn't trigger itself
     if (['message', 'app_mention'].includes(type) && !bot_id) {
@@ -46,7 +46,7 @@ export async function queryLensEventHandler(eventPayload: any, context: SlackRun
 
         // send to Lens
         await queryLens({
-            teamId: team_id,
+            teamId: team,
             channelId: channel,
             threadId: thread_ts,
             userId: user,

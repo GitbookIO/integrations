@@ -36,6 +36,8 @@ export function createSlackEventsHandler(
             });
         }
 
-        return handler(eventPayload, context);
+        const handlerPromise = handler(eventPayload, context);
+
+        context.waitUntil(handlerPromise);
     };
 }
