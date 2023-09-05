@@ -12,11 +12,14 @@ const logger = Logger('slack:api');
  */
 export async function queryLensSlashHandler(slashEvent: SlashEvent, context: SlackRuntimeContext) {
     // pull out required params from the slashEvent for queryLens
-    const { team_id, channel_id, thread_ts, user_id, text } = slashEvent;
+    const { team_id, channel_id, thread_ts, user_id, text, channel_name, response_url } =
+        slashEvent;
 
     try {
         return queryLens({
             channelId: channel_id,
+            channelName: channel_name,
+            responseUrl: response_url,
             teamId: team_id,
             threadId: thread_ts,
             text,

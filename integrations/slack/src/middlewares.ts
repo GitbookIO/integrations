@@ -41,6 +41,7 @@ export function acknowledgeQuery({
     text,
     userId,
     channelId,
+    responseUrl,
     threadId,
     accessToken,
     messageType = 'ephemeral',
@@ -55,6 +56,7 @@ export function acknowledgeQuery({
         {
             method: 'POST',
             path: slackMessageTypes[messageType], // probably alwasy ephemeral? or otherwise have replies in same thread
+            responseUrl,
             payload: {
                 channel: channelId,
                 text: `_Asking: ${stripMarkdown(text)}_`,
