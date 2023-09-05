@@ -43,7 +43,7 @@ export function createSlackActionsHandler(
                     ...(user.id ? { userId: user.id } : {}),
 
                     // if we have a response_url, we can reply safely using that
-                    responseUrl: dontUseResponseUrl ? null : response_url,
+                    responseUrl: dontUseResponseUrl ? undefined : response_url,
                     context,
                 };
 
