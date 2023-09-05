@@ -249,6 +249,8 @@ export async function queryLens({
                     user: userId,
 
                     ...(threadId ? { thread_ts: threadId } : {}),
+
+                    replace_original: 'false',
                 },
             };
         } else {
@@ -262,6 +264,9 @@ export async function queryLens({
                     blocks,
                     user: userId,
                     unfurl_links: false,
+
+                    response_type: 'in_channel',
+                    replace_original: 'false',
                 },
             };
         }
@@ -292,6 +297,8 @@ export async function queryLens({
                 ],
 
                 user: userId,
+                response_type: 'in_channel',
+                replace_original: 'false',
             },
         };
 
