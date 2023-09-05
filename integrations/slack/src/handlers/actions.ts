@@ -23,6 +23,9 @@ export function createSlackActionsHandler(
             const action = actions[0];
             const { actionName, actionPostType } = getActionNameAndType(action.action_id);
 
+            // TODO: using the response_url does not allow you to change the messageType (ie. ephemeral vs permanent).
+            // if we are in a channel and using an action where we are trying to post into the channel via, share, we
+            // need to skip using the response_url
             const dontUseResponseUrl =
                 channel_name !== 'directmessage' && actionPostType !== 'ephemeral';
 
@@ -41,7 +44,6 @@ export function createSlackActionsHandler(
 
                     // if we have a response_url, we can reply safely using that
                     responseUrl: dontUseResponseUrl ? null : response_url,
-                    // responseUrl: response_url,
                     context,
                 };
 
