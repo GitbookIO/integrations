@@ -11,7 +11,7 @@ import {
 
 import { fetchInstallationRepositories, fetchInstallations, fetchRepositoryBranches } from './api';
 import { configBlock } from './components';
-import { createReleaseEntitySchema } from './entities';
+import { createEntitySchemas } from './entities';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
 import type { GithubRuntimeContext } from './types';
 import { parseInstallationOrThrow, parseRepositoryOrThrow } from './utils';
@@ -329,19 +329,7 @@ const handleInstallationSetup: EventCallback<'installation_setup', GithubRuntime
     event,
     context
 ) => {
-    const { environment, api } = context;
-    // await api.integrations.queueIntegrationTask(environment.integration.name, {
-    //     task: {
-    //         type: 'testing',
-    //         token: '123',
-    //     },
-    //     schedule: 10,
-    // });
-    console.log('queueIntegrationTask', environment.integration.name);
-
-    // if (environment.installation && 'organization' in environment.installation.target) {
-    //     await createReleaseEntitySchema(context, environment.installation.target.organization);
-    // }
+    await createEntitySchemas(context);
 };
 
 export default createIntegration({

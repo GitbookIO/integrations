@@ -4,10 +4,28 @@ import { GithubRuntimeContext } from './types';
 
 const logger = Logger('github:entities');
 
-export async function createReleaseEntitySchema(
-    context: GithubRuntimeContext,
-    organizationId: string
-) {
+/**
+ * Create the various entity schemas for the installation organization.
+ * Ex: issue, pull request, release, etc.
+ */
+export async function createEntitySchemas(context: GithubRuntimeContext) {
+    if (
+        context.environment.installation &&
+        'organization' in context.environment.installation.target
+    ) {
+        const organizationId = context.environment.installation.target.organization;
+        logger.debug(`Creating entity schemas for org: ${organizationId}`);
+        await Promise.all([
+            createReleaseEntitySchema(context, organizationId),
+            createIssueEntitySchema(context, organizationId),
+            createIssueCommentEntitySchema(context, organizationId),
+            createPullRequestEntitySchema(context, organizationId),
+            createPullRequestCommentEntitySchema(context, organizationId),
+        ]);
+    }
+}
+
+async function createReleaseEntitySchema(context: GithubRuntimeContext, organizationId: string) {
     const entityType = getReleaseEntityType(context);
     await context.api.orgs.setEntitySchema(organizationId, entityType, {
         type: entityType,
@@ -75,10 +93,7 @@ export async function createReleaseEntitySchema(
     logger.info(`Created ${entityType} entity schema for org: ${organizationId}`);
 }
 
-export async function createIssueEntitySchema(
-    context: GithubRuntimeContext,
-    organizationId: string
-) {
+async function createIssueEntitySchema(context: GithubRuntimeContext, organizationId: string) {
     const entityType = getIssueEntityType(context);
     await context.api.orgs.setEntitySchema(organizationId, entityType, {
         type: entityType,
@@ -150,7 +165,7 @@ export async function createIssueEntitySchema(
     logger.info(`Created ${entityType} entity schema for org: ${organizationId}`);
 }
 
-export async function createIssueCommentEntitySchema(
+async function createIssueCommentEntitySchema(
     context: GithubRuntimeContext,
     organizationId: string
 ) {
@@ -243,7 +258,7 @@ export async function createIssueCommentEntitySchema(
     logger.info(`Created ${entityType} entity schema for org: ${organizationId}`);
 }
 
-export async function createPullRequestEntitySchema(
+async function createPullRequestEntitySchema(
     context: GithubRuntimeContext,
     organizationId: string
 ) {
@@ -333,7 +348,7 @@ export async function createPullRequestEntitySchema(
     logger.info(`Created ${entityType} entity schema for org: ${organizationId}`);
 }
 
-export async function createPullRequestCommentEntitySchema(
+async function createPullRequestCommentEntitySchema(
     context: GithubRuntimeContext,
     organizationId: string
 ) {
