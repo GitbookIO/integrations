@@ -30,6 +30,13 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         ).pathname,
     });
 
+    router.post('/tasks', async (request) => {
+        const headers = Object.fromEntries(Object.entries(request.headers));
+        const payloadString = await request.text();
+        const payload = JSON.parse(payloadString);
+        console.log({ headers, payload });
+    });
+
     /**
      * Handle task for GitHub App webhook events
      */
@@ -316,24 +323,32 @@ const handleGitSyncCompleted: EventCallback<
 };
 
 /**
- * Handle space installation setup: Create Entity schemas
+ * Handle installation setup: Create Entity schemas in the organization
  */
-const handleInstallationSetup: EventCallback<
-    'space_installation_setup',
-    GithubRuntimeContext
-> = async (event, context) => {
-    const { environment } = context;
+const handleInstallationSetup: EventCallback<'installation_setup', GithubRuntimeContext> = async (
+    event,
+    context
+) => {
+    const { environment, api } = context;
+    // await api.integrations.queueIntegrationTask(environment.integration.name, {
+    //     task: {
+    //         type: 'testing',
+    //         token: '123',
+    //     },
+    //     schedule: 10,
+    // });
+    console.log('queueIntegrationTask', environment.integration.name);
 
-    if (environment.installation && 'organization' in environment.installation.target) {
-        await createReleaseEntitySchema(context, environment.installation.target.organization);
-    }
+    // if (environment.installation && 'organization' in environment.installation.target) {
+    //     await createReleaseEntitySchema(context, environment.installation.target.organization);
+    // }
 };
 
 export default createIntegration({
     fetch: handleFetchEvent,
     components: [configBlock],
     events: {
-        space_installation_setup: handleInstallationSetup,
+        installation_setup: handleInstallationSetup,
         space_content_updated: handleSpaceContentUpdated,
         space_gitsync_started: handleGitSyncStarted,
         space_gitsync_completed: handleGitSyncCompleted,
