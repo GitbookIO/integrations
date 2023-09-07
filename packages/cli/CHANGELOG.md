@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.11.0
+
+### Minor Changes
+
+-   21891ed: Bump @gitbook/cli to use the latest API spec
+
 ## 0.10.0
 
 ### Minor Changes

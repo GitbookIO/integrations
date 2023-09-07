@@ -27,6 +27,11 @@ interface LinkSharedSlackEvent {
 export async function unfurlLink(event: LinkSharedSlackEvent, context: SlackRuntimeContext) {
     const { api } = context;
 
+    // if the link was posted by a bot, ignore this request
+    if (event.event?.is_bot_user_member) {
+        return {};
+    }
+
     // Lookup the concerned installations
     const {
         data: { items: installations },

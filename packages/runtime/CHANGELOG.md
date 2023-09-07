@@ -1,10 +1,32 @@
 # @gitbook/runtime
 
+## 0.8.0
+
+### Minor Changes
+
+-   4b40290: Pass FetchEvent down to the integration
+
+### Patch Changes
+
+-   e828239: Fixes that externalIds and space_selection is passed to the install
+
+## 0.7.0
+
+### Minor Changes
+
+-   b2c17f4: Pass FetchEvent down to the integration
+
+## 0.6.0
+
+### Minor Changes
+
+-   fecaf55: Update createOAuthHandler signature to allow passing an optional options object
+
 ## 0.5.0
 
 ### Minor Changes
 
-- Update JSX for @gitbook/runtime
+-   Update JSX for @gitbook/runtime
 
 ## 0.4.1
 

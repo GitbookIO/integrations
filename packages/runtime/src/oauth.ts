@@ -76,9 +76,18 @@ const logger = Logger('oauth');
  * When using this handler, you must configure `https://integrations.gitbook.com/integrations/{name}/` as a redirect URI.
  */
 export function createOAuthHandler(
-    config: OAuthConfig
+    config: OAuthConfig,
+    options: {
+        /**
+         * Whether to replace the existing installation configuration or merge it
+         * with the new oauth credentials.
+         * @default true
+         */
+        replace?: boolean;
+    } = {}
 ): RuntimeCallback<[Request], Promise<Response>> {
     const { extractCredentials = defaultExtractCredentials } = config;
+    const { replace = true } = options;
 
     return async (request, { api, environment }) => {
         const url = new URL(request.url);
@@ -173,18 +182,64 @@ export function createOAuthHandler(
                     spaceId?: string;
                 };
 
+                const existing = {
+                    configuration: {},
+                };
+
                 if (state.spaceId) {
+                    if (!replace) {
+                        const { data: spaceInstallation } =
+                            await api.integrations.getIntegrationSpaceInstallation(
+                                environment.integration.name,
+                                state.installationId,
+                                state.spaceId
+                            );
+                        existing.configuration = spaceInstallation.configuration;
+                    }
+
+                    // We need to make sure that properties outside of the credentials configuration are also passed when updating the installation (such as externalIds)
+                    const {
+                        configuration: credentialsConfiguration,
+                        ...credentialsMinusConfiguration
+                    } = credentials;
                     await api.integrations.updateIntegrationSpaceInstallation(
                         environment.integration.name,
                         state.installationId,
                         state.spaceId,
-                        credentials
+                        {
+                            configuration: {
+                                ...existing.configuration,
+                                ...credentialsConfiguration,
+                            },
+                            ...credentialsMinusConfiguration,
+                        }
                     );
                 } else {
+                    if (!replace) {
+                        const { data: installation } =
+                            await api.integrations.getIntegrationInstallationById(
+                                environment.integration.name,
+                                state.installationId
+                            );
+                        existing.configuration = installation.configuration;
+                    }
+
+                    // We need to make sure that properties outside of the credentials configuration are also passed when updating the installation (such as externalIds)
+                    const {
+                        configuration: credentialsConfiguration,
+                        ...credentialsMinusConfiguration
+                    } = credentials;
+
                     await api.integrations.updateIntegrationInstallation(
                         environment.integration.name,
                         state.installationId,
-                        credentials
+                        {
+                            configuration: {
+                                ...existing.configuration,
+                                ...credentialsConfiguration,
+                            },
+                            ...credentialsMinusConfiguration,
+                        }
                     );
                 }
             } catch (err) {
