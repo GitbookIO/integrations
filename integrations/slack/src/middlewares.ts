@@ -41,6 +41,7 @@ export function acknowledgeQuery({
     text,
     userId,
     channelId,
+    responseUrl,
     threadId,
     accessToken,
     messageType = 'ephemeral',
@@ -55,6 +56,7 @@ export function acknowledgeQuery({
         {
             method: 'POST',
             path: slackMessageTypes[messageType], // probably alwasy ephemeral? or otherwise have replies in same thread
+            responseUrl,
             payload: {
                 channel: channelId,
                 text: `_Asking: ${stripMarkdown(text)}_`,
@@ -72,19 +74,7 @@ export function acknowledgeQuery({
  * We acknowledge the slack request immediately to avoid failures
  * and "queue" the actual task to be executed in a subsequent request.
  */
-export async function acknowledgeSlackRequest(req: Request, context: SlackRuntimeContext) {
-    const fetchPromise = fetch(`${req.url}_task`, {
-        method: 'POST',
-        body: await req.text(),
-        headers: {
-            'content-type': req.headers.get('content-type'),
-            'x-slack-signature': req.headers.get('x-slack-signature'),
-            'x-slack-request-timestamp': req.headers.get('x-slack-request-timestamp'),
-        },
-    });
-
-    context.waitUntil(fetchPromise);
-
+export async function acknowledgeSlackRequest() {
     return new Response(null, {
         status: 200,
     });

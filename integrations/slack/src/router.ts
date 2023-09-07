@@ -70,32 +70,46 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         })
     );
 
-    // event triggers, e.g app_mention
+    /*
+     * Handle incoming webhooks from Slack.
+     * event triggers, e.g app_mention
+     */
     router.post(
         '/events',
         verifySlackRequest,
-        createSlackEventsHandler(
-            {
-                url_verification: async (event: { challenge: string }) => {
-                    return { challenge: event.challenge };
-                },
+        createSlackEventsHandler({
+            url_verification: async (event: { challenge: string }) => {
+                return { challenge: event.challenge };
             },
-            acknowledgeSlackRequest
-        )
+            message: queryLensEventHandler,
+            app_mention: queryLensEventHandler,
+            link_shared: unfurlLink,
+        }),
+        acknowledgeSlackRequest
     );
 
-    // shortcuts & interactivity
-    router.post('/actions', verifySlackRequest, acknowledgeSlackRequest);
-
-    // /gitbook slash commands
-    router.post('/commands', verifySlackRequest, acknowledgeSlackRequest);
-
+    /* Handle shortcuts and interactivity via Slack UI blocks
+     * shortcuts & interactivity
+     */
     router.post(
-        '/commands_task',
+        '/actions',
+        verifySlackRequest,
+        createSlackActionsHandler({
+            queryLens,
+        }),
+        acknowledgeSlackRequest
+    );
+
+    /* Handle slash commands
+     * eg. /gitbook [command]
+     */
+    router.post(
+        '/commands',
         verifySlackRequest,
         createSlackCommandsHandler({
             '/gitbook': queryLensSlashHandler,
-        })
+        }),
+        acknowledgeSlackRequest
     );
 
     /*
@@ -115,27 +129,6 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             },
         });
     });
-
-    /*
-     * Handle incoming webhooks from Slack.
-     */
-    router.post(
-        '/events_task',
-        verifySlackRequest,
-        createSlackEventsHandler({
-            message: queryLensEventHandler,
-            app_mention: queryLensEventHandler,
-            link_shared: unfurlLink,
-        })
-    );
-
-    router.post(
-        '/actions_task',
-        verifySlackRequest,
-        createSlackActionsHandler({
-            queryLens,
-        })
-    );
 
     const response = await router.handle(request, context);
     if (!response) {
