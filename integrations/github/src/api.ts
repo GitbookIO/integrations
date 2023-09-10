@@ -23,20 +23,160 @@ interface GHInstallation {
     };
 }
 
-interface GHRepository {
+export interface GHRepository {
     id: number;
     name: string;
     full_name: string;
+    html_url: string;
+    description: string;
     owner: {
         id: number;
         login: string;
     };
     visibility: 'public' | 'private';
+    private: boolean;
+    created_at: string;
+    updated_at: string;
+    pushed_at: string;
+    language: string;
+    default_branch: string;
 }
 
 interface GHBranch {
     name: string;
     protected: boolean;
+}
+
+export interface GHPullRequest {
+    id: number;
+    number: number;
+    html_url: string;
+    state: 'open' | 'closed';
+    title: string;
+    body: string;
+    created_at: string;
+    updated_at: string;
+    closed_at: string | null;
+    merged_at: string | null;
+    draft: boolean;
+    user: {
+        id: number;
+        login: string;
+    };
+    head: {
+        ref: string;
+        sha: string;
+    };
+    base: {
+        ref: string;
+        sha: string;
+    };
+    repo: {
+        id: number;
+        name: string;
+        full_name: string;
+        html_url: string;
+    };
+}
+
+export interface GHPullRequestComment {
+    id: number;
+    html_url: string;
+    body: string;
+    created_at: string;
+    updated_at: string;
+    user: {
+        id: number;
+        login: string;
+    };
+    reactions: {
+        total_count: number;
+        '+1': number;
+        '-1': number;
+        laugh: number;
+        hooray: number;
+        confused: number;
+        heart: number;
+        rocket: number;
+        eyes: number;
+    };
+}
+
+export interface GHIssue {
+    id: number;
+    number: number;
+    html_url: string;
+    state: 'open' | 'closed';
+    title: string;
+    body: string;
+    created_at: string;
+    updated_at: string;
+    closed_at: string | null;
+    user: {
+        id: number;
+        login: string;
+    };
+    pull_request?: {
+        url: string;
+        html_url: string;
+    };
+    comments: number;
+    reactions: {
+        total_count: number;
+        '+1': number;
+        '-1': number;
+        laugh: number;
+        hooray: number;
+        confused: number;
+        heart: number;
+        rocket: number;
+        eyes: number;
+    };
+}
+
+export interface GHIssueComment {
+    id: number;
+    html_url: string;
+    body: string;
+    created_at: string;
+    updated_at: string;
+    user: {
+        id: number;
+        login: string;
+    };
+    reactions: {
+        total_count: number;
+        '+1': number;
+        '-1': number;
+        laugh: number;
+        hooray: number;
+        confused: number;
+        heart: number;
+        rocket: number;
+        eyes: number;
+    };
+}
+
+export interface GHRelease {
+    id: number;
+    html_url: string;
+    tag_name: string;
+    name: string;
+    body: string;
+    created_at: string;
+    published_at: string;
+    user: {
+        id: number;
+        login: string;
+    };
+    draft: boolean;
+    prerelease: boolean;
+}
+
+interface GHFetchOptions {
+    tokenCredentials?: OAuthTokenCredentials;
+    per_page?: number;
+    page?: number;
 }
 
 /**
@@ -78,8 +218,12 @@ export async function fetchInstallationRepositories(
 /**
  * Fetch a repository by its ID.
  */
-export async function fetchRepository(context: GithubRuntimeContext, repositoryId: number) {
-    const repository = await githubAPI<GHRepository>(context, null, {
+export async function fetchRepository(
+    context: GithubRuntimeContext,
+    repositoryId: number,
+    options: GHFetchOptions = {}
+) {
+    const repository = await githubAPI<GHRepository>(context, options.tokenCredentials || null, {
         path: `/repositories/${repositoryId}`,
     });
 
@@ -99,6 +243,105 @@ export async function fetchRepositoryBranches(context: GithubRuntimeContext, rep
     });
 
     return branches;
+}
+
+export async function fetchPullRequests(
+    context: GithubRuntimeContext,
+    owner: string,
+    repo: string,
+    options: GHFetchOptions = {}
+) {
+    const pullRequests = await githubAPI<Array<GHPullRequest>>(
+        context,
+        options.tokenCredentials || null,
+        {
+            path: `/repos/${owner}/${repo}/pulls`,
+            params: {
+                per_page: options.per_page || 100,
+                page: options.page || 1,
+            },
+        }
+    );
+
+    return pullRequests;
+}
+
+export async function fetchPullRequestComments(
+    context: GithubRuntimeContext,
+    owner: string,
+    repo: string,
+    pullRequest: number,
+    options: GHFetchOptions = {}
+) {
+    const comments = await githubAPI<Array<GHPullRequestComment>>(
+        context,
+        options.tokenCredentials || null,
+        {
+            path: `/repos/${owner}/${repo}/pulls/${pullRequest}/comments`,
+            params: {
+                per_page: options.per_page || 100,
+                page: options.page || 1,
+            },
+        }
+    );
+
+    return comments;
+}
+
+export async function fetchIssues(
+    context: GithubRuntimeContext,
+    owner: string,
+    repo: string,
+    options: GHFetchOptions = {}
+) {
+    const issues = await githubAPI<Array<GHIssue>>(context, options.tokenCredentials || null, {
+        path: `/repos/${owner}/${repo}/issues`,
+        params: {
+            per_page: options.per_page || 100,
+            page: options.page || 1,
+        },
+    });
+
+    return issues;
+}
+
+export async function fetchIssueComments(
+    context: GithubRuntimeContext,
+    owner: string,
+    repo: string,
+    issue: number,
+    options: GHFetchOptions = {}
+) {
+    const comments = await githubAPI<Array<GHIssueComment>>(
+        context,
+        options.tokenCredentials || null,
+        {
+            path: `/repos/${owner}/${repo}/issues/${issue}/comments`,
+            params: {
+                per_page: options.per_page || 100,
+                page: options.page || 1,
+            },
+        }
+    );
+
+    return comments;
+}
+
+export async function fetchReleases(
+    context: GithubRuntimeContext,
+    owner: string,
+    repo: string,
+    options: GHFetchOptions = {}
+) {
+    const releases = await githubAPI<Array<GHRelease>>(context, options.tokenCredentials || null, {
+        path: `/repos/${owner}/${repo}/releases`,
+        params: {
+            per_page: options.per_page || 100,
+            page: options.page || 1,
+        },
+    });
+
+    return releases;
 }
 
 /**

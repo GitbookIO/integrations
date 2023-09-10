@@ -13,7 +13,7 @@ import { fetchInstallationRepositories, fetchInstallations, fetchRepositoryBranc
 import { configBlock } from './components';
 import { createEntitySchemas } from './entities';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
-import type { GithubRuntimeContext } from './types';
+import { GithubRuntimeContext, IntegrationTask } from './types';
 import { parseInstallationOrThrow, parseRepositoryOrThrow } from './utils';
 import { handlePullRequestEvents, handlePushEvent, verifyGitHubWebhookSignature } from './webhooks';
 
@@ -32,9 +32,9 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
 
     router.post('/tasks', async (request) => {
         const headers = Object.fromEntries(Object.entries(request.headers));
-        const payloadString = await request.text();
-        const payload = JSON.parse(payloadString);
-        console.log({ headers, payload });
+        const task = await request.json<IntegrationTask>();
+
+        logger.debug('received integration task', { task });
     });
 
     /**

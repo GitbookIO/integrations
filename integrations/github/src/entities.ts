@@ -1,5 +1,13 @@
 import { Logger } from '@gitbook/runtime';
 
+import {
+    GHIssue,
+    GHIssueComment,
+    GHPullRequest,
+    GHPullRequestComment,
+    GHRelease,
+    GHRepository,
+} from './api';
 import { GithubRuntimeContext } from './types';
 
 const logger = Logger('github:entities');
@@ -16,6 +24,7 @@ export async function createEntitySchemas(context: GithubRuntimeContext) {
         const organizationId = context.environment.installation.target.organization;
         logger.debug(`Creating entity schemas for org: ${organizationId}`);
         await Promise.all([
+            createRepositoryEntitySchema(context, organizationId),
             createReleaseEntitySchema(context, organizationId),
             createIssueEntitySchema(context, organizationId),
             createIssueCommentEntitySchema(context, organizationId),
@@ -25,13 +34,13 @@ export async function createEntitySchemas(context: GithubRuntimeContext) {
     }
 }
 
-async function createReleaseEntitySchema(context: GithubRuntimeContext, organizationId: string) {
-    const entityType = getReleaseEntityType(context);
+async function createRepositoryEntitySchema(context: GithubRuntimeContext, organizationId: string) {
+    const entityType = getRepositoryEntityType(context);
     await context.api.orgs.setEntitySchema(organizationId, entityType, {
         type: entityType,
         title: {
-            singular: 'Release',
-            plural: 'Releases',
+            singular: 'Repository',
+            plural: 'Repositories',
         },
         properties: [
             {
@@ -41,21 +50,31 @@ async function createReleaseEntitySchema(context: GithubRuntimeContext, organiza
                 role: 'target',
             },
             {
+                type: 'number',
+                name: 'id',
+                title: 'ID',
+            },
+            {
                 type: 'text',
                 name: 'name',
                 title: 'Name',
                 role: 'title',
             },
             {
-                type: 'text',
-                name: 'tag_name',
-                title: 'Tag',
-            },
-            {
                 type: 'longtext',
-                name: 'body',
+                name: 'description',
                 title: 'Description',
                 role: 'body',
+            },
+            {
+                type: 'user',
+                name: 'owner',
+                title: 'Owner',
+            },
+            {
+                type: 'boolean',
+                name: 'private',
+                title: 'Is Private',
             },
             {
                 type: 'date',
@@ -63,34 +82,27 @@ async function createReleaseEntitySchema(context: GithubRuntimeContext, organiza
                 title: 'Created At',
             },
             {
-                type: 'boolean',
-                name: 'draft',
-                title: 'Is Draft Release',
+                type: 'date',
+                name: 'updated_at',
+                title: 'Last Updated',
             },
             {
-                type: 'boolean',
-                name: 'prerelease',
-                title: 'Is Pre-Release',
-            },
-            {
-                type: 'user',
-                name: 'author',
-                title: 'Author',
+                type: 'date',
+                name: 'pushed_at',
+                title: 'Last Pushed',
             },
             {
                 type: 'text',
-                name: 'repository',
-                title: 'Repository',
+                name: 'default_branch',
+                title: 'Default Branch',
             },
             {
-                type: 'url',
-                name: 'repository_url',
-                title: 'Repository URL',
+                type: 'text',
+                name: 'language',
+                title: 'Language',
             },
         ],
     });
-
-    logger.info(`Created ${entityType} entity schema for org: ${organizationId}`);
 }
 
 async function createIssueEntitySchema(context: GithubRuntimeContext, organizationId: string) {
@@ -150,14 +162,12 @@ async function createIssueEntitySchema(context: GithubRuntimeContext, organizati
                 title: 'Last Updated',
             },
             {
-                type: 'text',
+                type: 'relation',
                 name: 'repository',
-                title: 'Issue Repository',
-            },
-            {
-                type: 'url',
-                name: 'repository_url',
-                title: 'Issue Repository URL',
+                title: 'Repository',
+                entity: {
+                    type: getRepositoryEntityType(context),
+                },
             },
         ],
     });
@@ -333,14 +343,12 @@ async function createPullRequestEntitySchema(
                 title: 'Base Branch',
             },
             {
-                type: 'text',
+                type: 'relation',
                 name: 'repository',
-                title: 'Pull Request Repository',
-            },
-            {
-                type: 'url',
-                name: 'repository_url',
-                title: 'Pull Request Repository URL',
+                title: 'Repository',
+                entity: {
+                    type: getRepositoryEntityType(context),
+                },
             },
         ],
     });
@@ -441,8 +449,74 @@ async function createPullRequestCommentEntitySchema(
     logger.info(`Created ${entityType} entity schema for org: ${organizationId}`);
 }
 
-function getReleaseEntityType(context: GithubRuntimeContext) {
-    return `${context.environment.integration.name}:release` as const;
+async function createReleaseEntitySchema(context: GithubRuntimeContext, organizationId: string) {
+    const entityType = getReleaseEntityType(context);
+    await context.api.orgs.setEntitySchema(organizationId, entityType, {
+        type: entityType,
+        title: {
+            singular: 'Release',
+            plural: 'Releases',
+        },
+        properties: [
+            {
+                type: 'url',
+                name: 'url',
+                title: 'URL',
+                role: 'target',
+            },
+            {
+                type: 'text',
+                name: 'name',
+                title: 'Name',
+                role: 'title',
+            },
+            {
+                type: 'text',
+                name: 'tag_name',
+                title: 'Tag',
+            },
+            {
+                type: 'longtext',
+                name: 'body',
+                title: 'Description',
+                role: 'body',
+            },
+            {
+                type: 'date',
+                name: 'created_at',
+                title: 'Created At',
+            },
+            {
+                type: 'boolean',
+                name: 'draft',
+                title: 'Is Draft Release',
+            },
+            {
+                type: 'boolean',
+                name: 'prerelease',
+                title: 'Is Pre-Release',
+            },
+            {
+                type: 'user',
+                name: 'author',
+                title: 'Author',
+            },
+            {
+                type: 'relation',
+                name: 'repository',
+                title: 'Repository',
+                entity: {
+                    type: getRepositoryEntityType(context),
+                },
+            },
+        ],
+    });
+
+    logger.info(`Created ${entityType} entity schema for org: ${organizationId}`);
+}
+
+function getRepositoryEntityType(context: GithubRuntimeContext) {
+    return `${context.environment.integration.name}:repository` as const;
 }
 
 function getIssueEntityType(context: GithubRuntimeContext) {
@@ -459,4 +533,201 @@ function getPullRequestEntityType(context: GithubRuntimeContext) {
 
 function getPullRequestCommentEntityType(context: GithubRuntimeContext) {
     return `${context.environment.integration.name}:pull_request_comment` as const;
+}
+
+function getReleaseEntityType(context: GithubRuntimeContext) {
+    return `${context.environment.integration.name}:release` as const;
+}
+
+export async function createRepositoryEntity(
+    context: GithubRuntimeContext,
+    organizationId: string,
+    data: GHRepository
+) {
+    const entityType = getRepositoryEntityType(context);
+    const entityId = `${entityType}:${data.id}`;
+    await context.api.orgs.upsertSchemaEntities(organizationId, entityType, {
+        entities: [
+            {
+                entityId,
+                properties: {
+                    url: data.html_url,
+                    id: data.id,
+                    name: data.full_name,
+                    description: data.description,
+                    owner: data.owner.login,
+                    private: data.private,
+                    created_at: data.created_at,
+                    updated_at: data.updated_at,
+                    pushed_at: data.pushed_at,
+                    default_branch: data.default_branch,
+                    language: data.language,
+                },
+            },
+        ],
+    });
+
+    logger.info(`Created repository entity ${entityId} for org: ${organizationId}`);
+}
+
+export async function createPullRequestEntity(
+    context: GithubRuntimeContext,
+    organizationId: string,
+    repositoryId: number,
+    data: GHPullRequest
+) {
+    const entityType = getPullRequestEntityType(context);
+    const entityId = `${entityType}:${data.number}`;
+    await context.api.orgs.upsertSchemaEntities(organizationId, entityType, {
+        entities: [
+            {
+                entityId,
+                properties: {
+                    url: data.html_url,
+                    number: data.number,
+                    title: data.title,
+                    body: data.body,
+                    state: data.state,
+                    user: data.user.login,
+                    created_at: data.created_at,
+                    updated_at: data.updated_at,
+                    draft: data.draft,
+                    head: data.head.ref,
+                    base: data.base.ref,
+                    repository: `${getRepositoryEntityType(context)}:${repositoryId}`,
+                },
+            },
+        ],
+    });
+
+    logger.info(`Created pull request entity ${entityId} for org: ${organizationId}`);
+}
+
+export async function createPullRequestCommentEntity(
+    context: GithubRuntimeContext,
+    organizationId: string,
+    pullRequest: number,
+    data: GHPullRequestComment
+) {
+    const entityType = getPullRequestCommentEntityType(context);
+    const entityId = `${entityType}:${data.id}`;
+    await context.api.orgs.upsertSchemaEntities(organizationId, entityType, {
+        entities: [
+            {
+                entityId,
+                properties: {
+                    url: data.html_url,
+                    body: data.body,
+                    user: data.user.login,
+                    created_at: data.created_at,
+                    updated_at: data.updated_at,
+                    'reaction_+1': data.reactions['+1'],
+                    'reaction_-1': data.reactions['-1'],
+                    reaction_laugh: data.reactions.laugh,
+                    reaction_confused: data.reactions.confused,
+                    reaction_heart: data.reactions.heart,
+                    reaction_hooray: data.reactions.hooray,
+                    reaction_rocket: data.reactions.rocket,
+                    reaction_eyes: data.reactions.eyes,
+                    pull_request: `${getPullRequestEntityType(context)}:${pullRequest}`,
+                },
+            },
+        ],
+    });
+
+    logger.info(`Created pull request comment entity ${entityId} for org: ${organizationId}`);
+}
+
+export async function createIssueEntity(
+    context: GithubRuntimeContext,
+    organizationId: string,
+    repositoryId: number,
+    data: GHIssue
+) {
+    const entityType = getIssueEntityType(context);
+    const entityId = `${entityType}:${data.number}`;
+    await context.api.orgs.upsertSchemaEntities(organizationId, entityType, {
+        entities: [
+            {
+                entityId,
+                properties: {
+                    url: data.html_url,
+                    number: data.number,
+                    title: data.title,
+                    body: data.body,
+                    state: data.state,
+                    user: data.user.login,
+                    created_at: data.created_at,
+                    updated_at: data.updated_at,
+                    repository: `${getRepositoryEntityType(context)}:${repositoryId}`,
+                },
+            },
+        ],
+    });
+
+    logger.info(`Created issue entity ${entityId} for org: ${organizationId}`);
+}
+
+export async function createIssueCommentEntity(
+    context: GithubRuntimeContext,
+    organizationId: string,
+    issue: number,
+    data: GHIssueComment
+) {
+    const entityType = getIssueCommentEntityType(context);
+    const entityId = `${entityType}:${data.id}`;
+    await context.api.orgs.upsertSchemaEntities(organizationId, entityType, {
+        entities: [
+            {
+                entityId,
+                properties: {
+                    url: data.html_url,
+                    body: data.body,
+                    user: data.user.login,
+                    created_at: data.created_at,
+                    updated_at: data.updated_at,
+                    'reaction_+1': data.reactions['+1'],
+                    'reaction_-1': data.reactions['-1'],
+                    reaction_laugh: data.reactions.laugh,
+                    reaction_confused: data.reactions.confused,
+                    reaction_heart: data.reactions.heart,
+                    reaction_hooray: data.reactions.hooray,
+                    reaction_rocket: data.reactions.rocket,
+                    reaction_eyes: data.reactions.eyes,
+                    issue: `${getIssueCommentEntityType(context)}:${issue}`,
+                },
+            },
+        ],
+    });
+
+    logger.info(`Created pull request comment entity ${entityId} for org: ${organizationId}`);
+}
+
+export async function createReleaseEntity(
+    context: GithubRuntimeContext,
+    organizationId: string,
+    repositoryId: number,
+    data: GHRelease
+) {
+    const entityType = getReleaseEntityType(context);
+    const entityId = `${entityType}:${data.id}`;
+    await context.api.orgs.upsertSchemaEntities(organizationId, entityType, {
+        entities: [
+            {
+                entityId,
+                properties: {
+                    url: data.html_url,
+                    name: data.name,
+                    tag_name: data.tag_name,
+                    body: data.body,
+                    created_at: data.created_at,
+                    draft: data.draft,
+                    prerelease: data.prerelease,
+                    repository: `${getRepositoryEntityType(context)}:${repositoryId}`,
+                },
+            },
+        ],
+    });
+
+    logger.info(`Created release entity ${entityId} for org: ${organizationId}`);
 }

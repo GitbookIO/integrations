@@ -97,6 +97,14 @@ export function computeConfigQueryKey(
     });
 }
 
+export function generateGitHubRepoFullName(owner: string, repo: string): string {
+    return `${owner}/${repo}`;
+}
+
+export function generateGitHubRepoHtmlUrl(owner: string, repo: string): string {
+    return `https://github.com/${generateGitHubRepoFullName(owner, repo)}`;
+}
+
 export function assertIsDefined<T>(
     value: T,
     options: {

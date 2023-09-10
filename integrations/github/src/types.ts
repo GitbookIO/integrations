@@ -71,3 +71,69 @@ export type ConfigureState = ConfigureProps['spaceInstallation']['configuration'
     withCustomTemplate?: boolean;
     commitMessagePreview?: string;
 };
+
+export type IntegrationTaskType =
+    | 'sync:repo'
+    | 'sync:pull-requests'
+    | 'sync:pull-request-comments'
+    | 'sync:issues'
+    | 'sync:issue-comments'
+    | 'sync:releases';
+
+export type BaseIntegrationTaskPayload = {
+    organizationId: string;
+    integrationInstallationId: string;
+    githubInstallationId: string;
+    repositoryId: number;
+    ownerName: string;
+    repoName: string;
+    token: string;
+    page?: number;
+};
+
+export type BaseIntegrationTask<
+    Type extends IntegrationTaskType,
+    Payload extends BaseIntegrationTaskPayload
+> = {
+    type: Type;
+    payload: Payload;
+};
+
+export type IntegrationTaskSyncRepo = BaseIntegrationTask<'sync:repo', BaseIntegrationTaskPayload>;
+
+export type IntegrationTaskSyncPullRequests = BaseIntegrationTask<
+    'sync:pull-requests',
+    BaseIntegrationTaskPayload
+>;
+
+export type IntegrationTaskSyncPullRequestComments = BaseIntegrationTask<
+    'sync:pull-request-comments',
+    BaseIntegrationTaskPayload & {
+        pullRequest: number;
+    }
+>;
+
+export type IntegrationTaskSyncIssues = BaseIntegrationTask<
+    'sync:issues',
+    BaseIntegrationTaskPayload
+>;
+
+export type IntegrationTaskSyncIssueComments = BaseIntegrationTask<
+    'sync:issue-comments',
+    BaseIntegrationTaskPayload & {
+        issue: number;
+    }
+>;
+
+export type IntegrationTaskSyncReleases = BaseIntegrationTask<
+    'sync:releases',
+    BaseIntegrationTaskPayload
+>;
+
+export type IntegrationTask =
+    | IntegrationTaskSyncRepo
+    | IntegrationTaskSyncPullRequests
+    | IntegrationTaskSyncPullRequestComments
+    | IntegrationTaskSyncIssues
+    | IntegrationTaskSyncIssueComments
+    | IntegrationTaskSyncReleases;
