@@ -18,7 +18,7 @@ export async function queueSyncRepository(
     const { api, environment } = context;
     await api.integrations.queueIntegrationTask(environment.integration.name, {
         task: {
-            type: 'sync:pull-requests',
+            type: 'sync:repo',
             payload,
         },
     });

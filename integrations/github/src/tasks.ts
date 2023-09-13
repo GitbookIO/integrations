@@ -34,6 +34,12 @@ import {
 // TODO: schedule task for next hour if rate limit remaining < 100
 // write a wrapper to check that and also if the token has expired (so generate new one)
 
+async function wrapTaskWithRetry(context: GithubRuntimeContext, task: IntegrationTask) {
+    try {
+        await handleIntegrationTask(context, task);
+    } catch (error) {}
+}
+
 export async function handleIntegrationTask(context: GithubRuntimeContext, task: IntegrationTask) {
     switch (task.type) {
         case 'sync:repo':

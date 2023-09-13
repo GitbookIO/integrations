@@ -233,12 +233,16 @@ export async function fetchRepository(
 /**
  * Fetch all branches for a given account repository.
  */
-export async function fetchRepositoryBranches(context: GithubRuntimeContext, repositoryId: number) {
-    const branches = await githubAPI<Array<GHBranch>>(context, null, {
+export async function fetchRepositoryBranches(
+    context: GithubRuntimeContext,
+    repositoryId: number,
+    options: GHFetchOptions = {}
+) {
+    const branches = await githubAPI<Array<GHBranch>>(context, options.tokenCredentials || null, {
         path: `/repositories/${repositoryId}/branches`,
         params: {
-            per_page: 100,
-            page: 1,
+            per_page: options.per_page || 100,
+            page: options.page || 1,
         },
     });
 
@@ -507,7 +511,9 @@ async function requestGitHubAPI(
         }
 
         // Otherwise, we throw an error
-        throw httpError(response.status, `GitHub API error: ${response.statusText}`);
+        throw httpError(response.status, `GitHub API error: ${response.statusText}`, {
+            ...response.headers,
+        });
     }
 
     return response;
