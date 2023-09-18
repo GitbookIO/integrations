@@ -1,5 +1,5 @@
 import { slackAPI } from '../slack';
-import { GeneratedDocLinkBlock, QueryDisplayBlock } from '../ui/blocks';
+import { GeneratedDocLinkBlock, QueryDisplayBlock } from '../ui';
 import { getInstallationConfig } from '../utils';
 import { createMessageThreadRecording } from './gitbook';
 
@@ -30,18 +30,6 @@ export async function saveThread({ teamId, channelId, thread_ts, userId, context
                         heading: 'Here some questions this thread can help answer:',
                     }),
                 ],
-                // attachments: [
-                //     {
-                //         color: '#346ddb',
-                //         blocks: [
-                //             ...GeneratedDocLinkBlock({ url: recording.url }),
-                //             ...QueryDisplayBlock({
-                //                 queries: followupQuestions,
-                //                 heading: 'Here some questions this thread can help answer:',
-                //             }),
-                //         ],
-                //     },
-                // ],
                 thread_ts,
                 user: userId,
                 unfurl_links: false,

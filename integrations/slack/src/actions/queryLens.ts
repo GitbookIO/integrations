@@ -13,13 +13,7 @@ import {
 } from '../configuration';
 import { acknowledgeQuery } from '../middlewares';
 import { slackAPI } from '../slack';
-import {
-    PagesBlock,
-    QueryDisplayBlock,
-    ShareTools,
-    decodeSlackEscapeChars,
-    Spacer,
-} from '../ui/blocks'; // eslint-disable-line import/no-internal-modules
+import { PagesBlock, QueryDisplayBlock, ShareTools, decodeSlackEscapeChars, Spacer } from '../ui';
 import { stripBotName, stripMarkdown } from '../utils';
 
 // Recursively extracts all pages from a collection of RevisionPages
