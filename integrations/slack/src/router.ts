@@ -8,7 +8,8 @@ import {
     createSlackCommandsHandler,
     createSlackActionsHandler,
     queryLensSlashHandler,
-    queryLensEventHandler,
+    messageEventHandler,
+    appMentionEventHandler,
 } from './handlers';
 import { unfurlLink } from './links';
 import { verifySlackRequest, acknowledgeSlackRequest } from './middlewares';
@@ -81,8 +82,8 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             url_verification: async (event: { challenge: string }) => {
                 return { challenge: event.challenge };
             },
-            message: queryLensEventHandler,
-            app_mention: queryLensEventHandler,
+            message: messageEventHandler,
+            app_mention: appMentionEventHandler,
             link_shared: unfurlLink,
         }),
         acknowledgeSlackRequest

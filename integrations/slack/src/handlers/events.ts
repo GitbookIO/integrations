@@ -14,7 +14,9 @@ export function createSlackEventsHandler(
 ): FetchEventCallback {
     return async (request, context) => {
         const eventPayload = await parseEventPayload(request);
-        const { type, bot_id } = eventPayload.event;
+
+        // url_verification doesn't have an event object
+        const { type, bot_id } = eventPayload.event ?? eventPayload;
 
         const handler = handlers[type];
 
@@ -33,6 +35,15 @@ export function createSlackEventsHandler(
         if (bot_id) {
             return new Response(null, {
                 status: 200,
+            });
+        }
+
+        // a bit special case the `url_verification` event since it needs to return a `challenge`
+        if (type === 'url_verification') {
+            const handleResponse = await handler(eventPayload, context);
+            return new Response(JSON.stringify(handleResponse), {
+                status: 200,
+                headers: { 'content-type': 'application/json' },
             });
         }
 

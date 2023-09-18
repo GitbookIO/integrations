@@ -1,11 +1,12 @@
 import { Logger } from '@gitbook/runtime';
 
-import { queryLens } from '../actions';
+import { queryLens, saveThread } from '../actions';
 import { SlackRuntimeContext } from '../configuration';
 import { stripBotName } from '../utils';
 import type { SlashEvent } from './commands';
 
 const logger = Logger('slack:api');
+const SAVE_THREAD_MESSAGE = 'save';
 
 /**
  * Handle a slash request and route it to the GitBook Lens' query function.
@@ -37,7 +38,7 @@ export async function queryLensSlashHandler(slashEvent: SlashEvent, context: Sla
 /**
  * Handle an Event request and route it to the GitBook Lens' query function.
  */
-export async function queryLensEventHandler(eventPayload: any, context: SlackRuntimeContext) {
+export async function messageEventHandler(eventPayload: any, context: SlackRuntimeContext) {
     // pull out required params from the slashEvent for queryLens
     const { type, text, bot_id, thread_ts, channel, user, team } = eventPayload.event;
 
@@ -55,6 +56,51 @@ export async function queryLensEventHandler(eventPayload: any, context: SlackRun
             userId: user,
             messageType: 'permanent',
             text: parsedQuery,
+            context,
+            // @ts-ignore
+            authorization: eventPayload.authorizations[0],
+        });
+    }
+
+    // Add custom header(s)
+    return new Response(null, {
+        status: 200,
+    });
+}
+
+/**
+ * Handle an Event request and route it to either GitBook Lens' query function or saveThread function.
+ */
+export async function appMentionEventHandler(eventPayload: any, context: SlackRuntimeContext) {
+    // pull out required params from the slashEvent for queryLens
+    const { type, text, bot_id, thread_ts, channel, user, team } = eventPayload.event;
+
+    // check for bot_id so that the bot doesn't trigger itself
+    if (['message', 'app_mention'].includes(type) && !bot_id) {
+        // strip out the bot-name in the mention and account for user mentions within the query
+        // @ts-ignore
+        const parsedMessage = stripBotName(text, eventPayload.authorizations[0]?.user_id);
+
+        if (parsedMessage === SAVE_THREAD_MESSAGE) {
+            await saveThread({
+                teamId: team,
+                channelId: channel,
+                thread_ts,
+                userId: user,
+                context,
+            });
+
+            return;
+        }
+
+        // send to Lens
+        await queryLens({
+            teamId: team,
+            channelId: channel,
+            threadId: thread_ts,
+            userId: user,
+            messageType: 'permanent',
+            text: parsedMessage,
             context,
             // @ts-ignore
             authorization: eventPayload.authorizations[0],
