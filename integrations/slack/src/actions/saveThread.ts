@@ -1,18 +1,31 @@
+import { SlackRuntimeContext } from '../configuration';
 import { slackAPI } from '../slack';
 import { GeneratedDocLinkBlock, QueryDisplayBlock } from '../ui';
 import { getInstallationConfig } from '../utils';
-import { createMessageThreadRecording } from './gitbook';
+import { createMessageThreadCapture } from './gitbook';
 
-export async function saveThread({ teamId, channelId, thread_ts, userId, context }) {
-    const { environment } = context;
-
-    const { recording, followupQuestions } = await createMessageThreadRecording(context, {
-        team_id: teamId,
-        channel: channelId,
+export async function saveThread(
+    {
+        teamId,
+        channelId,
         thread_ts,
-    });
-
-    console.log('recording===', recording, followupQuestions);
+        userId,
+    }: {
+        teamId: string;
+        channelId: string;
+        thread_ts: string;
+        userId: string;
+    },
+    context: SlackRuntimeContext
+) {
+    const { capture, followupQuestions } = await createMessageThreadCapture(
+        {
+            team_id: teamId,
+            channel: channelId,
+            thread_ts,
+        },
+        context
+    );
 
     const { accessToken } = await getInstallationConfig(context, teamId);
 
@@ -24,7 +37,10 @@ export async function saveThread({ teamId, channelId, thread_ts, userId, context
             payload: {
                 channel: channelId,
                 blocks: [
-                    ...GeneratedDocLinkBlock({ url: recording.url }),
+                    ...GeneratedDocLinkBlock({
+                        title: capture.title,
+                        document: capture.output as string,
+                    }),
                     ...QueryDisplayBlock({
                         queries: followupQuestions,
                         heading: 'Here some questions this thread can help answer:',

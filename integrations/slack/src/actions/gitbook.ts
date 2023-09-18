@@ -1,3 +1,6 @@
+import { GitBookAPI } from '@gitbook/api';
+
+import { SlackRuntimeContext } from '../configuration';
 import { slackAPI } from '../slack';
 import { getInstallationConfig } from '../utils';
 
@@ -11,7 +14,7 @@ function slackTimestampToISOFormat(slackTs) {
     return formattedDate;
 }
 
-export async function getInstallationApiClient(api, externalId: string) {
+export async function getInstallationApiClient(api: GitBookAPI, externalId: string) {
     const {
         data: { items: installations },
     } = await api.integrations.listIntegrationInstallations('slack', {
@@ -32,12 +35,11 @@ export async function getInstallationApiClient(api, externalId: string) {
     return { client: installationApiClient, installation };
 }
 
-export async function createMessageThreadRecording(context, slackEvent) {
-    const { api, environment } = context;
+export async function createMessageThreadCapture(slackEvent, context: SlackRuntimeContext) {
+    const { api } = context;
     const { installation } = await getInstallationApiClient(api, slackEvent.team_id);
 
     const orgId = installation.target.organization;
-    const spaceId = installation.configuration.recordings_space;
 
     const { team_id, channel, thread_ts } = slackEvent;
 
@@ -59,37 +61,60 @@ export async function createMessageThreadRecording(context, slackEvent) {
     );
     const { messages = [] } = messageReplies;
 
-    const startRecordingRes = await installationApiClient.orgs.startRecording(orgId, {
-        space: spaceId,
+    // get a permalink to the thread
+    const permalinkRes = (await slackAPI(
+        context,
+        {
+            method: 'GET',
+            path: 'chat.getPermalink',
+            payload: {
+                channel,
+                message_ts: thread_ts,
+            },
+        },
+        {
+            accessToken,
+        }
+    )) as { ok: boolean; permalink: string };
+
+    // TODO what's to be done with new permissions needed "capture:write" and users needing to re-auth
+
+    // start capture
+    const startCaptureRes = await installationApiClient.orgs.startCapture(orgId, {
         context: 'thread',
+        externalId: thread_ts,
+        ...(permalinkRes.ok ? { externalURL: permalinkRes.permalink } : {}),
     });
 
-    const recording = startRecordingRes.data;
+    const capture = startCaptureRes.data;
 
     const events = messages.map((message) => {
-        const { text, user, ts, thread_ts } = message;
+        const { text, ts, thread_ts } = message;
 
         return {
             type: 'thread.message',
             text,
-            user: user ?? '',
             timestamp: slackTimestampToISOFormat(ts),
             ...(ts === thread_ts ? { isFirst: true } : {}),
         };
     });
 
-    // add all messages in a thread to a recording
-
-    await installationApiClient.orgs.addEventsToRecording(orgId, recording.id, {
+    // add all messages in a thread to a capture
+    await installationApiClient.orgs.addEventsToCapture(orgId, capture.id, {
         events,
     });
 
-    // stop recording
-    const stopRecordingRes = await installationApiClient.orgs.stopRecording(orgId, recording.id, {
-        space: spaceId,
-    });
+    // stop capture
+    const stopCaptureRes = await installationApiClient.orgs.stopCapture(
+        orgId,
+        capture.id,
+        {}, // remove in api
+        {
+            format: 'markdown',
+        }
+    );
 
-    const outputRecording = stopRecordingRes.data;
+    const outputCapture = stopCaptureRes.data;
 
-    return outputRecording;
+    return outputCapture;
 }

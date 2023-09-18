@@ -23,6 +23,12 @@ export interface SlashEvent {
      * Reference - https://api.slack.com/interactivity/handling#message_responses
      */
     response_url: string;
+
+    /** The name of the channel where the command was triggered */
+    channel_name: string;
+
+    /** The ID of the parent message, if any */
+    thread_ts?: string;
 }
 
 export function createSlackCommandsHandler(handlers: {

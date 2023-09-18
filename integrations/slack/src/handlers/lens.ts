@@ -82,13 +82,19 @@ export async function appMentionEventHandler(eventPayload: any, context: SlackRu
         const parsedMessage = stripBotName(text, eventPayload.authorizations[0]?.user_id);
 
         if (parsedMessage === SAVE_THREAD_MESSAGE) {
-            await saveThread({
-                teamId: team,
-                channelId: channel,
-                thread_ts,
-                userId: user,
-                context,
-            });
+            if (!thread_ts) {
+                // not supported outside threads
+            }
+
+            await saveThread(
+                {
+                    teamId: team,
+                    channelId: channel,
+                    thread_ts,
+                    userId: user,
+                },
+                context
+            );
 
             return;
         }

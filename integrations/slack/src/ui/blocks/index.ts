@@ -53,15 +53,15 @@ export function PagesBlock(params: {
     ];
 }
 
-export function GeneratedDocLinkBlock(props: { url: string }) {
-    const { url } = props;
+export function GeneratedDocLinkBlock(props: { title: string; document: string }) {
+    const { title, document } = props;
 
     return [
         {
             type: 'section',
             text: {
                 type: 'mrkdwn',
-                text: `:white_check_mark: Conversation saved in <${url}|GitBook>`,
+                text: `:white_check_mark: Conversation saved in GitBook`,
             },
         },
     ];
