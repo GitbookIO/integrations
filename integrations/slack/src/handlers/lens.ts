@@ -1,8 +1,9 @@
 import { Logger } from '@gitbook/runtime';
 
-import { queryLens, saveThread } from '../actions';
+import { notifyOnlySupportedThreads, queryLens, saveThread } from '../actions';
 import { SlackRuntimeContext } from '../configuration';
-import { stripBotName } from '../utils';
+import { slackAPI } from '../slack';
+import { getInstallationConfig, stripBotName } from '../utils';
 import type { SlashEvent } from './commands';
 
 const logger = Logger('slack:api');
@@ -82,8 +83,10 @@ export async function appMentionEventHandler(eventPayload: any, context: SlackRu
         const parsedMessage = stripBotName(text, eventPayload.authorizations[0]?.user_id);
 
         if (parsedMessage === SAVE_THREAD_MESSAGE) {
+            // not supported outside threads
             if (!thread_ts) {
-                // not supported outside threads
+                await notifyOnlySupportedThreads(context, team, channel, user);
+                return;
             }
 
             await saveThread(

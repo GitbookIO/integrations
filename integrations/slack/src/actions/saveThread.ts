@@ -64,3 +64,30 @@ export async function saveThread(
         status: 200,
     });
 }
+
+export async function notifyOnlySupportedThreads(context, team, channel, user) {
+    const { accessToken } = await getInstallationConfig(context, team);
+
+    await slackAPI(
+        context,
+        {
+            method: 'POST',
+            path: 'chat.postMessage',
+            payload: {
+                channel,
+                blocks: [
+                    {
+                        type: 'section',
+                        text: {
+                            type: 'mrkdwn',
+                            text: `Sorry I'm only supported in threads for now :sweat_smile:`,
+                        },
+                    },
+                ],
+                user,
+                unfurl_links: false,
+            },
+        },
+        { accessToken }
+    );
+}
