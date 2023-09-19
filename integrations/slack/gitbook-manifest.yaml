@@ -16,6 +16,7 @@ script: ./src/index.ts
 scopes:
     - space:content:read
     - space:metadata:read
+    - capture:write
 summary: |
     # Overview
 

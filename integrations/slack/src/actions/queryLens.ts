@@ -13,14 +13,8 @@ import {
 } from '../configuration';
 import { acknowledgeQuery } from '../middlewares';
 import { slackAPI } from '../slack';
-import {
-    PagesBlock,
-    QueryDisplayBlock,
-    ShareTools,
-    decodeSlackEscapeChars,
-    Spacer,
-} from '../ui/blocks'; // eslint-disable-line import/no-internal-modules
-import { stripBotName, stripMarkdown } from '../utils';
+import { PagesBlock, QueryDisplayBlock, ShareTools, decodeSlackEscapeChars, Spacer } from '../ui';
+import { getInstallationApiClient, stripBotName, stripMarkdown } from '../utils';
 
 // Recursively extracts all pages from a collection of RevisionPages
 function extractAllPages(rootPages: Array<RevisionPage>) {
@@ -128,30 +122,6 @@ export interface IQueryLens {
     threadId?: string;
 
     authorization?: string;
-}
-
-/*
- * Gets an API client tied to an installation that the Slack installation was installed on. This also returns the installation associated.
- */
-async function getInstallationApiClient(api, externalId: string) {
-    const {
-        data: { items: installations },
-    } = await api.integrations.listIntegrationInstallations('slack', {
-        externalId,
-
-        // we need to pass installation.target.organization
-    });
-
-    // won't work for multiple installations across orgs and same slack team
-    const installation = installations[0];
-    if (!installation) {
-        return {};
-    }
-
-    // Authentify as the installation
-    const installationApiClient = await api.createInstallationClient('slack', installation.id);
-
-    return { client: installationApiClient, installation };
 }
 
 /*

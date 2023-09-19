@@ -1,5 +1,5 @@
 export * from './search';
-export * from './lens';
+export * from './handlers';
 export * from './actions';
 export * from './commands';
 export * from './events';
