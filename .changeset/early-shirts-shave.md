@@ -1,4 +1,5 @@
 ---
+'@gitbook/api': minor
 '@gitbook/runtime': minor
 ---
 
