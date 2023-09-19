@@ -2,8 +2,7 @@ import { Logger } from '@gitbook/runtime';
 
 import { notifyOnlySupportedThreads, queryLens, saveThread } from '../actions';
 import { SlackRuntimeContext } from '../configuration';
-import { slackAPI } from '../slack';
-import { getInstallationConfig, stripBotName } from '../utils';
+import { stripBotName } from '../utils';
 import type { SlashEvent } from './commands';
 
 const logger = Logger('slack:api');
