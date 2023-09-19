@@ -1,6 +1,11 @@
 import { SlackRuntimeContext } from '../configuration';
 import { slackAPI } from '../slack';
-import { GeneratedDocLinkBlock, QueryDisplayBlock } from '../ui';
+import {
+    ConversationSavedBlock,
+    GeneratedDocLinkBlock,
+    GeneratedDocSummaryBlock,
+    QueryDisplayBlock,
+} from '../ui';
 import { getInstallationConfig } from '../utils';
 import { createMessageThreadCapture } from './gitbook';
 
@@ -37,10 +42,12 @@ export async function saveThread(
             payload: {
                 channel: channelId,
                 blocks: [
-                    ...GeneratedDocLinkBlock({
-                        title: capture.title,
-                        document: capture.output as string,
-                    }),
+                    ...ConversationSavedBlock(),
+                    ...(capture.output.markdown
+                        ? GeneratedDocSummaryBlock({
+                              summary: capture.output.markdown,
+                          })
+                        : []),
                     ...QueryDisplayBlock({
                         queries: followupQuestions,
                         heading: 'Here some questions this thread can help answer:',
