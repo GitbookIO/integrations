@@ -82,7 +82,8 @@ export async function appMentionEventHandler(eventPayload: any, context: SlackRu
         // @ts-ignore
         const parsedMessage = stripBotName(text, eventPayload.authorizations[0]?.user_id);
 
-        if (parsedMessage === SAVE_THREAD_MESSAGE) {
+        console.log('parsedMessage====', parsedMessage);
+        if (isSaveThreadMessage(parsedMessage)) {
             // not supported outside threads
             if (!thread_ts) {
                 await notifyOnlySupportedThreads(context, team, channel, user);
@@ -120,4 +121,21 @@ export async function appMentionEventHandler(eventPayload: any, context: SlackRu
     return new Response(null, {
         status: 200,
     });
+}
+
+function isSaveThreadMessage(message: string) {
+    const tokens = message.split(' ');
+
+    if (tokens.length > 3) {
+        return false;
+    }
+
+    const [first, second] = tokens;
+
+    // `save` or `save this` or `please save`
+    if (first === SAVE_THREAD_MESSAGE || second === SAVE_THREAD_MESSAGE) {
+        return true;
+    }
+
+    return false;
 }

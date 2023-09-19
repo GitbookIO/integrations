@@ -1,9 +1,37 @@
 import removeMarkdown from 'remove-markdown';
 
+import { GitBookAPI } from '@gitbook/api';
+
 import { SlackInstallationConfiguration } from './configuration';
 
 export function stripMarkdown(text: string) {
     return removeMarkdown(text);
+}
+
+/**
+ *  Get the installation API client for a given slack org and gitbook org combination
+ *
+ * TODO: there's a HARD limitation on having one slack team per gitbook org.
+ */
+export async function getInstallationApiClient(api: GitBookAPI, externalId: string) {
+    const {
+        data: { items: installations },
+    } = await api.integrations.listIntegrationInstallations('slack', {
+        externalId,
+
+        // we need to pass installation.target.organization
+    });
+
+    // won't work for multiple installations accross orgs and same slack team
+    const installation = installations[0];
+    if (!installation) {
+        return {};
+    }
+
+    // Authentify as the installation
+    const installationApiClient = await api.createInstallationClient('slack', installation.id);
+
+    return { client: installationApiClient, installation };
 }
 
 export async function getInstallationConfig(context, externalId) {
