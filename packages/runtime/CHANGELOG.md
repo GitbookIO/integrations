@@ -1,5 +1,16 @@
 # @gitbook/runtime
 
+## 0.9.0
+
+### Minor Changes
+
+-   4affdac: Add ContentKit support for codeblock element for input
+
+### Patch Changes
+
+-   Updated dependencies [4affdac]
+    -   @gitbook/api@0.9.0
+
 ## 0.8.0
 
 ### Minor Changes
