@@ -14,6 +14,11 @@ function slackTimestampToISOFormat(slackTs) {
     return formattedDate;
 }
 
+/**
+ *  Get the installation API client for a given slack org and gitbook org combination
+ *
+ * TODO: there's a HARD limitation on having one slack team per gitbook org.
+ */
 export async function getInstallationApiClient(api: GitBookAPI, externalId: string) {
     const {
         data: { items: installations },
@@ -35,6 +40,14 @@ export async function getInstallationApiClient(api: GitBookAPI, externalId: stri
     return { client: installationApiClient, installation };
 }
 
+/**
+ * Creates a capture from a message thread
+ *
+ * 1. Get all messages in a thread
+ * 2. Start capture
+ * 3. Add all messages in a thread as capture events
+ * 4. Stop capture
+ */
 export async function createMessageThreadCapture(slackEvent, context: SlackRuntimeContext) {
     const { api } = context;
     const { installation } = await getInstallationApiClient(api, slackEvent.team_id);

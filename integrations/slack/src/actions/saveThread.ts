@@ -1,14 +1,12 @@
 import { SlackRuntimeContext } from '../configuration';
 import { slackAPI } from '../slack';
-import {
-    ConversationSavedBlock,
-    GeneratedDocLinkBlock,
-    GeneratedDocSummaryBlock,
-    QueryDisplayBlock,
-} from '../ui';
+import { ConversationSavedBlock, GeneratedDocSummaryBlock, QueryDisplayBlock } from '../ui';
 import { getInstallationConfig } from '../utils';
 import { createMessageThreadCapture } from './gitbook';
 
+/**
+ *  Save thread in GitBook as a summary (capture)
+ */
 export async function saveThread(
     {
         teamId,
