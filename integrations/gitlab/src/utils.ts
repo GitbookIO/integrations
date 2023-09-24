@@ -81,12 +81,18 @@ export function computeConfigQueryKey(projectId: number, ref: string): string {
     });
 }
 
+/**
+ * Sign a message with a secret key by using HMAC-SHA256 algorithm.
+ */
 export async function signResponse(message: string, secret: string): Promise<string> {
     const key = await importKey(secret);
     const signed = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(message));
     return arrayToHex(signed);
 }
 
+/**
+ * Verify that a message matches a signature by using HMAC-SHA256 algorithm.
+ */
 export async function verifySignature(
     message: string,
     signature: string,
