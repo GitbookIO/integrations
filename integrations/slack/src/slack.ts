@@ -65,6 +65,7 @@ export async function slackAPI(
     request: {
         method: string;
         path: string;
+        responseUrl?: string;
         payload?: { [key: string]: any };
     },
     options: {
@@ -82,7 +83,9 @@ export async function slackAPI(
         throw new Error('No authentication token provided');
     }
 
-    const url = new URL(`https://slack.com/api/${request.path}`);
+    const url = request.responseUrl
+        ? new URL(request.responseUrl)
+        : new URL(`https://slack.com/api/${request.path}`);
 
     let body;
     const headers: {
