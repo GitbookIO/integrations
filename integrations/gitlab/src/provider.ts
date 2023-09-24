@@ -18,12 +18,13 @@ const logger = Logger('gitlab:provider');
  */
 export async function installWebhook(
     spaceInstallation: IntegrationSpaceInstallation,
-    webhookUrl: string
+    webhookUrl: string,
+    webhookToken: string
 ) {
     const config = getSpaceConfigOrThrow(spaceInstallation);
     const projectId = parseProjectOrThow(config);
 
-    const id = await addProjectWebhook(config, projectId, webhookUrl);
+    const id = await addProjectWebhook(config, projectId, webhookUrl, webhookToken);
 
     logger.info(`Webhook ${id} installed on GitLab project ${projectId}`);
 }

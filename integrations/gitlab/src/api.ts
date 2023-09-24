@@ -69,13 +69,15 @@ export async function fetchProjectBranches(config: GitLabSpaceConfiguration, pro
 export async function addProjectWebhook(
     config: GitLabSpaceConfiguration,
     projectId: number,
-    webhook: string
+    webhookUrl: string,
+    webhookToken: string
 ) {
     const { id } = await gitlabAPI<{ id: number }>(config, {
         method: 'POST',
         path: `/projects/${projectId}/hooks`,
         body: {
-            url: webhook,
+            url: webhookUrl,
+            token: webhookToken,
             push_events: true,
             merge_requests_events: true,
         },

@@ -1,3 +1,4 @@
+import createHttpError from 'http-errors';
 import { Router } from 'itty-router';
 
 import { ContentKitIcon, ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
@@ -8,7 +9,12 @@ import { configBlock } from './components';
 import { uninstallWebhook } from './provider';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
 import type { GitLabRuntimeContext } from './types';
-import { getSpaceConfigOrThrow, assertIsDefined, parseProjectOrThow } from './utils';
+import {
+    getSpaceConfigOrThrow,
+    assertIsDefined,
+    parseProjectOrThow,
+    verifySignature,
+} from './utils';
 import { handleMergeRequestEvent, handlePushEvent } from './webhooks';
 
 const logger = Logger('gitlab');
@@ -30,8 +36,28 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
     router.post('/hooks/gitlab/task', async (request) => {
         const eventUuid = request.headers.get('x-gitlab-event-uuid');
         const event = request.headers.get('x-gitlab-event');
+        const signature = request.headers.get('x-gitlab-token');
         const payloadString = await request.text();
         const payload = JSON.parse(payloadString);
+
+        // Verify the webhook signature if a secret token is configured
+        if (signature) {
+            try {
+                const valid = await verifySignature(
+                    environment.integration.name,
+                    signature,
+                    environment.signingSecret!
+                );
+                if (!valid) {
+                    throw createHttpError(400, 'Invalid signature for webhook event');
+                }
+            } catch (error: any) {
+                return new Response(JSON.stringify({ error: error.message }), {
+                    status: 400,
+                    headers: { 'content-type': 'application/json' },
+                });
+            }
+        }
 
         logger.debug('received task for webhook event', { eventUuid, event });
 

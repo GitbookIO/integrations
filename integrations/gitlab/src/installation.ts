@@ -7,7 +7,7 @@ import { fetchProject } from './api';
 import { createGitLabWebhookURL, getGitRef, installWebhook } from './provider';
 import { triggerExport, triggerImport } from './sync';
 import { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { assertIsDefined, computeConfigQueryKey, parseProjectOrThow } from './utils';
+import { assertIsDefined, computeConfigQueryKey, parseProjectOrThow, signResponse } from './utils';
 
 const logger = Logger('gitlab:installation');
 
@@ -85,21 +85,27 @@ export async function saveSpaceConfiguration(
 
     // Install the webhook if needed
     if (!configurationBody.webhookId) {
-        await installWebhook(updatedSpaceInstallation, createGitLabWebhookURL(context)).then(
-            async (id) => {
-                return api.integrations.updateIntegrationSpaceInstallation(
-                    spaceInstallation.integration,
-                    spaceInstallation.installation,
-                    spaceInstallation.space,
-                    {
-                        configuration: {
-                            ...configurationBody,
-                            webhookId: id,
-                        },
-                    }
-                );
-            }
+        const webhookToken = await signResponse(
+            environment.integration.name,
+            environment.signingSecret!
         );
+        await installWebhook(
+            updatedSpaceInstallation,
+            createGitLabWebhookURL(context),
+            webhookToken
+        ).then(async (id) => {
+            return api.integrations.updateIntegrationSpaceInstallation(
+                spaceInstallation.integration,
+                spaceInstallation.installation,
+                spaceInstallation.space,
+                {
+                    configuration: {
+                        ...configurationBody,
+                        webhookId: id,
+                    },
+                }
+            );
+        });
     }
 }
 

@@ -2,6 +2,7 @@
     "extends": "@gitbook/tsconfig/integration.json",
     "compilerOptions": {
         "lib": ["ESNext", "DOM"],
-        "strict": true
+        "strict": true,
+        "downlevelIteration": true
     }
 }
