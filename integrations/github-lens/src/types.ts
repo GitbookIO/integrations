@@ -57,6 +57,7 @@ export type BaseIntegrationTaskPayload = {
     ownerName: string;
     repoName: string;
     token: string;
+    retriesLeft: number;
     page?: number;
 };
 

@@ -37,9 +37,9 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
 
     router.post('/tasks', async (request) => {
         const headers = Object.fromEntries(Object.entries(request.headers));
-        const task = await request.json<IntegrationTask>();
+        const { task } = await request.json<{ task: IntegrationTask }>();
 
-        logger.debug('received integration task', { task });
+        logger.debug('received integration task', task);
 
         await wrapTaskWithRetry(context, task);
     });

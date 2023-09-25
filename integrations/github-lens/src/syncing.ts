@@ -1,6 +1,10 @@
 import { Logger } from '@gitbook/runtime';
 
-import { fetchRepository, createAppInstallationAccessToken } from './api';
+import {
+    createAppInstallationAccessToken,
+    extractTokenCredentialsOrThrow,
+    fetchRepository,
+} from './api';
 import {
     GithubRuntimeContext,
     IntegrationTaskSyncIssueComments,
@@ -10,6 +14,7 @@ import {
     IntegrationTaskSyncReleases,
     IntegrationTaskSyncRepo,
 } from './types';
+import { authenticateAsIntegration } from './utils';
 
 const logger = Logger('github-lens:syncing');
 
@@ -20,21 +25,23 @@ export async function syncRepositoriesToOrganization(
     githubInstallationId: string,
     repositories: number[]
 ) {
-    const installationAccessToken = await createAppInstallationAccessToken(
+    const githubInstallationAccessToken = await createAppInstallationAccessToken(
         context,
         githubInstallationId
     );
 
     for (const repositoryId of repositories) {
         const repo = await fetchRepository(context, repositoryId);
-        await queueSyncRepository(context, {
+        const integrationContext = await authenticateAsIntegration(context);
+        await queueSyncRepository(integrationContext, {
             repositoryId,
             organizationId,
             integrationInstallationId,
             githubInstallationId,
             ownerName: repo.owner.login,
             repoName: repo.name,
-            token: installationAccessToken,
+            token: githubInstallationAccessToken,
+            retriesLeft: 3,
         });
         logger.info('syncing repository', { repositoryId });
     }

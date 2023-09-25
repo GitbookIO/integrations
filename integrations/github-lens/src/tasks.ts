@@ -1,4 +1,4 @@
-import { GitBookAPI } from '@gitbook/api';
+import { Logger } from '@gitbook/runtime';
 
 import {
     createAppInstallationAccessToken,
@@ -33,8 +33,16 @@ import {
     IntegrationTaskSyncReleases,
     IntegrationTaskSyncRepo,
 } from './types';
+import { authenticateAsIntegrationInstallation } from './utils';
+
+const logger = Logger('github-lens:tasks');
 
 export async function wrapTaskWithRetry(context: GithubRuntimeContext, task: IntegrationTask) {
+    if (task.payload.retriesLeft <= 0) {
+        logger.info(`task ${task} failed after all retries`, task);
+        return;
+    }
+
     try {
         await handleIntegrationTask(context, task);
     } catch (error: any) {
@@ -52,6 +60,7 @@ export async function wrapTaskWithRetry(context: GithubRuntimeContext, task: Int
                         payload: {
                             ...task.payload,
                             token: installationAccessToken,
+                            retriesLeft: task.payload.retriesLeft - 1,
                         },
                     },
                 }
@@ -71,12 +80,14 @@ export async function wrapTaskWithRetry(context: GithubRuntimeContext, task: Int
                         payload: {
                             ...task.payload,
                             token: installationAccessToken,
+                            retriesLeft: task.payload.retriesLeft - 1,
                         },
                     },
                     schedule,
                 }
             );
         } else {
+            logger.error('failed to handle integration task', task, error);
             throw error;
         }
     }
@@ -120,21 +131,24 @@ async function taskSyncRepo(context: GithubRuntimeContext, task: IntegrationTask
         const installationContext = await authenticateAsIntegrationInstallation(
             context,
             context.environment.integration.name,
-            payload.githubInstallationId
+            payload.integrationInstallationId
         );
         await createRepositoryEntity(installationContext, payload.organizationId, repository);
 
         await Promise.all([
             queueSyncPullRequests(context, {
                 ...payload,
+                retriesLeft: 3,
                 page: 1,
             }),
             queueSyncIssues(context, {
                 ...payload,
+                retriesLeft: 3,
                 page: 1,
             }),
             queueSyncReleases(context, {
                 ...payload,
+                retriesLeft: 3,
                 page: 1,
             }),
         ]);
@@ -177,11 +191,13 @@ async function taskSyncPullRequests(
             // Next page of pull requests
             queueSyncPullRequests(context, {
                 ...payload,
+                retriesLeft: 3,
                 page: (task.payload.page || 0) + 1,
             }),
             ...prs.map((pr) => {
                 return queueSyncPullRequestComments(context, {
                     ...payload,
+                    retriesLeft: 3,
                     pullRequest: pr.number,
                 });
             }),
@@ -230,6 +246,7 @@ async function taskSyncPullRequestComments(
         // Next page of pull request comments
         await queueSyncPullRequestComments(context, {
             ...payload,
+            retriesLeft: 3,
             page: (task.payload.page || 0) + 1,
         });
     }
@@ -268,15 +285,17 @@ async function taskSyncIssues(context: GithubRuntimeContext, task: IntegrationTa
         await Promise.all([
             queueSyncIssues(context, {
                 ...payload,
+                retriesLeft: 3,
                 page: (task.payload.page || 0) + 1,
             }),
             ...issues.map((issue) => {
-                if (issue.pull_request || issue.comments === 0) {
+                if (issue.comments === 0) {
                     return;
                 }
 
                 return queueSyncIssueComments(context, {
                     ...payload,
+                    retriesLeft: 3,
                     issue: issue.number,
                 });
             }),
@@ -324,6 +343,7 @@ async function taskSyncIssueComments(
 
         await queueSyncIssueComments(context, {
             ...payload,
+            retriesLeft: 3,
             page: (task.payload.page || 0) + 1,
         });
     }
@@ -360,28 +380,8 @@ async function taskSyncReleases(context: GithubRuntimeContext, task: Integration
 
         await queueSyncReleases(context, {
             ...payload,
+            retriesLeft: 3,
             page: (task.payload.page || 0) + 1,
         });
     }
-}
-
-async function authenticateAsIntegrationInstallation(
-    context: GithubRuntimeContext,
-    integrationName: string,
-    installationId: string
-): Promise<GithubRuntimeContext> {
-    const {
-        data: { token },
-    } = await context.api.integrations.createIntegrationInstallationToken(
-        integrationName,
-        installationId
-    );
-
-    return {
-        ...context,
-        api: new GitBookAPI({
-            endpoint: context.environment.apiEndpoint,
-            authToken: token,
-        }),
-    };
 }
