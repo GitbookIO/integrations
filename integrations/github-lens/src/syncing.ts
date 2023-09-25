@@ -1,10 +1,6 @@
 import { Logger } from '@gitbook/runtime';
 
-import {
-    createAppInstallationAccessToken,
-    extractTokenCredentialsOrThrow,
-    fetchRepository,
-} from './api';
+import { createAppInstallationAccessToken, fetchRepository } from './api';
 import {
     GithubRuntimeContext,
     IntegrationTaskSyncIssueComments,

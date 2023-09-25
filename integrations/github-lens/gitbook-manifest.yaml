@@ -24,12 +24,9 @@ entities:
             title: Name
             role: title
           - name: description
-            type: longtext
+            type: text
             title: Description
             role: body
-          - name: owner
-            type: user
-            title: Owner
           - name: private
             type: boolean
             title: Is Private
@@ -63,7 +60,7 @@ entities:
             title: Name
             role: title
           - name: description
-            type: longtext
+            type: text
             title: Description
             role: body
           - name: tag_name
@@ -78,9 +75,6 @@ entities:
           - name: created_at
             type: date
             title: Created At
-          - name: author
-            type: user
-            title: Author
           - name: repository
             type: relation
             title: Repository
@@ -104,8 +98,8 @@ entities:
             type: text
             title: Title
             role: title
-          - name: body
-            type: longtext
+          - name: description
+            type: text
             title: Description
             role: body
           - name: state
@@ -122,9 +116,6 @@ entities:
           - name: updated_at
             type: date
             title: Last Updated
-          - name: user
-            type: user
-            title: Author
           - name: repository
             type: relation
             title: Repository
@@ -148,8 +139,8 @@ entities:
             type: text
             title: Title
             role: title
-          - name: body
-            type: longtext
+          - name: description
+            type: text
             title: Description
             role: body
           - name: state
@@ -166,9 +157,6 @@ entities:
           - name: updated_at
             type: date
             title: Last Updated
-          - name: user
-            type: user
-            title: Author
           - name: draft
             type: boolean
             title: Is Draft
@@ -193,13 +181,10 @@ entities:
             type: url
             title: URL
             role: target
-          - name: body
-            type: longtext
+          - name: comment
+            type: text
             title: Comment
             role: body
-          - name: user
-            type: user
-            title: Author
           - name: created_at
             type: date
             title: Created At
@@ -245,13 +230,10 @@ entities:
             type: url
             title: URL
             role: target
-          - name: body
-            type: longtext
+          - name: comment
+            type: text
             title: Comment
             role: body
-          - name: user
-            type: user
-            title: Author
           - name: created_at
             type: date
             title: Created At
