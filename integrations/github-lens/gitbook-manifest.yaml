@@ -1,0 +1,299 @@
+name: github-lens
+title: GitHub + Lens
+organization: gitbook
+visibility: public
+description: ''
+script: src/index.ts
+scopes:
+    - entities:write
+entities:
+    - type: github-lens:repository
+      title:
+          singular: Repository
+          plural: Repositories
+      properties:
+          - name: url
+            type: url
+            title: URL
+            role: target
+          - name: id
+            type: number
+            title: ID
+          - name: name
+            type: text
+            title: Name
+            role: title
+          - name: description
+            type: longtext
+            title: Description
+            role: body
+          - name: owner
+            type: user
+            title: Owner
+          - name: private
+            type: boolean
+            title: Is Private
+          - name: created_at
+            type: date
+            title: Created At
+          - name: updated_at
+            type: date
+            title: Last Updated
+          - name: pushed_at
+            type: date
+            title: Last Pushed
+          - name: default_branch
+            type: text
+            title: Default Branch
+          - name: language
+            type: text
+            title: Language
+
+    - type: github-lens:release
+      title:
+          singular: Release
+          plural: Releases
+      properties:
+          - name: url
+            type: url
+            title: URL
+            role: target
+          - name: name
+            type: text
+            title: Name
+            role: title
+          - name: description
+            type: longtext
+            title: Description
+            role: body
+          - name: tag_name
+            type: text
+            title: Tag
+          - name: prerelease
+            type: boolean
+            title: Is Pre-release
+          - name: draft
+            type: boolean
+            title: Is Draft Release
+          - name: created_at
+            type: date
+            title: Created At
+          - name: author
+            type: user
+            title: Author
+          - name: repository
+            type: relation
+            title: Repository
+            entity:
+                type: github-lens:repository
+
+    - type: github-lens:issue
+      title:
+          singular: Issue
+          plural: Issues
+      properties:
+          - name: url
+            type: url
+            title: URL
+            role: target
+          - name: number
+            type: number
+            title: Number
+            role: target
+          - name: title
+            type: text
+            title: Title
+            role: title
+          - name: body
+            type: longtext
+            title: Description
+            role: body
+          - name: state
+            type: enum
+            title: State
+            values:
+                - value: open
+                  label: Open
+                - value: closed
+                  label: Closed
+          - name: created_at
+            type: date
+            title: Created At
+          - name: updated_at
+            type: date
+            title: Last Updated
+          - name: user
+            type: user
+            title: Author
+          - name: repository
+            type: relation
+            title: Repository
+            entity:
+                type: github-lens:repository
+
+    - type: github-lens:pull_request
+      title:
+          singular: Pull Request
+          plural: Pull Requests
+      properties:
+          - name: url
+            type: url
+            title: URL
+            role: target
+          - name: number
+            type: number
+            title: Number
+            role: target
+          - name: title
+            type: text
+            title: Title
+            role: title
+          - name: body
+            type: longtext
+            title: Description
+            role: body
+          - name: state
+            type: enum
+            title: State
+            values:
+                - value: open
+                  label: Open
+                - value: closed
+                  label: Closed
+          - name: created_at
+            type: date
+            title: Created At
+          - name: updated_at
+            type: date
+            title: Last Updated
+          - name: user
+            type: user
+            title: Author
+          - name: draft
+            type: boolean
+            title: Is Draft
+          - name: head
+            type: text
+            title: Head Branch
+          - name: base
+            type: text
+            title: Base Branch
+          - name: repository
+            type: relation
+            title: Repository
+            entity:
+                type: github-lens:repository
+
+    - type: github-lens:issue_comment
+      title:
+          singular: Issue Comment
+          plural: Issue Comments
+      properties:
+          - name: url
+            type: url
+            title: URL
+            role: target
+          - name: body
+            type: longtext
+            title: Comment
+            role: body
+          - name: user
+            type: user
+            title: Author
+          - name: created_at
+            type: date
+            title: Created At
+          - name: updated_at
+            type: date
+            title: Last Updated
+          - name: reaction_+1
+            type: number
+            title: Reaction +1
+          - name: reaction_-1
+            type: number
+            title: Reaction -1
+          - name: reaction_laugh
+            type: number
+            title: Reaction Laugh
+          - name: reaction_confused
+            type: number
+            title: Reaction Confused
+          - name: reaction_heart
+            type: number
+            title: Reaction Heart
+          - name: reaction_hooray
+            type: number
+            title: Reaction Hooray
+          - name: reaction_rocket
+            type: number
+            title: Reaction Rocket
+          - name: reaction_eyes
+            type: number
+            title: Reaction Eyes
+          - name: issue
+            type: relation
+            title: Issue
+            entity:
+                type: github-lens:issue
+
+    - type: github-lens:pull_request_comment
+      title:
+          singular: Pull Request Comment
+          plural: Pull Request Comments
+      properties:
+          - name: url
+            type: url
+            title: URL
+            role: target
+          - name: body
+            type: longtext
+            title: Comment
+            role: body
+          - name: user
+            type: user
+            title: Author
+          - name: created_at
+            type: date
+            title: Created At
+          - name: updated_at
+            type: date
+            title: Last Updated
+          - name: reaction_+1
+            type: number
+            title: Reaction +1
+          - name: reaction_-1
+            type: number
+            title: Reaction -1
+          - name: reaction_laugh
+            type: number
+            title: Reaction Laugh
+          - name: reaction_confused
+            type: number
+            title: Reaction Confused
+          - name: reaction_heart
+            type: number
+            title: Reaction Heart
+          - name: reaction_hooray
+            type: number
+            title: Reaction Hooray
+          - name: reaction_rocket
+            type: number
+            title: Reaction Rocket
+          - name: reaction_eyes
+            type: number
+            title: Reaction Eyes
+          - name: pull_request
+            type: relation
+            title: Pull Request
+            entity:
+                type: github-lens:pull_request
+
+configurations:
+    account:
+        componentId: sync
+secrets:
+    APP_ID: ${{ env.GITHUB_APP_ID }}
+    PRIVATE_KEY: ${{ env.GITHUB_PRIVATE_KEY }}
+    CLIENT_ID: ${{ env.GITHUB_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.GITHUB_CLIENT_SECRET }}
+    WEBHOOK_SECRET: ${{ env.GITHUB_WEBHOOK_SECRET }}
