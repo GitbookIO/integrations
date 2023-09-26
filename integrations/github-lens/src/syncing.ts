@@ -1,7 +1,8 @@
 import { Logger } from '@gitbook/runtime';
 
-import { createAppInstallationAccessToken, fetchRepository } from './api';
+import { createAppInstallationAccessToken } from './api';
 import {
+    GitHubRepositoriesWithMetadata,
     GithubRuntimeContext,
     IntegrationTaskSyncIssueComments,
     IntegrationTaskSyncIssues,
@@ -18,28 +19,29 @@ export async function syncRepositoriesToOrganization(
     context: GithubRuntimeContext,
     organizationId: string,
     integrationInstallationId: string,
+    integrationConfigurationId: string,
     githubInstallationId: string,
-    repositories: number[]
+    repositories: GitHubRepositoriesWithMetadata
 ) {
     const githubInstallationAccessToken = await createAppInstallationAccessToken(
         context,
         githubInstallationId
     );
 
-    for (const repositoryId of repositories) {
-        const repo = await fetchRepository(context, repositoryId);
+    for (const repository of repositories) {
         const integrationContext = await authenticateAsIntegration(context);
         await queueSyncRepository(integrationContext, {
-            repositoryId,
+            repositoryId: parseInt(repository.repoId, 10),
             organizationId,
             integrationInstallationId,
+            integrationConfigurationId,
             githubInstallationId,
-            ownerName: repo.owner.login,
-            repoName: repo.name,
+            ownerName: repository.repoOwner,
+            repoName: repository.repoName,
             token: githubInstallationAccessToken,
             retriesLeft: 3,
         });
-        logger.info('syncing repository', { repositoryId });
+        logger.info(`Queued repository ${repository} for syncing`);
     }
 }
 
@@ -56,6 +58,7 @@ export async function queueSyncRepository(
             type: 'sync:repo',
             payload,
         },
+        schedule: 10,
     });
 }
 
@@ -69,6 +72,7 @@ export async function queueSyncPullRequests(
             type: 'sync:pull-requests',
             payload,
         },
+        schedule: 10,
     });
 }
 
@@ -82,6 +86,7 @@ export async function queueSyncPullRequestComments(
             type: 'sync:pull-request-comments',
             payload,
         },
+        schedule: 10,
     });
 }
 
@@ -95,6 +100,7 @@ export async function queueSyncIssues(
             type: 'sync:issues',
             payload,
         },
+        schedule: 10,
     });
 }
 
@@ -108,6 +114,7 @@ export async function queueSyncIssueComments(
             type: 'sync:issue-comments',
             payload,
         },
+        schedule: 10,
     });
 }
 
@@ -121,5 +128,6 @@ export async function queueSyncReleases(
             type: 'sync:releases',
             payload,
         },
+        schedule: 10,
     });
 }

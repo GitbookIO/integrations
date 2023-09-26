@@ -12,7 +12,7 @@ type PlainObject = {
         | number
         | string
         | boolean
-        | (string | number | boolean | null | undefined)[]
+        | (string | number | boolean | null | PlainObject)[]
         | PlainObject
         | undefined
         | null;

@@ -2,6 +2,7 @@ import { Logger } from '@gitbook/runtime';
 
 import {
     createAppInstallationAccessToken,
+    fetchIssueComments,
     fetchIssues,
     fetchPullRequestComments,
     fetchPullRequests,
@@ -40,6 +41,17 @@ const logger = Logger('github-lens:tasks');
 export async function wrapTaskWithRetry(context: GithubRuntimeContext, task: IntegrationTask) {
     if (task.payload.retriesLeft <= 0) {
         logger.info(`task ${task} failed after all retries`, task);
+        return;
+    }
+
+    const { data: integrationInstallation } =
+        await context.api.integrations.getIntegrationInstallationById(
+            context.environment.integration.name,
+            task.payload.integrationInstallationId
+        );
+
+    if (task.payload.integrationConfigurationId !== integrationInstallation.configuration.key) {
+        logger.info(`task ${task} will be skipped as the installation configuration has changed`);
         return;
     }
 
@@ -174,7 +186,7 @@ async function taskSyncPullRequests(
         const installationContext = await authenticateAsIntegrationInstallation(
             context,
             context.environment.integration.name,
-            payload.githubInstallationId
+            payload.integrationInstallationId
         );
         await Promise.all(
             prs.map((pr) => {
@@ -197,6 +209,7 @@ async function taskSyncPullRequests(
             ...prs.map((pr) => {
                 return queueSyncPullRequestComments(context, {
                     ...payload,
+                    page: 1,
                     retriesLeft: 3,
                     pullRequest: pr.number,
                 });
@@ -230,7 +243,7 @@ async function taskSyncPullRequestComments(
         const installationContext = await authenticateAsIntegrationInstallation(
             context,
             context.environment.integration.name,
-            payload.githubInstallationId
+            payload.integrationInstallationId
         );
         await Promise.all(
             comments.map((comment) => {
@@ -268,7 +281,7 @@ async function taskSyncIssues(context: GithubRuntimeContext, task: IntegrationTa
         const installationContext = await authenticateAsIntegrationInstallation(
             context,
             context.environment.integration.name,
-            payload.githubInstallationId
+            payload.integrationInstallationId
         );
 
         await Promise.all(
@@ -295,6 +308,7 @@ async function taskSyncIssues(context: GithubRuntimeContext, task: IntegrationTa
 
                 return queueSyncIssueComments(context, {
                     ...payload,
+                    page: 1,
                     retriesLeft: 3,
                     issue: issue.number,
                 });
@@ -308,7 +322,7 @@ async function taskSyncIssueComments(
     task: IntegrationTaskSyncIssueComments
 ) {
     const { payload } = task;
-    const comments = await fetchPullRequestComments(
+    const comments = await fetchIssueComments(
         context,
         payload.ownerName,
         payload.repoName,
@@ -328,7 +342,7 @@ async function taskSyncIssueComments(
         const installationContext = await authenticateAsIntegrationInstallation(
             context,
             context.environment.integration.name,
-            payload.githubInstallationId
+            payload.integrationInstallationId
         );
         await Promise.all(
             comments.map((comment) => {
@@ -365,7 +379,7 @@ async function taskSyncReleases(context: GithubRuntimeContext, task: Integration
         const installationContext = await authenticateAsIntegrationInstallation(
             context,
             context.environment.integration.name,
-            payload.githubInstallationId
+            payload.integrationInstallationId
         );
         await Promise.all(
             releases.map((release) => {

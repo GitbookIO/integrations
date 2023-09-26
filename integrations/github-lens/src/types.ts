@@ -9,6 +9,13 @@ export type GitHubAccountConfiguration = {
     };
 } & ConfigureProps['installation']['configuration'];
 
+export type GitHubRepositoriesWithMetadata = Array<{
+    repoId: string;
+    repoName: string;
+    repoFullName: string;
+    repoOwner: string;
+}>;
+
 export type GithubRuntimeEnvironment = RuntimeEnvironment<GitHubAccountConfiguration, {}>;
 export type GithubRuntimeContext = RuntimeContext<GithubRuntimeEnvironment>;
 
@@ -32,6 +39,8 @@ export type ConfigureProps = {
              * Selected repositories to sync.
              */
             repositories?: string[];
+
+            repositoriesWithMetadata?: GitHubRepositoriesWithMetadata;
         };
     };
     spaceInstallation: {
@@ -52,6 +61,7 @@ export type IntegrationTaskType =
 export type BaseIntegrationTaskPayload = {
     organizationId: string;
     integrationInstallationId: string;
+    integrationConfigurationId: string;
     githubInstallationId: string;
     repositoryId: number;
     ownerName: string;

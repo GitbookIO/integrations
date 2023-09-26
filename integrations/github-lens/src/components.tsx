@@ -4,7 +4,7 @@ import createHttpError from 'http-errors';
 import { ContentKitIcon } from '@gitbook/api';
 import { createComponent, Logger } from '@gitbook/runtime';
 
-import { extractTokenCredentialsOrThrow } from './api';
+import { extractTokenCredentialsOrThrow, fetchRepository } from './api';
 import { syncRepositoriesToOrganization } from './syncing';
 import {
     ConfigureAction,
@@ -78,6 +78,22 @@ export const syncBlock = createComponent<
          */
         const versionHash = hash(element.props);
 
+        const currentRepositoriesMetadata =
+            element.props.installation.configuration?.repositoriesWithMetadata || [];
+        const currentRepositoriesNames = currentRepositoriesMetadata
+            .map((r) => `${r.repoFullName}`)
+            .join(', ');
+
+        const showSyncButton =
+            element.state.repositories &&
+            element.state.repositories.length > 0 &&
+            element.state.repositories.some(
+                (repo) =>
+                    (element.props.installation.configuration?.repositories || []).includes(
+                        repo
+                    ) === false
+            );
+
         return (
             <block>
                 <input
@@ -100,8 +116,6 @@ export const syncBlock = createComponent<
                     <>
                         <divider size="medium" />
 
-                        <markdown content="### Account" />
-
                         <vstack>
                             <input
                                 label="Select account"
@@ -110,7 +124,7 @@ export const syncBlock = createComponent<
                                         Choose the GitHub installation, user or organization.
                                         <link
                                             target={{
-                                                url: 'https://github.com/apps/gitbook-com/installations/new',
+                                                url: 'https://github.com/apps/gitbook-x-dev-taran/installations/new',
                                             }}
                                         >
                                             {' '}
@@ -183,7 +197,18 @@ export const syncBlock = createComponent<
                             ) : null}
                         </vstack>
 
-                        {element.state.repositories && element.state.repositories.length > 0 ? (
+                        {currentRepositoriesMetadata.length > 0 ? (
+                            <box>
+                                <hint>
+                                    <text>
+                                        ⚙️ The integration is currently syncing entities from{' '}
+                                        <text style="bold">{currentRepositoriesNames}.</text>
+                                    </text>
+                                </hint>
+                            </box>
+                        ) : null}
+
+                        {showSyncButton ? (
                             <input
                                 label=""
                                 hint=""
@@ -226,14 +251,28 @@ async function saveSyncConfiguration(
         externalIds.push(repo);
     });
 
+    const repositoriesWithMetadata: NonNullable<
+        ConfigureProps['installation']['configuration']
+    >['repositoriesWithMetadata'] = [];
+    for (const repositoryId of state.repositories) {
+        const repo = await fetchRepository(context, parseInt(repositoryId, 10));
+        repositoriesWithMetadata.push({
+            repoId: repositoryId,
+            repoName: repo.name,
+            repoFullName: repo.full_name,
+            repoOwner: repo.owner.login,
+        });
+    }
+
+    const integrationConfigurationId = crypto.randomUUID();
+
     const configurationBody: GitHubAccountConfiguration = {
         ...installation.configuration,
-        key: crypto.randomUUID(),
+        key: integrationConfigurationId,
         installation: state.installation,
         repositories: state.repositories,
+        repositoriesWithMetadata,
     };
-
-    logger.debug(`Saving config for integration-installation ${installation.id}`);
 
     // Save the installation configuration
     await api.integrations.updateIntegrationInstallation(
@@ -246,21 +285,14 @@ async function saveSyncConfiguration(
         }
     );
 
-    logger.info(`Saved config for integration-installation ${installation.id}`);
-
-    const existingConfigRepos = installation.configuration?.repositories || [];
-    const newConfigRepos = configurationBody.repositories || [];
-
-    // Added repositories are the ones that are in the new config but not in the existing config
-    const addedRepositories = newConfigRepos
-        .filter((repo) => !existingConfigRepos.includes(repo))
-        .map((repo) => parseInt(repo, 10));
+    logger.info(`Saved config ${integrationConfigurationId} for installation ${installation.id}`);
 
     await syncRepositoriesToOrganization(
         context,
         installation.target.organization,
         installation.id,
+        integrationConfigurationId,
         state.installation,
-        addedRepositories
+        repositoriesWithMetadata
     );
 }

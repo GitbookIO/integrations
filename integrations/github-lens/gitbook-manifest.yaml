@@ -24,7 +24,7 @@ entities:
             title: Name
             role: title
           - name: description
-            type: text
+            type: longtext
             title: Description
             role: body
           - name: private
@@ -60,7 +60,7 @@ entities:
             title: Name
             role: title
           - name: description
-            type: text
+            type: longtext
             title: Description
             role: body
           - name: tag_name
@@ -99,7 +99,7 @@ entities:
             title: Title
             role: title
           - name: description
-            type: text
+            type: longtext
             title: Description
             role: body
           - name: state
@@ -140,7 +140,7 @@ entities:
             title: Title
             role: title
           - name: description
-            type: text
+            type: longtext
             title: Description
             role: body
           - name: state
@@ -182,7 +182,7 @@ entities:
             title: URL
             role: target
           - name: comment
-            type: text
+            type: longtext
             title: Comment
             role: body
           - name: created_at
@@ -231,7 +231,7 @@ entities:
             title: URL
             role: target
           - name: comment
-            type: text
+            type: longtext
             title: Comment
             role: body
           - name: created_at

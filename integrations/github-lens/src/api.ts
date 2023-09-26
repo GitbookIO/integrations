@@ -49,7 +49,7 @@ export interface GHPullRequest {
     html_url: string;
     state: 'open' | 'closed';
     title: string;
-    body: string;
+    body: string | null;
     created_at: string;
     updated_at: string;
     closed_at: string | null;
@@ -104,7 +104,7 @@ export interface GHIssue {
     html_url: string;
     state: 'open' | 'closed';
     title: string;
-    body: string;
+    body: string | null;
     created_at: string;
     updated_at: string;
     closed_at: string | null;
@@ -158,7 +158,7 @@ export interface GHRelease {
     html_url: string;
     tag_name: string;
     name: string;
-    body: string;
+    body: string | null;
     created_at: string;
     published_at: string;
     user: {
