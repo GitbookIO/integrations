@@ -31,13 +31,12 @@ export function parseInstallationOrThrow(input: GitHubAccountConfiguration | str
  */
 export async function authenticateAsIntegrationInstallation(
     context: GithubRuntimeContext,
-    integrationName: string,
     installationId: string
 ): Promise<GithubRuntimeContext> {
     const {
         data: { token },
     } = await context.api.integrations.createIntegrationInstallationToken(
-        integrationName,
+        context.environment.integration.name,
         installationId
     );
 

@@ -35,12 +35,6 @@ export type ConfigureProps = {
              * The installation ID of the GitHub App.
              */
             installation?: string;
-            /**
-             * Selected repositories to sync.
-             */
-            repositories?: string[];
-
-            repositoriesWithMetadata?: GitHubRepositoriesWithMetadata;
         };
     };
     spaceInstallation: {
@@ -51,6 +45,7 @@ export type ConfigureProps = {
 export type ConfigureState = ConfigureProps['installation']['configuration'] & {};
 
 export type IntegrationTaskType =
+    | 'sync:repos'
     | 'sync:repo'
     | 'sync:pull-requests'
     | 'sync:pull-request-comments'
@@ -71,13 +66,17 @@ export type BaseIntegrationTaskPayload = {
     page?: number;
 };
 
-export type BaseIntegrationTask<
-    Type extends IntegrationTaskType,
-    Payload extends BaseIntegrationTaskPayload
-> = {
+export type BaseIntegrationTask<Type extends IntegrationTaskType, Payload extends object> = {
     type: Type;
     payload: Payload;
 };
+
+export type IntegrationTaskSyncRepos = BaseIntegrationTask<
+    'sync:repos',
+    Omit<BaseIntegrationTaskPayload, 'repositoryId' | 'ownerName' | 'repoName'> & {
+        userInstallationAccessToken: string;
+    }
+>;
 
 export type IntegrationTaskSyncRepo = BaseIntegrationTask<'sync:repo', BaseIntegrationTaskPayload>;
 
@@ -111,6 +110,7 @@ export type IntegrationTaskSyncReleases = BaseIntegrationTask<
 >;
 
 export type IntegrationTask =
+    | IntegrationTaskSyncRepos
     | IntegrationTaskSyncRepo
     | IntegrationTaskSyncPullRequests
     | IntegrationTaskSyncPullRequestComments

@@ -24,8 +24,9 @@ import {
     deleteRepositoryEntity,
 } from './entities';
 import { GithubRuntimeContext } from './types';
+import { authenticateAsIntegrationInstallation } from './utils';
 
-const logger = Logger('github-lens:webhooks');
+const logger = Logger('github-knowledge:webhooks');
 
 /**
  * Verify the signature of a GitHub webhook request. This is used to ensure that the request
@@ -66,23 +67,25 @@ export async function handleRepositoryEvent(
     if (payload.installation) {
         const integrationInstallations = await queryIntegrationInstallations(
             context,
-            payload.repository.id.toString()
+            payload.installation.id.toString()
         );
         await Promise.all(
             integrationInstallations.map(async (installation) => {
+                const installationContext = await authenticateAsIntegrationInstallation(
+                    context,
+                    installation.id
+                );
                 if (payload.action === 'deleted') {
                     await deleteRepositoryEntity(
-                        context,
-                        // @ts-ignore
-                        installation.target.organizationId,
+                        installationContext,
+                        installation.target.organization,
                         // @ts-ignore
                         payload.repository
                     );
                 } else {
                     await createRepositoryEntity(
-                        context,
-                        // @ts-ignore
-                        installation.target.organizationId,
+                        installationContext,
+                        installation.target.organization,
                         // @ts-ignore
                         payload.repository
                     );
@@ -96,23 +99,25 @@ export async function handleReleaseEvent(context: GithubRuntimeContext, payload:
     if (payload.installation) {
         const integrationInstallations = await queryIntegrationInstallations(
             context,
-            payload.repository.id.toString()
+            payload.installation.id.toString()
         );
         await Promise.all(
             integrationInstallations.map(async (installation) => {
+                const installationContext = await authenticateAsIntegrationInstallation(
+                    context,
+                    installation.id
+                );
                 if (payload.action === 'deleted') {
                     await deleteReleaseEntity(
-                        context,
-                        // @ts-ignore
-                        installation.target.organizationId,
+                        installationContext,
+                        installation.target.organization,
                         // @ts-ignore
                         payload.release
                     );
                 } else {
                     await createReleaseEntity(
-                        context,
-                        // @ts-ignore
-                        installation.target.organizationId,
+                        installationContext,
+                        installation.target.organization,
                         payload.repository.id,
                         // @ts-ignore
                         payload.release
@@ -127,23 +132,26 @@ export async function handleIssueEvent(context: GithubRuntimeContext, payload: I
     if (payload.installation) {
         const integrationInstallations = await queryIntegrationInstallations(
             context,
-            payload.repository.id.toString()
+            payload.installation.id.toString()
         );
+
         await Promise.all(
             integrationInstallations.map(async (installation) => {
+                const installationContext = await authenticateAsIntegrationInstallation(
+                    context,
+                    installation.id
+                );
                 if (payload.action === 'deleted') {
                     await deleteIssueEntity(
-                        context,
-                        // @ts-ignore
-                        installation.target.organizationId,
+                        installationContext,
+                        installation.target.organization,
                         // @ts-ignore
                         payload.issue
                     );
                 } else {
                     await createIssueEntity(
-                        context,
-                        // @ts-ignore
-                        installation.target.organizationId,
+                        installationContext,
+                        installation.target.organization,
                         payload.repository.id,
                         // @ts-ignore
                         payload.issue
@@ -161,14 +169,17 @@ export async function handlePullRequestEvent(
     if (payload.installation) {
         const integrationInstallations = await queryIntegrationInstallations(
             context,
-            payload.repository.id.toString()
+            payload.installation.id.toString()
         );
         await Promise.all(
             integrationInstallations.map(async (installation) => {
-                await createPullRequestEntity(
+                const installationContext = await authenticateAsIntegrationInstallation(
                     context,
-                    // @ts-ignore
-                    installation.target.organizationId,
+                    installation.id
+                );
+                await createPullRequestEntity(
+                    installationContext,
+                    installation.target.organization,
                     payload.repository.id,
                     // @ts-ignore
                     payload.pull_request
@@ -185,22 +196,24 @@ export async function handleIssueCommentEvent(
     if (payload.installation) {
         const integrationInstallations = await queryIntegrationInstallations(
             context,
-            payload.repository.id.toString()
+            payload.installation.id.toString()
         );
         await Promise.all(
             integrationInstallations.map(async (installation) => {
+                const installationContext = await authenticateAsIntegrationInstallation(
+                    context,
+                    installation.id
+                );
                 if (payload.action === 'deleted') {
                     deleteIssueCommentEntity(
-                        context,
-                        // @ts-ignore
-                        installation.target.organizationId,
+                        installationContext,
+                        installation.target.organization,
                         payload.comment
                     );
                 } else {
                     await createIssueCommentEntity(
-                        context,
-                        // @ts-ignore
-                        installation.target.organizationId,
+                        installationContext,
+                        installation.target.organization,
                         payload.issue.number,
                         payload.comment
                     );
@@ -217,22 +230,24 @@ export async function handlePullRequestReviewCommentEvent(
     if (payload.installation) {
         const integrationInstallations = await queryIntegrationInstallations(
             context,
-            payload.repository.id.toString()
+            payload.installation.id.toString()
         );
         await Promise.all(
             integrationInstallations.map(async (installation) => {
+                const installationContext = await authenticateAsIntegrationInstallation(
+                    context,
+                    installation.id
+                );
                 if (payload.action === 'deleted') {
                     deleteIssueCommentEntity(
-                        context,
-                        // @ts-ignore
-                        installation.target.organizationId,
+                        installationContext,
+                        installation.target.organization,
                         payload.comment
                     );
                 } else {
                     await createPullRequestCommentEntity(
-                        context,
-                        // @ts-ignore
-                        installation.target.organizationId,
+                        installationContext,
+                        installation.target.organization,
                         payload.pull_request.number,
                         payload.comment
                     );
@@ -275,6 +290,8 @@ export async function queryIntegrationInstallations(
         );
         installations.push(...nextInstallations);
     }
+
+    logger.info(`Found ${installations.length} installations for external ID ${externalId}`);
 
     return installations;
 }

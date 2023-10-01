@@ -4,8 +4,8 @@ import createHttpError from 'http-errors';
 import { ContentKitIcon } from '@gitbook/api';
 import { createComponent, Logger } from '@gitbook/runtime';
 
-import { extractTokenCredentialsOrThrow, fetchRepository } from './api';
-import { syncRepositoriesToOrganization } from './syncing';
+import { createAppInstallationAccessToken, extractTokenCredentialsOrThrow } from './api';
+import { queueSyncRepositories } from './syncing';
 import {
     ConfigureAction,
     ConfigureProps,
@@ -13,9 +13,9 @@ import {
     GitHubAccountConfiguration,
     GithubRuntimeContext,
 } from './types';
-import { assertIsDefined } from './utils';
+import { assertIsDefined, authenticateAsIntegration } from './utils';
 
-const logger = Logger('github-lens:components');
+const logger = Logger('github-knowledge:components');
 
 /**
  * ContentKit component to configure the GitHub Lens integration.
@@ -30,7 +30,6 @@ export const syncBlock = createComponent<
     initialState: (props) => {
         return {
             installation: props.installation.configuration?.installation,
-            repositories: props.installation.configuration?.repositories,
         };
     },
     action: async (element, action, context) => {
@@ -77,22 +76,6 @@ export const syncBlock = createComponent<
          * on the frontend when the input props to the component change.
          */
         const versionHash = hash(element.props);
-
-        const currentRepositoriesMetadata =
-            element.props.installation.configuration?.repositoriesWithMetadata || [];
-        const currentRepositoriesNames = currentRepositoriesMetadata
-            .map((r) => `${r.repoFullName}`)
-            .join(', ');
-
-        const showSyncButton =
-            element.state.repositories &&
-            element.state.repositories.length > 0 &&
-            element.state.repositories.some(
-                (repo) =>
-                    (element.props.installation.configuration?.repositories || []).includes(
-                        repo
-                    ) === false
-            );
 
         return (
             <block>
@@ -153,74 +136,18 @@ export const syncBlock = createComponent<
                                     />
                                 }
                             />
-
-                            {element.state.installation ? (
-                                <>
-                                    <input
-                                        label="Select repositories"
-                                        hint={
-                                            <text>
-                                                Choose the GitHub repositories to sync to this
-                                                organization.
-                                            </text>
-                                        }
-                                        element={
-                                            <select
-                                                state="repositories"
-                                                multiple
-                                                onValueChange={{
-                                                    action: 'select.repositories',
-                                                    repositories:
-                                                        element.dynamicState('repositories'),
-                                                }}
-                                                options={{
-                                                    url: {
-                                                        host: new URL(installationPublicEndpoint)
-                                                            .host,
-                                                        pathname: `${
-                                                            new URL(installationPublicEndpoint)
-                                                                .pathname
-                                                        }/repos`,
-                                                        query: {
-                                                            installation:
-                                                                element.dynamicState(
-                                                                    'installation'
-                                                                ),
-                                                            v: versionHash,
-                                                        },
-                                                    },
-                                                }}
-                                            />
-                                        }
-                                    />
-                                </>
-                            ) : null}
                         </vstack>
 
-                        {currentRepositoriesMetadata.length > 0 ? (
-                            <box>
-                                <hint>
-                                    <text>
-                                        ⚙️ The integration is currently syncing entities from{' '}
-                                        <text style="bold">{currentRepositoriesNames}.</text>
-                                    </text>
-                                </hint>
-                            </box>
-                        ) : null}
-
-                        {showSyncButton ? (
+                        {element.state.installation ? (
                             <input
                                 label=""
                                 hint=""
                                 element={
                                     <button
                                         style="primary"
-                                        disabled={
-                                            !element.state.installation ||
-                                            !element.state.repositories
-                                        }
-                                        label="Sync repositories"
-                                        tooltip="Sync the entities of the selected repositories to this organization"
+                                        disabled={!element.state.installation}
+                                        label="Sync entities"
+                                        tooltip="Start syncing the entities to this GitBook organization"
                                         onPress={{ action: 'start.sync' }}
                                     />
                                 }
@@ -242,57 +169,49 @@ async function saveSyncConfiguration(
 
     assertIsDefined(installation, { label: 'installation' });
 
-    if (!state.installation || !state.repositories || !('organization' in installation.target)) {
+    if (!state.installation) {
         throw createHttpError(400, 'Incomplete configuration');
     }
 
-    const externalIds: string[] = [];
-    state.repositories?.forEach((repo) => {
-        externalIds.push(repo);
-    });
+    const { access_token: userInstallationAccessToken } = extractTokenCredentialsOrThrow(context);
 
-    const repositoriesWithMetadata: NonNullable<
-        ConfigureProps['installation']['configuration']
-    >['repositoriesWithMetadata'] = [];
-    for (const repositoryId of state.repositories) {
-        const repo = await fetchRepository(context, parseInt(repositoryId, 10));
-        repositoriesWithMetadata.push({
-            repoId: repositoryId,
-            repoName: repo.name,
-            repoFullName: repo.full_name,
-            repoOwner: repo.owner.login,
-        });
-    }
+    const githubInstallationId = state.installation;
 
     const integrationConfigurationId = crypto.randomUUID();
-
     const configurationBody: GitHubAccountConfiguration = {
         ...installation.configuration,
         key: integrationConfigurationId,
         installation: state.installation,
-        repositories: state.repositories,
-        repositoriesWithMetadata,
     };
 
     // Save the installation configuration
     await api.integrations.updateIntegrationInstallation(
         environment.integration.name,
         installation.id,
-
         {
-            externalIds,
+            externalIds: [githubInstallationId],
             configuration: configurationBody,
         }
     );
 
     logger.info(`Saved config ${integrationConfigurationId} for installation ${installation.id}`);
 
-    await syncRepositoriesToOrganization(
+    const githubInstallationAccessToken = await createAppInstallationAccessToken(
         context,
-        installation.target.organization,
-        installation.id,
+        githubInstallationId
+    );
+    const integrationContext = await authenticateAsIntegration(context);
+    await queueSyncRepositories(integrationContext, {
+        integrationInstallationId: installation.id,
+        organizationId: installation.target.organization,
         integrationConfigurationId,
-        state.installation,
-        repositoriesWithMetadata
+        githubInstallationId,
+        userInstallationAccessToken,
+        token: githubInstallationAccessToken,
+        retriesLeft: 3,
+        page: 1,
+    });
+    logger.info(
+        `Queued sync of repos for installation ${installation.id} (github: ${githubInstallationId})`
     );
 }

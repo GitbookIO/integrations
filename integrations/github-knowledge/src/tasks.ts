@@ -2,6 +2,7 @@ import { Logger } from '@gitbook/runtime';
 
 import {
     createAppInstallationAccessToken,
+    fetchInstallationRepositories,
     fetchIssueComments,
     fetchIssues,
     fetchPullRequestComments,
@@ -23,6 +24,8 @@ import {
     queueSyncPullRequestComments,
     queueSyncPullRequests,
     queueSyncReleases,
+    queueSyncRepositories,
+    queueSyncRepository,
 } from './syncing';
 import {
     GithubRuntimeContext,
@@ -33,10 +36,11 @@ import {
     IntegrationTaskSyncPullRequests,
     IntegrationTaskSyncReleases,
     IntegrationTaskSyncRepo,
+    IntegrationTaskSyncRepos,
 } from './types';
-import { authenticateAsIntegrationInstallation } from './utils';
+import { authenticateAsIntegrationInstallation, parseInstallationOrThrow } from './utils';
 
-const logger = Logger('github-lens:tasks');
+const logger = Logger('github-knowledge:tasks');
 
 export async function wrapTaskWithRetry(context: GithubRuntimeContext, task: IntegrationTask) {
     if (task.payload.retriesLeft <= 0) {
@@ -107,6 +111,9 @@ export async function wrapTaskWithRetry(context: GithubRuntimeContext, task: Int
 
 async function handleIntegrationTask(context: GithubRuntimeContext, task: IntegrationTask) {
     switch (task.type) {
+        case 'sync:repos':
+            await taskSyncRepos(context, task);
+            break;
         case 'sync:repo':
             await taskSyncRepo(context, task);
             break;
@@ -130,6 +137,48 @@ async function handleIntegrationTask(context: GithubRuntimeContext, task: Integr
     }
 }
 
+async function taskSyncRepos(context: GithubRuntimeContext, task: IntegrationTaskSyncRepos) {
+    const { payload } = task;
+    const repositories = await fetchInstallationRepositories(
+        context,
+        parseInstallationOrThrow(payload.githubInstallationId),
+        {
+            walkPagination: false,
+            per_page: 45,
+            page: payload.page,
+            tokenCredentials: {
+                access_token: payload.userInstallationAccessToken,
+                expires_at: 0,
+            },
+        }
+    );
+
+    if (repositories.length > 0) {
+        await Promise.all(
+            repositories.map((repository) => {
+                return queueSyncRepository(context, {
+                    repositoryId: repository.id,
+                    organizationId: payload.organizationId,
+                    integrationInstallationId: payload.integrationInstallationId,
+                    integrationConfigurationId: payload.integrationConfigurationId,
+                    githubInstallationId: payload.githubInstallationId,
+                    ownerName: repository.owner.login,
+                    repoName: repository.name,
+                    token: payload.token,
+                    retriesLeft: 3,
+                });
+            })
+        );
+
+        // Next page of repositories
+        await queueSyncRepositories(context, {
+            ...payload,
+            retriesLeft: 3,
+            page: (task.payload.page || 0) + 1,
+        });
+    }
+}
+
 async function taskSyncRepo(context: GithubRuntimeContext, task: IntegrationTaskSyncRepo) {
     const { payload } = task;
     const repository = await fetchRepository(context, payload.repositoryId, {
@@ -142,7 +191,6 @@ async function taskSyncRepo(context: GithubRuntimeContext, task: IntegrationTask
     if (repository) {
         const installationContext = await authenticateAsIntegrationInstallation(
             context,
-            context.environment.integration.name,
             payload.integrationInstallationId
         );
         await createRepositoryEntity(installationContext, payload.organizationId, repository);
@@ -185,7 +233,6 @@ async function taskSyncPullRequests(
     if (prs.length > 0) {
         const installationContext = await authenticateAsIntegrationInstallation(
             context,
-            context.environment.integration.name,
             payload.integrationInstallationId
         );
         await Promise.all(
@@ -242,7 +289,6 @@ async function taskSyncPullRequestComments(
     if (comments.length > 0) {
         const installationContext = await authenticateAsIntegrationInstallation(
             context,
-            context.environment.integration.name,
             payload.integrationInstallationId
         );
         await Promise.all(
@@ -280,7 +326,6 @@ async function taskSyncIssues(context: GithubRuntimeContext, task: IntegrationTa
     if (issues.length > 0) {
         const installationContext = await authenticateAsIntegrationInstallation(
             context,
-            context.environment.integration.name,
             payload.integrationInstallationId
         );
 
@@ -341,7 +386,6 @@ async function taskSyncIssueComments(
     if (comments.length > 0) {
         const installationContext = await authenticateAsIntegrationInstallation(
             context,
-            context.environment.integration.name,
             payload.integrationInstallationId
         );
         await Promise.all(
@@ -378,7 +422,6 @@ async function taskSyncReleases(context: GithubRuntimeContext, task: Integration
     if (releases.length > 0) {
         const installationContext = await authenticateAsIntegrationInstallation(
             context,
-            context.environment.integration.name,
             payload.integrationInstallationId
         );
         await Promise.all(

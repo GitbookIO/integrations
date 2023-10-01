@@ -1,5 +1,5 @@
-name: github-lens
-title: GitHub + Lens
+name: github-knowledge
+title: GitHub Knowledge
 organization: gitbook
 visibility: public
 description: ''
@@ -7,7 +7,7 @@ script: src/index.ts
 scopes:
     - entities:write
 entities:
-    - type: github-lens:repository
+    - type: github-knowledge:repository
       title:
           singular: Repository
           plural: Repositories
@@ -46,7 +46,7 @@ entities:
             type: text
             title: Language
 
-    - type: github-lens:release
+    - type: github-knowledge:release
       title:
           singular: Release
           plural: Releases
@@ -79,9 +79,9 @@ entities:
             type: relation
             title: Repository
             entity:
-                type: github-lens:repository
+                type: github-knowledge:repository
 
-    - type: github-lens:issue
+    - type: github-knowledge:issue
       title:
           singular: Issue
           plural: Issues
@@ -120,9 +120,9 @@ entities:
             type: relation
             title: Repository
             entity:
-                type: github-lens:repository
+                type: github-knowledge:repository
 
-    - type: github-lens:pull_request
+    - type: github-knowledge:pull_request
       title:
           singular: Pull Request
           plural: Pull Requests
@@ -170,9 +170,9 @@ entities:
             type: relation
             title: Repository
             entity:
-                type: github-lens:repository
+                type: github-knowledge:repository
 
-    - type: github-lens:issue_comment
+    - type: github-knowledge:issue_comment
       title:
           singular: Issue Comment
           plural: Issue Comments
@@ -219,9 +219,9 @@ entities:
             type: relation
             title: Issue
             entity:
-                type: github-lens:issue
+                type: github-knowledge:issue
 
-    - type: github-lens:pull_request_comment
+    - type: github-knowledge:pull_request_comment
       title:
           singular: Pull Request Comment
           plural: Pull Request Comments
@@ -268,7 +268,7 @@ entities:
             type: relation
             title: Pull Request
             entity:
-                type: github-lens:pull_request
+                type: github-knowledge:pull_request
 
 configurations:
     account:

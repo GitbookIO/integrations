@@ -9,7 +9,7 @@ import { assertIsDefined, getAccountConfigOrThrow } from './utils';
 
 export type OAuthTokenCredentials = NonNullable<GitHubAccountConfiguration['oauth_credentials']>;
 
-const logger = Logger('github-lens:api');
+const logger = Logger('github-knowledge:api');
 
 /**
  * NOTE: These GH types are not complete, they are just what we need for now.
@@ -198,16 +198,22 @@ export async function fetchInstallations(context: GithubRuntimeContext) {
  */
 export async function fetchInstallationRepositories(
     context: GithubRuntimeContext,
-    installationId: number
+    installationId: number,
+    options: GHFetchOptions = {}
 ) {
-    const repositories = await githubAPI<Array<GHRepository>>(context, null, {
-        path: `/user/installations/${installationId}/repositories`,
-        params: {
-            per_page: 100,
-            page: 1,
-        },
-        listProperty: 'repositories',
-    });
+    const repositories = await githubAPI<Array<GHRepository>>(
+        context,
+        options.tokenCredentials || null,
+        {
+            path: `/user/installations/${installationId}/repositories`,
+            params: {
+                per_page: options.per_page || 100,
+                page: options.page || 1,
+            },
+            walkPagination: options.walkPagination,
+            listProperty: 'repositories',
+        }
+    );
 
     return repositories;
 }

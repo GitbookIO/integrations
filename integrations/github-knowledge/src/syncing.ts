@@ -1,8 +1,4 @@
-import { Logger } from '@gitbook/runtime';
-
-import { createAppInstallationAccessToken } from './api';
 import {
-    GitHubRepositoriesWithMetadata,
     GithubRuntimeContext,
     IntegrationTaskSyncIssueComments,
     IntegrationTaskSyncIssues,
@@ -10,39 +6,21 @@ import {
     IntegrationTaskSyncPullRequests,
     IntegrationTaskSyncReleases,
     IntegrationTaskSyncRepo,
+    IntegrationTaskSyncRepos,
 } from './types';
-import { authenticateAsIntegration } from './utils';
 
-const logger = Logger('github-lens:syncing');
-
-export async function syncRepositoriesToOrganization(
+export async function queueSyncRepositories(
     context: GithubRuntimeContext,
-    organizationId: string,
-    integrationInstallationId: string,
-    integrationConfigurationId: string,
-    githubInstallationId: string,
-    repositories: GitHubRepositoriesWithMetadata
+    payload: IntegrationTaskSyncRepos['payload']
 ) {
-    const githubInstallationAccessToken = await createAppInstallationAccessToken(
-        context,
-        githubInstallationId
-    );
-
-    for (const repository of repositories) {
-        const integrationContext = await authenticateAsIntegration(context);
-        await queueSyncRepository(integrationContext, {
-            repositoryId: parseInt(repository.repoId, 10),
-            organizationId,
-            integrationInstallationId,
-            integrationConfigurationId,
-            githubInstallationId,
-            ownerName: repository.repoOwner,
-            repoName: repository.repoName,
-            token: githubInstallationAccessToken,
-            retriesLeft: 3,
-        });
-        logger.info(`Queued repository ${repository} for syncing`);
-    }
+    const { api, environment } = context;
+    await api.integrations.queueIntegrationTask(environment.integration.name, {
+        task: {
+            type: 'sync:repos',
+            payload,
+        },
+        schedule: 10,
+    });
 }
 
 /**

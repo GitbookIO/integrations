@@ -1,6 +1,6 @@
 import { Router } from 'itty-router';
 
-import { ContentKitIcon, ContentKitSelectOption } from '@gitbook/api';
+import { ContentKitSelectOption } from '@gitbook/api';
 import {
     createIntegration,
     FetchEventCallback,
@@ -8,11 +8,10 @@ import {
     Logger,
 } from '@gitbook/runtime';
 
-import { fetchInstallationRepositories, fetchInstallations } from './api';
+import { fetchInstallations } from './api';
 import { syncBlock } from './components';
 import { wrapTaskWithRetry } from './tasks';
 import { GithubRuntimeContext, IntegrationTask } from './types';
-import { parseInstallationOrThrow } from './utils';
 import {
     handleIssueCommentEvent,
     handleIssueEvent,
@@ -47,7 +46,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
     /**
      * Handle task for GitHub App webhook events
      */
-    router.post('/hooks/github/task', async (request) => {
+    router.post('/hooks/github-app/task', async (request) => {
         const id = request.headers.get('x-github-delivery');
         const event = request.headers.get('x-github-event');
         const signature = request.headers.get('x-hub-signature-256') ?? '';
@@ -106,7 +105,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
      * in a subsequent request. This is to avoid GitHub timeouts.
      * https://docs.github.com/en/rest/guides/best-practices-for-integrators?#favor-asynchronous-work-over-synchronous
      */
-    router.post('/hooks/github', async (request) => {
+    router.post('/hooks/github-app', async (request) => {
         const id = request.headers.get('x-github-delivery') as string;
         const event = request.headers.get('x-github-event') as string;
         const signature = request.headers.get('x-hub-signature-256') ?? '';
@@ -174,35 +173,6 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                         url: installation.account.avatar_url,
                     },
                 },
-            })
-        );
-
-        return new Response(JSON.stringify(data), {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-    });
-
-    /**
-     * API to fetch all repositories of an installation
-     */
-    router.get('/repos', async (req) => {
-        const { installation: queryInstallation } = req.query;
-        const installationId =
-            queryInstallation && typeof queryInstallation === 'string'
-                ? parseInstallationOrThrow(queryInstallation)
-                : undefined;
-
-        const repositories = installationId
-            ? await fetchInstallationRepositories(context, installationId)
-            : [];
-
-        const data = repositories.map(
-            (repository): ContentKitSelectOption => ({
-                id: `${repository.id}`,
-                label: repository.name,
-                icon: repository.visibility === 'private' ? ContentKitIcon.Lock : undefined,
             })
         );
 

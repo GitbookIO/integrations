@@ -1,5 +1,5 @@
 {
-    "name": "@gitbook/integration-github-lens",
+    "name": "@gitbook/integration-github-knowledge",
     "version": "0.0.0",
     "private": true,
     "scripts": {
