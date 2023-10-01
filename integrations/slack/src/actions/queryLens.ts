@@ -193,7 +193,6 @@ export async function queryLens({
                     text: answerText,
                 },
             },
-            ...QueryDisplayBlock({ queries: answer?.followupQuestions ?? [] }),
             {
                 type: 'divider',
             },
@@ -201,6 +200,10 @@ export async function queryLens({
                 title: 'Sources',
                 items: relatedPages,
             }),
+            {
+                type: 'divider',
+            },
+            ...QueryDisplayBlock({ queries: answer?.followupQuestions ?? [] }),
             Spacer,
         ];
 

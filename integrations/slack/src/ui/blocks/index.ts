@@ -89,14 +89,10 @@ export function QueryDisplayBlock(params: { queries: Array<string>; heading?: st
     return [
         ...[
             {
-                type: 'divider',
-            },
-
-            {
                 type: 'section',
                 text: {
                     type: 'mrkdwn',
-                    text: heading ?? '*Some followup questions you might want to try:*',
+                    text: heading ?? '*Want to know more? Try these questions:*',
                 },
             },
         ],
