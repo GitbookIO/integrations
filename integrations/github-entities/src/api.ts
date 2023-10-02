@@ -9,7 +9,7 @@ import { assertIsDefined, getAccountConfigOrThrow } from './utils';
 
 export type OAuthTokenCredentials = NonNullable<GitHubAccountConfiguration['oauth_credentials']>;
 
-const logger = Logger('github-knowledge:api');
+const logger = Logger('github-entities:api');
 
 /**
  * NOTE: These GH types are not complete, they are just what we need for now.

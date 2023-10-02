@@ -22,7 +22,7 @@ import {
     verifyGitHubWebhookSignature,
 } from './webhooks';
 
-const logger = Logger('github');
+const logger = Logger('github-entities');
 
 const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (request, context) => {
     const { environment } = context;
@@ -67,7 +67,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
             });
         }
 
-        logger.debug('received webhook event', { id, event });
+        logger.debug('received webhook event', { id, event, payload });
 
         /**
          * Handle Webhook events
@@ -133,6 +133,23 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
             status: 200,
             headers: { 'content-type': 'application/json' },
         });
+    });
+
+    router.get('/status', async () => {
+        const integrationInstallation = context.environment.installation;
+        if (!integrationInstallation) {
+            return new Response(`Installation does not exist for integration`, {
+                status: 404,
+            });
+        }
+
+        return new Response(
+            JSON.stringify({ configured: Boolean(integrationInstallation.configuration.key) }),
+            {
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+            }
+        );
     });
 
     /*

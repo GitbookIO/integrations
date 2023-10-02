@@ -26,7 +26,7 @@ import {
 import { GithubRuntimeContext } from './types';
 import { authenticateAsIntegrationInstallation } from './utils';
 
-const logger = Logger('github-knowledge:webhooks');
+const logger = Logger('github-entities:webhooks');
 
 /**
  * Verify the signature of a GitHub webhook request. This is used to ensure that the request

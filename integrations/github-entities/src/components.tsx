@@ -15,7 +15,7 @@ import {
 } from './types';
 import { assertIsDefined, authenticateAsIntegration } from './utils';
 
-const logger = Logger('github-knowledge:components');
+const logger = Logger('github-entities:components');
 
 /**
  * ContentKit component to configure the GitHub Lens integration.
@@ -146,13 +146,20 @@ export const syncBlock = createComponent<
                                     <button
                                         style="primary"
                                         disabled={!element.state.installation}
-                                        label="Sync entities"
-                                        tooltip="Start syncing the entities to this GitBook organization"
+                                        label="Start syncing"
+                                        tooltip="Sync GitHub entities to this organization"
                                         onPress={{ action: 'start.sync' }}
                                     />
                                 }
                             />
-                        ) : null}
+                        ) : (
+                            <hint>
+                                <text>
+                                    🔁 The integration is syncing entities from GitHub to this
+                                    organization{' '}
+                                </text>
+                            </hint>
+                        )}
                     </>
                 ) : null}
             </block>

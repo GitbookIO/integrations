@@ -1,13 +1,27 @@
-name: github-knowledge
-title: GitHub Knowledge
+name: github-entities
+title: GitHub Entities
 organization: gitbook
 visibility: public
-description: ''
+description: Bring GitHub issues, pull requests, releases and other metadata into your GitBook knowledge base.
+previewImages:
+    - ./assets/github-entities-preview.png
+summary: |
+    # Overview
+
+    The GitHub Entities integration for GitBook lets you synchronize repositories with GitBook and add important workflow information to your team's knowledge base.
+
+    # How it works
+
+    Once you’ve set it up, the integration will sync your GitHub issues, pull requests, releases, comments and general metadata with GitBook. So when you ask GitBook AI a question about your latest PRs, or to list the five latest issues, it can answer and link you to the relevant place.
+
+    # Configure
+
+    In order to sync entities from private repositories, you’ll need to authorize with your GitHub Account in the integration’s configuration page.
 script: src/index.ts
 scopes:
     - entities:write
 entities:
-    - type: github-knowledge:repository
+    - type: github-entities:repository
       title:
           singular: Repository
           plural: Repositories
@@ -46,7 +60,7 @@ entities:
             type: text
             title: Language
 
-    - type: github-knowledge:release
+    - type: github-entities:release
       title:
           singular: Release
           plural: Releases
@@ -79,9 +93,9 @@ entities:
             type: relation
             title: Repository
             entity:
-                type: github-knowledge:repository
+                type: github-entities:repository
 
-    - type: github-knowledge:issue
+    - type: github-entities:issue
       title:
           singular: Issue
           plural: Issues
@@ -120,9 +134,9 @@ entities:
             type: relation
             title: Repository
             entity:
-                type: github-knowledge:repository
+                type: github-entities:repository
 
-    - type: github-knowledge:pull_request
+    - type: github-entities:pull_request
       title:
           singular: Pull Request
           plural: Pull Requests
@@ -170,9 +184,9 @@ entities:
             type: relation
             title: Repository
             entity:
-                type: github-knowledge:repository
+                type: github-entities:repository
 
-    - type: github-knowledge:issue_comment
+    - type: github-entities:issue_comment
       title:
           singular: Issue Comment
           plural: Issue Comments
@@ -219,9 +233,9 @@ entities:
             type: relation
             title: Issue
             entity:
-                type: github-knowledge:issue
+                type: github-entities:issue
 
-    - type: github-knowledge:pull_request_comment
+    - type: github-entities:pull_request_comment
       title:
           singular: Pull Request Comment
           plural: Pull Request Comments
@@ -268,7 +282,7 @@ entities:
             type: relation
             title: Pull Request
             entity:
-                type: github-knowledge:pull_request
+                type: github-entities:pull_request
 
 configurations:
     account:

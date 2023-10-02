@@ -40,7 +40,7 @@ import {
 } from './types';
 import { authenticateAsIntegrationInstallation, parseInstallationOrThrow } from './utils';
 
-const logger = Logger('github-knowledge:tasks');
+const logger = Logger('github-entities:tasks');
 
 export async function wrapTaskWithRetry(context: GithubRuntimeContext, task: IntegrationTask) {
     if (task.payload.retriesLeft <= 0) {

@@ -10,7 +10,7 @@ import {
 } from './api';
 import { GithubRuntimeContext } from './types';
 
-const logger = Logger('github-knowledge:entities');
+const logger = Logger('github-entities:entities');
 
 function getRepositoryEntityType(context: GithubRuntimeContext) {
     return `${context.environment.integration.name}:repository` as const;
