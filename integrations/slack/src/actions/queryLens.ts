@@ -200,6 +200,7 @@ export async function queryLens({
                 title: 'Sources',
                 items: relatedPages,
             }),
+            Spacer,
             {
                 type: 'divider',
             },
