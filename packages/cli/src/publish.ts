@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import * as api from '@gitbook/api';
+import { IntegrationTarget } from '@gitbook/api';
 
 import { buildScriptFromManifest } from './build';
 import { resolveFile } from './manifest';
@@ -22,6 +23,12 @@ export async function publishIntegration(
 
     const api = await getAPIClient(true);
 
+    if (typeof manifest.target === 'string' && manifest.target !== IntegrationTarget.All) {
+        console.log(
+            `ℹ️ Publishing integration with "${manifest.target}" as target for installations. Keep in mind this cannot be changed later.`
+        );
+    }
+
     // Publish the integration.
     const created = await api.integrations.publishIntegration(manifest.name, {
         title: manifest.title,
@@ -36,6 +43,7 @@ export async function publishIntegration(
         configurations: manifest.configurations,
         secrets: manifest.secrets,
         visibility: manifest.visibility,
+        target: manifest.target,
         organization: manifest.organization,
         externalLinks: manifest.externalLinks,
         entities: manifest.entities,
