@@ -296,6 +296,7 @@ async function taskSyncPullRequestComments(
                 return createPullRequestCommentEntity(
                     installationContext,
                     payload.organizationId,
+                    payload.repositoryId,
                     payload.pullRequest,
                     comment
                 );
@@ -393,6 +394,7 @@ async function taskSyncIssueComments(
                 return createIssueCommentEntity(
                     installationContext,
                     payload.organizationId,
+                    payload.repositoryId,
                     payload.issue,
                     comment
                 );

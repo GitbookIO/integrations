@@ -42,7 +42,7 @@ export async function createRepositoryEntity(
     data: GHRepository
 ) {
     const entityType = getRepositoryEntityType(context);
-    const entityId = `${entityType}:${data.id}`;
+    const entityId = `${data.id}`;
     try {
         await context.api.orgs.upsertSchemaEntities(organizationId, entityType, {
             entities: [
@@ -90,7 +90,7 @@ export async function createPullRequestEntity(
     data: GHPullRequest
 ) {
     const entityType = getPullRequestEntityType(context);
-    const entityId = `${entityType}:${data.number}`;
+    const entityId = `${repositoryId}:${data.number}`;
     try {
         await context.api.orgs.upsertSchemaEntities(organizationId, entityType, {
             entities: [
@@ -108,7 +108,7 @@ export async function createPullRequestEntity(
                         head: data.head.ref,
                         base: data.base.ref,
                         repository: {
-                            entityId: `${getRepositoryEntityType(context)}:${repositoryId}`,
+                            entityId: `${repositoryId}`,
                         },
                     },
                 },
@@ -124,11 +124,13 @@ export async function createPullRequestEntity(
 export async function createPullRequestCommentEntity(
     context: GithubRuntimeContext,
     organizationId: string,
+    repositoryId: number,
     pullRequest: number,
     data: GHPullRequestComment
 ) {
     const entityType = getPullRequestCommentEntityType(context);
-    const entityId = `${entityType}:${data.id}`;
+    const pullRequestEntityId = `${repositoryId}:${pullRequest}`;
+    const entityId = `${pullRequestEntityId}:${data.id}`;
     try {
         await context.api.orgs.upsertSchemaEntities(organizationId, entityType, {
             entities: [
@@ -148,7 +150,7 @@ export async function createPullRequestCommentEntity(
                         reaction_rocket: data.reactions.rocket,
                         reaction_eyes: data.reactions.eyes,
                         pull_request: {
-                            entityId: `${getPullRequestEntityType(context)}:${pullRequest}`,
+                            entityId: pullRequestEntityId,
                         },
                     },
                 },
@@ -184,7 +186,7 @@ export async function createIssueEntity(
     data: GHIssue
 ) {
     const entityType = getIssueEntityType(context);
-    const entityId = `${entityType}:${data.number}`;
+    const entityId = `${repositoryId}:${data.number}`;
     try {
         await context.api.orgs.upsertSchemaEntities(organizationId, entityType, {
             entities: [
@@ -199,7 +201,7 @@ export async function createIssueEntity(
                         created_at: new Date(data.created_at).toISOString(),
                         updated_at: new Date(data.updated_at).toISOString(),
                         repository: {
-                            entityId: `${getRepositoryEntityType(context)}:${repositoryId}`,
+                            entityId: `${repositoryId}`,
                         },
                     },
                 },
@@ -229,11 +231,13 @@ export async function deleteIssueEntity(
 export async function createIssueCommentEntity(
     context: GithubRuntimeContext,
     organizationId: string,
+    repositoryId: number,
     issue: number,
     data: GHIssueComment
 ) {
     const entityType = getIssueCommentEntityType(context);
-    const entityId = `${entityType}:${data.id}`;
+    const issueEntityId = `${repositoryId}:${issue}`;
+    const entityId = `${issueEntityId}:${data.id}`;
     try {
         await context.api.orgs.upsertSchemaEntities(organizationId, entityType, {
             entities: [
@@ -253,7 +257,7 @@ export async function createIssueCommentEntity(
                         reaction_rocket: data.reactions.rocket,
                         reaction_eyes: data.reactions.eyes,
                         issue: {
-                            entityId: `${getIssueCommentEntityType(context)}:${issue}`,
+                            entityId: `${issueEntityId}`,
                         },
                     },
                 },
@@ -287,7 +291,7 @@ export async function createReleaseEntity(
     data: GHRelease
 ) {
     const entityType = getReleaseEntityType(context);
-    const entityId = `${entityType}:${data.id}`;
+    const entityId = `${repositoryId}:${data.id}`;
     try {
         await context.api.orgs.upsertSchemaEntities(organizationId, entityType, {
             entities: [
@@ -302,7 +306,7 @@ export async function createReleaseEntity(
                         draft: data.draft,
                         prerelease: data.prerelease,
                         repository: {
-                            entityId: `${getRepositoryEntityType(context)}:${repositoryId}`,
+                            entityId: `${repositoryId}`,
                         },
                     },
                 },

@@ -214,6 +214,7 @@ export async function handleIssueCommentEvent(
                     await createIssueCommentEntity(
                         installationContext,
                         installation.target.organization,
+                        payload.repository.id,
                         payload.issue.number,
                         payload.comment
                     );
@@ -248,6 +249,7 @@ export async function handlePullRequestReviewCommentEvent(
                     await createPullRequestCommentEntity(
                         installationContext,
                         installation.target.organization,
+                        payload.repository.id,
                         payload.pull_request.number,
                         payload.comment
                     );

@@ -138,7 +138,7 @@ export const syncBlock = createComponent<
                             />
                         </vstack>
 
-                        {element.state.installation ? (
+                        {element.state.installation && !installation.configuration.key ? (
                             <input
                                 label=""
                                 hint=""
@@ -152,14 +152,18 @@ export const syncBlock = createComponent<
                                     />
                                 }
                             />
-                        ) : (
-                            <hint>
-                                <text>
-                                    🔁 The integration is syncing entities from GitHub to this
-                                    organization{' '}
-                                </text>
-                            </hint>
-                        )}
+                        ) : null}
+
+                        {installation.configuration.key ? (
+                            <box>
+                                <hint>
+                                    <text>
+                                        🔁 The integration is now syncing entities from GitHub to
+                                        this organization{' '}
+                                    </text>
+                                </hint>
+                            </box>
+                        ) : null}
                     </>
                 ) : null}
             </block>
