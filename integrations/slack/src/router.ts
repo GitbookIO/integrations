@@ -33,7 +33,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
 
     const encodedScopes = encodeURIComponent(
         [
-            "app_mentions:read",
+            'app_mentions:read',
             'chat:write',
             'channels:join',
             'channels:read',
