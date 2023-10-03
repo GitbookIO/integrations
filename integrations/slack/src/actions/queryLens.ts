@@ -165,7 +165,9 @@ export async function queryLens({
         messageType,
     });
 
-    const result = await client.search.askQuery({ query: parsedQuery });
+    const result = await client.orgs.askInOrganization(installation.target.organization, {
+        query: parsedQuery,
+    });
     const answer: SearchAIAnswer = result.data?.answer;
 
     const messageTypePath = messageType === 'ephemeral' ? 'chat.postEphemeral' : 'chat.postMessage';
