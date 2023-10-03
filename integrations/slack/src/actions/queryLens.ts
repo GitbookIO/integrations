@@ -273,7 +273,7 @@ export async function queryLens({
                 ],
 
                 user: userId,
-                response_type: 'in_channel',
+                ...(messageType === 'permanent' ? { response_type: 'in_channel' } : {}),
                 replace_original: 'false',
             },
         };
