@@ -168,6 +168,8 @@ export async function queryLens({
     const result = await client.search.askQuery({ query: parsedQuery });
     const answer: SearchAIAnswer = result.data?.answer;
 
+    const messageTypePath = messageType === 'ephemeral' ? 'chat.postEphemeral' : 'chat.postMessage';
+
     if (answer && answer.text) {
         const relatedPages = await getRelatedPages({
             pages: answer.pages,
@@ -200,6 +202,7 @@ export async function queryLens({
                 title: 'Sources',
                 items: relatedPages,
             }),
+            Spacer,
             {
                 type: 'divider',
             },
@@ -253,7 +256,7 @@ export async function queryLens({
 
         const slackData = {
             method: 'POST',
-            path: 'chat.postEphemeral',
+            path: messageTypePath,
             responseUrl,
             payload: {
                 channel: channelId,
