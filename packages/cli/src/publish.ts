@@ -2,11 +2,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import * as api from '@gitbook/api';
-import { IntegrationTarget } from '@gitbook/api';
 
 import { buildScriptFromManifest } from './build';
 import { resolveFile } from './manifest';
 import { getAPIClient } from './remote';
+
+const targetAll = api.IntegrationTarget.All;
 
 /**
  * Publish the integration to GitBook.
@@ -23,7 +24,7 @@ export async function publishIntegration(
 
     const api = await getAPIClient(true);
 
-    if (typeof manifest.target === 'string' && manifest.target !== IntegrationTarget.All) {
+    if (typeof manifest.target === 'string' && manifest.target !== targetAll) {
         console.log(
             `ℹ️ Publishing integration with "${manifest.target}" as target for installations. Keep in mind this cannot be changed later.`
         );
