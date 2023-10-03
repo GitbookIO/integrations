@@ -8,14 +8,7 @@ import {
 import { RuntimeCallback, RuntimeContext } from './context';
 
 type PlainObject = {
-    [key: string]:
-        | number
-        | string
-        | boolean
-        | (string | number | boolean | null | PlainObject)[]
-        | PlainObject
-        | undefined
-        | null;
+    [key: string]: number | string | boolean | PlainObject | undefined | null;
 };
 
 export interface ComponentRenderCache {

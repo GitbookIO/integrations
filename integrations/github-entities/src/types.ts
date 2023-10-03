@@ -9,13 +9,6 @@ export type GitHubAccountConfiguration = {
     };
 } & ConfigureProps['installation']['configuration'];
 
-export type GitHubRepositoriesWithMetadata = Array<{
-    repoId: string;
-    repoName: string;
-    repoFullName: string;
-    repoOwner: string;
-}>;
-
 export type GithubRuntimeEnvironment = RuntimeEnvironment<GitHubAccountConfiguration, {}>;
 export type GithubRuntimeContext = RuntimeContext<GithubRuntimeEnvironment>;
 
