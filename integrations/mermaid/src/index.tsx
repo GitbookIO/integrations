@@ -70,7 +70,7 @@ export default createIntegration({
                 <body>
                     <script type="module">
                         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-                        mermaid.initialize({ startOnLoad: false , securityLevel: 'loose' });
+                        mermaid.initialize({ startOnLoad: false, securityLevel: 'loose' });
 
                         function renderDiagram(content) {
                             mermaid.render('output', content).then(({ svg: svgGraph }) => {
