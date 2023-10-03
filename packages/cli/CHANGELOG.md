@@ -1,5 +1,17 @@
 # @gitbook/cli
 
+## 0.13.0
+
+### Minor Changes
+
+-   5f9c5c9: - Bump API client to use the latest spec
+    -   Update CLI to use the latest manifest with target support
+
+### Patch Changes
+
+-   Updated dependencies [5f9c5c9]
+    -   @gitbook/api@0.11.0
+
 ## 0.12.0
 
 ### Minor Changes
