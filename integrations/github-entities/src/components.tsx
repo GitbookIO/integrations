@@ -107,7 +107,7 @@ export const syncBlock = createComponent<
                                         Choose the GitHub installation, user or organization.
                                         <link
                                             target={{
-                                                url: 'https://github.com/apps/gitbook-x-dev-taran/installations/new',
+                                                url: 'https://github.com/apps/gitbook-entities/installations/new',
                                             }}
                                         >
                                             {' '}

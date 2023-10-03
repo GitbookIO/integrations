@@ -83,10 +83,6 @@ export async function wrapTaskWithRetry(context: GithubRuntimeContext, task: Int
             );
         } else if (error.rateLimitExceeded) {
             // Schedule the task for later if we have hit the rate limit
-            const installationAccessToken = await createAppInstallationAccessToken(
-                context,
-                task.payload.githubInstallationId
-            );
             const schedule = Math.ceil(Math.abs(Date.now() - error.rateLimitReset) / 1000);
             await context.api.integrations.queueIntegrationTask(
                 context.environment.integration.name,
@@ -95,7 +91,6 @@ export async function wrapTaskWithRetry(context: GithubRuntimeContext, task: Int
                         ...task,
                         payload: {
                             ...task.payload,
-                            token: installationAccessToken,
                             retriesLeft: task.payload.retriesLeft - 1,
                         },
                     },
