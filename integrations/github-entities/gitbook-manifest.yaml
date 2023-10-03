@@ -1,5 +1,6 @@
 name: github-entities
 title: GitHub Entities
+icon: ./assets/github-mark.png
 organization: gitbook
 visibility: public
 description: Bring GitHub issues, pull requests, releases and other metadata into your GitBook knowledge base.
