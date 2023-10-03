@@ -42,14 +42,6 @@ export const syncBlock = createComponent<
                         installation: action.installation,
                     },
                 };
-            case 'select.repositories':
-                return {
-                    ...element,
-                    state: {
-                        ...element.state,
-                        repositories: action.repositories,
-                    },
-                };
             case 'start.sync':
                 await saveSyncConfiguration(context, element.state);
                 return element;

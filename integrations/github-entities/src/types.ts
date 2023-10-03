@@ -21,7 +21,6 @@ export type GithubRuntimeContext = RuntimeContext<GithubRuntimeEnvironment>;
 
 export type ConfigureAction =
     | { action: 'select.installation'; installation: string }
-    | { action: 'select.repositories'; repositories: string[] }
     | { action: 'start.sync' };
 
 export type ConfigureProps = {
