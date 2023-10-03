@@ -18,6 +18,7 @@ export interface IntegrationManifest {
     icon?: string;
     description?: string;
     summary?: string;
+    target?: api.IntegrationTarget;
     scopes?: api.IntegrationScope[];
     categories?: api.IntegrationCategory[];
     blocks?: api.IntegrationBlock[];
