@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.13.1
+
+### Patch Changes
+
+-   28fb7f2: Validation method for target property in the manifest
+
 ## 0.13.0
 
 ### Minor Changes
