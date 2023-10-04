@@ -153,6 +153,12 @@ async function getManifestSchema() {
                     'components/schemas/Integration/properties/visibility'
                 ),
             },
+            target: {
+                ...getAPIJsonSchemaFor(
+                    openAPISpec,
+                    'components/schemas/RequestPublishIntegration/properties/target'
+                ),
+            },
             icon: {
                 type: 'string',
             },
