@@ -4,6 +4,7 @@ icon: ./assets/icon.png
 description: Notify a channel or individual in Slack with real-time events from GitBook.
 categories:
     - collaboration
+    - captures
 previewImages:
     - ./assets/slack-preview.png
 externalLinks:
