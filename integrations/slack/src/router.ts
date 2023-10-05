@@ -41,6 +41,8 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             'links:read',
             'links:write',
             'commands',
+            'channels:history',
+            'im:history',
         ].join(' ')
     );
 
