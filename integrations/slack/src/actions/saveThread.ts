@@ -39,7 +39,7 @@ export async function saveThread(
             payload: {
                 channel: channelId,
                 blocks: [
-                    ...ConversationSavedBlock(),
+                    ...ConversationSavedBlock(capture.urls.app),
                     ...(capture.output.markdown
                         ? GeneratedDocSummaryBlock({
                               summary: capture.output.markdown,
