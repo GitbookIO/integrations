@@ -96,14 +96,15 @@ export const syncBlock = createComponent<
                                 label="Select account"
                                 hint={
                                     <text>
-                                        Choose the GitHub installation, user or organization.
+                                        Choose the GitHub installation, user or organization. Make
+                                        sure you have installed the
                                         <link
                                             target={{
                                                 url: 'https://github.com/apps/gitbook-entities/installations/new',
                                             }}
                                         >
                                             {' '}
-                                            Install the GitHub app.
+                                            GitBook Entities app
                                         </link>
                                     </text>
                                 }
