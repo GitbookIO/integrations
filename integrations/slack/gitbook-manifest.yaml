@@ -20,18 +20,21 @@ scopes:
 summary: |
     # Overview
     With the GitBook Slack integration, your teams have instant access to your GitBook knowledge base, and can get AI-summarized answers about your content. Plus, if you solve a problem in a thread, you can ask GitBook AI to summarize it into useable documentation.
-    Head to our documentation to find out more.
+
+    [Head to our documentation to find out more.](https://docs.gitbook.com/product-tour/integrations/slack)
 
     # How it works
-    *Find information faster:* Getting an answer has never been easier. Just summon our Slackbot and ask a question — GitBook AI will scan your documentation and summarize an answer in seconds.
-    Turn conversations into documentation: Just solved a problem in an epic, 168-message thread? Ask GitBook AI to summarize the conversation and it’ll save it to your knowledge base so anyone can find out how you go there.
-    Real-time notifications: Get notified in real-time when something important happens with your GitBook content — from small updates to someone publishing a space. You choose what you get notifications for, and where you’ll see them.
+    **Find information faster:** Getting an answer has never been easier. Just summon our Slackbot and ask a question — GitBook AI will scan your documentation and summarize an answer in seconds.
+
+    **Turn conversations into documentation:** Just solved a problem in an epic, 168-message thread? Ask GitBook AI to summarize the conversation and it’ll save it to your knowledge base so anyone can find out how you go there.
+
+    **Real-time notifications:** Get notified in real-time when something important happens with your GitBook content — from small updates to someone publishing a space. You choose what you get notifications for, and where you’ll see them.
 
     # Configure
     To install on a single space, click Integrations in the sub-nav within the GitBook app. Alternatively, you can install it across all your spaces in Settings.
     Once you’ve installed it, head over to Slack and authorize the connection. You can select a default channel to post notifications and other messages, but remember — you can summon GitBook in any channel or thread.
 
-    Read our documentation to learn more.
+    [Read our documentation to learn more.](https://docs.gitbook.com/product-tour/integrations/slack)
 configurations:
     account:
         properties:
