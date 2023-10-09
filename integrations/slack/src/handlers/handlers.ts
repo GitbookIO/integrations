@@ -2,11 +2,10 @@ import { Logger } from '@gitbook/runtime';
 
 import { notifyOnlySupportedThreads, queryLens, saveThread } from '../actions';
 import { SlackRuntimeContext } from '../configuration';
-import { stripBotName } from '../utils';
+import { isSaveThreadMessage, stripBotName } from '../utils';
 import type { SlashEvent } from './commands';
 
 const logger = Logger('slack:api');
-const SAVE_THREAD_MESSAGE = 'save';
 
 /**
  * Handle a slash request and route it to the GitBook Lens' query function.
@@ -112,21 +111,4 @@ export async function appMentionEventHandler(eventPayload: any, context: SlackRu
             });
         }
     }
-}
-
-function isSaveThreadMessage(message: string) {
-    const tokens = message.split(' ');
-
-    if (tokens.length > 3) {
-        return false;
-    }
-
-    const [first, second] = tokens;
-
-    // `save` or `save this` or `please save`
-    if (first === SAVE_THREAD_MESSAGE || second === SAVE_THREAD_MESSAGE) {
-        return true;
-    }
-
-    return false;
 }
