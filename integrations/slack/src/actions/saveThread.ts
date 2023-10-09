@@ -178,8 +178,6 @@ async function createMessageThreadCapture(slackEvent, context: SlackRuntimeConte
             };
         });
 
-    console.log('filtered messages', events);
-
     // add all messages in a thread to a capture
     await installationApiClient.orgs.addEventsToCapture(orgId, capture.id, {
         events,
