@@ -7,6 +7,10 @@ categories:
     - captures
 previewImages:
     - ./assets/slack-preview.png
+    - ./assets/slack-marketplace-1.png
+    - ./assets/slack-marketplace-2.png
+    - ./assets/slack-marketplace-3.png
+    - ./assets/slack-marketplace-4.png
 externalLinks:
     - label: Documentation
       url: https://docs.gitbook.com/integrations/integrations-beta/slack
