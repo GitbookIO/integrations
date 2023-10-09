@@ -39,7 +39,9 @@ export function createSlackActionsHandler(
                 };
 
                 // queryLens:ephemeral, queryLens:permanent
-                return await handlers[actionName](params);
+                const handlerPromise = handlers[actionName](params);
+
+                context.waitUntil(handlerPromise);
             }
         }
     };
