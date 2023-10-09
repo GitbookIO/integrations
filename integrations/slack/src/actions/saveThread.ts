@@ -3,7 +3,7 @@ import { slackAPI } from '../slack';
 import { ConversationSavedBlock, GeneratedDocSummaryBlock, QueryDisplayBlock } from '../ui';
 import { getInstallationApiClient, getInstallationConfig } from '../utils';
 
-const RUNTIME_LIMIT = 30000;
+const RUNTIME_TIME_LIMIT = 30000;
 const APP_ORG_URL = 'https://app.gitbook.com/o/';
 
 /**
@@ -286,7 +286,7 @@ function registerNotifyBeforeRuntimeLimit(
         );
 
         // Set to a value slightly less than the actual runtime limit to notify just before
-    }, RUNTIME_LIMIT - 1000);
+    }, RUNTIME_TIME_LIMIT - 1000);
 
     return timeoutId;
 }
