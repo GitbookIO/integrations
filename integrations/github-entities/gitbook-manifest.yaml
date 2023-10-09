@@ -7,6 +7,9 @@ visibility: unlisted
 description: Bring GitHub issues, pull requests, releases and other metadata into your GitBook knowledge base.
 previewImages:
     - ./assets/github-entities-preview.png
+externalLinks:
+    - label: Documentation
+      url: https://docs.gitbook.com/integrations/integrations-beta/github-entities
 summary: |
     # Overview
 
