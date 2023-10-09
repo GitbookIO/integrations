@@ -81,7 +81,6 @@ export async function appMentionEventHandler(eventPayload: any, context: SlackRu
         // @ts-ignore
         const parsedMessage = stripBotName(text, eventPayload.authorizations[0]?.user_id);
 
-        console.log('parsedMessage====', parsedMessage);
         if (isSaveThreadMessage(parsedMessage)) {
             // not supported outside threads
             if (!thread_ts) {
@@ -98,28 +97,21 @@ export async function appMentionEventHandler(eventPayload: any, context: SlackRu
                 },
                 context
             );
-
-            return;
+        } else {
+            // send to Lens
+            await queryLens({
+                teamId: team,
+                channelId: channel,
+                threadId: thread_ts,
+                userId: user,
+                messageType: 'permanent',
+                text: parsedMessage,
+                context,
+                // @ts-ignore
+                authorization: eventPayload.authorizations[0],
+            });
         }
-
-        // send to Lens
-        await queryLens({
-            teamId: team,
-            channelId: channel,
-            threadId: thread_ts,
-            userId: user,
-            messageType: 'permanent',
-            text: parsedMessage,
-            context,
-            // @ts-ignore
-            authorization: eventPayload.authorizations[0],
-        });
     }
-
-    // Add custom header(s)
-    return new Response(null, {
-        status: 200,
-    });
 }
 
 function isSaveThreadMessage(message: string) {
