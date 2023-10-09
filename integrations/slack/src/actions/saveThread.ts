@@ -3,6 +3,9 @@ import { slackAPI } from '../slack';
 import { ConversationSavedBlock, GeneratedDocSummaryBlock, QueryDisplayBlock } from '../ui';
 import { getInstallationApiClient, getInstallationConfig } from '../utils';
 
+const RUNTIME_LIMIT = 30000;
+const APP_ORG_URL = 'https://app.gitbook.com/o/';
+
 /**
  *  Save thread in GitBook as a summary (capture)
  */
@@ -20,24 +23,23 @@ export async function saveThread(
     },
     context: SlackRuntimeContext
 ) {
-    const { accessToken } = await getInstallationConfig(context, teamId);
+    const { accessToken, installation } = await getInstallationConfig(context, teamId);
 
     // acknowledge the request to the user
-    await slackAPI(
-        context,
+    notifySavingThread({ channel: channelId, thread_ts, userId }, context, accessToken);
+
+    const capturesURL = `${APP_ORG_URL}${installation.target.organization}/captures`;
+    // In some cases, the runtime limit is reached before the capture is finished (e.g large threads)
+    // we notify the user before the runtime limit is reached that the capture
+    const timeoutId = registerNotifyBeforeRuntimeLimit(
         {
-            method: 'POST',
-            path: 'chat.postEphemeral', // probably alwasy ephemeral? or otherwise have replies in same thread
-            payload: {
-                channel: channelId,
-                text: `_Saving to GitBook..._`,
-                ...(userId ? { user: userId } : {}), // actually shouldn't be optional
-                thread_ts,
-            },
+            channel: channelId,
+            thread_ts,
+            userId,
         },
-        {
-            accessToken,
-        }
+        capturesURL,
+        context,
+        accessToken
     );
 
     const { capture, followupQuestions } = await createMessageThreadCapture(
@@ -48,6 +50,9 @@ export async function saveThread(
         },
         context
     );
+
+    // managed to avoid the timeout, clear the timeout
+    clearTimeout(timeoutId);
 
     await slackAPI(
         context,
@@ -119,6 +124,7 @@ async function createMessageThreadCapture(slackEvent, context: SlackRuntimeConte
         },
         { accessToken }
     );
+
     const { messages = [] } = messageReplies;
 
     // get a permalink to the thread
@@ -204,4 +210,83 @@ export async function notifyOnlySupportedThreads(context, team, channel, user) {
         },
         { accessToken }
     );
+}
+
+async function notifySavingThread(
+    {
+        channel,
+        thread_ts,
+        userId,
+    }: {
+        channel: string;
+        thread_ts: string;
+        userId: string;
+    },
+    context: SlackRuntimeContext,
+    accessToken: string
+) {
+    // acknowledge the request to the user
+    await slackAPI(
+        context,
+        {
+            method: 'POST',
+            path: 'chat.postEphemeral', // probably alwasy ephemeral? or otherwise have replies in same thread
+            payload: {
+                channel,
+                text: `_Saving to GitBook..._`,
+                ...(userId ? { user: userId } : {}), // actually shouldn't be optional
+                thread_ts,
+            },
+        },
+        {
+            accessToken,
+        }
+    );
+}
+
+function registerNotifyBeforeRuntimeLimit(
+    {
+        channel,
+        thread_ts,
+        userId,
+    }: {
+        channel: string;
+        thread_ts: string;
+        userId: string;
+    },
+    capturesUrl: string,
+    context: SlackRuntimeContext,
+    accessToken: string
+) {
+    const timeoutId = setTimeout(async () => {
+        // acknowledge the request to the user
+        await slackAPI(
+            context,
+            {
+                method: 'POST',
+                path: 'chat.postMessage',
+                payload: {
+                    channel,
+                    blocks: [
+                        {
+                            type: 'section',
+                            text: {
+                                type: 'mrkdwn',
+                                text: `Thread is being saved. You'll find the capture in <${capturesUrl}|GitBook> shortly.`,
+                            },
+                        },
+                    ],
+                    ...(userId ? { user: userId } : {}), // actually shouldn't be optional
+                    thread_ts,
+                },
+            },
+            {
+                accessToken,
+            }
+        );
+
+        // Set to a value slightly less than the actual runtime limit to notify just before
+    }, RUNTIME_LIMIT - 1000);
+
+    return timeoutId;
 }
