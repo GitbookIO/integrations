@@ -1,7 +1,7 @@
 import { SlackRuntimeContext } from '../configuration';
 import { slackAPI } from '../slack';
 import { ConversationSavedBlock, GeneratedDocSummaryBlock, QueryDisplayBlock } from '../ui';
-import { getInstallationApiClient, getInstallationConfig } from '../utils';
+import { getInstallationApiClient, getInstallationConfig, isSaveThreadMessage } from '../utils';
 
 const RUNTIME_TIME_LIMIT = 30000;
 const APP_ORG_URL = 'https://app.gitbook.com/o/';
@@ -154,16 +154,29 @@ async function createMessageThreadCapture(slackEvent, context: SlackRuntimeConte
 
     const capture = startCaptureRes.data;
 
-    const events = messages.map((message) => {
-        const { text, ts, thread_ts } = message;
+    const events = messages
+        .filter((message) => {
+            // ignore messages in thread from any bot (todo: potentially limit to gitbook only)
+            if (message.bot_id) {
+                return false;
+            }
 
-        return {
-            type: 'thread.message',
-            text,
-            timestamp: slackTimestampToISOFormat(ts),
-            ...(ts === thread_ts ? { isFirst: true } : {}),
-        };
-    });
+            if (isSaveThreadMessage(message.text)) {
+                return false;
+            }
+
+            return true;
+        })
+        .map((message) => {
+            const { text, ts, thread_ts } = message;
+
+            return {
+                type: 'thread.message',
+                text,
+                timestamp: slackTimestampToISOFormat(ts),
+                ...(ts === thread_ts ? { isFirst: true } : {}),
+            };
+        });
 
     // add all messages in a thread to a capture
     await installationApiClient.orgs.addEventsToCapture(orgId, capture.id, {
