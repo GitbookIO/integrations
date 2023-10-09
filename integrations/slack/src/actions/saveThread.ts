@@ -20,6 +20,26 @@ export async function saveThread(
     },
     context: SlackRuntimeContext
 ) {
+    const { accessToken } = await getInstallationConfig(context, teamId);
+
+    // acknowledge the request to the user
+    await slackAPI(
+        context,
+        {
+            method: 'POST',
+            path: 'chat.postEphemeral', // probably alwasy ephemeral? or otherwise have replies in same thread
+            payload: {
+                channel: channelId,
+                text: `_Saving to GitBook..._`,
+                ...(userId ? { user: userId } : {}), // actually shouldn't be optional
+                thread_ts,
+            },
+        },
+        {
+            accessToken,
+        }
+    );
+
     const { capture, followupQuestions } = await createMessageThreadCapture(
         {
             team_id: teamId,
@@ -28,8 +48,6 @@ export async function saveThread(
         },
         context
     );
-
-    const { accessToken } = await getInstallationConfig(context, teamId);
 
     await slackAPI(
         context,
@@ -57,11 +75,6 @@ export async function saveThread(
         },
         { accessToken }
     );
-
-    // Add custom header(s)
-    return new Response(null, {
-        status: 200,
-    });
 }
 
 function slackTimestampToISOFormat(slackTs) {
