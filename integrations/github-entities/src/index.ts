@@ -12,6 +12,7 @@ import { fetchInstallations } from './api';
 import { syncBlock } from './components';
 import { wrapTaskWithRetry } from './tasks';
 import { GithubRuntimeContext, IntegrationTask } from './types';
+import { arrayToHex, safeCompare } from './utils';
 import {
     handleIssueCommentEvent,
     handleIssueEvent,
@@ -34,101 +35,113 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         ).pathname,
     });
 
+    async function verifyIntegrationSignature(
+        payload: string,
+        signature: string,
+        secret: string
+    ): Promise<boolean> {
+        if (!signature) {
+            return false;
+        }
+
+        const algorithm = { name: 'HMAC', hash: 'SHA-256' };
+        const enc = new TextEncoder();
+        const key = await crypto.subtle.importKey('raw', enc.encode(secret), algorithm, false, [
+            'sign',
+            'verify',
+        ]);
+        const signed = await crypto.subtle.sign(algorithm.name, key, enc.encode(payload));
+        const expectedSignature = arrayToHex(signed);
+
+        return safeCompare(expectedSignature, signature);
+    }
+
     router.post('/tasks', async (request) => {
-        const headers = Object.fromEntries(Object.entries(request.headers));
-        const { task } = await request.json<{ task: IntegrationTask }>();
-
-        logger.debug('received integration task', task);
-
-        await wrapTaskWithRetry(context, task);
-    });
-
-    /**
-     * Handle task for GitHub App webhook events
-     */
-    router.post('/hooks/github-app/task', async (request) => {
-        const id = request.headers.get('x-github-delivery');
-        const event = request.headers.get('x-github-event');
-        const signature = request.headers.get('x-hub-signature-256') ?? '';
+        const signature = request.headers.get('x-gitbook-integration-signature') ?? '';
         const payloadString = await request.text();
-        const payload = JSON.parse(payloadString);
 
-        // Verify webhook signature
-        try {
-            await verifyGitHubWebhookSignature(
-                payloadString,
-                signature,
-                environment.secrets.WEBHOOK_SECRET
-            );
-        } catch (error: any) {
-            return new Response(JSON.stringify({ error: error.message }), {
+        const verified = await verifyIntegrationSignature(
+            payloadString,
+            signature,
+            environment.signingSecret!
+        );
+
+        if (!verified) {
+            return new Response('Invalid integration signature', {
                 status: 400,
-                headers: { 'content-type': 'application/json' },
             });
         }
 
-        logger.debug('received webhook event', { id, event, payload });
+        const { task } = JSON.parse(payloadString) as { task: IntegrationTask };
+        logger.debug('received integration task', task);
 
-        /**
-         * Handle Webhook events
-         */
-        switch (event) {
-            case 'repository':
-                await handleRepositoryEvent(context, payload);
-                break;
-            case 'pull_request':
-                await handlePullRequestEvent(context, payload);
-                break;
-            case 'pull_request_review_comment':
-                await handlePullRequestReviewCommentEvent(context, payload);
-            case 'issue':
-                await handleIssueEvent(context, payload);
-                break;
-            case 'issue_comment':
-                await handleIssueCommentEvent(context, payload);
-                break;
-            case 'release':
-                await handleReleaseEvent(context, payload);
-                break;
-            default:
-                logger.debug('ignoring webhook event', { id, event });
-        }
+        await wrapTaskWithRetry(context, task);
 
-        return new Response(JSON.stringify({ ok: true }), {
+        return new Response(JSON.stringify({ acknowledged: true }), {
             status: 200,
             headers: { 'content-type': 'application/json' },
         });
     });
 
     /**
-     * Acknowledge GitHub App webhook event and queue a task to handle it
-     * in a subsequent request. This is to avoid GitHub timeouts.
-     * https://docs.github.com/en/rest/guides/best-practices-for-integrators?#favor-asynchronous-work-over-synchronous
+     * Handle task for GitHub App webhook events
      */
     router.post('/hooks/github-app', async (request) => {
-        const id = request.headers.get('x-github-delivery') as string;
-        const event = request.headers.get('x-github-event') as string;
+        const id = request.headers.get('x-github-delivery');
+        const event = request.headers.get('x-github-event');
         const signature = request.headers.get('x-hub-signature-256') ?? '';
 
-        logger.debug('acknowledging webhook event', { id, event });
-
-        const taskUrl = new URL(request.url);
-        taskUrl.pathname += '/task';
-        const body = await request.text();
+        logger.debug('received webhook event', { id, event });
 
         context.waitUntil(
-            fetch(taskUrl.toString(), {
-                method: 'POST',
-                body,
-                headers: {
-                    'content-type': request.headers.get('content-type') || 'application/text',
-                    'x-github-delivery': id,
-                    'x-github-event': event,
-                    'x-hub-signature-256': signature,
-                },
-            })
+            (async () => {
+                const payloadString = await request.text();
+                const payload = JSON.parse(payloadString);
+
+                // Verify webhook signature
+                try {
+                    await verifyGitHubWebhookSignature(
+                        payloadString,
+                        signature,
+                        environment.secrets.WEBHOOK_SECRET
+                    );
+                } catch (error) {
+                    logger.error(`Error verifying signature for id:${id}, error ${error}`);
+                    return;
+                }
+
+                /**
+                 * Handle Webhook events
+                 */
+                switch (event) {
+                    case 'repository':
+                        await handleRepositoryEvent(context, payload);
+                        break;
+                    case 'pull_request':
+                        await handlePullRequestEvent(context, payload);
+                        break;
+                    case 'pull_request_review_comment':
+                        await handlePullRequestReviewCommentEvent(context, payload);
+                    case 'issue':
+                        await handleIssueEvent(context, payload);
+                        break;
+                    case 'issue_comment':
+                        await handleIssueCommentEvent(context, payload);
+                        break;
+                    case 'release':
+                        await handleReleaseEvent(context, payload);
+                        break;
+                    default:
+                        logger.debug('ignoring webhook event', { id, event });
+                }
+            })()
         );
 
+        /**
+         * Acknowledge the webhook immediately to avoid GitHub timeouts.
+         * https://docs.github.com/en/rest/guides/best-practices-for-integrators?#favor-asynchronous-work-over-synchronous
+         */
+        logger.debug('acknowledging webhook event', { id, event });
         return new Response(JSON.stringify({ acknowledged: true }), {
             status: 200,
             headers: { 'content-type': 'application/json' },

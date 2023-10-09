@@ -24,7 +24,7 @@ import {
     deleteRepositoryEntity,
 } from './entities';
 import { GithubRuntimeContext } from './types';
-import { authenticateAsIntegrationInstallation } from './utils';
+import { arrayToHex, authenticateAsIntegrationInstallation, safeCompare } from './utils';
 
 const logger = Logger('github-entities:webhooks');
 
@@ -111,6 +111,7 @@ export async function handleReleaseEvent(context: GithubRuntimeContext, payload:
                     await deleteReleaseEntity(
                         installationContext,
                         installation.target.organization,
+                        payload.repository.id,
                         // @ts-ignore
                         payload.release
                     );
@@ -145,6 +146,7 @@ export async function handleIssueEvent(context: GithubRuntimeContext, payload: I
                     await deleteIssueEntity(
                         installationContext,
                         installation.target.organization,
+                        payload.repository.id,
                         // @ts-ignore
                         payload.issue
                     );
@@ -208,6 +210,8 @@ export async function handleIssueCommentEvent(
                     deleteIssueCommentEntity(
                         installationContext,
                         installation.target.organization,
+                        payload.repository.id,
+                        payload.issue.number,
                         payload.comment
                     );
                 } else {
@@ -243,6 +247,8 @@ export async function handlePullRequestReviewCommentEvent(
                     deleteIssueCommentEntity(
                         installationContext,
                         installation.target.organization,
+                        payload.repository.id,
+                        payload.pull_request.number,
                         payload.comment
                     );
                 } else {
@@ -296,30 +302,4 @@ export async function queryIntegrationInstallations(
     logger.info(`Found ${installations.length} installations for external ID ${externalId}`);
 
     return installations;
-}
-
-/**
- * Convert an array buffer to a hex string
- */
-function arrayToHex(arr: ArrayBuffer) {
-    return [...new Uint8Array(arr)].map((x) => x.toString(16).padStart(2, '0')).join('');
-}
-
-/**
- * Constant-time string comparison. Equivalent of `crypto.timingSafeEqual`.
- **/
-function safeCompare(expected: string, actual: string) {
-    const lenExpected = expected.length;
-    let result = 0;
-
-    if (lenExpected !== actual.length) {
-        actual = expected;
-        result = 1;
-    }
-
-    for (let i = 0; i < lenExpected; i++) {
-        result |= expected.charCodeAt(i) ^ actual.charCodeAt(i);
-    }
-
-    return result === 0;
 }

@@ -76,7 +76,7 @@ export async function deleteRepositoryEntity(
     data: GHRepository
 ) {
     const entityType = getRepositoryEntityType(context);
-    const entityId = `${entityType}:${data.id}`;
+    const entityId = `${data.id}`;
     await context.api.orgs.upsertSchemaEntities(organizationId, entityType, {
         delete: [entityId],
     });
@@ -168,10 +168,13 @@ export async function createPullRequestCommentEntity(
 export async function deletePullRequestCommentEntity(
     context: GithubRuntimeContext,
     organizationId: string,
+    repositoryId: number,
+    pullRequest: number,
     data: GHPullRequestComment
 ) {
     const entityType = getPullRequestCommentEntityType(context);
-    const entityId = `${entityType}:${data.id}`;
+    const pullRequestEntityId = `${repositoryId}:${pullRequest}`;
+    const entityId = `${pullRequestEntityId}:${data.id}`;
     await context.api.orgs.upsertSchemaEntities(organizationId, entityType, {
         delete: [entityId],
     });
@@ -217,10 +220,11 @@ export async function createIssueEntity(
 export async function deleteIssueEntity(
     context: GithubRuntimeContext,
     organizationId: string,
+    repositoryId: number,
     data: GHIssue
 ) {
     const entityType = getIssueEntityType(context);
-    const entityId = `${entityType}:${data.number}`;
+    const entityId = `${repositoryId}:${data.number}`;
     await context.api.orgs.upsertSchemaEntities(organizationId, entityType, {
         delete: [entityId],
     });
@@ -273,10 +277,13 @@ export async function createIssueCommentEntity(
 export async function deleteIssueCommentEntity(
     context: GithubRuntimeContext,
     organizationId: string,
+    repositoryId: number,
+    issue: number,
     data: GHIssueComment
 ) {
     const entityType = getIssueCommentEntityType(context);
-    const entityId = `${entityType}:${data.id}`;
+    const issueEntityId = `${repositoryId}:${issue}`;
+    const entityId = `${issueEntityId}:${data.id}`;
     await context.api.orgs.upsertSchemaEntities(organizationId, entityType, {
         delete: [entityId],
     });
@@ -322,10 +329,11 @@ export async function createReleaseEntity(
 export async function deleteReleaseEntity(
     context: GithubRuntimeContext,
     organizationId: string,
+    repositoryId: number,
     data: GHRelease
 ) {
     const entityType = getReleaseEntityType(context);
-    const entityId = `${entityType}:${data.id}`;
+    const entityId = `${repositoryId}:${data.id}`;
     await context.api.orgs.upsertSchemaEntities(organizationId, entityType, {
         delete: [entityId],
     });
