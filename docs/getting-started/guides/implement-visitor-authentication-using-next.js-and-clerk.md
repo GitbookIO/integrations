@@ -86,7 +86,7 @@ In the Clerk dashboard, head to the **JWT Templates** section in the left side n
 1. Go to your Clerk dashboard.
 2. In your Clerk application, go to JWT templates.
 3. Create a new template using the "Blank" template.
-4. Give your template a name (this demo uses `'`**`GitBook`**`'`).
+4. Give your template a name (this demo uses `'`**`GitBook`**`'`). If you use a different name, make sure your template name matches the one set in `pages/api/visitor-auth.ts` in your local project.
 
 We'll now need the JWT key we created in [Publish your GitBook Space with Visitor Authentication](implement-visitor-authentication-using-next.js-and-clerk.md#publish-gitbook-space-with-visitor-authentication).
 
