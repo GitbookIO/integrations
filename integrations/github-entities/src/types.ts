@@ -14,11 +14,16 @@ export type GithubRuntimeContext = RuntimeContext<GithubRuntimeEnvironment>;
 
 export type ConfigureAction =
     | { action: 'select.installation'; installation: string }
+    | { action: 'app.installed' }
     | { action: 'start.sync' };
 
 export type ConfigureProps = {
     installation: {
         configuration?: {
+            /**
+             * Set to true if the user has potentially installed the app for the organization.
+             */
+            hasInstalledApp?: boolean;
             /**
              * A key to uniquely identify the configuration.
              */

@@ -165,6 +165,43 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         );
     });
 
+    router.get('/app-installation', async (request) => {
+        const { state } = request.query;
+
+        if (!state || typeof state !== 'string') {
+            return new Response(`Invalid app installation request`, {
+                status: 400,
+            });
+        }
+
+        const { data: integrationInstallation, error } =
+            await context.api.integrations.getIntegrationInstallationById(
+                context.environment.integration.name,
+                state
+            );
+
+        if (error) {
+            return new Response(error.error.message, {
+                status: error.error.code || 500,
+            });
+        }
+
+        await context.api.integrations.updateIntegrationInstallation(
+            context.environment.integration.name,
+            state,
+            {
+                configuration: {
+                    ...integrationInstallation.configuration,
+                    hasInstalledApp: true,
+                },
+            }
+        );
+
+        return new Response('App installed successfully, you can close this window', {
+            status: 200,
+        });
+    });
+
     /*
      * Authenticate using GitHub OAuth
      */

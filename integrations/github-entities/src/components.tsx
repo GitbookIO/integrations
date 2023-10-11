@@ -1,7 +1,7 @@
 import hash from 'hash-sum';
 import createHttpError from 'http-errors';
 
-import { ContentKitIcon } from '@gitbook/api';
+import { ContentKitIcon, IntegrationInstallation } from '@gitbook/api';
 import { createComponent, Logger } from '@gitbook/runtime';
 
 import { createAppInstallationAccessToken, extractTokenCredentialsOrThrow } from './api';
@@ -42,6 +42,11 @@ export const syncBlock = createComponent<
                         installation: action.installation,
                     },
                 };
+            case 'app.installed':
+                if (context.environment.installation) {
+                    await markAppAsInstalled(context, context.environment.installation);
+                }
+                return element;
             case 'start.sync':
                 await saveSyncConfiguration(context, element.state);
                 return element;
@@ -69,100 +74,149 @@ export const syncBlock = createComponent<
          */
         const versionHash = hash(element.props);
 
+        const showAppInstall = Boolean(
+            !installation.configuration?.key && !installation.configuration?.hasInstalledApp
+        );
+
+        const appInstallUrl = context.environment.secrets.APP_INSTALL_URL;
+
         return (
             <block>
-                <input
-                    label="Authenticate"
-                    hint="Authenticate using your GitHub account"
-                    element={
-                        <button
-                            label={buttonLabel}
-                            icon={ContentKitIcon.Github}
-                            tooltip={buttonLabel}
-                            onPress={{
-                                action: '@ui.url.open',
-                                url: `${installationPublicEndpoint}/oauth`,
-                            }}
-                        />
-                    }
-                />
-
-                {accessToken ? (
+                {showAppInstall ? (
                     <>
-                        <divider size="medium" />
-
-                        <vstack>
-                            <input
-                                label="Select account"
-                                hint={
-                                    <text>
-                                        Choose the GitHub installation, user or organization. Make
-                                        sure you have installed the
-                                        <link
-                                            target={{
-                                                url: 'https://github.com/apps/gitbook-entities/installations/new',
-                                            }}
-                                        >
-                                            {' '}
-                                            GitBook Entities app
-                                        </link>
-                                    </text>
-                                }
-                                element={
-                                    <select
-                                        state="installation"
-                                        onValueChange={{
-                                            action: 'select.installation',
-                                            installation: element.dynamicState('installation'),
-                                        }}
-                                        options={{
-                                            url: {
-                                                host: new URL(installationPublicEndpoint).host,
-                                                pathname: `${
-                                                    new URL(installationPublicEndpoint).pathname
-                                                }/installations`,
-                                                query: {
-                                                    v: versionHash,
-                                                },
-                                            },
-                                        }}
-                                    />
-                                }
+                        <input
+                            label="App Installation"
+                            hint="Install the GitBook Entities app on your GitHub account"
+                            element={
+                                <button
+                                    label="Install"
+                                    icon={ContentKitIcon.Github}
+                                    onPress={{
+                                        action: '@ui.url.open',
+                                        url: `${appInstallUrl}?state=${installation.id}`,
+                                    }}
+                                />
+                            }
+                        />
+                        <hstack align="end">
+                            <button
+                                style="primary"
+                                label="Already installed? Continue"
+                                onPress={{ action: 'app.installed' }}
                             />
-                        </vstack>
+                        </hstack>
+                    </>
+                ) : (
+                    <>
+                        <input
+                            label="Authenticate"
+                            hint="Authenticate using your GitHub account"
+                            element={
+                                <button
+                                    label={buttonLabel}
+                                    icon={ContentKitIcon.Github}
+                                    tooltip={buttonLabel}
+                                    onPress={{
+                                        action: '@ui.url.open',
+                                        url: `${installationPublicEndpoint}/oauth`,
+                                    }}
+                                />
+                            }
+                        />
 
-                        {element.state.installation && !installation.configuration.key ? (
-                            <input
-                                label=""
-                                hint=""
-                                element={
-                                    <button
-                                        style="primary"
-                                        disabled={!element.state.installation}
-                                        label="Start syncing"
-                                        tooltip="Sync GitHub entities to this organization"
-                                        onPress={{ action: 'start.sync' }}
+                        {accessToken ? (
+                            <>
+                                <divider size="medium" />
+
+                                <vstack>
+                                    <input
+                                        label="Select account"
+                                        hint={
+                                            <text>
+                                                Choose the GitHub installation, user or
+                                                organization. Make sure you have installed the
+                                                <link
+                                                    target={{
+                                                        url: appInstallUrl,
+                                                    }}
+                                                >
+                                                    {' '}
+                                                    GitBook Entities app
+                                                </link>
+                                            </text>
+                                        }
+                                        element={
+                                            <select
+                                                state="installation"
+                                                onValueChange={{
+                                                    action: 'select.installation',
+                                                    installation:
+                                                        element.dynamicState('installation'),
+                                                }}
+                                                options={{
+                                                    url: {
+                                                        host: new URL(installationPublicEndpoint)
+                                                            .host,
+                                                        pathname: `${
+                                                            new URL(installationPublicEndpoint)
+                                                                .pathname
+                                                        }/installations`,
+                                                        query: {
+                                                            v: versionHash,
+                                                        },
+                                                    },
+                                                }}
+                                            />
+                                        }
                                     />
-                                }
-                            />
-                        ) : null}
+                                </vstack>
 
-                        {installation.configuration.key ? (
-                            <box>
-                                <hint>
-                                    <text>
-                                        🔁 The integration is now syncing entities from GitHub to
-                                        this organization{' '}
-                                    </text>
-                                </hint>
-                            </box>
+                                {element.state.installation && !installation.configuration.key ? (
+                                    <hstack align="end">
+                                        <button
+                                            style="primary"
+                                            disabled={!element.state.installation}
+                                            label="Start syncing"
+                                            tooltip="Sync GitHub entities to this organization"
+                                            onPress={{ action: 'start.sync' }}
+                                        />
+                                    </hstack>
+                                ) : null}
+
+                                {installation.configuration.key ? (
+                                    <box>
+                                        <hint>
+                                            <text>
+                                                🔁 The integration is now syncing entities from
+                                                GitHub to this organization{' '}
+                                            </text>
+                                        </hint>
+                                    </box>
+                                ) : null}
+                            </>
                         ) : null}
                     </>
-                ) : null}
+                )}
             </block>
         );
     },
 });
+
+async function markAppAsInstalled(
+    context: GithubRuntimeContext,
+    existingInstallation: IntegrationInstallation
+) {
+    await context.api.integrations.updateIntegrationInstallation(
+        context.environment.integration.name,
+        existingInstallation.id,
+        {
+            configuration: {
+                ...existingInstallation.configuration,
+                hasInstalledApp: true,
+            },
+        }
+    );
+}
 
 async function saveSyncConfiguration(
     context: GithubRuntimeContext,
