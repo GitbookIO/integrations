@@ -7,21 +7,22 @@ visibility: unlisted
 description: Bring GitHub issues, pull requests, releases and other metadata into your GitBook knowledge base.
 previewImages:
     - ./assets/github-entities-preview.png
+    - ./assets/github-entities-marketplace-1.png
 externalLinks:
     - label: Documentation
       url: https://docs.gitbook.com/integrations/integrations-beta/github-entities
 summary: |
     # Overview
 
-    The GitHub Entities integration for GitBook lets you synchronize repositories with GitBook and add important workflow information to your team's knowledge base.
+    The GitHub Entities integration for GitBook lets you synchronize repositories with GitBook and add important workflow information to your team’s knowledge base.
 
     # How it works
 
-    Once you’ve set it up, the integration will sync your GitHub issues, pull requests, releases, comments and general metadata with GitBook. So when you ask GitBook AI a question about your latest PRs, or to list the five latest issues, it can answer and link you to the relevant place.
+    Once you’ve set it up, the integration will sync your GitHub issues, pull requests, releases, comments and general metadata with GitBook. So when you ask GitBook AI a question about your latest PRs, or ask it to list the five latest issues, it can answer and link you to the relevant place.
 
     # Configure
 
-    In order to sync entities from private repositories, you’ll need to authorize with your GitHub Account in the integration’s configuration page.
+    In order to sync entities from private repositories, you’ll need to authorize with your GitHub account in the integration’s configuration page.
 script: src/index.ts
 scopes:
     - entities:write
