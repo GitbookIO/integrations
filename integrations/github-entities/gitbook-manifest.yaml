@@ -5,7 +5,7 @@ organization: gitbook
 target: organization
 visibility: unlisted
 description: Bring GitHub issues, pull requests, releases and other metadata into your GitBook knowledge base.
-category:
+categories:
     - beta
 previewImages:
     - ./assets/github-entities-preview.png
