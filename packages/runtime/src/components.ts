@@ -7,7 +7,9 @@ import {
 
 import { RuntimeCallback, RuntimeContext } from './context';
 
-type PlainObject = { [key: string]: number | string | boolean | PlainObject | undefined | null };
+type PlainObject = {
+    [key: string]: number | string | boolean | PlainObject | undefined | null;
+};
 
 export interface ComponentRenderCache {
     maxAge: number;
