@@ -3,6 +3,7 @@ title: Slack
 icon: ./assets/icon.png
 description: Ask questions, get answers and add information to your GitBook knowledge base, right in Slack.
 categories:
+    - beta
     - collaboration
     - captures
 previewImages:
