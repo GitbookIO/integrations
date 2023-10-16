@@ -229,6 +229,7 @@ export async function queryLens({
                     ...(threadId ? { thread_ts: threadId } : {}),
 
                     replace_original: 'false',
+                    unfurl_links: false,
                 },
             };
         } else {
@@ -277,6 +278,7 @@ export async function queryLens({
                 user: userId,
                 ...(messageType === 'permanent' ? { response_type: 'in_channel' } : {}),
                 replace_original: 'false',
+                unfurl_links: false,
             },
         };
 
