@@ -230,6 +230,7 @@ export async function queryLens({
 
                     replace_original: 'false',
                     unfurl_links: false,
+                    unfurl_media: false,
                 },
             };
         } else {
@@ -243,6 +244,7 @@ export async function queryLens({
                     blocks,
                     user: userId,
                     unfurl_links: false,
+                    unfurl_media: false,
 
                     response_type: 'in_channel',
                     replace_original: 'false',
@@ -279,6 +281,7 @@ export async function queryLens({
                 ...(messageType === 'permanent' ? { response_type: 'in_channel' } : {}),
                 replace_original: 'false',
                 unfurl_links: false,
+                unfurl_media: false,
             },
         };
 
