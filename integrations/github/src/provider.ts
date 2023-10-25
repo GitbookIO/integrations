@@ -12,7 +12,7 @@ const logger = Logger('github:provider');
 /**
  * Return the GitHub App JWT signed with the private key.
  */
-async function getGitHubAppJWT(context: GithubRuntimeContext): Promise<string> {
+export async function getGitHubAppJWT(context: GithubRuntimeContext): Promise<string> {
     const { environment } = context;
 
     const now = Math.floor(Date.now() / 1000);

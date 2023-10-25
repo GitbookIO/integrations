@@ -215,6 +215,7 @@ export const configBlock = createComponent<
                                                     repository: element.dynamicState('repository'),
                                                 }}
                                                 options={{
+                                                    lazy: true,
                                                     url: {
                                                         host: new URL(
                                                             spaceInstallationPublicEndpoint

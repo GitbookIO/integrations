@@ -1,7 +1,7 @@
 name: github
 title: GitHub
 organization: gitbook
-visibility: private
+visibility: public
 description: ''
 script: src/index.ts
 scopes:

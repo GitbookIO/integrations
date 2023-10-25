@@ -9,8 +9,16 @@ import {
     EventCallback,
 } from '@gitbook/runtime';
 
-import { fetchInstallationRepositories, fetchInstallations, fetchRepositoryBranches } from './api';
+import {
+    createAppInstallationAccessToken,
+    fetchInstallationRepositories,
+    fetchInstallations,
+    fetchRepositoryBranches,
+    getAppInstallation,
+    searchRepositories,
+} from './api';
 import { configBlock } from './components';
+import { getGitHubAppJWT } from './provider';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
 import type { GithubRuntimeContext } from './types';
 import { parseInstallationOrThrow, parseRepositoryOrThrow } from './utils';
@@ -162,25 +170,94 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
      * API to fetch all repositories of an installation
      */
     router.get('/repos', async (req) => {
-        const { installation: queryInstallation } = req.query;
+        const { installation: queryInstallation, q, page } = req.query;
         const installationId =
             queryInstallation && typeof queryInstallation === 'string'
                 ? parseInstallationOrThrow(queryInstallation)
                 : undefined;
 
-        const repositories = installationId
-            ? await fetchInstallationRepositories(context, installationId)
-            : [];
+        const pageNumber = page && typeof page === 'string' ? parseInt(page, 10) : undefined;
+        const queryRepo = q && typeof q === 'string' ? q : undefined;
 
-        const data = repositories.map(
-            (repository): ContentKitSelectOption => ({
-                id: `${repository.id}`,
-                label: repository.name,
-                icon: repository.visibility === 'private' ? ContentKitIcon.Lock : undefined,
-            })
-        );
+        if (installationId) {
+            if (queryRepo) {
+                const appJWT = await getGitHubAppJWT(context);
+                const installation = await getAppInstallation(context, appJWT, installationId);
+                const installationToken = await createAppInstallationAccessToken(
+                    context,
+                    appJWT,
+                    installationId
+                );
 
-        return new Response(JSON.stringify(data), {
+                try {
+                    const q = `${queryRepo} in:name ${
+                        installation.account.type === 'Organization' ? 'org' : 'user'
+                    }:${installation.account.login} fork:true`;
+
+                    logger.debug(
+                        `Searching for repos matching ${q} for installation ${installationId}`
+                    );
+
+                    const searchedRepos = await searchRepositories(context, q, {
+                        page: 1,
+                        per_page: 100,
+                        tokenCredentials: {
+                            access_token: installationToken,
+                            expires_at: 0,
+                        },
+                        walkPagination: false,
+                    });
+
+                    const items = searchedRepos.map(
+                        (repository): ContentKitSelectOption => ({
+                            id: `${repository.id}`,
+                            label: repository.name,
+                            icon:
+                                repository.visibility === 'private'
+                                    ? ContentKitIcon.Lock
+                                    : undefined,
+                        })
+                    );
+
+                    return new Response(JSON.stringify({ items }), {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                } catch (error) {
+                    // Ignore error: repository not found or not accessible
+                }
+            } else {
+                const page = pageNumber || 1;
+                const repositories = await fetchInstallationRepositories(context, installationId, {
+                    per_page: 5,
+                    walkPagination: false,
+                    page,
+                });
+
+                const items = repositories.map(
+                    (repository): ContentKitSelectOption => ({
+                        id: `${repository.id}`,
+                        label: repository.name,
+                        icon: repository.visibility === 'private' ? ContentKitIcon.Lock : undefined,
+                    })
+                );
+
+                return new Response(
+                    JSON.stringify({
+                        items,
+                        nextPage: page + 1,
+                    }),
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+            }
+        }
+
+        return new Response(JSON.stringify([]), {
             headers: {
                 'Content-Type': 'application/json',
             },

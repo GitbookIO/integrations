@@ -20,6 +20,7 @@ interface GHInstallation {
         id: number;
         login: string;
         avatar_url: string;
+        type: 'User' | 'Organization';
     };
 }
 
@@ -37,6 +38,13 @@ interface GHRepository {
 interface GHBranch {
     name: string;
     protected: boolean;
+}
+
+interface GHFetchOptions {
+    walkPagination?: boolean;
+    per_page?: number;
+    page?: number;
+    tokenCredentials?: OAuthTokenCredentials;
 }
 
 /**
@@ -61,18 +69,46 @@ export async function fetchInstallations(context: GithubRuntimeContext) {
  */
 export async function fetchInstallationRepositories(
     context: GithubRuntimeContext,
-    installationId: number
+    installationId: number,
+    options: GHFetchOptions = {}
 ) {
     const repositories = await githubAPI<Array<GHRepository>>(context, null, {
         path: `/user/installations/${installationId}/repositories`,
         params: {
-            per_page: 100,
-            page: 1,
+            per_page: options.per_page || 100,
+            page: options.page || 1,
         },
         listProperty: 'repositories',
+        walkPagination: options.walkPagination,
     });
 
     return repositories;
+}
+
+/**
+ * Search repositories for a given query.
+ */
+export async function searchRepositories(
+    context: GithubRuntimeContext,
+    query: string,
+    options: GHFetchOptions = {}
+) {
+    const repository = await githubAPI<Array<GHRepository>>(
+        context,
+        options.tokenCredentials || null,
+        {
+            path: `/search/repositories`,
+            params: {
+                q: query,
+                per_page: options.per_page || 100,
+                page: options.page || 1,
+            },
+            walkPagination: options.walkPagination,
+            listProperty: 'items',
+        }
+    );
+
+    return repository;
 }
 
 /**
@@ -102,6 +138,27 @@ export async function fetchRepositoryBranches(context: GithubRuntimeContext, rep
 }
 
 /**
+ * Fetch the GitHub App installation for the given installation ID
+ * using the GitHub App JWT.
+ */
+export async function getAppInstallation(
+    context: GithubRuntimeContext,
+    appJWT: string,
+    installationId: number
+): Promise<GHInstallation> {
+    const installation = await githubAPI<GHInstallation>(
+        context,
+        { access_token: appJWT, expires_at: 0 },
+        {
+            method: 'GET',
+            path: `/app/installations/${installationId}`,
+        }
+    );
+
+    return installation;
+}
+
+/**
  * Get an access token for the GitHub App installation
  * using the GitHub App JWT.
  */
@@ -110,7 +167,7 @@ export async function createAppInstallationAccessToken(
     appJWT: string,
     installationId: number
 ): Promise<string> {
-    const { token } = await githubAPI<{ token: string }>(
+    const { token } = await githubAPI<{ token: string; expires_at: string }>(
         context,
         { access_token: appJWT, expires_at: 0 },
         {
@@ -159,9 +216,21 @@ async function githubAPI<T>(
         params?: object;
         /** Property to get an array for pagination */
         listProperty?: string;
+        /**
+         * Should the entire list of objects be fetched by walking over pages
+         * @default true
+         */
+        walkPagination?: boolean;
     }
 ): Promise<T> {
-    const { method = 'GET', path, body, params, listProperty = '' } = request;
+    const {
+        method = 'GET',
+        path,
+        body,
+        params,
+        listProperty = '',
+        walkPagination = true,
+    } = request;
 
     const credentials = tokenCredentials || extractTokenCredentialsOrThrow(context);
 
@@ -187,7 +256,7 @@ async function githubAPI<T>(
 
     // Pagination
     let res = response;
-    while (res.headers.has('Link')) {
+    while (res.headers.has('Link') && walkPagination) {
         const link = LinkHeader.parse(res.headers.get('Link') || '');
         if (link.has('rel', 'next')) {
             const nextURL = new URL(link.get('rel', 'next')[0].uri);
@@ -220,6 +289,7 @@ async function requestGitHubAPI(
     retriesLeft = 1
 ): Promise<Response> {
     const { access_token } = credentials;
+    logger.debug(`requesting GitHub API [${options.method}] ${url.toString()}`);
     const response = await fetch(url.toString(), {
         ...options,
         headers: {
@@ -263,6 +333,10 @@ async function requestGitHubAPI(
             return requestGitHubAPI(context, refreshed, url, options, retriesLeft - 1);
         }
 
+        logger.error(
+            `GitHub API error: ${response.status} for [${options.method}] ${url.toString()}`
+        );
+
         // Otherwise, we throw an error
         throw httpError(response.status, `GitHub API error: ${response.statusText}`);
     }
@@ -275,7 +349,7 @@ async function refreshCredentials(
     clientSecret: string,
     refreshToken: string
 ): Promise<OAuthTokenCredentials> {
-    const url = new URL('https://github.com/login/oauth/access_token');
+    const url = new URL('https://github.com/login/oau`th/access_token');
 
     url.searchParams.set('client_id', clientId);
     url.searchParams.set('client_secret', clientSecret);
