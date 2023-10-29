@@ -5,7 +5,7 @@ import { Logger } from '@gitbook/runtime';
 
 import { createAppInstallationAccessToken, createCommitStatus } from './api';
 import { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
-import { assertIsDefined, parseInstallationOrThrow } from './utils';
+import { assertIsDefined } from './utils';
 
 const logger = Logger('github:provider');
 
@@ -54,12 +54,13 @@ export async function getRepositoryAuth(
     context: GithubRuntimeContext,
     config: GitHubSpaceConfiguration
 ) {
+    assertIsDefined(config.installation, { label: 'config.installation' });
+
     const appJWT = await getGitHubAppJWT(context);
-    const installationId = parseInstallationOrThrow(config);
     const installationAccessToken = await createAppInstallationAccessToken(
         context,
         appJWT,
-        installationId
+        config.installation
     );
 
     return {
@@ -85,12 +86,13 @@ export async function updateCommitStatus(
 ) {
     assertIsDefined(config.accountName, { label: 'config.accountName' });
     assertIsDefined(config.repoName, { label: 'config.repoName' });
+    assertIsDefined(config.installation, { label: 'config.installation' });
 
     const appJWT = await getGitHubAppJWT(context);
     const installationAccessToken = await createAppInstallationAccessToken(
         context,
         appJWT,
-        parseInstallationOrThrow(config)
+        config.installation
     );
 
     await createCommitStatus(

@@ -33,7 +33,7 @@ export type ConfigureProps = {
             /**
              * The installation ID of the GitHub App.
              */
-            installation?: string;
+            installation?: number;
             /**
              * Owner of the repository
              */
@@ -41,7 +41,7 @@ export type ConfigureProps = {
             /**
              * The repository ID to be used for the integration.
              */
-            repository?: string;
+            repository?: number;
             /**
              * Name of the repository for the selected repository ID.
              */

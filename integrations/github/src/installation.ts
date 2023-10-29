@@ -7,12 +7,7 @@ import { fetchRepository } from './api';
 import { getGitRef } from './provider';
 import { triggerExport, triggerImport } from './sync';
 import { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
-import {
-    assertIsDefined,
-    computeConfigQueryKey,
-    parseInstallationOrThrow,
-    parseRepositoryOrThrow,
-} from './utils';
+import { assertIsDefined, computeConfigQueryKey } from './utils';
 
 const logger = Logger('github:installation');
 
@@ -32,8 +27,8 @@ export async function saveSpaceConfiguration(
         throw httpError(400, 'Incomplete configuration');
     }
 
-    const installationId = parseInstallationOrThrow(state);
-    const repoID = parseRepositoryOrThrow(state);
+    const installationId = state.installation;
+    const repoID = state.repository;
 
     /**
      * We need to update the space installation external IDs to make sure
