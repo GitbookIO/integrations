@@ -39,7 +39,7 @@ export type ConfigureProps = {
             /**
              * Unique identifier of the GitLab project.
              */
-            project?: string;
+            project?: number;
             /**
              * Full name of the GitLab project with namespace.
              */

@@ -1,5 +1,5 @@
 {
-    "name": "gitlab",
+    "name": "@gitbook/integration-gitlab",
     "private": true,
     "scripts": {
         "lint": "eslint --ext .js,.jsx,.ts,.tsx .",

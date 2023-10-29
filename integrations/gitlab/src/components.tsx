@@ -85,7 +85,7 @@ export const configBlock = createComponent<
                     ...element,
                     state: {
                         ...element.state,
-                        project: action.project,
+                        project: parseInt(action.project, 10),
                     },
                 };
             }

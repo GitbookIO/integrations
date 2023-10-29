@@ -8,7 +8,7 @@ import {
     editCommitStatus,
 } from './api';
 import { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { getSpaceConfigOrThrow, parseProjectOrThow } from './utils';
+import { assertIsDefined, getSpaceConfigOrThrow } from './utils';
 
 const logger = Logger('gitlab:provider');
 
@@ -22,9 +22,11 @@ export async function installWebhook(
     webhookToken: string
 ) {
     const config = getSpaceConfigOrThrow(spaceInstallation);
-    const projectId = parseProjectOrThow(config);
 
-    const id = await addProjectWebhook(config, projectId, webhookUrl, webhookToken);
+    assertIsDefined(config.project, { label: 'config.project' });
+
+    const projectId = config.project;
+    const id = await addProjectWebhook(config, config.project, webhookUrl, webhookToken);
 
     logger.info(`Webhook ${id} installed on GitLab project ${projectId}`);
 }
@@ -40,7 +42,9 @@ export async function uninstallWebhook(spaceInstallation: IntegrationSpaceInstal
         return;
     }
 
-    const projectId = parseProjectOrThow(config);
+    assertIsDefined(config.project, { label: 'config.project' });
+
+    const projectId = config.project;
 
     await deleteProjectWebhook(config, projectId, config.webhookId);
 
@@ -60,7 +64,9 @@ export async function updateCommitStatus(
         description: string;
     }
 ) {
-    const projectId = parseProjectOrThow(config);
+    assertIsDefined(config.project, { label: 'config.project' });
+
+    const projectId = config.project;
 
     await editCommitStatus(config, projectId, commitSha, {
         name: update.context || 'GitBook',

@@ -45,20 +45,6 @@ export function getGitSyncStateDescription(state: GitSyncOperationState): string
 }
 
 /**
- * Parse the numeric project ID from the project input string or configuration.
- * This will `throw an error` if the project is not defined.
- */
-export function parseProjectOrThow(input: string | GitLabSpaceConfiguration): number {
-    const project = typeof input === 'string' ? input : input.project;
-    assertIsDefined(project, { label: 'project' });
-    if (!project) {
-        throw new Error('Expected a project');
-    }
-
-    return parseInt(project, 10);
-}
-
-/**
  * Get the space configuration for the current space installation.
  * This will throw an error if the space installation configuration is not defined.
  */
