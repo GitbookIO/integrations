@@ -53,13 +53,13 @@ export function PagesBlock(params: {
     ];
 }
 
-export function ConversationSavedBlock() {
+export function ConversationSavedBlock(captureUrl: string) {
     return [
         {
             type: 'section',
             text: {
                 type: 'mrkdwn',
-                text: `:white_check_mark: Conversation saved in GitBook`,
+                text: `:white_check_mark: Conversation saved in <${captureUrl}|GitBook>`,
             },
         },
     ];
@@ -89,14 +89,10 @@ export function QueryDisplayBlock(params: { queries: Array<string>; heading?: st
     return [
         ...[
             {
-                type: 'divider',
-            },
-
-            {
                 type: 'section',
                 text: {
                     type: 'mrkdwn',
-                    text: heading ?? '*Some followup questions you might want to try:*',
+                    text: heading ?? '*Want to know more? Try these questions:*',
                 },
             },
         ],

@@ -4,6 +4,8 @@ import { GitBookAPI } from '@gitbook/api';
 
 import { SlackInstallationConfiguration } from './configuration';
 
+const SAVE_THREAD_MESSAGE = 'save';
+
 export function stripMarkdown(text: string) {
     return removeMarkdown(text);
 }
@@ -59,6 +61,7 @@ export async function getInstallationConfig(context, externalId) {
 
     return {
         accessToken,
+        installation,
     };
 }
 
@@ -98,4 +101,21 @@ export function getActionNameAndType(actionId: string) {
     const [actionName, actionPostType = 'ephemeral'] = actionId.split(':');
 
     return { actionName, actionPostType };
+}
+
+export function isSaveThreadMessage(message: string) {
+    const tokens = message.split(' ');
+
+    if (tokens.length > 3) {
+        return false;
+    }
+
+    const [first, second] = tokens;
+
+    // `save` or `save this` or `please save`
+    if (first === SAVE_THREAD_MESSAGE || second === SAVE_THREAD_MESSAGE) {
+        return true;
+    }
+
+    return false;
 }

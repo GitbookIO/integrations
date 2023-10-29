@@ -2,11 +2,10 @@ import { Logger } from '@gitbook/runtime';
 
 import { notifyOnlySupportedThreads, queryLens, saveThread } from '../actions';
 import { SlackRuntimeContext } from '../configuration';
-import { stripBotName } from '../utils';
+import { isSaveThreadMessage, stripBotName } from '../utils';
 import type { SlashEvent } from './commands';
 
 const logger = Logger('slack:api');
-const SAVE_THREAD_MESSAGE = 'save';
 
 /**
  * Handle a slash request and route it to the GitBook Lens' query function.
@@ -81,7 +80,6 @@ export async function appMentionEventHandler(eventPayload: any, context: SlackRu
         // @ts-ignore
         const parsedMessage = stripBotName(text, eventPayload.authorizations[0]?.user_id);
 
-        console.log('parsedMessage====', parsedMessage);
         if (isSaveThreadMessage(parsedMessage)) {
             // not supported outside threads
             if (!thread_ts) {
@@ -98,43 +96,19 @@ export async function appMentionEventHandler(eventPayload: any, context: SlackRu
                 },
                 context
             );
-
-            return;
+        } else {
+            // send to Lens
+            await queryLens({
+                teamId: team,
+                channelId: channel,
+                threadId: thread_ts,
+                userId: user,
+                messageType: 'permanent',
+                text: parsedMessage,
+                context,
+                // @ts-ignore
+                authorization: eventPayload.authorizations[0],
+            });
         }
-
-        // send to Lens
-        await queryLens({
-            teamId: team,
-            channelId: channel,
-            threadId: thread_ts,
-            userId: user,
-            messageType: 'permanent',
-            text: parsedMessage,
-            context,
-            // @ts-ignore
-            authorization: eventPayload.authorizations[0],
-        });
     }
-
-    // Add custom header(s)
-    return new Response(null, {
-        status: 200,
-    });
-}
-
-function isSaveThreadMessage(message: string) {
-    const tokens = message.split(' ');
-
-    if (tokens.length > 3) {
-        return false;
-    }
-
-    const [first, second] = tokens;
-
-    // `save` or `save this` or `please save`
-    if (first === SAVE_THREAD_MESSAGE || second === SAVE_THREAD_MESSAGE) {
-        return true;
-    }
-
-    return false;
 }

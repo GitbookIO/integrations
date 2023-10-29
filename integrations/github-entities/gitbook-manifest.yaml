@@ -1,0 +1,302 @@
+name: github-entities
+title: GitHub Entities
+icon: ./assets/github-mark.png
+organization: gitbook
+target: organization
+visibility: unlisted
+description: Bring GitHub issues, pull requests, releases and other metadata into your GitBook knowledge base.
+previewImages:
+    - ./assets/github-entities-preview.png
+    - ./assets/github-entities-marketplace-1.png
+externalLinks:
+    - label: Documentation
+      url: https://docs.gitbook.com/integrations/integrations-beta/github-entities
+summary: |
+    # Overview
+
+    The GitHub Entities integration for GitBook lets you synchronize repositories with GitBook and add important workflow information to your team’s knowledge base.
+
+    # How it works
+
+    Once you’ve set it up, the integration will sync your GitHub issues, pull requests, releases, comments and general metadata with GitBook. So when you ask GitBook AI a question about your latest PRs, or ask it to list the five latest issues, it can answer and link you to the relevant place.
+
+    # Configure
+
+    In order to sync entities from private repositories, you’ll need to authorize with your GitHub account in the integration’s configuration page.
+script: src/index.ts
+scopes:
+    - entities:write
+entities:
+    - type: github-entities:repository
+      title:
+          singular: Repository
+          plural: Repositories
+      properties:
+          - name: url
+            type: url
+            title: URL
+            role: target
+          - name: id
+            type: number
+            title: ID
+          - name: name
+            type: text
+            title: Name
+            role: title
+          - name: description
+            type: longtext
+            title: Description
+            role: body
+          - name: private
+            type: boolean
+            title: Is Private
+          - name: created_at
+            type: date
+            title: Created At
+          - name: updated_at
+            type: date
+            title: Last Updated
+          - name: pushed_at
+            type: date
+            title: Last Pushed
+          - name: default_branch
+            type: text
+            title: Default Branch
+          - name: language
+            type: text
+            title: Language
+
+    - type: github-entities:release
+      title:
+          singular: Release
+          plural: Releases
+      properties:
+          - name: url
+            type: url
+            title: URL
+            role: target
+          - name: name
+            type: text
+            title: Name
+            role: title
+          - name: description
+            type: longtext
+            title: Description
+            role: body
+          - name: tag_name
+            type: text
+            title: Tag
+          - name: prerelease
+            type: boolean
+            title: Is Pre-release
+          - name: draft
+            type: boolean
+            title: Is Draft Release
+          - name: created_at
+            type: date
+            title: Created At
+          - name: repository
+            type: relation
+            title: Repository
+            entity:
+                type: github-entities:repository
+
+    - type: github-entities:issue
+      title:
+          singular: Issue
+          plural: Issues
+      properties:
+          - name: url
+            type: url
+            title: URL
+            role: target
+          - name: number
+            type: number
+            title: Number
+            role: target
+          - name: title
+            type: text
+            title: Title
+            role: title
+          - name: description
+            type: longtext
+            title: Description
+            role: body
+          - name: state
+            type: enum
+            title: State
+            values:
+                - value: open
+                  label: Open
+                - value: closed
+                  label: Closed
+          - name: created_at
+            type: date
+            title: Created At
+          - name: updated_at
+            type: date
+            title: Last Updated
+          - name: repository
+            type: relation
+            title: Repository
+            entity:
+                type: github-entities:repository
+
+    - type: github-entities:pull_request
+      title:
+          singular: Pull Request
+          plural: Pull Requests
+      properties:
+          - name: url
+            type: url
+            title: URL
+            role: target
+          - name: number
+            type: number
+            title: Number
+            role: target
+          - name: title
+            type: text
+            title: Title
+            role: title
+          - name: description
+            type: longtext
+            title: Description
+            role: body
+          - name: state
+            type: enum
+            title: State
+            values:
+                - value: open
+                  label: Open
+                - value: closed
+                  label: Closed
+          - name: created_at
+            type: date
+            title: Created At
+          - name: updated_at
+            type: date
+            title: Last Updated
+          - name: draft
+            type: boolean
+            title: Is Draft
+          - name: head
+            type: text
+            title: Head Branch
+          - name: base
+            type: text
+            title: Base Branch
+          - name: repository
+            type: relation
+            title: Repository
+            entity:
+                type: github-entities:repository
+
+    - type: github-entities:issue_comment
+      title:
+          singular: Issue Comment
+          plural: Issue Comments
+      properties:
+          - name: url
+            type: url
+            title: URL
+            role: target
+          - name: comment
+            type: longtext
+            title: Comment
+            role: body
+          - name: created_at
+            type: date
+            title: Created At
+          - name: updated_at
+            type: date
+            title: Last Updated
+          - name: reaction_+1
+            type: number
+            title: Reaction +1
+          - name: reaction_-1
+            type: number
+            title: Reaction -1
+          - name: reaction_laugh
+            type: number
+            title: Reaction Laugh
+          - name: reaction_confused
+            type: number
+            title: Reaction Confused
+          - name: reaction_heart
+            type: number
+            title: Reaction Heart
+          - name: reaction_hooray
+            type: number
+            title: Reaction Hooray
+          - name: reaction_rocket
+            type: number
+            title: Reaction Rocket
+          - name: reaction_eyes
+            type: number
+            title: Reaction Eyes
+          - name: issue
+            type: relation
+            title: Issue
+            entity:
+                type: github-entities:issue
+
+    - type: github-entities:pull_request_comment
+      title:
+          singular: Pull Request Comment
+          plural: Pull Request Comments
+      properties:
+          - name: url
+            type: url
+            title: URL
+            role: target
+          - name: comment
+            type: longtext
+            title: Comment
+            role: body
+          - name: created_at
+            type: date
+            title: Created At
+          - name: updated_at
+            type: date
+            title: Last Updated
+          - name: reaction_+1
+            type: number
+            title: Reaction +1
+          - name: reaction_-1
+            type: number
+            title: Reaction -1
+          - name: reaction_laugh
+            type: number
+            title: Reaction Laugh
+          - name: reaction_confused
+            type: number
+            title: Reaction Confused
+          - name: reaction_heart
+            type: number
+            title: Reaction Heart
+          - name: reaction_hooray
+            type: number
+            title: Reaction Hooray
+          - name: reaction_rocket
+            type: number
+            title: Reaction Rocket
+          - name: reaction_eyes
+            type: number
+            title: Reaction Eyes
+          - name: pull_request
+            type: relation
+            title: Pull Request
+            entity:
+                type: github-entities:pull_request
+
+configurations:
+    account:
+        componentId: sync
+secrets:
+    APP_INSTALL_URL: ${{ env.GITHUB_ENTITIES_APP_INSTALL_URL }}
+    APP_ID: ${{ env.GITHUB_ENTITIES_APP_ID }}
+    PRIVATE_KEY: ${{ env.GITHUB_ENTITIES_PRIVATE_KEY }}
+    CLIENT_ID: ${{ env.GITHUB_ENTITIES_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.GITHUB_ENTITIES_CLIENT_SECRET }}
+    WEBHOOK_SECRET: ${{ env.GITHUB_ENTITIES_WEBHOOK_SECRET }}

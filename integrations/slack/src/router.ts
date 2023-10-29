@@ -33,6 +33,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
 
     const encodedScopes = encodeURIComponent(
         [
+            'app_mentions:read',
             'chat:write',
             'channels:join',
             'channels:read',
@@ -40,6 +41,8 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             'links:read',
             'links:write',
             'commands',
+            'channels:history',
+            'im:history',
         ].join(' ')
     );
 

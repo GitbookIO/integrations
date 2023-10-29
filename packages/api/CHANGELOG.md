@@ -1,5 +1,18 @@
 # @gitbook/api
 
+## 0.11.0
+
+### Minor Changes
+
+-   5f9c5c9: - Bump API client to use the latest spec
+    -   Update CLI to use the latest manifest with target support
+
+## 0.10.0
+
+### Minor Changes
+
+-   2f49b3f: Bump API client to use the latest OpenAPI spec
+
 ## 0.9.0
 
 ### Minor Changes

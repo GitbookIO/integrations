@@ -165,8 +165,12 @@ export async function queryLens({
         messageType,
     });
 
-    const result = await client.search.askQuery({ query: parsedQuery });
+    const result = await client.orgs.askInOrganization(installation.target.organization, {
+        query: parsedQuery,
+    });
     const answer: SearchAIAnswer = result.data?.answer;
+
+    const messageTypePath = messageType === 'ephemeral' ? 'chat.postEphemeral' : 'chat.postMessage';
 
     if (answer && answer.text) {
         const relatedPages = await getRelatedPages({
@@ -193,7 +197,6 @@ export async function queryLens({
                     text: answerText,
                 },
             },
-            ...QueryDisplayBlock({ queries: answer?.followupQuestions ?? [] }),
             {
                 type: 'divider',
             },
@@ -201,6 +204,11 @@ export async function queryLens({
                 title: 'Sources',
                 items: relatedPages,
             }),
+            Spacer,
+            {
+                type: 'divider',
+            },
+            ...QueryDisplayBlock({ queries: answer?.followupQuestions ?? [] }),
             Spacer,
         ];
 
@@ -221,6 +229,8 @@ export async function queryLens({
                     ...(threadId ? { thread_ts: threadId } : {}),
 
                     replace_original: 'false',
+                    unfurl_links: false,
+                    unfurl_media: false,
                 },
             };
         } else {
@@ -234,6 +244,7 @@ export async function queryLens({
                     blocks,
                     user: userId,
                     unfurl_links: false,
+                    unfurl_media: false,
 
                     response_type: 'in_channel',
                     replace_original: 'false',
@@ -250,7 +261,7 @@ export async function queryLens({
 
         const slackData = {
             method: 'POST',
-            path: 'chat.postEphemeral',
+            path: messageTypePath,
             responseUrl,
             payload: {
                 channel: channelId,
@@ -267,8 +278,10 @@ export async function queryLens({
                 ],
 
                 user: userId,
-                response_type: 'in_channel',
+                ...(messageType === 'permanent' ? { response_type: 'in_channel' } : {}),
                 replace_original: 'false',
+                unfurl_links: false,
+                unfurl_media: false,
             },
         };
 

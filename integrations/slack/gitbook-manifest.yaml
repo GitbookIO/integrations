@@ -1,14 +1,17 @@
 name: slack
 title: Slack
 icon: ./assets/icon.png
-description: Notify a channel or individual in Slack with real-time events from GitBook.
+description: Ask questions, get answers and add information to your GitBook knowledge base, right in Slack.
 categories:
     - collaboration
+    - captures
 previewImages:
     - ./assets/slack-preview.png
+    - ./assets/slack-marketplace-1.png
+    - ./assets/slack-marketplace-3.png
 externalLinks:
     - label: Documentation
-      url: https://www.gitbook.com/integrations/slack
+      url: https://docs.gitbook.com/integrations/integrations-beta/slack
     - label: Slack App Directory
       url: https://slack.com/apps/A7DE1QCTD-gitbook?tab=more_info
 visibility: public
@@ -19,24 +22,22 @@ scopes:
     - capture:write
 summary: |
     # Overview
+    With the GitBook Slack integration, your teams have instant access to your GitBook knowledge base, and can get AI-summarized answers about your content. Plus, if you solve a problem in a thread, you can ask GitBook AI to summarize it into useable documentation.
 
-    The GitBook Slack integration brings the power of GitBook to your Slack workspace. Your teams have instant access to your GitBook knowledge base, without leaving Slack.
+    [Head to our documentation to find out more](https://docs.gitbook.com/integrations/integrations-beta/slack)
 
     # How it works
+    **Find information faster:** Getting an answer has never been easier. Just summon our Slackbot and ask a question — GitBook AI will scan your documentation and summarize an answer in seconds.
 
-    Get notified of what's important:
-    Receive real-time Slack notifications when something important happens to your content on GitBook. For example, when your content is updated, published, etc.
-    Pick and choose what, where, and how you wish to be notified.
+    **Turn conversations into documentation:** Just solved a problem in an epic, 168-message thread? Ask GitBook AI to summarize the conversation and it’ll save it to your knowledge base so anyone can find out how you got there.
 
-    Searching made simple:
-    Searching for answers has never been easier. Use Slack global shortcuts to ask questions that are answered based on your content: Type \"/gitbook [question]\" or invite our bot to your channel to ask questions and see answers together.
-
-    Improved links sharing:
-    The GitBook Slack integration will automatically generate a nice-looking preview for all GitBook links shared in Slack.
+    **Real-time notifications:** Get notified in real-time when something important happens with your GitBook content — from small updates, to someone publishing a space. You choose what you get notifications for, and where you see them.
 
     # Configure
+    To install on a single space, click Integrations in the sub-nav within the GitBook app. Alternatively, you can install it across all your spaces in Settings.
+    Once you’ve installed it, head over to Slack and authorize the connection. You can select a default channel to post notifications and other messages, but remember — you can summon GitBook in any channel or thread.
 
-    You can install the integration on a single space by clicking the integrations button in sub-navigation panel. If you prefer to install the Slack integration on multiple on all spaces you can enable this through organization settings. To configure the integration you will have to authorize the connection between Slack and GitBook. You can also select the default channel to post messages to.
+    [Read our documentation to learn more](https://docs.gitbook.com/integrations/integrations-beta/slack)
 configurations:
     account:
         properties:
