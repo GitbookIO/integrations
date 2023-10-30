@@ -14,6 +14,8 @@ summary: |
     # Overview
 
     GitHub Sync allows technical teams to synchronize GitHub repositories with GitBook and turn Markdown files into beautiful, user-friendly docs. So you can edit directly in GitBook’s powerful editor while keeping content synchronized with your codebase on GitHub — and vice versa.
+
+
     Head to our documentation to find out more.
 
     # How it works
@@ -23,7 +25,11 @@ summary: |
     # Configure
 
     First, click Configure in the top-right of your GitBook space and choose GitLab as your provider.  You’ll need to authenticate in GitHub, then head back to GitBook and install the integration if you haven’t already. You can then link your GitBook space to a GitHub repository and select the branch you want to sync.
+
+
     When you make a change in GitBook, it will sync to GitHub as a commit. When you make a change in GitHub, they’ll sync to GitBook as history commits.
+
+
     Find out more about configuring GitHub Sync in our documentation.
 script: src/index.ts
 scopes:
