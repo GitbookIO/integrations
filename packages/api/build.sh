@@ -7,7 +7,7 @@ mkdir ./spec
 LOCAL_OPENAPI_FILE=../../../gitbook-x/packages/api-client/static/openapi.yaml
 
 if [[ -z "${GITBOOK_OPENAPI_URL}" ]]; then
-  OPENAPI_URL="https://api.gitbook-staging.com/openapi.yaml"
+  OPENAPI_URL="https://api.gitbook.com/openapi.yaml"
 else
   OPENAPI_URL="${GITBOOK_OPENAPI_URL}"
 fi
