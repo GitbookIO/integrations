@@ -20,18 +20,49 @@ interface GLBranch {
     protected: boolean;
 }
 
+interface GLFetchOptions {
+    walkPagination?: boolean;
+    per_page?: number;
+    page?: number;
+}
+
 /**
  * Fetch all projects for the current GitLab authentication. It will use
  * the access token from the environment.
  */
-export async function fetchProjects(config: GitLabSpaceConfiguration) {
+export async function fetchProjects(
+    config: GitLabSpaceConfiguration,
+    options: GLFetchOptions = {}
+) {
     const projects = await gitlabAPI<Array<GLProject>>(config, {
         path: '/projects',
         params: {
             membership: true,
-            per_page: 100,
-            page: 1,
+            per_page: options.per_page || 100,
+            page: options.page || 1,
         },
+        walkPagination: options.walkPagination,
+    });
+
+    return projects;
+}
+
+/**
+ * Search projects for a given query.
+ */
+export async function searchProjects(
+    config: GitLabSpaceConfiguration,
+    query: string,
+    options: GLFetchOptions = {}
+) {
+    const projects = await gitlabAPI<Array<GLProject>>(config, {
+        path: `/projects`,
+        params: {
+            q: query,
+            per_page: options.per_page || 100,
+            page: options.page || 1,
+        },
+        walkPagination: options.walkPagination,
     });
 
     return projects;
@@ -128,9 +159,21 @@ export async function gitlabAPI<T>(
         params?: object;
         /** Property to get an array for pagination */
         listProperty?: string;
+        /**
+         * Should the entire list of objects be fetched by walking over pages
+         * @default true
+         */
+        walkPagination?: boolean;
     }
 ): Promise<T> {
-    const { method = 'GET', path, body, params, listProperty = '' } = request;
+    const {
+        method = 'GET',
+        path,
+        body,
+        params,
+        listProperty = '',
+        walkPagination = true,
+    } = request;
 
     const token = getAccessTokenOrThrow(config);
     const endpoint = getEndpoint(config);
@@ -159,7 +202,7 @@ export async function gitlabAPI<T>(
 
     // Pagination
     let res = response;
-    while (res.headers.has('Link')) {
+    while (res.headers.has('Link') && walkPagination) {
         const link = LinkHeader.parse(res.headers.get('Link') || '');
         if (link.has('rel', 'next')) {
             const nextURL = new URL(link.get('rel', 'next')[0].uri);

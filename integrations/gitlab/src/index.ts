@@ -4,7 +4,7 @@ import { Router } from 'itty-router';
 import { ContentKitIcon, ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
 import { createIntegration, FetchEventCallback, Logger, EventCallback } from '@gitbook/runtime';
 
-import { fetchProjectBranches, fetchProjects } from './api';
+import { fetchProject, fetchProjectBranches, fetchProjects, searchProjects } from './api';
 import { configBlock } from './components';
 import { uninstallWebhook } from './provider';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
@@ -80,25 +80,86 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
     /**
      * API to fetch all GitLab projects under current authentication
      */
-    router.get('/projects', async () => {
+    router.get('/projects', async (req) => {
+        const { selectedProject, q, page } = req.query;
+        const querySelectedProject =
+            selectedProject && typeof selectedProject === 'string' ? selectedProject : undefined;
+        const pageNumber = page && typeof page === 'string' ? parseInt(page, 10) : undefined;
+        const queryProject = q && typeof q === 'string' ? q : undefined;
+
         const spaceInstallation = environment.spaceInstallation;
         assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
+        const spaceConfig = getSpaceConfigOrThrow(spaceInstallation);
 
-        const projects = await fetchProjects(getSpaceConfigOrThrow(spaceInstallation));
+        const selected: ContentKitSelectOption[] = [];
 
-        const data = projects.map(
-            (project): ContentKitSelectOption => ({
-                id: `${project.id}`,
-                label: project.path_with_namespace,
-                icon: project.visibility === 'public' ? undefined : ContentKitIcon.Lock,
-            })
-        );
+        if (querySelectedProject) {
+            try {
+                const selectedProject = await fetchProject(
+                    spaceConfig,
+                    parseInt(querySelectedProject, 10)
+                );
 
-        return new Response(JSON.stringify(data), {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+                selected.push({
+                    id: `${selectedProject.id}`,
+                    label: selectedProject.path_with_namespace,
+                    icon: selectedProject.visibility === 'public' ? undefined : ContentKitIcon.Lock,
+                });
+            } catch (error) {
+                // Ignore error: repository not found or not accessible
+            }
+        }
+
+        if (queryProject) {
+            const q = encodeURIComponent(queryProject);
+            const searchedProjects = await searchProjects(spaceConfig, q, {
+                page: 1,
+                per_page: 100,
+                walkPagination: false,
+            });
+
+            const items = searchedProjects.map(
+                (project): ContentKitSelectOption => ({
+                    id: `${project.id}`,
+                    label: project.path_with_namespace,
+                    icon: project.visibility === 'public' ? undefined : ContentKitIcon.Lock,
+                })
+            );
+
+            return new Response(JSON.stringify({ items, selected }), {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        } else {
+            const page = pageNumber || 1;
+            const projects = await fetchProjects(spaceConfig, {
+                page,
+                per_page: 100,
+                walkPagination: false,
+            });
+
+            const items = projects.map(
+                (project): ContentKitSelectOption => ({
+                    id: `${project.id}`,
+                    label: project.path_with_namespace,
+                    icon: project.visibility === 'public' ? undefined : ContentKitIcon.Lock,
+                })
+            );
+
+            return new Response(
+                JSON.stringify({
+                    items,
+                    nextPage: page + 1,
+                    selected,
+                }),
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+        }
     });
 
     /**
