@@ -1,5 +1,12 @@
 # @gitbook/integration-slack
 
+## 1.0.1
+
+### Patch Changes
+
+-   34c8c32: Fixes a regression that disabled link unfurling
+-   945453d: Restricts unfurling of links from GitBook bot
+
 ## 1.0.0
 
 ### Major Changes

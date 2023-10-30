@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.11.1
+
+### Patch Changes
+
+-   531c11c: Document the @gitbook/api package and update the OpenAPI spec
+
 ## 0.11.0
 
 ### Minor Changes
