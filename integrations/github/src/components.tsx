@@ -5,23 +5,28 @@ import { createComponent } from '@gitbook/runtime';
 
 import { extractTokenCredentialsOrThrow } from './api';
 import { saveSpaceConfiguration } from './installation';
-import { ConfigureAction, ConfigureProps, ConfigureState, GithubRuntimeContext } from './types';
+import {
+    GithubConfigureAction,
+    GithubConfigureProps,
+    GithubConfigureState,
+    GithubRuntimeContext,
+} from './types';
 import { assertIsDefined, getGitSyncCommitMessage, GITSYNC_DEFAULT_COMMIT_MESSAGE } from './utils';
 
 /**
  * ContentKit component to configure the GitHub integration.
  */
 export const configBlock = createComponent<
-    ConfigureProps,
-    ConfigureState,
-    ConfigureAction,
+    GithubConfigureProps,
+    GithubConfigureState,
+    GithubConfigureAction,
     GithubRuntimeContext
 >({
     componentId: 'configure',
     initialState: (props) => {
         return {
-            installation: props.spaceInstallation.configuration?.installation,
-            repository: props.spaceInstallation.configuration?.repository,
+            installation: `${props.spaceInstallation.configuration?.installation}`,
+            repository: `${props.spaceInstallation.configuration?.repository}`,
             branch: props.spaceInstallation.configuration?.branch,
             projectDirectory: props.spaceInstallation.configuration?.projectDirectory,
             withCustomTemplate: Boolean(
@@ -45,7 +50,7 @@ export const configBlock = createComponent<
                     ...element,
                     state: {
                         ...element.state,
-                        installation: parseInt(action.installation, 10),
+                        installation: action.installation,
                     },
                 };
             case 'select.repository':
@@ -53,7 +58,7 @@ export const configBlock = createComponent<
                     ...element,
                     state: {
                         ...element.state,
-                        repository: parseInt(action.repository, 10),
+                        repository: action.repository,
                     },
                 };
             case 'select.branch':

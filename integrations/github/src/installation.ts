@@ -5,7 +5,7 @@ import { Logger } from '@gitbook/runtime';
 
 import { fetchRepository } from './api';
 import { triggerExport, triggerImport } from './sync';
-import { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
+import { GithubConfigureState, GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
 import { assertIsDefined, computeConfigQueryKey } from './utils';
 
 const logger = Logger('github:installation');
@@ -15,7 +15,7 @@ const logger = Logger('github:installation');
  */
 export async function saveSpaceConfiguration(
     context: GithubRuntimeContext,
-    state: GitHubSpaceConfiguration
+    state: GithubConfigureState
 ) {
     const { api, environment } = context;
     const spaceInstallation = environment.spaceInstallation;
@@ -26,8 +26,8 @@ export async function saveSpaceConfiguration(
         throw httpError(400, 'Incomplete configuration');
     }
 
-    const installationId = state.installation;
-    const repoID = state.repository;
+    const installationId = parseInt(state.installation, 10);
+    const repoID = parseInt(state.repository, 10);
 
     /**
      * We need to update the space installation external IDs to make sure
@@ -42,8 +42,8 @@ export async function saveSpaceConfiguration(
     const configurationBody: GitHubSpaceConfiguration = {
         ...spaceInstallation.configuration,
         key: crypto.randomUUID(),
-        installation: state.installation,
-        repository: state.repository,
+        installation: installationId,
+        repository: repoID,
         branch: state.branch,
         commitMessageTemplate: state.commitMessageTemplate,
         previewExternalBranches: state.previewExternalBranches,

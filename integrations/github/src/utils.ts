@@ -67,8 +67,8 @@ export function computeConfigQueryKey(
     ref: string,
     previewExternalBranches?: boolean
 ): string {
-    const base = `ins:${installationId}/rep:${repoID}/br:${ref}`;
-    return previewExternalBranches ? `${base}/prv:${previewExternalBranches}` : base;
+    const base = `ins:${installationId}:rep:${repoID}:br:${ref}`;
+    return previewExternalBranches ? `${base}:prv:${previewExternalBranches}` : base;
 }
 
 export function assertIsDefined<T>(
