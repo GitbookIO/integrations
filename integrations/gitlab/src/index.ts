@@ -147,10 +147,13 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
                 })
             );
 
+            const nextPage = new URL(req.url);
+            nextPage.searchParams.set('page', `${page + 1}`);
+
             return new Response(
                 JSON.stringify({
                     items,
-                    nextPage: page + 1,
+                    nextPage: nextPage.toString(),
                     selected,
                 }),
                 {
