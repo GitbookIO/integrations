@@ -56,28 +56,6 @@ export function getSpaceConfigOrThrow(
     return config;
 }
 
-// /**
-//  * Parse the GitHub installation ID and account name from the installation string.
-//  * This will `throw an error` if the installation is not defined.
-//  */
-// export function parseInstallationOrThrow(input: GitHubSpaceConfiguration | string): number {
-//     const installation = typeof input === 'string' ? input : input.installation;
-//     assertIsDefined(installation, { label: 'installation' });
-
-//     return parseInt(installation, 10);
-// }
-
-// /**
-//  * Parse the repository ID from the repository string.
-//  * This will `throw an error` if the repository is not defined.
-//  */
-// export function parseRepositoryOrThrow(input: GitHubSpaceConfiguration | string): number {
-//     const repository = typeof input === 'string' ? input : input.repository;
-//     assertIsDefined(repository, { label: 'repository' });
-
-//     return parseInt(repository, 10);
-// }
-
 /**
  * Compute the query key for the configuration. This will be useful to list or find
  * all configuration(s) that match this combination of installationId, repositoryId
@@ -89,12 +67,8 @@ export function computeConfigQueryKey(
     ref: string,
     previewExternalBranches?: boolean
 ): string {
-    return JSON.stringify({
-        installationId,
-        repoID,
-        ref,
-        ...(typeof previewExternalBranches === 'boolean' ? { previewExternalBranches } : {}),
-    });
+    const base = `ins:${installationId}/rep:${repoID}/br:${ref}`;
+    return previewExternalBranches ? `${base}/prv:${previewExternalBranches}` : base;
 }
 
 export function assertIsDefined<T>(

@@ -4,7 +4,6 @@ import { IntegrationSpaceInstallation } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
 
 import { fetchRepository } from './api';
-import { getGitRef } from './provider';
 import { triggerExport, triggerImport } from './sync';
 import { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
 import { assertIsDefined, computeConfigQueryKey } from './utils';
@@ -35,11 +34,9 @@ export async function saveSpaceConfiguration(
      * we can query it later when there is a webhook event.
      */
     const externalIds: string[] = [];
-    externalIds.push(computeConfigQueryKey(installationId, repoID, getGitRef(state.branch)));
+    externalIds.push(computeConfigQueryKey(installationId, repoID, state.branch));
     if (state.previewExternalBranches) {
-        externalIds.push(
-            computeConfigQueryKey(installationId, repoID, getGitRef(state.branch), true)
-        );
+        externalIds.push(computeConfigQueryKey(installationId, repoID, state.branch, true));
     }
 
     const configurationBody: GitHubSpaceConfiguration = {

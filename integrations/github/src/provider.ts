@@ -129,10 +129,3 @@ export function getGitCommitURL(config: GitHubSpaceConfiguration): string {
     const base = getRepositoryUrl(config);
     return `${base}/commit`;
 }
-
-/**
- * Returns the Git ref to use for the synchronization.
- */
-export function getGitRef(branch: string): string {
-    return `refs/heads/${branch}`;
-}

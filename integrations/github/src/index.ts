@@ -238,10 +238,13 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                     })
                 );
 
+                const nextPage = new URL(request.url);
+                nextPage.searchParams.set('page', `${page + 1}`);
+
                 return new Response(
                     JSON.stringify({
                         items,
-                        nextPage: page + 1,
+                        nextPage: nextPage.toString(),
                         selected,
                     }),
                     {
@@ -275,7 +278,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
 
         const data = branches.map(
             (branch): ContentKitSelectOption => ({
-                id: branch.name,
+                id: `refs/heads/${branch.name}`,
                 label: branch.name,
                 icon: branch.protected ? ContentKitIcon.Lock : undefined,
             })
