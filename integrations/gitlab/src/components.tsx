@@ -3,9 +3,14 @@ import hash from 'hash-sum';
 import { ContentKitIcon } from '@gitbook/api';
 import { createComponent } from '@gitbook/runtime';
 
-import { getAccessTokenOrThrow } from './api';
+import { getAccessTokenOrThrow, getCurrentUser } from './api';
 import { saveSpaceConfiguration } from './installation';
-import { ConfigureAction, ConfigureProps, ConfigureState, GitLabRuntimeContext } from './types';
+import {
+    GitlabConfigureAction,
+    GitlabConfigureProps,
+    GitlabConfigureState,
+    GitLabRuntimeContext,
+} from './types';
 import {
     assertIsDefined,
     getGitSyncCommitMessage,
@@ -17,9 +22,9 @@ import {
  * ContentKit component to configure the GitLab integration.
  */
 export const configBlock = createComponent<
-    ConfigureProps,
-    ConfigureState,
-    ConfigureAction,
+    GitlabConfigureProps,
+    GitlabConfigureState,
+    GitlabConfigureAction,
     GitLabRuntimeContext
 >({
     componentId: 'configure',
@@ -32,7 +37,7 @@ export const configBlock = createComponent<
                     props.spaceInstallation.configuration?.customInstanceUrl.length > 0
             ),
             customInstanceUrl: props.spaceInstallation.configuration?.customInstanceUrl,
-            project: props.spaceInstallation.configuration?.project,
+            project: props.spaceInstallation.configuration?.project?.toString(),
             branch: props.spaceInstallation.configuration?.branch,
             projectDirectory: props.spaceInstallation.configuration?.projectDirectory,
             withCustomTemplate: Boolean(
@@ -63,15 +68,22 @@ export const configBlock = createComponent<
                 const spaceInstallation = context.environment.spaceInstallation;
                 assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
+                const updatedConfig = {
+                    ...spaceInstallation.configuration,
+                    key: crypto.randomUUID(),
+                    accessToken: action.token,
+                };
+
+                const glUser = await getCurrentUser(updatedConfig);
+
                 await context.api.integrations.updateIntegrationSpaceInstallation(
                     spaceInstallation.integration,
                     spaceInstallation.installation,
                     spaceInstallation.space,
                     {
                         configuration: {
-                            ...spaceInstallation.configuration,
-                            key: crypto.randomUUID(),
-                            accessToken: action.token,
+                            ...updatedConfig,
+                            userId: glUser.id,
                         },
                     }
                 );
@@ -85,7 +97,7 @@ export const configBlock = createComponent<
                     ...element,
                     state: {
                         ...element.state,
-                        project: parseInt(action.project, 10),
+                        project: action.project,
                     },
                 };
             }
@@ -271,6 +283,8 @@ export const configBlock = createComponent<
                                                 }/projects`,
                                                 query: {
                                                     v: versionHash,
+                                                    selectedProject:
+                                                        element.dynamicState('project'),
                                                 },
                                             },
                                         }}

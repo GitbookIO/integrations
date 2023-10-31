@@ -4,7 +4,7 @@ import { Router } from 'itty-router';
 import { ContentKitIcon, ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
 import { createIntegration, FetchEventCallback, Logger, EventCallback } from '@gitbook/runtime';
 
-import { fetchProject, fetchProjectBranches, fetchProjects, searchProjects } from './api';
+import { fetchProject, fetchProjectBranches, fetchProjects, searchUserProjects } from './api';
 import { configBlock } from './components';
 import { uninstallWebhook } from './provider';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
@@ -112,7 +112,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
 
         if (queryProject) {
             const q = encodeURIComponent(queryProject);
-            const searchedProjects = await searchProjects(spaceConfig, q, {
+            const searchedProjects = await searchUserProjects(spaceConfig, q, {
                 page: 1,
                 per_page: 100,
                 walkPagination: false,
@@ -135,7 +135,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
             const page = pageNumber || 1;
             const projects = await fetchProjects(spaceConfig, {
                 page,
-                per_page: 100,
+                per_page: 1,
                 walkPagination: false,
             });
 

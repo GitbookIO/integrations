@@ -20,10 +20,27 @@ interface GLBranch {
     protected: boolean;
 }
 
+interface GLUser {
+    id: number;
+    name: string;
+    username: string;
+}
+
 interface GLFetchOptions {
     walkPagination?: boolean;
     per_page?: number;
     page?: number;
+}
+
+/**
+ * Fetch the current GitLab user. It will use the access token from the environment.
+ */
+export async function getCurrentUser(config: GitLabSpaceConfiguration) {
+    const user = await gitlabAPI<GLUser>(config, {
+        path: '/user',
+    });
+
+    return user;
 }
 
 /**
@@ -48,17 +65,17 @@ export async function fetchProjects(
 }
 
 /**
- * Search projects for a given query.
+ * Search currently authenticated user projects for a given query.
  */
-export async function searchProjects(
+export async function searchUserProjects(
     config: GitLabSpaceConfiguration,
-    query: string,
+    search: string,
     options: GLFetchOptions = {}
 ) {
     const projects = await gitlabAPI<Array<GLProject>>(config, {
-        path: `/projects`,
+        path: `/users/${config.userId}/projects`,
         params: {
-            q: query,
+            search,
             per_page: options.per_page || 100,
             page: options.page || 1,
         },

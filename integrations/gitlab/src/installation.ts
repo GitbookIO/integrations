@@ -6,7 +6,7 @@ import { Logger } from '@gitbook/runtime';
 import { fetchProject } from './api';
 import { createGitLabWebhookURL, installWebhook } from './provider';
 import { triggerExport, triggerImport } from './sync';
-import { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
+import { GitlabConfigureState, GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
 import { assertIsDefined, computeConfigQueryKey, signResponse } from './utils';
 
 const logger = Logger('gitlab:installation');
@@ -16,7 +16,7 @@ const logger = Logger('gitlab:installation');
  */
 export async function saveSpaceConfiguration(
     context: GitLabRuntimeContext,
-    config: GitLabSpaceConfiguration
+    config: GitlabConfigureState
 ) {
     const { api, environment } = context;
     const spaceInstallation = environment.spaceInstallation;
@@ -27,7 +27,7 @@ export async function saveSpaceConfiguration(
         throw httpError(400, 'Incomplete configuration');
     }
 
-    const projectId = config.project;
+    const projectId = parseInt(config.project, 10);
 
     /**
      * We need to update the space installation external IDs to make sure
@@ -41,7 +41,7 @@ export async function saveSpaceConfiguration(
     const configurationBody: GitLabSpaceConfiguration = {
         ...spaceInstallation.configuration,
         key: config.key || crypto.randomUUID(),
-        project: config.project,
+        project: projectId,
         projectName: glProject.path_with_namespace,
         branch: config.branch,
         projectDirectory: config.projectDirectory,
