@@ -14,6 +14,7 @@
   * [Create a custom unfurl action for your integration](getting-started/guides/create-a-custom-unfurl-action-for-your-integration.md)
   * [Implement Visitor Authentication using Next.js and Clerk](getting-started/guides/implement-visitor-authentication-using-next.js-and-clerk.md)
   * [Implement Visitor Authentication using Node and Auth0](getting-started/guides/implement-visitor-authentication-using-node-and-auth0.md)
+  * [Implement Visitor Authentication using Node and Okta](getting-started/guides/implement-visitor-authentication-using-node-and-okta.md)
 * [GitHub Examples](https://github.com/GitbookIO/integrations)
 
 ## GitBook API
