@@ -113,13 +113,6 @@ export function getGitCommitURL(config: GitLabSpaceConfiguration): string {
     return `${base}/-/commit`;
 }
 
-/**
- * Returns the Git ref to use for the synchronization.
- */
-export function getGitRef(branch: string): string {
-    return `refs/heads/${branch}`;
-}
-
 /** Create the webhook url for GitLab */
 export function createGitLabWebhookURL(context: GitLabRuntimeContext): string {
     return `${context.environment.integration.urls.publicEndpoint}/hooks/gitlab?space=${context.environment.spaceInstallation?.space}`;

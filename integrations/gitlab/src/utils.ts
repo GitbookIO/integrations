@@ -61,10 +61,7 @@ export function getSpaceConfigOrThrow(
  * all configuration(s) that match this combination of project ID and ref.
  */
 export function computeConfigQueryKey(projectId: number, ref: string): string {
-    return JSON.stringify({
-        projectId,
-        ref,
-    });
+    return `prj:${projectId}/br:${ref}`;
 }
 
 /**

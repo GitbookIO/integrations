@@ -8,7 +8,6 @@ import { Logger } from '@gitbook/runtime';
 
 import {
     getGitCommitURL,
-    getGitRef,
     getGitTreeURL,
     getRepositoryAuth,
     getRepositoryUrl,
@@ -16,6 +15,7 @@ import {
 } from './provider';
 import { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
 import {
+    assertIsDefined,
     getGitSyncCommitMessage,
     getGitSyncStateDescription,
     getSpaceConfigOrThrow,
@@ -49,6 +49,7 @@ export async function triggerImport(
     const { force = false, updateGitInfo = false, standalone } = options;
 
     const config = getSpaceConfigOrThrow(spaceInstallation);
+    assertIsDefined(config.branch, { label: 'config.branch' });
 
     logger.info(`Initiating an import from GitLab to GitBook space ${spaceInstallation.space}`);
 
@@ -61,7 +62,7 @@ export async function triggerImport(
 
     await api.spaces.importGitRepository(spaceInstallation.space, {
         url: urlWithAuth.toString(),
-        ref: standalone?.ref ?? getGitRef(config.branch ?? ''),
+        ref: standalone?.ref || config.branch,
         repoTreeURL: getGitTreeURL(config),
         repoCommitURL: getGitCommitURL(config),
         repoProjectDirectory: config.projectDirectory,
@@ -90,6 +91,7 @@ export async function triggerExport(
     const { force = false, updateGitInfo = false } = options;
 
     const config = getSpaceConfigOrThrow(spaceInstallation);
+    assertIsDefined(config.branch, { label: 'config.branch' });
 
     logger.info(`Initiating an export from space ${spaceInstallation.space} to GitLab`);
 
@@ -104,7 +106,7 @@ export async function triggerExport(
 
     await api.spaces.exportToGitRepository(spaceInstallation.space, {
         url: urlWithAuth.toString(),
-        ref: getGitRef(config.branch ?? ''),
+        ref: config.branch,
         repoTreeURL: getGitTreeURL(config),
         repoCommitURL: getGitCommitURL(config),
         repoProjectDirectory: config.projectDirectory,

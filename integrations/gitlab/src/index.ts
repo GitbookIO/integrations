@@ -182,7 +182,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
 
         const data = branches.map(
             (branch): ContentKitSelectOption => ({
-                id: branch.name,
+                id: `refs/heads/${branch.name}`,
                 label: branch.name,
                 icon: branch.protected ? ContentKitIcon.Lock : undefined,
             })

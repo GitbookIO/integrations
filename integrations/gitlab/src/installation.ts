@@ -4,10 +4,10 @@ import { IntegrationSpaceInstallation } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
 
 import { fetchProject } from './api';
-import { createGitLabWebhookURL, getGitRef, installWebhook } from './provider';
+import { createGitLabWebhookURL, installWebhook } from './provider';
 import { triggerExport, triggerImport } from './sync';
 import { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { assertIsDefined, computeConfigQueryKey, parseProjectOrThow, signResponse } from './utils';
+import { assertIsDefined, computeConfigQueryKey, signResponse } from './utils';
 
 const logger = Logger('gitlab:installation');
 
@@ -27,14 +27,14 @@ export async function saveSpaceConfiguration(
         throw httpError(400, 'Incomplete configuration');
     }
 
-    const projectId = parseProjectOrThow(config);
+    const projectId = config.project;
 
     /**
      * We need to update the space installation external IDs to make sure
      * we can query it later when there is a webhook event.
      */
     const externalIds: string[] = [];
-    externalIds.push(computeConfigQueryKey(projectId, getGitRef(config.branch)));
+    externalIds.push(computeConfigQueryKey(projectId, config.branch));
 
     const glProject = await fetchProject(spaceInstallation.configuration, projectId);
 
