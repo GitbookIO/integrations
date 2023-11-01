@@ -84,6 +84,7 @@ jobs:
                   SENTRY_CLIENT_ID: ${{ secrets.SENTRY_STAGING_CLIENT_ID }}
                   SENTRY_CLIENT_SECRET: ${{ secrets.SENTRY_STAGING_CLIENT_SECRET }}
                   SENTRY_GITBOOK_INTEGRATION: ${{ secrets.SENTRY_STAGING_GITBOOK_INTEGRATION }}
+                  GITHUB_APP_INSTALL_URL: ${{ secrets.GITBOOK_GITHUB_STAGING_APP_INSTALL_URL }}
                   GITHUB_APP_ID: ${{ secrets.GITBOOK_GITHUB_STAGING_APP_ID }}
                   GITHUB_CLIENT_ID: ${{ secrets.GITBOOK_GITHUB_STAGING_CLIENT_ID }}
                   GITHUB_CLIENT_SECRET: ${{ secrets.GITBOOK_GITHUB_STAGING_CLIENT_SECRET }}
@@ -125,6 +126,7 @@ jobs:
                   JIRA_CLIENT_SECRET: ${{ secrets.JIRA_PROD_CLIENT_SECRET }}
                   LINEAR_CLIENT_ID: ${{ secrets.LINEAR_PROD_CLIENT_ID }}
                   LINEAR_CLIENT_SECRET: ${{ secrets.LINEAR_PROD_CLIENT_SECRET }}
+                  GITHUB_APP_INSTALL_URL: ${{ secrets.GITBOOK_GITHUB_APP_INSTALL_URL }}
                   GITHUB_APP_ID: ${{ secrets.GITBOOK_GITHUB_APP_ID }}
                   GITHUB_CLIENT_ID: ${{ secrets.GITBOOK_GITHUB_CLIENT_ID }}
                   GITHUB_CLIENT_SECRET: ${{ secrets.GITBOOK_GITHUB_CLIENT_SECRET }}

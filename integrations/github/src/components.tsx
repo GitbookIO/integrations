@@ -154,13 +154,12 @@ export const configBlock = createComponent<
                                 label="Select account"
                                 hint={
                                     <text>
-                                        Choose the GitHub installation, user or organization.
+                                        Choose the GitHub installation, user or organization.{' '}
                                         <link
                                             target={{
-                                                url: 'https://github.com/apps/gitbook-com/installations/new',
+                                                url: context.environment.secrets.APP_INSTALL_URL,
                                             }}
                                         >
-                                            {' '}
                                             Install the GitHub app.
                                         </link>
                                     </text>
