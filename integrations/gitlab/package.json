@@ -4,7 +4,8 @@
     "scripts": {
         "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
         "typecheck": "tsc --noEmit",
-        "publish": "gitbook publish ."
+        "publish": "gitbook publish .",
+        "publish-integrations-staging": "gitbook publish ."
     },
     "dependencies": {
         "@gitbook/api": "*",
