@@ -1,0 +1,41 @@
+name: gitlab
+title: GitLab Sync
+organization: gitbook
+visibility: public
+description: Synchronize your GitBook content with GitLab with GitBook’s bi-directional integration.
+icon: ./assets/gitlab-logo.png
+previewImages:
+    - ./assets/gitbook-gitlab.png
+    - ./assets/gitlab-sync.png
+externalLinks:
+    - label: Documentation
+      url: https://docs.gitbook.com/integrations/git-sync
+summary: |
+    # Overview
+
+    GitLab Sync allows technical teams to synchronize GitLab repositories with GitBook and turn Markdown files into beautiful, user-friendly docs. So you can edit directly in GitBook’s powerful editor while keeping content synchronized with your codebase on GitLab — and vice versa.
+
+
+    Head to our documentation to find out more.
+
+    # How it works
+
+    Because GitLab Sync works both ways, changes you make in GitBook’s editor automatically update in GitLab, and commits in GitLab appear in GitBook. So developers, technical writers, product managers and more can work in their preferred tool without content falling out of sync.
+
+    # Configure
+
+    First, click Configure in the top-right of your GitBook space and choose GitLab as your provider.  You’ll need to generate an API token in GitLab and add it to your GitBook space. You can then link your GitBook space to a GitLab repository and select the branch you want to sync.
+
+
+    When you make a change in GitBook, it will sync to GitLab as a commit. When you make a change in GitLab, they’ll sync to GitBook as history commits.
+
+
+    Find out more about configuring GitLab Sync in our documentation.
+script: src/index.ts
+scopes:
+    - space:metadata:read
+    - space:content:read
+    - space:git:sync
+configurations:
+    space:
+        componentId: configure
