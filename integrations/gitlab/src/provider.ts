@@ -37,18 +37,14 @@ export async function installWebhook(
  * Remove the GitLab webhook for the currently configured space installation
  * project.
  */
-export async function uninstallWebhook(spaceInstallation: IntegrationSpaceInstallation) {
-    const config = getSpaceConfigOrThrow(spaceInstallation);
-
-    if (!config.webhookId) {
-        return;
-    }
-
+export async function uninstallWebhook(config: GitLabSpaceConfiguration) {
     assertIsDefined(config.project, { label: 'config.project' });
+    assertIsDefined(config.webhookId, { label: 'config.webhookId' });
 
     const projectId = config.project;
+    const webhookId = config.webhookId;
 
-    await deleteProjectWebhook(config, projectId, config.webhookId);
+    await deleteProjectWebhook(config, projectId, webhookId);
 
     logger.info(`Webhook ${config.webhookId} uninstalled from GitLab project ${projectId}`);
 }

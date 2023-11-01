@@ -8,7 +8,7 @@ import { fetchProject, fetchProjectBranches, fetchProjects, searchUserProjects }
 import { configBlock } from './components';
 import { uninstallWebhook } from './provider';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
-import type { GitLabRuntimeContext } from './types';
+import type { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
 import { getSpaceConfigOrThrow, assertIsDefined, verifySignature } from './utils';
 import { handleMergeRequestEvent, handlePushEvent } from './webhooks';
 
@@ -135,7 +135,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
             const page = pageNumber || 1;
             const projects = await fetchProjects(spaceConfig, {
                 page,
-                per_page: 1,
+                per_page: 100,
                 walkPagination: false,
             });
 
@@ -306,13 +306,13 @@ const handleSpaceInstallationDeleted: EventCallback<
 > = async (event, context) => {
     logger.debug(`space installation deleted for space ${event.spaceId}, removing webhook`);
 
-    const spaceInstallation = context.environment.spaceInstallation;
-    if (!spaceInstallation) {
-        logger.debug(`missing space installation, skipping`);
+    const configuration = event.previous.configuration as GitLabSpaceConfiguration | undefined;
+    if (!configuration) {
+        logger.debug(`missing space installation configuration, skipping`);
         return;
     }
 
-    await uninstallWebhook(spaceInstallation);
+    await uninstallWebhook(configuration);
 };
 
 export default createIntegration({
