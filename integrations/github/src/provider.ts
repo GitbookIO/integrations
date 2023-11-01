@@ -5,14 +5,14 @@ import { Logger } from '@gitbook/runtime';
 
 import { createAppInstallationAccessToken, createCommitStatus } from './api';
 import { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
-import { assertIsDefined, parseInstallationOrThrow } from './utils';
+import { assertIsDefined } from './utils';
 
 const logger = Logger('github:provider');
 
 /**
  * Return the GitHub App JWT signed with the private key.
  */
-async function getGitHubAppJWT(context: GithubRuntimeContext): Promise<string> {
+export async function getGitHubAppJWT(context: GithubRuntimeContext): Promise<string> {
     const { environment } = context;
 
     const now = Math.floor(Date.now() / 1000);
@@ -54,12 +54,13 @@ export async function getRepositoryAuth(
     context: GithubRuntimeContext,
     config: GitHubSpaceConfiguration
 ) {
+    assertIsDefined(config.installation, { label: 'config.installation' });
+
     const appJWT = await getGitHubAppJWT(context);
-    const installationId = parseInstallationOrThrow(config);
     const installationAccessToken = await createAppInstallationAccessToken(
         context,
         appJWT,
-        installationId
+        config.installation
     );
 
     return {
@@ -85,12 +86,13 @@ export async function updateCommitStatus(
 ) {
     assertIsDefined(config.accountName, { label: 'config.accountName' });
     assertIsDefined(config.repoName, { label: 'config.repoName' });
+    assertIsDefined(config.installation, { label: 'config.installation' });
 
     const appJWT = await getGitHubAppJWT(context);
     const installationAccessToken = await createAppInstallationAccessToken(
         context,
         appJWT,
-        parseInstallationOrThrow(config)
+        config.installation
     );
 
     await createCommitStatus(
@@ -116,8 +118,9 @@ export async function updateCommitStatus(
  * Returns the base URL of the Git tree in the provider.
  */
 export function getGitTreeURL(config: GitHubSpaceConfiguration): string {
+    const ref = getPrettyGitRef(config.branch!);
     const base = getRepositoryUrl(config);
-    return `${base}/blob/${config.branch}`;
+    return `${base}/blob/${ref}`;
 }
 
 /**
@@ -129,8 +132,8 @@ export function getGitCommitURL(config: GitHubSpaceConfiguration): string {
 }
 
 /**
- * Returns the Git ref to use for the synchronization.
+ * Make a remote ref pretty (e.g. refs/heads/master => master)
  */
-export function getGitRef(branch: string): string {
-    return `refs/heads/${branch}`;
+export function getPrettyGitRef(ref: string): string {
+    return ref ? ref.replace('refs/', '').replace('heads/', '') : '';
 }

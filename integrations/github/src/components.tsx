@@ -5,28 +5,28 @@ import { createComponent } from '@gitbook/runtime';
 
 import { extractTokenCredentialsOrThrow } from './api';
 import { saveSpaceConfiguration } from './installation';
-import { ConfigureAction, ConfigureProps, ConfigureState, GithubRuntimeContext } from './types';
 import {
-    assertIsDefined,
-    getGitSyncCommitMessage,
-    GITSYNC_DEFAULT_COMMIT_MESSAGE,
-    parseInstallationOrThrow,
-} from './utils';
+    GithubConfigureAction,
+    GithubConfigureProps,
+    GithubConfigureState,
+    GithubRuntimeContext,
+} from './types';
+import { assertIsDefined, getGitSyncCommitMessage, GITSYNC_DEFAULT_COMMIT_MESSAGE } from './utils';
 
 /**
  * ContentKit component to configure the GitHub integration.
  */
 export const configBlock = createComponent<
-    ConfigureProps,
-    ConfigureState,
-    ConfigureAction,
+    GithubConfigureProps,
+    GithubConfigureState,
+    GithubConfigureAction,
     GithubRuntimeContext
 >({
     componentId: 'configure',
     initialState: (props) => {
         return {
-            installation: props.spaceInstallation.configuration?.installation,
-            repository: props.spaceInstallation.configuration?.repository,
+            installation: props.spaceInstallation.configuration?.installation?.toString(),
+            repository: props.spaceInstallation.configuration?.repository?.toString(),
             branch: props.spaceInstallation.configuration?.branch,
             projectDirectory: props.spaceInstallation.configuration?.projectDirectory,
             withCustomTemplate: Boolean(
@@ -198,9 +198,7 @@ export const configBlock = createComponent<
                                                 with. This repository should be authorized in the{' '}
                                                 <link
                                                     target={{
-                                                        url: `https://github.com/settings/installations/${parseInstallationOrThrow(
-                                                            element.state.installation
-                                                        )}`,
+                                                        url: `https://github.com/settings/installations/${element.state.installation}`,
                                                     }}
                                                 >
                                                     GitHub installation.
@@ -228,6 +226,8 @@ export const configBlock = createComponent<
                                                                 element.dynamicState(
                                                                     'installation'
                                                                 ),
+                                                            selectedRepo:
+                                                                element.dynamicState('repository'),
                                                             v: versionHash,
                                                         },
                                                     },

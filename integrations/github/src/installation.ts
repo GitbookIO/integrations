@@ -4,15 +4,9 @@ import { IntegrationSpaceInstallation } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
 
 import { fetchRepository } from './api';
-import { getGitRef } from './provider';
 import { triggerExport, triggerImport } from './sync';
-import { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
-import {
-    assertIsDefined,
-    computeConfigQueryKey,
-    parseInstallationOrThrow,
-    parseRepositoryOrThrow,
-} from './utils';
+import { GithubConfigureState, GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
+import { assertIsDefined, computeConfigQueryKey } from './utils';
 
 const logger = Logger('github:installation');
 
@@ -21,7 +15,7 @@ const logger = Logger('github:installation');
  */
 export async function saveSpaceConfiguration(
     context: GithubRuntimeContext,
-    state: GitHubSpaceConfiguration
+    state: GithubConfigureState
 ) {
     const { api, environment } = context;
     const spaceInstallation = environment.spaceInstallation;
@@ -32,26 +26,24 @@ export async function saveSpaceConfiguration(
         throw httpError(400, 'Incomplete configuration');
     }
 
-    const installationId = parseInstallationOrThrow(state);
-    const repoID = parseRepositoryOrThrow(state);
+    const installationId = parseInt(state.installation, 10);
+    const repoID = parseInt(state.repository, 10);
 
     /**
      * We need to update the space installation external IDs to make sure
      * we can query it later when there is a webhook event.
      */
     const externalIds: string[] = [];
-    externalIds.push(computeConfigQueryKey(installationId, repoID, getGitRef(state.branch)));
+    externalIds.push(computeConfigQueryKey(installationId, repoID, state.branch));
     if (state.previewExternalBranches) {
-        externalIds.push(
-            computeConfigQueryKey(installationId, repoID, getGitRef(state.branch), true)
-        );
+        externalIds.push(computeConfigQueryKey(installationId, repoID, state.branch, true));
     }
 
     const configurationBody: GitHubSpaceConfiguration = {
         ...spaceInstallation.configuration,
         key: crypto.randomUUID(),
-        installation: state.installation,
-        repository: state.repository,
+        installation: installationId,
+        repository: repoID,
         branch: state.branch,
         commitMessageTemplate: state.commitMessageTemplate,
         previewExternalBranches: state.previewExternalBranches,

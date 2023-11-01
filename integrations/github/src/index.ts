@@ -9,11 +9,19 @@ import {
     EventCallback,
 } from '@gitbook/runtime';
 
-import { fetchInstallationRepositories, fetchInstallations, fetchRepositoryBranches } from './api';
+import {
+    createAppInstallationAccessToken,
+    fetchInstallationRepositories,
+    fetchInstallations,
+    fetchRepository,
+    fetchRepositoryBranches,
+    getAppInstallation,
+    searchRepositories,
+} from './api';
 import { configBlock } from './components';
+import { getGitHubAppJWT } from './provider';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
 import type { GithubRuntimeContext } from './types';
-import { parseInstallationOrThrow, parseRepositoryOrThrow } from './utils';
 import { handlePullRequestEvents, handlePushEvent, verifyGitHubWebhookSignature } from './webhooks';
 
 const logger = Logger('github');
@@ -30,11 +38,11 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
     });
 
     /**
-     * Handle task for GitHub App webhook events
+     * Handle GitHub App webhook events
      */
-    router.post('/hooks/github/task', async (request) => {
-        const id = request.headers.get('x-github-delivery');
-        const event = request.headers.get('x-github-event');
+    router.post('/hooks/github', async (request) => {
+        const id = request.headers.get('x-github-delivery') as string;
+        const event = request.headers.get('x-github-event') as string;
         const signature = request.headers.get('x-hub-signature-256') ?? '';
         const payloadString = await request.text();
         const payload = JSON.parse(payloadString);
@@ -55,55 +63,29 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
 
         logger.debug('received webhook event', { id, event });
 
-        /**
-         * Handle Webhook events
-         */
-        if (event === 'push') {
-            await handlePushEvent(context, payload);
-        } else if (
-            event === 'pull_request' &&
-            (payload.action === 'opened' || payload.action === 'synchronize')
-        ) {
-            await handlePullRequestEvents(context, payload);
-        } else {
-            logger.debug('ignoring webhook event', { id, event });
-        }
-
-        return new Response(JSON.stringify({ ok: true }), {
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-        });
-    });
-
-    /**
-     * Acknowledge GitHub App webhook event and queue a task to handle it
-     * in a subsequent request. This is to avoid GitHub timeouts.
-     * https://docs.github.com/en/rest/guides/best-practices-for-integrators?#favor-asynchronous-work-over-synchronous
-     */
-    router.post('/hooks/github', async (request) => {
-        const id = request.headers.get('x-github-delivery') as string;
-        const event = request.headers.get('x-github-event') as string;
-        const signature = request.headers.get('x-hub-signature-256') ?? '';
-
-        logger.debug('acknowledging webhook event', { id, event });
-
-        const taskUrl = new URL(request.url);
-        taskUrl.pathname += '/task';
-        const body = await request.text();
-
         context.waitUntil(
-            fetch(taskUrl.toString(), {
-                method: 'POST',
-                body,
-                headers: {
-                    'content-type': request.headers.get('content-type') || 'application/text',
-                    'x-github-delivery': id,
-                    'x-github-event': event,
-                    'x-hub-signature-256': signature,
-                },
-            })
+            (async () => {
+                /**
+                 * Handle Webhook events
+                 */
+                if (event === 'push') {
+                    await handlePushEvent(context, payload);
+                } else if (
+                    event === 'pull_request' &&
+                    (payload.action === 'opened' || payload.action === 'synchronize')
+                ) {
+                    await handlePullRequestEvents(context, payload);
+                } else {
+                    logger.debug('ignoring webhook event', { id, event });
+                }
+            })()
         );
 
+        /**
+         * Acknowledge the webhook immediately to avoid GitHub timeouts.
+         * https://docs.github.com/en/rest/guides/best-practices-for-integrators?#favor-asynchronous-work-over-synchronous
+         */
+        logger.debug('acknowledging webhook event', { id, event });
         return new Response(JSON.stringify({ acknowledged: true }), {
             status: 200,
             headers: { 'content-type': 'application/json' },
@@ -162,25 +144,119 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
      * API to fetch all repositories of an installation
      */
     router.get('/repos', async (req) => {
-        const { installation: queryInstallation } = req.query;
+        const { installation: queryInstallation, selectedRepo, q, page } = req.query;
         const installationId =
             queryInstallation && typeof queryInstallation === 'string'
-                ? parseInstallationOrThrow(queryInstallation)
+                ? parseInt(queryInstallation, 10)
                 : undefined;
+        const querySelectedRepo =
+            selectedRepo && typeof selectedRepo === 'string' ? selectedRepo : undefined;
+        const pageNumber = page && typeof page === 'string' ? parseInt(page, 10) : undefined;
+        const queryRepo = q && typeof q === 'string' ? q : undefined;
 
-        const repositories = installationId
-            ? await fetchInstallationRepositories(context, installationId)
-            : [];
+        if (installationId) {
+            const selected: ContentKitSelectOption[] = [];
 
-        const data = repositories.map(
-            (repository): ContentKitSelectOption => ({
-                id: `${repository.id}`,
-                label: repository.name,
-                icon: repository.visibility === 'private' ? ContentKitIcon.Lock : undefined,
-            })
-        );
+            if (querySelectedRepo) {
+                try {
+                    const selectedRepo = await fetchRepository(
+                        context,
+                        parseInt(querySelectedRepo, 10)
+                    );
 
-        return new Response(JSON.stringify(data), {
+                    selected.push({
+                        id: `${selectedRepo.id}`,
+                        label: selectedRepo.name,
+                        icon:
+                            selectedRepo.visibility === 'private' ? ContentKitIcon.Lock : undefined,
+                    });
+                } catch (error) {
+                    // Ignore error: repository not found or not accessible
+                }
+            }
+
+            if (queryRepo) {
+                const appJWT = await getGitHubAppJWT(context);
+                const installation = await getAppInstallation(context, appJWT, installationId);
+                const installationToken = await createAppInstallationAccessToken(
+                    context,
+                    appJWT,
+                    installationId
+                );
+
+                try {
+                    const q = `${queryRepo} in:name ${
+                        installation.account.type === 'Organization' ? 'org' : 'user'
+                    }:${installation.account.login} fork:true`;
+
+                    logger.debug(
+                        `Searching for repos matching ${q} for installation ${installationId}`
+                    );
+
+                    const searchedRepos = await searchRepositories(context, q, {
+                        page: 1,
+                        per_page: 100,
+                        tokenCredentials: {
+                            access_token: installationToken,
+                            expires_at: 0,
+                        },
+                        walkPagination: false,
+                    });
+
+                    const items = searchedRepos.map(
+                        (repository): ContentKitSelectOption => ({
+                            id: `${repository.id}`,
+                            label: repository.name,
+                            icon:
+                                repository.visibility === 'private'
+                                    ? ContentKitIcon.Lock
+                                    : undefined,
+                        })
+                    );
+
+                    return new Response(JSON.stringify({ items, selected }), {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                } catch (error) {
+                    // Ignore error: repository not found or not accessible
+                }
+            } else {
+                const page = pageNumber || 1;
+                const repositories = await fetchInstallationRepositories(context, installationId, {
+                    page,
+                    per_page: 100,
+                    walkPagination: false,
+                });
+
+                const items = repositories.map(
+                    (repository): ContentKitSelectOption => ({
+                        id: `${repository.id}`,
+                        label: repository.name,
+                        icon: repository.visibility === 'private' ? ContentKitIcon.Lock : undefined,
+                    })
+                );
+
+                const nextPage = new URL(request.url);
+                nextPage.searchParams.set('page', `${page + 1}`);
+
+                return new Response(
+                    JSON.stringify({
+                        items,
+                        nextPage: nextPage.toString(),
+                        selected,
+                    }),
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+            }
+        }
+
+        return new Response(JSON.stringify([]), {
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -195,14 +271,14 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
 
         const repositoryId =
             queryRepository && typeof queryRepository === 'string'
-                ? parseRepositoryOrThrow(queryRepository)
+                ? parseInt(queryRepository, 10)
                 : undefined;
 
         const branches = repositoryId ? await fetchRepositoryBranches(context, repositoryId) : [];
 
         const data = branches.map(
             (branch): ContentKitSelectOption => ({
-                id: branch.name,
+                id: `refs/heads/${branch.name}`,
                 label: branch.name,
                 icon: branch.protected ? ContentKitIcon.Lock : undefined,
             })
