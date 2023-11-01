@@ -10,6 +10,8 @@ previewImages:
 externalLinks:
     - label: Documentation
       url: https://docs.gitbook.com/integrations/git-sync
+categories:
+    - gitsync
 summary: |
     # Overview
 
