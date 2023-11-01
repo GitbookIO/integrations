@@ -29,6 +29,8 @@ export async function installWebhook(
     const id = await addProjectWebhook(config, config.project, webhookUrl, webhookToken);
 
     logger.info(`Webhook ${id} installed on GitLab project ${projectId}`);
+
+    return id;
 }
 
 /**
