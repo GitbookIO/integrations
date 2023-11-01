@@ -118,8 +118,9 @@ export async function updateCommitStatus(
  * Returns the base URL of the Git tree in the provider.
  */
 export function getGitTreeURL(config: GitHubSpaceConfiguration): string {
+    const ref = getPrettyGitRef(config.branch!);
     const base = getRepositoryUrl(config);
-    return `${base}/blob/${config.branch}`;
+    return `${base}/blob/${ref}`;
 }
 
 /**
@@ -128,4 +129,11 @@ export function getGitTreeURL(config: GitHubSpaceConfiguration): string {
 export function getGitCommitURL(config: GitHubSpaceConfiguration): string {
     const base = getRepositoryUrl(config);
     return `${base}/commit`;
+}
+
+/**
+ * Make a remote ref pretty (e.g. refs/heads/master => master)
+ */
+export function getPrettyGitRef(ref: string): string {
+    return ref ? ref.replace('refs/', '').replace('heads/', '') : '';
 }
