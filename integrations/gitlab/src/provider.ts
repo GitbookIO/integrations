@@ -103,8 +103,9 @@ export async function getRepositoryAuth(config: GitLabSpaceConfiguration) {
  * Returns the base URL of the Git tree in the provider.
  */
 export function getGitTreeURL(config: GitLabSpaceConfiguration): string {
+    const ref = getPrettyGitRef(config.branch!);
     const base = getRepositoryUrl(config);
-    return `${base}/-/blob/${config.branch}`;
+    return `${base}/-/blob/${ref}`;
 }
 
 /**
@@ -118,4 +119,11 @@ export function getGitCommitURL(config: GitLabSpaceConfiguration): string {
 /** Create the webhook url for GitLab */
 export function createGitLabWebhookURL(context: GitLabRuntimeContext): string {
     return `${context.environment.integration.urls.publicEndpoint}/hooks/gitlab?space=${context.environment.spaceInstallation?.space}`;
+}
+
+/**
+ * Make a remote ref pretty (e.g. refs/heads/master => master)
+ */
+export function getPrettyGitRef(ref: string): string {
+    return ref ? ref.replace('refs/', '').replace('heads/', '') : '';
 }
