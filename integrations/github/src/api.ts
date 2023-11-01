@@ -349,7 +349,7 @@ async function refreshCredentials(
     clientSecret: string,
     refreshToken: string
 ): Promise<OAuthTokenCredentials> {
-    const url = new URL('https://github.com/login/oau`th/access_token');
+    const url = new URL('https://github.com/login/oauth/access_token');
 
     url.searchParams.set('client_id', clientId);
     url.searchParams.set('client_secret', clientSecret);

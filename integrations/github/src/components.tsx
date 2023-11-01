@@ -25,8 +25,8 @@ export const configBlock = createComponent<
     componentId: 'configure',
     initialState: (props) => {
         return {
-            installation: `${props.spaceInstallation.configuration?.installation}`,
-            repository: `${props.spaceInstallation.configuration?.repository}`,
+            installation: props.spaceInstallation.configuration?.installation?.toString(),
+            repository: props.spaceInstallation.configuration?.repository?.toString(),
             branch: props.spaceInstallation.configuration?.branch,
             projectDirectory: props.spaceInstallation.configuration?.projectDirectory,
             withCustomTemplate: Boolean(
