@@ -1,9 +1,0 @@
-{
-    "extends": "@gitbook/tsconfig/base.json",
-    "include": ["src/**/*", "./global.d.ts"],
-    "rootDir": "./src",
-    "compilerOptions": {
-        "baseUrl": "./src",
-        "types": ["@cloudflare/workers-types"]
-    }
-}

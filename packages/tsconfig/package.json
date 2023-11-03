@@ -1,8 +1,0 @@
-{
-    "name": "@gitbook/tsconfig",
-    "version": "0.1.0",
-    "devDependencies": {
-        "@cloudflare/workers-types": "^3.16.0",
-        "@types/node": "^18.8.3"
-    }
-}
