@@ -42,6 +42,7 @@ export async function saveSpaceConfiguration(
     const configurationBody: GitHubSpaceConfiguration = {
         ...spaceInstallation.configuration,
         key: crypto.randomUUID(),
+        configuredAt: new Date().toISOString(),
         installation: installationId,
         repository: repoID,
         branch: state.branch,

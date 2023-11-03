@@ -41,6 +41,7 @@ export async function saveSpaceConfiguration(
     const configurationBody: GitLabSpaceConfiguration = {
         ...spaceInstallation.configuration,
         key: config.key || crypto.randomUUID(),
+        configuredAt: new Date().toISOString(),
         project: projectId,
         projectName: glProject.path_with_namespace,
         branch: config.branch,

@@ -2,6 +2,7 @@ import { IntegrationInstallationConfiguration } from '@gitbook/api';
 import type { RuntimeContext, RuntimeEnvironment } from '@gitbook/runtime';
 
 export type GitHubSpaceConfiguration = {
+    configuredAt?: string;
     oauth_credentials?: {
         access_token: string;
         expires_at: number;
