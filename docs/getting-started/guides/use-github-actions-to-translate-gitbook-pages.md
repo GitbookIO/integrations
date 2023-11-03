@@ -2,63 +2,61 @@
 
 ### Overview
 
-As far as any good documentation goes, it's accessibility plays a big part of how useful it can be—and [Internationalization](https://en.wikipedia.org/wiki/Internationalization\_and\_localization) (i18n) has a big part to do with that.&#x20;
+As far as any good documentation goes, accessibility — and [Internationalization](https://en.wikipedia.org/wiki/Internationalization\_and\_localization) (i18n) specifically — plays an important role.&#x20;
 
-Translating documents and content has always been a rough and manual task - and many times translating documents from one language to another aren't completely straightforward. Luckily, we're able to start using new and emerging tools to help us make our documents more accessible.&#x20;
+Translating documents and content has always been a tedious and manual task. Many times translating documents from one language to another isn’t straightforward. Luckily, we’re able to start using new and emerging tools to help us make our documents more accessible.&#x20;
 
-While GitBook doesn't have a built in translation solution, our Integration Platform allows you to extend the way you manage your content - including allowing you to introduce workflows that take the manual part out of translating your work.
+While GitBook doesn’t have a native translation solution, our [Integration Platform](https://www.gitbook.com/integrations) allows you to extend the way you manage your content. And that includes the ability to introduce workflows that take the manual aspect out of translating content.
 
-Let's dive in!
+Let’s dive in!
 
 ### Collections
 
-In order for you to start translating your site, you'll need to have some content, and make sure it's organized!&#x20;
+In order to translate your site, you’ll need to have some well-organized content. GitBook provides the perfect solution to structure sites available in multiple languages: [collections](https://docs.gitbook.com/content-creation/content-structure/what-is-a-collection).
 
-GitBook provides the perfect solution for you to organize your content in different languages - [Collections](https://docs.gitbook.com/content-creation/content-structure/what-is-a-collection)!&#x20;
+Collections provide a way to group related spaces together. In the context of i18n, we will use one space for each language, with a space designated to hold the content in the primary language. You can think of this space as your “main” content.
 
-Collections allow you to create a "folder" of sorts, that you can add different spaces to! In our case, we can think of 1 space equal to 1 language.
+Here’s an example of such a setup:
 
-To create a collection in [GitBook](https://app.gitbook.com/), head to the blue button in the lower left corner!
-
-You'll need to have a space inside a collection for every language you want to translate into, but only one space in the collection with content in it - you can think of this space as your "main" content.
-
-Your setup might look something like this:
+<div data-full-width="false">
 
 <figure><img src="../../.gitbook/assets/Screenshot 2023-05-23 at 10.45.16.png" alt=""><figcaption><p>A collection with different spaces for each language</p></figcaption></figure>
 
-In the example above, the space called "_English_" is the main space that all the translations will come from.
+</div>
 
-After you have a collection set up with different spaces, you're then able to use another powerful feature in GitBook that gives you more control over the content you're working on.
+In the example above, the space called _English_ is the main space that all the translations will be based on.
+
+After you’ve set up the collection, you can use Git Sync to enable programmatic access to content.
 
 ### GitSync
 
 [GitSync](https://docs.gitbook.com/product-tour/git-sync) is a feature in GitBook that allows you to connect a space to a remote repository hosted on either GitHub or GitLab (_starting to Git the hang of it?_).
 
-This guide won't go deep into setting up GitSync, but you can check out our setup video to learn more about [configuring GitSync in your Space](https://www.youtube.com/watch?v=Fm5hYBsRSXo).
+You can check [out our setup video](https://www.youtube.com/watch?v=Fm5hYBsRSXo) to learn more about configuring GitSync in your Space.
 
 {% hint style="warning" %}
-It's important to note that while you will have multiple spaces set up in GitBook for each language, you'll need to connect each space separately to your remote repository.
+**Important:** While your collection will include a space for each language in GitBook, you’ll need to connect each one to your remote repository separately.
 {% endhint %}
 
-You can make use of the [Monorepo feature](https://docs.gitbook.com/product-tour/git-sync/monorepos) to configure each space to a specific folder or directory in your remote repository.
+Use the [Monorepo feature](https://docs.gitbook.com/product-tour/git-sync/monorepos) if you need to configure each space to a specific folder in your remote repository.
 
-Now that you have your GitBook project set up to a remote repository, you can explore some of the ways you can add workflows on top of your content.
+Once you’ve connected your GitBook spaces to a remote repository, we’ll run through how to add workflows on top of your content.
 
 ### GitHub Actions
 
-In this guide, we'll be exploring a workflow setup in GitHub - [GitHub Actions](https://github.com/features/actions).
+In this guide, we’ll configure a workflow in GitHub using [GitHub Actions](https://github.com/features/actions).
 
 {% hint style="info" %}
-If you're using GitLab, you'll want to explore their [built in CI/CD](https://docs.gitlab.com/ee/ci/) feature.
+If you’re using GitLab, you can use their [built in CI/CD](https://docs.gitlab.com/ee/ci/) feature.
 {% endhint %}
 
-GitHub Actions allow you to run scripts or other utilities when certain things happen in a remote repository—In our case, when a new update is made to the content!&#x20;
+GitHub Actions allow you to run scripts or other utilities when certain events occur in a remote repository. In this case, we want to run an action every time someone makes a new update to the content.
 
-If you have GitSync enabled with GitHub, any update you make in GitBook is automatically committed to your main branch in GitHub, allowing you to tap into the update through GitHub actions.
+Once you’ve configured Git Sync, any update you make in GitBook is automatically committed to the GitHub branch you configured, allowing you to tap into the update using GitHub Actions.
 
-You'll need to configure this by adding a `.github/workflows/action.yml` file at the root of your project.
+To configure the GitHub Action, you can add a `.github/workflows/action.yml` file at the root of your project.
 
-An example file looks something like this:
+Here’s an example `action.yml` file:
 
 <pre class="language-yaml"><code class="lang-yaml"># This is a basic workflow to help you get started with Actions
 <strong>name: GitHub Actions
@@ -75,52 +73,52 @@ jobs:
       - uses: actions/checkout@v3
 </code></pre>
 
-The example above will run every time an update is merged to main—In GitBook terms, this means any time a [Change Request](https://docs.gitbook.com/collaboration/collaboration/change-requests) is merged.&#x20;
+The example action above will run every time someone merges an update to the `main` branch — which means whenever someone merges a [change request](https://docs.gitbook.com/collaboration/collaboration/change-requests) in GitBook.&#x20;
 
-Because this workflow runs after the content is merged, it will contain up to date information about the request, including the latest version of the content.&#x20;
+Because this workflow runs after the content is merged, it will contain up-to-date information about the request, including the latest version of the content.&#x20;
 
-From here, you can set up a tool that will handle the translations!
+You can now use this action to invoke a tool that will handle the translations.
 
 ### Translation Software
 
-The power of having your workflow setup in code comes down to it's flexibility - you have the choice of what tool you'd like to use to handle the translations. Here are some AI tools we've seen used:
+The power of having your workflow set up in code comes down to its flexibility — you have the choice of what tool you’d like to use to handle the translations. For example, you could use one of these AI tools, which can automate translations:
 
 * [DeepL](https://www.deepl.com/)
 * [OpenAI](https://openai.com/)
 * [Google Cloud Translations](https://cloud.google.com/translate)
 
-Each of the tools above comes with it's Pro's and Con's—For example, some might provide better translations, but come at a higher cost. Some might have easier APIs to work with as well. The next sections covers some important things to keep in mind when choosing a tool for your translations.
+Each of the tools above comes with pros and cons. For example, some might provide better translations, but come at a higher cost, which others might have APIs that are easier to work with. The following sections cover some important things to keep in mind when choosing a tool for your translations.
 
 ### Considerations
 
-As you choose a tool to do the translations, you'll also be responsible for setting up the utility that handles the translation itself. Here are some things to keep in mind:
+As you choose a tool for translations, you’ll also be responsible for setting up the utility that handles the translation itself. Here are some things to keep in mind:
 
 **Cost**
 
-The cost of the tool you use is a big thing to keep in mind. While some tools provide a free plan to get started with, many translation tools require a paid plan in order to use for more than demo purposes.&#x20;
+The cost of the tool you use is an important factor. While some tools provide a free plan to get you started, many translation tools require a paid plan in order to use them beyond demo purposes.&#x20;
 
-It's also important to think about the number of requests being made - is your team making a lot of changes to your content? Should your content be re-translated every time the content is updated?Should it be updated on a schedule?&#x20;
+It’s also important to think about the number of requests: is your team making a lot of changes to your content? Should your content be re-translated every time the content is updated? Should it be updated on a schedule?&#x20;
 
-**Requests**
+**Scope of changes**
 
-If your team is making many requests, you'll want to think about how your translations are handled. For instance, if you only update one page, you will want to make sure your utility is only translating that specific page, instead of re-translating your entire site.
+If your team is making lots of isolated changes, you’ll need to adapt your strategy to handle translations. For instance, if you only update a single page, make sure your utility is only translating that specific page — not the entire space.
 
-**Reviewing Content**
+**Reviewing content**
 
-While translation APIs are getting better each day, they're not perfect—And in many cases you'll want to have someone reviewing the translations that are made.
+While translation APIs are getting better each day, they’re not perfect — and in many cases you’ll want to have someone to review the translations.
 
-You'll want to think about how the translated documents are submitted back into the main content. Should they be introduced in the form of a pull request, so your team can review the translations first?
+Think about how the translated documents are submitted back into the main content. Should they be introduced in the form of a pull request, so your team can review the translations first?
 
-It's also important to keep in mind, that if an already reviewed translated page is updated in the main branch and you re-translate the page, it might not include the original reviewed translations. You'll be responsible for making sure the translated documents are up to date with the version you're happy with.
+It’s also important to keep in mind that if someone reviews a translated page, and it’s updated in the main branch, it will be translated again automatically, losing the changes from the review. You’ll be responsible for making sure the translated documents are up to date with the version that you’re happy with.
 
 **Maintenance**
 
-As with any project, maintenance is another key area of focus. You'll want to make sure you have appropriate resources for not only hooking up all the pieces, but to maintain your project in case things change, like updates to any of the utilities or tools you're using.
+As with any project, maintenance is another key area of focus. You need to make sure that once the original setup is implemented, you maintain it in case any part involved in the solution changes, such as updates done to the tools you’re using.
 
 ### Wrapping up
 
-GitBook allows you to extend the way you work by offering a flexible way of enhancing it's native workflows. On top of working with the workflows and actions mentioned in this guide, GitBook's Integration Platform provides a set of tools that give you even more control over your content.&#x20;
+GitBook lets you extend your workflows by seamlessly integrating with Git providers like GitHub or GitLab. On top of working with the workflows and actions mentioned in this guide, GitBook’s Integration Platform provides a set of tools that give you even more control over your content.&#x20;
 
-From our REST API to creating custom blocks in GitBook, you're able to integrate many of the tools you already know and love directly into the sites you're working on.
+From our REST API to creating custom blocks in GitBook, you can integrate many of the tools you already know and love directly into your sites.
 
-Make sure you head to [GitBook Integrations](https://www.gitbook.com/integrations) to learn more.
+Make sure you head to [GitBook Integrations](https://www.gitbook.com/integrations) to learn more!
