@@ -15,6 +15,7 @@
   * [Implement Visitor Authentication using Next.js and Clerk](getting-started/guides/implement-visitor-authentication-using-next.js-and-clerk.md)
   * [Implement Visitor Authentication using Node and Auth0](getting-started/guides/implement-visitor-authentication-using-node-and-auth0.md)
   * [Implement Visitor Authentication using Node and Okta](getting-started/guides/implement-visitor-authentication-using-node-and-okta.md)
+  * [Implement Visitor Authentication using Node and Azure AD](getting-started/guides/implement-visitor-authentication-using-node-and-azure-ad.md)
 * [GitHub Examples](https://github.com/GitbookIO/integrations)
 
 ## GitBook API
