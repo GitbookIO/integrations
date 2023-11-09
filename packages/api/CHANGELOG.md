@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.13.0
+
+### Minor Changes
+
+-   4a45acf: Update OpenAPI spec for API client to get customization API
+
 ## 0.12.0
 
 ### Minor Changes
