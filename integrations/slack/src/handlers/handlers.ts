@@ -1,9 +1,9 @@
 import { Logger } from '@gitbook/runtime';
 
+import type { SlashEvent } from './commands';
 import { notifyOnlySupportedThreads, queryLens, saveThread } from '../actions';
 import { SlackRuntimeContext } from '../configuration';
-import { isSaveThreadMessage, stripBotName } from '../utils';
-import type { SlashEvent } from './commands';
+import { isAllowedToRespond, isSaveThreadMessage, stripBotName } from '../utils';
 
 const logger = Logger('slack:api');
 
@@ -38,11 +38,11 @@ export async function queryLensSlashHandler(slashEvent: SlashEvent, context: Sla
  * Handle an Event request and route it to the GitBook Lens' query function.
  */
 export async function messageEventHandler(eventPayload: any, context: SlackRuntimeContext) {
-    // pull out required params from the slashEvent for queryLens
-    const { type, text, bot_id, thread_ts, channel, user, team } = eventPayload.event;
+    // pull out required params from the event for queryLens
+    const { type, text, thread_ts, channel, user, team } = eventPayload.event;
 
     // check for bot_id so that the bot doesn't trigger itself
-    if (['message', 'app_mention'].includes(type) && !bot_id) {
+    if (['message', 'app_mention'].includes(type) && isAllowedToRespond(eventPayload)) {
         // strip out the bot-name in the mention and account for user mentions within the query
         // @ts-ignore
         const parsedQuery = stripBotName(text, eventPayload.authorizations[0]?.user_id);
@@ -72,10 +72,10 @@ export async function messageEventHandler(eventPayload: any, context: SlackRunti
  */
 export async function appMentionEventHandler(eventPayload: any, context: SlackRuntimeContext) {
     // pull out required params from the slashEvent for queryLens
-    const { type, text, bot_id, thread_ts, channel, user, team } = eventPayload.event;
+    const { type, text, thread_ts, channel, user, team } = eventPayload.event;
 
     // check for bot_id so that the bot doesn't trigger itself
-    if (['message', 'app_mention'].includes(type) && !bot_id) {
+    if (['message', 'app_mention'].includes(type) && isAllowedToRespond(eventPayload)) {
         // strip out the bot-name in the mention and account for user mentions within the query
         // @ts-ignore
         const parsedMessage = stripBotName(text, eventPayload.authorizations[0]?.user_id);

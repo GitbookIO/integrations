@@ -67,9 +67,12 @@ export async function getInstallationConfig(context, externalId) {
 
 export async function parseEventPayload(req: Request) {
     // Clone the request so its body is still available to the fallback
-    const event = await req
-        .clone()
-        .json<{ event?: { type: string; [key: string]: any }; type?: string }>(); // TODO: untyping this for now
+    const event = await req.clone().json<{
+        event?: { type: string; [key: string]: any };
+        type?: string;
+        bot_id?: string;
+        is_ext_shared_channel?: boolean;
+    }>(); // TODO: untyping this for now
 
     return event;
 }
@@ -118,4 +121,12 @@ export function isSaveThreadMessage(message: string) {
     }
 
     return false;
+}
+
+// Checks whether we should respond to a slack event
+export function isAllowedToRespond(eventPayload: any) {
+    const { bot_id } = eventPayload.event;
+    const isExternalChannel = eventPayload.is_ext_shared_channel;
+
+    return !bot_id && !isExternalChannel;
 }
