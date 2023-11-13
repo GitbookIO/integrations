@@ -31,8 +31,11 @@ export function createSlackEventsHandler(
             });
         }
 
+        const isExternalChannel = eventPayload.is_ext_shared_channel;
+
         // check for bot_id so that the bot doesn't trigger itself
-        if (bot_id) {
+        // check whether this was triggered from an external channel
+        if (bot_id || isExternalChannel) {
             return new Response(null, {
                 status: 200,
             });
