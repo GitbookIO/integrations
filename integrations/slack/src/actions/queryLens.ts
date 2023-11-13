@@ -4,6 +4,7 @@ import type {
     Revision,
     RevisionPage,
     RevisionPageGroup,
+    SearchAIAnswerSource,
 } from '@gitbook/api';
 
 import {
@@ -38,7 +39,7 @@ function extractAllPages(rootPages: Array<RevisionPage>) {
  * Pulls out the top related pages from page IDs returned from Lens and resolves them using a provided GitBook API client.
  */
 async function getRelatedPages(params: {
-    pages?: SearchAIAnswer['pages'];
+    pages?: SearchAIAnswer['sources'];
     client: GitBookAPI;
     environment: SlackRuntimeEnvironment;
 }) {
@@ -53,7 +54,9 @@ async function getRelatedPages(params: {
 
     // collect all spaces from page results (and de-dupe)
     const allSpaces = sourcePages.reduce((accum, page) => {
-        accum.add(page.space);
+        if (page.type === 'page') {
+            accum.add(page.space);
+        }
 
         return accum;
     }, new Set<string>());
@@ -70,26 +73,50 @@ async function getRelatedPages(params: {
         return accum;
     }, []);
 
+    const getResolvedPage = (page: SearchAIAnswerSource & { type: 'page' }) => {
+        // TODO: we can probably combine finding the currentRevision with extracting the appropriate page
+        const currentRevision = allRevisions.find((revision: Revision) =>
+            extractAllPages(revision.pages).find((revisionPage) => revisionPage.id === page.page)
+        );
+
+        if (currentRevision) {
+            const sourceUrl = currentRevision.urls.public || currentRevision.urls.app;
+
+            const allRevisionPages = extractAllPages(currentRevision.pages);
+            const revisionPage = allRevisionPages.find((revPage) => revPage.id === page.page);
+
+            return {
+                sourceUrl,
+                page: revisionPage,
+            };
+        }
+    };
+
+    const getResolvedSnippet = (
+        snippet: SearchAIAnswerSource & { type: 'snippet' | 'capture' }
+    ) => {
+        const sourceUrl = snippet.urls.public || snippet.urls.app;
+
+        return {
+            sourceUrl,
+            page: revisionPage,
+        };
+    };
+
     // extract all related pages from the Revisions along with the related public URL
-    const relatedPages: Array<{ sourceUrl: string; page: RevisionPage }> = sourcePages.reduce(
+    const relatedSources: Array<{ sourceUrl: string; page: RevisionPage }> = sourcePages.reduce(
         (accum, page) => {
-            // TODO: we can probably combine finding the currentRevision with extracting the appropriate page
-            const currentRevision = allRevisions.find((revision: Revision) =>
-                extractAllPages(revision.pages).find(
-                    (revisionPage) => revisionPage.id === page.page
-                )
-            );
+            switch (page.type) {
+                case 'page':
+                    const resolvedPage = getResolvedPage(page);
+                    accum.push(resolvedPage);
+                    break;
 
-            if (currentRevision) {
-                const sourceUrl = currentRevision.urls.public || currentRevision.urls.app;
-
-                const allRevisionPages = extractAllPages(currentRevision.pages);
-                const revisionPage = allRevisionPages.find((revPage) => revPage.id === page.page);
-
-                accum.push({
-                    sourceUrl,
-                    page: revisionPage,
-                });
+                case 'snippet':
+                case 'capture':
+                    const resolvedSnippet = getResolvedSnippet(page);
+                    accum.push(resolvedSnippet);
+                    break;
             }
 
             return accum;
@@ -98,7 +125,7 @@ async function getRelatedPages(params: {
     );
 
     // filter related pages from current revision
-    return relatedPages;
+    return relatedSources;
 }
 
 const capitalizeFirstLetter = (text: string) =>
@@ -173,6 +200,7 @@ export async function queryLens({
     const messageTypePath = messageType === 'ephemeral' ? 'chat.postEphemeral' : 'chat.postMessage';
 
     if (answer && answer.text) {
+        console.log('==========', JSON.stringify(answer));
         const relatedPages = await getRelatedPages({
             pages: answer.pages,
             client,
