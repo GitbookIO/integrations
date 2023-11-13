@@ -38,7 +38,7 @@ export async function queryLensSlashHandler(slashEvent: SlashEvent, context: Sla
  * Handle an Event request and route it to the GitBook Lens' query function.
  */
 export async function messageEventHandler(eventPayload: any, context: SlackRuntimeContext) {
-    // pull out required params from the slashEvent for queryLens
+    // pull out required params from the event for queryLens
     const { type, text, bot_id, thread_ts, channel, user, team } = eventPayload.event;
     const isExternalChannel = eventPayload.is_ext_shared_channel;
 
