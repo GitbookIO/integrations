@@ -33,8 +33,6 @@ export function createSlackEventsHandler(
 
         // check for bot_id so that the bot doesn't trigger itself
         // check whether this was triggered from an external channel
-
-        // if (bot_id || isExternalChannel) {
         if (!isAllowedToRespond(eventPayload)) {
             return new Response(null, {
                 status: 200,
