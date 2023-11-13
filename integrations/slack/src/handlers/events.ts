@@ -1,7 +1,7 @@
 import { FetchEventCallback } from '@gitbook/runtime';
 
 import { SlackRuntimeContext } from '../configuration';
-import { parseEventPayload } from '../utils';
+import { isAllowedToRespond, parseEventPayload } from '../utils';
 
 /**
  * Handle an event from Slack.
@@ -16,7 +16,7 @@ export function createSlackEventsHandler(
         const eventPayload = await parseEventPayload(request);
 
         // url_verification doesn't have an event object
-        const { type, bot_id } = eventPayload.event ?? eventPayload;
+        const { type } = eventPayload.event ?? eventPayload;
 
         const handler = handlers[type];
 
@@ -31,11 +31,11 @@ export function createSlackEventsHandler(
             });
         }
 
-        const isExternalChannel = eventPayload.is_ext_shared_channel;
-
         // check for bot_id so that the bot doesn't trigger itself
         // check whether this was triggered from an external channel
-        if (bot_id || isExternalChannel) {
+
+        // if (bot_id || isExternalChannel) {
+        if (!isAllowedToRespond(eventPayload)) {
             return new Response(null, {
                 status: 200,
             });

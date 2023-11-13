@@ -122,3 +122,11 @@ export function isSaveThreadMessage(message: string) {
 
     return false;
 }
+
+// Checks whether we should respond to a slack event
+export function isAllowedToRespond(eventPayload: any) {
+    const { bot_id } = eventPayload.event;
+    const isExternalChannel = eventPayload.is_ext_shared_channel;
+
+    return !bot_id && !isExternalChannel;
+}
