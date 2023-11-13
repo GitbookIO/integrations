@@ -112,6 +112,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         verifySlackRequest,
         createSlackCommandsHandler({
             '/gitbook': queryLensSlashHandler,
+            '/gitbookstaging': queryLensSlashHandler, // needed to allow our staging app to co-exist with the prod app
         }),
         acknowledgeSlackRequest
     );
