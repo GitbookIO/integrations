@@ -53,13 +53,13 @@ export function PagesBlock(params: {
     ];
 }
 
-export function ConversationSavedBlock(captureUrl: string) {
+export function ConversationSavedBlock(snippetsUrl: string) {
     return [
         {
             type: 'section',
             text: {
                 type: 'mrkdwn',
-                text: `:white_check_mark: Conversation saved in <${captureUrl}|GitBook>`,
+                text: `:white_check_mark: Conversation saved in <${snippetsUrl}|GitBook>`,
             },
         },
     ];

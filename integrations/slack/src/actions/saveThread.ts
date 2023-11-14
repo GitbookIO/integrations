@@ -7,7 +7,7 @@ const RUNTIME_TIME_LIMIT = 30000;
 const APP_ORG_URL = 'https://app.gitbook.com/o/';
 
 /**
- *  Save thread in GitBook as a summary (capture)
+ *  Save thread in GitBook as a summary (snippet)
  */
 export async function saveThread(
     {
@@ -28,7 +28,7 @@ export async function saveThread(
     // acknowledge the request to the user
     notifySavingThread({ channel: channelId, thread_ts, userId }, context, accessToken);
 
-    const capturesURL = `${APP_ORG_URL}${installation.target.organization}/captures`;
+    const snippetsURL = `${APP_ORG_URL}${installation.target.organization}/snippets`;
     // In some cases, the runtime limit is reached before the capture is finished (e.g large threads)
     // we notify the user before the runtime limit is reached that the capture
     const timeoutId = registerNotifyBeforeRuntimeLimit(
@@ -37,7 +37,7 @@ export async function saveThread(
             thread_ts,
             userId,
         },
-        capturesURL,
+        snippetsURL,
         context,
         accessToken
     );
@@ -267,7 +267,7 @@ function registerNotifyBeforeRuntimeLimit(
         thread_ts: string;
         userId: string;
     },
-    capturesUrl: string,
+    snippetsUrl: string,
     context: SlackRuntimeContext,
     accessToken: string
 ) {
@@ -285,7 +285,7 @@ function registerNotifyBeforeRuntimeLimit(
                             type: 'section',
                             text: {
                                 type: 'mrkdwn',
-                                text: `Thread is being saved. You'll find the capture in <${capturesUrl}|GitBook> shortly.`,
+                                text: `Thread is being saved. You'll find the snippet in <${snippetsUrl}|GitBook> shortly.`,
                             },
                         },
                     ],
