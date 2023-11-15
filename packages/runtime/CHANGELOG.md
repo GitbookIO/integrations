@@ -1,5 +1,16 @@
 # @gitbook/runtime
 
+## 0.10.0
+
+### Minor Changes
+
+-   619e1e9: Add support for using functions as components in JSX
+
+### Patch Changes
+
+-   Updated dependencies [619e1e9]
+    -   @gitbook/api@0.14.0
+
 ## 0.9.0
 
 ### Minor Changes
