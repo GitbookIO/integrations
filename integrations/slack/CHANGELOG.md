@@ -1,5 +1,14 @@
 # @gitbook/integration-slack
 
+## 1.0.2
+
+### Patch Changes
+
+-   6faa977: Update term used in Save
+-   0634853: Restrict usage from external connected slack channels
+-   Updated dependencies [619e1e9]
+    -   @gitbook/runtime@0.10.0
+
 ## 1.0.1
 
 ### Patch Changes
