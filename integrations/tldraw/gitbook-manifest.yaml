@@ -1,0 +1,21 @@
+name: tldraw
+title: tldraw
+organization: tldraw
+visibility: public
+icon: ./assets/icon.png
+description: 'Add a tldraw project'
+script: src/index.tsx
+scopes: []
+blocks:
+    - id: tldraw-block
+      title: tldraw
+      description: Add a tldraw project.
+      urlUnfurl:
+          - https://tldraw.com/r/**
+          - https://tldraw.com/v/**
+          - https://tldraw.com/s/**
+          - https://www.tldraw.com/r/**
+          - https://www.tldraw.com/v/**
+          - https://www.tldraw.com/s/**
+
+secrets: {}
