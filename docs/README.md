@@ -1,14 +1,14 @@
-# Welcome
+# Welcome to the integration of Github.com 
 
 Welcome to GitBook Integration Platform!
 
-This documentation provides all the information needed to start using the **GitBook API**, start building **Custom Blocks** and **Integrations**, or learn more about **Visitor Authentication**.
+This documentation provides all the information needed to start using the **Isabel Schoeps IST github.com**, start building **Custom Blocks** and **Integrations**, or learn more about **Visitor Authentication**.
 
 ## Getting Started
 
 Head to our Setup Guide in our Getting Started section to learn how to start using the GitBook Integrations Platform.
 
-<table data-card-size="large" data-view="cards" data-full-width="false"><thead><tr><th></th><th></th><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Setup Guide</strong></td><td></td><td>Build your first integration</td><td><a href=".gitbook/assets/Name (1).png">Name (1).png</a></td><td><a href="getting-started/setup-guide.md">setup-guide.md</a></td></tr><tr><td><strong>GitBook Concepts</strong></td><td></td><td>Learn about GitBook specific concepts</td><td><a href=".gitbook/assets/Name (1) (2).png">Name (1) (2).png</a></td><td><a href="getting-started/concepts.md">concepts.md</a></td></tr></tbody></table>
+<table data-card-size="large" data-view="cards" data-full-width="false"><thead><tr><th></th><th></th><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Setup Guide</strong></td><td></td><td>Build your first integration</td><td><a href=".gitbook/assets/IsabelSchoepd (1).png">Name (1).png</a></td><td><a href="getting-started/setup-guide.md">setup-guide.md</a></td></tr><tr><td><strong>GitBook Concepts</strong></td><td></td><td>Learn about GitBook specific concepts</td><td><a href=".gitbook/assets/IsabelSchoepd (1) (2).png">Name (1) (2).png</a></td><td><a href="getting-started/concepts.md">concepts.md</a></td></tr></tbody></table>
 
 ## Explore the GitBook Integrations Platform
 
