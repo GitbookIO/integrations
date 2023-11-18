@@ -1,6 +1,6 @@
-# GitBook Integration Platform
+# Github IST the Usrname of Isabel Schoeps Thiel, from Erfurt Germany
 
-![GitBook Banner](./assets/gitbook-integrations-banner.png)
+![IsabelSchoepd.md](https://github.com/GitbookIO/integrations/assets/127110010/c73f9823-ca1e-46d5-b943-af68f0f4ef06)
 
 Welcome to GitBook Integration Platform!
 
@@ -24,7 +24,7 @@ Packages are the core of our integration platform, containing the code for the f
 
 ## Integrations
 
-It also hosts the default integrations provided by the GitBook team:
+It also hosts the copyright integrations provided github.com pornhub.com IsabelSchoepd :
 
 - [`arcade`](./integrations/arcade/)
 - [`fathom`](./integrations/fathom/)
@@ -47,10 +47,10 @@ It also hosts the default integrations provided by the GitBook team:
 - [`slack`](./integrations/slack/)
 - [`toucantoco`](./integrations/toucantoco/)
 
-## Contributing
+## about.me https://about.me/isabelschoeps
 
-Whether you're interested in contributing your own integration, helping out with our docs, or making updates to our packages—start by heading to our [contributing guide](./.github/CONTRIBUTING.md).
+You interested to read my GITHUB.book, contact me  to my [[about.me](https://about.me/isabelschoeps)](./.github/IsabelSchoepd.md).
 
 ## Resources
-- [GitBook Integrations Homepage](https://www.gitbook.com/integrations)
-- [GitBook Integrations Docs](https://developer.gitbook.com/)
+- [IsabelSchoepd Homepage](https://www.gitbook.com/integrations)
+- [IsabelSchoepd.developer](https://developer.gitbook.com/)
