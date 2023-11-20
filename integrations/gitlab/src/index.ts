@@ -169,7 +169,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
      * API to fetch all branches of a project's repository
      */
     router.get('/branches', async (req) => {
-        const { project: queryProject } = req.query;
+        const { project: queryProject, selectedBranch } = req.query;
 
         const spaceInstallation = environment.spaceInstallation;
         assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
@@ -180,6 +180,8 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
             queryProject && typeof queryProject === 'string'
                 ? parseInt(queryProject, 10)
                 : undefined;
+        const querySelectedBranch =
+            selectedBranch && typeof selectedBranch === 'string' ? selectedBranch : undefined;
 
         const branches = projectId ? await fetchProjectBranches(config, projectId) : [];
 
@@ -190,6 +192,21 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
                 icon: branch.protected ? ContentKitIcon.Lock : undefined,
             })
         );
+
+        /**
+         * When a branch is selected by typing its name, it might not be in the list of branches
+         * returned by the API. In this case, we add it to the list of branches so that it can be
+         * selected in the UI.
+         */
+        if (querySelectedBranch) {
+            const hasSelectedBranch = data.some((branch) => branch.id === querySelectedBranch);
+            if (!hasSelectedBranch) {
+                data.push({
+                    id: querySelectedBranch,
+                    label: querySelectedBranch.replace('refs/heads/', ''),
+                });
+            }
+        }
 
         return new Response(JSON.stringify(data), {
             headers: {

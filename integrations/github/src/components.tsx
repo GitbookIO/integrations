@@ -66,7 +66,9 @@ export const configBlock = createComponent<
                     ...element,
                     state: {
                         ...element.state,
-                        branch: action.branch,
+                        branch: action.branch.includes('refs/heads/')
+                            ? action.branch
+                            : `refs/heads/${action.branch}`,
                     },
                 };
             case 'toggle.customTemplate':
@@ -261,6 +263,8 @@ export const configBlock = createComponent<
                                                         query: {
                                                             repository:
                                                                 element.dynamicState('repository'),
+                                                            selectedBranch:
+                                                                element.dynamicState('branch'),
                                                             v: versionHash,
                                                         },
                                                     },

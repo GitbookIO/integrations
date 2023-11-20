@@ -106,7 +106,9 @@ export const configBlock = createComponent<
                     ...element,
                     state: {
                         ...element.state,
-                        branch: action.branch,
+                        branch: action.branch.includes('refs/heads/')
+                            ? action.branch
+                            : `refs/heads/${action.branch}`,
                     },
                 };
             }
@@ -317,6 +319,8 @@ export const configBlock = createComponent<
                                                         query: {
                                                             project:
                                                                 element.dynamicState('project'),
+                                                            selectedBranch:
+                                                                element.dynamicState('branch'),
                                                             v: versionHash,
                                                         },
                                                     },

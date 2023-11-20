@@ -267,12 +267,14 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
      * API to fetch all branches of an account's repository
      */
     router.get('/branches', async (req) => {
-        const { repository: queryRepository } = req.query;
+        const { repository: queryRepository, selectedBranch } = req.query;
 
         const repositoryId =
             queryRepository && typeof queryRepository === 'string'
                 ? parseInt(queryRepository, 10)
                 : undefined;
+        const querySelectedBranch =
+            selectedBranch && typeof selectedBranch === 'string' ? selectedBranch : undefined;
 
         const branches = repositoryId ? await fetchRepositoryBranches(context, repositoryId) : [];
 
@@ -283,6 +285,21 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                 icon: branch.protected ? ContentKitIcon.Lock : undefined,
             })
         );
+
+        /**
+         * When a branch is selected by typing its name, it might not be in the list of branches
+         * returned by the API. In this case, we add it to the list of branches so that it can be
+         * selected in the UI.
+         */
+        if (querySelectedBranch) {
+            const hasSelectedBranch = data.some((branch) => branch.id === querySelectedBranch);
+            if (!hasSelectedBranch) {
+                data.push({
+                    id: querySelectedBranch,
+                    label: querySelectedBranch.replace('refs/heads/', ''),
+                });
+            }
+        }
 
         return new Response(JSON.stringify(data), {
             headers: {
