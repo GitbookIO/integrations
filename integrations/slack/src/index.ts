@@ -48,7 +48,7 @@ const handleSpaceContentUpdated: EventCallback<
      *
      *    Content of *Space* has been updated.
      *
-     *    Summary of Changes:
+     *    Summary of changes:
      *    • New pages: Page1, Page2
      *    • Modified pages: Page3
      *    • Deleted pages: Page4, Page5
@@ -109,7 +109,7 @@ const handleSpaceContentUpdated: EventCallback<
         editedFiles.length > 0 ||
         deletedFiles.length > 0
     ) {
-        notificationText += '\n\nSummary of Changes:';
+        notificationText += '\n\nSummary of changes:';
 
         if (createdPages.length > 0) {
             notificationText += `\n• New pages: ${createdPages.join(', ')}`;
