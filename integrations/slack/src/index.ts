@@ -57,7 +57,7 @@ const handleSpaceContentUpdated: EventCallback<
      *    • Modified files: File3
      *    • Deleted files: File4
      *
-     *    And another X changes are not listed here.
+     *    And another X changes not listed here.
      */
 
     const createdPages = [];
@@ -96,7 +96,9 @@ const handleSpaceContentUpdated: EventCallback<
         }
     });
 
-    let notificationText = `Content of *${space.title || 'Space'}* has been updated.`;
+    let notificationText = `Content of *<${space.urls.app}|${
+        space.title || 'Space'
+    }>* has been updated.`;
 
     if (
         createdPages.length > 0 ||
