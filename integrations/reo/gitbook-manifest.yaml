@@ -15,7 +15,7 @@ scopes:
     - space:script:inject
 organization: d8f63b60-89ae-11e7-8574-5927d48c4877
 contentSecurityPolicy:
-    script-src: static.reo.dev;
+    script-src: static.reo.dev www.ipapi.co;
 summary: |
     # Overview
     Reo.Dev is the Business to Developer (B2D) ABM platform that helps you find revenue opportunity from developer activity.
