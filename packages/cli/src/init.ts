@@ -171,7 +171,7 @@ export async function extendPackageJson(dirPath: string, projectName: string): P
  */
 export function installDependencies(dirPath: string): Promise<void> {
     return new Promise((resolve, reject) => {
-        const install = spawn('npm', ['install'], {
+        const install = spawn(/^win/.test(process.platform) ? 'npm.cmd' : 'npm', ['install'], {
             stdio: 'inherit',
             cwd: dirPath,
         });
