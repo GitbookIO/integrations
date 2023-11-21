@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.15.0
+
+### Minor Changes
+
+-   634cd65: Bump API client to use the latest spec
+
 ## 0.14.0
 
 ### Minor Changes
