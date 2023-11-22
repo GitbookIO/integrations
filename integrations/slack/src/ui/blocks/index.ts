@@ -1,4 +1,4 @@
-import { RevisionPage } from '@gitbook/api';
+import { RevisionPage, SearchAIAnswer } from '@gitbook/api';
 
 // Slack only encodes these specific characters so we need to remove them in the output (specifically used for inputs to slack)
 export function decodeSlackEscapeChars(text: string) {
@@ -23,7 +23,7 @@ export function PageBlock(page: RevisionPage, sourceUrl: string) {
 
 export function PagesBlock(params: {
     title?: string;
-    items: Array<{ sourceUrl: string; page: RevisionPage }>;
+    items: Array<{ sourceUrl: string; page: SearchAIAnswer }>;
 }) {
     const { title, items } = params;
 
