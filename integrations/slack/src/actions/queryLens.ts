@@ -5,7 +5,6 @@ import type {
     RevisionPage,
     RevisionPageGroup,
     SearchAIAnswerSource,
-    Capture,
 } from '@gitbook/api';
 
 import {
@@ -35,7 +34,11 @@ function extractAllPages(rootPages: Array<RevisionPage>) {
 
     return result;
 }
-
+export type RelatedSource = {
+    id: string;
+    sourceUrl: string;
+    page: { path: string; title: string };
+};
 /*
  * Pulls out the top related pages from page IDs returned from Lens and resolves them using a provided GitBook API client.
  */
@@ -44,7 +47,7 @@ async function getRelatedPages(params: {
     client: GitBookAPI;
     environment: SlackRuntimeEnvironment;
     organization: string;
-}) {
+}): Promise<RelatedSource[]> {
     const { pages, client, organization } = params;
 
     if (!pages || pages.length === 0) {
@@ -87,56 +90,72 @@ async function getRelatedPages(params: {
             const revisionPage = allRevisionPages.find((revPage) => revPage.id === page.page);
 
             return {
+                id: page.page,
                 sourceUrl,
                 page: revisionPage,
-            };
+            } as RelatedSource;
         }
     };
 
     const getResolvedSnippet = async (
         source: SearchAIAnswerSource & { type: 'snippet' | 'capture' }
-    ) => {
+    ): Promise<RelatedSource> => {
         try {
             const snippetRequest = await client.orgs.getCapture(organization, source.captureId);
             const snippet = snippetRequest.data;
-            // const sourceUrl = snippet.urls?.public || snippet.urls.app;
-            const sourceUrl = snippet.externalURL;
+            console.log('URLS', snippet.urls);
+
+            const publicUrl = `https://app.gitbook.com/o/${organization}`; // TODO replace with actual org public url
+            const sourceUrl = `${publicUrl}/snippets/${snippet.id}`;
 
             return {
+                id: snippet.id,
                 sourceUrl,
                 page: { path: '', title: snippet.title },
             };
         } catch (e) {
             console.log(e);
+            throw e;
         }
     };
 
-    const resolvedSnippets = await Promise.allSettled(
+    const resolvedSnippetsPromises = await Promise.allSettled(
         sourcePages
             .filter((source) => source.type === 'capture' || source.type === 'snippet')
             .map(getResolvedSnippet)
     );
 
+    const resolvedSnippets = resolvedSnippetsPromises.reduce((accum, result) => {
+        if (result.status === 'fulfilled') {
+            accum.push(result.value);
+        }
+
+        return accum;
+    }, [] as RelatedSource[]);
+
+    // { type: 'capture', captureId: '72', source: 'slack' }
     // extract all related pages from the Revisions along with the related public URL
-    const relatedSources: Array<{ sourceUrl: string; page: SearchAIAnswerSource }> =
-        sourcePages.reduce((accum, source) => {
-            switch (source.type) {
-                case 'page':
-                    const resolvedPage = getResolvedPage(source);
-                    accum.push(resolvedPage);
-                    break;
+    const relatedSources: Array<RelatedSource> = sourcePages.reduce((accum, source) => {
+        switch (source.type) {
+            case 'page':
+                const resolvedPage = getResolvedPage(source);
+                accum.push(resolvedPage);
+                break;
 
-                case 'snippet':
-                case 'capture':
-                    const resolvedSnippet = resolvedSnippets.find(
-                        (snippet) => snippet.sourceUrl === source.captureId
-                    );
+            case 'snippet':
+            case 'capture':
+                const resolvedSnippet = resolvedSnippets.find(
+                    (snippet) => snippet.id === source.captureId
+                );
+
+                if (resolvedSnippet) {
                     accum.push(resolvedSnippet);
-                    break;
-            }
+                }
+                break;
+        }
 
-            return accum;
-        }, []);
+        return accum;
+    }, []);
 
     // filter related pages from current revision
     return relatedSources;

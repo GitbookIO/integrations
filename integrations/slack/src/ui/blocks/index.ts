@@ -1,4 +1,5 @@
 import { RevisionPage, SearchAIAnswer } from '@gitbook/api';
+import { RelatedSource } from '../../actions/queryLens';
 
 // Slack only encodes these specific characters so we need to remove them in the output (specifically used for inputs to slack)
 export function decodeSlackEscapeChars(text: string) {
@@ -11,7 +12,7 @@ export function decodeSlackEscapeChars(text: string) {
     }, text);
 }
 
-export function PageBlock(page: RevisionPage, sourceUrl: string) {
+export function PageBlock(page: { path: string; title: string }, sourceUrl: string) {
     // TODO: note for review. is this the best way to do this?
     const nonRevisionPublicUrl = sourceUrl.split('~/')[0];
     const url = `${nonRevisionPublicUrl}${page.path}`;
@@ -21,10 +22,7 @@ export function PageBlock(page: RevisionPage, sourceUrl: string) {
     };
 }
 
-export function PagesBlock(params: {
-    title?: string;
-    items: Array<{ sourceUrl: string; page: SearchAIAnswer }>;
-}) {
+export function PagesBlock(params: { title?: string; items: Array<RelatedSource> }) {
     const { title, items } = params;
 
     const blocks = items.reduce<Array<any>>((acc, pageData) => {
