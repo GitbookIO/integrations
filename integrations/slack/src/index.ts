@@ -1,3 +1,4 @@
+import { RevisionSemanticChangeType } from '@gitbook/api';
 import { createIntegration, EventCallback } from '@gitbook/runtime';
 
 import { SlackRuntimeContext } from './configuration';
@@ -26,7 +27,116 @@ const handleSpaceContentUpdated: EventCallback<
         return;
     }
 
+    const { data: semanticChanges } = await api.spaces.getRevisionSemanticChanges(
+        event.spaceId,
+        event.revisionId,
+        {
+            // Ignore git metadata and custom field changes
+            metadata: false,
+        }
+    );
+
+    if (semanticChanges.changes.length === 0) {
+        // No changes to notify about
+        return;
+    }
+
     const { data: space } = await api.spaces.getSpaceById(event.spaceId);
+
+    /*
+     * Build a notification that looks something like this:
+     *
+     *    Content of *Space* has been updated.
+     *
+     *    Summary of changes:
+     *    • New pages: Page1, Page2
+     *    • Modified pages: Page3
+     *    • Deleted pages: Page4, Page5
+     *    • Moved pages: Page6
+     *    • New files: File1, File2
+     *    • Modified files: File3
+     *    • Deleted files: File4
+     *
+     *    And another X changes not listed here.
+     */
+
+    const createdPages = [];
+    const editedPages = [];
+    const deletedPages = [];
+    const movedPages = [];
+    const createdFiles = [];
+    const editedFiles = [];
+    const deletedFiles = [];
+
+    semanticChanges.changes.forEach((change) => {
+        switch (change.type) {
+            case RevisionSemanticChangeType.PageCreated:
+                createdPages.push(change.page.title);
+                break;
+            case RevisionSemanticChangeType.PageEdited:
+                editedPages.push(change.page.title);
+                break;
+            case RevisionSemanticChangeType.PageDeleted:
+                deletedPages.push(change.page.title);
+                break;
+            case RevisionSemanticChangeType.PageMoved:
+                movedPages.push(change.page.title);
+                break;
+            case RevisionSemanticChangeType.FileCreated:
+                createdFiles.push(change.file.name);
+                break;
+            case RevisionSemanticChangeType.FileEdited:
+                editedFiles.push(change.file.name);
+                break;
+            case RevisionSemanticChangeType.FileDeleted:
+                deletedFiles.push(change.file.name);
+                break;
+            default:
+                break;
+        }
+    });
+
+    let notificationText = `Content of *<${space.urls.app}|${
+        space.title || 'Space'
+    }>* has been updated.`;
+
+    if (
+        createdPages.length > 0 ||
+        editedPages.length > 0 ||
+        deletedPages.length > 0 ||
+        movedPages.length > 0 ||
+        createdFiles.length > 0 ||
+        editedFiles.length > 0 ||
+        deletedFiles.length > 0
+    ) {
+        notificationText += '\n\nSummary of changes:';
+
+        if (createdPages.length > 0) {
+            notificationText += `\n• New pages: ${createdPages.join(', ')}`;
+        }
+        if (editedPages.length > 0) {
+            notificationText += `\n• Modified pages: ${editedPages.join(', ')}`;
+        }
+        if (deletedPages.length > 0) {
+            notificationText += `\n• Deleted pages: ${deletedPages.join(', ')}`;
+        }
+        if (movedPages.length > 0) {
+            notificationText += `\n• Moved pages: ${movedPages.join(', ')}`;
+        }
+        if (createdFiles.length > 0) {
+            notificationText += `\n• New files: ${createdFiles.join(', ')}`;
+        }
+        if (editedFiles.length > 0) {
+            notificationText += `\n• Modified files: ${editedFiles.join(', ')}`;
+        }
+        if (deletedFiles.length > 0) {
+            notificationText += `\n• Deleted files: ${deletedFiles.join(', ')}`;
+        }
+
+        if (semanticChanges.more > 0) {
+            notificationText += `\n\nAnd another ${semanticChanges.more} changes not listed here.`;
+        }
+    }
 
     await slackAPI(context, {
         method: 'POST',
@@ -38,9 +148,7 @@ const handleSpaceContentUpdated: EventCallback<
                     type: 'section',
                     text: {
                         type: 'mrkdwn',
-                        text: `Content of *<${space.urls.app}|${
-                            space.title || 'Space'
-                        }>* has been updated`,
+                        text: notificationText,
                     },
                 },
             ],
