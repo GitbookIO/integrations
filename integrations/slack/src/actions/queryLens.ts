@@ -5,6 +5,7 @@ import type {
     RevisionPage,
     RevisionPageGroup,
     SearchAIAnswerSource,
+    Capture,
 } from '@gitbook/api';
 
 import {
@@ -42,7 +43,7 @@ async function getRelatedPages(params: {
     pages?: SearchAIAnswer['sources'];
     client: GitBookAPI;
     environment: SlackRuntimeEnvironment;
-  organization: string;
+    organization: string;
 }) {
     const { pages, client, organization } = params;
 
@@ -95,31 +96,30 @@ async function getRelatedPages(params: {
     const getResolvedSnippet = async (
         source: SearchAIAnswerSource & { type: 'snippet' | 'capture' }
     ) => {
+        try {
+            const snippetRequest = await client.orgs.getCapture(organization, source.captureId);
+            const snippet = snippetRequest.data;
+            // const sourceUrl = snippet.urls?.public || snippet.urls.app;
+            const sourceUrl = snippet.externalURL;
 
-      console.log("RESOLVING", source);
-      try {
-      const snippet = await client.orgs.getCapture(organization, source.captureId);
-      console.log("RESOLVED", snippet);
-        // const sourceUrl = snippet.urls?.public || snippet.urls.app;
-        const sourceUrl = source.captureId;
-
-        return {
-            sourceUrl,
-            page: {path: 'blah', title: 'a snippet'},
-        };
-      } catch (e) {
-        console.log(e);
-      }
+            return {
+                sourceUrl,
+                page: { path: '', title: snippet.title },
+            };
+        } catch (e) {
+            console.log(e);
+        }
     };
 
-  const resolvedSnippets = await Promise.allSettled(sourcePages
-    .filter((source) => source.type === 'capture' || source.type === 'snippet')
-    .map(getResolvedSnippet));
-  console.log('all resolved', resolvedSnippets);
+    const resolvedSnippets = await Promise.allSettled(
+        sourcePages
+            .filter((source) => source.type === 'capture' || source.type === 'snippet')
+            .map(getResolvedSnippet)
+    );
 
     // extract all related pages from the Revisions along with the related public URL
-    const relatedSources: Array<{ sourceUrl: string; page: SearchAIAnswerSource }> = sourcePages.reduce(
-        (accum, source) => {
+    const relatedSources: Array<{ sourceUrl: string; page: SearchAIAnswerSource }> =
+        sourcePages.reduce((accum, source) => {
             switch (source.type) {
                 case 'page':
                     const resolvedPage = getResolvedPage(source);
@@ -128,15 +128,15 @@ async function getRelatedPages(params: {
 
                 case 'snippet':
                 case 'capture':
-                    const resolvedSnippet = resolvedSnippets.find(snippet => snippet.sourceUrl === source.captureId);
+                    const resolvedSnippet = resolvedSnippets.find(
+                        (snippet) => snippet.sourceUrl === source.captureId
+                    );
                     accum.push(resolvedSnippet);
                     break;
             }
 
             return accum;
-        },
-        []
-    );
+        }, []);
 
     // filter related pages from current revision
     return relatedSources;
@@ -214,14 +214,12 @@ export async function queryLens({
     const messageTypePath = messageType === 'ephemeral' ? 'chat.postEphemeral' : 'chat.postMessage';
 
     if (answer && answer.text) {
-        console.log('==========', JSON.stringify(answer.sources));
         const relatedPages = await getRelatedPages({
             pages: answer.sources,
             client,
             environment,
-          organization: installation.target.organization,
+            organization: installation.target.organization,
         });
-      console.log('RELATED', JSON.stringify(relatedPages));
 
         const answerText = capitalizeFirstLetter(answer.text);
 
