@@ -125,7 +125,7 @@ async function getRelatedSources(params: {
     const getResolvedSnippet = async (
         source: SearchAIAnswerSource & { type: 'snippet' | 'capture' }
     ): Promise<RelatedSource> => {
-        const snippetRequest = await client.orgs.getCapture(organization, source.captureId);
+        const snippetRequest = await client.orgs.getSnippet(organization, source.captureId);
         const snippet = snippetRequest.data;
 
         const sourceUrl = snippet.urls.app;
