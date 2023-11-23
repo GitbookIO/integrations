@@ -14,7 +14,7 @@ import {
 } from '../configuration';
 import { acknowledgeQuery } from '../middlewares';
 import { slackAPI } from '../slack';
-import { PagesBlock, QueryDisplayBlock, ShareTools, decodeSlackEscapeChars, Spacer } from '../ui';
+import { QueryDisplayBlock, ShareTools, decodeSlackEscapeChars, Spacer, SourcesBlock } from '../ui';
 import { getInstallationApiClient, stripBotName, stripMarkdown } from '../utils';
 
 // Recursively extracts all pages from a collection of RevisionPages
@@ -126,7 +126,6 @@ async function getRelatedPages(params: {
         return accum;
     }, [] as RelatedSource[]);
 
-    // { type: 'capture', captureId: '72', source: 'slack' }
     // extract all related pages from the Revisions along with the related public URL
     const relatedSources: Array<RelatedSource> = sourcePages.reduce((accum, source) => {
         switch (source.type) {
@@ -254,7 +253,7 @@ export async function queryLens({
             {
                 type: 'divider',
             },
-            ...PagesBlock({
+            ...SourcesBlock({
                 title: 'Sources',
                 items: relatedPages,
             }),
