@@ -100,23 +100,16 @@ async function getRelatedPages(params: {
     const getResolvedSnippet = async (
         source: SearchAIAnswerSource & { type: 'snippet' | 'capture' }
     ): Promise<RelatedSource> => {
-        try {
-            const snippetRequest = await client.orgs.getCapture(organization, source.captureId);
-            const snippet = snippetRequest.data;
-            console.log('URLS', snippet.urls);
+        const snippetRequest = await client.orgs.getCapture(organization, source.captureId);
+        const snippet = snippetRequest.data;
 
-            const publicUrl = `https://app.gitbook.com/o/${organization}`; // TODO replace with actual org public url
-            const sourceUrl = `${publicUrl}/snippets/${snippet.id}`;
+        const sourceUrl = snippet.urls.app;
 
-            return {
-                id: snippet.id,
-                sourceUrl,
-                page: { path: '', title: snippet.title },
-            };
-        } catch (e) {
-            console.log(e);
-            throw e;
-        }
+        return {
+            id: snippet.id,
+            sourceUrl,
+            page: { path: '', title: snippet.title },
+        };
     };
 
     const resolvedSnippetsPromises = await Promise.allSettled(
