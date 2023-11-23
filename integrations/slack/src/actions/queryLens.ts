@@ -4,6 +4,7 @@ import type {
     Revision,
     RevisionPage,
     RevisionPageGroup,
+    SearchAIAnswerSource,
 } from '@gitbook/api';
 
 import {
@@ -13,96 +14,14 @@ import {
 } from '../configuration';
 import { acknowledgeQuery } from '../middlewares';
 import { slackAPI } from '../slack';
-import { PagesBlock, QueryDisplayBlock, ShareTools, decodeSlackEscapeChars, Spacer } from '../ui';
+import { QueryDisplayBlock, ShareTools, decodeSlackEscapeChars, Spacer, SourcesBlock } from '../ui';
 import { getInstallationApiClient, stripBotName, stripMarkdown } from '../utils';
 
-// Recursively extracts all pages from a collection of RevisionPages
-function extractAllPages(rootPages: Array<RevisionPage>) {
-    const result: Array<RevisionPage> = [];
-
-    function recurse(pages: Array<RevisionPage>) {
-        for (const page of pages) {
-            result.push(page);
-            if ((page as RevisionPageGroup).pages?.length > 0) {
-                recurse((page as RevisionPageGroup).pages);
-            }
-        }
-    }
-
-    recurse(rootPages);
-
-    return result;
-}
-
-/*
- * Pulls out the top related pages from page IDs returned from Lens and resolves them using a provided GitBook API client.
- */
-async function getRelatedPages(params: {
-    pages?: SearchAIAnswer['pages'];
-    client: GitBookAPI;
-    environment: SlackRuntimeEnvironment;
-}) {
-    const { pages, client } = params;
-
-    if (!pages || pages.length === 0) {
-        return [];
-    }
-
-    // return top 3 pages (pages are ordered by score by default)
-    const sourcePages = pages.slice(0, 3);
-
-    // collect all spaces from page results (and de-dupe)
-    const allSpaces = sourcePages.reduce((accum, page) => {
-        accum.add(page.space);
-
-        return accum;
-    }, new Set<string>());
-
-    // query for all Revisions (accounting for spaces that might not exist or any errors)
-    const allRevisions: Array<Revision> = (
-        await Promise.allSettled(
-            Array.from(allSpaces).map((space) => client.spaces.getCurrentRevision(space))
-        )
-    ).reduce((accum, result) => {
-        if (result.status === 'fulfilled') {
-            accum.push(result.value.data);
-        }
-        return accum;
-    }, []);
-
-    // extract all related pages from the Revisions along with the related public URL
-    const relatedPages: Array<{ sourceUrl: string; page: RevisionPage }> = sourcePages.reduce(
-        (accum, page) => {
-            // TODO: we can probably combine finding the currentRevision with extracting the appropriate page
-            const currentRevision = allRevisions.find((revision: Revision) =>
-                extractAllPages(revision.pages).find(
-                    (revisionPage) => revisionPage.id === page.page
-                )
-            );
-
-            if (currentRevision) {
-                const sourceUrl = currentRevision.urls.public || currentRevision.urls.app;
-
-                const allRevisionPages = extractAllPages(currentRevision.pages);
-                const revisionPage = allRevisionPages.find((revPage) => revPage.id === page.page);
-
-                accum.push({
-                    sourceUrl,
-                    page: revisionPage,
-                });
-            }
-
-            return accum;
-        },
-        []
-    );
-
-    // filter related pages from current revision
-    return relatedPages;
-}
-
-const capitalizeFirstLetter = (text: string) =>
-    text?.trim().charAt(0).toUpperCase() + text?.trim().slice(1);
+export type RelatedSource = {
+    id: string;
+    sourceUrl: string;
+    page: { path?: string; title: string };
+};
 
 export interface IQueryLens {
     channelId: string;
@@ -122,6 +41,141 @@ export interface IQueryLens {
     threadId?: string;
 
     authorization?: string;
+}
+
+// Recursively extracts all pages from a collection of RevisionPages
+function extractAllPages(rootPages: Array<RevisionPage>) {
+    const result: Array<RevisionPage> = [];
+
+    function recurse(pages: Array<RevisionPage>) {
+        for (const page of pages) {
+            result.push(page);
+            if ((page as RevisionPageGroup).pages?.length > 0) {
+                recurse((page as RevisionPageGroup).pages);
+            }
+        }
+    }
+
+    recurse(rootPages);
+
+    return result;
+}
+
+const capitalizeFirstLetter = (text: string) =>
+    text?.trim().charAt(0).toUpperCase() + text?.trim().slice(1);
+
+/*
+ * Pulls out the top related pages from page IDs returned from Lens and resolves them using a provided GitBook API client.
+ */
+async function getRelatedSources(params: {
+    sources?: SearchAIAnswer['sources'];
+    client: GitBookAPI;
+    environment: SlackRuntimeEnvironment;
+    organization: string;
+}): Promise<RelatedSource[]> {
+    const { sources, client, organization } = params;
+
+    if (!sources || sources.length === 0) {
+        return [];
+    }
+
+    // return top 3 sources (sources are ordered by score by default)
+    const topSources = sources.slice(0, 3);
+    // collect all spaces from page results (and de-dupe)
+    const allSpaces = topSources.reduce((accum, source) => {
+        if (source.type === 'page') {
+            accum.add(source.space);
+        }
+
+        return accum;
+    }, new Set<string>());
+
+    // query for all Revisions (accounting for spaces that might not exist or any errors)
+    const allRevisions: Array<Revision> = (
+        await Promise.allSettled(
+            Array.from(allSpaces).map((space) => client.spaces.getCurrentRevision(space))
+        )
+    ).reduce((accum, result) => {
+        if (result.status === 'fulfilled') {
+            accum.push(result.value.data);
+        }
+        return accum;
+    }, []);
+
+    const getResolvedPage = (page: SearchAIAnswerSource & { type: 'page' }) => {
+        // TODO: we can probably combine finding the currentRevision with extracting the appropriate page
+        const currentRevision = allRevisions.find((revision: Revision) =>
+            extractAllPages(revision.pages).find((revisionPage) => revisionPage.id === page.page)
+        );
+
+        if (currentRevision) {
+            const sourceUrl = currentRevision.urls.public || currentRevision.urls.app;
+
+            const allRevisionPages = extractAllPages(currentRevision.pages);
+            const revisionPage = allRevisionPages.find((revPage) => revPage.id === page.page);
+
+            return {
+                id: page.page,
+                sourceUrl,
+                page: { path: revisionPage.path, title: revisionPage.title },
+            } as RelatedSource;
+        }
+    };
+
+    const getResolvedSnippet = async (
+        source: SearchAIAnswerSource & { type: 'snippet' | 'capture' }
+    ): Promise<RelatedSource> => {
+        const snippetRequest = await client.orgs.getSnippet(organization, source.captureId);
+        const snippet = snippetRequest.data;
+
+        const sourceUrl = snippet.urls.app;
+
+        return {
+            id: snippet.id,
+            sourceUrl,
+            page: { title: snippet.title },
+        };
+    };
+
+    const resolvedSnippetsPromises = await Promise.allSettled(
+        topSources
+            .filter((source) => source.type === 'capture' || source.type === 'snippet')
+            .map(getResolvedSnippet)
+    );
+
+    const resolvedSnippets = resolvedSnippetsPromises.reduce((accum, result) => {
+        if (result.status === 'fulfilled') {
+            accum.push(result.value);
+        }
+
+        return accum;
+    }, [] as RelatedSource[]);
+
+    // extract all related sources from the Revisions along with the related public URL
+    const relatedSources: Array<RelatedSource> = topSources.reduce((accum, source) => {
+        switch (source.type) {
+            case 'page':
+                const resolvedPage = getResolvedPage(source);
+                accum.push(resolvedPage);
+                break;
+
+            case 'snippet':
+            case 'capture':
+                const resolvedSnippet = resolvedSnippets.find(
+                    (snippet) => snippet.id === source.captureId
+                );
+
+                if (resolvedSnippet) {
+                    accum.push(resolvedSnippet);
+                }
+                break;
+        }
+
+        return accum;
+    }, []);
+
+    // filter related sources from current revision
+    return relatedSources;
 }
 
 /*
@@ -173,10 +227,11 @@ export async function queryLens({
     const messageTypePath = messageType === 'ephemeral' ? 'chat.postEphemeral' : 'chat.postMessage';
 
     if (answer && answer.text) {
-        const relatedPages = await getRelatedPages({
-            pages: answer.pages,
+        const relatedSources = await getRelatedSources({
+            sources: answer.sources,
             client,
             environment,
+            organization: installation.target.organization,
         });
 
         const answerText = capitalizeFirstLetter(answer.text);
@@ -200,9 +255,9 @@ export async function queryLens({
             {
                 type: 'divider',
             },
-            ...PagesBlock({
+            ...SourcesBlock({
                 title: 'Sources',
-                items: relatedPages,
+                items: relatedSources,
             }),
             Spacer,
             {

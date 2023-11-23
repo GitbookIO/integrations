@@ -20,6 +20,7 @@ scopes:
     - space:content:read
     - space:metadata:read
     - capture:write
+    - snippets:read
 summary: |
     # Overview
     With the GitBook Slack integration, your teams have instant access to your GitBook knowledge base, and can get AI-summarized answers about your content. Plus, if you solve a problem in a thread, you can ask GitBook AI to summarize it into useable documentation.
