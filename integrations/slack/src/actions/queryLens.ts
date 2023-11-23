@@ -17,6 +17,32 @@ import { slackAPI } from '../slack';
 import { QueryDisplayBlock, ShareTools, decodeSlackEscapeChars, Spacer, SourcesBlock } from '../ui';
 import { getInstallationApiClient, stripBotName, stripMarkdown } from '../utils';
 
+export type RelatedSource = {
+    id: string;
+    sourceUrl: string;
+    page: { path: string; title: string };
+};
+
+export interface IQueryLens {
+    channelId: string;
+    channelName?: string;
+    responseUrl?: string;
+    teamId: string;
+    text: string;
+    context: SlackRuntimeContext;
+
+    /* postEphemeral vs postMessage */
+    messageType: 'ephemeral' | 'permanent';
+
+    /* needed for postEphemeral */
+    userId?: string;
+
+    /* Get lens reply in thread */
+    threadId?: string;
+
+    authorization?: string;
+}
+
 // Recursively extracts all pages from a collection of RevisionPages
 function extractAllPages(rootPages: Array<RevisionPage>) {
     const result: Array<RevisionPage> = [];
@@ -34,32 +60,31 @@ function extractAllPages(rootPages: Array<RevisionPage>) {
 
     return result;
 }
-export type RelatedSource = {
-    id: string;
-    sourceUrl: string;
-    page: { path: string; title: string };
-};
+
+const capitalizeFirstLetter = (text: string) =>
+    text?.trim().charAt(0).toUpperCase() + text?.trim().slice(1);
+
 /*
  * Pulls out the top related pages from page IDs returned from Lens and resolves them using a provided GitBook API client.
  */
-async function getRelatedPages(params: {
-    pages?: SearchAIAnswer['sources'];
+async function getRelatedSources(params: {
+    sources?: SearchAIAnswer['sources'];
     client: GitBookAPI;
     environment: SlackRuntimeEnvironment;
     organization: string;
 }): Promise<RelatedSource[]> {
-    const { pages, client, organization } = params;
+    const { sources, client, organization } = params;
 
-    if (!pages || pages.length === 0) {
+    if (!sources || sources.length === 0) {
         return [];
     }
 
-    // return top 3 pages (pages are ordered by score by default)
-    const sourcePages = pages.slice(0, 3);
+    // return top 3 sources (sources are ordered by score by default)
+    const topSources = sources.slice(0, 3);
     // collect all spaces from page results (and de-dupe)
-    const allSpaces = sourcePages.reduce((accum, page) => {
-        if (page.type === 'page') {
-            accum.add(page.space);
+    const allSpaces = topSources.reduce((accum, source) => {
+        if (source.type === 'page') {
+            accum.add(source.space);
         }
 
         return accum;
@@ -113,7 +138,7 @@ async function getRelatedPages(params: {
     };
 
     const resolvedSnippetsPromises = await Promise.allSettled(
-        sourcePages
+        topSources
             .filter((source) => source.type === 'capture' || source.type === 'snippet')
             .map(getResolvedSnippet)
     );
@@ -126,8 +151,8 @@ async function getRelatedPages(params: {
         return accum;
     }, [] as RelatedSource[]);
 
-    // extract all related pages from the Revisions along with the related public URL
-    const relatedSources: Array<RelatedSource> = sourcePages.reduce((accum, source) => {
+    // extract all related sources from the Revisions along with the related public URL
+    const relatedSources: Array<RelatedSource> = topSources.reduce((accum, source) => {
         switch (source.type) {
             case 'page':
                 const resolvedPage = getResolvedPage(source);
@@ -149,31 +174,8 @@ async function getRelatedPages(params: {
         return accum;
     }, []);
 
-    // filter related pages from current revision
+    // filter related sources from current revision
     return relatedSources;
-}
-
-const capitalizeFirstLetter = (text: string) =>
-    text?.trim().charAt(0).toUpperCase() + text?.trim().slice(1);
-
-export interface IQueryLens {
-    channelId: string;
-    channelName?: string;
-    responseUrl?: string;
-    teamId: string;
-    text: string;
-    context: SlackRuntimeContext;
-
-    /* postEphemeral vs postMessage */
-    messageType: 'ephemeral' | 'permanent';
-
-    /* needed for postEphemeral */
-    userId?: string;
-
-    /* Get lens reply in thread */
-    threadId?: string;
-
-    authorization?: string;
 }
 
 /*
@@ -225,8 +227,8 @@ export async function queryLens({
     const messageTypePath = messageType === 'ephemeral' ? 'chat.postEphemeral' : 'chat.postMessage';
 
     if (answer && answer.text) {
-        const relatedPages = await getRelatedPages({
-            pages: answer.sources,
+        const relatedSources = await getRelatedSources({
+            sources: answer.sources,
             client,
             environment,
             organization: installation.target.organization,
@@ -255,7 +257,7 @@ export async function queryLens({
             },
             ...SourcesBlock({
                 title: 'Sources',
-                items: relatedPages,
+                items: relatedSources,
             }),
             Spacer,
             {
