@@ -20,7 +20,7 @@ import { getInstallationApiClient, stripBotName, stripMarkdown } from '../utils'
 export type RelatedSource = {
     id: string;
     sourceUrl: string;
-    page: { path: string; title: string };
+    page: { path?: string; title: string };
 };
 
 export interface IQueryLens {
@@ -117,7 +117,7 @@ async function getRelatedSources(params: {
             return {
                 id: page.page,
                 sourceUrl,
-                page: revisionPage,
+                page: { path: revisionPage.path, title: revisionPage.title },
             } as RelatedSource;
         }
     };
@@ -133,7 +133,7 @@ async function getRelatedSources(params: {
         return {
             id: snippet.id,
             sourceUrl,
-            page: { path: '', title: snippet.title },
+            page: { title: snippet.title },
         };
     };
 
