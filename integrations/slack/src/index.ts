@@ -114,8 +114,6 @@ const handleSpaceContentUpdated: EventCallback<
         editedFiles.length > 0 ||
         deletedFiles.length > 0
     ) {
-        // notificationText += '\n\n*Summary of changes:*';
-
         if (createdPages.length > 0) {
             notificationText += `\n*New pages:*\n${renderList(createdPages)}\n\n`;
         }
