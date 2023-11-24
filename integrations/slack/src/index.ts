@@ -4,6 +4,7 @@ import { createIntegration, EventCallback } from '@gitbook/runtime';
 import { SlackRuntimeContext } from './configuration';
 import { handleFetchEvent } from './router';
 import { slackAPI } from './slack';
+import { Spacer } from './ui';
 
 /*
  * Handle content being updated: send a notification on Slack.
@@ -100,6 +101,10 @@ const handleSpaceContentUpdated: EventCallback<
         space.title || 'Space'
     }>* has been updated.`;
 
+    const renderList = (list: string[]) => {
+        return list.map((item) => `• ${item}\n`);
+    };
+
     if (
         createdPages.length > 0 ||
         editedPages.length > 0 ||
@@ -109,32 +114,32 @@ const handleSpaceContentUpdated: EventCallback<
         editedFiles.length > 0 ||
         deletedFiles.length > 0
     ) {
-        notificationText += '\n\nSummary of changes:';
+        // notificationText += '\n\n*Summary of changes:*';
 
         if (createdPages.length > 0) {
-            notificationText += `\n• New pages: ${createdPages.join(', ')}`;
+            notificationText += `\n*New pages:*\n${renderList(createdPages)}\n\n`;
         }
         if (editedPages.length > 0) {
-            notificationText += `\n• Modified pages: ${editedPages.join(', ')}`;
+            notificationText += `\n*Modified pages:*\n${renderList(editedPages)}\n\n`;
         }
         if (deletedPages.length > 0) {
-            notificationText += `\n• Deleted pages: ${deletedPages.join(', ')}`;
+            notificationText += `\n*Deleted pages:*\n${renderList(deletedPages)}\n\n`;
         }
         if (movedPages.length > 0) {
-            notificationText += `\n• Moved pages: ${movedPages.join(', ')}`;
+            notificationText += `\n*Moved pages:*\n${renderList(movedPages)}\n\n`;
         }
         if (createdFiles.length > 0) {
-            notificationText += `\n• New files: ${createdFiles.join(', ')}`;
+            notificationText += `\n*New files:*\n${renderList(createdFiles)}\n\n`;
         }
         if (editedFiles.length > 0) {
-            notificationText += `\n• Modified files: ${editedFiles.join(', ')}`;
+            notificationText += `\n*Modified files:*\n${renderList(editedFiles)}\n\n`;
         }
         if (deletedFiles.length > 0) {
-            notificationText += `\n• Deleted files: ${deletedFiles.join(', ')}`;
+            notificationText += `\n*Deleted files:*\n${renderList(deletedFiles)}\n\n`;
         }
 
         if (semanticChanges.more > 0) {
-            notificationText += `\n\nAnd another ${semanticChanges.more} changes not listed here.`;
+            notificationText += `\n\nAnd another ${semanticChanges.more} changes not listed here.\n`;
         }
     }
 
@@ -144,6 +149,7 @@ const handleSpaceContentUpdated: EventCallback<
         payload: {
             channel,
             blocks: [
+                Spacer,
                 {
                     type: 'section',
                     text: {
@@ -151,6 +157,7 @@ const handleSpaceContentUpdated: EventCallback<
                         text: notificationText,
                     },
                 },
+                Spacer,
             ],
         },
     });
