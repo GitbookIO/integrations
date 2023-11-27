@@ -247,6 +247,8 @@ export const configBlock = createComponent<
 
                 {accessToken ? (
                     <>
+                        <divider size="medium" />
+
                         <markdown content="### Project" />
 
                         <vstack>
