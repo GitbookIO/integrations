@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.17.0
+
+### Minor Changes
+
+-   f358a79: Update API client with latest OpenAPI spec and pass request data to errors
+
 ## 0.16.0
 
 ### Minor Changes
