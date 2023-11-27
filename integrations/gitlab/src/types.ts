@@ -10,8 +10,7 @@ export type GitLabRuntimeEnvironment = RuntimeEnvironment<{}, GitLabSpaceConfigu
 export type GitLabRuntimeContext = RuntimeContext<GitLabRuntimeEnvironment>;
 
 export type GitlabConfigureAction =
-    | { action: 'connect.gitlab'; withConnectGitLab: boolean }
-    | { action: 'save.token'; token: string }
+    | { action: 'save.token'; token: string; customInstanceUrl?: string }
     | { action: 'select.project'; project: string }
     | { action: 'select.branch'; branch: string }
     | { action: 'toggle.customTemplate'; withCustomTemplate: boolean }
@@ -70,7 +69,6 @@ export type GitlabConfigureProps = {
 
 export type GitlabConfigureState = Omit<SpaceInstallationConfiguration, 'project'> & {
     project?: string;
-    withConnectGitLab?: boolean;
     withCustomTemplate?: boolean;
     withCustomInstanceUrl?: boolean;
     commitMessagePreview?: string;
