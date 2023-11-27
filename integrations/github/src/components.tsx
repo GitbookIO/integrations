@@ -435,8 +435,8 @@ export const configBlock = createComponent<
                                                 !element.state.repository ||
                                                 !element.state.branch
                                             }
-                                            label="Configure"
-                                            tooltip="Save configuration"
+                                            label="Sync"
+                                            tooltip="Start the initial synchronization"
                                             onPress={{ action: 'save.config' }}
                                         />
                                     }
