@@ -22,6 +22,7 @@ import { configBlock } from './components';
 import { getGitHubAppJWT } from './provider';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
 import type { GithubRuntimeContext } from './types';
+import { BRANCH_REF_PREFIX } from './utils';
 import { handlePullRequestEvents, handlePushEvent, verifyGitHubWebhookSignature } from './webhooks';
 
 const logger = Logger('github');
@@ -296,7 +297,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
             if (!hasSelectedBranch) {
                 data.push({
                     id: querySelectedBranch,
-                    label: querySelectedBranch.replace('refs/heads/', ''),
+                    label: querySelectedBranch.replace(BRANCH_REF_PREFIX, ''),
                 });
             }
         }

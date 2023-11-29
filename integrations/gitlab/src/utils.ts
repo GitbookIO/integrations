@@ -2,6 +2,8 @@ import type { GitSyncOperationState, IntegrationSpaceInstallation } from '@gitbo
 
 import type { GitLabSpaceConfiguration } from './types';
 
+export const BRANCH_REF_PREFIX = 'refs/heads/';
+
 /**
  * The default commit message to use when a change request is merged in GitBook
  */

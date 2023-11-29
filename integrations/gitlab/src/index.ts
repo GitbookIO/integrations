@@ -9,7 +9,12 @@ import { configBlock } from './components';
 import { uninstallWebhook } from './provider';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
 import type { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { getSpaceConfigOrThrow, assertIsDefined, verifySignature } from './utils';
+import {
+    getSpaceConfigOrThrow,
+    assertIsDefined,
+    verifySignature,
+    BRANCH_REF_PREFIX,
+} from './utils';
 import { handleMergeRequestEvent, handlePushEvent } from './webhooks';
 
 const logger = Logger('gitlab');
@@ -203,7 +208,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
             if (!hasSelectedBranch) {
                 data.push({
                     id: querySelectedBranch,
-                    label: querySelectedBranch.replace('refs/heads/', ''),
+                    label: querySelectedBranch.replace(BRANCH_REF_PREFIX, ''),
                 });
             }
         }

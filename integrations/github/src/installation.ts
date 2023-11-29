@@ -6,7 +6,7 @@ import { Logger } from '@gitbook/runtime';
 import { fetchRepository } from './api';
 import { triggerExport, triggerImport } from './sync';
 import { GithubConfigureState, GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
-import { assertIsDefined, computeConfigQueryKey } from './utils';
+import { assertIsDefined, BRANCH_REF_PREFIX, computeConfigQueryKey } from './utils';
 
 const logger = Logger('github:installation');
 
@@ -25,6 +25,11 @@ export async function saveSpaceConfiguration(
     if (!state.installation || !state.repository || !state.branch) {
         throw httpError(400, 'Incomplete configuration');
     }
+
+    // Make sure the branch is prefixed with refs/heads/
+    state.branch = state.branch.startsWith(BRANCH_REF_PREFIX)
+        ? state.branch
+        : BRANCH_REF_PREFIX + state.branch;
 
     const installationId = parseInt(state.installation, 10);
     const repoID = parseInt(state.repository, 10);
