@@ -7,7 +7,7 @@ import { fetchProject } from './api';
 import { createGitLabWebhookURL, installWebhook } from './provider';
 import { triggerExport, triggerImport } from './sync';
 import { GitlabConfigureState, GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { assertIsDefined, computeConfigQueryKey, signResponse } from './utils';
+import { assertIsDefined, BRANCH_REF_PREFIX, computeConfigQueryKey, signResponse } from './utils';
 
 const logger = Logger('gitlab:installation');
 
@@ -16,39 +16,44 @@ const logger = Logger('gitlab:installation');
  */
 export async function saveSpaceConfiguration(
     context: GitLabRuntimeContext,
-    config: GitlabConfigureState
+    state: GitlabConfigureState
 ) {
     const { api, environment } = context;
     const spaceInstallation = environment.spaceInstallation;
 
     assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
-    if (!config.project || !config.branch) {
+    if (!state.project || !state.branch) {
         throw httpError(400, 'Incomplete configuration');
     }
 
-    const projectId = parseInt(config.project, 10);
+    const projectId = parseInt(state.project, 10);
+
+    // Make sure the branch is prefixed with refs/heads/
+    state.branch = state.branch.startsWith(BRANCH_REF_PREFIX)
+        ? state.branch
+        : BRANCH_REF_PREFIX + state.branch;
 
     /**
      * We need to update the space installation external IDs to make sure
      * we can query it later when there is a webhook event.
      */
     const externalIds: string[] = [];
-    externalIds.push(computeConfigQueryKey(projectId, config.branch));
+    externalIds.push(computeConfigQueryKey(projectId, state.branch));
 
     const glProject = await fetchProject(spaceInstallation.configuration, projectId);
 
     const configurationBody: GitLabSpaceConfiguration = {
         ...spaceInstallation.configuration,
-        key: config.key || crypto.randomUUID(),
+        key: state.key || crypto.randomUUID(),
         configuredAt: new Date().toISOString(),
         project: projectId,
         projectName: glProject.path_with_namespace,
-        branch: config.branch,
-        projectDirectory: config.projectDirectory,
-        commitMessageTemplate: config.commitMessageTemplate,
-        priority: config.priority,
-        customInstanceUrl: config.customInstanceUrl,
+        branch: state.branch,
+        projectDirectory: state.projectDirectory,
+        commitMessageTemplate: state.commitMessageTemplate,
+        priority: state.priority,
+        customInstanceUrl: state.customInstanceUrl,
     };
 
     logger.debug(

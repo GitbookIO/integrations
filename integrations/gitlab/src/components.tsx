@@ -97,9 +97,7 @@ export const configBlock = createComponent<
                     ...element,
                     state: {
                         ...element.state,
-                        branch: action.branch.includes('refs/heads/')
-                            ? action.branch
-                            : `refs/heads/${action.branch}`,
+                        branch: action.branch,
                     },
                 };
             }
