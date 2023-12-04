@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.19.0
+
+### Minor Changes
+
+-   b0a616e: Update api client with latest OpenAPI spec (`cover` in `RevisionPageDocument)
+
 ## 0.18.0
 
 ### Minor Changes
