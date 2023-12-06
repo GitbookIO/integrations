@@ -23,6 +23,7 @@ export interface IntegrationManifest {
     categories?: api.IntegrationCategory[];
     blocks?: api.IntegrationBlock[];
     configurations?: api.IntegrationConfigurations;
+    visitorAuthentication?: api.visitorAuthenticationConfiguration;
     visibility?: api.IntegrationVisibility;
     previewImages?: api.Integration['previewImages'];
     externalLinks?: api.Integration['externalLinks'];

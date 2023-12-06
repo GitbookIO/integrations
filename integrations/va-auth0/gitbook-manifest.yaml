@@ -1,0 +1,34 @@
+name: VA Auth0
+title: VA Auth0
+description: Visitor Authentication with Auth0
+externalLinks:
+    - label: Documentation
+      url: https://www.gitbook.com/integrations/heap
+visibility: public
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - space:script:inject
+organization: d8f63b60-89ae-11e7-8574-5927d48c4877
+contentSecurityPolicy:
+summary: |
+    # Overview
+
+categories:
+    - visitor_authentication
+configurations:
+    space:
+        properties:
+            client_id:
+                type: string
+                title: Client ID
+                description: Client ID of your Auth0 instance
+            issuer_base_url:
+                type: string
+                titile: Issuer Base URL
+                description: Issuer Base URL of your Auth0 instance
+
+        required:
+            - client_id
+            - issuer_base_url
