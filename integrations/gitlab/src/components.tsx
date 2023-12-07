@@ -194,6 +194,7 @@ export const configBlock = createComponent<
                                 }
                                 element={
                                     <textinput
+                                        inputType="password"
                                         state="accessToken"
                                         placeholder="xxxxxxxxxxxxxxxxxxxx"
                                     />
