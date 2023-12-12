@@ -1,17 +1,16 @@
+import jwt from '@tsndr/cloudflare-worker-jwt';
 import { Router } from 'itty-router';
+// import * as jwt from 'jsonwebtoken';
 
-import { ContentKitIcon, ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
 import {
     createIntegration,
     FetchEventCallback,
-    createOAuthHandler,
     Logger,
-    EventCallback,
-    FetchPublishScriptEventCallback,
     RuntimeContext,
     RuntimeEnvironment,
 } from '@gitbook/runtime';
-import type { GithubRuntimeContext } from '../../github/src/types';
+
+// gitbook auth token gb_api_1vLt3QfHZ80SSAwbOPqt2ALFVUfBkZu52WfVVT9r
 
 const logger = Logger('auth0.visitor-auth');
 
@@ -20,321 +19,84 @@ type Auth0RuntimeEnvironment = RuntimeEnvironment<
     {
         client_id?: string;
         issuer_base_url?: string;
+        private_key?: string;
     }
 >;
 type Auth0RuntimeContext = RuntimeContext<Auth0RuntimeEnvironment>;
 
-/* RuntimeContext<
-    RuntimeEnvironment<
-        {},
-        {
-            client_id?: string;
-            issuer_base_url?: string;
-        }
-    >
->;*/
-
 const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request, context) => {
     const { environment } = context;
-    environment.installation.urls;
-    const router = Router({
-        base: new URL(environment.spaceInstallation?.urls?.publicEndpoint).pathname,
-    });
-    router.get('/visitor-auth', async (request) => {
-        //calls to auth provider
-    });
+    const installationURL = environment.spaceInstallation?.urls?.publicEndpoint;
+    if (installationURL) {
+        const router = Router({
+            base: new URL(installationURL).pathname,
+        });
+        router.get('/visitor-auth', async (request) => {
+            // eslint-disable-next-line no-console
+            console.log('redirecting bby');
+            return Response.redirect(`${installationURL}/visitor-auth/response`);
+            // calls to auth provider
+        });
 
-    router.get('/visitor-auth/response', async (request) => {
-        // redirect to published content URL
-    });
-    /**
-     * Handle GitHub App webhook events
-     */
-    router.post('/hooks/github', async (request) => {
-        const id = request.headers.get('x-github-delivery') as string;
-        const event = request.headers.get('x-github-event') as string;
-        const signature = request.headers.get('x-hub-signature-256') ?? '';
-        const payloadString = await request.text();
-        const payload = JSON.parse(payloadString);
+        router.get('/visitor-auth/response', async (request) => {
+            // eslint-disable-next-line no-console
+            console.log('yaaay');
+            // redirect to published content URL
+            if (context.environment.spaceInstallation?.space) {
+                const space = await context.api.spaces.getSpaceById(
+                    context.environment.spaceInstallation?.space
+                );
+                // eslint-disable-next-line no-console
+                console.log('space', space);
+                // return Response.redirect('https://www.google.no'); WORKS
+                const obj = space.data;
+                const privateKey = '4b7e6704-f591-450e-ae61-ac5a52150118'; // context.environment.spaceInstallation.configuration.private_key;
+                // eslint-disable-next-line no-console
+                console.log('space', obj, privateKey);
+                // return Response.json({ error: privateKey });
+                // return Response.redirect('https://www.google.in');
+                let token;
+                try {
+                    token = await jwt.sign(
+                        { exp: Math.floor(Date.now() / 1000) + 2 * (60 * 60) },
+                        privateKey ? privateKey : ''
+                    );
+                } catch (e) {
+                    return Response.json({ error: privateKey });
+                }
+                // return Response.redirect('https://www.google.no');
+                return Response.redirect(
+                    obj.urls?.published && token
+                        ? `${obj.urls?.published}/?jwt_token=${token}`
+                        : 'https://www.google.dk'
+                );
+            }
+            // eslint-disable-next-line no-console
+            console.log('noting here');
+            return Response.redirect('https://www.google.com');
+        });
+        /**
+         * Handle GitHub App webhook events
+         */
 
-        // Verify webhook signature
+        let response;
         try {
-            await verifyGitHubWebhookSignature(
-                payloadString,
-                signature,
-                environment.secrets.WEBHOOK_SECRET
-            );
+            response = await router.handle(request, context);
         } catch (error: any) {
-            return new Response(JSON.stringify({ error: error.message }), {
-                status: 400,
-                headers: { 'content-type': 'application/json' },
+            logger.error('error handling request', error);
+            return new Response(error.message, {
+                status: error.status || 500,
             });
         }
 
-        logger.debug('received webhook event', { id, event });
-
-        context.waitUntil(
-            (async () => {
-                /**
-                 * Handle Webhook events
-                 */
-                if (event === 'push') {
-                    await handlePushEvent(context, payload);
-                } else if (
-                    event === 'pull_request' &&
-                    (payload.action === 'opened' || payload.action === 'synchronize')
-                ) {
-                    await handlePullRequestEvents(context, payload);
-                } else {
-                    logger.debug('ignoring webhook event', { id, event });
-                }
-            })()
-        );
-
-        /**
-         * Acknowledge the webhook immediately to avoid GitHub timeouts.
-         * https://docs.github.com/en/rest/guides/best-practices-for-integrators?#favor-asynchronous-work-over-synchronous
-         */
-        logger.debug('acknowledging webhook event', { id, event });
-        return new Response(JSON.stringify({ acknowledged: true }), {
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-        });
-    });
-
-    /*
-     * Authenticate using GitHub OAuth
-     */
-    router.get(
-        '/oauth',
-        createOAuthHandler(
-            {
-                redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
-                clientId: context.environment.secrets.CLIENT_ID,
-                clientSecret: context.environment.secrets.CLIENT_SECRET,
-                authorizeURL: 'https://github.com/login/oauth/authorize',
-                accessTokenURL: 'https://github.com/login/oauth/access_token',
-                scopes: [],
-                prompt: 'consent',
-            },
-            {
-                replace: false,
-            }
-        )
-    );
-
-    /**
-     * API to fetch all GitHub installations
-     */
-    router.get('/installations', async () => {
-        const installations = await fetchInstallations(context);
-
-        const data = installations.map(
-            (installation): ContentKitSelectOption => ({
-                id: `${installation.id}`,
-                label: installation.account.login,
-                icon: {
-                    type: 'image',
-                    aspectRatio: 1,
-                    source: {
-                        url: installation.account.avatar_url,
-                    },
-                },
-            })
-        );
-
-        return new Response(JSON.stringify(data), {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-    });
-
-    /**
-     * API to fetch all repositories of an installation
-     */
-    router.get('/repos', async (req) => {
-        const { installation: queryInstallation, selectedRepo, q, page } = req.query;
-        const installationId =
-            queryInstallation && typeof queryInstallation === 'string'
-                ? parseInt(queryInstallation, 10)
-                : undefined;
-        const querySelectedRepo =
-            selectedRepo && typeof selectedRepo === 'string' ? selectedRepo : undefined;
-        const pageNumber = page && typeof page === 'string' ? parseInt(page, 10) : undefined;
-        const queryRepo = q && typeof q === 'string' ? q : undefined;
-
-        if (installationId) {
-            const selected: ContentKitSelectOption[] = [];
-
-            if (querySelectedRepo) {
-                try {
-                    const selectedRepo = await fetchRepository(
-                        context,
-                        parseInt(querySelectedRepo, 10)
-                    );
-
-                    selected.push({
-                        id: `${selectedRepo.id}`,
-                        label: selectedRepo.name,
-                        icon:
-                            selectedRepo.visibility === 'private' ? ContentKitIcon.Lock : undefined,
-                    });
-                } catch (error) {
-                    // Ignore error: repository not found or not accessible
-                }
-            }
-
-            if (queryRepo) {
-                const appJWT = await getGitHubAppJWT(context);
-                const installation = await getAppInstallation(context, appJWT, installationId);
-                const installationToken = await createAppInstallationAccessToken(
-                    context,
-                    appJWT,
-                    installationId
-                );
-
-                try {
-                    const q = `${queryRepo} in:name ${
-                        installation.account.type === 'Organization' ? 'org' : 'user'
-                    }:${installation.account.login} fork:true`;
-
-                    logger.debug(
-                        `Searching for repos matching ${q} for installation ${installationId}`
-                    );
-
-                    const searchedRepos = await searchRepositories(context, q, {
-                        page: 1,
-                        per_page: 100,
-                        tokenCredentials: {
-                            access_token: installationToken,
-                            expires_at: 0,
-                        },
-                        walkPagination: false,
-                    });
-
-                    const items = searchedRepos.map(
-                        (repository): ContentKitSelectOption => ({
-                            id: `${repository.id}`,
-                            label: repository.name,
-                            icon:
-                                repository.visibility === 'private'
-                                    ? ContentKitIcon.Lock
-                                    : undefined,
-                        })
-                    );
-
-                    return new Response(JSON.stringify({ items, selected }), {
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    });
-                } catch (error) {
-                    // Ignore error: repository not found or not accessible
-                }
-            } else {
-                const page = pageNumber || 1;
-                const repositories = await fetchInstallationRepositories(context, installationId, {
-                    page,
-                    per_page: 100,
-                    walkPagination: false,
-                });
-
-                const items = repositories.map(
-                    (repository): ContentKitSelectOption => ({
-                        id: `${repository.id}`,
-                        label: repository.name,
-                        icon: repository.visibility === 'private' ? ContentKitIcon.Lock : undefined,
-                    })
-                );
-
-                const nextPage = new URL(request.url);
-                nextPage.searchParams.set('page', `${page + 1}`);
-
-                return new Response(
-                    JSON.stringify({
-                        items,
-                        nextPage: nextPage.toString(),
-                        selected,
-                    }),
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    }
-                );
-            }
+        if (!response) {
+            return new Response(`No route matching ${request.method} ${request.url}`, {
+                status: 404,
+            });
         }
 
-        return new Response(JSON.stringify([]), {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-    });
-
-    /**
-     * API to fetch all branches of an account's repository
-     */
-    router.get('/branches', async (req) => {
-        const { repository: queryRepository, selectedBranch } = req.query;
-
-        const repositoryId =
-            queryRepository && typeof queryRepository === 'string'
-                ? parseInt(queryRepository, 10)
-                : undefined;
-        const querySelectedBranch =
-            selectedBranch && typeof selectedBranch === 'string' ? selectedBranch : undefined;
-
-        const branches = repositoryId ? await fetchRepositoryBranches(context, repositoryId) : [];
-
-        const data = branches.map(
-            (branch): ContentKitSelectOption => ({
-                id: `refs/heads/${branch.name}`,
-                label: branch.name,
-                icon: branch.protected ? ContentKitIcon.Lock : undefined,
-            })
-        );
-
-        /**
-         * When a branch is selected by typing its name, it might not be in the list of branches
-         * returned by the API. In this case, we add it to the list of branches so that it can be
-         * selected in the UI.
-         */
-        if (querySelectedBranch) {
-            const hasSelectedBranch = data.some((branch) => branch.id === querySelectedBranch);
-            if (!hasSelectedBranch) {
-                data.push({
-                    id: querySelectedBranch,
-                    label: querySelectedBranch.replace('refs/heads/', ''),
-                });
-            }
-        }
-
-        return new Response(JSON.stringify(data), {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-    });
-
-    let response;
-    try {
-        response = await router.handle(request, context);
-    } catch (error: any) {
-        logger.error('error handling request', error);
-        return new Response(error.message, {
-            status: error.status || 500,
-        });
+        return response;
     }
-
-    if (!response) {
-        return new Response(`No route matching ${request.method} ${request.url}`, {
-            status: 404,
-        });
-    }
-
-    return response;
 };
 
 /*
@@ -420,15 +182,45 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
 export default createIntegration({
     fetch: handleFetchEvent,
     events: {
-        space_installation_setup: (event, context) => {
-            context.api.integrations.updateIntegrationSpaceInstallation(
+        space_installation_setup: async (event, context) => {
+            // eslint-disable-next-line no-console
+            console.log(
+                'received event',
                 context.environment.integration.name,
                 event.installationId,
-                event.spaceId,
-                {
-                    configuration: crypto.randomUUID(),
-                }
+                event.spaceId
             );
+            // eslint-disable-next-line no-console
+            console.log(
+                'context.environment.installation?.configuration.private_key',
+                context.environment.installation?.configuration
+            );
+            if (!context.environment.spaceInstallation?.configuration.private_key) {
+                const res = await context.api.integrations.updateIntegrationSpaceInstallation(
+                    context.environment.integration.name,
+                    event.installationId,
+                    event.spaceId,
+                    {
+                        configuration: {
+                            private_key: crypto.randomUUID(),
+                            client_id: 'test',
+                            issuer_base_url: 'url_test',
+                        },
+                    }
+                );
+                // eslint-disable-next-line no-console
+                console.log('recevied response', res.data);
+            } else {
+                // eslint-disable-next-line no-console
+                console.log('already has oprivate key');
+                const res = await context.api.integrations.getIntegrationSpaceInstallation(
+                    context.environment.integration.name,
+                    event.installationId,
+                    event.spaceId
+                );
+                // eslint-disable-next-line no-console
+                console.log('existing config', res.data);
+            }
         },
     },
 });
