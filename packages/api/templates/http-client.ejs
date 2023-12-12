@@ -214,7 +214,8 @@ export class HttpClient<SecurityDataType = unknown> {
             }
 
 <% if (!config.disableThrowOnError) { %>
-            if (!response.ok) throw data;
+            // GITBOOK: we want actual error to be thrown, even when no responseFormat is specified
+            if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
 <% } %>
 <% if (config.unwrapResponseData) { %>
             return data.data;
