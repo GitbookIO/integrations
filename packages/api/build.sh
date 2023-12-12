@@ -23,7 +23,7 @@ else
 fi
 
 # First we build the API client from the OpenAPI definition
-swagger-typescript-api --path ./spec/openapi.yaml --output ./src/ --name client.ts --silent
+swagger-typescript-api --path ./spec/openapi.yaml --output ./src/ --name client.ts --silent --templates ./templates
 
 # Then we bundle into an importable JSON module
 swagger-cli bundle ./spec/openapi.yaml --outfile ./spec/openapi.json --type json
