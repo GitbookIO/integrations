@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.20.1
+
+### Patch Changes
+
+-   0bcacd8: Throw error instead of Response in API client
+
 ## 0.20.0
 
 ### Minor Changes
