@@ -32,9 +32,11 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
         router.get('/visitor-auth', async (request) => {
             // eslint-disable-next-line no-console
             console.log('redirecting bby');
+            logger.debug('Got a request');
+            // return Response.json({ error: installationURL });
             try {
                 return Response.redirect(
-                    `https://dev-qyd2bk185i3mltdi.us.auth0.com/authorize?response_type=token&client_id=xEyiJiDYHQ6JQrOVBvhgXQxhi2KY4cC8&redirect_uri=https://integrations-gitbook-x-dev-vib-5d3ed.firebaseapp.com/v1/integrations/VA-Auth0/installations/e52595ae99fc77b2fd2faa581911d5ca6d532eadc15407a188b881981eb9c8b5/spaces/lsR2y6uosd61YyfqjSCv/space/visitor-auth/response`
+                    `https://dev-qyd2bk185i3mltdi.us.auth0.com/authorize?response_type=code&client_id=xEyiJiDYHQ6JQrOVBvhgXQxhi2KY4cC8&redirect_uri=${installationURL}/visitor-auth/response`
                 );
             } catch (e) {
                 return Response.json({ error: e.stack });
@@ -68,12 +70,42 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                 } catch (e) {
                     return Response.json({ error: privateKey });
                 }
-                // return Response.redirect('https://www.google.no');
-                return Response.redirect(
-                    obj.urls?.published && token
-                        ? `${obj.urls?.published}/?jwt_token=${token}`
-                        : 'https://www.google.dk'
-                );
+                // return Response.json({ query: request.query });
+                const searchParams = new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    client_id: 'xEyiJiDYHQ6JQrOVBvhgXQxhi2KY4cC8',
+                    client_secret:
+                        'twYDeVkbjC9ZjhVs1cgII-0oX5CAsa1gsg2b7NDLJm7Vtv0ngOl54WlrKtnGMjhF',
+                    code: `${request.query.code}`,
+                    redirect_uri: `${installationURL}/visitor-auth/response`,
+                });
+                // return Response.json({ searchParams });
+                const url = `https://dev-qyd2bk185i3mltdi.us.auth0.com/oauth/token/`;
+                // return Response.json({ url });
+                const resp = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+                    body: searchParams,
+                }).then((response) => response.json());
+                // .then((response) => response.json())
+                // .then((data) => {
+                //     return data;
+                //     // return Response.redirect(
+                //     //     obj.urls?.published && token
+                //     //         ? `${obj.urls?.published}/?jwt_token=${token}`
+                //     //         : 'https://www.google.dk'
+                //     // );
+                // })
+                // .catch((err) => {
+                //     return Response.json({ err });
+                // });
+                return Response.json({ resp });
+                // // return Response.redirect('https://www.google.no');
+                // return Response.redirect(
+                //     obj.urls?.published && token
+                //         ? `${obj.urls?.published}/?jwt_token=${token}`
+                //         : 'https://www.google.dk'
+                // );
             }
             // eslint-disable-next-line no-console
             console.log('noting here');
