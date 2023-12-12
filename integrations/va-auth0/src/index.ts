@@ -1,4 +1,4 @@
-import jwt from '@tsndr/cloudflare-worker-jwt';
+import { sign } from '@tsndr/cloudflare-worker-jwt';
 import { Router } from 'itty-router';
 // import * as jwt from 'jsonwebtoken';
 
@@ -9,8 +9,6 @@ import {
     RuntimeContext,
     RuntimeEnvironment,
 } from '@gitbook/runtime';
-
-// gitbook auth token gb_api_1vLt3QfHZ80SSAwbOPqt2ALFVUfBkZu52WfVVT9r
 
 const logger = Logger('auth0.visitor-auth');
 
@@ -34,8 +32,14 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
         router.get('/visitor-auth', async (request) => {
             // eslint-disable-next-line no-console
             console.log('redirecting bby');
-            return Response.redirect(`${installationURL}/visitor-auth/response`);
-            // calls to auth provider
+            try {
+                return Response.redirect(
+                    `https://dev-qyd2bk185i3mltdi.us.auth0.com/authorize?response_type=token&client_id=xEyiJiDYHQ6JQrOVBvhgXQxhi2KY4cC8&redirect_uri=https://integrations-gitbook-x-dev-vib-5d3ed.firebaseapp.com/v1/integrations/VA-Auth0/installations/e52595ae99fc77b2fd2faa581911d5ca6d532eadc15407a188b881981eb9c8b5/spaces/lsR2y6uosd61YyfqjSCv/space/visitor-auth/response`
+                );
+            } catch (e) {
+                return Response.json({ error: e.stack });
+            }
+            // return Response.redirect(`${installationURL}/visitor-auth/response`);
         });
 
         router.get('/visitor-auth/response', async (request) => {
@@ -50,14 +54,14 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                 console.log('space', space);
                 // return Response.redirect('https://www.google.no'); WORKS
                 const obj = space.data;
-                const privateKey = '4b7e6704-f591-450e-ae61-ac5a52150118'; // context.environment.spaceInstallation.configuration.private_key;
+                const privateKey = context.environment.spaceInstallation.configuration.private_key;
                 // eslint-disable-next-line no-console
                 console.log('space', obj, privateKey);
                 // return Response.json({ error: privateKey });
                 // return Response.redirect('https://www.google.in');
                 let token;
                 try {
-                    token = await jwt.sign(
+                    token = await sign(
                         { exp: Math.floor(Date.now() / 1000) + 2 * (60 * 60) },
                         privateKey ? privateKey : ''
                     );

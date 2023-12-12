@@ -31,7 +31,7 @@ export async function buildScriptFromManifest(
     const outputFilePath = path.join(os.tmpdir(), '.gitbook', manifest.name, 'script.js');
 
     await esbuild.build({
-        platform: 'browser',
+        platform: 'neutral',
         entryPoints: [inputFilePath],
         outfile: outputFilePath,
         bundle: true,
