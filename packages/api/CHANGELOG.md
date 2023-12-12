@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.20.0
+
+### Minor Changes
+
+-   a63371a: Update swagger-typescript-api and fix passing signal to requests
+
 ## 0.19.0
 
 ### Minor Changes
