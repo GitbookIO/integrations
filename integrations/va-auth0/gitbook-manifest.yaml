@@ -23,12 +23,17 @@ configurations:
             client_id:
                 type: string
                 title: Client ID
-                description: Client ID of your Auth0 instance
+                description: Client ID of your Auth0 app
             issuer_base_url:
                 type: string
                 title: Issuer Base URL
                 description: Issuer Base URL of your Auth0 instance
+            client_secret:
+                type: string
+                title: Client Secret
+                description: The Client Secret of your Auth0 app
 
         required:
             - client_id
             - issuer_base_url
+            - client_secret

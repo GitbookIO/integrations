@@ -18,10 +18,13 @@ type Auth0RuntimeEnvironment = RuntimeEnvironment<
         client_id?: string;
         issuer_base_url?: string;
         private_key?: string;
+        client_secret?: string;
     }
 >;
-type Auth0RuntimeContext = RuntimeContext<Auth0RuntimeEnvironment>;
 
+// https://dev-qyd2bk185i3mltdi.us.auth0.com/authorize?response_type=code&client_id=xEyiJiDYHQ6JQrOVBvhgXQxhi2KY4cC8&redirect_uri=${installationURL}/visitor-auth/response&state=${location}`
+
+type Auth0RuntimeContext = RuntimeContext<Auth0RuntimeEnvironment>;
 const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request, context) => {
     const { environment } = context;
     const installationURL = environment.spaceInstallation?.urls?.publicEndpoint;
@@ -33,10 +36,15 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
             // eslint-disable-next-line no-console
             console.log('redirecting bby');
             logger.debug('Got a request');
+            const location = request.query.location;
+            const issuerBaseUrl = environment.spaceInstallation?.configuration.issuer_base_url;
+            const clientId = environment.spaceInstallation?.configuration.client_id;
+
+            // return Response.json({ url_received: request.url, query: request.query });
             // return Response.json({ error: installationURL });
             try {
                 return Response.redirect(
-                    `https://dev-qyd2bk185i3mltdi.us.auth0.com/authorize?response_type=code&client_id=xEyiJiDYHQ6JQrOVBvhgXQxhi2KY4cC8&redirect_uri=${installationURL}/visitor-auth/response`
+                    `${issuerBaseUrl}/authorize?response_type=code&client_id=${clientId}&redirect_uri=${installationURL}/visitor-auth/response&state=${location}`
                 );
             } catch (e) {
                 return Response.json({ error: e.stack });
@@ -54,7 +62,8 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                 );
                 // eslint-disable-next-line no-console
                 console.log('space', space);
-                // return Response.redirect('https://www.google.no'); WORKS
+                // return Response.json({ url: request.url });
+                // WORKS;
                 const obj = space.data;
                 const privateKey = context.environment.spaceInstallation.configuration.private_key;
                 // eslint-disable-next-line no-console
@@ -68,38 +77,54 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                         privateKey ? privateKey : ''
                     );
                 } catch (e) {
-                    return Response.json({ error: privateKey });
+                    return Response.json({ error: e.stack });
                 }
                 // return Response.json({ query: request.query });
-                const searchParams = new URLSearchParams({
-                    grant_type: 'authorization_code',
-                    client_id: 'xEyiJiDYHQ6JQrOVBvhgXQxhi2KY4cC8',
-                    client_secret:
-                        'twYDeVkbjC9ZjhVs1cgII-0oX5CAsa1gsg2b7NDLJm7Vtv0ngOl54WlrKtnGMjhF',
-                    code: `${request.query.code}`,
-                    redirect_uri: `${installationURL}/visitor-auth/response`,
-                });
-                // return Response.json({ searchParams });
-                const url = `https://dev-qyd2bk185i3mltdi.us.auth0.com/oauth/token/`;
-                // return Response.json({ url });
-                const resp = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'content-type': 'application/x-www-form-urlencoded' },
-                    body: searchParams,
-                }).then((response) => response.json());
-                // .then((response) => response.json())
-                // .then((data) => {
-                //     return data;
-                //     // return Response.redirect(
-                //     //     obj.urls?.published && token
-                //     //         ? `${obj.urls?.published}/?jwt_token=${token}`
-                //     //         : 'https://www.google.dk'
-                //     // );
-                // })
-                // .catch((err) => {
-                //     return Response.json({ err });
-                // });
-                return Response.json({ resp });
+                const issuerBaseUrl = environment.spaceInstallation?.configuration.issuer_base_url;
+                const clientId = environment.spaceInstallation?.configuration.client_id;
+                const clientSecret = environment.spaceInstallation?.configuration.client_secret;
+                if (clientId && clientSecret) {
+                    const searchParams = new URLSearchParams({
+                        grant_type: 'authorization_code',
+                        client_id: clientId,
+                        client_secret: clientSecret,
+                        code: `${request.query.code}`,
+                        redirect_uri: `${installationURL}/visitor-auth/response`,
+                    });
+                    // return Response.json({ searchParams });
+                    const url = `${issuerBaseUrl}/oauth/token/`;
+                    // return Response.json({ url });
+                    const resp: any = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+                        body: searchParams,
+                    })
+                        .then((response) => response.json())
+                        .catch((err) => {
+                            return Response.json({ err });
+                        });
+
+                    if ('access_token' in resp) {
+                        let url;
+                        // return Response.json({ state: request.query.state });
+                        if (request.query.state) {
+                            url = `${obj.urls?.published}${request.query.state}/?jwt_token=${token}`;
+                        } else {
+                            url = `${obj.urls?.published}/?jwt_token=${token}`;
+                        }
+                        return Response.redirect(
+                            obj.urls?.published && token ? url : 'https://www.google.dk'
+                        );
+                    } else {
+                        return Response.json({
+                            Error: 'No Access Token found in the response from Auth0',
+                        });
+                    }
+                } else {
+                    return Response.json({
+                        Error: 'Either ClientId or ClientSecret is missing',
+                    });
+                }
                 // // return Response.redirect('https://www.google.no');
                 // return Response.redirect(
                 //     obj.urls?.published && token
@@ -109,7 +134,7 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
             }
             // eslint-disable-next-line no-console
             console.log('noting here');
-            return Response.redirect('https://www.google.com');
+            // return Response.redirect('https://www.google.com');
         });
         /**
          * Handle GitHub App webhook events
@@ -135,86 +160,6 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
     }
 };
 
-/*
- * Handle content being updated: Trigger an export to GitHub
- */
-// const handleSpaceContentUpdated: EventCallback<
-//     'space_content_updated',
-//     GithubRuntimeContext
-// > = async (event, context) => {
-//     const { data: revision } = await context.api.spaces.getRevisionById(
-//         event.spaceId,
-//         event.revisionId
-//     );
-//     if (revision.git?.oid) {
-//         const revisionStatus = revision.git.createdByGitBook ? 'exported' : 'imported';
-//         logger.info(
-//             `skipping Git Sync for space ${event.spaceId} revision ${revision.id} as it was already ${revisionStatus}`
-//         );
-//         return;
-//     }
-
-//     const spaceInstallation = context.environment.spaceInstallation;
-//     if (!spaceInstallation) {
-//         logger.debug(`missing space installation, skipping`);
-//         return;
-//     }
-
-//     await triggerExport(context, spaceInstallation);
-// };
-
-// /*
-//  * Handle git sync started: Update commit status
-//  */
-// const handleGitSyncStarted: EventCallback<'space_gitsync_started', GithubRuntimeContext> = async (
-//     event,
-//     context
-// ) => {
-//     logger.info(
-//         `Git Sync started for space ${event.spaceId} revision ${event.revisionId}, updating commit status`
-//     );
-
-//     const spaceInstallation = context.environment.spaceInstallation;
-//     if (!spaceInstallation) {
-//         logger.debug(`missing space installation, skipping`);
-//         return;
-//     }
-
-//     await updateCommitWithPreviewLinks(
-//         context,
-//         spaceInstallation,
-//         event.revisionId,
-//         event.commitId,
-//         GitSyncOperationState.Running
-//     );
-// };
-
-// /**
-//  * Handle git sync completed: Update commit status
-//  */
-// const handleGitSyncCompleted: EventCallback<
-//     'space_gitsync_completed',
-//     GithubRuntimeContext
-// > = async (event, context) => {
-//     logger.info(
-//         `Git Sync completed (${event.state}) for space ${event.spaceId} revision ${event.revisionId}, updating commit status`
-//     );
-
-//     const spaceInstallation = context.environment.spaceInstallation;
-//     if (!spaceInstallation) {
-//         logger.debug(`missing space installation, skipping`);
-//         return;
-//     }
-
-//     await updateCommitWithPreviewLinks(
-//         context,
-//         spaceInstallation,
-//         event.revisionId,
-//         event.commitId,
-//         event.state as GitSyncOperationState
-//     );
-// };
-
 export default createIntegration({
     fetch: handleFetchEvent,
     events: {
@@ -239,23 +184,16 @@ export default createIntegration({
                     {
                         configuration: {
                             private_key: crypto.randomUUID(),
-                            client_id: 'test',
-                            issuer_base_url: 'url_test',
+                            // client_id:
+                            //     context.environment.spaceInstallation?.configuration.client_id,
+                            // issuer_base_url:
+                            //     context.environment.spaceInstallation?.configuration
+                            //         .issuer_base_url,
                         },
                     }
                 );
                 // eslint-disable-next-line no-console
                 console.log('recevied response', res.data);
-            } else {
-                // eslint-disable-next-line no-console
-                console.log('already has oprivate key');
-                const res = await context.api.integrations.getIntegrationSpaceInstallation(
-                    context.environment.integration.name,
-                    event.installationId,
-                    event.spaceId
-                );
-                // eslint-disable-next-line no-console
-                console.log('existing config', res.data);
             }
         },
     },
