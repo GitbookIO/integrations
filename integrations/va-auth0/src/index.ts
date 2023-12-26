@@ -8,7 +8,10 @@ import {
     Logger,
     RuntimeContext,
     RuntimeEnvironment,
+    EventCallback,
 } from '@gitbook/runtime';
+
+// import type { GithubRuntimeContext } from '../../github/src/types';
 
 const logger = Logger('auth0.visitor-auth');
 
@@ -32,6 +35,7 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
         });
         router.get('/visitor-auth', async (request) => {
             logger.debug('Got a request');
+            return Response.json({ req: 'Got in the fetch event' });
             const location = request.query.location;
             const issuerBaseUrl = environment.spaceInstallation?.configuration.issuer_base_url;
             const clientId = environment.spaceInstallation?.configuration.client_id;
@@ -127,6 +131,53 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
     }
 };
 
+// const handleFetchVisitorAuth: EventCallback<
+//     'fetch_visitor_authentication',
+//     Auth0RuntimeContext
+// > = async (event, context) => {
+//     const { data: revision } = await context.api.spaces.getRevisionById(
+//         event.spaceId,
+//         event.revisionId
+//     );
+//     if (revision.git?.oid) {
+//         const revisionStatus = revision.git.createdByGitBook ? 'exported' : 'imported';
+//         logger.info(
+//             `skipping Git Sync for space ${event.spaceId} revision ${revision.id} as it was already ${revisionStatus}`
+//         );
+//         return;
+//     }
+
+//     const spaceInstallation = context.environment.spaceInstallation;
+//     if (!spaceInstallation) {
+//         logger.debug(`missing space installation, skipping`);
+//         return;
+//     }
+
+//     // await triggerExport(context, spaceInstallation);
+// };
+// const handleGitSyncCompleted: EventCallback<
+//     'space_gitsync_completed',
+//     GithubRuntimeContext
+// > = async (event, context) => {
+//     logger.info(
+//         `Git Sync completed (${event.state}) for space ${event.spaceId} revision ${event.revisionId}, updating commit status`
+//     );
+
+//     const spaceInstallation = context.environment.spaceInstallation;
+//     if (!spaceInstallation) {
+//         logger.debug(`missing space installation, skipping`);
+//         return;
+//     }
+
+//     await updateCommitWithPreviewLinks(
+//         context,
+//         spaceInstallation,
+//         event.revisionId,
+//         event.commitId,
+//         event.state as GitSyncOperationState
+//     );
+// };
+
 export default createIntegration({
     fetch: handleFetchEvent,
     events: {
@@ -143,6 +194,23 @@ export default createIntegration({
                     }
                 );
             }
+        },
+        fetch_visitor_authentication: async (event, context) => {
+            const { environment } = context;
+            const installationURL = environment.spaceInstallation?.urls?.publicEndpoint;
+            const issuerBaseUrl = environment.spaceInstallation?.configuration.issuer_base_url;
+            const clientId = environment.spaceInstallation?.configuration.client_id;
+            const location = event.location || '';
+
+            try {
+                return Response.redirect(
+                    `${issuerBaseUrl}/authorize?response_type=code&client_id=${clientId}&redirect_uri=${installationURL}/visitor-auth/response&state=${location}`
+                );
+            } catch (e) {
+                return Response.json({ error: e.stack });
+            }
+
+            // await triggerExport(context, spaceInstallation);
         },
     },
 });

@@ -126,7 +126,7 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                 if (Array.isArray(cb)) {
                     await Promise.all(cb.map((c) => c(event, context)));
                 } else {
-                    await cb(event, context);
+                    return await cb(event, context);
                 }
 
                 // TODO: maybe the callback wants to return something
