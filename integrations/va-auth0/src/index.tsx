@@ -58,50 +58,68 @@ const helloWorldBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Aut
     action: async (element, action, context) => {
         switch (action.action) {
             case 'save.config':
-                // await saveConfig();
+                // eslint-disable-next-line no-console
+                console.log('action save.config element.state.client_id', element.state.client_id);
+                const { api, environment } = context;
+                const spaceInstallation = environment.spaceInstallation;
+
+                const configurationBody = {
+                    ...spaceInstallation.configuration,
+                    client_id: element.state.client_id,
+                    client_secret: element.state.client_secret,
+                    issuer_base_url: element.state.issuer_base_url,
+                };
+
+                const res = await api.integrations.updateIntegrationSpaceInstallation(
+                    spaceInstallation.integration,
+                    spaceInstallation.installation,
+                    spaceInstallation.space,
+                    {
+                        configuration: {
+                            ...configurationBody,
+                        },
+                    }
+                );
+                // eslint-disable-next-line no-console
+                console.log('res', res);
                 return element;
         }
     },
     render: async (element, context) => {
-        // eslint-disable-next-line no-console
-        console.log(
-            'disabled?',
-            element.dynamicState('client_id'),
-            !element.state.client_id ||
-                !element.state.issuer_base_url ||
-                !element.state.client_secret
-        );
-        const showButton =
-            element.state.client_id && element.state.issuer_base_url && element.state.client_secret;
+        const VACallbackURL = `${context.environment.spaceInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
         return (
             <block>
                 <textinput state="client_id" placeholder="Enter Client Id" />
                 <textinput state="issuer_base_url" placeholder="Enter Issuer Base URL" />
                 <textinput state="client_secret" placeholder="Enter Client Secret" />
-                {true ? (
-                    <input
-                        label=""
-                        hint=""
-                        element={
-                            <button
-                                style="primary"
-                                disabled={
-                                    !element.state.client_id ||
-                                    !element.state.client_secret ||
-                                    !element.state.issuer_base_url
-                                }
-                                label="Configure"
-                                tooltip="Save configuration"
-                                onPress={{
-                                    action: 'save.config',
-                                    client_id: element.dynamicState('client_id'),
-                                    client_secret: element.dynamicState('client_secret'),
-                                    issuer_base_url: element.dynamicState('issuer_base_url'),
-                                }}
-                            />
-                        }
-                    />
+                <input
+                    label=""
+                    hint=""
+                    element={
+                        <button
+                            style="primary"
+                            disabled={false}
+                            label="Vibby"
+                            tooltip="Save configuration Vib"
+                            onPress={{
+                                action: 'save.config',
+                                // client_id: element.dynamicState('client_id'),
+                                // client_secret: element.dynamicState('client_secret'),
+                                // issuer_base_url: element.dynamicState('issuer_base_url'),
+                            }}
+                        />
+                    }
+                />
+                {!element.state.client_id ||
+                !element.state.client_secret ||
+                !element.state.issuer_base_url ? (
+                    <hint>
+                        <text style="bold">Enter values for the fields above and hit Save</text>
+                    </hint>
                 ) : null}
+                <divider size="medium" />
+                <text>Enter the following URL as an allowed callback URL in Auth0:</text>
+                <text>{VACallbackURL}</text>
             </block>
         );
     },
@@ -267,7 +285,7 @@ export default createIntegration({
         const installationURL = environment.spaceInstallation?.urls?.publicEndpoint;
         const issuerBaseUrl = environment.spaceInstallation?.configuration.issuer_base_url;
         const clientId = environment.spaceInstallation?.configuration.client_id;
-        const location = '';
+        const location = event.location ? event.location : '';
 
         try {
             return Response.redirect(
