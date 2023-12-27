@@ -1,7 +1,8 @@
 import { sign } from '@tsndr/cloudflare-worker-jwt';
 import { Router } from 'itty-router';
-// import * as jwt from 'jsonwebtoken';
 
+// import * as jwt from 'jsonwebtoken';
+import { IntegrationInstallationConfiguration } from '@gitbook/api';
 import {
     createIntegration,
     FetchEventCallback,
@@ -9,6 +10,7 @@ import {
     RuntimeContext,
     RuntimeEnvironment,
     EventCallback,
+    createComponent,
 } from '@gitbook/runtime';
 
 // import type { GithubRuntimeContext } from '../../github/src/types';
@@ -17,15 +19,94 @@ const logger = Logger('auth0.visitor-auth');
 
 type Auth0RuntimeEnvironment = RuntimeEnvironment<
     {},
-    {
-        client_id?: string;
-        issuer_base_url?: string;
+    Auth0SpaceInstallationConfiguration & {
         private_key?: string;
-        client_secret?: string;
     }
 >;
 
 type Auth0RuntimeContext = RuntimeContext<Auth0RuntimeEnvironment>;
+
+type Auth0SpaceInstallationConfiguration = {
+    client_id?: string;
+    issuer_base_url?: string;
+    client_secret?: string;
+};
+
+type Auth0State = Auth0SpaceInstallationConfiguration;
+
+type Auth0Props = {
+    installation: {
+        configuration?: IntegrationInstallationConfiguration;
+    };
+    spaceInstallation: {
+        configuration?: Auth0SpaceInstallationConfiguration;
+    };
+};
+
+export type Auth0Action = { action: 'save.config' };
+
+const helloWorldBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0RuntimeContext>({
+    componentId: 'hello',
+    initialState: (props) => {
+        return {
+            client_id: props.spaceInstallation.configuration?.client_id?.toString() || '',
+            issuer_base_url:
+                props.spaceInstallation.configuration?.issuer_base_url?.toString() || '',
+            client_secret: props.spaceInstallation.configuration?.client_secret?.toString() || '',
+        };
+    },
+    action: async (element, action, context) => {
+        switch (action.action) {
+            case 'save.config':
+                // await saveConfig();
+                return element;
+        }
+    },
+    render: async (element, context) => {
+        // eslint-disable-next-line no-console
+        console.log(
+            'disabled?',
+            element.dynamicState('client_id'),
+            !element.state.client_id ||
+                !element.state.issuer_base_url ||
+                !element.state.client_secret
+        );
+        const showButton =
+            element.state.client_id && element.state.issuer_base_url && element.state.client_secret;
+        return (
+            <block>
+                <textinput state="client_id" placeholder="Enter Client Id" />
+                <textinput state="issuer_base_url" placeholder="Enter Issuer Base URL" />
+                <textinput state="client_secret" placeholder="Enter Client Secret" />
+                {true ? (
+                    <input
+                        label=""
+                        hint=""
+                        element={
+                            <button
+                                style="primary"
+                                disabled={
+                                    !element.state.client_id ||
+                                    !element.state.client_secret ||
+                                    !element.state.issuer_base_url
+                                }
+                                label="Configure"
+                                tooltip="Save configuration"
+                                onPress={{
+                                    action: 'save.config',
+                                    client_id: element.dynamicState('client_id'),
+                                    client_secret: element.dynamicState('client_secret'),
+                                    issuer_base_url: element.dynamicState('issuer_base_url'),
+                                }}
+                            />
+                        }
+                    />
+                ) : null}
+            </block>
+        );
+    },
+});
+
 const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request, context) => {
     const { environment } = context;
     const installationURL = environment.spaceInstallation?.urls?.publicEndpoint;
@@ -180,8 +261,27 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
 
 export default createIntegration({
     fetch: handleFetchEvent,
+    components: [helloWorldBlock],
+    fetch_visitor_authentication: async (event, context) => {
+        const { environment } = context;
+        const installationURL = environment.spaceInstallation?.urls?.publicEndpoint;
+        const issuerBaseUrl = environment.spaceInstallation?.configuration.issuer_base_url;
+        const clientId = environment.spaceInstallation?.configuration.client_id;
+        const location = '';
+
+        try {
+            return Response.redirect(
+                `${issuerBaseUrl}/authorize?response_type=code&client_id=${clientId}&redirect_uri=${installationURL}/visitor-auth/response&state=${location}`
+            );
+        } catch (e) {
+            return Response.json({ error: e.stack });
+        }
+
+        // await triggerExport(context, spaceInstallation);
+    },
     events: {
         space_installation_setup: async (event, context) => {
+            // check event status to be active
             if (!context.environment.spaceInstallation?.configuration.private_key) {
                 const res = await context.api.integrations.updateIntegrationSpaceInstallation(
                     context.environment.integration.name,
@@ -194,23 +294,6 @@ export default createIntegration({
                     }
                 );
             }
-        },
-        fetch_visitor_authentication: async (event, context) => {
-            const { environment } = context;
-            const installationURL = environment.spaceInstallation?.urls?.publicEndpoint;
-            const issuerBaseUrl = environment.spaceInstallation?.configuration.issuer_base_url;
-            const clientId = environment.spaceInstallation?.configuration.client_id;
-            const location = event.location || '';
-
-            try {
-                return Response.redirect(
-                    `${issuerBaseUrl}/authorize?response_type=code&client_id=${clientId}&redirect_uri=${installationURL}/visitor-auth/response&state=${location}`
-                );
-            } catch (e) {
-                return Response.json({ error: e.stack });
-            }
-
-            // await triggerExport(context, spaceInstallation);
         },
     },
 });

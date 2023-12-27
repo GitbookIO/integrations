@@ -5,7 +5,7 @@ externalLinks:
     - label: Documentation
       url: https://www.gitbook.com/integrations/heap
 visibility: public
-script: ./src/index.ts
+script: ./src/index.tsx
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
@@ -19,21 +19,22 @@ categories:
     - analytics
 configurations:
     space:
-        properties:
-            client_id:
-                type: string
-                title: Client ID
-                description: Client ID of your Auth0 app
-            issuer_base_url:
-                type: string
-                title: Issuer Base URL
-                description: Issuer Base URL of your Auth0 instance
-            client_secret:
-                type: string
-                title: Client Secret
-                description: The Client Secret of your Auth0 app
+        componentId: hello
+        # properties:
+        #     client_id:
+        #         type: string
+        #         title: Client ID
+        #         description: Client ID of your Auth0 app
+        #     issuer_base_url:
+        #         type: string
+        #         title: Issuer Base URL
+        #         description: Issuer Base URL of your Auth0 instance
+        #     client_secret:
+        #         type: string
+        #         title: Client Secret
+        #         description: The Client Secret of your Auth0 app
 
-        required:
-            - client_id
-            - issuer_base_url
-            - client_secret
+        # required:
+        #     - client_id
+        #     - issuer_base_url
+        #     - client_secret
