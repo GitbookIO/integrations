@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.24.0
+
+### Minor Changes
+
+-   73a437c: Publicly expose type for endpoint / authToken
+
 ## 0.23.0
 
 ### Minor Changes
