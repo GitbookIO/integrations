@@ -17,7 +17,16 @@ interface GitBookAPIErrorResponse {
 export class GitBookAPI extends Api<{
     authToken?: string;
 }> {
-    private endpoint: string;
+
+    /**
+     * Endpoint used by the API client.
+     */
+    public readonly endpoint: string;
+
+    /**
+     * Authentication token used by the API client.
+     */
+    public readonly authToken: string | undefined;
 
     constructor(
         options: {
@@ -80,6 +89,7 @@ export class GitBookAPI extends Api<{
         });
 
         this.endpoint = endpoint;
+        this.authToken = authToken;
         this.setSecurityData({ authToken });
     }
 
