@@ -17,7 +17,6 @@ interface GitBookAPIErrorResponse {
 export class GitBookAPI extends Api<{
     authToken?: string;
 }> {
-
     /**
      * Endpoint used by the API client.
      */
