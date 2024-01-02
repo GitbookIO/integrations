@@ -79,3 +79,21 @@ export type GithubConfigureState = Omit<
     withCustomTemplate?: boolean;
     commitMessagePreview?: string;
 };
+
+export type IntegrationTaskType = 'import:spaces';
+
+export type BaseIntegrationTask<Type extends IntegrationTaskType, Payload extends object> = {
+    type: Type;
+    payload: Payload;
+};
+
+export type IntegrationTaskImportSpaces = BaseIntegrationTask<
+    'import:spaces',
+    {
+        configQuery: string;
+        page?: string;
+        standaloneRef?: string;
+    }
+>;
+
+export type IntegrationTask = IntegrationTaskImportSpaces;

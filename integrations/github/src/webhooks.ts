@@ -10,8 +10,9 @@ import { Logger } from '@gitbook/runtime';
 
 import { querySpaceInstallations } from './installation';
 import { triggerImport } from './sync';
-import { GithubRuntimeContext } from './types';
-import { computeConfigQueryKey } from './utils';
+import { queueTaskForImportSpaces } from './tasks';
+import { GithubRuntimeContext, IntegrationTaskImportSpaces } from './types';
+import { arrayToHex, computeConfigQueryKey, safeCompare } from './utils';
 
 const logger = Logger('github:webhooks');
 
@@ -59,40 +60,17 @@ export async function handlePushEvent(
         const githubRepositoryId = payload.repository.id;
         const githubRef = payload.ref;
 
+        logger.info(
+            `handling push event on ref "${payload.ref}" of "${payload.repository.id}" (installation "${payload.installation.id}")`
+        );
+
         const queryKey = computeConfigQueryKey(githubInstallationId, githubRepositoryId, githubRef);
 
-        const spaceInstallations = await querySpaceInstallations(context, queryKey);
+        const total = await handleImportDispatchForSpaces(context, {
+            configQuery: queryKey,
+        });
 
-        logger.info(
-            `handling push event on ref "${payload.ref}" of "${payload.repository.id}" (installation "${payload.installation.id}"): ${spaceInstallations.length} space configurations are affected`
-        );
-
-        await Promise.all(
-            spaceInstallations.map(async (spaceInstallation) => {
-                try {
-                    // Obtain the installation API token needed to trigger the import
-                    const { data: installationAPIToken } =
-                        await context.api.integrations.createIntegrationInstallationToken(
-                            spaceInstallation.integration,
-                            spaceInstallation.installation
-                        );
-
-                    // Set the token in the context to be used by the API client
-                    context.environment.authToken = installationAPIToken.token;
-                    context.api = new GitBookAPI({
-                        endpoint: context.environment.apiEndpoint,
-                        authToken: installationAPIToken.token,
-                    });
-
-                    await triggerImport(context, spaceInstallation);
-                } catch (error) {
-                    logger.error(
-                        `error while triggering import for space ${spaceInstallation.space}`,
-                        error
-                    );
-                }
-            })
-        );
+        logger.debug(`${total} space configurations are affected`);
     }
 }
 
@@ -113,6 +91,10 @@ export async function handlePullRequestEvents(
         const githubInstallationId = payload.installation.id;
         const githubRepositoryId = payload.repository.id;
 
+        logger.info(
+            `handling ${eventType} event on ref "${headRef}" of "${payload.repository.id}" (installation "${payload.installation.id}")`
+        );
+
         const queryKey = computeConfigQueryKey(
             githubInstallationId,
             githubRepositoryId,
@@ -120,67 +102,91 @@ export async function handlePullRequestEvents(
             isPRFromFork ? true : undefined
         );
 
-        const spaceInstallations = await querySpaceInstallations(context, queryKey);
+        const total = await handleImportDispatchForSpaces(context, {
+            configQuery: queryKey,
+            standaloneRef: headRef,
+        });
 
-        logger.info(
-            `handling ${eventType} event on ref "${headRef}" of "${payload.repository.id}" (installation "${payload.installation.id}"): ${spaceInstallations.length} space configurations are affected`
-        );
+        logger.debug(`${total} space configurations are affected`);
+    }
+}
 
-        await Promise.all(
-            spaceInstallations.map(async (spaceInstallation) => {
-                try {
-                    // Obtain the installation API token needed to trigger the import
-                    const { data: installationAPIToken } =
-                        await context.api.integrations.createIntegrationInstallationToken(
-                            spaceInstallation.integration,
-                            spaceInstallation.installation
-                        );
+/**
+ * This function is used to trigger an import for all the spaces that match the given config query.
+ * It will handle pagination by queueing itself if there are more spaces to import.
+ *
+ * `NOTE`: It is important that the total number of external network calls in this function is less
+ * than 50 as that is the limit imposed by Cloudflare workers.
+ */
+export async function handleImportDispatchForSpaces(
+    context: GithubRuntimeContext,
+    payload: IntegrationTaskImportSpaces['payload']
+): Promise<number | undefined> {
+    const { configQuery, page, standaloneRef } = payload;
 
-                    // Set the token in the context to be used by the API client
-                    context.environment.authToken = installationAPIToken.token;
-                    context.api = new GitBookAPI({
+    logger.debug(`handling import dispatch for spaces with payload: ${JSON.stringify(payload)}`);
+
+    const {
+        data: spaceInstallations,
+        nextPage,
+        total,
+    } = await querySpaceInstallations(context, configQuery, {
+        limit: 20,
+        page,
+    });
+
+    await Promise.allSettled(
+        spaceInstallations.map(async (spaceInstallation) => {
+            try {
+                // Obtain the installation API token needed to trigger the import
+                const { data: installationAPIToken } =
+                    await context.api.integrations.createIntegrationInstallationToken(
+                        spaceInstallation.integration,
+                        spaceInstallation.installation
+                    );
+
+                // Set the token in the duplicated context to be used by the API client
+                const installationContext: GithubRuntimeContext = {
+                    ...context,
+                    api: new GitBookAPI({
                         endpoint: context.environment.apiEndpoint,
                         authToken: installationAPIToken.token,
-                    });
+                    }),
+                    environment: {
+                        ...context.environment,
+                        authToken: installationAPIToken.token,
+                    },
+                };
 
-                    await triggerImport(context, spaceInstallation, {
-                        standalone: {
-                            ref: headRef,
-                        },
-                    });
-                } catch (error) {
-                    logger.error(
-                        `error while triggering standalone (${headRef}) import for space ${spaceInstallation.space}`,
-                        error
-                    );
-                }
-            })
-        );
-    }
-}
+                await triggerImport(installationContext, spaceInstallation, {
+                    standalone: standaloneRef
+                        ? {
+                              ref: standaloneRef,
+                          }
+                        : undefined,
+                });
+            } catch (error) {
+                logger.error(
+                    `error while triggering ${
+                        standaloneRef ? `standalone (${standaloneRef})` : ''
+                    } import for space ${spaceInstallation.space}`,
+                    error
+                );
+            }
+        })
+    );
 
-/**
- * Convert an array buffer to a hex string
- */
-function arrayToHex(arr: ArrayBuffer) {
-    return [...new Uint8Array(arr)].map((x) => x.toString(16).padStart(2, '0')).join('');
-}
-
-/**
- * Constant-time string comparison. Equivalent of `crypto.timingSafeEqual`.
- **/
-function safeCompare(expected: string, actual: string) {
-    const lenExpected = expected.length;
-    let result = 0;
-
-    if (lenExpected !== actual.length) {
-        actual = expected;
-        result = 1;
-    }
-
-    for (let i = 0; i < lenExpected; i++) {
-        result |= expected.charCodeAt(i) ^ actual.charCodeAt(i);
+    // Queue the next page if there is one
+    if (nextPage) {
+        await queueTaskForImportSpaces(context, {
+            type: 'import:spaces',
+            payload: {
+                page: nextPage,
+                configQuery,
+                standaloneRef,
+            },
+        });
     }
 
-    return result === 0;
+    return total;
 }
