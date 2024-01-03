@@ -111,7 +111,9 @@ export async function querySpaceInstallations(
     const { api, environment } = context;
     const { page, limit = 100 } = options;
 
-    logger.debug(`Querying space installations for external ID ${externalId} (opt: ${options})`);
+    logger.debug(
+        `Querying space installations for external ID ${externalId} (${JSON.stringify(options)})`
+    );
 
     const { data } = await api.integrations.listIntegrationSpaceInstallations(
         environment.integration.name,

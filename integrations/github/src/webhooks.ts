@@ -131,7 +131,7 @@ export async function handleImportDispatchForSpaces(
         nextPage,
         total,
     } = await querySpaceInstallations(context, configQuery, {
-        limit: 20,
+        limit: 10,
         page,
     });
 
@@ -178,6 +178,7 @@ export async function handleImportDispatchForSpaces(
 
     // Queue the next page if there is one
     if (nextPage) {
+        logger.debug(`queueing next page ${nextPage} of import dispatch for spaces`);
         await queueTaskForImportSpaces(context, {
             type: 'import:spaces',
             payload: {
