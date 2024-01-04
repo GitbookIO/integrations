@@ -171,6 +171,10 @@ export async function handleMergeRequestEvent(
                         standalone: {
                             ref: sourceRef,
                         },
+                        eventCreatedAt:
+                            payload.object_attributes.action === 'open'
+                                ? new Date(payload.object_attributes.created_at)
+                                : new Date(payload.object_attributes.updated_at),
                     });
                 } catch (error) {
                     logger.error(
