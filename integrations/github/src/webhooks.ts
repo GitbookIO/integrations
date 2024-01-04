@@ -151,10 +151,6 @@ export async function handlePullRequestEvents(
                         standalone: {
                             ref: headRef,
                         },
-                        eventTimestamp:
-                            payload.action === 'opened'
-                                ? new Date(payload.pull_request.created_at)
-                                : new Date(payload.pull_request.updated_at),
                     });
                 } catch (error) {
                     logger.error(
