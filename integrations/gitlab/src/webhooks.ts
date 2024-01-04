@@ -6,6 +6,21 @@ import { triggerImport } from './sync';
 import { GitLabRuntimeContext } from './types';
 import { computeConfigQueryKey } from './utils';
 
+interface GitLabCommit {
+    id: string;
+    message: string;
+    title: string;
+    timestamp: string;
+    url: string;
+    author: {
+        name: string;
+        email: string;
+    };
+    added: string[];
+    modified: string[];
+    removed: string[];
+}
+
 interface GitLabPushEvent {
     object_kind: string;
     before: string;
@@ -20,7 +35,7 @@ interface GitLabPushEvent {
     project_id: number;
     project: GitLabProject;
     repository: any;
-    commits: any[];
+    commits: GitLabCommit[];
     total_commits_count: number;
 }
 
@@ -94,6 +109,12 @@ export async function handlePushEvent(context: GitLabRuntimeContext, payload: Gi
         `handling push event on ref "${payload.ref}" of "${payload.repository.id}" (project "${payload.project.id}"): ${spaceInstallations.length} space configurations are affected`
     );
 
+    // Gitlab push events do not include a head_commit property so we need to get it from
+    // the commits attribute which should contains the newest 20 commits:
+    // https://docs.gitlab.com/ee/user/project/integrations/webhook_events.html#push-events
+    const headCommitSha = payload.after;
+    const headCommit = payload.commits.find((commit) => commit.id === headCommitSha);
+
     await Promise.all(
         spaceInstallations.map(async (spaceInstallation) => {
             try {
@@ -111,7 +132,9 @@ export async function handlePushEvent(context: GitLabRuntimeContext, payload: Gi
                     authToken: installationAPIToken.token,
                 });
 
-                await triggerImport(context, spaceInstallation);
+                await triggerImport(context, spaceInstallation, {
+                    eventCreatedAt: headCommit ? new Date(headCommit.timestamp) : undefined,
+                });
             } catch (error) {
                 logger.error(
                     `error while triggering import for space ${spaceInstallation.space}`,
