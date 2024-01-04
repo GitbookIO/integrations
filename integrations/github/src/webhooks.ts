@@ -85,7 +85,7 @@ export async function handlePushEvent(
                     });
 
                     await triggerImport(context, spaceInstallation, {
-                        eventCreatedAt: payload.head_commit?.timestamp
+                        eventTimestamp: payload.head_commit?.timestamp
                             ? new Date(payload.head_commit?.timestamp)
                             : undefined,
                     });
@@ -151,7 +151,7 @@ export async function handlePullRequestEvents(
                         standalone: {
                             ref: headRef,
                         },
-                        eventCreatedAt:
+                        eventTimestamp:
                             payload.action === 'opened'
                                 ? new Date(payload.pull_request.created_at)
                                 : new Date(payload.pull_request.updated_at),

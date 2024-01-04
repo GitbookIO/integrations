@@ -45,16 +45,16 @@ export async function triggerImport(
         updateGitInfo?: boolean;
 
         /**
-         * The date/time of the event that triggers the import.
+         * The timestamp of the event that triggers the import.
          *
          * This is to help ensures that Git sync import and export operations are executed
          * in the same order on GitBook and on the remote repository.
          */
-        eventCreatedAt?: Date;
+        eventTimestamp?: Date;
     } = {}
 ) {
     const { api } = context;
-    const { force = false, updateGitInfo = false, standalone, eventCreatedAt } = options;
+    const { force = false, updateGitInfo = false, standalone, eventTimestamp } = options;
 
     const config = getSpaceConfigOrThrow(spaceInstallation);
     assertIsDefined(config.branch, { label: 'config.branch' });
@@ -76,7 +76,7 @@ export async function triggerImport(
         repoProjectDirectory: config.projectDirectory,
         repoCacheID: config.key,
         force,
-        timestamp: eventCreatedAt && !force ? eventCreatedAt.toISOString() : undefined,
+        timestamp: eventTimestamp && !force ? eventTimestamp.toISOString() : undefined,
         standalone: !!standalone,
         ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoURL } } : {}),
     });
@@ -96,16 +96,16 @@ export async function triggerExport(
         updateGitInfo?: boolean;
 
         /**
-         * The date/time of the event that triggers the export.
+         * The timestamp of the event that triggers the export.
          *
          * This is to help ensures that Git sync import and export operations are executed
          * in the same order on GitBook and on the remote repository.
          */
-        eventCreatedAt?: Date;
+        eventTimestamp?: Date;
     } = {}
 ) {
     const { api } = context;
-    const { force = false, updateGitInfo = false, eventCreatedAt } = options;
+    const { force = false, updateGitInfo = false, eventTimestamp } = options;
 
     const config = getSpaceConfigOrThrow(spaceInstallation);
     assertIsDefined(config.branch, { label: 'config.branch' });
@@ -129,7 +129,7 @@ export async function triggerExport(
         repoProjectDirectory: config.projectDirectory,
         repoCacheID: config.key,
         force,
-        timestamp: eventCreatedAt && !force ? eventCreatedAt.toISOString() : undefined,
+        timestamp: eventTimestamp && !force ? eventTimestamp.toISOString() : undefined,
         commitMessage: getCommitMessageForRevision(config, revision),
         ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoURL } } : {}),
     });

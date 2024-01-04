@@ -133,7 +133,7 @@ export async function handlePushEvent(context: GitLabRuntimeContext, payload: Gi
                 });
 
                 await triggerImport(context, spaceInstallation, {
-                    eventCreatedAt: headCommit ? new Date(headCommit.timestamp) : undefined,
+                    eventTimestamp: headCommit ? new Date(headCommit.timestamp) : undefined,
                 });
             } catch (error) {
                 logger.error(
@@ -194,7 +194,7 @@ export async function handleMergeRequestEvent(
                         standalone: {
                             ref: sourceRef,
                         },
-                        eventCreatedAt:
+                        eventTimestamp:
                             payload.object_attributes.action === 'open'
                                 ? new Date(payload.object_attributes.created_at)
                                 : new Date(payload.object_attributes.updated_at),
