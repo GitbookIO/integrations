@@ -103,8 +103,15 @@ export async function handlePushEvent(context: GitLabRuntimeContext, payload: Gi
 
     const queryKey = computeConfigQueryKey(gitlabProjectId, gitlabRef);
 
+    // Gitlab push events do not include a head_commit property so we need to get it from
+    // the commits attribute which should contains the newest 20 commits:
+    // https://docs.gitlab.com/ee/user/project/integrations/webhook_events.html#push-events
+    const headCommitSha = payload.after;
+    const headCommit = payload.commits.find((commit) => commit.id === headCommitSha);
+
     const total = await handleImportDispatchForSpaces(context, {
         configQuery: queryKey,
+        eventTimestamp: headCommit ? new Date(headCommit.timestamp) : undefined,
     });
 
     logger.debug(`${total} space configurations are affected`);

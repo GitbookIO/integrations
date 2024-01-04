@@ -50,7 +50,7 @@ export async function handleImportDispatchForSpaces(
     context: GithubRuntimeContext,
     payload: IntegrationTaskImportSpaces['payload']
 ): Promise<number | undefined> {
-    const { configQuery, page, standaloneRef } = payload;
+    const { configQuery, page, standaloneRef, eventTimestamp } = payload;
 
     logger.debug(`handling import dispatch for spaces with payload: ${JSON.stringify(payload)}`);
 
@@ -92,6 +92,7 @@ export async function handleImportDispatchForSpaces(
                               ref: standaloneRef,
                           }
                         : undefined,
+                    eventTimestamp,
                 });
             } catch (error) {
                 logger.error(
