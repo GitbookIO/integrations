@@ -84,7 +84,11 @@ export async function handlePushEvent(
                         authToken: installationAPIToken.token,
                     });
 
-                    await triggerImport(context, spaceInstallation);
+                    await triggerImport(context, spaceInstallation, {
+                        eventCreatedAt: payload.head_commit?.timestamp
+                            ? new Date(payload.head_commit?.timestamp)
+                            : undefined,
+                    });
                 } catch (error) {
                     logger.error(
                         `error while triggering import for space ${spaceInstallation.space}`,
