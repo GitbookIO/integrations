@@ -66,7 +66,7 @@ export async function handlePushEvent(
         const total = await handleImportDispatchForSpaces(context, {
             configQuery: queryKey,
             eventTimestamp: payload.head_commit?.timestamp
-                ? new Date(payload.head_commit?.timestamp)
+                ? new Date(payload.head_commit.timestamp)
                 : undefined,
         });
 

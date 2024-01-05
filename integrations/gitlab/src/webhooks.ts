@@ -111,7 +111,7 @@ export async function handlePushEvent(context: GitLabRuntimeContext, payload: Gi
 
     const total = await handleImportDispatchForSpaces(context, {
         configQuery: queryKey,
-        eventTimestamp: headCommit ? new Date(headCommit.timestamp) : undefined,
+        eventTimestamp: headCommit?.timestamp ? new Date(headCommit.timestamp) : undefined,
     });
 
     logger.debug(`${total} space configurations are affected`);
