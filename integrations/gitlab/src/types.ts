@@ -87,6 +87,13 @@ export type IntegrationTaskImportSpaces = BaseIntegrationTask<
         configQuery: string;
         page?: string;
         standaloneRef?: string;
+        /**
+         * The timestamp of the event that triggers the export.
+         *
+         * This is to help ensures that Git sync import and export operations are executed
+         * in the same order on GitBook and on the remote repository.
+         */
+        eventTimestamp?: Date;
     }
 >;
 

@@ -409,7 +409,9 @@ const handleSpaceContentUpdated: EventCallback<
         return;
     }
 
-    await triggerExport(context, spaceInstallation);
+    await triggerExport(context, spaceInstallation, {
+        eventTimestamp: new Date(revision.createdAt),
+    });
 };
 
 /*

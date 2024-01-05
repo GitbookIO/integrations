@@ -43,10 +43,18 @@ export async function triggerImport(
 
         /** Whether the git info should be updated on the space */
         updateGitInfo?: boolean;
+
+        /**
+         * The timestamp of the event that triggers the import.
+         *
+         * This is to help ensures that Git sync import and export operations are executed
+         * in the same order on GitBook and on the remote repository.
+         */
+        eventTimestamp?: Date;
     } = {}
 ) {
     const { api } = context;
-    const { force = false, updateGitInfo = false, standalone } = options;
+    const { force = false, updateGitInfo = false, standalone, eventTimestamp } = options;
 
     const config = getSpaceConfigOrThrow(spaceInstallation);
     assertIsDefined(config.branch, { label: 'config.branch' });
@@ -68,6 +76,7 @@ export async function triggerImport(
         repoProjectDirectory: config.projectDirectory,
         repoCacheID: config.key,
         force,
+        timestamp: eventTimestamp && !force ? eventTimestamp.toISOString() : undefined,
         standalone: !!standalone,
         ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoURL } } : {}),
     });
@@ -85,10 +94,18 @@ export async function triggerExport(
 
         /** Whether the git info should be updated on the space */
         updateGitInfo?: boolean;
+
+        /**
+         * The timestamp of the event that triggers the export.
+         *
+         * This is to help ensures that Git sync import and export operations are executed
+         * in the same order on GitBook and on the remote repository.
+         */
+        eventTimestamp?: Date;
     } = {}
 ) {
     const { api } = context;
-    const { force = false, updateGitInfo = false } = options;
+    const { force = false, updateGitInfo = false, eventTimestamp } = options;
 
     const config = getSpaceConfigOrThrow(spaceInstallation);
     assertIsDefined(config.branch, { label: 'config.branch' });
@@ -112,6 +129,7 @@ export async function triggerExport(
         repoProjectDirectory: config.projectDirectory,
         repoCacheID: config.key,
         force,
+        timestamp: eventTimestamp && !force ? eventTimestamp.toISOString() : undefined,
         commitMessage: getCommitMessageForRevision(config, revision),
         ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoURL } } : {}),
     });
