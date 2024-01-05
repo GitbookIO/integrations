@@ -54,7 +54,7 @@ const helloWorldBlock = createComponent<AzureProps, AzureState, Auth0Action, Azu
         switch (action.action) {
             case 'save.config':
                 // eslint-disable-next-line no-console
-                console.log('action save.config element.state.client_id', element.state.client_id);
+                console.log('save.config');
                 const { api, environment } = context;
                 const spaceInstallation = environment.spaceInstallation;
 
@@ -64,19 +64,21 @@ const helloWorldBlock = createComponent<AzureProps, AzureState, Auth0Action, Azu
                     client_secret: element.state.client_secret,
                     tenant_id: element.state.tenant_id,
                 };
-
-                const res = await api.integrations.updateIntegrationSpaceInstallation(
-                    spaceInstallation.integration,
-                    spaceInstallation.installation,
-                    spaceInstallation.space,
-                    {
-                        configuration: {
-                            ...configurationBody,
-                        },
-                    }
-                );
-                // eslint-disable-next-line no-console
-                console.log('res', res);
+                try {
+                    const res = await api.integrations.updateIntegrationSpaceInstallation(
+                        spaceInstallation.integration,
+                        spaceInstallation.installation,
+                        spaceInstallation.space,
+                        {
+                            configuration: {
+                                ...configurationBody,
+                            },
+                        }
+                    );
+                } catch (error) {
+                    // eslint-disable-next-line no-console
+                    console.log('error', error);
+                }
                 return element;
         }
     },
@@ -84,8 +86,8 @@ const helloWorldBlock = createComponent<AzureProps, AzureState, Auth0Action, Azu
         const VACallbackURL = `${context.environment.spaceInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
         return (
             <block>
-                <textinput state="client_id" placeholder="Enter Client Id" />
-                <textinput state="tenant_id" placeholder="Enter Issuer Base URL" />
+                <textinput state="client_id" placeholder="Enter Client ID" />
+                <textinput state="tenant_id" placeholder="Enter Tenant ID" />
                 <textinput state="client_secret" placeholder="Enter Client Secret" />
                 <input
                     label=""
@@ -94,13 +96,10 @@ const helloWorldBlock = createComponent<AzureProps, AzureState, Auth0Action, Azu
                         <button
                             style="primary"
                             disabled={false}
-                            label="Vibby"
-                            tooltip="Save configuration Vib"
+                            label="Save"
+                            tooltip="Save configuration"
                             onPress={{
                                 action: 'save.config',
-                                // client_id: element.dynamicState('client_id'),
-                                // client_secret: element.dynamicState('client_secret'),
-                                // tenant_id: element.dynamicState('tenant_id'),
                             }}
                         />
                     }
@@ -113,7 +112,7 @@ const helloWorldBlock = createComponent<AzureProps, AzureState, Auth0Action, Azu
                     </hint>
                 ) : null}
                 <divider size="medium" />
-                <text>Enter the following URL as an allowed callback URL in Auth0:</text>
+                <text>Enter the following URL as an allowed callback URL in Azure:</text>
                 <text>{VACallbackURL}</text>
             </block>
         );
@@ -150,6 +149,7 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                 );
                 const obj = space.data;
                 const privateKey = context.environment.spaceInstallation.configuration.private_key;
+                const envPK = context.environment.signingSecret;
                 let token;
                 try {
                     token = await sign(

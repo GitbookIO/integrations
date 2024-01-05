@@ -11,6 +11,7 @@ script: ./src/index.tsx
 scopes:
     - space:metadata:read
     - space:visitor:auth
+    - space:content:read
 organization: w45sBUBc1JWE1ktYkQfI
 summary: |
     # Overview

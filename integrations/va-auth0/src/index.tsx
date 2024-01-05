@@ -1,7 +1,6 @@
 import { sign } from '@tsndr/cloudflare-worker-jwt';
 import { Router } from 'itty-router';
 
-// import * as jwt from 'jsonwebtoken';
 import { IntegrationInstallationConfiguration } from '@gitbook/api';
 import {
     createIntegration,
@@ -9,11 +8,8 @@ import {
     Logger,
     RuntimeContext,
     RuntimeEnvironment,
-    EventCallback,
     createComponent,
 } from '@gitbook/runtime';
-
-// import type { GithubRuntimeContext } from '../../github/src/types';
 
 const logger = Logger('auth0.visitor-auth');
 
@@ -58,8 +54,6 @@ const helloWorldBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Aut
     action: async (element, action, context) => {
         switch (action.action) {
             case 'save.config':
-                // eslint-disable-next-line no-console
-                console.log('action save.config element.state.client_id', element.state.client_id);
                 const { api, environment } = context;
                 const spaceInstallation = environment.spaceInstallation;
 
@@ -69,7 +63,8 @@ const helloWorldBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Aut
                     client_secret: element.state.client_secret,
                     issuer_base_url: element.state.issuer_base_url,
                 };
-
+                // eslint-disable-next-line no-console
+                console.log('env.auth_token', environment.authToken);
                 const res = await api.integrations.updateIntegrationSpaceInstallation(
                     spaceInstallation.integration,
                     spaceInstallation.installation,
@@ -80,8 +75,6 @@ const helloWorldBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Aut
                         },
                     }
                 );
-                // eslint-disable-next-line no-console
-                console.log('res', res);
                 return element;
         }
     },
@@ -99,13 +92,10 @@ const helloWorldBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Aut
                         <button
                             style="primary"
                             disabled={false}
-                            label="Vibby"
-                            tooltip="Save configuration Vib"
+                            label="Vib"
+                            tooltip="Save configuration"
                             onPress={{
                                 action: 'save.config',
-                                // client_id: element.dynamicState('client_id'),
-                                // client_secret: element.dynamicState('client_secret'),
-                                // issuer_base_url: element.dynamicState('issuer_base_url'),
                             }}
                         />
                     }
@@ -154,12 +144,16 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                     context.environment.spaceInstallation?.space
                 );
                 const obj = space.data;
+                // eslint-disable-next-line no-console
+                console.log('obj', obj);
                 const privateKey = context.environment.spaceInstallation.configuration.private_key;
+                const envPK = context.environment.signingSecret;
+                console.log('privateKey envPK', envPK);
                 let token;
                 try {
                     token = await sign(
                         { exp: Math.floor(Date.now() / 1000) + 2 * (60 * 60) },
-                        privateKey ? privateKey : ''
+                        envPK ? envPK : ''
                     );
                 } catch (e) {
                     return Response.json({ error: e.stack });
@@ -230,53 +224,6 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
     }
 };
 
-// const handleFetchVisitorAuth: EventCallback<
-//     'fetch_visitor_authentication',
-//     Auth0RuntimeContext
-// > = async (event, context) => {
-//     const { data: revision } = await context.api.spaces.getRevisionById(
-//         event.spaceId,
-//         event.revisionId
-//     );
-//     if (revision.git?.oid) {
-//         const revisionStatus = revision.git.createdByGitBook ? 'exported' : 'imported';
-//         logger.info(
-//             `skipping Git Sync for space ${event.spaceId} revision ${revision.id} as it was already ${revisionStatus}`
-//         );
-//         return;
-//     }
-
-//     const spaceInstallation = context.environment.spaceInstallation;
-//     if (!spaceInstallation) {
-//         logger.debug(`missing space installation, skipping`);
-//         return;
-//     }
-
-//     // await triggerExport(context, spaceInstallation);
-// };
-// const handleGitSyncCompleted: EventCallback<
-//     'space_gitsync_completed',
-//     GithubRuntimeContext
-// > = async (event, context) => {
-//     logger.info(
-//         `Git Sync completed (${event.state}) for space ${event.spaceId} revision ${event.revisionId}, updating commit status`
-//     );
-
-//     const spaceInstallation = context.environment.spaceInstallation;
-//     if (!spaceInstallation) {
-//         logger.debug(`missing space installation, skipping`);
-//         return;
-//     }
-
-//     await updateCommitWithPreviewLinks(
-//         context,
-//         spaceInstallation,
-//         event.revisionId,
-//         event.commitId,
-//         event.state as GitSyncOperationState
-//     );
-// };
-
 export default createIntegration({
     fetch: handleFetchEvent,
     components: [helloWorldBlock],
@@ -294,12 +241,9 @@ export default createIntegration({
         } catch (e) {
             return Response.json({ error: e.stack });
         }
-
-        // await triggerExport(context, spaceInstallation);
     },
     events: {
         space_installation_setup: async (event, context) => {
-            // check event status to be active
             if (!context.environment.spaceInstallation?.configuration.private_key) {
                 const res = await context.api.integrations.updateIntegrationSpaceInstallation(
                     context.environment.integration.name,
