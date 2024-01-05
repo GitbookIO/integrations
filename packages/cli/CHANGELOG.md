@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.15.0
+
+### Minor Changes
+
+-   2dfce83: Bump CLI to use the latest OpenAPI spec
+
 ## 0.14.0
 
 ### Minor Changes
