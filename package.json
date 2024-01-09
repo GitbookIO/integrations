@@ -21,6 +21,10 @@
         "publish-assets": "./scripts/publish-assets.sh"
     },
     "devDependencies": {
+        "@actions/core": "^1.10.1",
+        "@actions/exec": "^1.1.1",
+        "@changesets/cli": "^2.27.0",
+        "@actions/github": "^6.0.0",
         "assert": "^2.0.0",
         "esbuild-register": "^3.3.3",
         "test": "^3.2.1",
@@ -32,8 +36,6 @@
         "npm": ">=7.0.0",
         "node": ">=14.0.0"
     },
-    "dependencies": {
-        "@changesets/cli": "^2.22.0"
-    },
+    "dependencies": {},
     "packageManager": "npm@8.4.1"
 }
