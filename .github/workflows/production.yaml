@@ -6,10 +6,19 @@ on:
 
 jobs:
     deploy-integration-to-production:
-        if: github.event.release.draft == false && github.event.release.prerelease == false && contains(github.event.release.tag_name, '@gitbook/integration-')
+        if: startsWith(github.event.release.tag_name, '@gitbook/integration-')
         name: Deploy integration to production
         runs-on: ubuntu-latest
         steps:
+            - name: Get integration package name
+              id: integration-package
+              uses: actions/github-script@7.0.1
+              with:
+                  script: |
+                      const tag = context.payload.release.tag_name;
+                      const integrationPackage = '@' + tag.split('@')[1];
+                      core.setOutput('integrationPackage', integrationPackage)
+
             - name: Checkout repo
               uses: actions/checkout@v3
 
@@ -34,7 +43,7 @@ jobs:
                   CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
 
             - name: Deploy integration
-              run: npm run publish-integrations -- --filter=${{ github.event.release.tag_name }}
+              run: npm run publish-integrations -- --filter=${{ steps.integration-package.outputs.integrationPackage }}
               env:
                   GITBOOK_TOKEN: ${{ secrets.GITBOOK_PROD_API_TOKEN }}
                   GITBOOK_ENDPOINT: https://api.gitbook.com
