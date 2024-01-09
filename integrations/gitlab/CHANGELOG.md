@@ -1,5 +1,11 @@
 # @gitbook/integration-gitlab
 
+## 0.0.2
+
+### Patch Changes
+
+-   d3622ef: Release
+
 ## 0.0.1
 
 ### Patch Changes
