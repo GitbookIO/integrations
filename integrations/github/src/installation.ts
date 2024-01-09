@@ -1,4 +1,4 @@
-import httpError from 'http-errors';
+import { StatusError } from 'itty-router';
 
 import { IntegrationSpaceInstallation } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
@@ -23,7 +23,10 @@ export async function saveSpaceConfiguration(
     assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
     if (!state.installation || !state.repository || !state.branch) {
-        throw httpError(400, 'Incomplete configuration');
+        throw new StatusError(
+            400,
+            'Incomplete configuration: missing installation, repository or branch'
+        );
     }
 
     // Make sure the branch is prefixed with refs/heads/

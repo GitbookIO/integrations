@@ -1,4 +1,4 @@
-import { Router } from 'itty-router';
+import { Router, error } from 'itty-router';
 
 import { ContentKitIcon, ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
 import {
@@ -365,15 +365,10 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         });
     });
 
-    let response;
-    try {
-        response = await router.handle(request, context);
-    } catch (error: any) {
-        logger.error('error handling request', error);
-        return new Response(error.message, {
-            status: error.status || 500,
-        });
-    }
+    const response = (await router.handle(request, context).catch((err) => {
+        logger.error('error handling request', err);
+        return error(err);
+    })) as Response | undefined;
 
     if (!response) {
         return new Response(`No route matching ${request.method} ${request.url}`, {
