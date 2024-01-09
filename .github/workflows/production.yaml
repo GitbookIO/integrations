@@ -12,7 +12,7 @@ jobs:
         steps:
             - name: Get integration package name
               id: integration-package
-              uses: actions/github-script@7.0.1
+              uses: actions/github-script@7
               with:
                   script: |
                       const tag = context.payload.release.tag_name;
