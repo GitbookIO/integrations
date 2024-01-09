@@ -2,7 +2,7 @@ name: Release integration to production
 
 on:
     release:
-        types: [created]
+        types: [published]
 
 jobs:
     deploy-integration-to-production:
