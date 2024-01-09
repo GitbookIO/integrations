@@ -1,5 +1,11 @@
 # @gitbook/integration-gitlab
 
+## 0.0.3
+
+### Patch Changes
+
+-   37e4590: Release
+
 ## 0.0.2
 
 ### Patch Changes
