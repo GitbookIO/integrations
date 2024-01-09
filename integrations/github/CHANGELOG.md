@@ -1,5 +1,11 @@
 # @gitbook/integration-github
 
+## 0.0.4
+
+### Patch Changes
+
+-   a7e2098: Release
+
 ## 0.0.3
 
 ### Patch Changes
