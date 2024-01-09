@@ -1,5 +1,11 @@
 # @gitbook/integration-github
 
+## 0.0.6
+
+### Patch Changes
+
+-   8e40049: Release
+
 ## 0.0.5
 
 ### Patch Changes
