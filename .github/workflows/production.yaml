@@ -6,7 +6,7 @@ on:
 
 jobs:
     deploy-integration-to-production:
-        if: github.event.release.draft == false && github.event.release.prerelease == false && startsWith(github.event.release.tag_name, '@gitbook/integration-')
+        if: github.event.release.draft == false && github.event.release.prerelease == false && contains(github.event.release.tag_name, '@gitbook/integration-')
         name: Deploy integration to production
         runs-on: ubuntu-latest
         steps:
