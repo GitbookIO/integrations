@@ -1,5 +1,11 @@
 # @gitbook/integration-gitlab
 
+## 0.0.5
+
+### Patch Changes
+
+-   3373bce: Release
+
 ## 0.0.4
 
 ### Patch Changes
