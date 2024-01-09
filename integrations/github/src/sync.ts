@@ -57,6 +57,12 @@ export async function triggerImport(
     const { force = false, updateGitInfo = false, standalone, eventTimestamp } = options;
 
     const config = getSpaceConfigOrThrow(spaceInstallation);
+
+    if (!config.key) {
+        logger.info(`No configuration found for space ${spaceInstallation.space}, skipping import`);
+        return;
+    }
+
     assertIsDefined(config.branch, { label: 'config.branch' });
 
     logger.info(`Initiating an import from GitHub to GitBook space ${spaceInstallation.space}`);
@@ -108,6 +114,12 @@ export async function triggerExport(
     const { force = false, updateGitInfo = false, eventTimestamp } = options;
 
     const config = getSpaceConfigOrThrow(spaceInstallation);
+
+    if (!config.key) {
+        logger.info(`No configuration found for space ${spaceInstallation.space}, skipping export`);
+        return;
+    }
+
     assertIsDefined(config.branch, { label: 'config.branch' });
 
     logger.info(`Initiating an export from space ${spaceInstallation.space} to GitHub`);
