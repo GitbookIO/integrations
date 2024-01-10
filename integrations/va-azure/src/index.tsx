@@ -13,12 +13,7 @@ import {
 
 const logger = Logger('azure.visitor-auth');
 
-type AzureRuntimeEnvironment = RuntimeEnvironment<
-    {},
-    AzureSpaceInstallationConfiguration & {
-        private_key?: string;
-    }
->;
+type AzureRuntimeEnvironment = RuntimeEnvironment<{}, AzureSpaceInstallationConfiguration>;
 
 type AzureRuntimeContext = RuntimeContext<AzureRuntimeEnvironment>;
 
@@ -39,10 +34,10 @@ type AzureProps = {
     };
 };
 
-export type Auth0Action = { action: 'save.config' };
+export type AzureAction = { action: 'save.config' };
 
-const helloWorldBlock = createComponent<AzureProps, AzureState, Auth0Action, AzureRuntimeContext>({
-    componentId: 'hello',
+const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRuntimeContext>({
+    componentId: 'config',
     initialState: (props) => {
         return {
             client_id: props.spaceInstallation.configuration?.client_id?.toString() || '',
@@ -53,8 +48,6 @@ const helloWorldBlock = createComponent<AzureProps, AzureState, Auth0Action, Azu
     action: async (element, action, context) => {
         switch (action.action) {
             case 'save.config':
-                // eslint-disable-next-line no-console
-                console.log('save.config');
                 const { api, environment } = context;
                 const spaceInstallation = environment.spaceInstallation;
 
@@ -64,21 +57,17 @@ const helloWorldBlock = createComponent<AzureProps, AzureState, Auth0Action, Azu
                     client_secret: element.state.client_secret,
                     tenant_id: element.state.tenant_id,
                 };
-                try {
-                    const res = await api.integrations.updateIntegrationSpaceInstallation(
-                        spaceInstallation.integration,
-                        spaceInstallation.installation,
-                        spaceInstallation.space,
-                        {
-                            configuration: {
-                                ...configurationBody,
-                            },
-                        }
-                    );
-                } catch (error) {
-                    // eslint-disable-next-line no-console
-                    console.log('error', error);
-                }
+
+                await api.integrations.updateIntegrationSpaceInstallation(
+                    spaceInstallation.integration,
+                    spaceInstallation.installation,
+                    spaceInstallation.space,
+                    {
+                        configuration: {
+                            ...configurationBody,
+                        },
+                    }
+                );
                 return element;
         }
     },
@@ -126,21 +115,6 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
         const router = Router({
             base: new URL(installationURL).pathname,
         });
-        router.get('/visitor-auth', async (request) => {
-            logger.debug('Got a request');
-            return Response.json({ req: 'Got in the fetch event' });
-            const location = request.query.location;
-            const issuerBaseUrl = environment.spaceInstallation?.configuration.tenant_id;
-            const clientId = environment.spaceInstallation?.configuration.client_id;
-
-            try {
-                return Response.redirect(
-                    `${issuerBaseUrl}/authorize?response_type=code&client_id=${clientId}&redirect_uri=${installationURL}/visitor-auth/response&state=${location}`
-                );
-            } catch (e) {
-                return Response.json({ error: e.stack });
-            }
-        });
 
         router.get('/visitor-auth/response', async (request) => {
             if (context.environment.spaceInstallation?.space) {
@@ -148,13 +122,12 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                     context.environment.spaceInstallation?.space
                 );
                 const obj = space.data;
-                const privateKey = context.environment.spaceInstallation.configuration.private_key;
-                const envPK = context.environment.signingSecret;
+                const privateKey = context.environment.signingSecret;
                 let token;
                 try {
                     token = await sign(
                         { exp: Math.floor(Date.now() / 1000) + 2 * (60 * 60) },
-                        privateKey ? privateKey : ''
+                        privateKey
                     );
                 } catch (e) {
                     return Response.json({ error: e.stack });
@@ -190,12 +163,16 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                         } else {
                             url = `${obj.urls?.published}/?jwt_token=${token}`;
                         }
-                        return Response.redirect(
-                            obj.urls?.published && token ? url : 'https://www.google.dk'
-                        );
+                        if (obj.urls?.published && token) {
+                            return Response.redirect(url);
+                        } else {
+                            return Response.json({
+                                Error: 'Either Published URL or token is missing',
+                            });
+                        }
                     } else {
                         return Response.json({
-                            Error: 'No Access Token found in the response from Auth0',
+                            Error: 'No Access Token found in the response from Azure',
                         });
                     }
                 } else {
@@ -226,20 +203,9 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
     }
 };
 
-/*
-https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize?
-client_id=535fb089-9ff3-47b6-9bfb-4f1264799865
-&response_type=code
-&redirect_uri=http%3A%2F%2Flocalhost%2Fmyapp%2F
-&response_mode=query
-&scope=https%3A%2F%2Fgraph.microsoft.com%2Fmail.read
-&state=12345
-&code_challenge=YTFjNjI1OWYzMzA3MTI4ZDY2Njg5M2RkNmVjNDE5YmEyZGRhOGYyM2IzNjdmZWFhMTQ1ODg3NDcxY2Nl
-&code_challenge_method=S256
-*/
 export default createIntegration({
     fetch: handleFetchEvent,
-    components: [helloWorldBlock],
+    components: [configBlock],
     fetch_visitor_authentication: async (event, context) => {
         const { environment } = context;
         const installationURL = environment.spaceInstallation?.urls?.publicEndpoint;
@@ -250,29 +216,9 @@ export default createIntegration({
         try {
             return Response.redirect(
                 `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${installationURL}/visitor-auth/response&response_mode=query&scope=openid&state=${location}`
-                // `${issuerBaseUrl}/authorize?response_type=code&client_id=${clientId}&redirect_uri=${installationURL}/visitor-auth/response&state=${location}`
             );
         } catch (e) {
             return Response.json({ error: e.stack });
         }
-
-        // await triggerExport(context, spaceInstallation);
-    },
-    events: {
-        space_installation_setup: async (event, context) => {
-            // check event status to be active
-            if (!context.environment.spaceInstallation?.configuration.private_key) {
-                const res = await context.api.integrations.updateIntegrationSpaceInstallation(
-                    context.environment.integration.name,
-                    event.installationId,
-                    event.spaceId,
-                    {
-                        configuration: {
-                            private_key: crypto.randomUUID(),
-                        },
-                    }
-                );
-            }
-        },
     },
 });

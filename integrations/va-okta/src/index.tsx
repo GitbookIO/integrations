@@ -11,38 +11,37 @@ import {
     createComponent,
 } from '@gitbook/runtime';
 
-const logger = Logger('auth0.visitor-auth');
+const logger = Logger('okta.visitor-auth');
 
-type Auth0RuntimeEnvironment = RuntimeEnvironment<{}, Auth0SpaceInstallationConfiguration>;
+type OktaRuntimeEnvironment = RuntimeEnvironment<{}, OktaSpaceInstallationConfiguration>;
 
-type Auth0RuntimeContext = RuntimeContext<Auth0RuntimeEnvironment>;
+type OktaRuntimeContext = RuntimeContext<OktaRuntimeEnvironment>;
 
-type Auth0SpaceInstallationConfiguration = {
+type OktaSpaceInstallationConfiguration = {
     client_id?: string;
-    issuer_base_url?: string;
+    okta_domain?: string;
     client_secret?: string;
 };
 
-type Auth0State = Auth0SpaceInstallationConfiguration;
+type OktaState = OktaSpaceInstallationConfiguration;
 
-type Auth0Props = {
+type OktaProps = {
     installation: {
         configuration?: IntegrationInstallationConfiguration;
     };
     spaceInstallation: {
-        configuration?: Auth0SpaceInstallationConfiguration;
+        configuration?: OktaSpaceInstallationConfiguration;
     };
 };
 
-export type Auth0Action = { action: 'save.config' };
+export type OktaAction = { action: 'save.config' };
 
-const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0RuntimeContext>({
+const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntimeContext>({
     componentId: 'config',
     initialState: (props) => {
         return {
             client_id: props.spaceInstallation.configuration?.client_id?.toString() || '',
-            issuer_base_url:
-                props.spaceInstallation.configuration?.issuer_base_url?.toString() || '',
+            okta_domain: props.spaceInstallation.configuration?.okta_domain?.toString() || '',
             client_secret: props.spaceInstallation.configuration?.client_secret?.toString() || '',
         };
     },
@@ -56,7 +55,7 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
                     ...spaceInstallation.configuration,
                     client_id: element.state.client_id,
                     client_secret: element.state.client_secret,
-                    issuer_base_url: element.state.issuer_base_url,
+                    okta_domain: element.state.okta_domain,
                 };
                 await api.integrations.updateIntegrationSpaceInstallation(
                     spaceInstallation.integration,
@@ -75,8 +74,8 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
         const VACallbackURL = `${context.environment.spaceInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
         return (
             <block>
-                <textinput state="client_id" placeholder="Enter Client Id" />
-                <textinput state="issuer_base_url" placeholder="Enter Issuer Base URL" />
+                <textinput state="client_id" placeholder="Enter Client ID" />
+                <textinput state="okta_domain" placeholder="Enter Okta Domain" />
                 <textinput state="client_secret" placeholder="Enter Client Secret" />
                 <input
                     label=""
@@ -95,20 +94,20 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
                 />
                 {!element.state.client_id ||
                 !element.state.client_secret ||
-                !element.state.issuer_base_url ? (
+                !element.state.okta_domain ? (
                     <hint>
                         <text style="bold">Enter values for the fields above and hit Save</text>
                     </hint>
                 ) : null}
                 <divider size="medium" />
-                <text>Enter the following URL as an allowed callback URL in Auth0:</text>
+                <text>Enter the following URL as an allowed callback URL in Okta:</text>
                 <text>{VACallbackURL}</text>
             </block>
         );
     },
 });
 
-const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request, context) => {
+const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request, context) => {
     const { environment } = context;
     const installationURL = environment.spaceInstallation?.urls?.publicEndpoint;
     if (installationURL) {
@@ -133,7 +132,7 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                     return Response.json({ error: e.stack });
                 }
 
-                const issuerBaseUrl = environment.spaceInstallation?.configuration.issuer_base_url;
+                const oktaDomain = environment.spaceInstallation?.configuration.okta_domain;
                 const clientId = environment.spaceInstallation?.configuration.client_id;
                 const clientSecret = environment.spaceInstallation?.configuration.client_secret;
                 if (clientId && clientSecret) {
@@ -142,9 +141,10 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                         client_id: clientId,
                         client_secret: clientSecret,
                         code: `${request.query.code}`,
+                        scope: 'openid',
                         redirect_uri: `${installationURL}/visitor-auth/response`,
                     });
-                    const url = `${issuerBaseUrl}/oauth/token/`;
+                    const url = `https://${oktaDomain}/oauth2/default/v1/token/`;
                     const resp: any = await fetch(url, {
                         method: 'POST',
                         headers: { 'content-type': 'application/x-www-form-urlencoded' },
@@ -154,24 +154,25 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                         .catch((err) => {
                             return Response.json({ err });
                         });
-
                     if ('access_token' in resp) {
                         let url;
-                        if (request.query.state) {
-                            url = `${obj.urls?.published}${request.query.state}/?jwt_token=${token}`;
+                        const state = request.query.state.toString();
+                        const location = state.substring(state.indexOf('-') + 1);
+                        if (location) {
+                            url = `${obj.urls?.published}${location}/?jwt_token=${token}`;
                         } else {
                             url = `${obj.urls?.published}/?jwt_token=${token}`;
                         }
-                        if (obj.urls?.published && token) {
+                        if (token && obj.urls?.published) {
                             return Response.redirect(url);
                         } else {
                             return Response.json({
-                                Error: 'Either Published URL or token is missing',
+                                Error: 'Either token or published URL is missing',
                             });
                         }
                     } else {
                         return Response.json({
-                            Error: 'No Access Token found in the response from Auth0',
+                            Error: 'No Access Token found in the response from Okta',
                         });
                     }
                 } else {
@@ -208,13 +209,13 @@ export default createIntegration({
     fetch_visitor_authentication: async (event, context) => {
         const { environment } = context;
         const installationURL = environment.spaceInstallation?.urls?.publicEndpoint;
-        const issuerBaseUrl = environment.spaceInstallation?.configuration.issuer_base_url;
+        const oktaDomain = environment.spaceInstallation?.configuration.okta_domain;
         const clientId = environment.spaceInstallation?.configuration.client_id;
         const location = event.location ? event.location : '';
 
         try {
             return Response.redirect(
-                `${issuerBaseUrl}/authorize?response_type=code&client_id=${clientId}&redirect_uri=${installationURL}/visitor-auth/response&state=${location}`
+                `https://${oktaDomain}/oauth2/default/v1/authorize?client_id=${clientId}&response_type=code&redirect_uri=${installationURL}/visitor-auth/response&response_mode=query&scope=openid&state=state-${location}`
             );
         } catch (e) {
             return Response.json({ error: e.stack });

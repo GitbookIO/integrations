@@ -1,6 +1,6 @@
-name: VA-Auth0
-title: VA Auth0
-description: Visitor Authentication with Auth0
+name: VA-Okta
+title: VA Okta
+description: Visitor Authentication with Okta
 externalLinks:
     - label: Documentation
       url: https://www.gitbook.com/integrations/heap

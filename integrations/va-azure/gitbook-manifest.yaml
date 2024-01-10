@@ -4,14 +4,13 @@ description: Visitor Authentication with Azure
 externalLinks:
     - label: Documentation
       url: https://www.gitbook.com/integrations/heap
-visibility: public
+visibility: unlisted #public
 script: ./src/index.tsx
-# The following scope(s) are available only to GitBook Staff
-# See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
     - space:metadata:read
     - space:visitor:auth
-organization: w45sBUBc1JWE1ktYkQfI
+    - space:content:read
+organization: d8f63b60-89ae-11e7-8574-5927d48c4877 #w45sBUBc1JWE1ktYkQfI
 summary: |
     # Overview
 
@@ -19,22 +18,4 @@ categories:
     - other
 configurations:
     space:
-        componentId: hello
-        # properties:
-        #     client_id:
-        #         type: string
-        #         title: Client ID
-        #         description: Client ID of your Azure app
-        #     issuer_base_url:
-        #         type: string
-        #         title: Issuer Base URL
-        #         description: Issuer Base URL of your Azure instance
-        #     client_secret:
-        #         type: string
-        #         title: Client Secret
-        #         description: The Client Secret of your Azure app
-
-        # required:
-        #     - client_id
-        #     - issuer_base_url
-        #     - client_secret
+        componentId: config
