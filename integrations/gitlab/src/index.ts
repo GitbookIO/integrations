@@ -1,4 +1,4 @@
-import createHttpError from 'http-errors';
+import { StatusError, error } from 'itty-router';
 import { Router } from 'itty-router';
 
 import { ContentKitIcon, ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
@@ -108,7 +108,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
                     environment.signingSecret!
                 );
                 if (!valid) {
-                    throw createHttpError(400, 'Invalid signature for webhook event');
+                    throw new StatusError(400, 'Invalid signature for webhook event');
                 }
             } catch (error: any) {
                 return new Response(JSON.stringify({ error: error.message }), {
@@ -278,15 +278,10 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
         });
     });
 
-    let response;
-    try {
-        response = await router.handle(request, context);
-    } catch (error: any) {
-        logger.error('error handling request', error);
-        return new Response(error.message, {
-            status: error.status || 500,
-        });
-    }
+    const response = (await router.handle(request, context).catch((err) => {
+        logger.error('error handling request', err);
+        return error(err);
+    })) as Response | undefined;
 
     if (!response) {
         return new Response(`No route matching ${request.method} ${request.url}`, {

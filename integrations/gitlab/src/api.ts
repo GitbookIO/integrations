@@ -1,7 +1,11 @@
-import httpError from 'http-errors';
 import LinkHeader from 'http-link-header';
+import { StatusError } from 'itty-router';
+
+import { Logger } from '@gitbook/runtime';
 
 import type { GitLabSpaceConfiguration } from './types';
+
+const logger = Logger('gitlab:api');
 
 /**
  * NOTE: These GL types are not complete, they are just what we need for now.
@@ -249,6 +253,7 @@ async function requestGitLab(
     url: URL,
     options: RequestInit = {}
 ): Promise<Response> {
+    logger.debug(`GitLab API -> [${options.method}] ${url.toString()}`);
     const response = await fetch(url.toString(), {
         ...options,
         headers: {
@@ -261,7 +266,11 @@ async function requestGitLab(
     });
 
     if (!response.ok) {
-        throw httpError(response.status, `GitLab API error: ${response.statusText}`);
+        const text = await response.text();
+
+        logger.error(`[${options.method}] (${response.status}) GitLab API error: ${text}`);
+
+        throw new StatusError(response.status, `GitLab API error: ${response.statusText}`);
     }
 
     return response;
@@ -282,7 +291,7 @@ function getEndpoint(config: GitLabSpaceConfiguration): string {
 export function getAccessTokenOrThrow(config: GitLabSpaceConfiguration): string {
     const { accessToken } = config;
     if (!accessToken) {
-        throw httpError(401, 'Unauthorized: kindly re-authenticate with a new access token.');
+        throw new StatusError(401, 'Unauthorized: kindly re-authenticate with a new access token.');
     }
 
     return accessToken;

@@ -1,4 +1,4 @@
-import httpError from 'http-errors';
+import { StatusError } from 'itty-router';
 
 import { IntegrationSpaceInstallation } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
@@ -24,7 +24,7 @@ export async function saveSpaceConfiguration(
     assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
     if (!state.project || !state.branch) {
-        throw httpError(400, 'Incomplete configuration');
+        throw new StatusError(400, 'Incomplete configuration: missing project or branch');
     }
 
     const projectId = parseInt(state.project, 10);
