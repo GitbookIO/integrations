@@ -4,7 +4,7 @@
     "main": "./dist/index.cjs",
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
-    "version": "0.15.0",
+    "version": "0.25.0",
     "sideEffects": false,
     "files": [
         "README.md",
@@ -12,7 +12,7 @@
         "dist/**"
     ],
     "dependencies": {
-        "swagger-typescript-api": "^9.3.1"
+        "swagger-typescript-api": "^13.0.3"
     },
     "devDependencies": {
         "swagger-cli": "^4.0.4",

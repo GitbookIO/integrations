@@ -1,6 +1,8 @@
 import { Api } from './client';
+import { GitBookAPIError } from './GitBookAPIError';
 
 export * from './client';
+export { GitBookAPIError };
 
 export const GITBOOK_DEFAULT_ENDPOINT = 'https://api.gitbook.com';
 
@@ -15,7 +17,15 @@ interface GitBookAPIErrorResponse {
 export class GitBookAPI extends Api<{
     authToken?: string;
 }> {
-    private endpoint: string;
+    /**
+     * Endpoint used by the API client.
+     */
+    public readonly endpoint: string;
+
+    /**
+     * Authentication token used by the API client.
+     */
+    public readonly authToken: string | undefined;
 
     constructor(
         options: {
@@ -68,23 +78,17 @@ export class GitBookAPI extends Api<{
                         const body = (await response.json()) as GitBookAPIErrorResponse;
                         error = body?.error?.message || error;
                     } catch (err) {
-                        // if it's a browser error, also log the headers to see if it can give us more info
-                        response.headers.forEach((value, key) => {
-                            error += `${key}:${value} `;
-                        });
-
                         // Ignore, just use the statusText as an error message
                     }
 
-                    throw new Error(
-                        `GitBook API failed with [${response.status}] ${response.url}: ${error}`
-                    );
+                    throw new GitBookAPIError(error, response);
                 }
                 return response;
             },
         });
 
         this.endpoint = endpoint;
+        this.authToken = authToken;
         this.setSecurityData({ authToken });
     }
 

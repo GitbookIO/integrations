@@ -30,7 +30,6 @@ export const configBlock = createComponent<
     componentId: 'configure',
     initialState: (props) => {
         return {
-            withConnectGitLab: props.spaceInstallation.configuration?.accessToken !== undefined,
             accessToken: props.spaceInstallation.configuration?.accessToken,
             withCustomInstanceUrl: Boolean(
                 props.spaceInstallation.configuration?.customInstanceUrl &&
@@ -55,15 +54,6 @@ export const configBlock = createComponent<
     },
     action: async (element, action, context) => {
         switch (action.action) {
-            case 'connect.gitlab': {
-                return {
-                    ...element,
-                    state: {
-                        ...element.state,
-                        withConnectGitLab: action.withConnectGitLab,
-                    },
-                };
-            }
             case 'save.token': {
                 const spaceInstallation = context.environment.spaceInstallation;
                 assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
@@ -72,6 +62,7 @@ export const configBlock = createComponent<
                     ...spaceInstallation.configuration,
                     key: crypto.randomUUID(),
                     accessToken: action.token,
+                    customInstanceUrl: action.customInstanceUrl,
                 };
 
                 const glUser = await getCurrentUser(updatedConfig);
@@ -106,9 +97,7 @@ export const configBlock = createComponent<
                     ...element,
                     state: {
                         ...element.state,
-                        branch: action.branch.includes('refs/heads/')
-                            ? action.branch
-                            : `refs/heads/${action.branch}`,
+                        branch: action.branch,
                     },
                 };
             }
@@ -182,85 +171,81 @@ export const configBlock = createComponent<
 
         return (
             <block>
-                <input
-                    label="Connect your GitLab account"
-                    hint={
-                        <text>
-                            The access token requires the{' '}
-                            <text style="bold">api, read_repository, write_repository</text> scope
-                            for the integration to work. You can create one at{' '}
-                            <link
-                                target={{
-                                    url: 'https://gitlab.com/-/profile/personal_access_tokens',
-                                }}
-                            >
-                                User Settings → Access Tokens.
-                            </link>
-                        </text>
-                    }
-                    element={
-                        <button
-                            label="Connect"
-                            icon={ContentKitIcon.Gitlab}
-                            disabled={element.state.withConnectGitLab}
-                            tooltip="Connect your GitLab account"
-                            onPress={{
-                                action: 'connect.gitlab',
-                                withConnectGitLab: true,
-                            }}
-                        />
-                    }
-                />
-
-                {element.state.withConnectGitLab ? (
-                    <hstack>
+                <card>
+                    <vstack>
                         <box grow={1}>
-                            <textinput
-                                state="accessToken"
-                                placeholder="Enter your GitLab access token"
-                            />
-                        </box>
-                        <button
-                            style="secondary"
-                            tooltip="Save access token"
-                            label="Save"
-                            onPress={{
-                                action: 'save.token',
-                                token: element.dynamicState('accessToken'),
-                            }}
-                        />
-                    </hstack>
-                ) : null}
-
-                {accessToken ? (
-                    <>
-                        <divider size="medium" />
-
-                        <vstack>
                             <input
-                                label="Custom GitLab URL"
-                                hint="If your GitLab instance is self-hosted, enter its publicly accessible URL"
+                                label="GitLab access token"
+                                hint={
+                                    <text>
+                                        The access token requires the{' '}
+                                        <text style="bold">
+                                            api, read_repository, write_repository
+                                        </text>{' '}
+                                        scope for the integration to work. You can create one at{' '}
+                                        <link
+                                            target={{
+                                                url: 'https://gitlab.com/-/profile/personal_access_tokens',
+                                            }}
+                                        >
+                                            User Settings → Access Tokens.
+                                        </link>
+                                    </text>
+                                }
                                 element={
-                                    <switch
-                                        state="withCustomInstanceUrl"
-                                        onValueChange={{
-                                            action: 'toggle.customInstanceUrl',
-                                            withCustomInstanceUrl:
-                                                element.dynamicState('withCustomInstanceUrl'),
-                                        }}
+                                    <textinput
+                                        inputType="password"
+                                        state="accessToken"
+                                        placeholder="xxxxxxxxxxxxxxxxxxxx"
                                     />
                                 }
                             />
-                            {element.state.withCustomInstanceUrl ? (
-                                <box grow={1}>
-                                    <textinput
-                                        state="customInstanceUrl"
-                                        placeholder="https://gitlab.mycompany.com"
-                                    />
-                                </box>
-                            ) : null}
-                        </vstack>
+                        </box>
 
+                        <input
+                            label="Custom GitLab URL"
+                            hint="If your GitLab instance is self-hosted, enter its publicly accessible URL"
+                            element={
+                                <switch
+                                    state="withCustomInstanceUrl"
+                                    onValueChange={{
+                                        action: 'toggle.customInstanceUrl',
+                                        withCustomInstanceUrl:
+                                            element.dynamicState('withCustomInstanceUrl'),
+                                    }}
+                                />
+                            }
+                        />
+                        {element.state.withCustomInstanceUrl ? (
+                            <box grow={1}>
+                                <textinput
+                                    state="customInstanceUrl"
+                                    placeholder="https://gitlab.mycompany.com"
+                                />
+                            </box>
+                        ) : null}
+
+                        <box grow={1}>
+                            <hstack align="end">
+                                <button
+                                    style="secondary"
+                                    icon={ContentKitIcon.Gitlab}
+                                    tooltip="Authenticate with GitLab"
+                                    label="Authenticate"
+                                    onPress={{
+                                        action: 'save.token',
+                                        token: element.dynamicState('accessToken'),
+                                        customInstanceUrl:
+                                            element.dynamicState('customInstanceUrl'),
+                                    }}
+                                />
+                            </hstack>
+                        </box>
+                    </vstack>
+                </card>
+
+                {accessToken ? (
+                    <>
                         <divider size="medium" />
 
                         <markdown content="### Project" />
@@ -472,8 +457,8 @@ export const configBlock = createComponent<
                                                 !element.state.project ||
                                                 !element.state.branch
                                             }
-                                            label="Configure"
-                                            tooltip="Save configuration"
+                                            label="Sync"
+                                            tooltip="Start the initial synchronization"
                                             onPress={{ action: 'save.configuration' }}
                                         />
                                     }

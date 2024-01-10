@@ -1,5 +1,13 @@
 # @gitbook/integration-slack
 
+## 1.1.0
+
+### Minor Changes
+
+-   3c8320c: Reformats the notifications into a list
+-   9046bfb: Notify of space updates with a more detailed notification
+-   58eee59: Adds support for snippets to be displayed in answers from GitBook AI
+
 ## 1.0.2
 
 ### Patch Changes

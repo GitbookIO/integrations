@@ -1,5 +1,5 @@
-import httpError from 'http-errors';
 import LinkHeader from 'http-link-header';
+import { StatusError } from 'itty-router';
 
 import { Logger } from '@gitbook/runtime';
 
@@ -289,7 +289,7 @@ async function requestGitHubAPI(
     retriesLeft = 1
 ): Promise<Response> {
     const { access_token } = credentials;
-    logger.debug(`requesting GitHub API [${options.method}] ${url.toString()}`);
+    logger.debug(`GitHub API -> [${options.method}] ${url.toString()}`);
     const response = await fetch(url.toString(), {
         ...options,
         headers: {
@@ -333,12 +333,12 @@ async function requestGitHubAPI(
             return requestGitHubAPI(context, refreshed, url, options, retriesLeft - 1);
         }
 
-        logger.error(
-            `GitHub API error: ${response.status} for [${options.method}] ${url.toString()}`
-        );
+        const text = await response.text();
+
+        logger.error(`[${options.method}] (${response.status}) GitHub API error: ${text}`);
 
         // Otherwise, we throw an error
-        throw httpError(response.status, `GitHub API error: ${response.statusText}`);
+        throw new StatusError(response.status, `GitHub API error: ${response.statusText}`);
     }
 
     return response;
@@ -365,7 +365,7 @@ async function refreshCredentials(
 
     if (!resp.ok) {
         // If refresh fails for whatever reason, we ask the user to re-authenticate
-        throw httpError(401, `Unauthorized: kindly re-authenticate!`);
+        throw new StatusError(401, `Unauthorized: kindly re-authenticate!`);
     }
 
     const data = await resp.formData();
@@ -393,7 +393,7 @@ export function extractTokenCredentialsOrThrow(
 
     const oAuthCredentials = config?.oauth_credentials;
     if (!oAuthCredentials?.access_token) {
-        throw httpError(401, 'Unauthorized: kindly re-authenticate!');
+        throw new StatusError(401, 'Unauthorized: kindly re-authenticate!');
     }
 
     return oAuthCredentials;

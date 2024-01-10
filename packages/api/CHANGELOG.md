@@ -1,5 +1,71 @@
 # @gitbook/api
 
+## 0.25.0
+
+### Minor Changes
+
+-   d43bc17: Update api client with latest OpenAPI spec
+
+## 0.24.0
+
+### Minor Changes
+
+-   73a437c: Publicly expose type for endpoint / authToken
+
+## 0.23.0
+
+### Minor Changes
+
+-   ad9df8e: Update API client with latest OpenAPI spec
+
+## 0.22.0
+
+### Minor Changes
+
+-   5598f59: Update API client with latest OpenAPI spec
+
+## 0.21.0
+
+### Minor Changes
+
+-   4e17700: Update API client with latest OpenAPI spec
+
+## 0.20.1
+
+### Patch Changes
+
+-   0bcacd8: Throw error instead of Response in API client
+
+## 0.20.0
+
+### Minor Changes
+
+-   a63371a: Update swagger-typescript-api and fix passing signal to requests
+
+## 0.19.0
+
+### Minor Changes
+
+-   b0a616e: Update api client with latest OpenAPI spec (`cover` in `RevisionPageDocument)
+
+## 0.18.0
+
+### Minor Changes
+
+-   7318cb3: Update API client with latest OpenAPI changes
+
+## 0.17.0
+
+### Minor Changes
+
+-   f358a79: Update API client with latest OpenAPI spec and pass request data to errors
+
+## 0.16.0
+
+### Minor Changes
+
+-   1c45194: Update API client with latest OpenAPI spec
+
 ## 0.15.0
 
 ### Minor Changes

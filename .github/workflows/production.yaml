@@ -1,0 +1,80 @@
+name: Release integration to production
+
+on:
+    release:
+        types: [published]
+
+jobs:
+    deploy-integration-to-production:
+        if: startsWith(github.event.release.tag_name, '@gitbook/integration-')
+        name: Deploy integration to production
+        runs-on: ubuntu-latest
+        steps:
+            - name: Get integration package name
+              id: integration-package
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const tag = context.payload.release.tag_name;
+                      const integrationPackage = '@' + tag.split('@')[1];
+                      core.setOutput('integrationPackage', integrationPackage)
+
+            - name: Checkout repo
+              uses: actions/checkout@v3
+
+            - name: Setup Node.js 20.x
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 20.x
+
+            - name: Install Dependencies
+              # We need to build and then re-install so that the "bin" can be correctly linked
+              run: |
+                  npm ci
+                  npm run build
+                  npm ci
+
+            # TODO: Remove this once we incorporate this in the publish API of the integration
+            - name: Publish all integrations assets to production
+              run: npm run publish-assets
+              env:
+                  CLOUDFLARE_PAGES_PROJECT: ${{ secrets.INTEGRATIONS_ASSETS_PROD_PROJECT }}
+                  CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+                  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
+
+            - name: Deploy integration
+              run: npm run publish-integrations -- --filter=${{ steps.integration-package.outputs.integrationPackage }}
+              env:
+                  GITBOOK_TOKEN: ${{ secrets.GITBOOK_PROD_API_TOKEN }}
+                  GITBOOK_ENDPOINT: https://api.gitbook.com
+                  GITBOOK_ORGANIZATION: gitbook
+                  UNFURL_GITHUB_CLIENT_ID: ${{ secrets.UNFURL_GITHUB_CLIENT_ID }}
+                  UNFURL_GITHUB_CLIENT_SECRET: ${{ secrets.UNFURL_GITHUB_CLIENT_SECRET }}
+                  GITLAB_CLIENT_ID: ${{ secrets.GITLAB_CLIENT_ID }}
+                  GITLAB_CLIENT_SECRET: ${{ secrets.GITLAB_CLIENT_SECRET }}
+                  DISCORD_CLIENT_ID: $ {{ secrets.DISCORD_CLIENT_ID }}
+                  DISCORD_CLIENT_SECRET: $ {{ secrets.DISCORD_CLIENT_SECRET }}
+                  DISCORD_BOT_TOKEN: $ {{ secrets.DISCORD_BOT_TOKEN }}
+                  SLACK_CLIENT_ID: ${{ secrets.SLACK_PROD_CLIENT_ID }}
+                  SLACK_CLIENT_SECRET: ${{ secrets.SLACK_PROD_CLIENT_SECRET }}
+                  SLACK_SIGNING_SECRET: ${{ secrets.SLACK_PROD_SIGNING_SECRET }}
+                  FIGMA_CLIENT_ID: ${{ secrets.FIGMA_PROD_CLIENT_ID }}
+                  FIGMA_CLIENT_SECRET: ${{ secrets.FIGMA_PROD_CLIENT_SECRET }}
+                  MAILCHIMP_CLIENT_ID: ${{ secrets.MAILCHIMP_PROD_CLIENT_ID }}
+                  MAILCHIMP_CLIENT_SECRET: ${{ secrets.MAILCHIMP_PROD_CLIENT_SECRET }}
+                  JIRA_CLIENT_ID: ${{ secrets.JIRA_PROD_CLIENT_ID }}
+                  JIRA_CLIENT_SECRET: ${{ secrets.JIRA_PROD_CLIENT_SECRET }}
+                  LINEAR_CLIENT_ID: ${{ secrets.LINEAR_PROD_CLIENT_ID }}
+                  LINEAR_CLIENT_SECRET: ${{ secrets.LINEAR_PROD_CLIENT_SECRET }}
+                  GITHUB_APP_INSTALL_URL: ${{ secrets.GITBOOK_GITHUB_APP_INSTALL_URL }}
+                  GITHUB_APP_ID: ${{ secrets.GITBOOK_GITHUB_APP_ID }}
+                  GITHUB_CLIENT_ID: ${{ secrets.GITBOOK_GITHUB_CLIENT_ID }}
+                  GITHUB_CLIENT_SECRET: ${{ secrets.GITBOOK_GITHUB_CLIENT_SECRET }}
+                  GITHUB_WEBHOOK_SECRET: ${{ secrets.GITBOOK_GITHUB_WEBHOOK_SECRET }}
+                  GITHUB_PRIVATE_KEY: ${{ secrets.GITBOOK_GITHUB_PRIVATE_KEY }}
+                  GITHUB_ENTITIES_APP_INSTALL_URL: ${{ secrets.ENTITIES_GITHUB_APP_INSTALL_URL }}
+                  GITHUB_ENTITIES_APP_ID: ${{ secrets.ENTITIES_GITHUB_APP_ID }}
+                  GITHUB_ENTITIES_CLIENT_ID: ${{ secrets.ENTITIES_GITHUB_CLIENT_ID }}
+                  GITHUB_ENTITIES_CLIENT_SECRET: ${{ secrets.ENTITIES_GITHUB_CLIENT_SECRET }}
+                  GITHUB_ENTITIES_WEBHOOK_SECRET: ${{ secrets.ENTITIES_GITHUB_WEBHOOK_SECRET }}
+                  GITHUB_ENTITIES_PRIVATE_KEY: ${{ secrets.ENTITIES_GITHUB_PRIVATE_KEY }}

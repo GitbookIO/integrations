@@ -43,12 +43,26 @@ export async function triggerImport(
 
         /** Whether the git info should be updated on the space */
         updateGitInfo?: boolean;
+
+        /**
+         * The timestamp of the event that triggers the import.
+         *
+         * This is to help ensures that Git sync import and export operations are executed
+         * in the same order on GitBook and on the remote repository.
+         */
+        eventTimestamp?: Date;
     } = {}
 ) {
     const { api } = context;
-    const { force = false, updateGitInfo = false, standalone } = options;
+    const { force = false, updateGitInfo = false, standalone, eventTimestamp } = options;
 
     const config = getSpaceConfigOrThrow(spaceInstallation);
+
+    if (!config.key) {
+        logger.info(`No configuration found for space ${spaceInstallation.space}, skipping import`);
+        return;
+    }
+
     assertIsDefined(config.branch, { label: 'config.branch' });
 
     logger.info(`Initiating an import from GitHub to GitBook space ${spaceInstallation.space}`);
@@ -68,6 +82,7 @@ export async function triggerImport(
         repoProjectDirectory: config.projectDirectory,
         repoCacheID: config.key,
         force,
+        timestamp: eventTimestamp && !force ? eventTimestamp.toISOString() : undefined,
         standalone: !!standalone,
         ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoURL } } : {}),
     });
@@ -85,12 +100,26 @@ export async function triggerExport(
 
         /** Whether the git info should be updated on the space */
         updateGitInfo?: boolean;
+
+        /**
+         * The timestamp of the event that triggers the export.
+         *
+         * This is to help ensures that Git sync import and export operations are executed
+         * in the same order on GitBook and on the remote repository.
+         */
+        eventTimestamp?: Date;
     } = {}
 ) {
     const { api } = context;
-    const { force = false, updateGitInfo = false } = options;
+    const { force = false, updateGitInfo = false, eventTimestamp } = options;
 
     const config = getSpaceConfigOrThrow(spaceInstallation);
+
+    if (!config.key) {
+        logger.info(`No configuration found for space ${spaceInstallation.space}, skipping export`);
+        return;
+    }
+
     assertIsDefined(config.branch, { label: 'config.branch' });
 
     logger.info(`Initiating an export from space ${spaceInstallation.space} to GitHub`);
@@ -112,6 +141,7 @@ export async function triggerExport(
         repoProjectDirectory: config.projectDirectory,
         repoCacheID: config.key,
         force,
+        timestamp: eventTimestamp && !force ? eventTimestamp.toISOString() : undefined,
         commitMessage: getCommitMessageForRevision(config, revision),
         ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoURL } } : {}),
     });

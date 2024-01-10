@@ -21,7 +21,7 @@
     "eslint.format.enable": true,
     // Fix errors on save using ESLint
     "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": true
+        "source.fixAll.eslint": "explicit"
     },
     // Format using Prettier to format on save
     "editor.defaultFormatter": "esbenp.prettier-vscode",

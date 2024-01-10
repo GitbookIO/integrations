@@ -1,7 +1,5 @@
 # GitBook Integration Platform
 
-![GitBook Banner](./assets/gitbook-integrations-banner.png)
-
 Welcome to GitBook Integration Platform!
 
 This repository contains code, packages, and scripts related to the integrations platform in GitBook. Want to get started building your first integration? Head to our [documentation](https://developer.gitbook.com/getting-started/setup-guide) to get started.

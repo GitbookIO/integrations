@@ -66,9 +66,7 @@ export const configBlock = createComponent<
                     ...element,
                     state: {
                         ...element.state,
-                        branch: action.branch.includes('refs/heads/')
-                            ? action.branch
-                            : `refs/heads/${action.branch}`,
+                        branch: action.branch,
                     },
                 };
             case 'toggle.customTemplate':
@@ -435,8 +433,8 @@ export const configBlock = createComponent<
                                                 !element.state.repository ||
                                                 !element.state.branch
                                             }
-                                            label="Configure"
-                                            tooltip="Save configuration"
+                                            label="Sync"
+                                            tooltip="Start the initial synchronization"
                                             onPress={{ action: 'save.config' }}
                                         />
                                     }

@@ -1,4 +1,4 @@
-import createHttpError from 'http-errors';
+import { StatusError, error } from 'itty-router';
 import { Router } from 'itty-router';
 
 import { ContentKitIcon, ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
@@ -8,8 +8,16 @@ import { fetchProject, fetchProjectBranches, fetchProjects, searchUserProjects }
 import { configBlock } from './components';
 import { uninstallWebhook } from './provider';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
-import type { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { getSpaceConfigOrThrow, assertIsDefined, verifySignature } from './utils';
+import { handleIntegrationTask } from './tasks';
+import type { GitLabRuntimeContext, GitLabSpaceConfiguration, IntegrationTask } from './types';
+import {
+    getSpaceConfigOrThrow,
+    assertIsDefined,
+    verifySignature,
+    BRANCH_REF_PREFIX,
+    arrayToHex,
+    safeCompare,
+} from './utils';
 import { handleMergeRequestEvent, handlePushEvent } from './webhooks';
 
 const logger = Logger('gitlab');
@@ -23,6 +31,61 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
                 environment.installation?.urls.publicEndpoint ||
                 environment.integration.urls.publicEndpoint
         ).pathname,
+    });
+
+    async function verifyIntegrationSignature(
+        payload: string,
+        signature: string,
+        secret: string
+    ): Promise<boolean> {
+        if (!signature) {
+            return false;
+        }
+
+        const algorithm = { name: 'HMAC', hash: 'SHA-256' };
+        const enc = new TextEncoder();
+        const key = await crypto.subtle.importKey('raw', enc.encode(secret), algorithm, false, [
+            'sign',
+            'verify',
+        ]);
+        const signed = await crypto.subtle.sign(algorithm.name, key, enc.encode(payload));
+        const expectedSignature = arrayToHex(signed);
+
+        return safeCompare(expectedSignature, signature);
+    }
+
+    /**
+     * Handle integration tasks
+     */
+    router.post('/tasks', async (request) => {
+        const signature = request.headers.get('x-gitbook-integration-signature') ?? '';
+        const payloadString = await request.text();
+
+        const verified = await verifyIntegrationSignature(
+            payloadString,
+            signature,
+            environment.signingSecret!
+        );
+
+        if (!verified) {
+            return new Response('Invalid integration signature', {
+                status: 400,
+            });
+        }
+
+        const { task } = JSON.parse(payloadString) as { task: IntegrationTask };
+        logger.debug('verified & received integration task', task);
+
+        context.waitUntil(
+            (async () => {
+                await handleIntegrationTask(context, task);
+            })()
+        );
+
+        return new Response(JSON.stringify({ acknowledged: true }), {
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+        });
     });
 
     /**
@@ -45,7 +108,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
                     environment.signingSecret!
                 );
                 if (!valid) {
-                    throw createHttpError(400, 'Invalid signature for webhook event');
+                    throw new StatusError(400, 'Invalid signature for webhook event');
                 }
             } catch (error: any) {
                 return new Response(JSON.stringify({ error: error.message }), {
@@ -203,7 +266,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
             if (!hasSelectedBranch) {
                 data.push({
                     id: querySelectedBranch,
-                    label: querySelectedBranch.replace('refs/heads/', ''),
+                    label: querySelectedBranch.replace(BRANCH_REF_PREFIX, ''),
                 });
             }
         }
@@ -215,15 +278,10 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
         });
     });
 
-    let response;
-    try {
-        response = await router.handle(request, context);
-    } catch (error: any) {
-        logger.error('error handling request', error);
-        return new Response(error.message, {
-            status: error.status || 500,
-        });
-    }
+    const response = (await router.handle(request, context).catch((err) => {
+        logger.error('error handling request', err);
+        return error(err);
+    })) as Response | undefined;
 
     if (!response) {
         return new Response(`No route matching ${request.method} ${request.url}`, {
@@ -259,7 +317,9 @@ const handleSpaceContentUpdated: EventCallback<
         return;
     }
 
-    await triggerExport(context, spaceInstallation);
+    await triggerExport(context, spaceInstallation, {
+        eventTimestamp: new Date(revision.createdAt),
+    });
 };
 
 /*

@@ -1,5 +1,22 @@
 # @gitbook/cli
 
+## 0.15.0
+
+### Minor Changes
+
+-   2dfce83: Bump CLI to use the latest OpenAPI spec
+
+## 0.14.0
+
+### Minor Changes
+
+-   a5e0e14: Updates the CLI to check for Windows machines in order to install dependencies correctly
+
+### Patch Changes
+
+-   Updated dependencies [1c45194]
+    -   @gitbook/api@0.16.0
+
 ## 0.13.1
 
 ### Patch Changes

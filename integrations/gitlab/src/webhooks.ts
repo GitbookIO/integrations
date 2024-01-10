@@ -1,10 +1,23 @@
-import { GitBookAPI } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
 
-import { querySpaceInstallations } from './installation';
-import { triggerImport } from './sync';
+import { handleImportDispatchForSpaces } from './tasks';
 import { GitLabRuntimeContext } from './types';
 import { computeConfigQueryKey } from './utils';
+
+interface GitLabCommit {
+    id: string;
+    message: string;
+    title: string;
+    timestamp: string;
+    url: string;
+    author: {
+        name: string;
+        email: string;
+    };
+    added: string[];
+    modified: string[];
+    removed: string[];
+}
 
 interface GitLabPushEvent {
     object_kind: string;
@@ -20,7 +33,7 @@ interface GitLabPushEvent {
     project_id: number;
     project: GitLabProject;
     repository: any;
-    commits: any[];
+    commits: GitLabCommit[];
     total_commits_count: number;
 }
 
@@ -81,45 +94,27 @@ const logger = Logger('gitlab:webhooks');
  * Push on the main branch of an installation triggers a sync.
  */
 export async function handlePushEvent(context: GitLabRuntimeContext, payload: GitLabPushEvent) {
-    logger.info(`handling push event on ref "${payload.ref}" of "${payload.project.id}"`);
-
     const gitlabProjectId = payload.project.id;
     const gitlabRef = payload.ref;
 
-    const queryKey = computeConfigQueryKey(gitlabProjectId, gitlabRef);
-    // Trigger import for all installations that match this repository
-    const spaceInstallations = await querySpaceInstallations(context, queryKey);
-
     logger.info(
-        `handling push event on ref "${payload.ref}" of "${payload.repository.id}" (project "${payload.project.id}"): ${spaceInstallations.length} space configurations are affected`
+        `handling push event on ref "${payload.ref}" of "${payload.repository.id}" (project "${payload.project.id}")`
     );
 
-    await Promise.all(
-        spaceInstallations.map(async (spaceInstallation) => {
-            try {
-                // Obtain the installation API token needed to trigger the import
-                const { data: installationAPIToken } =
-                    await context.api.integrations.createIntegrationInstallationToken(
-                        spaceInstallation.integration,
-                        spaceInstallation.installation
-                    );
+    const queryKey = computeConfigQueryKey(gitlabProjectId, gitlabRef);
 
-                // Set the token in the context to be used by the API client
-                context.environment.authToken = installationAPIToken.token;
-                context.api = new GitBookAPI({
-                    endpoint: context.environment.apiEndpoint,
-                    authToken: installationAPIToken.token,
-                });
+    // Gitlab push events do not include a head_commit property so we need to get it from
+    // the commits attribute which should contains the newest 20 commits:
+    // https://docs.gitlab.com/ee/user/project/integrations/webhook_events.html#push-events
+    const headCommitSha = payload.after;
+    const headCommit = payload.commits.find((commit) => commit.id === headCommitSha);
 
-                await triggerImport(context, spaceInstallation);
-            } catch (error) {
-                logger.error(
-                    `error while triggering import for space ${spaceInstallation.space}`,
-                    error
-                );
-            }
-        })
-    );
+    const total = await handleImportDispatchForSpaces(context, {
+        configQuery: queryKey,
+        eventTimestamp: headCommit?.timestamp ? new Date(headCommit.timestamp) : undefined,
+    });
+
+    logger.debug(`${total} space configurations are affected`);
 }
 
 /**
@@ -141,45 +136,18 @@ export async function handleMergeRequestEvent(
         payload.object_attributes.action === 'open' ||
         payload.object_attributes.action === 'update'
     ) {
-        const queryKey = computeConfigQueryKey(gitlabProjectId, targetRef);
-        // Trigger import for all installations that match this repository
-        const spaceInstallations = await querySpaceInstallations(context, queryKey);
-
         logger.info(`
-            handling merge request event "${payload.object_attributes.action}" on ref "${targetRef}" of "${payload.repository.id}" (project "${payload.project.id}"):
-            ${spaceInstallations.length} space configurations are affected
+          handling merge request event "${payload.object_attributes.action}" on ref "${targetRef}" of "${payload.repository.id}" (project "${payload.project.id}")
         `);
 
-        await Promise.all(
-            spaceInstallations.map(async (spaceInstallation) => {
-                try {
-                    // Obtain the installation API token needed to trigger the import
-                    const { data: installationAPIToken } =
-                        await context.api.integrations.createIntegrationInstallationToken(
-                            spaceInstallation.integration,
-                            spaceInstallation.installation
-                        );
+        const queryKey = computeConfigQueryKey(gitlabProjectId, targetRef);
 
-                    // Set the token in the context to be used by the API client
-                    context.environment.authToken = installationAPIToken.token;
-                    context.api = new GitBookAPI({
-                        endpoint: context.environment.apiEndpoint,
-                        authToken: installationAPIToken.token,
-                    });
+        const total = await handleImportDispatchForSpaces(context, {
+            configQuery: queryKey,
+            standaloneRef: sourceRef,
+        });
 
-                    await triggerImport(context, spaceInstallation, {
-                        standalone: {
-                            ref: sourceRef,
-                        },
-                    });
-                } catch (error) {
-                    logger.error(
-                        `error while triggering standalone (${sourceRef}) import for space ${spaceInstallation.space}`,
-                        error
-                    );
-                }
-            })
-        );
+        logger.debug(`${total} space configurations are affected`);
     } else {
         logger.info(`ignoring merge request event "${payload.object_attributes.action}"`);
     }
