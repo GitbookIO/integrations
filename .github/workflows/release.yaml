@@ -96,6 +96,8 @@ jobs:
                   GITHUB_ENTITIES_CLIENT_SECRET: ${{ secrets.ENTITIES_GITHUB_STAGING_CLIENT_SECRET }}
                   GITHUB_ENTITIES_WEBHOOK_SECRET: ${{ secrets.ENTITIES_GITHUB_STAGING_WEBHOOK_SECRET }}
                   GITHUB_ENTITIES_PRIVATE_KEY: ${{ secrets.ENTITIES_GITHUB_STAGING_PRIVATE_KEY }}
+                  LUCID_CLIENT_ID: ${{ secrets.LUCID_CLIENT_ID }}
+                  LUCID_CLIENT_SECRET: ${{ secrets.LUCID_CLIENT_SECRET }}
             - name: Publish all integrations assets to production
               run: npm run publish-assets
               env:
@@ -138,3 +140,5 @@ jobs:
                   GITHUB_ENTITIES_CLIENT_SECRET: ${{ secrets.ENTITIES_GITHUB_CLIENT_SECRET }}
                   GITHUB_ENTITIES_WEBHOOK_SECRET: ${{ secrets.ENTITIES_GITHUB_WEBHOOK_SECRET }}
                   GITHUB_ENTITIES_PRIVATE_KEY: ${{ secrets.ENTITIES_GITHUB_PRIVATE_KEY }}
+                  LUCID_CLIENT_ID: ${{ secrets.LUCID_CLIENT_ID }}
+                  LUCID_CLIENT_SECRET: ${{ secrets.LUCID_CLIENT_SECRET }}
