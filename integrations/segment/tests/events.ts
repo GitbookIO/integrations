@@ -3,6 +3,7 @@ import test from 'test';
 
 import * as api from '@gitbook/api';
 
+import packageJson from '../package.json';
 // eslint-disable-next-line import/no-internal-modules
 import { generateSegmentTrackEvent } from '../src/events';
 
@@ -32,7 +33,7 @@ test('events', async (t) => {
             context: {
                 library: {
                     name: 'GitBook',
-                    version: '1.0.0',
+                    version: packageJson.version,
                 },
                 page: {
                     referrer: 'https://www.gitbook.com/',
