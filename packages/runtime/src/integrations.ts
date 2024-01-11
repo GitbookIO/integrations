@@ -139,7 +139,12 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
             });
         } catch (err) {
             logger.error(err.stack);
-            throw err;
+            return new Response(
+                JSON.stringify({
+                    error: err.message,
+                }),
+                { status: err.status || 500, headers: { 'content-type': 'application/json' } }
+            );
         }
     }
 
