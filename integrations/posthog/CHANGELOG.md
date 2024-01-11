@@ -1,5 +1,11 @@
 # @gitbook/integration-posthog
 
+## 0.0.4
+
+### Patch Changes
+
+-   d648cc2: Release to use the latest runtime package
+
 ## 0.0.3
 
 ### Patch Changes

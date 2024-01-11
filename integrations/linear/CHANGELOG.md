@@ -1,5 +1,11 @@
 # @gitbook/integration-linear
 
+## 1.0.1
+
+### Patch Changes
+
+-   d648cc2: Release to use the latest runtime package
+
 ## 1.0.0
 
 ### Major Changes
