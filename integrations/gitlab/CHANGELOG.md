@@ -1,5 +1,11 @@
 # @gitbook/integration-gitlab
 
+## 0.0.9
+
+### Patch Changes
+
+-   1ac9975: check webhookId exists before deleting it in gitlab
+
 ## 0.0.8
 
 ### Patch Changes
