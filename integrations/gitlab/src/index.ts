@@ -389,6 +389,11 @@ const handleSpaceInstallationDeleted: EventCallback<
         return;
     }
 
+    if (!configuration.webhookId) {
+        logger.debug(`missing webhook id in configuration, skipping`);
+        return;
+    }
+
     await uninstallWebhook(configuration);
 };
 
