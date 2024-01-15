@@ -1,5 +1,11 @@
 # @gitbook/integration-github
 
+## 0.0.9
+
+### Patch Changes
+
+-   84c0202: Exit early from space_content_updated if not configured
+
 ## 0.0.8
 
 ### Patch Changes
