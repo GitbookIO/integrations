@@ -400,7 +400,12 @@ const handleSpaceContentUpdated: EventCallback<
 
     const spaceInstallation = context.environment.spaceInstallation;
     if (!spaceInstallation) {
-        logger.debug(`missing space installation, skipping`);
+        logger.debug(`missing space installation for ${event.spaceId}, skipping`);
+        return;
+    }
+
+    if (!spaceInstallation.configuration.key) {
+        logger.debug(`space ${event.spaceId} is not configured, skipping`);
         return;
     }
 
