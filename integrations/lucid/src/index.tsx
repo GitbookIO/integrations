@@ -1,11 +1,6 @@
 import { Router } from 'itty-router';
 
-import {
-    createIntegration,
-    createComponent,
-    createOAuthHandler,
-    FetchEventCallback,
-} from '@gitbook/runtime';
+import { createIntegration, createComponent, FetchEventCallback } from '@gitbook/runtime';
 
 const defaultContent = '';
 
@@ -88,22 +83,6 @@ const handleFetchEvent: FetchEventCallback = async (request, context) => {
             }
         );
     });
-
-    /*
-     * Authenticate the user using OAuth.
-     */
-    router.get(
-        '/oauth',
-        // @ts-ignore
-        createOAuthHandler({
-            redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
-            clientId: context.environment.secrets.CLIENT_ID,
-            clientSecret: context.environment.secrets.CLIENT_SECRET,
-            scopes: ['lucidchart.document.app'],
-            authorizeURL: 'https://lucid.app/oauth2/authorize',
-            accessTokenURL: `https://api.lucid.co/oauth2/token`,
-        })
-    );
 
     const response = await router.handle(request, context);
     if (!response) {

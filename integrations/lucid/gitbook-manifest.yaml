@@ -30,17 +30,6 @@ blocks:
       title: Lucidchart
       urlUnfurl:
           - https://lucid.app/*
-configurations:
-    account:
-        properties:
-            oauth_credentials:
-                type: button
-                title: Connection
-                description: Authorization between Lucid and GitBook.
-                button_text: Authorize
-                callback_url: /oauth
-        required:
-            - oauth_credentials
 secrets:
     CLIENT_ID: ${{ env.LUCID_CLIENT_ID }}
     CLIENT_SECRET: ${{ env.LUCID_CLIENT_SECRET }}
