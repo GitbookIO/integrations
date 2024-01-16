@@ -1,11 +1,11 @@
 name: lucid
 title: Lucid
 organization: gitbook
-visibility: private
+visibility: public
 icon: ./assets/icon.png
 previewImages:
     - ./assets/lucid-preview.png
-description: ''
+description: 'Embed Lucid projects directly into GitBook.'
 summary: |
     # Overview
 
