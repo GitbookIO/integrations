@@ -1,5 +1,6 @@
 {
     "name": "@gitbook/integration-gitlab",
+    "version": "0.0.10",
     "private": true,
     "scripts": {
         "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -13,14 +14,13 @@
         "hash-sum": "^2.0.0",
         "http-errors": "^2.0.0",
         "http-link-header": "^1.1.1",
-        "itty-router": "^4.0.17"
+        "itty-router": "^4.0.26"
     },
     "devDependencies": {
         "@gitbook/cli": "*",
         "@gitbook/eslint-config": "*",
         "@gitbook/tsconfig": "*",
         "@types/hash-sum": "^1.0.0",
-        "@types/http-errors": "^2.0.1",
         "@types/http-link-header": "^1.0.3"
     }
 }

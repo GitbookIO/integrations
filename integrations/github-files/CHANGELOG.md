@@ -1,5 +1,11 @@
 # @gitbook/integration-github
 
+## 0.1.3
+
+### Patch Changes
+
+-   d648cc2: Release to use the latest runtime package
+
 ## 0.1.2
 
 ### Patch Changes

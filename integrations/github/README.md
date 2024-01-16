@@ -12,7 +12,8 @@ Go to the integration folder at `cd integrations/github`. Before you run `publis
 - `export GITHUB_CLIENT_ID=client-id-from-settings`
 - `export GITHUB_CLIENT_SECRET=client-secret-that-you-noted-down-earlier`
 - `export GITHUB_WEBHOOK_SECRET=webhook-secret-that-you-noted-down-earlier`
-- `export GITHUB_PRIVATE_KEY=cat ~/Downloads/gitbook-dev-YOURNAME.key` (this is the file that we converted from `.pem` to `.key` earlier. Make sure the file exists at the path)
+- ```export GITHUB_PRIVATE_KEY=`cat ~/Downloads/gitbook-dev-YOURNAME.key```
+(this is the file that we converted from `.pem` to `.key` earlier. Make sure the file exists at the path)
 
 Once you've exported these `env` variables, it's time to run the `publish` script:
 

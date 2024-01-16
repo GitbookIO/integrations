@@ -1,5 +1,11 @@
 # @gitbook/integration-plausible
 
+## 0.1.1
+
+### Patch Changes
+
+-   d648cc2: Release to use the latest runtime package
+
 ## 0.1.0
 
 ### Minor Changes

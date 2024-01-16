@@ -1,4 +1,4 @@
-import httpError from 'http-errors';
+import { StatusError } from 'itty-router';
 
 import { IntegrationSpaceInstallation } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
@@ -23,7 +23,10 @@ export async function saveSpaceConfiguration(
     assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
     if (!state.installation || !state.repository || !state.branch) {
-        throw httpError(400, 'Incomplete configuration');
+        throw new StatusError(
+            400,
+            'Incomplete configuration: missing installation, repository or branch'
+        );
     }
 
     // Make sure the branch is prefixed with refs/heads/
@@ -98,38 +101,35 @@ export async function saveSpaceConfiguration(
 }
 
 /**
- * List space installations that match the given external ID. It takes
- * care of pagination and returns all space installations at once.
+ * List space installations that match the given external ID.
  */
 export async function querySpaceInstallations(
     context: GithubRuntimeContext,
     externalId: string,
-    page?: string
-): Promise<Array<IntegrationSpaceInstallation>> {
+    options: {
+        page?: string;
+        limit?: number;
+    } = {}
+): Promise<{ data: Array<IntegrationSpaceInstallation>; nextPage?: string; total?: number }> {
     const { api, environment } = context;
+    const { page, limit = 100 } = options;
 
-    logger.debug(`Querying space installations for external ID ${externalId} (page: ${page ?? 1})`);
+    logger.debug(
+        `Querying space installations for external ID ${externalId} (${JSON.stringify(options)})`
+    );
 
     const { data } = await api.integrations.listIntegrationSpaceInstallations(
         environment.integration.name,
         {
-            limit: 100,
+            limit,
             externalId,
             page,
         }
     );
 
-    const spaceInstallations = [...data.items];
-
-    // Recursively fetch next pages
-    if (data.next) {
-        const nextSpaceInstallations = await querySpaceInstallations(
-            context,
-            externalId,
-            data.next.page
-        );
-        spaceInstallations.push(...nextSpaceInstallations);
-    }
-
-    return spaceInstallations;
+    return {
+        data: data.items,
+        total: data.count,
+        nextPage: data.next?.page,
+    };
 }

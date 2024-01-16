@@ -18,10 +18,10 @@ jobs:
                   # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
                   fetch-depth: 0
 
-            - name: Setup Node.js 18.x
+            - name: Setup Node.js 20.x
               uses: actions/setup-node@v3
               with:
-                  node-version: 18.x
+                  node-version: 20.x
 
             - name: Install Dependencies
               run: npm ci
@@ -32,19 +32,21 @@ jobs:
               with:
                   publish: npm run release
               env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  # Using a PAT instead of GITHUB_TOKEN because we need to run workflows when releases are created
+                  # https://github.com/orgs/community/discussions/26875#discussioncomment-3253761
+                  GITHUB_TOKEN: ${{ secrets.GH_PERSONAL_TOKEN }}
                   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-    publish-integrations:
-        name: Publish Integrations
+    publish-integrations-staging:
+        name: Publish Integrations to Staging
         runs-on: ubuntu-latest
         steps:
             - name: Checkout Repo
               uses: actions/checkout@v3
-            - name: Setup Node.js 18.x
+            - name: Setup Node.js 20.x
               uses: actions/setup-node@v3
               with:
-                  node-version: 18.x
+                  node-version: 20.x
             - name: Install Dependencies
               # We need to build and then re-install so that the "bin" can be correctly linked
               run: |

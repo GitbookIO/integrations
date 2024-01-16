@@ -1,5 +1,11 @@
 # @gitbook/runtime
 
+## 0.10.1
+
+### Patch Changes
+
+-   b607365: Fix worker dispatch catch handler to send a http response with the status code instead of throwing an error
+
 ## 0.10.0
 
 ### Minor Changes

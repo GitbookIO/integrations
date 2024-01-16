@@ -1,5 +1,11 @@
 # @gitbook/integration-injection-test
 
+## 0.0.2
+
+### Patch Changes
+
+-   d648cc2: Release to use the latest runtime package
+
 ## 0.0.1
 
 ### Patch Changes
