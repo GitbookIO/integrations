@@ -143,7 +143,10 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                 JSON.stringify({
                     error: err.message,
                 }),
-                { status: err.status || 500, headers: { 'content-type': 'application/json' } }
+                {
+                    status: err.status || err.statusCode || err.code || 500,
+                    headers: { 'content-type': 'application/json' },
+                }
             );
         }
     }
