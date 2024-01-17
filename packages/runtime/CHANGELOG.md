@@ -1,5 +1,11 @@
 # @gitbook/runtime
 
+## 0.10.2
+
+### Patch Changes
+
+-   dfd610b: Use status from error.code for GitBookAPIError errors
+
 ## 0.10.1
 
 ### Patch Changes
