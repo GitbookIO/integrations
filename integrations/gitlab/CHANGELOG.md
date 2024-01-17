@@ -1,5 +1,11 @@
 # @gitbook/integration-gitlab
 
+## 0.0.11
+
+### Patch Changes
+
+-   f86ac5d: Release with the latest @gitbook/runtime@0.10.2
+
 ## 0.0.10
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @gitbook/integration-github
 
+## 0.0.10
+
+### Patch Changes
+
+-   f86ac5d: Release with the latest @gitbook/runtime@0.10.2
+
 ## 0.0.9
 
 ### Patch Changes
