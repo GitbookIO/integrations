@@ -75,9 +75,24 @@ const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRu
         const VACallbackURL = `${context.environment.spaceInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
         return (
             <block>
-                <textinput state="client_id" placeholder="Enter Client ID" />
-                <textinput state="tenant_id" placeholder="Enter Tenant ID" />
-                <textinput state="client_secret" placeholder="Enter Client Secret" />
+                <input
+                    label="Enter Client ID"
+                    hint="Enter Client ID of your Azure application"
+                    element={<textinput state="client_id" placeholder="Client ID" />}
+                />
+
+                <input
+                    label="Enter Tenant ID"
+                    hint="Enter Tenant ID of your Azure application"
+                    element={<textinput state="tenant_id" placeholder="Tenant ID" />}
+                />
+
+                <input
+                    label="Enter Client Secret"
+                    hint="Enter Client Secret of your Azure application"
+                    element={<textinput state="client_secret" placeholder="Client Secret" />}
+                />
+
                 <input
                     label=""
                     hint=""
@@ -101,7 +116,7 @@ const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRu
                     </hint>
                 ) : null}
                 <divider size="medium" />
-                <text>Enter the following URL as an allowed callback URL in Azure:</text>
+                <text>Enter the following URL as an allowed Redirect URI in Azure:</text>
                 <text>{VACallbackURL}</text>
             </block>
         );
@@ -121,7 +136,7 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                 const space = await context.api.spaces.getSpaceById(
                     context.environment.spaceInstallation?.space
                 );
-                const obj = space.data;
+                const spaceData = space.data;
                 const privateKey = context.environment.signingSecret;
                 let token;
                 try {
@@ -130,7 +145,9 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                         privateKey
                     );
                 } catch (e) {
-                    return Response.json({ error: e.stack });
+                    return new Response('Error: Could not sign JWT token', {
+                        status: 500,
+                    });
                 }
 
                 const tenantId = environment.spaceInstallation?.configuration.tenant_id;
@@ -153,31 +170,36 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                     })
                         .then((response) => response.json())
                         .catch((err) => {
-                            return Response.json({ err });
+                            return new Response('Error: Could not fetch access token from Azure', {
+                                status: 401,
+                            });
                         });
 
                     if ('access_token' in resp) {
                         let url;
                         if (request.query.state) {
-                            url = `${obj.urls?.published}${request.query.state}/?jwt_token=${token}`;
+                            url = `${spaceData.urls?.published}${request.query.state}/?jwt_token=${token}`;
                         } else {
-                            url = `${obj.urls?.published}/?jwt_token=${token}`;
+                            url = `${spaceData.urls?.published}/?jwt_token=${token}`;
                         }
-                        if (obj.urls?.published && token) {
+                        if (spaceData.urls?.published && token) {
                             return Response.redirect(url);
                         } else {
-                            return Response.json({
-                                Error: 'Either Published URL or token is missing',
-                            });
+                            return new Response(
+                                "Error: Either JWT token or space's published URL is missing",
+                                {
+                                    status: 500,
+                                }
+                            );
                         }
                     } else {
-                        return Response.json({
-                            Error: 'No Access Token found in the response from Azure',
+                        return new Response('Error: No Access Token found in response from Azure', {
+                            status: 401,
                         });
                     }
                 } else {
-                    return Response.json({
-                        Error: 'Either ClientId or ClientSecret is missing',
+                    return new Response('Error: Either ClientId or Client Secret is missing', {
+                        status: 400,
                     });
                 }
             }
@@ -213,12 +235,20 @@ export default createIntegration({
         const clientId = environment.spaceInstallation?.configuration.client_id;
         const location = event.location ? event.location : '';
 
+        const url = new URL(`https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize`);
+        url.searchParams.append('client_id', clientId);
+        url.searchParams.append('response_type', 'code');
+        url.searchParams.append('redirect_uri', `${installationURL}/visitor-auth/response`);
+        url.searchParams.append('response_mode', 'query');
+        url.searchParams.append('scope', 'openid');
+        url.searchParams.append('state', location);
+
         try {
-            return Response.redirect(
-                `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${installationURL}/visitor-auth/response&response_mode=query&scope=openid&state=${location}`
-            );
+            return Response.redirect(url.toString());
         } catch (e) {
-            return Response.json({ error: e.stack });
+            return new Response(e.message, {
+                status: e.status || 500,
+            });
         }
     },
 });

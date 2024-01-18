@@ -4,13 +4,13 @@ description: Visitor Authentication with Okta
 externalLinks:
     - label: Documentation
       url: https://www.gitbook.com/integrations/heap
-visibility: unlisted #public
+visibility: public #unlisted
 script: ./src/index.tsx
 scopes:
     - space:metadata:read
     - space:visitor:auth
     - space:content:read
-organization: d8f63b60-89ae-11e7-8574-5927d48c4877 #w45sBUBc1JWE1ktYkQfI
+organization: w45sBUBc1JWE1ktYkQfI #d8f63b60-89ae-11e7-8574-5927d48c4877
 summary: |
     # Overview
 

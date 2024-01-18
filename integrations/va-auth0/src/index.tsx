@@ -75,9 +75,24 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
         const VACallbackURL = `${context.environment.spaceInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
         return (
             <block>
-                <textinput state="client_id" placeholder="Enter Client Id" />
-                <textinput state="issuer_base_url" placeholder="Enter Issuer Base URL" />
-                <textinput state="client_secret" placeholder="Enter Client Secret" />
+                <input
+                    label="Enter Client ID"
+                    hint="Enter Client ID of your Auth0 application"
+                    element={<textinput state="client_id" placeholder="Client ID" />}
+                />
+
+                <input
+                    label="Enter Your Auth0 Domain"
+                    hint="Enter Domain of your Auth0 instance"
+                    element={<textinput state="issuer_base_url" placeholder="Domain" />}
+                />
+
+                <input
+                    label="Enter Client Secret"
+                    hint="Enter Client Secret of your Auth0 application"
+                    element={<textinput state="client_secret" placeholder="Client Secret" />}
+                />
+
                 <input
                     label=""
                     hint=""
@@ -121,7 +136,7 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                 const space = await context.api.spaces.getSpaceById(
                     context.environment.spaceInstallation?.space
                 );
-                const obj = space.data;
+                const spaceData = space.data;
                 const privateKey = context.environment.signingSecret;
                 let token;
                 try {
@@ -130,7 +145,9 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                         privateKey
                     );
                 } catch (e) {
-                    return Response.json({ error: e.stack });
+                    return new Response('Error: Could not sign JWT token', {
+                        status: 500,
+                    });
                 }
 
                 const issuerBaseUrl = environment.spaceInstallation?.configuration.issuer_base_url;
@@ -152,31 +169,36 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                     })
                         .then((response) => response.json())
                         .catch((err) => {
-                            return Response.json({ err });
+                            return new Response('Error: Could not fetch access token from Auth0', {
+                                status: 401,
+                            });
                         });
 
                     if ('access_token' in resp) {
                         let url;
                         if (request.query.state) {
-                            url = `${obj.urls?.published}${request.query.state}/?jwt_token=${token}`;
+                            url = `${spaceData.urls?.published}${request.query.state}/?jwt_token=${token}`;
                         } else {
-                            url = `${obj.urls?.published}/?jwt_token=${token}`;
+                            url = `${spaceData.urls?.published}/?jwt_token=${token}`;
                         }
-                        if (obj.urls?.published && token) {
+                        if (spaceData.urls?.published && token) {
                             return Response.redirect(url);
                         } else {
-                            return Response.json({
-                                Error: 'Either Published URL or token is missing',
-                            });
+                            return new Response(
+                                "Error: Either JWT token or space's published URL is missing",
+                                {
+                                    status: 500,
+                                }
+                            );
                         }
                     } else {
-                        return Response.json({
-                            Error: 'No Access Token found in the response from Auth0',
+                        return new Response('Error: No Access Token found in response from Auth0', {
+                            status: 401,
                         });
                     }
                 } else {
-                    return Response.json({
-                        Error: 'Either ClientId or ClientSecret is missing',
+                    return new Response('Error: Either ClientId or Client Secret is missing', {
+                        status: 400,
                     });
                 }
             }
@@ -212,12 +234,18 @@ export default createIntegration({
         const clientId = environment.spaceInstallation?.configuration.client_id;
         const location = event.location ? event.location : '';
 
+        const url = new URL(`${issuerBaseUrl}/authorize`);
+        url.searchParams.append('client_id', clientId);
+        url.searchParams.append('response_type', 'code');
+        url.searchParams.append('redirect_uri', `${installationURL}/visitor-auth/response`);
+        url.searchParams.append('state', location);
+
         try {
-            return Response.redirect(
-                `${issuerBaseUrl}/authorize?response_type=code&client_id=${clientId}&redirect_uri=${installationURL}/visitor-auth/response&state=${location}`
-            );
+            return Response.redirect(url.toString());
         } catch (e) {
-            return Response.json({ error: e.stack });
+            return new Response(e.message, {
+                status: e.status || 500,
+            });
         }
     },
 });
