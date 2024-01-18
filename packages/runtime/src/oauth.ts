@@ -104,6 +104,21 @@ export function createOAuthHandler(
         // Redirect to authorization
         //
         if (!code) {
+            if (!environment.installation) {
+                logger.error(`Cannot initiate OAuth flow without an installation`);
+                return new Response(
+                    JSON.stringify({
+                        error: 'Cannot initiate OAuth flow without an installation',
+                    }),
+                    {
+                        status: 400,
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+            }
+
             logger.debug(`handle redirect to authorization at: ${config.authorizeURL}`);
 
             const redirectTo = new URL(config.authorizeURL);
@@ -113,11 +128,9 @@ export function createOAuthHandler(
             redirectTo.searchParams.set(
                 'state',
                 JSON.stringify({
-                    ...(environment.installation
-                        ? { installationId: environment.installation.id }
-                        : {}),
-                    ...(environment.spaceInstallation
-                        ? { spaceId: environment.spaceInstallation.space }
+                    installationId: environment.installation.id,
+                    ...(environment.spaceInstallation?.space
+                        ? { spaceId: environment.spaceInstallation?.space }
                         : {}),
                 })
             );
@@ -184,24 +197,13 @@ export function createOAuthHandler(
                  * updating the installation config.
                  */
                 const state = JSON.parse(url.searchParams.get('state')) as {
-                    installationId?: string;
+                    installationId: string;
                     spaceId?: string;
                 };
 
                 const existing = {
                     configuration: {},
                 };
-
-                if (!state.installationId) {
-                    const error = 'Missing installationId in state parameter';
-                    logger.error(error);
-                    return new Response(JSON.stringify({ error }), {
-                        status: 400,
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    });
-                }
 
                 if (state.spaceId) {
                     if (!replace) {
