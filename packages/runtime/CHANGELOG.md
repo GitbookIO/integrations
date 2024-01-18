@@ -1,5 +1,11 @@
 # @gitbook/runtime
 
+## 0.10.3
+
+### Patch Changes
+
+-   95f041a: Add more logs during OAuth flow
+
 ## 0.10.2
 
 ### Patch Changes
