@@ -1,5 +1,11 @@
 # @gitbook/integration-gitlab
 
+## 0.0.12
+
+### Patch Changes
+
+-   391aea5: Bump to use the latest runtime@0.10.3
+
 ## 0.0.11
 
 ### Patch Changes
