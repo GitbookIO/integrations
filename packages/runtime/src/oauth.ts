@@ -104,6 +104,8 @@ export function createOAuthHandler(
         // Redirect to authorization
         //
         if (!code) {
+            logger.debug(`handle redirect to authorization at: ${config.authorizeURL}`);
+
             const redirectTo = new URL(config.authorizeURL);
             redirectTo.searchParams.set('client_id', config.clientId);
             redirectTo.searchParams.set('redirect_uri', redirectUri);
@@ -111,9 +113,11 @@ export function createOAuthHandler(
             redirectTo.searchParams.set(
                 'state',
                 JSON.stringify({
-                    installationId: environment.installation.id,
-                    ...(environment.spaceInstallation?.space
-                        ? { spaceId: environment.spaceInstallation?.space }
+                    ...(environment.installation
+                        ? { installationId: environment.installation.id }
+                        : {}),
+                    ...(environment.spaceInstallation
+                        ? { spaceId: environment.spaceInstallation.space }
                         : {}),
                 })
             );
@@ -129,7 +133,9 @@ export function createOAuthHandler(
             const url = redirectTo
                 .toString()
                 .replace('SCOPE_PLACEHOLDER', config.scopes?.join('%20'));
-            logger.debug(`handle oauth redirect to ${url}`);
+
+            logger.debug(`oauth redirecting to ${url}`);
+
             return Response.redirect(url);
         }
 
