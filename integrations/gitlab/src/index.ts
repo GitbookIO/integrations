@@ -279,7 +279,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
     });
 
     const response = (await router.handle(request, context).catch((err) => {
-        logger.error('error handling request', err);
+        logger.error(`error handling request ${err.message} ${err.stack}`);
         return error(err);
     })) as Response | undefined;
 
