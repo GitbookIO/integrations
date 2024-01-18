@@ -184,13 +184,24 @@ export function createOAuthHandler(
                  * updating the installation config.
                  */
                 const state = JSON.parse(url.searchParams.get('state')) as {
-                    installationId: string;
+                    installationId?: string;
                     spaceId?: string;
                 };
 
                 const existing = {
                     configuration: {},
                 };
+
+                if (!state.installationId) {
+                    const error = 'Missing installationId in state parameter';
+                    logger.error(error);
+                    return new Response(JSON.stringify({ error }), {
+                        status: 400,
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                }
 
                 if (state.spaceId) {
                     if (!replace) {
