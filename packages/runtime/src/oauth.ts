@@ -104,6 +104,23 @@ export function createOAuthHandler(
         // Redirect to authorization
         //
         if (!code) {
+            if (!environment.installation) {
+                logger.error(`Cannot initiate OAuth flow without an installation`);
+                return new Response(
+                    JSON.stringify({
+                        error: 'Cannot initiate OAuth flow without an installation',
+                    }),
+                    {
+                        status: 400,
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+            }
+
+            logger.debug(`handle redirect to authorization at: ${config.authorizeURL}`);
+
             const redirectTo = new URL(config.authorizeURL);
             redirectTo.searchParams.set('client_id', config.clientId);
             redirectTo.searchParams.set('redirect_uri', redirectUri);
@@ -129,7 +146,9 @@ export function createOAuthHandler(
             const url = redirectTo
                 .toString()
                 .replace('SCOPE_PLACEHOLDER', config.scopes?.join('%20'));
-            logger.debug(`handle oauth redirect to ${url}`);
+
+            logger.debug(`oauth redirecting to ${url}`);
+
             return Response.redirect(url);
         }
 
