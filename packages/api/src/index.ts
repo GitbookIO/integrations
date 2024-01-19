@@ -1,3 +1,5 @@
+// @ts-ignore - Ignore the error "'rootDir' is expected to contain all source files" because
+// we need to control root to avoid ./dist/src and only have ./dist
 import { name, version } from '../package.json';
 import { Api } from './client';
 import { GitBookAPIError } from './GitBookAPIError';
@@ -27,6 +29,11 @@ export class GitBookAPI extends Api<{
      * Authentication token used by the API client.
      */
     public readonly authToken: string | undefined;
+
+    /**
+     * User agent used by the API client.
+     */
+    public readonly userAgent: string;
 
     constructor(
         options: {
@@ -100,6 +107,7 @@ export class GitBookAPI extends Api<{
         });
 
         this.endpoint = endpoint;
+        this.userAgent = userAgent;
         this.authToken = authToken;
         this.setSecurityData({ authToken });
     }
@@ -119,6 +127,7 @@ export class GitBookAPI extends Api<{
 
         return new GitBookAPI({
             endpoint: this.endpoint,
+            userAgent: this.userAgent,
             authToken: installationToken.token,
         });
     }
