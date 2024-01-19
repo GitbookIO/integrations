@@ -1,12 +1,12 @@
 {
     "name": "@gitbook/integration-gitlab-files",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "private": true,
     "dependencies": {
         "dotenv": "^16.1.1"
     },
     "devDependencies": {
-        "@gitbook/cli": "^0.15.0",
+        "@gitbook/cli": "^0.15.1",
         "@gitbook/runtime": "*",
         "@gitbook/eslint-config": "*",
         "@gitbook/tsconfig": "*"
