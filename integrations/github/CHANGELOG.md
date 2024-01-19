@@ -1,5 +1,14 @@
 # @gitbook/integration-github
 
+## 0.0.12
+
+### Patch Changes
+
+-   7d76dfb: Update integrations to use latest runtime and api client with `User-Agent`
+-   Updated dependencies [46c9686]
+    -   @gitbook/runtime@0.11.0
+    -   @gitbook/api@0.27.0
+
 ## 0.0.11
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @gitbook/runtime
 
+## 0.11.0
+
+### Minor Changes
+
+-   46c9686: Allow passing a `userAgent` to the API client (`@gitbook/api`) and set a default user-agent for all integrations
+
+### Patch Changes
+
+-   Updated dependencies [46c9686]
+    -   @gitbook/api@0.27.0
+
 ## 0.10.3
 
 ### Patch Changes
