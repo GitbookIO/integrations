@@ -52,6 +52,7 @@ export function createContext(
         api: new GitBookAPI({
             endpoint: environment.apiEndpoint,
             authToken: environment.authToken,
+            userAgent: `integration-${environment.integration.name}/${environment.integration.version}`,
         }),
 
         waitUntil,

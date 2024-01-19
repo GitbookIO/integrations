@@ -1,6 +1,9 @@
 import { GitBookAPI } from '@gitbook/api';
 
+import { name, version } from '../package.json';
 import { getConfigValue, setConfigValue } from './config';
+
+const userAgent = `${name}/${version}`;
 
 /**
  * Get an authenticated API client.
@@ -15,6 +18,7 @@ export async function getAPIClient(requireAuth: boolean = true): Promise<GitBook
     }
 
     return new GitBookAPI({
+        userAgent,
         endpoint: getConfigValue('endpoint'),
         authToken,
     });
@@ -27,6 +31,7 @@ export async function authenticate(endpoint: string, authToken: string): Promise
     console.log(`Authenticating with ${endpoint}...`);
 
     const api = new GitBookAPI({
+        userAgent,
         endpoint,
         authToken,
     });
