@@ -1,5 +1,34 @@
 # @gitbook/runtime
 
+## 0.11.0
+
+### Minor Changes
+
+-   46c9686: Allow passing a `userAgent` to the API client (`@gitbook/api`) and set a default user-agent for all integrations
+
+### Patch Changes
+
+-   Updated dependencies [46c9686]
+    -   @gitbook/api@0.27.0
+
+## 0.10.3
+
+### Patch Changes
+
+-   95f041a: Add more logs during OAuth flow
+
+## 0.10.2
+
+### Patch Changes
+
+-   dfd610b: Use status from error.code for GitBookAPIError errors
+
+## 0.10.1
+
+### Patch Changes
+
+-   b607365: Fix worker dispatch catch handler to send a http response with the status code instead of throwing an error
+
 ## 0.10.0
 
 ### Minor Changes

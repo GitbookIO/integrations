@@ -279,7 +279,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
     });
 
     const response = (await router.handle(request, context).catch((err) => {
-        logger.error('error handling request', err);
+        logger.error(`error handling request ${err.message} ${err.stack}`);
         return error(err);
     })) as Response | undefined;
 
@@ -313,7 +313,12 @@ const handleSpaceContentUpdated: EventCallback<
 
     const spaceInstallation = context.environment.spaceInstallation;
     if (!spaceInstallation) {
-        logger.debug(`missing space installation, skipping`);
+        logger.debug(`missing space installation for ${event.spaceId}, skipping`);
+        return;
+    }
+
+    if (!spaceInstallation.configuration.key) {
+        logger.debug(`space ${event.spaceId} is not configured, skipping`);
         return;
     }
 
@@ -386,6 +391,11 @@ const handleSpaceInstallationDeleted: EventCallback<
     const configuration = event.previous.configuration as GitLabSpaceConfiguration | undefined;
     if (!configuration) {
         logger.debug(`missing space installation configuration, skipping`);
+        return;
+    }
+
+    if (!configuration.webhookId) {
+        logger.debug(`missing webhook id in configuration, skipping`);
         return;
     }
 

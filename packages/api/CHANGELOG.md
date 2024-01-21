@@ -1,5 +1,17 @@
 # @gitbook/api
 
+## 0.27.0
+
+### Minor Changes
+
+-   46c9686: Allow passing a `userAgent` to the API client (`@gitbook/api`) and set a default user-agent for all integrations
+
+## 0.26.0
+
+### Minor Changes
+
+-   980a262: Update API client with latest OpenAPI spec
+
 ## 0.25.0
 
 ### Minor Changes

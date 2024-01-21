@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-github-entities",
-    "version": "0.0.1",
+    "version": "0.0.3",
     "private": true,
     "scripts": {
         "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
