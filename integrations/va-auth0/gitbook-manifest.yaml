@@ -1,9 +1,6 @@
 name: VA-Auth0
 title: VA Auth0
 description: Visitor Authentication with Auth0
-externalLinks:
-    - label: Documentation
-      url: https://www.gitbook.com/integrations/heap
 visibility: public #unlisted
 script: ./src/index.tsx
 scopes:

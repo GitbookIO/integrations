@@ -77,19 +77,55 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
             <block>
                 <input
                     label="Enter Client ID"
-                    hint="Enter Client ID of your Auth0 application"
+                    hint={
+                        <text>
+                            Enter the unique identifier of your Auth0 application.
+                            <link
+                                target={{
+                                    url: 'https://auth0.com/docs/get-started/applications/application-settings',
+                                }}
+                            >
+                                {' '}
+                                More Details
+                            </link>
+                        </text>
+                    }
                     element={<textinput state="client_id" placeholder="Client ID" />}
                 />
 
                 <input
                     label="Enter Your Auth0 Domain"
-                    hint="Enter Domain of your Auth0 instance"
+                    hint={
+                        <text>
+                            Enter the Auth0 domain (also known as tenant).
+                            <link
+                                target={{
+                                    url: 'https://auth0.com/docs/get-started/applications/application-settings',
+                                }}
+                            >
+                                {' '}
+                                More Details
+                            </link>
+                        </text>
+                    }
                     element={<textinput state="issuer_base_url" placeholder="Domain" />}
                 />
 
                 <input
                     label="Enter Client Secret"
-                    hint="Enter Client Secret of your Auth0 application"
+                    hint={
+                        <text>
+                            Enter the secret used for signing and validating tokens.
+                            <link
+                                target={{
+                                    url: 'https://auth0.com/docs/get-started/applications/application-settings',
+                                }}
+                            >
+                                {' '}
+                                More Details
+                            </link>
+                        </text>
+                    }
                     element={<textinput state="client_secret" placeholder="Client Secret" />}
                 />
 
@@ -108,16 +144,9 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
                         />
                     }
                 />
-                {!element.state.client_id ||
-                !element.state.client_secret ||
-                !element.state.issuer_base_url ? (
-                    <hint>
-                        <text style="bold">Enter values for the fields above and hit Save</text>
-                    </hint>
-                ) : null}
                 <divider size="medium" />
                 <text>Enter the following URL as an allowed callback URL in Auth0:</text>
-                <text>{VACallbackURL}</text>
+                <codeblock content={VACallbackURL} />
             </block>
         );
     },
@@ -141,7 +170,7 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                 let token;
                 try {
                     token = await sign(
-                        { exp: Math.floor(Date.now() / 1000) + 2 * (60 * 60) },
+                        { exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60) },
                         privateKey
                     );
                 } catch (e) {
