@@ -102,7 +102,7 @@ const handleSpaceContentUpdated: EventCallback<
     }>* has been updated.`;
 
     const renderList = (list: string[]) => {
-        return list.map((item) => `• ${item}\n`);
+        return list.map((item) => `• ${item}\n`).join('');
     };
 
     if (
