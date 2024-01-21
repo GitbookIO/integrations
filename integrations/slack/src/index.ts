@@ -106,7 +106,7 @@ const handleSpaceContentUpdated: EventCallback<
     };
 
     const renderPageList = (list: ChangedRevisionPage[]) => {
-        return list.map((item) => `• <${space.urls.app}/${item.path}|${item.title}>\n`).join('');
+        return list.map((item) => `• <${space.urls.app}${item.path}|${item.title}>\n`).join('');
     };
 
     if (
@@ -122,13 +122,13 @@ const handleSpaceContentUpdated: EventCallback<
             notificationText += `\n*New pages:*\n${renderPageList(createdPages)}\n\n`;
         }
         if (editedPages.length > 0) {
-            notificationText += `\n*Modified pages:*\n${renderList(editedPages)}\n\n`;
+            notificationText += `\n*Modified pages:*\n${renderPageList(editedPages)}\n\n`;
         }
         if (deletedPages.length > 0) {
-            notificationText += `\n*Deleted pages:*\n${renderList(deletedPages)}\n\n`;
+            notificationText += `\n*Deleted pages:*\n${renderPageList(deletedPages)}\n\n`;
         }
         if (movedPages.length > 0) {
-            notificationText += `\n*Moved pages:*\n${renderList(movedPages)}\n\n`;
+            notificationText += `\n*Moved pages:*\n${renderPageList(movedPages)}\n\n`;
         }
         if (createdFiles.length > 0) {
             notificationText += `\n*New files:*\n${renderList(createdFiles)}\n\n`;
