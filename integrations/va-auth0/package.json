@@ -12,7 +12,7 @@
         "@gitbook/cli": "*"
     },
     "scripts": {
-        "lint": "eslint ./src/**/*.ts",
+        "lint": "eslint ./**/*.ts*",
         "typecheck": "tsc --noEmit",
         "publish-integrations-staging": "gitbook publish .",
         "publish-integrations": "gitbook publish ."
