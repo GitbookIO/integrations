@@ -1,5 +1,5 @@
 {
-    "name": "@gitbook/integration-va-azure",
+    "name": "@gitbook/integration-va-okta",
     "version": "0.0.1",
     "private": true,
     "dependencies": {
