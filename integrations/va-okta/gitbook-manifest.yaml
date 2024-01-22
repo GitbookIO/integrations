@@ -1,5 +1,6 @@
 name: VA-Okta
 title: VA Okta
+icon: ./assets/icon.png
 description: Visitor Authentication with Okta
 visibility: public #unlisted
 script: ./src/index.tsx
@@ -10,6 +11,12 @@ scopes:
 organization: w45sBUBc1JWE1ktYkQfI #d8f63b60-89ae-11e7-8574-5927d48c4877
 summary: |
     # Overview
+    Visitor Authentication allows you to publish content behind an authentication wall so that your content is only accessible to selected people.
+    This integration lets you control access to your published content as determined by Okta.
+    # Configure
+    Install this integration on a space and then populate the configuration screen with the details of your Okta application and Okta instance
+    Then publish the space with Visitor Authentication, choose this integration as the backend, and hit save.
+    Your space is now published with Visitor Authentication using Okta.
 categories:
     - other
 configurations:
