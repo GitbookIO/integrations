@@ -93,7 +93,7 @@ export async function saveSpaceConfiguration(
     if (!configurationBody.webhookId) {
         const webhookToken = await signResponse(
             environment.integration.name,
-            environment.signingSecret!
+            environment.signingSecrets.integration
         );
         await installWebhook(
             updatedSpaceInstallation,
