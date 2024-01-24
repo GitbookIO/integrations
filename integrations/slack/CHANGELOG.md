@@ -1,5 +1,11 @@
 # @gitbook/integration-slack
 
+## 1.2.0
+
+### Minor Changes
+
+-   429285b: Updates to notifications showing direct page links
+
 ## 1.1.2
 
 ### Patch Changes

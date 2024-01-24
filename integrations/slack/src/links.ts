@@ -55,10 +55,18 @@ export async function unfurlLink(event: LinkSharedSlackEvent, context: SlackRunt
             }
 
             if ('space' in content && content.space) {
-                unfurls[link.url] = createBlocksForSpace(content.space);
+                // we don't unfurl direct pages for security reasons, so we dedupe by space here
+                if (!unfurls[content.space.urls.app]) {
+                    unfurls[content.space.urls.app] = createBlocksForSpace(content.space);
+                }
             }
             if ('collection' in content && content.collection) {
-                unfurls[link.url] = createBlocksForCollection(content.collection);
+                // we don't unfurl direct pages for security reasons, so we dedupe by collection here
+                if (!unfurls[content.collection.urls.app]) {
+                    unfurls[content.collection.urls.app] = createBlocksForCollection(
+                        content.collection
+                    );
+                }
             }
         })
     );
