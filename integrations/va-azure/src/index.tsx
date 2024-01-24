@@ -76,10 +76,10 @@ const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRu
         return (
             <block>
                 <input
-                    label="Enter Client ID"
+                    label="Client ID"
                     hint={
                         <text>
-                            Enter the unique identifier of your app registration.
+                            The unique identifier of your app registration.
                             <link
                                 target={{
                                     url: 'https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app#register-an-application',
@@ -94,10 +94,10 @@ const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRu
                 />
 
                 <input
-                    label="Enter Tenant ID"
+                    label="Tenant ID"
                     hint={
                         <text>
-                            Enter the Tenant ID of your subscription.
+                            The Tenant ID of your subscription.
                             <link
                                 target={{
                                     url: 'https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app#register-an-application',
@@ -112,10 +112,10 @@ const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRu
                 />
 
                 <input
-                    label="Enter Client Secret"
+                    label="Client Secret"
                     hint={
                         <text>
-                            Enter the secret that the application uses to prove its identity when
+                            The secret that the application uses to prove its identity when
                             requesting a token.
                             <link
                                 target={{
@@ -147,7 +147,9 @@ const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRu
                 />
 
                 <divider size="medium" />
-                <text>Enter the following URL as an allowed Redirect URI in Azure:</text>
+                <text>
+                    The following URL needs to be saved as an allowed Redirect URI in Azure:
+                </text>
                 <codeblock content={VACallbackURL} />
             </block>
         );
@@ -168,7 +170,7 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                     context.environment.spaceInstallation?.space
                 );
                 const spaceData = space.data;
-                const privateKey = context.environment.signingSecret;
+                const privateKey = context.environment.signingSecrets.spaceInstallation;
                 let token;
                 try {
                     token = await sign(
