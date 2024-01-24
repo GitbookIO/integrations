@@ -64,13 +64,13 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
         const verified = await verifyIntegrationSignature(
             payloadString,
             signature,
-            environment.signingSecret!
+            environment.signingSecrets.integration
         );
 
         if (!verified) {
-            return new Response('Invalid integration signature', {
-                status: 400,
-            });
+            const message = `Invalid signature for integration task`;
+            logger.error(message);
+            throw new StatusError(400, message);
         }
 
         const { task } = JSON.parse(payloadString) as { task: IntegrationTask };
@@ -105,16 +105,16 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
                 const valid = await verifySignature(
                     environment.integration.name,
                     signature,
-                    environment.signingSecret!
+                    environment.signingSecrets.integration
                 );
                 if (!valid) {
-                    throw new StatusError(400, 'Invalid signature for webhook event');
+                    const message = `Invalid signature for webhook event ${eventUuid}`;
+                    logger.error(message);
+                    throw new StatusError(400, message);
                 }
             } catch (error: any) {
-                return new Response(JSON.stringify({ error: error.message }), {
-                    status: 400,
-                    headers: { 'content-type': 'application/json' },
-                });
+                logger.error(`Error verifying signature ${error}`);
+                throw new StatusError(400, error.message);
             }
         }
 
