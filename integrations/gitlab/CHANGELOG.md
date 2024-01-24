@@ -1,5 +1,11 @@
 # @gitbook/integration-gitlab
 
+## 0.0.14
+
+### Patch Changes
+
+-   69c2691: Use environment.signingSecrets instead of deprecated environment.signingSecret to verify signatures
+
 ## 0.0.13
 
 ### Patch Changes
