@@ -76,10 +76,10 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
         return (
             <block>
                 <input
-                    label="Enter Client ID"
+                    label="Client ID"
                     hint={
                         <text>
-                            Enter the unique identifier of your Auth0 application.
+                            The unique identifier of your Auth0 application.
                             <link
                                 target={{
                                     url: 'https://auth0.com/docs/get-started/applications/application-settings',
@@ -94,10 +94,10 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
                 />
 
                 <input
-                    label="Enter Your Auth0 Domain"
+                    label="Auth0 Domain"
                     hint={
                         <text>
-                            Enter the Auth0 domain (also known as tenant).
+                            The Auth0 domain (also known as tenant).
                             <link
                                 target={{
                                     url: 'https://auth0.com/docs/get-started/applications/application-settings',
@@ -112,10 +112,10 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
                 />
 
                 <input
-                    label="Enter Client Secret"
+                    label="Client Secret"
                     hint={
                         <text>
-                            Enter the secret used for signing and validating tokens.
+                            The secret used for signing and validating tokens.
                             <link
                                 target={{
                                     url: 'https://auth0.com/docs/get-started/applications/application-settings',
@@ -145,7 +145,9 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
                     }
                 />
                 <divider size="medium" />
-                <text>Enter the following URL as an allowed callback URL in Auth0:</text>
+                <text>
+                    The following URL needs to be saved as an allowed callback URL in Auth0:
+                </text>
                 <codeblock content={VACallbackURL} />
             </block>
         );
@@ -166,7 +168,7 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                     context.environment.spaceInstallation?.space
                 );
                 const spaceData = space.data;
-                const privateKey = context.environment.signingSecret;
+                const privateKey = context.environment.signingSecrets.spaceInstallation;
                 let token;
                 try {
                     token = await sign(
