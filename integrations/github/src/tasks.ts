@@ -77,6 +77,7 @@ export async function handleImportDispatchForSpaces(
                 const installationContext: GithubRuntimeContext = {
                     ...context,
                     api: new GitBookAPI({
+                        userAgent: context.api.userAgent,
                         endpoint: context.environment.apiEndpoint,
                         authToken: installationAPIToken.token,
                     }),

@@ -43,6 +43,7 @@ export async function authenticateAsIntegrationInstallation(
     return {
         ...context,
         api: new GitBookAPI({
+            userAgent: context.api.userAgent,
             endpoint: context.environment.apiEndpoint,
             authToken: token,
         }),
@@ -55,6 +56,7 @@ export async function authenticateAsIntegration(
     return {
         ...context,
         api: new GitBookAPI({
+            userAgent: context.api.userAgent,
             endpoint: context.environment.apiEndpoint,
             authToken: context.environment.apiTokens.integration,
         }),

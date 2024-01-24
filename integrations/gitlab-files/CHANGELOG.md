@@ -1,5 +1,11 @@
 # @gitbook/integration-gitlab-files
 
+## 0.1.2
+
+### Patch Changes
+
+-   7d76dfb: Update integrations to use latest runtime and api client with `User-Agent`
+
 ## 0.1.1
 
 ### Patch Changes

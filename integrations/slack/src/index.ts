@@ -1,4 +1,4 @@
-import { RevisionSemanticChangeType } from '@gitbook/api';
+import { ChangedRevisionPage, RevisionSemanticChangeType } from '@gitbook/api';
 import { createIntegration, EventCallback } from '@gitbook/runtime';
 
 import { SlackRuntimeContext } from './configuration';
@@ -72,16 +72,16 @@ const handleSpaceContentUpdated: EventCallback<
     semanticChanges.changes.forEach((change) => {
         switch (change.type) {
             case RevisionSemanticChangeType.PageCreated:
-                createdPages.push(change.page.title);
+                createdPages.push(change.page);
                 break;
             case RevisionSemanticChangeType.PageEdited:
-                editedPages.push(change.page.title);
+                editedPages.push(change.page);
                 break;
             case RevisionSemanticChangeType.PageDeleted:
-                deletedPages.push(change.page.title);
+                deletedPages.push(change.page);
                 break;
             case RevisionSemanticChangeType.PageMoved:
-                movedPages.push(change.page.title);
+                movedPages.push(change.page);
                 break;
             case RevisionSemanticChangeType.FileCreated:
                 createdFiles.push(change.file.name);
@@ -102,7 +102,11 @@ const handleSpaceContentUpdated: EventCallback<
     }>* has been updated.`;
 
     const renderList = (list: string[]) => {
-        return list.map((item) => `• ${item}\n`);
+        return list.map((item) => `• ${item}\n`).join('');
+    };
+
+    const renderPageList = (list: ChangedRevisionPage[]) => {
+        return list.map((item) => `• <${space.urls.app}${item.path}|${item.title}>\n`).join('');
     };
 
     if (
@@ -115,16 +119,16 @@ const handleSpaceContentUpdated: EventCallback<
         deletedFiles.length > 0
     ) {
         if (createdPages.length > 0) {
-            notificationText += `\n*New pages:*\n${renderList(createdPages)}\n\n`;
+            notificationText += `\n*New pages:*\n${renderPageList(createdPages)}\n\n`;
         }
         if (editedPages.length > 0) {
-            notificationText += `\n*Modified pages:*\n${renderList(editedPages)}\n\n`;
+            notificationText += `\n*Modified pages:*\n${renderPageList(editedPages)}\n\n`;
         }
         if (deletedPages.length > 0) {
-            notificationText += `\n*Deleted pages:*\n${renderList(deletedPages)}\n\n`;
+            notificationText += `\n*Deleted pages:*\n${renderPageList(deletedPages)}\n\n`;
         }
         if (movedPages.length > 0) {
-            notificationText += `\n*Moved pages:*\n${renderList(movedPages)}\n\n`;
+            notificationText += `\n*Moved pages:*\n${renderPageList(movedPages)}\n\n`;
         }
         if (createdFiles.length > 0) {
             notificationText += `\n*New files:*\n${renderList(createdFiles)}\n\n`;

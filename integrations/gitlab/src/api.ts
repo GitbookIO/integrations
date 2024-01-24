@@ -212,6 +212,11 @@ export async function gitlabAPI<T>(
 
     const response = await requestGitLab(token, url, options);
 
+    const isJSONResponse = response.headers.get('Content-Type')?.includes('application/json');
+    if (!isJSONResponse) {
+        return (await response.text()) as unknown as T;
+    }
+
     let data = await response.json();
 
     let paginatedListProperty = false;

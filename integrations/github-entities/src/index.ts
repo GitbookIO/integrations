@@ -63,7 +63,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         const verified = await verifyIntegrationSignature(
             payloadString,
             signature,
-            environment.signingSecret!
+            environment.signingSecrets.integration
         );
 
         if (!verified) {

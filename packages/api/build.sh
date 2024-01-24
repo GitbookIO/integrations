@@ -36,4 +36,4 @@ esbuild ./src/index.ts --bundle --platform=node --format=esm --outfile=./dist/in
 
 # Finally we build the TypeScript declaration files
 echo "Generating public types from code..."
-tsc --project tsconfig.json --declaration --allowJs --emitDeclarationOnly --outDir ./dist/
+tsc --project tsconfig.json --declaration --allowJs --emitDeclarationOnly --outDir ./dist/ --rootDir ./src

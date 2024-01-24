@@ -1,5 +1,19 @@
 # @gitbook/integration-slack
 
+## 1.2.0
+
+### Minor Changes
+
+-   429285b: Updates to notifications showing direct page links
+
+## 1.1.2
+
+### Patch Changes
+
+-   7d76dfb: Update integrations to use latest runtime and api client with `User-Agent`
+-   Updated dependencies [46c9686]
+    -   @gitbook/runtime@0.11.0
+
 ## 1.1.1
 
 ### Patch Changes

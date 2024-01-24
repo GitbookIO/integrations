@@ -1,5 +1,32 @@
 # @gitbook/integration-github
 
+## 0.0.13
+
+### Patch Changes
+
+-   69c2691: Use environment.signingSecrets instead of deprecated environment.signingSecret to verify signatures
+
+## 0.0.12
+
+### Patch Changes
+
+-   7d76dfb: Update integrations to use latest runtime and api client with `User-Agent`
+-   Updated dependencies [46c9686]
+    -   @gitbook/runtime@0.11.0
+    -   @gitbook/api@0.27.0
+
+## 0.0.11
+
+### Patch Changes
+
+-   391aea5: Bump to use the latest runtime@0.10.3
+
+## 0.0.10
+
+### Patch Changes
+
+-   f86ac5d: Release with the latest @gitbook/runtime@0.10.2
+
 ## 0.0.9
 
 ### Patch Changes
