@@ -75,10 +75,10 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
         return (
             <block>
                 <input
-                    label="Enter Client ID"
+                    label="Client ID"
                     hint={
                         <text>
-                            Enter the Client ID of your Okta app.
+                            The Client ID of your Okta application.
                             <link
                                 target={{
                                     url: 'https://developer.okta.com/docs/guides/find-your-app-credentials/main/#find-your-app-integration-credentials',
@@ -93,10 +93,10 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                 />
 
                 <input
-                    label="Enter Okta Domain"
+                    label="Okta Domain"
                     hint={
                         <text>
-                            Enter the domain of your Okta instance.
+                            The Domain of your Okta instance.
                             <link
                                 target={{
                                     url: 'https://developer.okta.com/docs/guides/find-your-domain/main/',
@@ -111,10 +111,10 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                 />
 
                 <input
-                    label="Enter Client Secret"
+                    label="Client Secret"
                     hint={
                         <text>
-                            Enter the Client Secret of your Okta app.
+                            The Client Secret of your Okta application.
                             <link
                                 target={{
                                     url: 'https://developer.okta.com/docs/guides/find-your-app-credentials/main/#find-your-app-integration-credentials',
@@ -144,7 +144,7 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                     }
                 />
                 <divider size="medium" />
-                <text>Enter the following URL a Sign-In Redirect URI in Okta:</text>
+                <text>The following URL needs to be saved as a Sign-In Redirect URI in Okta:</text>
                 <codeblock content={VACallbackURL} />
             </block>
         );
@@ -165,7 +165,7 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                     context.environment.spaceInstallation?.space
                 );
                 const spaceData = space.data;
-                const privateKey = context.environment.signingSecret;
+                const privateKey = context.environment.signingSecrets.spaceInstallation;
                 let token;
                 try {
                     token = await sign(
