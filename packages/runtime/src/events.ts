@@ -60,7 +60,7 @@ export type FetchPublishScriptEventCallback<Context extends RuntimeContext = Run
     >;
 
 /**
- * Callback for fetch events to fetch Visitor Authentication from integrations.
+ * Callback to handle visitor authentication fetch event.
  */
 export type FetchVisitorAuthenticationEventCallback<
     Context extends RuntimeContext = RuntimeContext
