@@ -26,7 +26,7 @@ summary: |
 
     # Configure
 
-    First, click Configure in the top-right of your GitBook space and choose GitLab as your provider.  You’ll need to authenticate in GitHub, then head back to GitBook and install the integration if you haven’t already. You can then link your GitBook space to a GitHub repository and select the branch you want to sync.
+    First, click Configure in the top-right of your GitBook space and choose GitHub as your provider.  You’ll need to authenticate in GitHub, then head back to GitBook and install the integration if you haven’t already. You can then link your GitBook space to a GitHub repository and select the branch you want to sync.
 
 
     When you make a change in GitBook, it will sync to GitHub as a commit. When you make a change in GitHub, they’ll sync to GitBook as history commits.
