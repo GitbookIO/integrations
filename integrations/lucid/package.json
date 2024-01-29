@@ -1,5 +1,5 @@
 {
-    "name": "lucid",
+    "name": "@gitbook/integration-lucid",
     "private": true,
     "scripts": {
         "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
