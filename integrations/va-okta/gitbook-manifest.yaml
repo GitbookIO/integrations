@@ -1,14 +1,16 @@
 name: VA-Okta
 title: VA Okta
 icon: ./assets/icon.png
+previewImages:
+    - ./assets/preview.png
 description: Visitor Authentication with Okta
-visibility: public #unlisted
+visibility: public
 script: ./src/index.tsx
 scopes:
     - space:metadata:read
     - space:visitor:auth
     - space:content:read
-organization: w45sBUBc1JWE1ktYkQfI #d8f63b60-89ae-11e7-8574-5927d48c4877
+organization: d8f63b60-89ae-11e7-8574-5927d48c4877
 summary: |
     # Overview
     Visitor Authentication allows you to publish content behind an authentication wall, so your content is only accessible to people you choose.
