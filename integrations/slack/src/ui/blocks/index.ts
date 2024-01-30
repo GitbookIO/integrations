@@ -61,20 +61,6 @@ export function ConversationSavedBlock(snippetsUrl: string) {
     ];
 }
 
-export function GeneratedDocSummaryBlock(props: { summary: string }) {
-    const { summary } = props;
-
-    return [
-        {
-            type: 'section',
-            text: {
-                type: 'mrkdwn',
-                text: summary,
-            },
-        },
-    ];
-}
-
 export function QueryDisplayBlock(params: { queries: Array<string>; heading?: string }) {
     const { queries, heading } = params;
 

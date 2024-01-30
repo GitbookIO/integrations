@@ -1,6 +1,6 @@
 import { SlackRuntimeContext } from '../configuration';
 import { slackAPI } from '../slack';
-import { ConversationSavedBlock, GeneratedDocSummaryBlock, QueryDisplayBlock } from '../ui';
+import { ConversationSavedBlock, QueryDisplayBlock } from '../ui';
 import { getInstallationApiClient, getInstallationConfig, isSaveThreadMessage } from '../utils';
 
 const RUNTIME_TIME_LIMIT = 30000;
@@ -63,11 +63,6 @@ export async function saveThread(
                 channel: channelId,
                 blocks: [
                     ...ConversationSavedBlock(capture.urls.app),
-                    ...(capture.output.markdown
-                        ? GeneratedDocSummaryBlock({
-                              summary: capture.output.markdown,
-                          })
-                        : []),
                     ...QueryDisplayBlock({
                         queries: followupQuestions,
                         heading: 'Here some questions this thread can help answer:',
