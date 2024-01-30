@@ -1,5 +1,11 @@
 # @gitbook/integration-github
 
+## 0.0.14
+
+### Patch Changes
+
+-   775249b: Fix typo in github integration manifest
+
 ## 0.0.13
 
 ### Patch Changes
