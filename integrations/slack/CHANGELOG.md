@@ -1,5 +1,11 @@
 # @gitbook/integration-slack
 
+## 1.2.1
+
+### Patch Changes
+
+-   42a58f7: Fix an issue where GitBook save was not working in Slack.
+
 ## 1.2.0
 
 ### Minor Changes
