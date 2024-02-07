@@ -5,6 +5,7 @@ import { createComponent } from '@gitbook/runtime';
 
 import { extractTokenCredentialsOrThrow } from './api';
 import { saveSpaceConfiguration } from './installation';
+import { getPrettyGitRef } from './provider';
 import {
     GithubConfigureAction,
     GithubConfigureProps,
@@ -112,12 +113,16 @@ export const configBlock = createComponent<
 
         let accessToken: string | undefined;
         try {
-            const tokenCredentials = extractTokenCredentialsOrThrow(context);
-            accessToken = tokenCredentials.access_token;
+            accessToken = extractTokenCredentialsOrThrow(context).access_token;
         } catch (error) {
-            // Ignore: We will show the button to connect
+            accessToken = undefined;
         }
-        const buttonLabel = accessToken ? 'Connected' : 'Connect with GitHub';
+
+        const isSpaceConfigured = Boolean(
+            spaceInstallation.configuration?.key && spaceInstallation.configuration?.configuredAt
+        );
+        // Show input elements in disabled state if the space is configured and the access token is missing
+        const disableInputElements = isSpaceConfigured && !accessToken;
 
         /**
          * The version hash will be used to invalidate the cache of the select components
@@ -132,9 +137,8 @@ export const configBlock = createComponent<
                     hint="Authenticate using your GitHub account"
                     element={
                         <button
-                            label={buttonLabel}
+                            label={accessToken ? 'Connected' : 'Connect with GitHub'}
                             icon={ContentKitIcon.Github}
-                            tooltip={buttonLabel}
                             onPress={{
                                 action: '@ui.url.open',
                                 url: `${context.environment.spaceInstallation?.urls.publicEndpoint}/oauth`,
@@ -143,10 +147,23 @@ export const configBlock = createComponent<
                     }
                 />
 
-                {accessToken ? (
-                    <>
+                {disableInputElements ? (
+                    <box>
                         <divider size="medium" />
+                        <hint>
+                            <text style="bold">
+                                Your space has been configured to synchronize with GitHub. To change
+                                the configuration, please re-authenticate with GitHub.
+                            </text>
+                        </hint>
+                        <divider size="medium" />
+                    </box>
+                ) : accessToken ? (
+                    <divider size="medium" />
+                ) : null}
 
+                {!accessToken && !isSpaceConfigured ? null : (
+                    <box>
                         <markdown content="### Account" />
 
                         <vstack>
@@ -167,22 +184,35 @@ export const configBlock = createComponent<
                                 element={
                                     <select
                                         state="installation"
+                                        disabled={disableInputElements ? true : undefined}
                                         onValueChange={{
                                             action: 'select.installation',
                                             installation: element.dynamicState('installation'),
                                         }}
-                                        options={{
-                                            url: {
-                                                host: new URL(spaceInstallationPublicEndpoint).host,
-                                                pathname: `${
-                                                    new URL(spaceInstallationPublicEndpoint)
-                                                        .pathname
-                                                }/installations`,
-                                                query: {
-                                                    v: versionHash,
-                                                },
-                                            },
-                                        }}
+                                        options={
+                                            disableInputElements
+                                                ? [
+                                                      {
+                                                          id: `${spaceInstallation.configuration.installation}`,
+                                                          label: `${spaceInstallation.configuration.accountName}`,
+                                                      },
+                                                  ]
+                                                : {
+                                                      url: {
+                                                          host: new URL(
+                                                              spaceInstallationPublicEndpoint
+                                                          ).host,
+                                                          pathname: `${
+                                                              new URL(
+                                                                  spaceInstallationPublicEndpoint
+                                                              ).pathname
+                                                          }/installations`,
+                                                          query: {
+                                                              v: versionHash,
+                                                          },
+                                                      },
+                                                  }
+                                        }
                                     />
                                 }
                             />
@@ -207,30 +237,43 @@ export const configBlock = createComponent<
                                         element={
                                             <select
                                                 state="repository"
+                                                disabled={disableInputElements ? true : undefined}
                                                 onValueChange={{
                                                     action: 'select.repository',
                                                     repository: element.dynamicState('repository'),
                                                 }}
-                                                options={{
-                                                    url: {
-                                                        host: new URL(
-                                                            spaceInstallationPublicEndpoint
-                                                        ).host,
-                                                        pathname: `${
-                                                            new URL(spaceInstallationPublicEndpoint)
-                                                                .pathname
-                                                        }/repos`,
-                                                        query: {
-                                                            installation:
-                                                                element.dynamicState(
-                                                                    'installation'
-                                                                ),
-                                                            selectedRepo:
-                                                                element.dynamicState('repository'),
-                                                            v: versionHash,
-                                                        },
-                                                    },
-                                                }}
+                                                options={
+                                                    disableInputElements
+                                                        ? [
+                                                              {
+                                                                  id: `${spaceInstallation.configuration.repository}`,
+                                                                  label: `${spaceInstallation.configuration.repoName}`,
+                                                              },
+                                                          ]
+                                                        : {
+                                                              url: {
+                                                                  host: new URL(
+                                                                      spaceInstallationPublicEndpoint
+                                                                  ).host,
+                                                                  pathname: `${
+                                                                      new URL(
+                                                                          spaceInstallationPublicEndpoint
+                                                                      ).pathname
+                                                                  }/repos`,
+                                                                  query: {
+                                                                      installation:
+                                                                          element.dynamicState(
+                                                                              'installation'
+                                                                          ),
+                                                                      selectedRepo:
+                                                                          element.dynamicState(
+                                                                              'repository'
+                                                                          ),
+                                                                      v: versionHash,
+                                                                  },
+                                                              },
+                                                          }
+                                                }
                                             />
                                         }
                                     />
@@ -245,28 +288,45 @@ export const configBlock = createComponent<
                                             <select
                                                 acceptInput
                                                 state="branch"
+                                                disabled={disableInputElements ? true : undefined}
                                                 onValueChange={{
                                                     action: 'select.branch',
                                                     branch: element.dynamicState('branch'),
                                                 }}
-                                                options={{
-                                                    url: {
-                                                        host: new URL(
-                                                            spaceInstallationPublicEndpoint
-                                                        ).host,
-                                                        pathname: `${
-                                                            new URL(spaceInstallationPublicEndpoint)
-                                                                .pathname
-                                                        }/branches`,
-                                                        query: {
-                                                            repository:
-                                                                element.dynamicState('repository'),
-                                                            selectedBranch:
-                                                                element.dynamicState('branch'),
-                                                            v: versionHash,
-                                                        },
-                                                    },
-                                                }}
+                                                options={
+                                                    disableInputElements
+                                                        ? [
+                                                              {
+                                                                  id: `${spaceInstallation.configuration.branch}`,
+                                                                  label: getPrettyGitRef(
+                                                                      `${spaceInstallation.configuration.branch}`
+                                                                  ),
+                                                              },
+                                                          ]
+                                                        : {
+                                                              url: {
+                                                                  host: new URL(
+                                                                      spaceInstallationPublicEndpoint
+                                                                  ).host,
+                                                                  pathname: `${
+                                                                      new URL(
+                                                                          spaceInstallationPublicEndpoint
+                                                                      ).pathname
+                                                                  }/branches`,
+                                                                  query: {
+                                                                      repository:
+                                                                          element.dynamicState(
+                                                                              'repository'
+                                                                          ),
+                                                                      selectedBranch:
+                                                                          element.dynamicState(
+                                                                              'branch'
+                                                                          ),
+                                                                      v: versionHash,
+                                                                  },
+                                                              },
+                                                          }
+                                                }
                                             />
                                         }
                                     />
@@ -294,7 +354,11 @@ export const configBlock = createComponent<
                                         </text>
                                     }
                                     element={
-                                        <textinput state="projectDirectory" placeholder="./" />
+                                        <textinput
+                                            state="projectDirectory"
+                                            disabled={disableInputElements ? true : undefined}
+                                            placeholder="./"
+                                        />
                                     }
                                 />
 
@@ -319,6 +383,7 @@ export const configBlock = createComponent<
                                     element={
                                         <switch
                                             state="withCustomTemplate"
+                                            disabled={disableInputElements ? true : undefined}
                                             onValueChange={{
                                                 action: 'toggle.customTemplate',
                                                 withCustomTemplate:
@@ -333,10 +398,14 @@ export const configBlock = createComponent<
                                             <box grow={1}>
                                                 <textinput
                                                     state="commitMessageTemplate"
+                                                    disabled={
+                                                        disableInputElements ? true : undefined
+                                                    }
                                                     placeholder={GITSYNC_DEFAULT_COMMIT_MESSAGE}
                                                 />
                                             </box>
                                             <button
+                                                disabled={disableInputElements ? true : undefined}
                                                 style="secondary"
                                                 tooltip="Preview commit message"
                                                 icon={ContentKitIcon.Eye}
@@ -393,7 +462,12 @@ export const configBlock = createComponent<
                                             </link>
                                         </text>
                                     }
-                                    element={<switch state="previewExternalBranches" />}
+                                    element={
+                                        <switch
+                                            state="previewExternalBranches"
+                                            disabled={disableInputElements ? true : undefined}
+                                        />
+                                    }
                                 />
 
                                 <divider size="large" />
@@ -411,38 +485,52 @@ export const configBlock = createComponent<
                                     <input
                                         label="GitHub to GitBook"
                                         hint="I write my content on GitHub. Content will be imported and replace the space content."
-                                        element={<radio state="priority" value="github" />}
+                                        element={
+                                            <radio
+                                                state="priority"
+                                                disabled={disableInputElements ? true : undefined}
+                                                value="github"
+                                            />
+                                        }
                                     />
                                 </card>
                                 <card>
                                     <input
                                         label="GitBook to GitHub"
                                         hint="I write my content on GitBook. Content on GitHub will be replaced with the space content."
-                                        element={<radio state="priority" value="gitbook" />}
+                                        element={
+                                            <radio
+                                                state="priority"
+                                                disabled={disableInputElements ? true : undefined}
+                                                value="gitbook"
+                                            />
+                                        }
                                     />
                                 </card>
 
-                                <input
-                                    label=""
-                                    hint=""
-                                    element={
-                                        <button
-                                            style="primary"
-                                            disabled={
-                                                !element.state.installation ||
-                                                !element.state.repository ||
-                                                !element.state.branch
-                                            }
-                                            label="Sync"
-                                            tooltip="Start the initial synchronization"
-                                            onPress={{ action: 'save.config' }}
-                                        />
-                                    }
-                                />
+                                {disableInputElements ? null : (
+                                    <input
+                                        label=""
+                                        hint=""
+                                        element={
+                                            <button
+                                                style="primary"
+                                                disabled={
+                                                    !element.state.installation ||
+                                                    !element.state.repository ||
+                                                    !element.state.branch
+                                                }
+                                                label="Sync"
+                                                tooltip="Start the initial synchronization"
+                                                onPress={{ action: 'save.config' }}
+                                            />
+                                        }
+                                    />
+                                )}
                             </>
                         ) : null}
-                    </>
-                ) : null}
+                    </box>
+                )}
             </block>
         );
     },
