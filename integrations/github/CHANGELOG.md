@@ -1,5 +1,11 @@
 # @gitbook/integration-github
 
+## 0.1.0
+
+### Minor Changes
+
+-   7e601b6: Show GitHub sync config in a disabled state with pre-filled values when configured #382
+
 ## 0.0.14
 
 ### Patch Changes
