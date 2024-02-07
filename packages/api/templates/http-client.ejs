@@ -224,4 +224,78 @@ export class HttpClient<SecurityDataType = unknown> {
 <% } %>
         });
     };
+
+    public streamRequest = async function*<T, E>({
+        path,
+        baseUrl,
+        cancelToken,
+        secure,
+        ...params,
+    }: FullRequestParams): AsyncGenerator<T, void, unknown> {
+        const secureParams = ((typeof secure === 'boolean' ? secure : this.baseApiParams.secure) && this.securityWorker && await this.securityWorker(this.securityData, 'streaming')) || {};
+        const { query: requestQuery, ...requestParams } = this.mergeRequestParams(params, secureParams);
+        const queryString = requestQuery ? this.toQueryString(requestQuery) : undefined;
+
+        // @ts-ignore - works only in browser
+        const eventSource = new EventSource(
+            `${baseUrl || this.baseUrl || ""}${path}${queryString ? `?${queryString}` : ""}`,
+        );
+
+        try {
+            const signal = cancelToken ? this.createAbortSignal(cancelToken) : void 0;
+            if (signal) {
+                signal.addEventListener("abort", () => {
+                    eventSource.close();
+                });
+            }
+
+            let results: T[] = [];
+            let resolve: () => void;
+            let reject: (error: globalThis.Error) => void;
+            let promise = new Promise<void>((r, rj) => {
+                resolve = r;
+                reject = rj;
+            });
+            let done = false;
+            let messages = 0;
+
+            eventSource.onmessage = (event) => {
+                messages += 1;
+                try {
+                    const data = JSON.parse(event.data);
+                    results.push(data);
+                } catch (error) {
+                    return reject(error);
+                }
+                
+                resolve();
+                promise = new Promise<void>((r, rj) => {
+                    resolve = r;
+                    reject = rj;
+                });
+            };
+
+            eventSource.onerror = (event) => {
+                done = true;
+
+                if (messages > 0) {
+                    resolve();
+                    return;
+                } else {
+                    const error = new Error('API streaming error');
+                    reject(error);
+                }
+            };
+
+            while(!done) {
+                await promise;
+                for (const result of results) {
+                    yield result;
+                }
+                results = [];
+            }
+        } finally {
+            eventSource.close();
+        }
+    };
 }
