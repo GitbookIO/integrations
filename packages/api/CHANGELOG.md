@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.30.0
+
+### Minor Changes
+
+-   41f811e: Update the API client with the latest OpenAPI specification and add support for streaming operations.
+
 ## 0.29.0
 
 ### Minor Changes
