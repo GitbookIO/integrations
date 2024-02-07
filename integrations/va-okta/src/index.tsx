@@ -191,8 +191,8 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                         scope: 'openid',
                         redirect_uri: `${installationURL}/visitor-auth/response`,
                     });
-                    const url = `https://${oktaDomain}/oauth2/default/v1/token/`;
-                    const resp: any = await fetch(url, {
+                    const accessTokenURL = `https://${oktaDomain}/oauth2/default/v1/token/`;
+                    const resp: any = await fetch(accessTokenURL, {
                         method: 'POST',
                         headers: { 'content-type': 'application/x-www-form-urlencoded' },
                         body: searchParams,
@@ -208,12 +208,14 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                         const state = request.query.state.toString();
                         const location = state.substring(state.indexOf('-') + 1);
                         if (location) {
-                            url = `${spaceData.urls?.published}${location}/?jwt_token=${token}`;
+                            url = new URL(`${spaceData.urls?.published}${location}`);
+                            url.searchParams.append('jwt_token', token);
                         } else {
-                            url = `${spaceData.urls?.published}/?jwt_token=${token}`;
+                            url = new URL(spaceData.urls?.published);
+                            url.searchParams.append('jwt_token', token);
                         }
                         if (token && spaceData.urls?.published) {
-                            return Response.redirect(url);
+                            return Response.redirect(url.toString());
                         } else {
                             return new Response(
                                 "Error: Either JWT token or space's published URL is missing",
