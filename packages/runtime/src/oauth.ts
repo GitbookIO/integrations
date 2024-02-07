@@ -185,7 +185,23 @@ export function createOAuthHandler(
             const json = await response.json<OAuthResponse>();
 
             // Store the credentials in the installation configuration
-            const credentials = await extractCredentials(json);
+            let credentials: RequestUpdateIntegrationInstallation;
+            try {
+                credentials = await extractCredentials(json);
+            } catch (error) {
+                logger.error(`error extracting credentials from oauth response`, error.stack);
+                return new Response(
+                    JSON.stringify({
+                        error: 'Could not retrieve access token from OAuth response. Please try again.',
+                    }),
+                    {
+                        status: 400,
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+            }
 
             logger.debug(`exchange code for credentials`, credentials);
 
@@ -333,11 +349,16 @@ export async function getToken(
     return creds.configuration.oauth_credentials.access_token;
 }
 
+/**
+ * Default implementation to extract the credentials from the OAuth response.
+ * throws an error if the `access_token` is not present in the response.
+ */
 function defaultExtractCredentials(response: OAuthResponse): RequestUpdateIntegrationInstallation {
     if (!response.access_token) {
-        throw new Error(
-            `Could not extract access_token from response ${JSON.stringify(response, null, 4)}`
+        logger.error(
+            `Could not extract access_token from response ${JSON.stringify(response, null, 2)} `
         );
+        throw new Error(`Could not extract access_token from response`);
     }
 
     return {
