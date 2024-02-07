@@ -1,5 +1,11 @@
 # @gitbook/runtime
 
+## 0.12.0
+
+### Minor Changes
+
+-   fe26302: Bump runtime to use the latest openAPI spec
+
 ## 0.11.0
 
 ### Minor Changes
