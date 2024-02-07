@@ -121,6 +121,7 @@ export const configBlock = createComponent<
         const isSpaceConfigured = Boolean(
             spaceInstallation.configuration?.key && spaceInstallation.configuration?.configuredAt
         );
+        // Show input elements in disabled state if the space is configured and the access token is missing
         const disableInputElements = isSpaceConfigured && !accessToken;
 
         /**
