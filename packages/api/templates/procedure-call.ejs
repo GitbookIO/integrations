@@ -88,7 +88,7 @@ const describeReturnType = () => {
 
  */
 <%~ route.routeName.usage %><%~ route.namespace ? ': ' : ' = ' %>(<%~ wrapperArgs %>)<%~ config.toJS ? `: ${describeReturnType()}` : "" %> =>
-    <%~ config.singleHttpClient ? 'this.http.request' : 'this.request' %><<%~ type %>, <%~ errorType %>>({
+    <%~ config.singleHttpClient ? 'this.http.request' : (route.response.contentTypes.includes('text/event-stream') ? 'this.streamRequest' : 'this.request') %><<%~ type %>, <%~ errorType %>>({
         path: `<%~ path %>`,
         method: '<%~ _.upperCase(method) %>',
         <%~ queryTmpl ? `query: ${queryTmpl},` : '' %>
