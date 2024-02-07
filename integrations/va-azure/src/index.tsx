@@ -195,8 +195,8 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                         scope: 'openid',
                         redirect_uri: `${installationURL}/visitor-auth/response`,
                     });
-                    const url = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token/`;
-                    const resp: any = await fetch(url, {
+                    const accessTokenURL = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token/`;
+                    const resp: any = await fetch(accessTokenURL, {
                         method: 'POST',
                         headers: { 'content-type': 'application/x-www-form-urlencoded' },
                         body: searchParams,
@@ -211,12 +211,14 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                     if ('access_token' in resp) {
                         let url;
                         if (request.query.state) {
-                            url = `${spaceData.urls?.published}${request.query.state}/?jwt_token=${token}`;
+                            url = new URL(`${spaceData.urls?.published}${request.query.state}`);
+                            url.searchParams.append('jwt_token', token);
                         } else {
-                            url = `${spaceData.urls?.published}/?jwt_token=${token}`;
+                            url = new URL(spaceData.urls?.published);
+                            url.searchParams.append('jwt_token', token);
                         }
                         if (spaceData.urls?.published && token) {
-                            return Response.redirect(url);
+                            return Response.redirect(url.toString());
                         } else {
                             return new Response(
                                 "Error: Either JWT token or space's published URL is missing",
