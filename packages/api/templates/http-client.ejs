@@ -257,34 +257,30 @@ export class HttpClient<SecurityDataType = unknown> {
                 reject = rj;
             });
             let done = false;
-            let messages = 0;
 
             eventSource.onmessage = (event) => {
-                messages += 1;
-                try {
-                    const data = JSON.parse(event.data);
-                    results.push(data);
-                } catch (error) {
-                    return reject(error);
+                if (event.data === 'done') {
+                    done = true;
+                    resolve();
+                } else {
+                    try {
+                        const data = JSON.parse(event.data);
+                        results.push(data);
+                    } catch (error) {
+                        return reject(error);
+                    }
+                    
+                    resolve();
+                    promise = new Promise<void>((r, rj) => {
+                        resolve = r;
+                        reject = rj;
+                    });
                 }
-                
-                resolve();
-                promise = new Promise<void>((r, rj) => {
-                    resolve = r;
-                    reject = rj;
-                });
             };
 
-            eventSource.onerror = (event) => {
-                done = true;
-
-                if (messages > 0) {
-                    resolve();
-                    return;
-                } else {
-                    const error = new Error('API streaming error');
-                    reject(error);
-                }
+            eventSource.onerror = (error) => {
+                // @ts-ignore
+                reject(error);
             };
 
             while(!done) {
