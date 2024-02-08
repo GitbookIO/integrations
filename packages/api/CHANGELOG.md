@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.33.0
+
+### Minor Changes
+
+-   17099cf: Use fetch and a custom EventSource parsing to support node/browser/worker for streaming operations
+
 ## 0.32.0
 
 ### Minor Changes
