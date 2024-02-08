@@ -279,6 +279,7 @@ export class HttpClient<SecurityDataType = unknown> {
             };
 
             eventSource.onerror = (error) => {
+                // @ts-ignore
                 reject(error);
             };
 
