@@ -2,7 +2,7 @@
 const { apiConfig, generateResponses, config } = it;
 %>
 import { EventIterator } from 'event-iterator';
-import { fetchEventSource } from '@microsoft/fetch-event-source';
+import { createParser, type ParsedEvent, type ReconnectInterval } from 'eventsource-parser';
 
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
@@ -241,28 +241,55 @@ export class HttpClient<SecurityDataType = unknown> {
                     const { query: requestQuery, ...requestParams } = this.mergeRequestParams(params, secureParams);
                     const queryString = requestQuery ? this.toQueryString(requestQuery) : undefined;
 
-                    await fetchEventSource(
+                    const response = await this.customFetch(
                         `${baseUrl || this.baseUrl || ""}${path}${queryString ? `?${queryString}` : ""}`,
                         {
                             ...requestParams,
                             signal: cancelToken ? this.createAbortSignal(cancelToken) : requestParams.signal,
-                            onmessage(event) {
-                                if (event.data === 'done') {
-                                    queue.stop();
-                                } else {
-                                    const data = JSON.parse(event.data);
-                                    queue.push(data);
-                                }
-                            },
-                            onclose() {
-                                queue.stop();
-                            },
-                            onerror(error) {
-                                queue.fail(error);
+                        }
+                    )
+
+                    if (!response.ok) {
+                        throw new Error(`${response.status} ${response.statusText}`);
+                        return;
+                    }
+
+                    const reader = response.body.getReader();
+
+                    const stop = () => {
+                        reader.cancel();
+                        queue.stop();
+                    }
+
+                    const parser = createParser((event: ParsedEvent | ReconnectInterval) => {
+                        if (event.type === 'event') {
+                            if (event.data === 'done') {
+                                stop();
+                            } else {
+                                const data = JSON.parse(event.data);
+                                queue.push(data);
                             }
-                        },
-                    );
-                })();
+                        }
+                    })
+
+                    const decoder = new TextDecoder();
+                    while (true) {
+                        const { done, value } = await reader.read();
+
+                        if (value) {
+                            parser.feed(decoder.decode(value))
+                        }
+
+                        if (done) {
+                            break;
+                        }
+                    }
+
+                    stop();
+                })()
+                .catch(error => {
+                    queue.fail(error);
+                });
             }
         );
     };
