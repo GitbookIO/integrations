@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.32.0
+
+### Minor Changes
+
+-   aadb319: Use a custom EventSource client to support Cloudflare Worker environments
+
 ## 0.31.0
 
 ### Minor Changes
