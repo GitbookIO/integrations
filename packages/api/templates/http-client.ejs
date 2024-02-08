@@ -257,11 +257,8 @@ export class HttpClient<SecurityDataType = unknown> {
                 reject = rj;
             });
             let done = false;
-            let messages = 0;
 
             eventSource.onmessage = (event) => {
-                messages += 1;
-
                 if (event.data === 'done') {
                     done = true;
                     resolve();
