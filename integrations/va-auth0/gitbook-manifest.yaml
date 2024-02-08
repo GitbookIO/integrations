@@ -1,9 +1,9 @@
 name: VA-Auth0
-title: VA Auth0
+title: Auth0
 icon: ./assets/icon.png
 previewImages:
     - ./assets/auth0-preview.png
-description: Visitor Authentication with Auth0
+description: Control who has access to your published documentation with Auth0
 visibility: public
 script: ./src/index.tsx
 scopes:
