@@ -1,5 +1,16 @@
 # @gitbook/runtime
 
+## 0.13.0
+
+### Minor Changes
+
+-   41fa1ec: Add support for fetch_visitor_authentication event
+
+### Patch Changes
+
+-   Updated dependencies [0961cf4]
+    -   @gitbook/api@0.31.0
+
 ## 0.12.0
 
 ### Minor Changes
