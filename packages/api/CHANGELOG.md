@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.31.0
+
+### Minor Changes
+
+-   0961cf4: Improve streaming client to support last "done" message and throw error event
+
 ## 0.30.0
 
 ### Minor Changes
