@@ -1,6 +1,8 @@
 <%
 const { apiConfig, generateResponses, config } = it;
 %>
+import { EventIterator } from 'event-iterator';
+import { fetchEventSource } from '@microsoft/fetch-event-source';
 
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
@@ -225,73 +227,43 @@ export class HttpClient<SecurityDataType = unknown> {
         });
     };
 
-    public streamRequest = async function*<T, E>({
+    public streamRequest = function<T, E>({
         path,
         baseUrl,
         cancelToken,
         secure,
         ...params,
-    }: FullRequestParams): AsyncGenerator<T, void, unknown> {
-        const secureParams = ((typeof secure === 'boolean' ? secure : this.baseApiParams.secure) && this.securityWorker && await this.securityWorker(this.securityData, 'streaming')) || {};
-        const { query: requestQuery, ...requestParams } = this.mergeRequestParams(params, secureParams);
-        const queryString = requestQuery ? this.toQueryString(requestQuery) : undefined;
+    }: FullRequestParams) {
+        return new EventIterator<T>(
+            (queue) => {
+                (async () => {
+                    const secureParams = ((typeof secure === 'boolean' ? secure : this.baseApiParams.secure) && this.securityWorker && await this.securityWorker(this.securityData)) || {};
+                    const { query: requestQuery, ...requestParams } = this.mergeRequestParams(params, secureParams);
+                    const queryString = requestQuery ? this.toQueryString(requestQuery) : undefined;
 
-        // @ts-ignore - works only in browser
-        const eventSource = new EventSource(
-            `${baseUrl || this.baseUrl || ""}${path}${queryString ? `?${queryString}` : ""}`,
+                    await fetchEventSource(
+                        `${baseUrl || this.baseUrl || ""}${path}${queryString ? `?${queryString}` : ""}`,
+                        {
+                            ...requestParams,
+                            signal: cancelToken ? this.createAbortSignal(cancelToken) : requestParams.signal,
+                            onmessage(event) {
+                                if (event.data === 'done') {
+                                    queue.stop();
+                                } else {
+                                    const data = JSON.parse(event.data);
+                                    queue.push(data);
+                                }
+                            },
+                            onclose() {
+                                queue.stop();
+                            },
+                            onerror(error) {
+                                queue.fail(error);
+                            }
+                        },
+                    );
+                })();
+            }
         );
-
-        try {
-            const signal = cancelToken ? this.createAbortSignal(cancelToken) : void 0;
-            if (signal) {
-                signal.addEventListener("abort", () => {
-                    eventSource.close();
-                });
-            }
-
-            let results: T[] = [];
-            let resolve: () => void;
-            let reject: (error: globalThis.Error) => void;
-            let promise = new Promise<void>((r, rj) => {
-                resolve = r;
-                reject = rj;
-            });
-            let done = false;
-
-            eventSource.onmessage = (event) => {
-                if (event.data === 'done') {
-                    done = true;
-                    resolve();
-                } else {
-                    try {
-                        const data = JSON.parse(event.data);
-                        results.push(data);
-                    } catch (error) {
-                        return reject(error);
-                    }
-                    
-                    resolve();
-                    promise = new Promise<void>((r, rj) => {
-                        resolve = r;
-                        reject = rj;
-                    });
-                }
-            };
-
-            eventSource.onerror = (error) => {
-                // @ts-ignore
-                reject(error);
-            };
-
-            while(!done) {
-                await promise;
-                for (const result of results) {
-                    yield result;
-                }
-                results = [];
-            }
-        } finally {
-            eventSource.close();
-        }
     };
 }
