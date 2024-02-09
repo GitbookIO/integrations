@@ -1,5 +1,11 @@
 # @gitbook/runtime
 
+## 0.14.0
+
+### Minor Changes
+
+-   1e3c023: return 4xx error instead of 5xx when failed to extract access token
+
 ## 0.13.0
 
 ### Minor Changes
