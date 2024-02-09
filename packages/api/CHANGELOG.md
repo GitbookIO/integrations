@@ -1,5 +1,29 @@
 # @gitbook/api
 
+## 0.33.0
+
+### Minor Changes
+
+-   17099cf: Use fetch and a custom EventSource parsing to support node/browser/worker for streaming operations
+
+## 0.32.0
+
+### Minor Changes
+
+-   aadb319: Use a custom EventSource client to support Cloudflare Worker environments
+
+## 0.31.0
+
+### Minor Changes
+
+-   0961cf4: Improve streaming client to support last "done" message and throw error event
+
+## 0.30.0
+
+### Minor Changes
+
+-   41f811e: Update the API client with the latest OpenAPI specification and add support for streaming operations.
+
 ## 0.29.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @gitbook/integration-gitlab
 
+## 0.0.15
+
+### Patch Changes
+
+-   19f14fd: Normalize custom instance URL for gitlab sync
+
 ## 0.0.14
 
 ### Patch Changes

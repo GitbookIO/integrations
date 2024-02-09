@@ -16,6 +16,7 @@ import {
     getGitSyncCommitMessage,
     getSpaceConfigOrThrow,
     GITSYNC_DEFAULT_COMMIT_MESSAGE,
+    normalizeInstanceUrl,
 } from './utils';
 
 /**
@@ -58,14 +59,16 @@ export const configBlock = createComponent<
                 const spaceInstallation = context.environment.spaceInstallation;
                 assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
-                const updatedConfig = {
+                const config = {
                     ...spaceInstallation.configuration,
                     key: crypto.randomUUID(),
                     accessToken: action.token,
-                    customInstanceUrl: action.customInstanceUrl,
+                    customInstanceUrl: action.customInstanceUrl
+                        ? normalizeInstanceUrl(action.customInstanceUrl)
+                        : undefined,
                 };
 
-                const glUser = await getCurrentUser(updatedConfig);
+                const glUser = await getCurrentUser(config);
 
                 await context.api.integrations.updateIntegrationSpaceInstallation(
                     spaceInstallation.integration,
@@ -73,7 +76,7 @@ export const configBlock = createComponent<
                     spaceInstallation.space,
                     {
                         configuration: {
-                            ...updatedConfig,
+                            ...config,
                             userId: glUser.id,
                         },
                     }

@@ -299,6 +299,10 @@ const handleSpaceContentUpdated: EventCallback<
     'space_content_updated',
     GitLabRuntimeContext
 > = async (event, context) => {
+    logger.info(
+        `Handling space_content_updated event for space ${event.spaceId} revision ${event.revisionId}`
+    );
+
     const { data: revision } = await context.api.spaces.getRevisionById(
         event.spaceId,
         event.revisionId
@@ -317,7 +321,7 @@ const handleSpaceContentUpdated: EventCallback<
         return;
     }
 
-    if (!spaceInstallation.configuration.key) {
+    if (!spaceInstallation.configuration.configuredAt) {
         logger.debug(`space ${event.spaceId} is not configured, skipping`);
         return;
     }

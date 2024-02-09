@@ -67,6 +67,16 @@ export function computeConfigQueryKey(projectId: number, ref: string): string {
 }
 
 /**
+ * Normalize the instance URL to ensure it is a valid URL.
+ */
+export function normalizeInstanceUrl(url: string): string {
+    let instanceUrl = url.trim();
+    instanceUrl = instanceUrl.endsWith('/') ? instanceUrl.slice(0, -1) : instanceUrl;
+    instanceUrl = instanceUrl.startsWith('https://') ? instanceUrl : `https://${instanceUrl}`;
+    return instanceUrl;
+}
+
+/**
  * Sign a message with a secret key by using HMAC-SHA256 algorithm.
  */
 export async function signResponse(message: string, secret: string): Promise<string> {
