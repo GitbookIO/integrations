@@ -1,5 +1,11 @@
 # @gitbook/integration-github
 
+## 0.1.1
+
+### Patch Changes
+
+-   6929b20: Release github with the latest runtime package 0.14.0
+
 ## 0.1.0
 
 ### Minor Changes
