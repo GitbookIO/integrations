@@ -254,6 +254,7 @@ export const configBlock = createComponent<
                             <input
                                 label="Select project"
                                 hint="Select the GitLab project to sync this space with"
+                                size="large"
                                 element={
                                     <select
                                         state="project"
