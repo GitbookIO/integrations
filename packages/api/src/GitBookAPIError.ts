@@ -17,11 +17,17 @@ export class GitBookAPIError extends Error {
      */
     public readonly code: number;
 
+    /**
+     * Original error message from the API.
+     */
+    public readonly errorMessage: string;
+
     constructor(errorMessage: string, response: Response) {
         const message = `GitBook API failed with [${response.status}] ${response.url}: ${errorMessage}`;
 
         super(message);
         this.response = response;
         this.code = response.status;
+        this.errorMessage = errorMessage;
     }
 }
