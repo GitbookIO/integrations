@@ -189,10 +189,10 @@ export function createOAuthHandler(
             try {
                 credentials = await extractCredentials(json);
             } catch (error) {
-                logger.error(`error extracting credentials from oauth response`, error.stack);
+                logger.error(`extractCredentials error`, error.stack);
                 return new Response(
                     JSON.stringify({
-                        error: 'Could not retrieve access token from OAuth response. Please try again.',
+                        error: `Failed to retrieve access_token from OAuth response. Please try again.`,
                     }),
                     {
                         status: 400,
@@ -355,10 +355,9 @@ export async function getToken(
  */
 function defaultExtractCredentials(response: OAuthResponse): RequestUpdateIntegrationInstallation {
     if (!response.access_token) {
-        logger.error(
-            `Could not extract access_token from response ${JSON.stringify(response, null, 2)} `
-        );
-        throw new Error(`Could not extract access_token from response`);
+        const message = `Failed to retrieve access_token from response`;
+        logger.error(`${message} ${JSON.stringify(response, null, 2)} `);
+        throw new Error(message);
     }
 
     return {
