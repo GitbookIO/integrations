@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.34.0
+
+### Minor Changes
+
+-   e3fdaae: Store the original error message as GitBookAPIError.errorMessage
+
 ## 0.33.0
 
 ### Minor Changes
