@@ -230,14 +230,9 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                                 (resp && resp.error_description) || ''
                             }`
                         );
-                        return new Response(
-                            `Error: No Access Token found in response from Okta ${
-                                (resp && resp.error) || ''
-                            } ${(resp && resp.error_description) || ''}`,
-                            {
-                                status: 401,
-                            }
-                        );
+                        return new Response('Error: No Access Token found in response from Okta', {
+                            status: 401,
+                        });
                     }
                 } else {
                     return new Response('Error: Either ClientId or Client Secret is missing', {

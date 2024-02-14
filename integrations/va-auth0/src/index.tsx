@@ -230,14 +230,9 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                                 (resp && resp.error_description) || ''
                             }`
                         );
-                        return new Response(
-                            `Error: No Access Token found in response from Auth0 ${
-                                (resp && resp.error) || ''
-                            } ${(resp && resp.error_description) || ''}`,
-                            {
-                                status: 401,
-                            }
-                        );
+                        return new Response('Error: No Access Token found in response from Auth0', {
+                            status: 401,
+                        });
                     }
                 } else {
                     return new Response('Error: Either ClientId or Client Secret is missing', {
