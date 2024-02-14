@@ -1,5 +1,5 @@
 ---
-'@gitbook/integration-va-okta': minor
+'@gitbook/integration-va-okta': patch
 ---
 
 Use default authorization server
