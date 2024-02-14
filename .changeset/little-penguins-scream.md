@@ -4,4 +4,4 @@
 '@gitbook/integration-va-okta': patch
 ---
 
-Improve logging and displaying errors to users
+Improve logging for VA integrations
