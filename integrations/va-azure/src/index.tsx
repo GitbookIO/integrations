@@ -228,9 +228,19 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                             );
                         }
                     } else {
-                        return new Response('Error: No Access Token found in response from Azure', {
-                            status: 401,
-                        });
+                        logger.debug(
+                            `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
+                                (resp && resp.error_description) || ''
+                            }`
+                        );
+                        return new Response(
+                            `Error: No Access Token found in response from Azure ${
+                                (resp && resp.error) || ''
+                            } ${(resp && resp.error_description) || ''}`,
+                            {
+                                status: 401,
+                            }
+                        );
                     }
                 } else {
                     return new Response('Error: Either ClientId or Client Secret is missing', {
