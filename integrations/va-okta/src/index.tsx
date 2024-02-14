@@ -225,6 +225,11 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                             );
                         }
                     } else {
+                        logger.debug(
+                            `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
+                                (resp && resp.error_description) || ''
+                            }`
+                        );
                         return new Response('Error: No Access Token found in response from Okta', {
                             status: 401,
                         });

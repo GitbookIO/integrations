@@ -228,6 +228,11 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                             );
                         }
                     } else {
+                        logger.debug(
+                            `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
+                                (resp && resp.error_description) || ''
+                            }`
+                        );
                         return new Response('Error: No Access Token found in response from Azure', {
                             status: 401,
                         });
