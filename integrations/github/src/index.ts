@@ -20,7 +20,7 @@ import {
 } from './api';
 import { configBlock } from './components';
 import { getGitHubAppJWT } from './provider';
-import { triggerExport, updateCommitWithPreviewLinks } from './sync';
+import { triggerExport, triggerSync, updateCommitWithPreviewLinks } from './sync';
 import { handleIntegrationTask } from './tasks';
 import type { GithubRuntimeContext, IntegrationTask } from './types';
 import { arrayToHex, BRANCH_REF_PREFIX, safeCompare } from './utils';
@@ -407,7 +407,7 @@ const handleSpaceContentUpdated: EventCallback<
         return;
     }
 
-    await triggerExport(context, spaceInstallation, {
+    await triggerSync(context, spaceInstallation, {
         eventTimestamp: new Date(revision.createdAt),
     });
 };

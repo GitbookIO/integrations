@@ -2,7 +2,7 @@ import { GitBookAPI } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
 
 import { querySpaceInstallations } from './installation';
-import { triggerImport } from './sync';
+import { triggerImport, triggerSync } from './sync';
 import type { GithubRuntimeContext, IntegrationTask, IntegrationTaskImportSpaces } from './types';
 
 const logger = Logger('github:tasks');
@@ -87,7 +87,7 @@ export async function handleImportDispatchForSpaces(
                     },
                 };
 
-                await triggerImport(installationContext, spaceInstallation, {
+                await triggerSync(installationContext, spaceInstallation, {
                     standalone: standaloneRef
                         ? {
                               ref: standaloneRef,
