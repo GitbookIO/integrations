@@ -1,5 +1,11 @@
 # @gitbook/integration-va-okta
 
+## 0.0.4
+
+### Patch Changes
+
+-   d06c529: Move Redirect URI instructions above the save button
+
 ## 0.0.3
 
 ### Patch Changes
