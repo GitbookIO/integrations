@@ -127,7 +127,13 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                     }
                     element={<textinput state="client_secret" placeholder="Client Secret" />}
                 />
-
+                <divider size="medium" />
+                <hint>
+                    <text style="bold">
+                        The following URL needs to be saved as a Sign-In Redirect URI in Okta:
+                    </text>
+                </hint>
+                <codeblock content={VACallbackURL} />
                 <input
                     label=""
                     hint=""
@@ -143,9 +149,6 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                         />
                     }
                 />
-                <divider size="medium" />
-                <text>The following URL needs to be saved as a Sign-In Redirect URI in Okta:</text>
-                <codeblock content={VACallbackURL} />
             </block>
         );
     },
