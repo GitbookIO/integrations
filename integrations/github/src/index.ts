@@ -407,9 +407,14 @@ const handleSpaceContentUpdated: EventCallback<
         return;
     }
 
-    await triggerSync(context, spaceInstallation, {
-        eventTimestamp: new Date(revision.createdAt),
-    });
+    await Promise.all([
+        triggerExport(context, spaceInstallation, {
+            eventTimestamp: new Date(revision.createdAt),
+        }),
+        triggerSync(context, spaceInstallation, {
+            eventTimestamp: new Date(revision.createdAt),
+        }),
+    ]);
 };
 
 /*

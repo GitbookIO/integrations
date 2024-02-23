@@ -87,14 +87,24 @@ export async function handleImportDispatchForSpaces(
                     },
                 };
 
-                await triggerSync(installationContext, spaceInstallation, {
-                    standalone: standaloneRef
-                        ? {
-                              ref: standaloneRef,
-                          }
-                        : undefined,
-                    eventTimestamp,
-                });
+                await Promise.all([
+                    triggerImport(installationContext, spaceInstallation, {
+                        standalone: standaloneRef
+                            ? {
+                                  ref: standaloneRef,
+                              }
+                            : undefined,
+                        eventTimestamp,
+                    }),
+                    triggerSync(installationContext, spaceInstallation, {
+                        standalone: standaloneRef
+                            ? {
+                                  ref: standaloneRef,
+                              }
+                            : undefined,
+                        eventTimestamp,
+                    }),
+                ]);
             } catch (error) {
                 logger.error(
                     `error while triggering ${

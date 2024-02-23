@@ -86,25 +86,25 @@ export async function saveSpaceConfiguration(
 
     logger.debug(`Forcing synchronization for space ${spaceInstallation.space}`);
 
+    // Force a synchronization
+    if (state.priority === 'github') {
+        logger.debug(`Forcing import for space ${spaceInstallation.space}`);
+        await triggerImport(context, updatedSpaceInstallation, {
+            force: true,
+            updateGitInfo: true,
+        });
+    } else {
+        logger.debug(`Forcing export for space ${spaceInstallation.space}`);
+        await triggerExport(context, updatedSpaceInstallation, {
+            force: true,
+            updateGitInfo: true,
+        });
+    }
+
     await triggerSync(context, updatedSpaceInstallation, {
         force: true,
         updateGitInfo: true,
     });
-
-    // Force a synchronization
-    // if (state.priority === 'github') {
-    //     logger.debug(`Forcing import for space ${spaceInstallation.space}`);
-    //     await triggerImport(context, updatedSpaceInstallation, {
-    //         force: true,
-    //         updateGitInfo: true,
-    //     });
-    // } else {
-    //     logger.debug(`Forcing export for space ${spaceInstallation.space}`);
-    //     await triggerExport(context, updatedSpaceInstallation, {
-    //         force: true,
-    //         updateGitInfo: true,
-    //     });
-    // }
 }
 
 /**
