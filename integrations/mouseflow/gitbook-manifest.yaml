@@ -1,0 +1,41 @@
+name: Mouseflow
+title: Mouseflow
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/mouseflow-preview.png
+description: Plug your GitBook site to your Mouseflow installation.
+externalLinks:
+    - label: Documentation
+      url: https://www.gitbook.com/integrations/mouseflow
+visibility: public
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - space:script:inject
+organization: d8f63b60-89ae-11e7-8574-5927d48c4877
+contentSecurityPolicy:
+    script-src: cdn.mouseflow.com;
+summary: |
+    # Overview
+    This integration allows to add the Mouseflow tracker on your published GitBook site.
+
+    # How it works
+    The integration injects the Mouseflow script on your page, using the configured Website ID,
+    so that you can get analytics information from your GitBook site.
+
+    # Configure
+    Install the integration on the GitBook space of your choice.
+    Locate the Website ID you want to use from the settings page.
+
+categories:
+    - analytics
+configurations:
+    space:
+        properties:
+            website_id:
+                type: string
+                title: Mouseflow Website ID
+                description: Available in Mouseflow website settings page
+        required:
+            - website_id
