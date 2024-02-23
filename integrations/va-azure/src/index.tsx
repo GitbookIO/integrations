@@ -129,7 +129,13 @@ const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRu
                     }
                     element={<textinput state="client_secret" placeholder="Client Secret" />}
                 />
-
+                <divider size="medium" />
+                <hint>
+                    <text style="bold">
+                        The following URL needs to be saved as an allowed Redirect URI in Azure:
+                    </text>
+                </hint>
+                <codeblock content={VACallbackURL} />
                 <input
                     label=""
                     hint=""
@@ -145,12 +151,6 @@ const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRu
                         />
                     }
                 />
-
-                <divider size="medium" />
-                <text>
-                    The following URL needs to be saved as an allowed Redirect URI in Azure:
-                </text>
-                <codeblock content={VACallbackURL} />
             </block>
         );
     },
@@ -228,6 +228,11 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                             );
                         }
                     } else {
+                        logger.debug(
+                            `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
+                                (resp && resp.error_description) || ''
+                            }`
+                        );
                         return new Response('Error: No Access Token found in response from Azure', {
                             status: 401,
                         });

@@ -128,7 +128,13 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
                     }
                     element={<textinput state="client_secret" placeholder="Client Secret" />}
                 />
-
+                <divider size="medium" />
+                <hint>
+                    <text style="bold">
+                        The following URL needs to be saved as an allowed callback URL in Auth0:
+                    </text>
+                </hint>
+                <codeblock content={VACallbackURL} />
                 <input
                     label=""
                     hint=""
@@ -144,11 +150,6 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
                         />
                     }
                 />
-                <divider size="medium" />
-                <text>
-                    The following URL needs to be saved as an allowed callback URL in Auth0:
-                </text>
-                <codeblock content={VACallbackURL} />
             </block>
         );
     },
@@ -225,6 +226,11 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                             );
                         }
                     } else {
+                        logger.debug(
+                            `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
+                                (resp && resp.error_description) || ''
+                            }`
+                        );
                         return new Response('Error: No Access Token found in response from Auth0', {
                             status: 401,
                         });

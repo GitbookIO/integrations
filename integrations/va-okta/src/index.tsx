@@ -127,7 +127,13 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                     }
                     element={<textinput state="client_secret" placeholder="Client Secret" />}
                 />
-
+                <divider size="medium" />
+                <hint>
+                    <text style="bold">
+                        The following URL needs to be saved as a Sign-In Redirect URI in Okta:
+                    </text>
+                </hint>
+                <codeblock content={VACallbackURL} />
                 <input
                     label=""
                     hint=""
@@ -143,9 +149,6 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                         />
                     }
                 />
-                <divider size="medium" />
-                <text>The following URL needs to be saved as a Sign-In Redirect URI in Okta:</text>
-                <codeblock content={VACallbackURL} />
             </block>
         );
     },
@@ -191,7 +194,7 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                         scope: 'openid',
                         redirect_uri: `${installationURL}/visitor-auth/response`,
                     });
-                    const accessTokenURL = `https://${oktaDomain}/oauth2/default/v1/token/`;
+                    const accessTokenURL = `https://${oktaDomain}/oauth2/v1/token/`;
                     const resp: any = await fetch(accessTokenURL, {
                         method: 'POST',
                         headers: { 'content-type': 'application/x-www-form-urlencoded' },
@@ -225,6 +228,11 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                             );
                         }
                     } else {
+                        logger.debug(
+                            `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
+                                (resp && resp.error_description) || ''
+                            }`
+                        );
                         return new Response('Error: No Access Token found in response from Okta', {
                             status: 401,
                         });
@@ -267,7 +275,7 @@ export default createIntegration({
         const clientId = environment.spaceInstallation?.configuration.client_id;
         const location = event.location ? event.location : '';
 
-        const url = new URL(`https://${oktaDomain}/oauth2/default/v1/authorize`);
+        const url = new URL(`https://${oktaDomain}/oauth2/v1/authorize`);
         url.searchParams.append('client_id', clientId);
         url.searchParams.append('response_type', 'code');
         url.searchParams.append('redirect_uri', `${installationURL}/visitor-auth/response`);
