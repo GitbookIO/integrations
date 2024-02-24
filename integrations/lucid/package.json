@@ -11,7 +11,7 @@
         "itty-router": "^4.0.27"
     },
     "devDependencies": {
-        "@gitbook/cli": "^0.13.1",
+        "@gitbook/cli": "*",
         "@gitbook/eslint-config": "*",
         "@gitbook/tsconfig": "*"
     }
