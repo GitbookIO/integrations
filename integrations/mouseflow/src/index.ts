@@ -7,7 +7,7 @@ import {
 
 import script from './script.raw.js';
 
-type HotjarRuntimeContext = RuntimeContext<
+type MouseflowRuntimeContext = RuntimeContext<
     RuntimeEnvironment<
         {},
         {
@@ -18,7 +18,7 @@ type HotjarRuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: HotjarRuntimeContext
+    { environment }: MouseflowRuntimeContext
 ) => {
     const websiteId = environment.spaceInstallation.configuration.website_id;
     if (!websiteId) {
@@ -35,6 +35,6 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     });
 };
 
-export default createIntegration<HotjarRuntimeContext>({
+export default createIntegration<MouseflowRuntimeContext>({
     fetch_published_script: handleFetchEvent,
 });
