@@ -1,5 +1,5 @@
-name: Mouseflow
-title: Mouseflow
+name: mouseflow
+title: mouseflow
 icon: ./assets/icon.png
 previewImages:
     - ./assets/mouseflow-preview.png
