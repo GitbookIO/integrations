@@ -1,5 +1,6 @@
 {
     "name": "@gitbook/integration-lucid",
+    "version": "0.0.0",
     "private": true,
     "scripts": {
         "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -14,6 +15,5 @@
         "@gitbook/cli": "*",
         "@gitbook/eslint-config": "*",
         "@gitbook/tsconfig": "*"
-    },
-    "version": null
+    }
 }
