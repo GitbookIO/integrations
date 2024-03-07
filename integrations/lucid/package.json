@@ -14,5 +14,6 @@
         "@gitbook/cli": "*",
         "@gitbook/eslint-config": "*",
         "@gitbook/tsconfig": "*"
-    }
+    },
+    "version": null
 }
