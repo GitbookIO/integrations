@@ -1,5 +1,11 @@
 # @gitbook/integration-lucid
 
+## 0.2.0
+
+### Minor Changes
+
+-   016a073: Fix lucid integration publish scripts
+
 ## 0.1.0
 
 ### Minor Changes
