@@ -1,8 +1,6 @@
 name: mixpanel
 title: Mixpanel
 icon: ./assets/icon.png
-#previewImages:
-#    - ./assets/hotjar-preview.png
 description: Plug your GitBook site to your Mixpanel account.
 visibility: public
 script: ./src/index.ts
@@ -10,7 +8,7 @@ script: ./src/index.ts
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
     - space:script:inject
-organization: w45sBUBc1JWE1ktYkQfI #d8f63b60-89ae-11e7-8574-5927d48c4877
+organization: gitbook
 contentSecurityPolicy:
     script-src: cdn.mxpnl.com;
 summary: |
