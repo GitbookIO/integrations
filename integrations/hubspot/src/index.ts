@@ -18,12 +18,12 @@ type HubSpotRuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = (
     event,
-    { environment }: HubSpotRuntimeContext
+    { environment }: HubSpotRuntimeContext,
 ) => {
     const scriptLoaderURL = environment.spaceInstallation.configuration.script_loader_url;
     if (!scriptLoaderURL) {
         throw new Error(
-            `The HubSpot Script Loader URL is missing from the configuration (ID: ${event.spaceId}).`
+            `The HubSpot Script Loader URL is missing from the configuration (ID: ${event.spaceId}).`,
         );
     }
 

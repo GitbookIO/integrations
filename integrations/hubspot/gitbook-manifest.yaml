@@ -19,7 +19,8 @@ summary: |
 
     # Configure
     Install the integration on the GitBook space of your choice.
-    Locate the HubSpot Script Loader URL you want to use, which is available in HubSpot's Reports & Analytics Tracking section
+    Locate the HubSpot Script Loader URL you want to use, which is available in HubSpot's Reports & Analytics Tracking section.
+    The URL Should be in the form "//{subdomain}.hs-scripts.com/{portalId}.js".
 categories:
     - analytics
 configurations:
@@ -28,6 +29,6 @@ configurations:
             script_loader_url:
                 type: string
                 title: HubSpot Script Loader URL
-                description: The URL from which the script loader will load the script. Copied form HubSpot's script. Should be in the form "//{subdomain}.hs-scripts.com/{portalId}.js"
+                description: The URL to load the script from. Copied form HubSpot's script tracking code script tag src attribute
         required:
             - script_loader_url
