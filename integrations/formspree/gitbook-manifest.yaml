@@ -6,8 +6,11 @@ description: A simple Formspree integration to collect user signups directly in 
 summary: |
     # Overview
     The GitBook Formspree integration allows you to specify a form ID from your Formspree account to collect user signups.
+
     # Configure
     You can install the integration on a single space by clicking the integrations button in sub-navigation panel. If you prefer to install the Formspree integration on multiple on all spaces you can enable this through organization settings. From here you can specify different Formspree IDs for different spaces.
+
+    You can customize the integration's form fields directly from the block itself. Press the Action menu with the block selected to see the available customization options.
 icon: ./assets/formspree-icon.png
 previewImages:
     - ./assets/formspree-banner.png
@@ -30,19 +33,4 @@ configurations:
                 type: string
                 title: Formspree endpoint
                 description: The endpoint your formspree lives at.
-            email:
-                type: boolean
-                title: Email
-                description: An email field for your form
-                default: true
-            name:
-                type: boolean
-                title: Name
-                description: A name field for your form
-                default: false
-            message:
-                type: boolean
-                title: Message
-                description: A message field for your form
-                default: false
 secrets: {}
