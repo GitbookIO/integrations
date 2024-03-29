@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.39.0
+
+### Minor Changes
+
+-   8a6c869: Bump the version of the GitBook API
+
 ## 0.38.0
 
 ### Minor Changes
