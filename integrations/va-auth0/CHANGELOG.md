@@ -1,5 +1,11 @@
 # @gitbook/integration-va-auth0
 
+## 0.0.4
+
+### Patch Changes
+
+-   dbc6c1e: Add more logs
+
 ## 0.0.3
 
 ### Patch Changes
