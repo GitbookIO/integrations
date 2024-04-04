@@ -228,6 +228,7 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                             );
                         }
                     } else {
+                        logger.debug(JSON.stringify(resp, null, 2));
                         logger.debug(
                             `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
                                 (resp && resp.error_description) || ''
