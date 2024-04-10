@@ -93,7 +93,7 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
     render: async (element, context) => {
         const siteOrSpaceInstallation =
             context.environment.siteInstallation ?? context.environment.spaceInstallation;
-        const VACallbackURL = `${siteOrSpaceInstallation.urls?.publicEndpoint}/visitor-auth/response`;
+        const VACallbackURL = `${siteOrSpaceInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
         return (
             <block>
                 <input
@@ -206,7 +206,9 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                 ('space' in siteOrSpaceInstallation && siteOrSpaceInstallation.space)
             ) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
-                const privateKey = context.environment.signingSecrets.spaceInstallation;
+                const privateKey =
+                    context.environment.signingSecrets.siteInstallation ??
+                    context.environment.signingSecrets.spaceInstallation;
                 let token;
                 try {
                     token = await sign(
