@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.42.0
+
+### Minor Changes
+
+-   ddf1538: Bump API client to use the latest OpenAPI spec
+
 ## 0.41.0
 
 ### Minor Changes
