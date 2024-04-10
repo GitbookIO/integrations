@@ -21,7 +21,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     { environment }: HeapRuntimeContext
 ) => {
     const trackingId =
-        environment.siteInstallation.configuration.tracking_id ??
+        environment.siteInstallation?.configuration?.tracking_id ??
         environment.spaceInstallation.configuration.tracking_id;
     if (!trackingId) {
         throw new Error(

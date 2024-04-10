@@ -21,7 +21,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     { environment }: IntercomRuntimeContext
 ) => {
     const appId =
-        environment.siteInstallation.configuration.app_id ??
+        environment.siteInstallation?.configuration?.app_id ??
         environment.spaceInstallation.configuration.app_id;
 
     if (!appId) {

@@ -21,7 +21,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     { environment }: GARuntimeContext
 ) => {
     const trackingId =
-        environment.siteInstallation.configuration.tracking_id ??
+        environment.siteInstallation?.configuration?.tracking_id ??
         environment.spaceInstallation.configuration.tracking_id;
     if (!trackingId) {
         return;
