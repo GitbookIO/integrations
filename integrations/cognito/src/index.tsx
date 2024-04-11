@@ -91,10 +91,10 @@ const configBlock = createComponent<
                     label="Client ID"
                     hint={
                         <text>
-                            The unique identifier of your Cognito application.
+                            The unique identifier of your Cognito app client.
                             <link
                                 target={{
-                                    url: 'https://Cognito.com/docs/get-started/applications/application-settings',
+                                    url: 'https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html#cognito-user-pools-app-idp-settings-console-create',
                                 }}
                             >
                                 {' '}
@@ -109,10 +109,10 @@ const configBlock = createComponent<
                     label="Cognito Domain"
                     hint={
                         <text>
-                            The Cognito domain (also known as tenant).
+                            The Cognito User Pool domain.
                             <link
                                 target={{
-                                    url: 'https://Cognito.com/docs/get-started/applications/application-settings',
+                                    url: 'https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain.html',
                                 }}
                             >
                                 {' '}
@@ -130,7 +130,7 @@ const configBlock = createComponent<
                             The secret used for signing and validating tokens.
                             <link
                                 target={{
-                                    url: 'https://Cognito.com/docs/get-started/applications/application-settings',
+                                    url: 'https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html#cognito-user-pools-app-idp-settings-console-create',
                                 }}
                             >
                                 {' '}
