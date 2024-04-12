@@ -14,6 +14,7 @@ script: ./src/index.ts
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
     - space:script:inject
+    - site:script:inject
 organization: d8f63b60-89ae-11e7-8574-5927d48c4877
 contentSecurityPolicy:
     script-src: https://eu.posthog.com https://app.posthog.com;

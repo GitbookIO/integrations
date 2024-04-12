@@ -25,16 +25,24 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
         EU: 'https://eu.posthog.com',
         US: 'https://app.posthog.com',
     };
-    const projectApiKey = environment.spaceInstallation.configuration.projectApiKey;
-    const instanceAddress = environment.spaceInstallation.configuration.instanceAddress;
+    const projectApiKey =
+        environment.siteInstallation?.configuration?.projectApiKey ??
+        environment.spaceInstallation.configuration.projectApiKey;
+    const instanceAddress =
+        environment.siteInstallation?.configuration?.instanceAddress ??
+        environment.spaceInstallation.configuration.instanceAddress;
     if (!projectApiKey) {
         throw new Error(
-            `The PostHog project API key is missing from the space configuration (ID: ${event.spaceId}).`
+            `The PostHog project API key is missing from the space configuration (ID: ${
+                'spaceId' in event ? event.spaceId : event.siteId
+            }).`
         );
     }
     if (!instanceAddress) {
         throw new Error(
-            `The PostHog instance address is missing from the space configuration (ID: ${event.spaceId}).`
+            `The PostHog instance address is missing from the space configuration (ID: ${
+                'spaceId' in event ? event.spaceId : event.siteId
+            }).`
         );
     }
 
