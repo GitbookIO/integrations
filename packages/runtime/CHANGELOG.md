@@ -1,5 +1,11 @@
 # @gitbook/runtime
 
+## 0.14.1
+
+### Patch Changes
+
+-   cebbcb6: Updating inject scripts integration to support sites installations
+
 ## 0.14.0
 
 ### Minor Changes

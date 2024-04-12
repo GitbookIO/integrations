@@ -1,5 +1,13 @@
 # @gitbook/integration-googleanalytics
 
+## 0.1.3
+
+### Patch Changes
+
+-   cebbcb6: Updating inject scripts integration to support sites installations
+-   Updated dependencies [cebbcb6]
+    -   @gitbook/runtime@0.14.1
+
 ## 0.1.2
 
 ### Patch Changes
