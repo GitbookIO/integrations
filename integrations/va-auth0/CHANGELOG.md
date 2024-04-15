@@ -1,5 +1,11 @@
 # @gitbook/integration-va-auth0
 
+## 0.0.5
+
+### Patch Changes
+
+-   4271881: Update existing VA Integrations to support site installations
+
 ## 0.0.4
 
 ### Patch Changes
