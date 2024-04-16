@@ -10,6 +10,7 @@ script: ./src/index.tsx
 scopes:
     - space:metadata:read
     - space:visitor:auth
+    - site:visitor:auth
     - space:content:read
 organization: VIHHSvOsHTHfcuksLxBw
 summary: |
