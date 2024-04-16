@@ -8,6 +8,7 @@ script: ./src/index.ts
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
     - space:script:inject
+    - site:script:inject
 organization: gitbook
 contentSecurityPolicy:
     script-src: cdn.mxpnl.com;

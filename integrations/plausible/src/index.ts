@@ -21,8 +21,12 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
     { environment }: PlausibleRuntimeContext
 ) => {
-    const domain = environment.spaceInstallation.configuration.domain;
-    const api = environment.spaceInstallation.configuration.api || '';
+    const domain =
+        environment.siteInstallation?.configuration?.domain ??
+        environment.spaceInstallation.configuration.domain;
+    const api =
+        environment.siteInstallation?.configuration?.api ??
+        (environment.spaceInstallation.configuration.api || '');
     if (!domain) {
         return;
     }

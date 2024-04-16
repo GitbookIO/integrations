@@ -13,24 +13,27 @@ import {
 
 const logger = Logger('azure.visitor-auth');
 
-type AzureRuntimeEnvironment = RuntimeEnvironment<{}, AzureSpaceInstallationConfiguration>;
+type AzureRuntimeEnvironment = RuntimeEnvironment<{}, AzureSiteOrSpaceInstallationConfiguration>;
 
 type AzureRuntimeContext = RuntimeContext<AzureRuntimeEnvironment>;
 
-type AzureSpaceInstallationConfiguration = {
+type AzureSiteOrSpaceInstallationConfiguration = {
     client_id?: string;
     tenant_id?: string;
     client_secret?: string;
 };
 
-type AzureState = AzureSpaceInstallationConfiguration;
+type AzureState = AzureSiteOrSpaceInstallationConfiguration;
 
 type AzureProps = {
     installation: {
         configuration?: IntegrationInstallationConfiguration;
     };
-    spaceInstallation: {
-        configuration?: AzureSpaceInstallationConfiguration;
+    spaceInstallation?: {
+        configuration?: AzureSiteOrSpaceInstallationConfiguration;
+    };
+    siteInstallation?: {
+        configuration?: AzureSiteOrSpaceInstallationConfiguration;
     };
 };
 
@@ -39,40 +42,57 @@ export type AzureAction = { action: 'save.config' };
 const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRuntimeContext>({
     componentId: 'config',
     initialState: (props) => {
+        const siteOrSpaceInstallation = props.siteInstallation ?? props.spaceInstallation;
         return {
-            client_id: props.spaceInstallation.configuration?.client_id?.toString() || '',
-            tenant_id: props.spaceInstallation.configuration?.tenant_id?.toString() || '',
-            client_secret: props.spaceInstallation.configuration?.client_secret?.toString() || '',
+            client_id: siteOrSpaceInstallation?.configuration?.client_id?.toString() || '',
+            tenant_id: siteOrSpaceInstallation?.configuration?.tenant_id?.toString() || '',
+            client_secret: siteOrSpaceInstallation?.configuration?.client_secret?.toString() || '',
         };
     },
     action: async (element, action, context) => {
         switch (action.action) {
             case 'save.config':
                 const { api, environment } = context;
-                const spaceInstallation = environment.spaceInstallation;
+                const siteOrSpaceInstallation =
+                    environment.siteInstallation ?? environment.spaceInstallation;
 
                 const configurationBody = {
-                    ...spaceInstallation.configuration,
+                    ...siteOrSpaceInstallation.configuration,
                     client_id: element.state.client_id,
                     client_secret: element.state.client_secret,
                     tenant_id: element.state.tenant_id,
                 };
 
-                await api.integrations.updateIntegrationSpaceInstallation(
-                    spaceInstallation.integration,
-                    spaceInstallation.installation,
-                    spaceInstallation.space,
-                    {
-                        configuration: {
-                            ...configurationBody,
-                        },
-                    }
-                );
+                if ('site' in siteOrSpaceInstallation) {
+                    await api.integrations.updateIntegrationSiteInstallation(
+                        siteOrSpaceInstallation.integration,
+                        siteOrSpaceInstallation.installation,
+                        siteOrSpaceInstallation.site,
+                        {
+                            configuration: {
+                                ...configurationBody,
+                            },
+                        }
+                    );
+                } else {
+                    await api.integrations.updateIntegrationSpaceInstallation(
+                        siteOrSpaceInstallation.integration,
+                        siteOrSpaceInstallation.installation,
+                        siteOrSpaceInstallation.space,
+                        {
+                            configuration: {
+                                ...configurationBody,
+                            },
+                        }
+                    );
+                }
                 return element;
         }
     },
     render: async (element, context) => {
-        const VACallbackURL = `${context.environment.spaceInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
+        const siteOrSpaceInstallation =
+            context.environment.siteInstallation ?? context.environment.spaceInstallation;
+        const VACallbackURL = `${siteOrSpaceInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
         return (
             <block>
                 <input
@@ -156,21 +176,39 @@ const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRu
     },
 });
 
+/**
+ * Get the published content (site or space) related urls.
+ */
+async function getPublishedContentUrls(context: AzureRuntimeContext) {
+    const organizationId = context.environment.installation?.target?.organization;
+    const siteOrSpaceInstallation =
+        context.environment.siteInstallation ?? context.environment.spaceInstallation;
+    const publishedContentData =
+        'site' in siteOrSpaceInstallation
+            ? await context.api.orgs.getSiteById(organizationId, siteOrSpaceInstallation.site)
+            : await context.api.spaces.getSpaceById(siteOrSpaceInstallation.space);
+
+    return publishedContentData.data.urls;
+}
+
 const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request, context) => {
     const { environment } = context;
-    const installationURL = environment.spaceInstallation?.urls?.publicEndpoint;
+    const siteOrSpaceInstallation = environment.siteInstallation ?? environment.spaceInstallation;
+    const installationURL = siteOrSpaceInstallation?.urls?.publicEndpoint;
     if (installationURL) {
         const router = Router({
             base: new URL(installationURL).pathname,
         });
 
         router.get('/visitor-auth/response', async (request) => {
-            if (context.environment.spaceInstallation?.space) {
-                const space = await context.api.spaces.getSpaceById(
-                    context.environment.spaceInstallation?.space
-                );
-                const spaceData = space.data;
-                const privateKey = context.environment.signingSecrets.spaceInstallation;
+            if (
+                ('site' in siteOrSpaceInstallation && siteOrSpaceInstallation.site) ||
+                ('space' in siteOrSpaceInstallation && siteOrSpaceInstallation.space)
+            ) {
+                const publishedContentUrls = await getPublishedContentUrls(context);
+                const privateKey =
+                    context.environment.signingSecrets.siteInstallation ??
+                    context.environment.signingSecrets.spaceInstallation;
                 let token;
                 try {
                     token = await sign(
@@ -183,9 +221,9 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                     });
                 }
 
-                const tenantId = environment.spaceInstallation?.configuration.tenant_id;
-                const clientId = environment.spaceInstallation?.configuration.client_id;
-                const clientSecret = environment.spaceInstallation?.configuration.client_secret;
+                const tenantId = siteOrSpaceInstallation?.configuration.tenant_id;
+                const clientId = siteOrSpaceInstallation?.configuration.client_id;
+                const clientSecret = siteOrSpaceInstallation?.configuration.client_secret;
                 if (clientId && clientSecret) {
                     const searchParams = new URLSearchParams({
                         grant_type: 'authorization_code',
@@ -211,13 +249,15 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                     if ('access_token' in resp) {
                         let url;
                         if (request.query.state) {
-                            url = new URL(`${spaceData.urls?.published}${request.query.state}`);
+                            url = new URL(
+                                `${publishedContentUrls?.published}${request.query.state}`
+                            );
                             url.searchParams.append('jwt_token', token);
                         } else {
-                            url = new URL(spaceData.urls?.published);
+                            url = new URL(publishedContentUrls?.published);
                             url.searchParams.append('jwt_token', token);
                         }
-                        if (spaceData.urls?.published && token) {
+                        if (publishedContentUrls?.published && token) {
                             return Response.redirect(url.toString());
                         } else {
                             return new Response(
@@ -271,9 +311,11 @@ export default createIntegration({
     components: [configBlock],
     fetch_visitor_authentication: async (event, context) => {
         const { environment } = context;
-        const installationURL = environment.spaceInstallation?.urls?.publicEndpoint;
-        const tenantId = environment.spaceInstallation?.configuration.tenant_id;
-        const clientId = environment.spaceInstallation?.configuration.client_id;
+        const siteOrSpaceInstallation =
+            environment.siteInstallation ?? environment.spaceInstallation;
+        const installationURL = siteOrSpaceInstallation?.urls?.publicEndpoint;
+        const tenantId = siteOrSpaceInstallation?.configuration.tenant_id;
+        const clientId = siteOrSpaceInstallation?.configuration.client_id;
         const location = event.location ? event.location : '';
 
         const url = new URL(`https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize`);
