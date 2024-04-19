@@ -1,8 +1,8 @@
 name: cognito
 title: AWS Cognito
 icon: ./assets/icon.png
-#previewImages:
-#    - ./assets/azure-preview.png
+previewImages:
+    - ./assets/preview.png
 description: Control who has access to your published documentation with AWS Cognito
 
 visibility: private
@@ -12,7 +12,7 @@ scopes:
     - space:visitor:auth
     - site:visitor:auth
     - space:content:read
-organization: VIHHSvOsHTHfcuksLxBw
+organization: gitbook
 summary: |
     # Overview
     Visitor Authentication allows you to publish content behind an authentication wall, so your content is only accessible to people you choose.
