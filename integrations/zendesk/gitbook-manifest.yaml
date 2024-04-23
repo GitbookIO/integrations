@@ -1,0 +1,28 @@
+name: zendesk
+title: Zendesk
+organization: d8f63b60-89ae-11e7-8574-5927d48c4877
+visibility: private
+description: ''
+summary: |
+    # Overview
+    https://support.zendesk.com/hc/en-us/articles/4593564000410-Setting-up-the-search-crawler
+categories:
+    - analytics
+script: src/index.tsx
+scopes:
+    - space:script:inject
+    - site:script:inject
+blocks:
+    - id: zendesk
+      title: Zendesk
+      description: My GitBook Integration
+secrets: {}
+configurations:
+    space:
+        properties:
+            site_tag:
+                type: string
+                title: Hotjar Site ID
+                description: Site Tag from Zendesk
+        required:
+            - site_tag
