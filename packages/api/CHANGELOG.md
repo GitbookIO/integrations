@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.44.0
+
+### Minor Changes
+
+-   65c7dc7: Bumping API and CLI package to use latest specs
+
 ## 0.43.0
 
 ### Minor Changes
