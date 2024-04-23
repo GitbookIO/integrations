@@ -43,7 +43,7 @@ type CognitoProps = {
 export type CognitoAction = { action: 'save.config' };
 
 const getDomainWithHttps = (url: string): string => {
-    if (url.startsWith('https://') || url.startsWith('http://')) {
+    if (url.startsWith('https://')) {
         return url;
     } else {
         return `https://${url}`;
