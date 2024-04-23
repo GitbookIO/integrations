@@ -47,3 +47,15 @@ configurations:
                 description: When self-hosting, configure the url of the instance API (empty when using plausible.io).
         required:
             - domain
+    site:
+        properties:
+            domain:
+                type: string
+                title: Domain
+                description: The domain URL you configured for this Plausible website.
+            api:
+                type: string
+                title: Self-hosted API
+                description: When self-hosting, configure the url of the instance API (empty when using plausible.io).
+        required:
+            - domain

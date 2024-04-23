@@ -28,3 +28,5 @@ categories:
 configurations:
     space:
         componentId: config
+    site:
+        componentId: config
