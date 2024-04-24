@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-googleanalytics",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "private": true,
     "dependencies": {
         "@gitbook/api": "*",

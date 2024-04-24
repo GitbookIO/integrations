@@ -1,5 +1,11 @@
 # @gitbook/integration-posthog
 
+## 0.0.7
+
+### Patch Changes
+
+-   6c303a0: Add site configuration object in manifest for integration that can be installed on sites
+
 ## 0.0.6
 
 ### Patch Changes

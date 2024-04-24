@@ -1,5 +1,11 @@
 # @gitbook/integration-mixpanel
 
+## 0.0.4
+
+### Patch Changes
+
+-   6c303a0: Add site configuration object in manifest for integration that can be installed on sites
+
 ## 0.0.3
 
 ### Patch Changes

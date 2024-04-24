@@ -1,5 +1,11 @@
 # @gitbook/integration-va-azure
 
+## 0.0.6
+
+### Patch Changes
+
+-   6c303a0: Add site configuration object in manifest for integration that can be installed on sites
+
 ## 0.0.5
 
 ### Patch Changes
