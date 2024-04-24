@@ -35,3 +35,11 @@ configurations:
                 description: Available in Mixpanel's Project Settings section
         required:
             - project_token
+    site:
+        properties:
+            project_token:
+                type: string
+                title: Project Token
+                description: Available in Mixpanel's Project Settings section
+        required:
+            - project_token

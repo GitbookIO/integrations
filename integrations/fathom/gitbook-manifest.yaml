@@ -44,3 +44,11 @@ configurations:
                 description: Look for this in your Fathom analytics account
         required:
             - site_id
+    site:
+        properties:
+            site_id:
+                type: string
+                title: Site ID
+                description: Look for this in your Fathom analytics account
+        required:
+            - site_id

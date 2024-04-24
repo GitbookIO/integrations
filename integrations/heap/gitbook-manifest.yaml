@@ -48,3 +48,11 @@ configurations:
                 description: Available in Heap's Web installation flow `heap.load("YOUR_ID_IS_HERE")`
         required:
             - tracking_id
+    site:
+        properties:
+            tracking_id:
+                type: string
+                title: Tracking ID
+                description: Available in Heap's Web installation flow `heap.load("YOUR_ID_IS_HERE")`
+        required:
+            - tracking_id
