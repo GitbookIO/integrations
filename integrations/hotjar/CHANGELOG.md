@@ -1,5 +1,11 @@
 # @gitbook/integration-hotjar
 
+## 0.1.4
+
+### Patch Changes
+
+-   6c303a0: Add site configuration object in manifest for integration that can be installed on sites
+
 ## 0.1.3
 
 ### Patch Changes
