@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.45.0
+
+### Minor Changes
+
+-   94067cb: Bump GitBook API.
+
 ## 0.44.0
 
 ### Minor Changes
