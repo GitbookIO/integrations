@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.46.0
+
+### Minor Changes
+
+-   38fc6b2: Updated getEmbedByUrlInSpace endpoint to include the integration name.
+
 ## 0.45.0
 
 ### Minor Changes
