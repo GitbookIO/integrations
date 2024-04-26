@@ -68,24 +68,24 @@ export async function triggerImport(
 
     logger.info(`Initiating an import from GitHub to GitBook space ${spaceInstallation.space}`);
 
-    const repoURL = getRepositoryUrl(config, true);
     const auth = await getRepositoryAuth(context, config);
+    const repoTreeURL = getGitTreeURL(config);
 
-    const urlWithAuth = new URL(repoURL);
+    const urlWithAuth = new URL(getRepositoryUrl(config, true));
     urlWithAuth.username = auth.username;
     urlWithAuth.password = auth.password;
 
     await api.spaces.importGitRepository(spaceInstallation.space, {
         url: urlWithAuth.toString(),
         ref: standalone?.ref || config.branch,
-        repoTreeURL: getGitTreeURL(config),
+        repoTreeURL,
         repoCommitURL: getGitCommitURL(config),
         repoProjectDirectory: config.projectDirectory,
         repoCacheID: config.key,
         force,
         timestamp: eventTimestamp && !force ? eventTimestamp.toISOString() : undefined,
         standalone: !!standalone,
-        ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoURL } } : {}),
+        ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoTreeURL } } : {}),
     });
 }
 
@@ -127,24 +127,24 @@ export async function triggerExport(
 
     const { data: revision } = await api.spaces.getCurrentRevision(spaceInstallation.space);
 
-    const repoURL = getRepositoryUrl(config, true);
     const auth = await getRepositoryAuth(context, config);
+    const repoTreeURL = getGitTreeURL(config);
 
-    const urlWithAuth = new URL(repoURL);
+    const urlWithAuth = new URL(getRepositoryUrl(config, true));
     urlWithAuth.username = auth.username;
     urlWithAuth.password = auth.password;
 
     await api.spaces.exportToGitRepository(spaceInstallation.space, {
         url: urlWithAuth.toString(),
         ref: config.branch,
-        repoTreeURL: getGitTreeURL(config),
+        repoTreeURL,
         repoCommitURL: getGitCommitURL(config),
         repoProjectDirectory: config.projectDirectory,
         repoCacheID: config.key,
         force,
         timestamp: eventTimestamp && !force ? eventTimestamp.toISOString() : undefined,
         commitMessage: getCommitMessageForRevision(config, revision),
-        ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoURL } } : {}),
+        ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoTreeURL } } : {}),
     });
 }
 
