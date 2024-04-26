@@ -1,5 +1,11 @@
 # @gitbook/integration-gitlab
 
+## 0.1.0
+
+### Minor Changes
+
+-   c07f41e: Fix an issue where GitBook was showing the wrong repository URL in published content.
+
 ## 0.0.15
 
 ### Patch Changes
