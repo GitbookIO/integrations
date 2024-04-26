@@ -4,7 +4,7 @@ import { IntegrationSpaceInstallation } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
 
 import { fetchRepository } from './api';
-import { triggerExport, triggerImport, triggerSync } from './sync';
+import { triggerExport, triggerImport } from './sync';
 import { GithubConfigureState, GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
 import { assertIsDefined, BRANCH_REF_PREFIX, computeConfigQueryKey } from './utils';
 
@@ -84,8 +84,6 @@ export async function saveSpaceConfiguration(
 
     logger.info(`Saved config for space ${spaceInstallation.space}`);
 
-    logger.debug(`Forcing synchronization for space ${spaceInstallation.space}`);
-
     // Force a synchronization
     if (state.priority === 'github') {
         logger.debug(`Forcing import for space ${spaceInstallation.space}`);
@@ -100,11 +98,6 @@ export async function saveSpaceConfiguration(
             updateGitInfo: true,
         });
     }
-
-    await triggerSync(context, updatedSpaceInstallation, {
-        force: true,
-        updateGitInfo: true,
-    });
 }
 
 /**
