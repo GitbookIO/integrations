@@ -1,5 +1,12 @@
 # @gitbook/integration-github
 
+## 0.2.0
+
+### Minor Changes
+
+-   c07f41e: Fix an issue where GitBook was showing the wrong repository URL in published content.
+-   2cd5fe0: Revert an experimental change to use a unified sync operation for GitHub sync.
+
 ## 0.1.1
 
 ### Patch Changes
