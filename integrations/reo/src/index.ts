@@ -20,7 +20,9 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
     { environment }: ReoDotDevRuntimeContext
 ) => {
-    const trackingId = environment.spaceInstallation.configuration.tracking_id;
+    const trackingId =
+        environment.siteInstallation?.configuration?.tracking_id ??
+        environment.spaceInstallation.configuration.tracking_id;
     if (!trackingId) {
         throw new Error(
             `The Reo.Dev tracking ID is missing from the configuration (ID: ${event.spaceId}).`

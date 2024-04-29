@@ -13,6 +13,7 @@ script: ./src/index.ts
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
     - space:script:inject
+    - site:script:inject
 organization: d8f63b60-89ae-11e7-8574-5927d48c4877
 contentSecurityPolicy:
     script-src: static.reo.dev www.ipapi.co;
@@ -33,6 +34,14 @@ categories:
     - analytics
 configurations:
     space:
+        properties:
+            tracking_id:
+                type: string
+                title: Client ID
+                description: Available in Reodotdev's Integration -> Documentation section
+        required:
+            - tracking_id
+    site:
         properties:
             tracking_id:
                 type: string
