@@ -1,14 +1,10 @@
-(function (h, o, t, j, a, r) {
+(function (z, e, n) {
     const trackingID = '<TO_REPLACE>';
-    h.hj =
-        h.hj ||
-        function () {
-            (h.hj.q = h.hj.q || []).push(arguments);
-        };
-    h._hjSettings = { hjid: trackingID, hjsv: 6 };
-    a = o.getElementsByTagName('head')[0];
-    r = o.createElement('script');
-    r.async = 1;
-    r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
-    a.appendChild(r);
-})(window, document, 'WIP', '.js?sv=');
+    z._trackingID = trackingID;
+
+    z = e.getElementsByTagName('head')[0];
+    n = e.createElement('meta');
+    n.name = 'zd-site-verification';
+    n.content = `${z._trackingID}`;
+    z.appendChild(n);
+})(window, document);
