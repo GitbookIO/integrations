@@ -22,7 +22,7 @@ configurations:
         properties:
             site_tag:
                 type: string
-                title: Hotjar Site ID
+                title: Zendesk Site ID
                 description: Site Tag from Zendesk
         required:
             - site_tag
@@ -30,7 +30,7 @@ configurations:
         properties:
             site_tag:
                 type: string
-                title: Hotjar Site ID
+                title: Zendesk Site ID
                 description: Site Tag from Zendesk
         required:
             - site_tag
