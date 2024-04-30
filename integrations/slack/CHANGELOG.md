@@ -1,5 +1,11 @@
 # @gitbook/integration-slack
 
+## 1.2.2
+
+### Patch Changes
+
+-   15511c8: Updates the copy for the Slack Integration
+
 ## 1.2.1
 
 ### Patch Changes
