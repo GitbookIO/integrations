@@ -27,7 +27,7 @@ summary: |
 
     [Head to our documentation to find out more](https://docs.gitbook.com/integrations/integrations-beta/slack)
 
-    Note: The Slack integration’s AI features use GitBook AI, which is only available for users on our Pro or Enterprise plans. If you’re on the Free or Plus plan you’ll need to upgrade to Pro to continue using GitBook AI features in Slack. Visit our [pricing page](https://www.gitbook.com/pricing) to learn more.
+    Slack's AI features require GitBook AI, exclusive to Pro/Enterprise plans. Free/Plus users will need to upgrade to Pro to use this integration. Please visit the [pricing page](https://www.gitbook.com/pricing) to learn more.
 
     # How it works
     **Find information faster:** Getting an answer has never been easier. Just summon our Slackbot and ask a question — GitBook AI will scan your documentation and summarize an answer in seconds.
