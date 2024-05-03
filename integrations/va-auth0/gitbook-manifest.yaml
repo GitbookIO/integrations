@@ -1,4 +1,4 @@
-name: VA-Auth0
+name: va-auth0
 title: Auth0
 icon: ./assets/icon.png
 previewImages:
@@ -9,6 +9,7 @@ script: ./src/index.tsx
 scopes:
     - space:metadata:read
     - space:visitor:auth
+    - site:metadata:read
     - site:visitor:auth
     - space:content:read
 organization: d8f63b60-89ae-11e7-8574-5927d48c4877
