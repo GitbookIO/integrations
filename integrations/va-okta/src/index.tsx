@@ -39,16 +39,6 @@ type OktaProps = {
 
 export type OktaAction = { action: 'save.config' };
 
-const getDomainWithHttps = (url: string): string => {
-    if (url.startsWith('https://')) {
-        return url;
-    } else if (url.startsWith('http://')) {
-        return url.replace('http', 'https');
-    } else {
-        return `https://${url}`;
-    }
-};
-
 const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntimeContext>({
     componentId: 'config',
     initialState: (props) => {
@@ -70,7 +60,7 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                     ...siteOrSpaceInstallation.configuration,
                     client_id: element.state.client_id,
                     client_secret: element.state.client_secret,
-                    okta_domain: getDomainWithHttps(element.state.okta_domain),
+                    okta_domain: element.state.okta_domain,
                 };
                 if ('site' in siteOrSpaceInstallation) {
                     await api.integrations.updateIntegrationSiteInstallation(
