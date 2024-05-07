@@ -1,6 +1,5 @@
 ---
 '@gitbook/integration-va-auth0': patch
-'@gitbook/integration-va-okta': patch
 ---
 
-Add and enforce HTTPS for domains in VA configurations
+Add and enforce HTTPS for domains in VA configuration of Auth0
