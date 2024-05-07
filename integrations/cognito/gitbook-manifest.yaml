@@ -25,7 +25,7 @@ summary: |
 
     Your space is now published with Visitor Authentication using AWS Cognito.
 categories:
-    - other
+    - visitor-auth
 configurations:
     space:
         componentId: config

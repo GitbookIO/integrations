@@ -24,7 +24,7 @@ summary: |
 
     Your space is now published with Visitor Authentication using Okta.
 categories:
-    - other
+    - visitor-auth
 configurations:
     space:
         componentId: config
