@@ -1,6 +1,6 @@
 {
-    "name": "@gitbook/integration-cognito",
-    "version": "0.0.5",
+    "name": "@gitbook/integration-oidc",
+    "version": "0.0.1",
     "private": true,
     "dependencies": {
         "@gitbook/api": "*",
