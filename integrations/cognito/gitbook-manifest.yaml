@@ -10,6 +10,7 @@ script: ./src/index.tsx
 scopes:
     - space:metadata:read
     - space:visitor:auth
+    - site:metadata:read
     - site:visitor:auth
     - space:content:read
 organization: gitbook
@@ -28,4 +29,6 @@ categories:
     - other
 configurations:
     space:
+        componentId: config
+    site:
         componentId: config
