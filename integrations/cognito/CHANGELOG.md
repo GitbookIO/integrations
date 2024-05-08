@@ -1,5 +1,11 @@
 # @gitbook/integration-cognito
 
+## 0.0.4
+
+### Patch Changes
+
+-   15a814a: Add site:metadata:read scope to VA integrations
+
 ## 0.0.3
 
 ### Patch Changes

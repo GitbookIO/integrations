@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.16.0
+
+### Minor Changes
+
+-   6646aac: Update the CLI to accommodate new category
+
 ## 0.15.2
 
 ### Patch Changes

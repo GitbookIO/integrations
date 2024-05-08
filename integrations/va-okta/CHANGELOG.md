@@ -1,5 +1,11 @@
 # @gitbook/integration-va-okta
 
+## 0.0.8
+
+### Patch Changes
+
+-   15a814a: Add site:metadata:read scope to VA integrations
+
 ## 0.0.7
 
 ### Patch Changes
