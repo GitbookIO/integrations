@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-va-auth0",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "private": true,
     "dependencies": {
         "@gitbook/api": "*",

@@ -1,5 +1,11 @@
 # @gitbook/integration-va-okta
 
+## 0.0.9
+
+### Patch Changes
+
+-   6181f25: Move VA integrations to their own category
+
 ## 0.0.8
 
 ### Patch Changes

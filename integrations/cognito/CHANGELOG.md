@@ -1,5 +1,11 @@
 # @gitbook/integration-cognito
 
+## 0.0.5
+
+### Patch Changes
+
+-   6181f25: Move VA integrations to their own category
+
 ## 0.0.4
 
 ### Patch Changes
