@@ -1,5 +1,11 @@
 # @gitbook/integration-va-azure
 
+## 0.0.8
+
+### Patch Changes
+
+-   6181f25: Move VA integrations to their own category
+
 ## 0.0.7
 
 ### Patch Changes
