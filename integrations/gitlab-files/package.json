@@ -6,7 +6,7 @@
         "dotenv": "^16.1.1"
     },
     "devDependencies": {
-        "@gitbook/cli": "^0.15.1",
+        "@gitbook/cli": "^0.16.0",
         "@gitbook/runtime": "*",
         "@gitbook/eslint-config": "*",
         "@gitbook/tsconfig": "*"

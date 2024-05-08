@@ -8,7 +8,7 @@
     },
     "devDependencies": {
         "@gitbook/api": "*",
-        "@gitbook/cli": "^0.15.1",
+        "@gitbook/cli": "^0.16.0",
         "@gitbook/eslint-config": "*",
         "@gitbook/runtime": "*",
         "@gitbook/tsconfig": "*"
