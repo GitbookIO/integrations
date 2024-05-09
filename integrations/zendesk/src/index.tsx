@@ -21,9 +21,15 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     { environment }: ZendeskRuntimeContext
 ) => {
     const trackingId =
+        environment.spaceInstallation?.configuration?.site_tag ??
         environment.siteInstallation?.configuration?.site_tag ??
-        environment.spaceInstallation.configuration.site_tag ??
         'Site_Tag_Missing';
+
+    console.log(
+        'SITE INSTALLATION VARIABLE',
+        environment.siteInstallation?.configuration?.site_tag
+    );
+
     if (!trackingId) {
         throw new Error(
             `The Zendesk site tag is missing from the configuration (ID: ${
