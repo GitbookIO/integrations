@@ -62,6 +62,7 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
             access_token_endpoint:
                 siteOrSpaceInstallation.configuration?.access_token_endpoint?.toString() || '',
             client_secret: siteOrSpaceInstallation.configuration?.client_secret?.toString() || '',
+            scope: siteOrSpaceInstallation.configuration?.scope?.toString() || '',
         };
     },
     action: async (element, action, context) => {
@@ -79,6 +80,7 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                         element.state.authorization_endpoint
                     ),
                     access_token_endpoint: getDomainWithHttps(element.state.access_token_endpoint),
+                    scope: element.state.scope,
                 };
                 if ('site' in siteOrSpaceInstallation) {
                     await api.integrations.updateIntegrationSiteInstallation(

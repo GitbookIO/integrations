@@ -12,7 +12,7 @@ scopes:
     - space:visitor:auth
     # - site:metadata:read
     # - site:visitor:auth
-    # - space:content:read
+    - space:content:read
 organization: gitbook
 summary: |
     # Overview
