@@ -314,10 +314,10 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
 
                     if ('access_token' in resp) {
                         let url;
-                        if (request.query.state) {
-                            url = new URL(
-                                `${publishedContentUrls?.published}${request.query.state}`
-                            );
+                        const state = request.query.state.toString();
+                        const location = state.substring(state.indexOf('-') + 1);
+                        if (location) {
+                            url = new URL(`${publishedContentUrls?.published}${location}`);
                             url.searchParams.append('jwt_token', token);
                         } else {
                             url = new URL(publishedContentUrls?.published);
@@ -395,8 +395,8 @@ export default createIntegration({
         url.searchParams.append('client_id', clientId);
         url.searchParams.append('response_type', 'code');
         url.searchParams.append('redirect_uri', `${installationURL}/visitor-auth/response`);
-        url.searchParams.append('scope', scope);
-        url.searchParams.append('state', location);
+        url.searchParams.append('scope', scope.toLowerCase());
+        url.searchParams.append('state', `state-${location}`);
 
         try {
             return Response.redirect(url.toString());
