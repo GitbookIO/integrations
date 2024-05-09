@@ -1,0 +1,12 @@
+name: koala
+title: koala
+organization: gitbook
+visibility: private
+description: ''
+script: src/index.tsx
+scopes: []
+blocks:
+    - id: koala
+      title: koala
+      description: My GitBook Integration test
+secrets: {}
