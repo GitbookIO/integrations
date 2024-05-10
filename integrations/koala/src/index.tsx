@@ -1,53 +1,42 @@
 import {
     createIntegration,
-    createComponent,
-    FetchEventCallback,
+    FetchPublishScriptEventCallback,
     RuntimeContext,
+    RuntimeEnvironment,
 } from '@gitbook/runtime';
 
-type IntegrationContext = {} & RuntimeContext;
-type IntegrationBlockProps = {};
-type IntegrationBlockState = { message: string };
-type IntegrationAction = { action: 'click' };
+import script from './script.raw.js';
 
-const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request, context) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { api } = context;
-    const user = api.user.getAuthenticatedUser();
+type KoalaRuntimeContext = RuntimeContext<
+    RuntimeEnvironment<
+        {},
+        {
+            koala_key?: string;
+        }
+    >
+>;
 
-    return new Response(JSON.stringify(user));
+export const handleFetchEvent: FetchPublishScriptEventCallback = async (
+    event,
+    { environment }: KoalaRuntimeContext
+) => {
+    const koalaId =
+        environment.spaceInstallation.configuration.koala_key ??
+        environment.siteInstallation?.configuration?.koala_key ??
+        'Koala Key not configured';
+
+    if (!koalaId) {
+        return;
+    }
+
+    return new Response(script.replace('<TO_REPLACE>', koalaId), {
+        headers: {
+            'Content-Type': 'application/javascript',
+            'Cache-Control': 'max-age=604800',
+        },
+    });
 };
 
-const exampleBlock = createComponent<
-    IntegrationBlockProps,
-    IntegrationBlockState,
-    IntegrationAction,
-    IntegrationContext
->({
-    componentId: 'koala',
-    initialState: (props) => {
-        return {
-            message: 'Click Me',
-        };
-    },
-    action: async (element, action, context) => {
-        switch (action.action) {
-            case 'click':
-                console.log('Button Clicked');
-                return {};
-        }
-    },
-    render: async (element, context) => {
-        return (
-            <block>
-                <button label={element.state.message} onPress={{ action: 'click' }} />
-            </block>
-        );
-    },
-});
-
-export default createIntegration({
-    fetch: handleFetchEvent,
-    components: [exampleBlock],
-    events: {},
+export default createIntegration<KoalaRuntimeContext>({
+    fetch_published_script: handleFetchEvent,
 });
