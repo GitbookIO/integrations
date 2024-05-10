@@ -1,12 +1,49 @@
 name: koala
-title: koala
+title: Koala
 organization: gitbook
-visibility: private
-description: ''
+visibility: public
+description: 'Receive GitBook traffic insights directly in your Koala dashboard.'
+summary: |
+    # Overview
+    This integration allows you to add the Koala tracker on your published GitBook site.
+
+    # How it works
+    The integration injects the Koala Analytics script on your page, using the configured Koala key, \nso that you can get analytics information from your GitBook site.
+
+    # Configure
+    Install the integration on the GitBook space of your choice.
+
+    Locate the Koala key you want to use, which is available in the Koala snippet <pk_xxxxxxxxxxxxxxxxxxx>
+externalLinks:
+    - label: Website
+      url: https://getkoala.com/
+categories:
+    - analytics
 script: src/index.tsx
-scopes: []
+scopes:
+    - space:script:inject
+    - site:script:inject
 blocks:
     - id: koala
       title: koala
       description: My GitBook Integration test
 secrets: {}
+contentSecurityPolicy:
+    script-src: cdn.getkoala.com
+configurations:
+    space:
+        properties:
+            koala_key:
+                type: string
+                title: Koala Key
+                description: Available in Koala snippet https://cdn.getkoala.com/v1/<pk_xxxxxxxxxxxxxxxxxxx>/sdk.js
+        required:
+            - koala_key
+    site:
+        properties:
+            koala_key:
+                type: string
+                title: Koala Key
+                description: Available in Koala snippet https://cdn.getkoala.com/v1/<pk_xxxxxxxxxxxxxxxxxxx>/sdk.js
+        required:
+            - koala_key
