@@ -29,7 +29,9 @@ blocks:
       description: My GitBook Integration test
 secrets: {}
 contentSecurityPolicy:
-    script-src: cdn.getkoala.com
+    script-src:
+        - cdn.getkoala.com
+        - https://*.getkoala.com
 configurations:
     space:
         properties:
