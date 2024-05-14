@@ -45,7 +45,7 @@ const getDomainWithHttps = (url: string): string => {
     if (url.startsWith('https://')) {
         return url;
     } else if (url.startsWith('http://')) {
-        return url.replace('http', 'https');
+        return url.replace('http://', 'https://');
     } else {
         return `https://${url}`;
     }
