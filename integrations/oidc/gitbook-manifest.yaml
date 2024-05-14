@@ -1,8 +1,8 @@
 name: oidc
 title: OIDC
-#icon: ./assets/icon.png
-#previewImages:
-#    - ./assets/preview.png
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/preview.png
 description: Control who has access to your published documentation with your authentication provider
 
 visibility: private
@@ -10,8 +10,8 @@ script: ./src/index.tsx
 scopes:
     - space:metadata:read
     - space:visitor:auth
-    # - site:metadata:read
-    # - site:visitor:auth
+    - site:metadata:read
+    - site:visitor:auth
     - space:content:read
 organization: gitbook
 summary: |
