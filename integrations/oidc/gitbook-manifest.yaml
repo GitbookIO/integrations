@@ -1,0 +1,34 @@
+name: oidc
+title: OIDC
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/preview.png
+description: Control who has access to your published documentation with your authentication provider
+
+visibility: private
+script: ./src/index.tsx
+scopes:
+    - space:metadata:read
+    - space:visitor:auth
+    - site:metadata:read
+    - site:visitor:auth
+    - space:content:read
+organization: gitbook
+summary: |
+    # Overview
+    Visitor Authentication allows you to publish content behind an authentication wall, so your content is only accessible to people you choose.
+
+    This integration lets you control access to your published content as determined by your OIDC compliant authentication provider.
+
+    # Configure
+    Install this integration on a space and then populate the configuration screen with the details of your OIDC application and OIDC account.
+    You can then open the Share menu, publish the space with Visitor Authentication, choose this integration as the authentication backend, and hit Save.
+
+    Your space is now published with Visitor Authentication using OIDC.
+categories:
+    - visitor-auth
+configurations:
+    space:
+        componentId: config
+    site:
+        componentId: config
