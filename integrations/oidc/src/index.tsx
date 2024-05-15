@@ -42,12 +42,13 @@ type OIDCProps = {
 export type OIDCAction = { action: 'save.config' };
 
 const getDomainWithHttps = (url: string): string => {
-    if (url.startsWith('https://')) {
-        return url;
-    } else if (url.startsWith('http://')) {
-        return url.replace('http://', 'https://');
+    const sanitizedURL = url.trim().toLowerCase();
+    if (sanitizedURL.startsWith('https://')) {
+        return sanitizedURL;
+    } else if (sanitizedURL.startsWith('http://')) {
+        return sanitizedURL.replace('http://', 'https://');
     } else {
-        return `https://${url}`;
+        return `https://${sanitizedURL}`;
     }
 };
 
@@ -121,7 +122,7 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                             The unique identifier of your OIDC app client.
                             <link
                                 target={{
-                                    url: 'https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html#cognito-user-pools-app-idp-settings-console-create',
+                                    url: 'https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest',
                                 }}
                             >
                                 {' '}
@@ -139,7 +140,7 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                             The Authorization Endpoint of your Authentication provider.
                             <link
                                 target={{
-                                    url: 'https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain.html',
+                                    url: 'https://openid.net/specs/openid-connect-core-1_0.html#AuthorizationEndpoint',
                                 }}
                             >
                                 {' '}
@@ -162,7 +163,7 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                             The Access Token endpoint of your authentication provider.
                             <link
                                 target={{
-                                    url: 'https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain.html',
+                                    url: 'https://openid.net/specs/openid-connect-core-1_0.html#TokenEndpoint',
                                 }}
                             >
                                 {' '}
@@ -185,7 +186,7 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                             The secret used for signing and validating tokens.
                             <link
                                 target={{
-                                    url: 'https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html#cognito-user-pools-app-idp-settings-console-create',
+                                    url: 'https://cloudentity.com/developers/basics/oauth-client-authentication/client-secret-authentication/',
                                 }}
                             >
                                 {' '}
@@ -203,7 +204,7 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                             The scope to be granted to the access token. Enter oidc if not sure
                             <link
                                 target={{
-                                    url: 'https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html#cognito-user-pools-app-idp-settings-console-create',
+                                    url: 'https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest',
                                 }}
                             >
                                 {' '}
