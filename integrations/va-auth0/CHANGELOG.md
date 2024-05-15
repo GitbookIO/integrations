@@ -1,5 +1,11 @@
 # @gitbook/integration-va-auth0
 
+## 0.0.9
+
+### Patch Changes
+
+-   5dabe91: Add and enforce HTTPS for domains in VA configuration of Auth0
+
 ## 0.0.8
 
 ### Patch Changes
