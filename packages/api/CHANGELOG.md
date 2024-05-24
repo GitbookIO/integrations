@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.47.0
+
+### Minor Changes
+
+-   73b6d7b: Bump @gitbook/api to use the latest OpenAPI spec
+
 ## 0.46.0
 
 ### Minor Changes
