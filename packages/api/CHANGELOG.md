@@ -1,5 +1,12 @@
 # @gitbook/api
 
+## 0.49.0
+
+### Minor Changes
+
+-   faa1893: Bump @gitbook/api to use the latest OpenAPI spec
+-   dd212a5: Bump @gitbook/api to use the latest spec
+
 ## 0.48.0
 
 ### Minor Changes
