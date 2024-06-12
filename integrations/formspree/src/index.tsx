@@ -25,6 +25,9 @@ const formspreeBlock = createComponent({
         email: '',
         name: '',
         message: '',
+        emailVisible: true,
+        nameVisible: false,
+        messageVisible: false,
         formSubmitted: false,
     },
     action: async (element, action: FormspreeAction, context: FormspreeContext) => {
@@ -38,16 +41,49 @@ const formspreeBlock = createComponent({
                 return {
                     state: {
                         formSubmitted: true,
+                        ...element.state,
                     },
                 };
+            case 'toggleEmail': {
+                return { state: { emailVisible: !element.state.emailVisible, ...element.state } };
+            }
+            case 'toggleName': {
+                return { state: { nameVisible: !element.state.nameVisible, ...element.state } };
+            }
+            case 'toggleMessage': {
+                return {
+                    state: { messageVisible: !element.state.messageVisible, ...element.state },
+                };
+            }
         }
     },
     render: async (element, context: FormspreeContext) => {
         return (
-            <block>
+            <block
+                controls={[
+                    {
+                        label: 'Toggle Email',
+                        onPress: {
+                            action: 'toggleEmail',
+                        },
+                    },
+                    {
+                        label: 'Toggle Name',
+                        onPress: {
+                            action: 'toggleName',
+                        },
+                    },
+                    {
+                        label: 'Toggle Messsage',
+                        onPress: {
+                            action: 'toggleMessage',
+                        },
+                    },
+                ]}
+            >
                 <hstack>
                     {/* Email */}
-                    {context.environment.spaceInstallation?.configuration.email ? (
+                    {element.state.emailVisible ? (
                         <box grow={1}>
                             <input
                                 label="Email"
@@ -57,7 +93,7 @@ const formspreeBlock = createComponent({
                     ) : null}
 
                     {/* Name */}
-                    {context.environment.spaceInstallation?.configuration.name ? (
+                    {element.state.nameVisible ? (
                         <box grow={1}>
                             <input
                                 label="Name"
@@ -69,7 +105,7 @@ const formspreeBlock = createComponent({
 
                 <vstack>
                     {/* Message */}
-                    {context.environment.spaceInstallation?.configuration.message ? (
+                    {element.state.messageVisible ? (
                         <box grow={2}>
                             <input
                                 label="Message"
