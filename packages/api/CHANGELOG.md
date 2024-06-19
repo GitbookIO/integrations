@@ -1,5 +1,108 @@
 # @gitbook/api
 
+## 0.51.0
+
+### Minor Changes
+
+-   88c532b: Bump @gitbook/api to use the latest OpenAPI spec
+
+## 0.50.0
+
+### Minor Changes
+
+-   5551561: Bump @gitbook/api to use latest API spec
+
+## 0.49.0
+
+### Minor Changes
+
+-   faa1893: Bump @gitbook/api to use the latest OpenAPI spec
+-   dd212a5: Bump @gitbook/api to use the latest spec
+
+## 0.48.0
+
+### Minor Changes
+
+-   874462c: Bump @gitbook/api to use the latest OpenAPI spec
+
+## 0.47.0
+
+### Minor Changes
+
+-   73b6d7b: Bump @gitbook/api to use the latest OpenAPI spec
+
+## 0.46.0
+
+### Minor Changes
+
+-   38fc6b2: Updated getEmbedByUrlInSpace endpoint to include the integration name.
+
+## 0.45.0
+
+### Minor Changes
+
+-   94067cb: Bump GitBook API.
+
+## 0.44.0
+
+### Minor Changes
+
+-   65c7dc7: Bumping API and CLI package to use latest specs
+
+## 0.43.0
+
+### Minor Changes
+
+-   6a01ef0: Bump API client to use the latest OpenAPI spec
+
+## 0.42.0
+
+### Minor Changes
+
+-   ddf1538: Bump API client to use the latest OpenAPI spec
+
+## 0.41.0
+
+### Minor Changes
+
+-   a568d01: Bump API client to use the latest OpenAPI spec
+
+## 0.40.0
+
+### Minor Changes
+
+-   0eff9e8: Bump API client to use the latest OpenAPI spec
+
+## 0.39.0
+
+### Minor Changes
+
+-   8a6c869: Bump the version of the GitBook API
+
+## 0.38.0
+
+### Minor Changes
+
+-   ca87848: Update the API client with the latest OpenAPI specification
+
+## 0.37.0
+
+### Minor Changes
+
+-   2fe33b4: Update the API client with the latest OpenAPI specification
+
+## 0.36.0
+
+### Minor Changes
+
+-   2cddf6a: Update API client with latest OpenAPI spec
+
+## 0.35.0
+
+### Minor Changes
+
+-   a04e370: Add synced block endpoints
+
 ## 0.34.0
 
 ### Minor Changes

@@ -9,6 +9,8 @@ script: ./src/index.tsx
 scopes:
     - space:metadata:read
     - space:visitor:auth
+    - site:metadata:read
+    - site:visitor:auth
     - space:content:read
 organization: d8f63b60-89ae-11e7-8574-5927d48c4877
 summary: |
@@ -24,7 +26,9 @@ summary: |
     Your space is now published with Visitor Authentication using Auth0.
 
 categories:
-    - other
+    - visitor-auth
 configurations:
     space:
+        componentId: config
+    site:
         componentId: config

@@ -1,5 +1,19 @@
 # @gitbook/cli
 
+## 0.16.0
+
+### Minor Changes
+
+-   6646aac: Update the CLI to accommodate new category
+
+## 0.15.2
+
+### Patch Changes
+
+-   65c7dc7: Bumping API and CLI package to use latest specs
+-   Updated dependencies [65c7dc7]
+    -   @gitbook/api@0.44.0
+
 ## 0.15.1
 
 ### Patch Changes

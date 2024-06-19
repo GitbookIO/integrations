@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-slack",
-    "version": "1.2.1",
+    "version": "1.2.3",
     "private": true,
     "dependencies": {
         "@gitbook/runtime": "*",

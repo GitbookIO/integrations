@@ -13,66 +13,97 @@ import {
 
 const logger = Logger('auth0.visitor-auth');
 
-type Auth0RuntimeEnvironment = RuntimeEnvironment<{}, Auth0SpaceInstallationConfiguration>;
+type Auth0RuntimeEnvironment = RuntimeEnvironment<{}, Auth0SiteOrSpaceInstallationConfiguration>;
 
 type Auth0RuntimeContext = RuntimeContext<Auth0RuntimeEnvironment>;
 
-type Auth0SpaceInstallationConfiguration = {
+type Auth0SiteOrSpaceInstallationConfiguration = {
     client_id?: string;
     issuer_base_url?: string;
     client_secret?: string;
 };
 
-type Auth0State = Auth0SpaceInstallationConfiguration;
+type Auth0State = Auth0SiteOrSpaceInstallationConfiguration;
 
 type Auth0Props = {
     installation: {
         configuration?: IntegrationInstallationConfiguration;
     };
-    spaceInstallation: {
-        configuration?: Auth0SpaceInstallationConfiguration;
+    spaceInstallation?: {
+        configuration?: Auth0SiteOrSpaceInstallationConfiguration;
+    };
+    siteInstallation?: {
+        configuration?: Auth0SiteOrSpaceInstallationConfiguration;
     };
 };
 
 export type Auth0Action = { action: 'save.config' };
 
+const getDomainWithHttps = (url: string): string => {
+    if (url.startsWith('https://')) {
+        return url;
+    } else if (url.startsWith('http://')) {
+        return url.replace('http', 'https');
+    } else {
+        return `https://${url}`;
+    }
+};
+
 const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0RuntimeContext>({
     componentId: 'config',
     initialState: (props) => {
+        const siteOrSpaceInstallation = props.siteInstallation ?? props.spaceInstallation;
         return {
-            client_id: props.spaceInstallation.configuration?.client_id?.toString() || '',
+            client_id: siteOrSpaceInstallation?.configuration?.client_id?.toString() || '',
             issuer_base_url:
-                props.spaceInstallation.configuration?.issuer_base_url?.toString() || '',
-            client_secret: props.spaceInstallation.configuration?.client_secret?.toString() || '',
+                siteOrSpaceInstallation?.configuration?.issuer_base_url?.toString() || '',
+            client_secret: siteOrSpaceInstallation?.configuration?.client_secret?.toString() || '',
         };
     },
     action: async (element, action, context) => {
         switch (action.action) {
             case 'save.config':
                 const { api, environment } = context;
-                const spaceInstallation = environment.spaceInstallation;
+                const siteOrSpaceInstallation =
+                    environment.siteInstallation ?? environment.spaceInstallation;
 
                 const configurationBody = {
-                    ...spaceInstallation.configuration,
+                    ...siteOrSpaceInstallation.configuration,
                     client_id: element.state.client_id,
                     client_secret: element.state.client_secret,
-                    issuer_base_url: element.state.issuer_base_url,
+                    issuer_base_url: getDomainWithHttps(element.state.issuer_base_url),
                 };
-                await api.integrations.updateIntegrationSpaceInstallation(
-                    spaceInstallation.integration,
-                    spaceInstallation.installation,
-                    spaceInstallation.space,
-                    {
-                        configuration: {
-                            ...configurationBody,
-                        },
-                    }
-                );
+
+                if ('site' in siteOrSpaceInstallation) {
+                    await api.integrations.updateIntegrationSiteInstallation(
+                        siteOrSpaceInstallation.integration,
+                        siteOrSpaceInstallation.installation,
+                        siteOrSpaceInstallation.site,
+                        {
+                            configuration: {
+                                ...configurationBody,
+                            },
+                        }
+                    );
+                } else {
+                    await api.integrations.updateIntegrationSpaceInstallation(
+                        siteOrSpaceInstallation.integration,
+                        siteOrSpaceInstallation.installation,
+                        siteOrSpaceInstallation.space,
+                        {
+                            configuration: {
+                                ...configurationBody,
+                            },
+                        }
+                    );
+                }
                 return element;
         }
     },
     render: async (element, context) => {
-        const VACallbackURL = `${context.environment.spaceInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
+        const siteOrSpaceInstallation =
+            context.environment.siteInstallation ?? context.environment.spaceInstallation;
+        const VACallbackURL = `${siteOrSpaceInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
         return (
             <block>
                 <input
@@ -155,21 +186,39 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
     },
 });
 
+/**
+ * Get the published content (site or space) related urls.
+ */
+async function getPublishedContentUrls(context: Auth0RuntimeContext) {
+    const organizationId = context.environment.installation?.target?.organization;
+    const siteOrSpaceInstallation =
+        context.environment.siteInstallation ?? context.environment.spaceInstallation;
+    const publishedContentData =
+        'site' in siteOrSpaceInstallation
+            ? await context.api.orgs.getSiteById(organizationId, siteOrSpaceInstallation.site)
+            : await context.api.spaces.getSpaceById(siteOrSpaceInstallation.space);
+
+    return publishedContentData.data.urls;
+}
+
 const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request, context) => {
     const { environment } = context;
-    const installationURL = environment.spaceInstallation?.urls?.publicEndpoint;
+    const siteOrSpaceInstallation = environment.siteInstallation ?? environment.spaceInstallation;
+    const installationURL = siteOrSpaceInstallation?.urls?.publicEndpoint;
     if (installationURL) {
         const router = Router({
             base: new URL(installationURL).pathname,
         });
 
         router.get('/visitor-auth/response', async (request) => {
-            if (context.environment.spaceInstallation?.space) {
-                const space = await context.api.spaces.getSpaceById(
-                    context.environment.spaceInstallation?.space
-                );
-                const spaceData = space.data;
-                const privateKey = context.environment.signingSecrets.spaceInstallation;
+            if (
+                ('site' in siteOrSpaceInstallation && siteOrSpaceInstallation.site) ||
+                ('space' in siteOrSpaceInstallation && siteOrSpaceInstallation.space)
+            ) {
+                const publishedContentUrls = await getPublishedContentUrls(context);
+                const privateKey =
+                    context.environment.signingSecrets.siteInstallation ??
+                    context.environment.signingSecrets.spaceInstallation;
                 let token;
                 try {
                     token = await sign(
@@ -182,9 +231,9 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                     });
                 }
 
-                const issuerBaseUrl = environment.spaceInstallation?.configuration.issuer_base_url;
-                const clientId = environment.spaceInstallation?.configuration.client_id;
-                const clientSecret = environment.spaceInstallation?.configuration.client_secret;
+                const issuerBaseUrl = siteOrSpaceInstallation?.configuration.issuer_base_url;
+                const clientId = siteOrSpaceInstallation?.configuration.client_id;
+                const clientSecret = siteOrSpaceInstallation?.configuration.client_secret;
                 if (clientId && clientSecret) {
                     const searchParams = new URLSearchParams({
                         grant_type: 'authorization_code',
@@ -209,13 +258,15 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                     if ('access_token' in resp) {
                         let url;
                         if (request.query.state) {
-                            url = new URL(`${spaceData.urls?.published}${request.query.state}`);
+                            url = new URL(
+                                `${publishedContentUrls?.published}${request.query.state}`
+                            );
                             url.searchParams.append('jwt_token', token);
                         } else {
-                            url = new URL(spaceData.urls?.published);
+                            url = new URL(publishedContentUrls?.published);
                             url.searchParams.append('jwt_token', token);
                         }
-                        if (spaceData.urls?.published && token) {
+                        if (publishedContentUrls?.published && token) {
                             return Response.redirect(url.toString());
                         } else {
                             return new Response(
@@ -226,6 +277,7 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                             );
                         }
                     } else {
+                        logger.debug(JSON.stringify(resp, null, 2));
                         logger.debug(
                             `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
                                 (resp && resp.error_description) || ''
@@ -268,9 +320,11 @@ export default createIntegration({
     components: [configBlock],
     fetch_visitor_authentication: async (event, context) => {
         const { environment } = context;
-        const installationURL = environment.spaceInstallation?.urls?.publicEndpoint;
-        const issuerBaseUrl = environment.spaceInstallation?.configuration.issuer_base_url;
-        const clientId = environment.spaceInstallation?.configuration.client_id;
+        const siteOrSpaceInstallation =
+            environment.siteInstallation ?? environment.spaceInstallation;
+        const installationURL = siteOrSpaceInstallation?.urls?.publicEndpoint;
+        const issuerBaseUrl = siteOrSpaceInstallation?.configuration.issuer_base_url;
+        const clientId = siteOrSpaceInstallation?.configuration.client_id;
         const location = event.location ? event.location : '';
 
         const url = new URL(`${issuerBaseUrl}/authorize`);

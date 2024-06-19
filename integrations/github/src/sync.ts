@@ -19,7 +19,6 @@ import {
     getGitSyncCommitMessage,
     getGitSyncStateDescription,
     getSpaceConfigOrThrow,
-    GITSYNC_DEFAULT_COMMIT_MESSAGE,
 } from './utils';
 
 const logger = Logger('github:sync');
@@ -68,24 +67,24 @@ export async function triggerImport(
 
     logger.info(`Initiating an import from GitHub to GitBook space ${spaceInstallation.space}`);
 
-    const repoURL = getRepositoryUrl(config, true);
     const auth = await getRepositoryAuth(context, config);
+    const repoTreeURL = getGitTreeURL(config);
 
-    const urlWithAuth = new URL(repoURL);
+    const urlWithAuth = new URL(getRepositoryUrl(config, true));
     urlWithAuth.username = auth.username;
     urlWithAuth.password = auth.password;
 
     await api.spaces.importGitRepository(spaceInstallation.space, {
         url: urlWithAuth.toString(),
         ref: standalone?.ref || config.branch,
-        repoTreeURL: getGitTreeURL(config),
+        repoTreeURL,
         repoCommitURL: getGitCommitURL(config),
         repoProjectDirectory: config.projectDirectory,
         repoCacheID: config.key,
         force,
         timestamp: eventTimestamp && !force ? eventTimestamp.toISOString() : undefined,
         standalone: !!standalone,
-        ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoURL } } : {}),
+        ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoTreeURL } } : {}),
     });
 }
 
@@ -127,88 +126,24 @@ export async function triggerExport(
 
     const { data: revision } = await api.spaces.getCurrentRevision(spaceInstallation.space);
 
-    const repoURL = getRepositoryUrl(config, true);
     const auth = await getRepositoryAuth(context, config);
+    const repoTreeURL = getGitTreeURL(config);
 
-    const urlWithAuth = new URL(repoURL);
+    const urlWithAuth = new URL(getRepositoryUrl(config, true));
     urlWithAuth.username = auth.username;
     urlWithAuth.password = auth.password;
 
     await api.spaces.exportToGitRepository(spaceInstallation.space, {
         url: urlWithAuth.toString(),
         ref: config.branch,
-        repoTreeURL: getGitTreeURL(config),
+        repoTreeURL,
         repoCommitURL: getGitCommitURL(config),
         repoProjectDirectory: config.projectDirectory,
         repoCacheID: config.key,
         force,
         timestamp: eventTimestamp && !force ? eventTimestamp.toISOString() : undefined,
         commitMessage: getCommitMessageForRevision(config, revision),
-        ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoURL } } : {}),
-    });
-}
-
-/**
- * Trigger a synchronization for space
- */
-export async function triggerSync(
-    context: GithubRuntimeContext,
-    spaceInstallation: IntegrationSpaceInstallation,
-    options: {
-        /**
-         * To import from the provider a standalone content.
-         * Main space content will not be updated.
-         */
-        standalone?: {
-            ref: string;
-        };
-        /** Force the synchronization even if content has already been exported */
-        force?: boolean;
-
-        /** Whether the git info should be updated on the space */
-        updateGitInfo?: boolean;
-
-        /**
-         * The timestamp of the event that triggers the export.
-         *
-         * This is to help ensures that Git sync import and export operations are executed
-         * in the same order on GitBook and on the remote repository.
-         */
-        eventTimestamp?: Date;
-    } = {}
-) {
-    const { api } = context;
-    const { standalone, force = false, updateGitInfo = false, eventTimestamp } = options;
-
-    const config = getSpaceConfigOrThrow(spaceInstallation);
-
-    if (!config.key) {
-        logger.info(`No configuration found for space ${spaceInstallation.space}, skipping`);
-        return;
-    }
-
-    assertIsDefined(config.branch, { label: 'config.branch' });
-
-    logger.info(`Initiating a synchronization for space ${spaceInstallation.space}`);
-
-    const repoURL = getRepositoryUrl(config, true);
-    const auth = await getRepositoryAuth(context, config);
-
-    const urlWithAuth = new URL(repoURL);
-    urlWithAuth.username = auth.username;
-    urlWithAuth.password = auth.password;
-
-    await api.spaces.syncGitRepository(spaceInstallation.space, {
-        ref: standalone?.ref || config.branch,
-        repoURL: urlWithAuth.toString(),
-        repoTreeURL: getGitTreeURL(config),
-        repoCommitURL: getGitCommitURL(config),
-        repoProjectDirectory: config.projectDirectory,
-        commitMessageTemplate: config.commitMessageTemplate || GITSYNC_DEFAULT_COMMIT_MESSAGE,
-        timestamp: eventTimestamp && !force ? eventTimestamp.toISOString() : undefined,
-        standalone: !!standalone,
-        ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoURL } } : {}),
-        ...(force ? { force: { priority: config.priority === 'github' ? 'git' : 'gitbook' } } : {}),
+        ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoTreeURL } } : {}),
     });
 }
 

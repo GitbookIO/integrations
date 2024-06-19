@@ -2,13 +2,16 @@ import { GitBookAPI, IntegrationEnvironment } from '@gitbook/api';
 
 export interface RuntimeEnvironment<
     InstallationConfiguration = {},
-    SpaceInstallationConfiguration = {}
+    SpaceOrSiteInstallationConfiguration = {}
 > extends IntegrationEnvironment {
     installation?: IntegrationEnvironment['installation'] & {
         configuration: InstallationConfiguration;
     };
     spaceInstallation?: IntegrationEnvironment['spaceInstallation'] & {
-        configuration: SpaceInstallationConfiguration;
+        configuration: SpaceOrSiteInstallationConfiguration;
+    };
+    siteInstallation?: IntegrationEnvironment['siteInstallation'] & {
+        configuration: SpaceOrSiteInstallationConfiguration;
     };
 }
 

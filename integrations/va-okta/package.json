@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-va-okta",
-    "version": "0.0.4",
+    "version": "0.0.9",
     "private": true,
     "dependencies": {
         "@gitbook/api": "*",
