@@ -1,5 +1,5 @@
 {
-    "name": "koala",
+    "name": "@gitbook/integration-koala",
     "private": true,
     "scripts": {
         "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
