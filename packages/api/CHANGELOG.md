@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.52.0
+
+### Minor Changes
+
+-   35b8bf0: Add in source details when there is no AI answer
+
 ## 0.51.0
 
 ### Minor Changes
