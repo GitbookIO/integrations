@@ -1,0 +1,31 @@
+name: helpscout
+title: HelpScout
+organization: gitbook
+visibility: public
+description: ''
+script: src/index.tsx
+scopes: []
+blocks:
+    - id: helpscout
+      title: HelpScout
+      description: My GitBook Integration
+secrets: {}
+contentSecurityPolicy:
+    script-src: https://beacon-v2.helpscout.net;
+configurations:
+    space:
+        properties:
+            helpscout_id:
+                type: string
+                title: Koala Key
+                description: Your HelpScout integration ID.
+        required:
+            - helpscout_id
+    site:
+        properties:
+            helpscout_id:
+                type: string
+                title: Koala Key
+                description: Your HelpScout integration ID.
+        required:
+            - helpscout_id
