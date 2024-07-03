@@ -20,16 +20,16 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
     { environment }: HelpScoutRuntimeContext
 ) => {
-    const koalaId =
+    const helpscoutID =
         environment.spaceInstallation.configuration.helpscout_id ??
         environment.siteInstallation?.configuration?.helpscout_id ??
-        'Koala Key not configured';
+        'HelpScout ID not configured';
 
-    if (!koalaId) {
+    if (!helpscoutID) {
         return;
     }
 
-    return new Response(script.replace('<TO_REPLACE>', koalaId), {
+    return new Response(script.replace('<TO_REPLACE>', helpscoutID), {
         headers: {
             'Content-Type': 'application/javascript',
             'Cache-Control': 'max-age=604800',
