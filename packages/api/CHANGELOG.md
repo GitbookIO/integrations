@@ -1,5 +1,17 @@
 # @gitbook/api
 
+## 0.53.0
+
+### Minor Changes
+
+-   59ea476: Bump @gitbook/api to use the latest OpenAPI spec
+
+## 0.52.0
+
+### Minor Changes
+
+-   35b8bf0: Add in source details when there is no AI answer
+
 ## 0.51.0
 
 ### Minor Changes
