@@ -1,12 +1,12 @@
 name: reodotdev
-title: Reodotdev
+title: Reo.dev
 icon: ./assets/icon.png
 previewImages:
     - ./assets/preview.png
 description: Plug your GitBook site to your Reo.dev installation.
 externalLinks:
-    - label: Documentation
-      url: https://www.gitbook.com/integrations/reodotdev
+    - label: Website
+      url: https://www.reo.dev/
 visibility: public
 script: ./src/index.ts
 # The following scope(s) are available only to GitBook Staff
@@ -23,12 +23,12 @@ summary: |
     This integration lets you add the Reo.Dev Javascript on your published GitBook site to seamlessly analyze developer intent through any interactions with your content on GitBook.
 
     # How it works
-    The integration injects the Reodotdev script on your page, using the configured client ID, 
+    The integration injects the Reo.dev script on your page, using the configured client ID, 
     so that you can get analytics information from your GitBook site directly inside of Reo.
 
     # Configure
     Install the integration on the GitBook space of your choice.
-    Locate the Reodotdev's client ID you want to use, which is available in Reodotdev's Integration -> Documentation section
+    Locate the Reo.dev's client ID you want to use, which is available in Reo.dev's Integration -> Documentation section
 
 categories:
     - analytics
@@ -38,7 +38,7 @@ configurations:
             tracking_id:
                 type: string
                 title: Client ID
-                description: Available in Reodotdev's Integration -> Documentation section
+                description: Available in Reo.dev's Integration -> Documentation section
         required:
             - tracking_id
     site:
@@ -46,6 +46,6 @@ configurations:
             tracking_id:
                 type: string
                 title: Client ID
-                description: Available in Reodotdev's Integration -> Documentation section
+                description: Available in Reo.dev's Integration -> Documentation section
         required:
             - tracking_id
