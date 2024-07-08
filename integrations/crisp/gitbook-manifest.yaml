@@ -1,0 +1,55 @@
+name: crisp
+title: Crisp
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/crisp-preview.png
+description: Add the Crisp chat widget to your published GitBook content.
+externalLinks:
+    - label: Website
+      url: https://crisp.chat/en/
+visibility: public
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - space:script:inject
+    - site:script:inject
+organization: gitbook
+contentSecurityPolicy:
+    script-src: |
+        client.crisp.chat;
+    style-src: |
+        client.crisp.chat;
+        https://client.crisp.chat
+summary: |
+    # Overview
+
+    The Crisp integration for GitBook allows you to display the Crisp chat widget on your public documentation to connect and interact with your readers.
+
+    # How it works
+
+    Automatic chat widget on your documentation: Each of your connected GitBook spaces will fetch the Crisp chat widget script and inject it in your published content.
+
+    # Configure
+
+    You can configure the integration on single or multiple public spaces by navigating to the integrations in sub-navigation or org settings. You will then have to provide Crisp website ID to finish the configuration. This can be found in the URL from your Crisp dashboard.
+
+categories:
+    - analytics
+configurations:
+    space:
+        properties:
+            tracking_id:
+                type: string
+                title: Crisp Site ID
+                description: Available in the URL from your Crisp dashboard
+        required:
+            - tracking_id
+    site:
+        properties:
+            tracking_id:
+                type: string
+                title: Crisp Site ID
+                description: Available in the URL from your Crisp dashboard
+        required:
+            - tracking_id
