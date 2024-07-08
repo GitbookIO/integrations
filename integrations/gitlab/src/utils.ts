@@ -2,6 +2,8 @@ import type { GitSyncOperationState, IntegrationSpaceInstallation } from '@gitbo
 
 import type { GitLabSpaceConfiguration } from './types';
 
+export const BRANCH_REF_PREFIX = 'refs/heads/';
+
 /**
  * The default commit message to use when a change request is merged in GitBook
  */
@@ -65,6 +67,16 @@ export function computeConfigQueryKey(projectId: number, ref: string): string {
 }
 
 /**
+ * Normalize the instance URL to ensure it is a valid URL.
+ */
+export function normalizeInstanceUrl(url: string): string {
+    let instanceUrl = url.trim();
+    instanceUrl = instanceUrl.endsWith('/') ? instanceUrl.slice(0, -1) : instanceUrl;
+    instanceUrl = instanceUrl.startsWith('https://') ? instanceUrl : `https://${instanceUrl}`;
+    return instanceUrl;
+}
+
+/**
  * Sign a message with a secret key by using HMAC-SHA256 algorithm.
  */
 export async function signResponse(message: string, secret: string): Promise<string> {
@@ -96,26 +108,32 @@ export function assertIsDefined<T>(
 }
 
 /**
- * Import a secret CryptoKey to use for signing.
- */
-async function importKey(secret: string): Promise<CryptoKey> {
-    return await crypto.subtle.importKey(
-        'raw',
-        new TextEncoder().encode(secret),
-        { name: 'HMAC', hash: 'SHA-256' },
-        false,
-        ['sign', 'verify']
-    );
+ * Constant-time string comparison. Equivalent of `crypto.timingSafeEqual`.
+ **/
+export function safeCompare(expected: string, actual: string) {
+    const lenExpected = expected.length;
+    let result = 0;
+
+    if (lenExpected !== actual.length) {
+        actual = expected;
+        result = 1;
+    }
+
+    for (let i = 0; i < lenExpected; i++) {
+        result |= expected.charCodeAt(i) ^ actual.charCodeAt(i);
+    }
+
+    return result === 0;
 }
 
 /**
  * Convert an array buffer to a hex string
  */
-function arrayToHex(arr: ArrayBuffer) {
+export function arrayToHex(arr: ArrayBuffer) {
     return [...new Uint8Array(arr)].map((x) => x.toString(16).padStart(2, '0')).join('');
 }
 
-export default function hexToArray(input: string) {
+function hexToArray(input: string) {
     if (input.length % 2 !== 0) {
         throw new RangeError('Expected string to be an even number of characters');
     }
@@ -127,4 +145,17 @@ export default function hexToArray(input: string) {
     }
 
     return view.buffer;
+}
+
+/**
+ * Import a secret CryptoKey to use for signing.
+ */
+async function importKey(secret: string): Promise<CryptoKey> {
+    return await crypto.subtle.importKey(
+        'raw',
+        new TextEncoder().encode(secret),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign', 'verify']
+    );
 }

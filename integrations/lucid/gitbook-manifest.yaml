@@ -1,0 +1,35 @@
+name: lucid
+title: Lucid
+organization: gitbook
+visibility: public
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/lucid-preview.png
+description: 'Embed Lucid projects directly into GitBook.'
+summary: |
+    # Overview
+
+    Lucid provides teams with software that helps to gain insights and make informed decisions through market research and data analytics.
+
+    This integration lets you embed Lucid projects into your GitBook documentation. It allows your reader to get a preview of the project right from your published site.
+
+    # How it works
+
+    Embedding Lucid in your documentation is simple - just paste a Lucid share link into the GitBook editor. The app will turn the link into an embed that shows an interactive version of the Lucid project.
+
+    # Configure
+
+    Once the Lucid integration has been installed, you can insert the Lucid block into any GitBook space through the "/" menu.
+
+script: src/index.tsx
+scopes:
+    - space:content:read
+    - space:content:write
+blocks:
+    - id: lucid-component
+      title: Lucidchart
+      urlUnfurl:
+          - https://lucid.app/*
+secrets:
+    CLIENT_ID: ${{ env.LUCID_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.LUCID_CLIENT_SECRET }}

@@ -1,5 +1,246 @@
 # @gitbook/api
 
+## 0.53.0
+
+### Minor Changes
+
+-   59ea476: Bump @gitbook/api to use the latest OpenAPI spec
+
+## 0.52.0
+
+### Minor Changes
+
+-   35b8bf0: Add in source details when there is no AI answer
+
+## 0.51.0
+
+### Minor Changes
+
+-   88c532b: Bump @gitbook/api to use the latest OpenAPI spec
+
+## 0.50.0
+
+### Minor Changes
+
+-   5551561: Bump @gitbook/api to use latest API spec
+
+## 0.49.0
+
+### Minor Changes
+
+-   faa1893: Bump @gitbook/api to use the latest OpenAPI spec
+-   dd212a5: Bump @gitbook/api to use the latest spec
+
+## 0.48.0
+
+### Minor Changes
+
+-   874462c: Bump @gitbook/api to use the latest OpenAPI spec
+
+## 0.47.0
+
+### Minor Changes
+
+-   73b6d7b: Bump @gitbook/api to use the latest OpenAPI spec
+
+## 0.46.0
+
+### Minor Changes
+
+-   38fc6b2: Updated getEmbedByUrlInSpace endpoint to include the integration name.
+
+## 0.45.0
+
+### Minor Changes
+
+-   94067cb: Bump GitBook API.
+
+## 0.44.0
+
+### Minor Changes
+
+-   65c7dc7: Bumping API and CLI package to use latest specs
+
+## 0.43.0
+
+### Minor Changes
+
+-   6a01ef0: Bump API client to use the latest OpenAPI spec
+
+## 0.42.0
+
+### Minor Changes
+
+-   ddf1538: Bump API client to use the latest OpenAPI spec
+
+## 0.41.0
+
+### Minor Changes
+
+-   a568d01: Bump API client to use the latest OpenAPI spec
+
+## 0.40.0
+
+### Minor Changes
+
+-   0eff9e8: Bump API client to use the latest OpenAPI spec
+
+## 0.39.0
+
+### Minor Changes
+
+-   8a6c869: Bump the version of the GitBook API
+
+## 0.38.0
+
+### Minor Changes
+
+-   ca87848: Update the API client with the latest OpenAPI specification
+
+## 0.37.0
+
+### Minor Changes
+
+-   2fe33b4: Update the API client with the latest OpenAPI specification
+
+## 0.36.0
+
+### Minor Changes
+
+-   2cddf6a: Update API client with latest OpenAPI spec
+
+## 0.35.0
+
+### Minor Changes
+
+-   a04e370: Add synced block endpoints
+
+## 0.34.0
+
+### Minor Changes
+
+-   e3fdaae: Store the original error message as GitBookAPIError.errorMessage
+
+## 0.33.0
+
+### Minor Changes
+
+-   17099cf: Use fetch and a custom EventSource parsing to support node/browser/worker for streaming operations
+
+## 0.32.0
+
+### Minor Changes
+
+-   aadb319: Use a custom EventSource client to support Cloudflare Worker environments
+
+## 0.31.0
+
+### Minor Changes
+
+-   0961cf4: Improve streaming client to support last "done" message and throw error event
+
+## 0.30.0
+
+### Minor Changes
+
+-   41f811e: Update the API client with the latest OpenAPI specification and add support for streaming operations.
+
+## 0.29.0
+
+### Minor Changes
+
+-   d5ba3df: Update API client with latest OpenAPI spec
+
+## 0.28.0
+
+### Minor Changes
+
+-   4cb31e9: Bump @gitbook/api to use the latest openAPI spec
+
+## 0.27.0
+
+### Minor Changes
+
+-   46c9686: Allow passing a `userAgent` to the API client (`@gitbook/api`) and set a default user-agent for all integrations
+
+## 0.26.0
+
+### Minor Changes
+
+-   980a262: Update API client with latest OpenAPI spec
+
+## 0.25.0
+
+### Minor Changes
+
+-   d43bc17: Update api client with latest OpenAPI spec
+
+## 0.24.0
+
+### Minor Changes
+
+-   73a437c: Publicly expose type for endpoint / authToken
+
+## 0.23.0
+
+### Minor Changes
+
+-   ad9df8e: Update API client with latest OpenAPI spec
+
+## 0.22.0
+
+### Minor Changes
+
+-   5598f59: Update API client with latest OpenAPI spec
+
+## 0.21.0
+
+### Minor Changes
+
+-   4e17700: Update API client with latest OpenAPI spec
+
+## 0.20.1
+
+### Patch Changes
+
+-   0bcacd8: Throw error instead of Response in API client
+
+## 0.20.0
+
+### Minor Changes
+
+-   a63371a: Update swagger-typescript-api and fix passing signal to requests
+
+## 0.19.0
+
+### Minor Changes
+
+-   b0a616e: Update api client with latest OpenAPI spec (`cover` in `RevisionPageDocument)
+
+## 0.18.0
+
+### Minor Changes
+
+-   7318cb3: Update API client with latest OpenAPI changes
+
+## 0.17.0
+
+### Minor Changes
+
+-   f358a79: Update API client with latest OpenAPI spec and pass request data to errors
+
+## 0.16.0
+
+### Minor Changes
+
+-   1c45194: Update API client with latest OpenAPI spec
+
+## 0.15.0
+
+### Minor Changes
+
+-   634cd65: Bump API client to use the latest spec
+
 ## 0.14.0
 
 ### Minor Changes

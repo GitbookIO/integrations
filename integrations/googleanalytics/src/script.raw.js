@@ -1,35 +1,34 @@
-const trackingID = '<TO_REPLACE>';
+(function (win, doc, script, layer) {
+    const id = '<TO_REPLACE>';
+    const GRANTED_COOKIE = '__gitbook_cookie_granted';
 
-const GANTED_COOKIE = '__gitbook_cookie_granted';
-
-function getCookie(cname) {
-    const name = `${cname}=`;
-    const decodedCookie = decodeURIComponent(document.cookie);
-    const ca = decodedCookie.split(';');
-    for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) === ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) === 0) {
-            return c.substring(name.length, c.length);
-        }
+    function triggerView(win) {
+        win.gtag('event', 'page_view', {
+            page_path: win.location.pathname,
+            page_location: win.location.href,
+            page_title: win.document.title,
+            send_to: 'tracking_views',
+        });
     }
-    return '';
-}
 
-function triggerView(win) {
-    win.gtag('event', 'page_view', {
-        page_path: win.location.pathname,
-        page_location: win.location.href,
-        page_title: win.document.title,
-        send_to: 'tracking_views',
-    });
-}
+    function getCookie(cname) {
+        const name = `${cname}=`;
+        const decodedCookie = decodeURIComponent(document.cookie);
+        const ca = decodedCookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) === 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return '';
+    }
 
-(function (win, doc, script, layer, id) {
     let disableCookies = false;
-    const cookie = getCookie(GANTED_COOKIE);
+    const cookie = getCookie(GRANTED_COOKIE);
     if (cookie === 'yes') {
         disableCookies = false;
     } else if (cookie === 'no') {
@@ -69,4 +68,4 @@ function triggerView(win) {
         });
     };
     f.parentNode.insertBefore(j, f);
-})(window, document, 'script', 'dataLayer', trackingID);
+})(window, document, 'script', 'dataLayer');

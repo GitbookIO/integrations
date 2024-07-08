@@ -1,0 +1,20 @@
+{
+    "name": "@gitbook/integration-va-auth0",
+    "version": "0.0.9",
+    "private": true,
+    "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+        "itty-router": "^4.0.14",
+        "@tsndr/cloudflare-worker-jwt": "2.3.2"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "*"
+    },
+    "scripts": {
+        "lint": "eslint ./**/*.ts*",
+        "typecheck": "tsc --noEmit",
+        "publish-integrations-staging": "gitbook publish .",
+        "publish-integrations": "gitbook publish ."
+    }
+}

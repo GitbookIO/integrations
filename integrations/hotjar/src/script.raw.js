@@ -1,6 +1,5 @@
-const trackingID = '<TO_REPLACE>';
-
 (function (h, o, t, j, a, r) {
+    const trackingID = '<TO_REPLACE>';
     h.hj =
         h.hj ||
         function () {

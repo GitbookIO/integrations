@@ -1,0 +1,34 @@
+name: cognito
+title: AWS Cognito
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/preview.png
+description: Control who has access to your published documentation with AWS Cognito
+
+visibility: public
+script: ./src/index.tsx
+scopes:
+    - space:metadata:read
+    - space:visitor:auth
+    - site:metadata:read
+    - site:visitor:auth
+    - space:content:read
+organization: gitbook
+summary: |
+    # Overview
+    Visitor Authentication allows you to publish content behind an authentication wall, so your content is only accessible to people you choose.
+
+    This integration lets you control access to your published content as determined by AWS Cognito.
+
+    # Configure
+    Install this integration on a space and then populate the configuration screen with the details of your AWS Cognito application and AWS Cognito account.
+    You can then open the Share menu, publish the space with Visitor Authentication, choose this integration as the authentication backend, and hit Save.
+
+    Your space is now published with Visitor Authentication using AWS Cognito.
+categories:
+    - visitor-auth
+configurations:
+    space:
+        componentId: config
+    site:
+        componentId: config

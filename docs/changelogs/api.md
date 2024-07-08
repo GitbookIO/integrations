@@ -2,6 +2,22 @@
 
 All notable changes to the REST API will be documented in this page.
 
+## 2023-11-16
+
+### Breaking: changing feedback score computation logic
+
+We have changed the way we compute the feedback score based on user ratings which is affecting the following endpoint: `/v1/spaces/:id/insights/content`
+
+* <mark style="color:orange;">**\[Updated]**</mark> `score` is now calculated this way$$score = positives - 0.5 * intermediates - 2*negatives$$.\
+  This is done to reinforce negative ratings and help surfacing content that may require updates.
+* <mark style="color:orange;">**\[Updated]**</mark> `rating` is now computed this way
+  * `'good'` whenever the score is > 0
+  * `'ok'` whenever the score is 0
+  * `'bad'` whenever the score is < 0
+* <mark style="color:green;">**\[Added]**</mark> `ponderedScore` is computed by multiplying the `score` by the total amount of ratings given by visitors.
+
+**Note: The GitBook app is displaying `ponderedScore` inside of the Insights section.**
+
 ## 2022-09-16
 
 ### API for users management

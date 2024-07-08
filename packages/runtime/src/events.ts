@@ -1,4 +1,9 @@
-import { Event, FetchEvent, FetchPublishedScriptEvent } from '@gitbook/api';
+import {
+    Event,
+    FetchEvent,
+    FetchPublishedScriptEvent,
+    FetchVisitorAuthenticationEvent,
+} from '@gitbook/api';
 
 import { RuntimeCallback, RuntimeContext } from './context';
 
@@ -25,7 +30,7 @@ export type EventCallback<
  */
 export type NonFetchEvent = Exclude<
     EventType,
-    FetchEvent['type'] | FetchPublishedScriptEvent['type']
+    FetchEvent['type'] | FetchPublishedScriptEvent['type'] | FetchVisitorAuthenticationEvent['type']
 >;
 
 /**
@@ -53,3 +58,10 @@ export type FetchPublishScriptEventCallback<Context extends RuntimeContext = Run
         Response | undefined | Promise<Response | undefined>, // Scripts can return undefined, in which case a no-op script will be sent back to the caller.
         Context
     >;
+
+/**
+ * Callback to handle visitor authentication fetch event.
+ */
+export type FetchVisitorAuthenticationEventCallback<
+    Context extends RuntimeContext = RuntimeContext
+> = RuntimeCallback<[FetchVisitorAuthenticationEvent], Response | Promise<Response>, Context>;

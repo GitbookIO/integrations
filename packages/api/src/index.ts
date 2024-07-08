@@ -1,6 +1,11 @@
+// @ts-ignore - Ignore the error "'rootDir' is expected to contain all source files" because
+// we need to control root to avoid ./dist/src and only have ./dist
+import { name, version } from '../package.json';
 import { Api } from './client';
+import { GitBookAPIError } from './GitBookAPIError';
 
 export * from './client';
+export { GitBookAPIError };
 
 export const GITBOOK_DEFAULT_ENDPOINT = 'https://api.gitbook.com';
 
@@ -15,7 +20,20 @@ interface GitBookAPIErrorResponse {
 export class GitBookAPI extends Api<{
     authToken?: string;
 }> {
-    private endpoint: string;
+    /**
+     * Endpoint used by the API client.
+     */
+    public readonly endpoint: string;
+
+    /**
+     * Authentication token used by the API client.
+     */
+    public readonly authToken: string | undefined;
+
+    /**
+     * User agent used by the API client.
+     */
+    public readonly userAgent: string;
 
     constructor(
         options: {
@@ -26,12 +44,22 @@ export class GitBookAPI extends Api<{
             endpoint?: string;
 
             /**
+             * User agent to use.
+             * It'll default to the package name and version.
+             */
+            userAgent?: string;
+
+            /**
              * Authentication token to use.
              */
             authToken?: string;
         } = {}
     ) {
-        const { endpoint = GITBOOK_DEFAULT_ENDPOINT, authToken } = options;
+        const {
+            endpoint = GITBOOK_DEFAULT_ENDPOINT,
+            authToken,
+            userAgent = `${name}/${version}`,
+        } = options;
 
         super({
             baseUrl: `${endpoint}/v1`,
@@ -40,6 +68,7 @@ export class GitBookAPI extends Api<{
                     return {
                         headers: {
                             Authorization: `Bearer ${securityData.authToken}`,
+                            'User-Agent': userAgent,
                         },
                     };
                 }
@@ -68,23 +97,18 @@ export class GitBookAPI extends Api<{
                         const body = (await response.json()) as GitBookAPIErrorResponse;
                         error = body?.error?.message || error;
                     } catch (err) {
-                        // if it's a browser error, also log the headers to see if it can give us more info
-                        response.headers.forEach((value, key) => {
-                            error += `${key}:${value} `;
-                        });
-
                         // Ignore, just use the statusText as an error message
                     }
 
-                    throw new Error(
-                        `GitBook API failed with [${response.status}] ${response.url}: ${error}`
-                    );
+                    throw new GitBookAPIError(error, response);
                 }
                 return response;
             },
         });
 
         this.endpoint = endpoint;
+        this.userAgent = userAgent;
+        this.authToken = authToken;
         this.setSecurityData({ authToken });
     }
 
@@ -103,6 +127,7 @@ export class GitBookAPI extends Api<{
 
         return new GitBookAPI({
             endpoint: this.endpoint,
+            userAgent: this.userAgent,
             authToken: installationToken.token,
         });
     }

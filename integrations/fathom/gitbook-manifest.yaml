@@ -13,6 +13,7 @@ script: ./src/index.ts
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
     - space:script:inject
+    - site:script:inject
 contentSecurityPolicy:
     script-src: |
         https://cdn.usefathom.com;
@@ -36,6 +37,14 @@ categories:
     - analytics
 configurations:
     space:
+        properties:
+            site_id:
+                type: string
+                title: Site ID
+                description: Look for this in your Fathom analytics account
+        required:
+            - site_id
+    site:
         properties:
             site_id:
                 type: string

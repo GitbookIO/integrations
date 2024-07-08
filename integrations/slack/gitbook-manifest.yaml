@@ -20,11 +20,14 @@ scopes:
     - space:content:read
     - space:metadata:read
     - capture:write
+    - snippets:read
 summary: |
     # Overview
     With the GitBook Slack integration, your teams have instant access to your GitBook knowledge base, and can get AI-summarized answers about your content. Plus, if you solve a problem in a thread, you can ask GitBook AI to summarize it into useable documentation.
 
     [Head to our documentation to find out more](https://docs.gitbook.com/integrations/integrations-beta/slack)
+
+    Slack's AI features require GitBook AI, exclusive to Pro/Enterprise plans. Free/Plus users will need to upgrade to Pro to use this integration. Please visit the [pricing page](https://www.gitbook.com/pricing) to learn more.
 
     # How it works
     **Find information faster:** Getting an answer has never been easier. Just summon our Slackbot and ask a question — GitBook AI will scan your documentation and summarize an answer in seconds.
@@ -34,6 +37,8 @@ summary: |
     **Real-time notifications:** Get notified in real-time when something important happens with your GitBook content — from small updates, to someone publishing a space. You choose what you get notifications for, and where you see them.
 
     # Configure
+    First, you’ll need to enable GitBook AI for your organization. **Open Settings > Organization Settings** and toggle it on in the **General** section. GitBook AI is available to teams on a Pro or Enterprise plan.
+
     To install on a single space, click Integrations in the sub-nav within the GitBook app. Alternatively, you can install it across all your spaces in Settings.
     Once you’ve installed it, head over to Slack and authorize the connection. You can select a default channel to post notifications and other messages, but remember — you can summon GitBook in any channel or thread.
 

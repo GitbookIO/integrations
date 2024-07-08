@@ -1,4 +1,4 @@
-import httpError from 'http-errors';
+import { StatusError } from 'itty-router';
 
 import { IntegrationSpaceInstallation } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
@@ -7,7 +7,7 @@ import { fetchProject } from './api';
 import { createGitLabWebhookURL, installWebhook } from './provider';
 import { triggerExport, triggerImport } from './sync';
 import { GitlabConfigureState, GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { assertIsDefined, computeConfigQueryKey, signResponse } from './utils';
+import { assertIsDefined, BRANCH_REF_PREFIX, computeConfigQueryKey, signResponse } from './utils';
 
 const logger = Logger('gitlab:installation');
 
@@ -16,39 +16,44 @@ const logger = Logger('gitlab:installation');
  */
 export async function saveSpaceConfiguration(
     context: GitLabRuntimeContext,
-    config: GitlabConfigureState
+    state: GitlabConfigureState
 ) {
     const { api, environment } = context;
     const spaceInstallation = environment.spaceInstallation;
 
     assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
-    if (!config.project || !config.branch) {
-        throw httpError(400, 'Incomplete configuration');
+    if (!state.project || !state.branch) {
+        throw new StatusError(400, 'Incomplete configuration: missing project or branch');
     }
 
-    const projectId = parseInt(config.project, 10);
+    const projectId = parseInt(state.project, 10);
+
+    // Make sure the branch is prefixed with refs/heads/
+    state.branch = state.branch.startsWith(BRANCH_REF_PREFIX)
+        ? state.branch
+        : BRANCH_REF_PREFIX + state.branch;
 
     /**
      * We need to update the space installation external IDs to make sure
      * we can query it later when there is a webhook event.
      */
     const externalIds: string[] = [];
-    externalIds.push(computeConfigQueryKey(projectId, config.branch));
+    externalIds.push(computeConfigQueryKey(projectId, state.branch));
 
     const glProject = await fetchProject(spaceInstallation.configuration, projectId);
 
     const configurationBody: GitLabSpaceConfiguration = {
         ...spaceInstallation.configuration,
-        key: config.key || crypto.randomUUID(),
+        key: state.key || crypto.randomUUID(),
         configuredAt: new Date().toISOString(),
         project: projectId,
         projectName: glProject.path_with_namespace,
-        branch: config.branch,
-        projectDirectory: config.projectDirectory,
-        commitMessageTemplate: config.commitMessageTemplate,
-        priority: config.priority,
-        customInstanceUrl: config.customInstanceUrl,
+        branch: state.branch,
+        projectDirectory: state.projectDirectory,
+        commitMessageTemplate: state.commitMessageTemplate,
+        priority: state.priority,
+        customInstanceUrl: state.customInstanceUrl,
     };
 
     logger.debug(
@@ -88,7 +93,7 @@ export async function saveSpaceConfiguration(
     if (!configurationBody.webhookId) {
         const webhookToken = await signResponse(
             environment.integration.name,
-            environment.signingSecret!
+            environment.signingSecrets.integration
         );
         await installWebhook(
             updatedSpaceInstallation,
@@ -111,38 +116,35 @@ export async function saveSpaceConfiguration(
 }
 
 /**
- * List space installations that match the given external ID. It takes
- * care of pagination and returns all space installations at once.
+ * List space installations that match the given external ID.
  */
 export async function querySpaceInstallations(
     context: GitLabRuntimeContext,
     externalId: string,
-    page?: string
-): Promise<Array<IntegrationSpaceInstallation>> {
+    options: {
+        page?: string;
+        limit?: number;
+    } = {}
+): Promise<{ data: Array<IntegrationSpaceInstallation>; nextPage?: string; total?: number }> {
     const { api, environment } = context;
+    const { page, limit = 100 } = options;
 
-    logger.debug(`Querying space installations for external ID ${externalId} (page: ${page ?? 1})`);
+    logger.debug(
+        `Querying space installations for external ID ${externalId} (${JSON.stringify(options)})`
+    );
 
     const { data } = await api.integrations.listIntegrationSpaceInstallations(
         environment.integration.name,
         {
-            limit: 100,
+            limit,
             externalId,
             page,
         }
     );
 
-    const spaceInstallations = [...data.items];
-
-    // Recursively fetch next pages
-    if (data.next) {
-        const nextSpaceInstallations = await querySpaceInstallations(
-            context,
-            externalId,
-            data.next.page
-        );
-        spaceInstallations.push(...nextSpaceInstallations);
-    }
-
-    return spaceInstallations;
+    return {
+        data: data.items,
+        total: data.count,
+        nextPage: data.next?.page,
+    };
 }

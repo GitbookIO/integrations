@@ -1,5 +1,51 @@
 # @gitbook/integration-slack
 
+## 1.2.3
+
+### Patch Changes
+
+-   71d12f6: Updates the copy for the Slack Integration
+
+## 1.2.2
+
+### Patch Changes
+
+-   15511c8: Updates the copy for the Slack Integration
+
+## 1.2.1
+
+### Patch Changes
+
+-   42a58f7: Fix an issue where GitBook save was not working in Slack.
+
+## 1.2.0
+
+### Minor Changes
+
+-   429285b: Updates to notifications showing direct page links
+
+## 1.1.2
+
+### Patch Changes
+
+-   7d76dfb: Update integrations to use latest runtime and api client with `User-Agent`
+-   Updated dependencies [46c9686]
+    -   @gitbook/runtime@0.11.0
+
+## 1.1.1
+
+### Patch Changes
+
+-   d648cc2: Release to use the latest runtime package
+
+## 1.1.0
+
+### Minor Changes
+
+-   3c8320c: Reformats the notifications into a list
+-   9046bfb: Notify of space updates with a more detailed notification
+-   58eee59: Adds support for snippets to be displayed in answers from GitBook AI
+
 ## 1.0.2
 
 ### Patch Changes

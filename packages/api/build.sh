@@ -7,7 +7,7 @@ mkdir ./spec
 LOCAL_OPENAPI_FILE=../../../gitbook-x/packages/api-client/static/openapi.yaml
 
 if [[ -z "${GITBOOK_OPENAPI_URL}" ]]; then
-  OPENAPI_URL="https://api.gitbook.com/openapi.yaml"
+  OPENAPI_URL="https://api.gitbook.com/openapi.yaml?cacheBust=$(date +%s)"
 else
   OPENAPI_URL="${GITBOOK_OPENAPI_URL}"
 fi
@@ -23,7 +23,7 @@ else
 fi
 
 # First we build the API client from the OpenAPI definition
-swagger-typescript-api --path ./spec/openapi.yaml --output ./src/ --name client.ts --silent
+swagger-typescript-api --path ./spec/openapi.yaml --output ./src/ --name client.ts --silent --templates ./templates
 
 # Then we bundle into an importable JSON module
 swagger-cli bundle ./spec/openapi.yaml --outfile ./spec/openapi.json --type json
@@ -36,4 +36,4 @@ esbuild ./src/index.ts --bundle --platform=node --format=esm --outfile=./dist/in
 
 # Finally we build the TypeScript declaration files
 echo "Generating public types from code..."
-tsc --project tsconfig.json --declaration --allowJs --emitDeclarationOnly --outDir ./dist/
+tsc --project tsconfig.json --declaration --allowJs --emitDeclarationOnly --outDir ./dist/ --rootDir ./src

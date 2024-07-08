@@ -1,4 +1,4 @@
-import { Router } from 'itty-router';
+import { Router, error, StatusError } from 'itty-router';
 
 import { ContentKitIcon, ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
 import {
@@ -21,7 +21,9 @@ import {
 import { configBlock } from './components';
 import { getGitHubAppJWT } from './provider';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
-import type { GithubRuntimeContext } from './types';
+import { handleIntegrationTask } from './tasks';
+import type { GithubRuntimeContext, IntegrationTask } from './types';
+import { arrayToHex, BRANCH_REF_PREFIX, safeCompare } from './utils';
 import { handlePullRequestEvents, handlePushEvent, verifyGitHubWebhookSignature } from './webhooks';
 
 const logger = Logger('github');
@@ -35,6 +37,61 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                 environment.installation?.urls.publicEndpoint ||
                 environment.integration.urls.publicEndpoint
         ).pathname,
+    });
+
+    async function verifyIntegrationSignature(
+        payload: string,
+        signature: string,
+        secret: string
+    ): Promise<boolean> {
+        if (!signature) {
+            return false;
+        }
+
+        const algorithm = { name: 'HMAC', hash: 'SHA-256' };
+        const enc = new TextEncoder();
+        const key = await crypto.subtle.importKey('raw', enc.encode(secret), algorithm, false, [
+            'sign',
+            'verify',
+        ]);
+        const signed = await crypto.subtle.sign(algorithm.name, key, enc.encode(payload));
+        const expectedSignature = arrayToHex(signed);
+
+        return safeCompare(expectedSignature, signature);
+    }
+
+    /**
+     * Handle integration tasks
+     */
+    router.post('/tasks', async (request) => {
+        const signature = request.headers.get('x-gitbook-integration-signature') ?? '';
+        const payloadString = await request.text();
+
+        const verified = await verifyIntegrationSignature(
+            payloadString,
+            signature,
+            environment.signingSecrets.integration
+        );
+
+        if (!verified) {
+            const message = `Invalid signature for integration task`;
+            logger.error(message);
+            throw new StatusError(400, message);
+        }
+
+        const { task } = JSON.parse(payloadString) as { task: IntegrationTask };
+        logger.debug('verified & received integration task', task);
+
+        context.waitUntil(
+            (async () => {
+                await handleIntegrationTask(context, task);
+            })()
+        );
+
+        return new Response(JSON.stringify({ acknowledged: true }), {
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+        });
     });
 
     /**
@@ -55,10 +112,8 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                 environment.secrets.WEBHOOK_SECRET
             );
         } catch (error: any) {
-            return new Response(JSON.stringify({ error: error.message }), {
-                status: 400,
-                headers: { 'content-type': 'application/json' },
-            });
+            logger.error(`Error verifying signature ${error}`);
+            throw new StatusError(400, error.message);
         }
 
         logger.debug('received webhook event', { id, event });
@@ -267,12 +322,14 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
      * API to fetch all branches of an account's repository
      */
     router.get('/branches', async (req) => {
-        const { repository: queryRepository } = req.query;
+        const { repository: queryRepository, selectedBranch } = req.query;
 
         const repositoryId =
             queryRepository && typeof queryRepository === 'string'
                 ? parseInt(queryRepository, 10)
                 : undefined;
+        const querySelectedBranch =
+            selectedBranch && typeof selectedBranch === 'string' ? selectedBranch : undefined;
 
         const branches = repositoryId ? await fetchRepositoryBranches(context, repositoryId) : [];
 
@@ -284,6 +341,21 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
             })
         );
 
+        /**
+         * When a branch is selected by typing its name, it might not be in the list of branches
+         * returned by the API. In this case, we add it to the list of branches so that it can be
+         * selected in the UI.
+         */
+        if (querySelectedBranch) {
+            const hasSelectedBranch = data.some((branch) => branch.id === querySelectedBranch);
+            if (!hasSelectedBranch) {
+                data.push({
+                    id: querySelectedBranch,
+                    label: querySelectedBranch.replace(BRANCH_REF_PREFIX, ''),
+                });
+            }
+        }
+
         return new Response(JSON.stringify(data), {
             headers: {
                 'Content-Type': 'application/json',
@@ -291,15 +363,10 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         });
     });
 
-    let response;
-    try {
-        response = await router.handle(request, context);
-    } catch (error: any) {
-        logger.error('error handling request', error);
-        return new Response(error.message, {
-            status: error.status || 500,
-        });
-    }
+    const response = (await router.handle(request, context).catch((err) => {
+        logger.error(`error handling request ${err.message} ${err.stack}`);
+        return error(err);
+    })) as Response | undefined;
 
     if (!response) {
         return new Response(`No route matching ${request.method} ${request.url}`, {
@@ -331,11 +398,18 @@ const handleSpaceContentUpdated: EventCallback<
 
     const spaceInstallation = context.environment.spaceInstallation;
     if (!spaceInstallation) {
-        logger.debug(`missing space installation, skipping`);
+        logger.debug(`missing space installation for ${event.spaceId}, skipping`);
         return;
     }
 
-    await triggerExport(context, spaceInstallation);
+    if (!spaceInstallation.configuration.key) {
+        logger.debug(`space ${event.spaceId} is not configured, skipping`);
+        return;
+    }
+
+    await triggerExport(context, spaceInstallation, {
+        eventTimestamp: new Date(revision.createdAt),
+    });
 };
 
 /*

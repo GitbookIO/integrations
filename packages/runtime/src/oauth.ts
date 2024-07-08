@@ -104,6 +104,23 @@ export function createOAuthHandler(
         // Redirect to authorization
         //
         if (!code) {
+            if (!environment.installation) {
+                logger.error(`Cannot initiate OAuth flow without an installation`);
+                return new Response(
+                    JSON.stringify({
+                        error: 'Cannot initiate OAuth flow without an installation',
+                    }),
+                    {
+                        status: 400,
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+            }
+
+            logger.debug(`handle redirect to authorization at: ${config.authorizeURL}`);
+
             const redirectTo = new URL(config.authorizeURL);
             redirectTo.searchParams.set('client_id', config.clientId);
             redirectTo.searchParams.set('redirect_uri', redirectUri);
@@ -129,7 +146,9 @@ export function createOAuthHandler(
             const url = redirectTo
                 .toString()
                 .replace('SCOPE_PLACEHOLDER', config.scopes?.join('%20'));
-            logger.debug(`handle oauth redirect to ${url}`);
+
+            logger.debug(`oauth redirecting to ${url}`);
+
             return Response.redirect(url);
         }
 
@@ -166,7 +185,23 @@ export function createOAuthHandler(
             const json = await response.json<OAuthResponse>();
 
             // Store the credentials in the installation configuration
-            const credentials = await extractCredentials(json);
+            let credentials: RequestUpdateIntegrationInstallation;
+            try {
+                credentials = await extractCredentials(json);
+            } catch (error) {
+                logger.error(`extractCredentials error`, error.stack);
+                return new Response(
+                    JSON.stringify({
+                        error: `Failed to retrieve access_token from OAuth response. Please try again.`,
+                    }),
+                    {
+                        status: 400,
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+            }
 
             logger.debug(`exchange code for credentials`, credentials);
 
@@ -314,11 +349,15 @@ export async function getToken(
     return creds.configuration.oauth_credentials.access_token;
 }
 
+/**
+ * Default implementation to extract the credentials from the OAuth response.
+ * throws an error if the `access_token` is not present in the response.
+ */
 function defaultExtractCredentials(response: OAuthResponse): RequestUpdateIntegrationInstallation {
     if (!response.access_token) {
-        throw new Error(
-            `Could not extract access_token from response ${JSON.stringify(response, null, 4)}`
-        );
+        const message = `Failed to retrieve access_token from response`;
+        logger.error(`${message} ${JSON.stringify(response, null, 2)} `);
+        throw new Error(message);
     }
 
     return {

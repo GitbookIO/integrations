@@ -1,4 +1,4 @@
-import { RevisionPage } from '@gitbook/api';
+import { RelatedSource } from '../../actions/';
 
 // Slack only encodes these specific characters so we need to remove them in the output (specifically used for inputs to slack)
 export function decodeSlackEscapeChars(text: string) {
@@ -11,24 +11,20 @@ export function decodeSlackEscapeChars(text: string) {
     }, text);
 }
 
-export function PageBlock(page: RevisionPage, sourceUrl: string) {
-    // TODO: note for review. is this the best way to do this?
-    const nonRevisionPublicUrl = sourceUrl.split('~/')[0];
-    const url = `${nonRevisionPublicUrl}${page.path}`;
+export function SourceBlock(source: RelatedSource) {
+    const nonRevisionPublicUrl = source.sourceUrl.split('~/')[0];
+    const url = `${nonRevisionPublicUrl}${source.page.path || ''}`;
     return {
         type: 'mrkdwn',
-        text: `*<${url}|:spiral_note_pad: ${page.title}>*`,
+        text: `*<${url}|:spiral_note_pad: ${source.page.title}>*`,
     };
 }
 
-export function PagesBlock(params: {
-    title?: string;
-    items: Array<{ sourceUrl: string; page: RevisionPage }>;
-}) {
+export function SourcesBlock(params: { title?: string; items: Array<RelatedSource> }) {
     const { title, items } = params;
 
     const blocks = items.reduce<Array<any>>((acc, pageData) => {
-        const pageResultBlock = PageBlock(pageData.page, pageData.sourceUrl);
+        const pageResultBlock = SourceBlock(pageData);
         acc.push(pageResultBlock);
 
         return acc;
@@ -60,20 +56,6 @@ export function ConversationSavedBlock(snippetsUrl: string) {
             text: {
                 type: 'mrkdwn',
                 text: `:white_check_mark: Conversation saved in <${snippetsUrl}|GitBook>`,
-            },
-        },
-    ];
-}
-
-export function GeneratedDocSummaryBlock(props: { summary: string }) {
-    const { summary } = props;
-
-    return [
-        {
-            type: 'section',
-            text: {
-                type: 'mrkdwn',
-                text: summary,
             },
         },
     ];

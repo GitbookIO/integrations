@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-github-files",
-    "version": "0.1.2",
+    "version": "0.1.4",
     "private": true,
     "dependencies": {
         "dotenv": "^16.0.3",
@@ -8,7 +8,7 @@
     },
     "devDependencies": {
         "@gitbook/api": "*",
-        "@gitbook/cli": "^0.13.0",
+        "@gitbook/cli": "^0.16.0",
         "@gitbook/eslint-config": "*",
         "@gitbook/runtime": "*",
         "@gitbook/tsconfig": "*"

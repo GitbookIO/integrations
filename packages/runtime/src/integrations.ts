@@ -2,7 +2,12 @@ import { Event, IntegrationEnvironment } from '@gitbook/api';
 
 import { ComponentDefinition } from './components';
 import { createContext, RuntimeContext } from './context';
-import { EventCallbackMap, FetchEventCallback, FetchPublishScriptEventCallback } from './events';
+import {
+    EventCallbackMap,
+    FetchEventCallback,
+    FetchPublishScriptEventCallback,
+    FetchVisitorAuthenticationEventCallback,
+} from './events';
 import { Logger } from './logger';
 
 const logger = Logger('integrations');
@@ -18,6 +23,11 @@ interface IntegrationRuntimeDefinition<Context extends RuntimeContext = RuntimeC
      * Handler for fetching the injectable script for an integration.
      */
     fetch_published_script?: FetchPublishScriptEventCallback<Context>;
+
+    /**
+     * Handler for fetching the visitor auth for an integration.
+     */
+    fetch_visitor_authentication?: FetchVisitorAuthenticationEventCallback<Context>;
 
     /**
      * Handler for GitBook events.
@@ -108,6 +118,21 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                 return resp;
             }
 
+            if (
+                event.type === 'fetch_visitor_authentication' &&
+                definition.fetch_visitor_authentication
+            ) {
+                const resp = await definition.fetch_visitor_authentication(event, context);
+
+                logger.debug(
+                    `response ${resp.status} ${resp.statusText} Content-Type: ${resp.headers.get(
+                        'content-type'
+                    )}`
+                );
+
+                return resp;
+            }
+
             if (event.type === 'ui_render') {
                 const component = components.find((c) => c.componentId === event.componentId);
 
@@ -139,7 +164,15 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
             });
         } catch (err) {
             logger.error(err.stack);
-            throw err;
+            return new Response(
+                JSON.stringify({
+                    error: err.message,
+                }),
+                {
+                    status: err.status || err.statusCode || err.code || 500,
+                    headers: { 'content-type': 'application/json' },
+                }
+            );
         }
     }
 
