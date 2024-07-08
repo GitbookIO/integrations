@@ -1,6 +1,8 @@
 name: crisp
 title: Crisp
 icon: ./assets/icon.png
+previewImages:
+    - ./assets/crisp-preview.png
 description: Add the Crisp chat widget to your published GitBook content.
 externalLinks:
     - label: Website
