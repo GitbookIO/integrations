@@ -1,5 +1,11 @@
 # @gitbook/integration-googleanalytics
 
+## 0.1.5
+
+### Patch Changes
+
+-   923b241: Disable gtag storage when cookies consent is no
+
 ## 0.1.4
 
 ### Patch Changes
