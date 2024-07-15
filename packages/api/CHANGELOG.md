@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.54.0
+
+### Minor Changes
+
+-   e3944b8: Adds new endpoint for searching specific to Sites
+
 ## 0.53.0
 
 ### Minor Changes
