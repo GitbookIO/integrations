@@ -1,24 +1,29 @@
 name: syft
 title: Syft
 organization: gitbook
-visibility: unlisted
+visibility: public
 description: 'Syft helps you get leads from your GitBook traffic.'
 icon: ./assets/icon.png
 summary: |
     # Overview
-    This integration allows you to add the Syft pixel to your GitBook site.
+    This integration allows you to use Syft on your GitBook site.
 
     # How it works
-    The integration injects the Syft script on your page, using the configured Syft key, \nso that you get visit information from your site.
+    The integration injects the Syft script on your page, using the configured Syft key. The script collects visitor session and makes it available in the Syft dashboard.
 
     # Configure
     Install the integration on the GitBook space.
-    Locate the Syft key you want to use, which is available in the Syft snippet <pk_xxxxxxxxxxxxxxxxxxx>
-externalLinks:
-    - label: Website
-      url: https://getsyft.app/
+    Locate the Syft key you want to use, which is available in the Syft snippet. https://app.syftdata.com/dashboard/settings/snippets
 categories:
     - analytics
+externalLinks:
+    - label: Dashboard
+      url: https://app.syftdata.com/
+    - label: Documentation
+      url: https://docs.getsyft.app/
+    - label: Website
+      url: https://getsyft.app/
+visibility: public
 script: src/index.tsx
 scopes:
     - space:script:inject
