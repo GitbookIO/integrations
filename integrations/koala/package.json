@@ -11,7 +11,7 @@
         "@gitbook/runtime": "*"
     },
     "devDependencies": {
-        "@gitbook/cli": "^0.16.0",
+        "@gitbook/cli": "^0.17.0",
         "@gitbook/eslint-config": "*",
         "@gitbook/tsconfig": "*"
     }

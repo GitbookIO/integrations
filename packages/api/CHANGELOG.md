@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.57.0
+
+### Minor Changes
+
+-   d3fcacc: Bump @gitbook/api to use the latest OpenAPI spec
+
 ## 0.56.0
 
 ### Minor Changes
