@@ -5,7 +5,7 @@
     "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
-        "graphql": "^16.6.0",
+        "graphql": "^16.8.1",
         "graphql-request": "^5.0.0"
     },
     "devDependencies": {
