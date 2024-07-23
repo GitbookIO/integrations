@@ -39,6 +39,16 @@ type Auth0Props = {
 
 export type Auth0Action = { action: 'save.config' };
 
+const getDomainWithHttps = (url: string): string => {
+    if (url.startsWith('https://')) {
+        return url;
+    } else if (url.startsWith('http://')) {
+        return url.replace('http', 'https');
+    } else {
+        return `https://${url}`;
+    }
+};
+
 const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0RuntimeContext>({
     componentId: 'config',
     initialState: (props) => {
@@ -61,7 +71,7 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
                     ...siteOrSpaceInstallation.configuration,
                     client_id: element.state.client_id,
                     client_secret: element.state.client_secret,
-                    issuer_base_url: element.state.issuer_base_url,
+                    issuer_base_url: getDomainWithHttps(element.state.issuer_base_url),
                 };
 
                 if ('site' in siteOrSpaceInstallation) {

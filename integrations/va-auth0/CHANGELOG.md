@@ -1,5 +1,23 @@
 # @gitbook/integration-va-auth0
 
+## 0.0.9
+
+### Patch Changes
+
+-   5dabe91: Add and enforce HTTPS for domains in VA configuration of Auth0
+
+## 0.0.8
+
+### Patch Changes
+
+-   6181f25: Move VA integrations to their own category
+
+## 0.0.7
+
+### Patch Changes
+
+-   15a814a: Add site:metadata:read scope to VA integrations
+
 ## 0.0.6
 
 ### Patch Changes
