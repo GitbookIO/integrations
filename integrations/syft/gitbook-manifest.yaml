@@ -1,7 +1,7 @@
 name: syft
 title: Syft
-organization: gitbook
-visibility: public
+organization: 5R4Iu5dnFmc1wfhsNVVT
+visibility: unlisted
 description: 'Syft helps you get leads from your GitBook traffic.'
 icon: ./assets/icon.png
 summary: |
@@ -23,7 +23,6 @@ externalLinks:
       url: https://docs.getsyft.app/
     - label: Website
       url: https://getsyft.app/
-visibility: public
 script: src/index.tsx
 scopes:
     - space:script:inject

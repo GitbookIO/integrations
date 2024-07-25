@@ -21,9 +21,8 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     { environment }: SyftRuntimeContext
 ) => {
     const syftId =
-        environment.spaceInstallation.configuration.syft_key ??
-        environment.siteInstallation?.configuration?.syft_key ??
-        'Syft Key not configured';
+        environment.spaceInstallation?.configuration?.syft_key ??
+        environment.siteInstallation?.configuration?.syft_key;
 
     if (!syftId) {
         throw new Error(
