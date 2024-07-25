@@ -35,15 +35,15 @@ configurations:
         properties:
             syft_key:
                 type: string
-                title: Syft Key
-                description: Available in Syft snippet https://app.syftdata.com/dashboard/settings/snippets
+                title: API Key
+                description: Available here https://app.syftdata.com/dashboard/settings/snippets
         required:
             - syft_key
     site:
         properties:
             syft_key:
                 type: string
-                title: Syft Key
-                description: Available in Syft snippet https://app.syftdata.com/dashboard/settings/snippets
+                title: API Key
+                description: Available here https://app.syftdata.com/dashboard/settings/snippets
         required:
             - syft_key
