@@ -14,7 +14,9 @@ type SegmentRuntimeContext = RuntimeContext<
 export default createIntegration<SegmentRuntimeContext>({
     events: {
         space_view: async (event, { environment }) => {
-            const writeKey = environment.spaceInstallation.configuration.write_key;
+            const writeKey =
+                environment.siteInstallation?.configuration?.write_key ??
+                environment.spaceInstallation?.configuration?.write_key;
             if (!writeKey) {
                 throw new Error(
                     `The Segment write key is missing from the Space (ID: ${event.spaceId}) installation.`

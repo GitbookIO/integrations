@@ -15,7 +15,7 @@ const handleSpaceContentUpdated: EventCallback<
 > = async (event, context) => {
     const { environment, api } = context;
     const channel =
-        environment.spaceInstallation.configuration.channel ||
+        environment.spaceInstallation?.configuration?.channel ||
         environment.installation.configuration.default_channel;
 
     if (!channel) {
@@ -23,7 +23,7 @@ const handleSpaceContentUpdated: EventCallback<
         return;
     }
 
-    if (environment.spaceInstallation.configuration.notify_content_update === false) {
+    if (environment.spaceInstallation?.configuration?.notify_content_update === false) {
         // Content updates are turned off
         return;
     }
@@ -175,7 +175,7 @@ const handleSpaceVisibilityUpdated: EventCallback<
     const { environment, api } = context;
 
     const channel =
-        environment.spaceInstallation.configuration.channel ||
+        environment.spaceInstallation?.configuration?.channel ||
         environment.installation.configuration.default_channel;
 
     if (!channel) {
@@ -183,7 +183,7 @@ const handleSpaceVisibilityUpdated: EventCallback<
         return;
     }
 
-    if (environment.spaceInstallation.configuration.notify_visibility_update === false) {
+    if (environment.spaceInstallation?.configuration?.notify_visibility_update === false) {
         // Visibility updates are turned off
         return;
     }
