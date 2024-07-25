@@ -27,10 +27,10 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     };
     const projectApiKey =
         environment.siteInstallation?.configuration?.projectApiKey ??
-        environment.spaceInstallation.configuration.projectApiKey;
+        environment.spaceInstallation?.configuration?.projectApiKey;
     const instanceAddress =
         environment.siteInstallation?.configuration?.instanceAddress ??
-        environment.spaceInstallation.configuration.instanceAddress;
+        environment.spaceInstallation?.configuration?.instanceAddress;
     if (!projectApiKey) {
         throw new Error(
             `The PostHog project API key is missing from the space configuration (ID: ${
