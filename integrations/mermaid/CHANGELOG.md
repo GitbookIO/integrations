@@ -1,5 +1,11 @@
 # @gitbook/integration-mermaid
 
+## 0.1.3
+
+### Patch Changes
+
+-   86a80b2: Improve robustness of the mermaid iframe
+
 ## 0.1.2
 
 ### Patch Changes
