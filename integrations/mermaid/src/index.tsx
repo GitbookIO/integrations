@@ -99,7 +99,11 @@ export default createIntegration({
                         }
 
                         window.addEventListener("message", (event) => {
-                            if (event.data) {
+                            if (
+                                event.data &&
+                                typeof event.data.state === 'object' &&
+                                typeof event.data.state.content === 'string'
+                            ) {
                                 const content = event.data.state.content;
                                 renderDiagram(content)
                             }
