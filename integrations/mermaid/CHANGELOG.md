@@ -1,5 +1,11 @@
 # @gitbook/integration-mermaid
 
+## 0.1.5
+
+### Patch Changes
+
+-   ac9074b: Add debug logs to mermaid iframe code
+
 ## 0.1.4
 
 ### Patch Changes
