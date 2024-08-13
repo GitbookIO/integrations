@@ -95,7 +95,9 @@ export default createIntegration({
                                 queue.shift();
                             }
 
-                            await processQueue();
+                            if (queue.length > 0) {
+                                await processQueue();
+                            }
                         }
 
                         async function renderDiagram(content) {
