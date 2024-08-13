@@ -75,23 +75,45 @@ export default createIntegration({
                         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
                         mermaid.initialize({ startOnLoad: false });
 
-                        function renderDiagram(content) {
+                        const queue = [];
+
+                        function pushRenderDiagram(content) {
+                            console.log('mermaid: queue diagram', { content });
+                            queue.push(content);
+
+                            if (queue.length === 1) {
+                                processQueue();
+                            }
+                        }
+
+                        async function processQueue() {
+                            console.log('mermaid: process queue', queue.length);
+                            if (queue.length > 0) {
+                                const content = queue[0];
+                                await renderDiagram(content);
+
+                                queue.shift();
+                            }
+
+                            await processQueue();
+                        }
+
+                        async function renderDiagram(content) {
                             console.log('mermaid: render diagram', { content });
+                            const { svg: svgGraph } = await mermaid.render('output', content);
 
-                            mermaid.render('output', content).then(({ svg: svgGraph }) => {
-                                document.getElementById('content').innerHTML = svgGraph;
-                                const svg = document.getElementById('content').querySelector('svg');
-                                const size = { width: svg.viewBox.baseVal.width, height: svg.viewBox.baseVal.height };
+                            document.getElementById('content').innerHTML = svgGraph;
+                            const svg = document.getElementById('content').querySelector('svg');
+                            const size = { width: svg.viewBox.baseVal.width, height: svg.viewBox.baseVal.height };
 
-                                console.log('mermaid: resize', size);
-                                sendAction({
-                                    action: '@webframe.resize',
-                                    size: {
-                                        aspectRatio: size.width / size.height,
-                                        maxHeight: size.height,
-                                        maxWidth: size.width,
-                                    }
-                                })
+                            console.log('mermaid: resize', size);
+                            sendAction({
+                                action: '@webframe.resize',
+                                size: {
+                                    aspectRatio: size.width / size.height,
+                                    maxHeight: size.height,
+                                    maxWidth: size.width,
+                                }
                             });
                         }
 
@@ -111,7 +133,7 @@ export default createIntegration({
                                 typeof event.data.state.content === 'string'
                             ) {
                                 const content = event.data.state.content;
-                                renderDiagram(content)
+                                pushRenderDiagram(content)
                             } else {
                              console.log('mermaid: invalid message', event.data);
                             }
