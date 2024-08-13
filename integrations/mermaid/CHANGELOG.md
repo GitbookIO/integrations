@@ -1,5 +1,11 @@
 # @gitbook/integration-mermaid
 
+## 0.1.4
+
+### Patch Changes
+
+-   f7a295b: Add bust cache parameter to mermaid iframe url
+
 ## 0.1.3
 
 ### Patch Changes
