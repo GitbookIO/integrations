@@ -1,5 +1,11 @@
 # @gitbook/integration-mermaid
 
+## 0.1.6
+
+### Patch Changes
+
+-   5a92f1b: Fix bug when mermaid block is quickly updated, using a rendering queue
+
 ## 0.1.5
 
 ### Patch Changes
