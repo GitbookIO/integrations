@@ -25,10 +25,13 @@ const diagramBlock = createComponent<
             maxAge: 86400,
         });
 
+        const url = new URL(environment.integration.urls.publicEndpoint);
+        url.searchParams.set('v', String(environment.integration.version));
+
         const output = (
             <webframe
                 source={{
-                    url: environment.integration.urls.publicEndpoint,
+                    url: url.toString(),
                 }}
                 aspectRatio={16 / 9}
                 data={{
