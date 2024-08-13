@@ -76,11 +76,14 @@ export default createIntegration({
                         mermaid.initialize({ startOnLoad: false });
 
                         function renderDiagram(content) {
+                            console.log('mermaid: render diagram', { content });
+
                             mermaid.render('output', content).then(({ svg: svgGraph }) => {
                                 document.getElementById('content').innerHTML = svgGraph;
                                 const svg = document.getElementById('content').querySelector('svg');
                                 const size = { width: svg.viewBox.baseVal.width, height: svg.viewBox.baseVal.height };
 
+                                console.log('mermaid: resize', size);
                                 sendAction({
                                     action: '@webframe.resize',
                                     size: {
@@ -109,11 +112,16 @@ export default createIntegration({
                             ) {
                                 const content = event.data.state.content;
                                 renderDiagram(content)
+                            } else {
+                             console.log('mermaid: invalid message', event.data);
                             }
                         });
 
-                        sendAction({
-                            action: '@webframe.ready'
+                        document.addEventListener("DOMContentLoaded", function(e) {
+                            console.log("mermaid: ready");
+                            sendAction({
+                                action: '@webframe.ready'
+                            });
                         });
                     </script>
                     <div id="content"></div>
