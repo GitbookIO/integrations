@@ -1,5 +1,23 @@
 # @gitbook/api
 
+## 0.60.0
+
+### Minor Changes
+
+-   dfbbfb0: Update API client with latest OpenAPI spec
+
+## 0.59.0
+
+### Minor Changes
+
+-   75466c1: Update API client with latest OpenAPI spec
+
+## 0.58.0
+
+### Minor Changes
+
+-   a04dfb8: Bump @gitbook/api to use the latest OpenAPI spec
+
 ## 0.57.0
 
 ### Minor Changes

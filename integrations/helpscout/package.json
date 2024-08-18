@@ -1,7 +1,7 @@
 {
     "name": "@gitbook/integration-helpscout",
     "private": true,
-    "version": "1.0.0",
+    "version": "1.1.0",
     "scripts": {
         "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
         "typecheck": "tsc --noEmit",

@@ -21,7 +21,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     { environment }: HelpScoutRuntimeContext
 ) => {
     const helpscoutID =
-        environment.spaceInstallation.configuration.helpscout_id ??
+        environment.spaceInstallation?.configuration?.helpscout_id ??
         environment.siteInstallation?.configuration?.helpscout_id ??
         'HelpScout ID not configured';
 
