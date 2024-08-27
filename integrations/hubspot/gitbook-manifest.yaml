@@ -6,7 +6,6 @@ previewImages:
 organization: d8f63b60-89ae-11e7-8574-5927d48c4877
 description: Plug your GitBook site to your HubSpot installation.
 visibility: public
-previewImages:
 script: ./src/index.ts
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
