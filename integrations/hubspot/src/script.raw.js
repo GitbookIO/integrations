@@ -1,4 +1,4 @@
-(function (h, u, b, s, p, o, t) {
+function loadScScript() {
     if (!u.getElementById(b)) {
         const trackingID = '<TO_REPLACE_SCRIPT_LOADER_ID>';
 
@@ -13,5 +13,13 @@
         s.appendChild(p);
         o = h._hsp = h._hsp || [];
         o.push(['setContentType', 'knowledge-article']);
+    }
+}
+
+(function (h, u, b, s, p, o, t) {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadScScript);
+    } else {
+        loadScScript();
     }
 })(window, document, 'hs-script-loader');
