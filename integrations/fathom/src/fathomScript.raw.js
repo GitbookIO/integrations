@@ -6,7 +6,7 @@
     element.setAttribute('data-spa', 'auto');
     element.src = 'https://cdn.usefathom.com/script.js';
 
-    // Add function to track external links https://github.com/GitbookIO/integrations/issues/450
+    // Function to track external links https://github.com/GitbookIO/integrations/issues/450
     element.onload = function () {
         if (trackExternalLinks === true || trackExternalLinks === 'true') {
             window.addEventListener('load', function (event) {
