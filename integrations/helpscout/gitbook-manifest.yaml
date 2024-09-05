@@ -30,14 +30,6 @@ secrets: {}
 contentSecurityPolicy:
     script-src: https://beacon-v2.helpscout.net;
 configurations:
-    space:
-        properties:
-            helpscout_id:
-                type: string
-                title: HelpScout ID
-                description: Your HelpScout integration ID.
-        required:
-            - helpscout_id
     site:
         properties:
             helpscout_id:
