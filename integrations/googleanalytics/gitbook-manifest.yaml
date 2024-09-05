@@ -51,14 +51,6 @@ summary: |
 categories:
     - analytics
 configurations:
-    space:
-        properties:
-            tracking_id:
-                type: string
-                title: Tracking ID
-                description: Look for this in your Google Analytics account.
-        required:
-            - tracking_id
     site:
         properties:
             tracking_id:

@@ -25,12 +25,8 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
         EU: 'https://eu.posthog.com',
         US: 'https://app.posthog.com',
     };
-    const projectApiKey =
-        environment.siteInstallation?.configuration?.projectApiKey ??
-        environment.spaceInstallation?.configuration?.projectApiKey;
-    const instanceAddress =
-        environment.siteInstallation?.configuration?.instanceAddress ??
-        environment.spaceInstallation?.configuration?.instanceAddress;
+    const projectApiKey = environment.siteInstallation?.configuration?.projectApiKey;
+    const instanceAddress = environment.siteInstallation?.configuration?.instanceAddress;
     if (!projectApiKey) {
         throw new Error(
             `The PostHog project API key is missing from the space configuration (ID: ${
