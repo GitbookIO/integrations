@@ -1,0 +1,70 @@
+import {
+    createIntegration,
+    FetchPublishScriptEventCallback,
+    RuntimeContext,
+    RuntimeEnvironment,
+} from '@gitbook/runtime';
+
+import script from './script.raw.js';
+
+type IntercomRuntimeContext = RuntimeContext<
+    RuntimeEnvironment<
+        {},
+        {
+            assistant_id?: string;
+            name?: string;
+            server_address?: string;
+            position?: string;
+            logo?: string;
+            theme_color?: string;
+            keyboard_shortcut?: string;
+            slack_community_url?: string;
+            disable_ask_a_person?: boolean;
+        }
+    >
+>;
+
+export const handleFetchEvent: FetchPublishScriptEventCallback = async (
+    event,
+    { environment }: IntercomRuntimeContext
+) => {
+    const config =
+        environment.siteInstallation?.configuration ?? environment.spaceInstallation?.configuration;
+    const assistantId = config?.assistant_id;
+
+    if (!assistantId) {
+        return;
+    }
+
+    const name = config?.name ?? '';
+    const serverAddress = config?.server_address ?? '';
+    const position = config?.position ?? '';
+    const logo = config?.logo ?? '';
+    const themeColor = config?.theme_color ?? '';
+    const keyboardShortcut = config?.keyboard_shortcut ?? '';
+    const slackCommunityUrl = config?.slack_community_url ?? '';
+    const disableAskAPerson = config?.disable_ask_a_person ? 'true' : '';
+
+    return new Response(
+        script
+            .replace('<ASSISTANT_ID>', assistantId)
+            .replace('<NAME>', name)
+            .replace('<SERVER_ADDRESS>', serverAddress)
+            .replace('<POSITION>', position)
+            .replace('<KEYBOARD_SHORTCUT>', keyboardShortcut)
+            .replace('<THEME_COLOR>', themeColor)
+            .replace('<BRAND_LOGO>', logo)
+            .replace('<SLACK_COMMUNITY_URL>', slackCommunityUrl)
+            .replace('<DISABLE_ASK_A_PERSON>', disableAskAPerson),
+        {
+            headers: {
+                'Content-Type': 'application/javascript',
+                'Cache-Control': 'max-age=604800',
+            },
+        }
+    );
+};
+
+export default createIntegration<IntercomRuntimeContext>({
+    fetch_published_script: handleFetchEvent,
+});
