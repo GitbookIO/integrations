@@ -6,7 +6,8 @@
     const keyboardShortcut = "<KEYBOARD_SHORTCUT>"
     const themeColor = "<THEME_COLOR>"
     const brandLogo = "<BRAND_LOGO>"
-    const slackCommunityUrl = "<SLACK_COMMUNITY_URL>"
+    const communityUrl = "<COMMUNITY_URL>"
+    const communityType = "<COMMUNITY_TYPE>"
     const disableAskAPerson = "<DISABLE_ASK_A_PERSON>"
 
     n = document.createElement("script");
@@ -30,8 +31,11 @@
     if(themeColor) {
         n.setAttribute('runllm-theme-color', themeColor)
     }
-    if(slackCommunityUrl) {
-        n.setAttribute('runllm-slack-community-url', slackCommunityUrl)
+    if(communityUrl) {
+        n.setAttribute('runllm-community-url', communityUrl)
+    }
+    if(communityType) {
+        n.setAttribute('runllm-community-type', communityType)
     }
     if(disableAskAPerson) {
         n.setAttribute('runllm-disable-ask-a-person', disableAskAPerson)

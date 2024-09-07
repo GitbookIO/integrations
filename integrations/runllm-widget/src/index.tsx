@@ -18,7 +18,8 @@ type IntercomRuntimeContext = RuntimeContext<
             logo?: string;
             theme_color?: string;
             keyboard_shortcut?: string;
-            slack_community_url?: string;
+            community_type?: string;
+            community_url?: string;
             disable_ask_a_person?: boolean;
         }
     >
@@ -42,7 +43,8 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     const logo = config?.logo ?? '';
     const themeColor = config?.theme_color ?? '';
     const keyboardShortcut = config?.keyboard_shortcut ?? '';
-    const slackCommunityUrl = config?.slack_community_url ?? '';
+    const communityType = config?.community_type ?? '';
+    const communityUrl = config?.community_url ?? '';
     const disableAskAPerson = config?.disable_ask_a_person ? 'true' : '';
 
     return new Response(
@@ -54,7 +56,8 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
             .replace('<KEYBOARD_SHORTCUT>', keyboardShortcut)
             .replace('<THEME_COLOR>', themeColor)
             .replace('<BRAND_LOGO>', logo)
-            .replace('<SLACK_COMMUNITY_URL>', slackCommunityUrl)
+            .replace('<COMMUNITY_URL>', communityUrl)
+            .replace('<COMMUNITY_TYPE>', communityType)
             .replace('<DISABLE_ASK_A_PERSON>', disableAskAPerson),
         {
             headers: {

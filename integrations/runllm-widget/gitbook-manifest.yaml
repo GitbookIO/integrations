@@ -78,16 +78,28 @@ configurations:
             theme_color:
                 type: string
                 title: Theme Color
-                description: Specify your brand color for the chat widget theming.
+                description: Specify your brand color to theme the widget.
             keyboard_shortcut:
                 type: string
                 title: Keyboard Shortcut
                 description: Sets the keyboard shortcut for activating the widget.
-                default: Mod+k
-            slack_community_url:
+                default: Mod+j
+            community_type:
                 type: string
-                title: Slack Community Url
-                description: URL used for users to join your Slack community.
+                title: Community Type
+                description: Specify a community type. The chat widget renders a button for your user to join.
+                default: ""
+
+                enum:
+                    - ""
+                    - "slack"
+                    - "discord"
+                    - "discourse"
+                    - "brand"
+            community_url:
+                type: string
+                title: Community Url
+                description: Specify a community url. The chat widget renders a button for your user to join.
             disable_ask_a_person:
                 type: boolean
                 title: Disable Ask-A-Person-Button
@@ -128,20 +140,33 @@ configurations:
             theme_color:
                 type: string
                 title: Theme Color
-                description: Specify your brand color for the chat widget theming.
+                description: Specify your brand color to theme the widget.
             keyboard_shortcut:
                 type: string
                 title: Keyboard Shortcut
                 description: Sets the keyboard shortcut for activating the widget.
-                default: Mod+k
-            slack_community_url:
+                default: Mod+j
+            community_type:
                 type: string
-                title: Slack Community Url
-                description: URL used for users to join your Slack community.
+                title: Community Type
+                description: Specify a community type. The chat widget renders a button for your user to join.
+                default: ""
+
+                enum:
+                    - ""
+                    - "slack"
+                    - "discord"
+                    - "discourse"
+                    - "brand"
+            community_url:
+                type: string
+                title: Community Url
+                description: Specify a community url. The chat widget renders a button for your user to join.
             disable_ask_a_person:
                 type: boolean
                 title: Disable Ask-A-Person-Button
                 description: Disable ask-a-person button when you have support email configured.
+
         required:
             - assistant_id
 secrets: {}
