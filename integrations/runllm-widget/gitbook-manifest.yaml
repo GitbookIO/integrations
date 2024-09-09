@@ -172,3 +172,7 @@ configurations:
 secrets: {}
 categories:
     - content
+previewImages:
+    - ./assets/modal.png
+    - ./assets/widget.png
+    - ./assets/session.png
