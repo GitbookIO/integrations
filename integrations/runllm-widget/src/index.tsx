@@ -45,7 +45,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     const keyboardShortcut = config?.keyboard_shortcut ?? '';
     const communityType = config?.community_type ?? '';
     const communityUrl = config?.community_url ?? '';
-    const disableAskAPerson = config?.disable_ask_a_person ? 'true' : '';
+    const disableAskAPerson = config?.disable_ask_a_person ? 'false' : '';
 
     return new Response(
         script
