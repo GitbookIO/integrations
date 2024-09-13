@@ -30,14 +30,6 @@ secrets: {}
 contentSecurityPolicy:
     script-src: cdn.getkoala.com https://*.getkoala.com;
 configurations:
-    space:
-        properties:
-            koala_key:
-                type: string
-                title: Koala Key
-                description: Available in Koala snippet https://cdn.getkoala.com/v1/<pk_xxxxxxxxxxxxxxxxxxx>/sdk.js
-        required:
-            - koala_key
     site:
         properties:
             koala_key:

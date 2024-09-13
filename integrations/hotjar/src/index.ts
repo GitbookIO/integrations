@@ -20,9 +20,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
     { environment }: HotjarRuntimeContext
 ) => {
-    const trackingId =
-        environment.siteInstallation?.configuration?.tracking_id ??
-        environment.spaceInstallation?.configuration?.tracking_id;
+    const trackingId = environment.siteInstallation?.configuration?.tracking_id;
     if (!trackingId) {
         throw new Error(
             `The Hotjar Site ID is missing from the configuration (ID: ${

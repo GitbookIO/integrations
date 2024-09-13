@@ -21,9 +21,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
     { environment }: FathomRuntimeContext
 ) => {
-    const siteId =
-        environment.siteInstallation?.configuration?.site_id ??
-        environment.spaceInstallation?.configuration?.site_id;
+    const siteId = environment.siteInstallation?.configuration?.site_id;
 
     if (!siteId) {
         return;

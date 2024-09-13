@@ -74,14 +74,6 @@ summary: |
 categories:
     - analytics
 configurations:
-    space:
-        properties:
-            app_id:
-                type: string
-                title: Application ID
-                description: You can find it in your Intercom account, under the "Installation" section of the "Settings" page.
-        required:
-            - app_id
     site:
         properties:
             app_id:

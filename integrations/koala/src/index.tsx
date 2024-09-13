@@ -20,10 +20,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
     { environment }: KoalaRuntimeContext
 ) => {
-    const koalaId =
-        environment.spaceInstallation?.configuration?.koala_key ??
-        environment.siteInstallation?.configuration?.koala_key ??
-        'Koala Key not configured';
+    const koalaId = environment.siteInstallation?.configuration?.koala_key;
 
     if (!koalaId) {
         return;

@@ -33,14 +33,6 @@ summary: |
 categories:
     - analytics
 configurations:
-    space:
-        properties:
-            tracking_id:
-                type: string
-                title: Client ID
-                description: Available in Reo.dev's Integration -> Documentation section
-        required:
-            - tracking_id
     site:
         properties:
             tracking_id:
