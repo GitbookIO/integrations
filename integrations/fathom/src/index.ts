@@ -34,7 +34,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
         environment.spaceInstallation?.configuration?.track_external_links ??
         false;
 
-    return new Response(script.replace('<TO_REPLACE>', `'${siteId}', ${trackExternalLinks}`), {
+    return new Response(script.replace('<TO_REPLACE>', `${siteId}, ${trackExternalLinks}`), {
         headers: {
             'Content-Type': 'application/javascript',
             'Cache-Control': 'max-age=604800',
