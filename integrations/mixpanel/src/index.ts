@@ -20,9 +20,8 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
     { environment }: MixpanelRuntimeContext
 ) => {
-    const projectToken =
-        environment.siteInstallation?.configuration?.project_token ??
-        environment.spaceInstallation?.configuration?.project_token;
+    const projectToken = environment.siteInstallation?.configuration?.project_token;
+
     if (!projectToken) {
         throw new Error(
             `The Mixpanel Project Token is missing from the configuration (ID: ${
