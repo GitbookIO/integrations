@@ -164,6 +164,13 @@ const previewModal = createComponent<{
 
         return (
             <modal size="fullscreen">
+                <modal size="fullscreen">
+                    <webframe
+                        source={{
+                            url: url.toString(),
+                        }}
+                    />
+                </modal>
                 <webframe
                     source={{
                         url: url.toString(),
