@@ -151,15 +151,15 @@ export const configBlock = createComponent<
                 await saveSpaceConfiguration(context, element.state);
                 return element;
 
-            // case 'step.go': {
-            //     return {
-            //         ...element,
-            //         state: {
-            //             ...element.state,
-            //             activeStepId: action.step,
-            //         },
-            //     };
-            // }
+            case 'step.go': {
+                return {
+                    ...element,
+                    state: {
+                        ...element.state,
+                        activeStepId: action.step,
+                    },
+                };
+            }
         }
     },
     render: async (element, context) => {
@@ -193,7 +193,10 @@ export const configBlock = createComponent<
                 <step
                     id="token"
                     title="Authenticate"
-                    nextStepId="project"
+                    onNext={{
+                        action: 'step.go',
+                        step: 'project',
+                    }}
                     completed={!!accessToken}
                 >
                     <card>
@@ -272,8 +275,14 @@ export const configBlock = createComponent<
                 <step
                     id="project"
                     title="Project"
-                    previousStepId="token"
-                    nextStepId="monorepo"
+                    onPrevious={{
+                        action: 'step.go',
+                        step: 'token',
+                    }}
+                    onNext={{
+                        action: 'step.go',
+                        step: 'monorepo',
+                    }}
                     completed={Boolean(element.state.project && element.state.branch)}
                 >
                     <markdown content="### Project" />
@@ -340,9 +349,15 @@ export const configBlock = createComponent<
                 <step
                     id="monorepo"
                     title="Monorepo"
-                    previousStepId="project"
-                    nextStepId="priority"
                     completed={true}
+                    onPrevious={{
+                        action: 'step.go',
+                        step: 'project',
+                    }}
+                    onNext={{
+                        action: 'step.go',
+                        step: 'priority',
+                    }}
                 >
                     <vstack>
                         <markdown content="### Monorepo" />
@@ -441,7 +456,18 @@ export const configBlock = createComponent<
                         ) : null}
                     </vstack>
                 </step>
-                <step id="priority" title="Sync" previousStepId="monorepo" completed={true}>
+                <step
+                    id="priority"
+                    title="Sync"
+                    onPrevious={{
+                        action: 'step.go',
+                        step: 'monorepo',
+                    }}
+                    onComplete={{
+                        action: 'save.configuration',
+                    }}
+                    completed={true}
+                >
                     <markdown content={`### Initial sync`} />
 
                     <hint>
@@ -451,20 +477,22 @@ export const configBlock = createComponent<
                         </text>
                     </hint>
 
-                    <card>
-                        <input
-                            label="GitLab to GitBook"
-                            hint="I write my content on GitLab. Content will be imported and replace the space content."
-                            element={<radio state="priority" value="gitlab" />}
-                        />
-                    </card>
-                    <card>
-                        <input
-                            label="GitBook to GitLab"
-                            hint="I write my content on GitBook. Content on GitLab will be replaced with the space content."
-                            element={<radio state="priority" value="gitbook" />}
-                        />
-                    </card>
+                    <vstack>
+                        <card>
+                            <input
+                                label="GitLab to GitBook"
+                                hint="I write my content on GitLab. Content will be imported and replace the space content."
+                                element={<radio state="priority" value="gitlab" />}
+                            />
+                        </card>
+                        <card>
+                            <input
+                                label="GitBook to GitLab"
+                                hint="I write my content on GitBook. Content on GitLab will be replaced with the space content."
+                                element={<radio state="priority" value="gitbook" />}
+                            />
+                        </card>
+                    </vstack>
                 </step>
             </stepper>
         );
