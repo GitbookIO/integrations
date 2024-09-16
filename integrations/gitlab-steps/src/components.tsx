@@ -182,14 +182,8 @@ export const configBlock = createComponent<
          */
         const versionHash = hash(element.props);
 
-        const explicitStepId = element.state.activeStepId;
-
-        console.log('explicitStepId', explicitStepId);
-
-        const activeStepId = explicitStepId;
-
         return (
-            <stepper activeStepId={activeStepId ?? 'token'}>
+            <stepper activeStepId={element.state.activeStepId ?? 'token'}>
                 <step
                     id="token"
                     title="Authenticate"
