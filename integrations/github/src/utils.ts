@@ -109,3 +109,27 @@ export function safeCompare(expected: string, actual: string) {
 
     return result === 0;
 }
+
+/**
+ * Project directory should be a relative path and not end with a slash.
+ * We make sure that the value is normalized.
+ */
+export function normalizeProjectDirectory(
+    projectDirectory: string | undefined
+): string | undefined {
+    if (typeof projectDirectory === 'undefined') {
+        return projectDirectory;
+    }
+
+    let relativeDirectory = projectDirectory.trim();
+
+    while (relativeDirectory.startsWith('/')) {
+        relativeDirectory = relativeDirectory.slice(1);
+    }
+
+    while (relativeDirectory.endsWith('/')) {
+        relativeDirectory = relativeDirectory.slice(0, -1);
+    }
+
+    return relativeDirectory;
+}
