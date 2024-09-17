@@ -28,9 +28,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     }
 
     const trackExternalLinks =
-        environment.siteInstallation?.configuration?.track_external_links ??
-        environment.spaceInstallation?.configuration?.track_external_links ??
-        false;
+        environment.siteInstallation?.configuration?.track_external_links ?? false;
 
     const updatedScript = script
         .replace('<TO_REPLACE_SITE_ID>', siteId)

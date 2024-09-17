@@ -36,18 +36,6 @@ summary: |
 categories:
     - analytics
 configurations:
-    space:
-        properties:
-            site_id:
-                type: string
-                title: Site ID
-                description: Look for this in your Fathom analytics account
-            track_external_links:
-                type: boolean
-                title: Track External Links
-                description: Enable tracking of clicks on external links
-        required:
-            - site_id
     site:
         properties:
             site_id:
