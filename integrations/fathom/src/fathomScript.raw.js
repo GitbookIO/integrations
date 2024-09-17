@@ -16,13 +16,17 @@
                         var currentHostname = window.location.hostname;
 
                         if (linkUrl.hostname !== currentHostname) {
+                            /*
+                            Use this to track domainName or separate domainParts
                             var domainParts = linkUrl.hostname.split('.');
                             var domainName =
                                 domainParts.length > 1
                                     ? domainParts[domainParts.length - 2]
                                     : domainParts[0];
+                            */
 
-                            window.fathom.trackEvent('External link clicked: ' + domainName);
+                            // We simply track the full url as an event.
+                            window.fathom.trackEvent('External link clicked: ' + linkUrl.href);
                         }
                     });
                 });
