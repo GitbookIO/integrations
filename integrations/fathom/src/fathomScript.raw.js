@@ -31,4 +31,4 @@
     };
 
     sibling.parentNode.insertBefore(element, sibling);
-})(document, '<TO_REPLACE>');
+})(document, '<TO_REPLACE_SITE_ID>', '<TO_REPLACE_TRACK_EXTERNAL_LINKS>');
