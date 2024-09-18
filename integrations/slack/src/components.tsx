@@ -34,12 +34,9 @@ export const configBlock = createComponent<
     },
     action: async (element, action, context) => {
         const { api } = context;
-        console.log('render', element.state, action);
 
         const installation = context.environment.installation;
         const spaceInstallation = context.environment.spaceInstallation;
-        console.log('installation', installation.configuration);
-        console.log('space installation', spaceInstallation.configuration);
 
         switch (action.action) {
             case 'select.defaultChannel':
@@ -76,13 +73,17 @@ export const configBlock = createComponent<
                         notifyVisibilityUpdate: action.notifyVisibilityUpdate,
                     },
                 };
+            case 'step.go': {
+                return {
+                    ...element,
+                    state: {
+                        ...element.state,
+                        activeStepId: action.step,
+                    },
+                };
+            }
             case 'save.config': {
-                //  update installation configuration
-                // const existingInstallation = await api.integrations.getIntegrationInstallation(
-                //     spaceInstallation.integration,
-                //     spaceInstallation.installation
-                // );
-                //
+                // TODO: handle errors
                 await api.integrations.updateIntegrationInstallation(
                     spaceInstallation.integration, // TODO installatio.integration doesn't exist for some reason
                     installation.id,
@@ -109,16 +110,6 @@ export const configBlock = createComponent<
                 );
 
                 return element;
-            }
-
-            case 'step.go': {
-                return {
-                    ...element,
-                    state: {
-                        ...element.state,
-                        activeStepId: action.step,
-                    },
-                };
             }
         }
     },
@@ -291,37 +282,3 @@ export const configBlock = createComponent<
         );
     },
 });
-
-// configurations:
-//     account:
-//         properties:
-//             oauth_credentials:
-//                 type: button
-//                 title: Connection
-//                 description: Authorization between Slack and GitBook.
-//                 button_text: Authorize
-//                 callback_url: /oauth
-//             default_channel:
-//                 type: string
-//                 title: Default Channel
-//                 description: Select a channel to post messages to, when none is configured for a specific space.
-//                 completion_url: /channels
-//         required:
-//             - oauth_credentials
-//             - default_channel
-//     space:
-//         properties:
-//             channel:
-//                 type: string
-//                 title: Channel
-//                 description: Select a channel to post messages related to this space.
-//                 completion_url: /channels
-//             notify_content_update:
-//                 type: boolean
-//                 title: Notify Content Update
-//                 description: Post a notification message every time the content of the space is updated.
-//                 default: true
-//             notify_visibility_update:
-//                 type: boolean
-//                 title: Notify Visibility Update
-//                 description: Post a notification message every time the visibility of the space is updated.
