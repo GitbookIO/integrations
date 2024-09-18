@@ -1,8 +1,11 @@
+import { StatusError } from 'itty-router';
+
 import removeMarkdown from 'remove-markdown';
 
 import { GitBookAPI } from '@gitbook/api';
 
-import { SlackInstallationConfiguration } from './configuration';
+import { SlackOrgInstallationConfiguration, SlackRuntimeContext } from './configuration';
+import { FullInstallationConfiguration } from './types';
 
 const SAVE_THREAD_MESSAGE = 'save';
 
@@ -56,7 +59,7 @@ export async function getInstallationConfig(context, externalId) {
         return {};
     }
 
-    const accessToken = (installation.configuration as SlackInstallationConfiguration)
+    const accessToken = (installation.configuration as SlackOrgInstallationConfiguration)
         .oauth_credentials?.access_token;
 
     return {
@@ -129,4 +132,40 @@ export function isAllowedToRespond(eventPayload: any) {
     const isExternalChannel = eventPayload.is_ext_shared_channel;
 
     return !bot_id && !isExternalChannel;
+}
+
+export type OAuthTokenCredentials = NonNullable<FullInstallationConfiguration['oauth_credentials']>;
+
+/**
+ * Extract the token credentials of the space installation configuration from the context
+ * This will throw an error if the access token is not defined.
+ */
+export function extractTokenCredentialsOrThrow(
+    context: SlackRuntimeContext
+): OAuthTokenCredentials {
+    const installation = context.environment.installation;
+    assertIsDefined(installation, {
+        label: 'spaceInstallation',
+    });
+
+    const config = installation.configuration;
+    assertIsDefined(config, { label: 'installationConfiguration' });
+
+    const oAuthCredentials = config?.oauth_credentials;
+    if (!oAuthCredentials?.access_token) {
+        throw new StatusError(401, 'Unauthorized: kindly re-authenticate!');
+    }
+
+    return oAuthCredentials;
+}
+
+export function assertIsDefined<T>(
+    value: T,
+    options: {
+        label: string;
+    }
+): asserts value is NonNullable<T> {
+    if (value === undefined || value === null) {
+        throw new Error(`Expected value (${options.label}) to be defined, but received ${value}`);
+    }
 }

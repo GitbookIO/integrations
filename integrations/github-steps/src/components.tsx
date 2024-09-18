@@ -531,7 +531,7 @@ export const configBlock = createComponent<
                         action: 'step.go',
                         step: 'extras',
                     }}
-                    onComplete={{
+                    onNext={{
                         action: 'save.config',
                     }}
                 >

@@ -184,6 +184,7 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
             // @ts-ignore
             const credentials = await extractCredentials(json);
             logger.debug(`exchange code for credentials`, credentials);
+            console.log(`exchange code for credentials`, credentials);
 
             const rawState = url.searchParams.get('state');
             if (!rawState) {

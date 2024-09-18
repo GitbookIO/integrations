@@ -1,6 +1,9 @@
 import { RuntimeContext, RuntimeEnvironment } from '@gitbook/runtime';
 
-export interface SlackInstallationConfiguration {
+/**
+ * Configuration for the Slack integration at the orgnaization level.
+ */
+export interface SlackOrgInstallationConfiguration {
     oauth_credentials?: {
         access_token: string;
     };
@@ -8,6 +11,9 @@ export interface SlackInstallationConfiguration {
     default_channel?: string;
 }
 
+/**
+ * Configuration for the Slack integration at the space level.
+ */
 export interface SlackSpaceInstallationConfiguration {
     channel?: string;
     notify_content_update?: boolean;
@@ -15,7 +21,7 @@ export interface SlackSpaceInstallationConfiguration {
 }
 
 export type SlackRuntimeEnvironment = RuntimeEnvironment<
-    SlackInstallationConfiguration,
+    SlackOrgInstallationConfiguration,
     SlackSpaceInstallationConfiguration
 >;
 

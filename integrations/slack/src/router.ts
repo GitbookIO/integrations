@@ -27,7 +27,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         base: new URL(
             environment.spaceInstallation?.urls?.publicEndpoint ||
                 environment.installation?.urls.publicEndpoint ||
-                environment.integration.urls.publicEndpoint,
+                environment.integration.urls.publicEndpoint
         ).pathname,
     });
 
@@ -43,7 +43,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             'commands',
             'channels:history',
             'im:history',
-        ].join(' '),
+        ].join(' ')
     );
 
     /*
@@ -51,27 +51,30 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
      */
     router.get(
         '/oauth',
-        createOAuthHandler({
-            clientId: environment.secrets.CLIENT_ID,
-            clientSecret: environment.secrets.CLIENT_SECRET,
-            // TODO: use the yaml as SoT for scopes
-            authorizeURL: `https://slack.com/oauth/v2/authorize?scope=${encodedScopes}`,
-            accessTokenURL: 'https://slack.com/api/oauth.v2.access',
-            extractCredentials: (response) => {
-                if (!response.ok) {
-                    throw new Error(
-                        `Failed to exchange code for access token ${JSON.stringify(response)}`,
-                    );
-                }
+        createOAuthHandler(
+            {
+                clientId: environment.secrets.CLIENT_ID,
+                clientSecret: environment.secrets.CLIENT_SECRET,
+                // TODO: use the yaml as SoT for scopes
+                authorizeURL: `https://slack.com/oauth/v2/authorize?scope=${encodedScopes}`,
+                accessTokenURL: 'https://slack.com/api/oauth.v2.access',
+                extractCredentials: (response) => {
+                    if (!response.ok) {
+                        throw new Error(
+                            `Failed to exchange code for access token ${JSON.stringify(response)}`
+                        );
+                    }
 
-                return {
-                    externalIds: [response.team.id],
-                    configuration: {
-                        oauth_credentials: { access_token: response.access_token },
-                    },
-                };
+                    return {
+                        externalIds: [response.team.id],
+                        configuration: {
+                            oauth_credentials: { access_token: response.access_token },
+                        },
+                    };
+                },
             },
-        }),
+            { replace: false }
+        )
     );
 
     /*
@@ -89,7 +92,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             app_mention: appMentionEventHandler,
             link_shared: unfurlLink,
         }),
-        acknowledgeSlackRequest,
+        acknowledgeSlackRequest
     );
 
     /* Handle shortcuts and interactivity via Slack UI blocks
@@ -101,7 +104,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         createSlackActionsHandler({
             queryLens,
         }),
-        acknowledgeSlackRequest,
+        acknowledgeSlackRequest
     );
 
     /* Handle slash commands
@@ -114,7 +117,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             '/gitbook': queryLensSlashHandler,
             '/gitbookstaging': queryLensSlashHandler, // needed to allow our staging app to co-exist with the prod app
         }),
-        acknowledgeSlackRequest,
+        acknowledgeSlackRequest
     );
 
     /*
@@ -126,6 +129,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         const completions = channels.map((channel) => ({
             label: channel.name,
             value: channel.id,
+            id: channel.id,
         }));
 
         return new Response(JSON.stringify(completions), {

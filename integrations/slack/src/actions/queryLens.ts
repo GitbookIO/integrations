@@ -8,7 +8,7 @@ import type {
 } from '@gitbook/api';
 
 import {
-    SlackInstallationConfiguration,
+    SlackOrgInstallationConfiguration,
     SlackRuntimeEnvironment,
     SlackRuntimeContext,
 } from '../configuration';
@@ -200,7 +200,7 @@ export async function queryLens({
         throw new Error('Installation not found');
     }
     // Authenticate as the installation
-    const accessToken = (installation.configuration as SlackInstallationConfiguration)
+    const accessToken = (installation.configuration as SlackOrgInstallationConfiguration)
         .oauth_credentials?.access_token;
 
     // strip a bot name if the user_id from the request is present in the query itself (specifically for a bot mention)

@@ -1,6 +1,7 @@
 import { ChangedRevisionPage, RevisionSemanticChangeType } from '@gitbook/api';
 import { createIntegration, EventCallback } from '@gitbook/runtime';
 
+import { configBlock } from './components';
 import { SlackRuntimeContext } from './configuration';
 import { handleFetchEvent } from './router';
 import { slackAPI } from './slack';
@@ -214,7 +215,7 @@ const handleSpaceVisibilityUpdated: EventCallback<
 
 export default createIntegration({
     fetch: handleFetchEvent,
-
+    components: [configBlock],
     events: {
         space_content_updated: handleSpaceContentUpdated,
         space_visibility_updated: handleSpaceVisibilityUpdated,

@@ -1,6 +1,6 @@
 import * as gitbook from '@gitbook/api';
 
-import { SlackInstallationConfiguration, SlackRuntimeContext } from './configuration';
+import { SlackOrgInstallationConfiguration, SlackRuntimeContext } from './configuration';
 import { slackAPI } from './slack';
 
 interface LinkSharedSlackEvent {
@@ -72,7 +72,7 @@ export async function unfurlLink(event: LinkSharedSlackEvent, context: SlackRunt
     );
 
     // Send the unfurls to Slack
-    const accessToken = (installation.configuration as SlackInstallationConfiguration)
+    const accessToken = (installation.configuration as SlackOrgInstallationConfiguration)
         .oauth_credentials?.access_token;
     if (accessToken) {
         await slackAPI(
