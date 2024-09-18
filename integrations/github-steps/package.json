@@ -1,5 +1,5 @@
 {
-    "name": "@gitbook/integration-github",
+    "name": "@gitbook/integration-github-steps",
     "version": "0.2.0",
     "private": true,
     "scripts": {

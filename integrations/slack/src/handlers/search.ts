@@ -1,7 +1,7 @@
 import type { SearchPageResult, SearchSectionResult, SearchSpaceResult } from '@gitbook/api';
 
 import type { SlashEvent } from '../commands';
-import { SlackInstallationConfiguration, SlackRuntimeContext } from '../configuration';
+import { SlackOrgInstallationConfiguration, SlackRuntimeContext } from '../configuration';
 import { slackAPI } from '../slack';
 
 /**
@@ -27,7 +27,7 @@ export async function searchInGitBook(slashEvent: SlashEvent, context: SlackRunt
         return {};
     }
 
-    const accessToken = (installation.configuration as SlackInstallationConfiguration)
+    const accessToken = (installation.configuration as SlackOrgInstallationConfiguration)
         .oauth_credentials?.access_token;
 
     await slackAPI(
