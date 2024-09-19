@@ -1,5 +1,11 @@
 # @gitbook/integration-github
 
+## 0.3.0
+
+### Minor Changes
+
+-   c3e0c55: GitHub & GitLab: Normalize project directory to always be a relative path
+
 ## 0.2.0
 
 ### Minor Changes
