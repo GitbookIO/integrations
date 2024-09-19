@@ -6,7 +6,12 @@ import { Logger } from '@gitbook/runtime';
 import { fetchRepository } from './api';
 import { triggerExport, triggerImport } from './sync';
 import { GithubConfigureState, GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
-import { assertIsDefined, BRANCH_REF_PREFIX, computeConfigQueryKey } from './utils';
+import {
+    assertIsDefined,
+    BRANCH_REF_PREFIX,
+    computeConfigQueryKey,
+    normalizeProjectDirectory,
+} from './utils';
 
 const logger = Logger('github:installation');
 
@@ -56,7 +61,7 @@ export async function saveSpaceConfiguration(
         branch: state.branch,
         commitMessageTemplate: state.commitMessageTemplate,
         previewExternalBranches: state.previewExternalBranches,
-        projectDirectory: state.projectDirectory,
+        projectDirectory: normalizeProjectDirectory(state.projectDirectory),
         priority: state.priority,
     };
 

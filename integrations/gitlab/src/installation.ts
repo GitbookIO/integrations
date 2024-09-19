@@ -7,7 +7,13 @@ import { fetchProject } from './api';
 import { createGitLabWebhookURL, installWebhook } from './provider';
 import { triggerExport, triggerImport } from './sync';
 import { GitlabConfigureState, GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { assertIsDefined, BRANCH_REF_PREFIX, computeConfigQueryKey, signResponse } from './utils';
+import {
+    assertIsDefined,
+    BRANCH_REF_PREFIX,
+    computeConfigQueryKey,
+    signResponse,
+    normalizeProjectDirectory,
+} from './utils';
 
 const logger = Logger('gitlab:installation');
 
@@ -50,7 +56,7 @@ export async function saveSpaceConfiguration(
         project: projectId,
         projectName: glProject.path_with_namespace,
         branch: state.branch,
-        projectDirectory: state.projectDirectory,
+        projectDirectory: normalizeProjectDirectory(state.projectDirectory),
         commitMessageTemplate: state.commitMessageTemplate,
         priority: state.priority,
         customInstanceUrl: state.customInstanceUrl,
