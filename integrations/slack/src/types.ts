@@ -1,6 +1,12 @@
 import type { RuntimeContext, RuntimeEnvironment } from '@gitbook/runtime';
 
-type SlackConfigureStepId = 'auth' | 'channels' | 'notifications';
+export enum SlackConfigureStep {
+    Auth = 'auth',
+    Channels = 'channels',
+    Notifications = 'notifications',
+}
+
+type SlackConfigureStepId = keyof typeof SlackConfigureStep;
 
 export type SlackConfigureAction =
     | { action: 'select.installation'; installation: string }
