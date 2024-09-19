@@ -1,5 +1,11 @@
 # @gitbook/integration-helpscout
 
+## 1.2.0
+
+### Minor Changes
+
+-   f3999b7: Updates all packages to remove the spaces configuration, and rely on the now used site configuration instead. Also removes instances of the spaces variable where applicable
+
 ## 1.1.0
 
 ### Minor Changes
