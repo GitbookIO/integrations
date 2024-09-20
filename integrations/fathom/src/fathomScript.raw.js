@@ -6,31 +6,24 @@
     element.setAttribute('data-spa', 'auto');
     element.src = 'https://cdn.usefathom.com/script.js';
 
-    // Function to track external links https://github.com/GitbookIO/integrations/issues/450
+    // Function to track external links
+    function trackExternalLink(event) {
+        var item = event.target.closest('a');
+        if (!item) return;
+
+        var linkUrl = new URL(item.getAttribute('href'), window.location.href);
+        var currentHostname = window.location.hostname;
+
+        if (linkUrl.hostname !== currentHostname) {
+            // We simply track the full url as an event.
+            window.fathom.trackEvent('External link clicked: ' + linkUrl.href);
+        }
+    }
+
     element.onload = function () {
         if (trackExternalLinks === true || trackExternalLinks === 'true') {
-            window.addEventListener('load', function (event) {
-                doc.querySelectorAll('a').forEach(function (item) {
-                    item.addEventListener('click', function (event) {
-                        var linkUrl = new URL(item.getAttribute('href'), window.location.href);
-                        var currentHostname = window.location.hostname;
-
-                        if (linkUrl.hostname !== currentHostname) {
-                            /*
-                            Use this to track domainName or separate domainParts
-                            var domainParts = linkUrl.hostname.split('.');
-                            var domainName =
-                                domainParts.length > 1
-                                    ? domainParts[domainParts.length - 2]
-                                    : domainParts[0];
-                            */
-
-                            // We simply track the full url as an event.
-                            window.fathom.trackEvent('External link clicked: ' + linkUrl.href);
-                        }
-                    });
-                });
-            });
+            // Use event delegation to capture clicks on all current and later loaded links
+            doc.addEventListener('click', trackExternalLink);
         }
     };
 
