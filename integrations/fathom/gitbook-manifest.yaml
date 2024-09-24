@@ -42,5 +42,9 @@ configurations:
                 type: string
                 title: Site ID
                 description: Look for this in your Fathom analytics account
+            track_external_links:
+                type: boolean
+                title: Track External Links
+                description: Enable tracking of clicks on external links
         required:
             - site_id

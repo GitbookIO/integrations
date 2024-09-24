@@ -12,6 +12,7 @@ type FathomRuntimeContext = RuntimeContext<
         {},
         {
             site_id?: string;
+            track_external_links?: boolean;
         }
     >
 >;
@@ -26,7 +27,14 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
         return;
     }
 
-    return new Response(script.replace('<TO_REPLACE>', siteId), {
+    const trackExternalLinks =
+        environment.siteInstallation?.configuration?.track_external_links ?? false;
+
+    const updatedScript = script
+        .replace('<TO_REPLACE_SITE_ID>', siteId)
+        .replace('<TO_REPLACE_TRACK_EXTERNAL_LINKS>', trackExternalLinks.toString());
+
+    return new Response(updatedScript, {
         headers: {
             'Content-Type': 'application/javascript',
             'Cache-Control': 'max-age=604800',
