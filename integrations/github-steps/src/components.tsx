@@ -10,9 +10,24 @@ import {
     GithubConfigureAction,
     GithubConfigureProps,
     GithubConfigureState,
+    GithubConfigureStep,
     GithubRuntimeContext,
 } from './types';
 import { assertIsDefined, getGitSyncCommitMessage, GITSYNC_DEFAULT_COMMIT_MESSAGE } from './utils';
+
+/** Constants for the stepper */
+
+const STEPPER_GO_ACTION = 'step.go';
+const STEPPER_COMPLETE_ACTION = 'save.config';
+const STEPPER_DEFAULT_STEP = GithubConfigureStep.Repository;
+
+const STEPPER_CHANGE = {
+    action: STEPPER_GO_ACTION,
+};
+
+const STEPPER_COMPLETE = {
+    action: STEPPER_COMPLETE_ACTION,
+};
 
 /**
  * ContentKit component to configure the GitHub integration.
@@ -99,17 +114,17 @@ export const configBlock = createComponent<
                         ),
                     },
                 };
-            case 'save.config': {
+            case STEPPER_COMPLETE_ACTION: {
                 await saveSpaceConfiguration(context, element.state);
                 return element;
             }
 
-            case 'step.go': {
+            case STEPPER_GO_ACTION: {
                 return {
                     ...element,
                     state: {
                         ...element.state,
-                        activeStepId: action.step,
+                        activeStep: action.step,
                     },
                 };
             }
@@ -141,17 +156,18 @@ export const configBlock = createComponent<
          */
         const versionHash = hash(element.props);
 
+        // If the user has already authenticated, we start at the channels step
+        const stepIdFromConfiguration = accessToken
+            ? STEPPER_DEFAULT_STEP
+            : GithubConfigureStep.Auth;
+
         return (
-            <stepper activeStepId={element.state.activeStepId ?? (accessToken ? 'repo' : 'auth')}>
-                <step
-                    id="auth"
-                    title="Authenticate"
-                    completed={!!accessToken}
-                    onNext={{
-                        action: 'step.go',
-                        step: 'repo',
-                    }}
-                >
+            <stepper
+                activeStep={element.state.activeStep ?? stepIdFromConfiguration}
+                onStepChange={STEPPER_CHANGE}
+                onComplete={STEPPER_COMPLETE}
+            >
+                <step id={GithubConfigureStep.Auth} title="Authenticate" next={!!accessToken}>
                     <input
                         label="Authenticate"
                         hint="Authenticate using your GitHub account"
@@ -181,22 +197,14 @@ export const configBlock = createComponent<
                     ) : null}
                 </step>
                 <step
-                    id="repo"
+                    id={GithubConfigureStep.Repository}
                     title="Repository"
-                    completed={Boolean(
+                    next={Boolean(
                         accessToken &&
                         element.state.installation &&
                         element.state.repository &&
                         element.state.branch
                     )}
-                    onPrevious={{
-                        action: 'step.go',
-                        step: 'auth',
-                    }}
-                    onNext={{
-                        action: 'step.go',
-                        step: 'extras',
-                    }}
                 >
                     <box>
                         <markdown content="### Account" />
@@ -367,19 +375,7 @@ export const configBlock = createComponent<
                         </vstack>
                     </box>
                 </step>
-                <step
-                    id="extras"
-                    title="Extras"
-                    onPrevious={{
-                        action: 'step.go',
-                        step: 'repo',
-                    }}
-                    onNext={{
-                        action: 'step.go',
-                        step: 'sync',
-                    }}
-                    completed={true}
-                >
+                <step id={GithubConfigureStep.Extras} title="Extras" next={true}>
                     <box>
                         {element.state.branch ? (
                             <>
@@ -523,18 +519,7 @@ export const configBlock = createComponent<
                         ) : null}
                     </box>
                 </step>
-                <step
-                    id="sync"
-                    title="Sync"
-                    completed={!disableInputElements}
-                    onPrevious={{
-                        action: 'step.go',
-                        step: 'extras',
-                    }}
-                    onNext={{
-                        action: 'save.config',
-                    }}
-                >
+                <step id={GithubConfigureStep.Sync} title="Sync" next={!disableInputElements}>
                     <vstack>
                         <markdown content={`### Initial sync`} />
 

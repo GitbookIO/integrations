@@ -57,7 +57,7 @@ export type SlackConfigureProps = {
 };
 
 export type SlackConfigureState = {
-    activeStepId?: SlackConfigureStepId;
+    active?: SlackConfigureStepId;
     accessToken?: string;
     defaultChannel?: string;
     spaceChannel?: string;

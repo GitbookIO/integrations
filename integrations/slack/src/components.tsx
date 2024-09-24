@@ -19,18 +19,18 @@ const STEPPER_GO = {
     action: STEPPER_ACTION,
 };
 
-const STEPPER_GO_AUTH = {
-    ...STEPPER_GO,
-    step: SlackConfigureStep.Auth,
-};
-const STEPPER_GO_CHANNELS = {
-    ...STEPPER_GO,
-    step: SlackConfigureStep.Channels,
-};
-const STEPPER_GO_NOTIFICATIONS = {
-    ...STEPPER_GO,
-    step: SlackConfigureStep.Notifications,
-};
+// const STEPPER_GO_AUTH = {
+//     ...STEPPER_GO,
+//     step: SlackConfigureStep.Auth,
+// };
+// const STEPPER_GO_CHANNELS = {
+//     ...STEPPER_GO,
+//     step: SlackConfigureStep.Channels,
+// };
+// const STEPPER_GO_NOTIFICATIONS = {
+//     ...STEPPER_GO,
+//     step: SlackConfigureStep.Notifications,
+// };
 
 /**
  * ContentKit component to configure the GitHub integration.
@@ -129,13 +129,14 @@ export const configBlock = createComponent<
                     ...element,
                     state: {
                         ...element.state,
-                        activeStepId: action.step,
+                        active: action.step,
                     },
                 };
             }
         }
     },
     render: async (element, context) => {
+        console.log('=== Render', JSON.stringify(element, null, 2));
         const installation = context.environment.installation;
         const spaceInstallation = context.environment.spaceInstallation;
 
@@ -154,17 +155,14 @@ export const configBlock = createComponent<
             ? STEPPER_DEFAULT_STEP
             : SlackConfigureStep.Auth;
 
+        console.log('=== Render', JSON.stringify(element.state, null, 2));
         return (
             <stepper
-                activeStepId={element.state.activeStepId ?? stepIdFromConfiguration}
+                activeStep={element.state.active ?? stepIdFromConfiguration}
                 onStepChange={STEPPER_GO}
+                onComplete={{ action: 'save.config' }}
             >
-                <step
-                    id={SlackConfigureStep.Auth}
-                    title="Authenticate"
-                    completed={Boolean(accessToken && element.state.defaultChannel)}
-                    onNext={STEPPER_GO_CHANNELS}
-                >
+                <step id={SlackConfigureStep.Auth} title="Authenticate" next={Boolean(accessToken)}>
                     <vstack>
                         <input
                             label="Authenticate"
@@ -185,9 +183,7 @@ export const configBlock = createComponent<
                 <step
                     id={SlackConfigureStep.Channels}
                     title="Channels"
-                    onPrevious={STEPPER_GO_AUTH}
-                    onNext={STEPPER_GO_NOTIFICATIONS}
-                    completed={Boolean(element.state.defaultChannel)}
+                    next={Boolean(accessToken && element.state.defaultChannel)}
                 >
                     <vstack>
                         <input
@@ -252,16 +248,7 @@ export const configBlock = createComponent<
                         />
                     </vstack>
                 </step>
-                <step
-                    id={SlackConfigureStep.Notifications}
-                    title="Notifications"
-                    completed={true}
-                    onPrevious={STEPPER_GO_CHANNELS}
-                    onNext={{
-                        action: 'save.config',
-                    }}
-                    nextLabel="Complete"
-                >
+                <step id={SlackConfigureStep.Notifications} title="Notifications" next={true}>
                     <vstack>
                         <input
                             label="Notify Content Update"
