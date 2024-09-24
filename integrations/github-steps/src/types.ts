@@ -13,13 +13,23 @@ export type GitHubSpaceConfiguration = {
 export type GithubRuntimeEnvironment = RuntimeEnvironment<{}, GitHubSpaceConfiguration>;
 export type GithubRuntimeContext = RuntimeContext<GithubRuntimeEnvironment>;
 
+export enum GithubConfigureStep {
+    Auth = 'auth',
+    Repository = 'repo',
+    Extras = 'extras',
+    Sync = 'sync',
+}
+
+type GithubConfigureStepId = keyof typeof GithubConfigureStep;
+
 export type GithubConfigureAction =
     | { action: 'select.installation'; installation: string }
     | { action: 'select.repository'; repository: string }
     | { action: 'select.branch'; branch: string }
     | { action: 'toggle.customTemplate'; withCustomTemplate: boolean }
     | { action: 'preview.commitMessage' }
-    | { action: 'save.config' };
+    | { action: 'save.config' }
+    | { action: 'step.go'; step: GithubConfigureStepId };
 
 type SpaceInstallationConfiguration = {
     /**
