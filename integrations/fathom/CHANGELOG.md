@@ -1,5 +1,11 @@
 # @gitbook/integration-fathom
 
+## 0.3.0
+
+### Minor Changes
+
+-   ca136a9: Add external link tracking to Fathom integration
+
 ## 0.2.0
 
 ### Minor Changes
