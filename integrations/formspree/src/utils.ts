@@ -34,3 +34,28 @@ export async function removeEmptyValues(object) {
     }
     return object;
 }
+
+/**
+ * Save the space configuration for the current space installation.
+ */
+export async function saveSpaceConfiguration(context, state) {
+    const { api, environment } = context;
+    const spaceInstallation = environment.spaceInstallation;
+
+    console.log('state trying to be saved: ', state);
+
+    // Save the space installation configuration
+    const { data } = await api.integrations.updateIntegrationSpaceInstallation(
+        spaceInstallation.integration,
+        spaceInstallation.installation,
+        spaceInstallation.space,
+        {
+            configuration: {
+                ...spaceInstallation.configuration,
+                ...state,
+            },
+        }
+    );
+
+    console.log('Just saved data: ', data.configuration);
+}
