@@ -129,7 +129,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         base: new URL(
             environment.spaceInstallation?.urls?.publicEndpoint ||
                 environment.installation?.urls.publicEndpoint ||
-                environment.integration.urls.publicEndpoint
+                environment.integration.urls.publicEndpoint,
         ).pathname,
     });
 
@@ -148,7 +148,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
             scopes: ['repo'],
             prompt: 'consent',
             extractCredentials,
-        })
+        }),
     );
 
     const response = await router.handle(request, context);
@@ -162,7 +162,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
 };
 
 const extractCredentials = async (
-    response: OAuthResponse
+    response: OAuthResponse,
 ): Promise<RequestUpdateIntegrationInstallation> => {
     const { access_token } = response;
 

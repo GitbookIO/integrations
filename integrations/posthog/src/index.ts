@@ -19,7 +19,7 @@ type PostHogRuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: PostHogRuntimeContext
+    { environment }: PostHogRuntimeContext,
 ) => {
     const instancesURLs = {
         EU: 'https://eu.posthog.com',
@@ -31,14 +31,14 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
         throw new Error(
             `The PostHog project API key is missing from the space configuration (ID: ${
                 'spaceId' in event ? event.spaceId : event.siteId
-            }).`
+            }).`,
         );
     }
     if (!instanceAddress) {
         throw new Error(
             `The PostHog instance address is missing from the space configuration (ID: ${
                 'spaceId' in event ? event.spaceId : event.siteId
-            }).`
+            }).`,
         );
     }
 
@@ -51,7 +51,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
                 'Content-Type': 'application/javascript',
                 'Cache-Control': 'max-age=604800',
             },
-        }
+        },
     );
 };
 

@@ -13,7 +13,7 @@ export async function getAPIClient(requireAuth: boolean = true): Promise<GitBook
 
     if (!authToken && requireAuth) {
         throw new Error(
-            'You must be authenticated before you can run this command.\n  Run "gitbook auth" to authenticate.'
+            'You must be authenticated before you can run this command.\n  Run "gitbook auth" to authenticate.',
         );
     }
 

@@ -69,7 +69,7 @@ program
     .option(
         '-o, --organization <organization>',
         'organization to publish to',
-        process.env.GITBOOK_ORGANIZATION
+        process.env.GITBOOK_ORGANIZATION,
     )
     .description('publish a new version of the integration')
     .action(async (filePath, options) => {
@@ -77,7 +77,7 @@ program
             await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath)),
             {
                 ...(options.organization ? { organization: options.organization } : {}),
-            }
+            },
         );
     });
 
@@ -131,6 +131,6 @@ checkNodeVersion({ node: '>= 18' }, (error, result) => {
         (error) => {
             console.error(error.message);
             process.exit(1);
-        }
+        },
     );
 });

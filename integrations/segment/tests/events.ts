@@ -1,5 +1,5 @@
-import * as assert from 'assert';
-import test from 'test';
+import * as assert from 'node:assert';
+import test from 'node:test';
 
 import * as api from '@gitbook/api';
 
@@ -68,7 +68,7 @@ test('events', async (t) => {
                 },
             });
             assert.equal(segmentEvent.anonymousId, 'segmentAnonymousId');
-        }
+        },
     );
 
     await t.test(
@@ -76,6 +76,6 @@ test('events', async (t) => {
         async () => {
             const segmentEvent = generateSegmentTrackEvent(fakeSpaceViewEvent);
             assert.equal(segmentEvent.anonymousId, 'gitbookAnonymousId');
-        }
+        },
     );
 });

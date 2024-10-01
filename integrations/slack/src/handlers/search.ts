@@ -42,13 +42,13 @@ export async function searchInGitBook(slashEvent: SlashEvent, context: SlackRunt
         },
         {
             accessToken,
-        }
+        },
     );
 
     // Authentify as the installation
     const installationApiClient = await api.createInstallationClient(
         environment.integration.name,
-        installation.id
+        installation.id,
     );
 
     const {
@@ -69,7 +69,7 @@ export async function searchInGitBook(slashEvent: SlashEvent, context: SlackRunt
         },
         {
             accessToken,
-        }
+        },
     );
 }
 
@@ -93,7 +93,7 @@ function buildSearchContentBlocks(query: string, items: SearchSpaceResult[]) {
                 }
                 return acc;
             },
-            [queryBlock]
+            [queryBlock],
         );
 
     return blocks.flat();

@@ -76,7 +76,7 @@ const getHeaders = (authorise: boolean, accessToken = '') => {
 
 const getGitlabApiResponse = async (
     headers: { 'User-Agent': string; Authorization?: string },
-    baseURL: string
+    baseURL: string,
 ) => {
     const res = await fetch(baseURL, { headers }).catch((err) => {
         throw new Error(`Error fetching content from ${baseURL}. ${err}`);
@@ -99,11 +99,11 @@ const fetchGitlabFile = async (
     projectName: string,
     filePath: string,
     ref: string,
-    accessToken: string
+    accessToken: string,
 ) => {
     const projectPath = `${nameSpace}/${projectName}`;
     const baseURL = `https://gitlab.com/api/v4/projects/${encodeURIComponent(
-        projectPath
+        projectPath,
     )}/repository/files/${encodeURIComponent(filePath).replace('.', '%2E')}?ref=${ref}`;
     const headers = getHeaders(accessToken !== '', accessToken);
 
@@ -120,7 +120,7 @@ export const getGitlabContent = async (url: string, context: GitlabRuntimeContex
         urlObject.projectName,
         urlObject.filePath.split('#')[0],
         urlObject.ref,
-        context.environment.installation.configuration.oauth_credentials?.access_token
+        context.environment.installation.configuration.oauth_credentials?.access_token,
     );
 
     if (content) {

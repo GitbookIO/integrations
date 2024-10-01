@@ -18,7 +18,7 @@ type IntercomRuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: IntercomRuntimeContext
+    { environment }: IntercomRuntimeContext,
 ) => {
     const appId = environment.siteInstallation?.configuration?.app_id;
 

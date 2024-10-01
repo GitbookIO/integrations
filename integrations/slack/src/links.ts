@@ -64,11 +64,11 @@ export async function unfurlLink(event: LinkSharedSlackEvent, context: SlackRunt
                 // we don't unfurl direct pages for security reasons, so we dedupe by collection here
                 if (!unfurls[content.collection.urls.app]) {
                     unfurls[content.collection.urls.app] = createBlocksForCollection(
-                        content.collection
+                        content.collection,
                     );
                 }
             }
-        })
+        }),
     );
 
     // Send the unfurls to Slack
@@ -89,7 +89,7 @@ export async function unfurlLink(event: LinkSharedSlackEvent, context: SlackRunt
 
             {
                 accessToken,
-            }
+            },
         );
     }
 
@@ -116,7 +116,7 @@ function createBlocksForSpace(space: gitbook.Space) {
                     {
                         type: 'mrkdwn',
                         text: `*Last updated:*\n<!date^${getUnixTimestamp(
-                            space.updatedAt
+                            space.updatedAt,
                         )}^{date} at {time}|${space.updatedAt}>`,
                     },
                 ],

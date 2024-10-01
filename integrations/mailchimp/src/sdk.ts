@@ -3,7 +3,7 @@
  */
 export async function getMailingLists(
     apiEndpoint: string,
-    accessToken: string
+    accessToken: string,
 ): Promise<MailchimpListItem[]> {
     const resp = await fetch(`${apiEndpoint}/3.0/lists`, {
         headers: {
@@ -35,7 +35,7 @@ export async function getUserMetadata(accessToken: string): Promise<MailchimpMet
 export async function subscribeUserToList(
     listId: string,
     email: string,
-    options: { apiEndpoint: string; accessToken: string }
+    options: { apiEndpoint: string; accessToken: string },
 ): Promise<void> {
     const { apiEndpoint, accessToken } = options;
 

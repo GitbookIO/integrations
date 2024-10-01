@@ -18,14 +18,14 @@ type HotjarRuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: HotjarRuntimeContext
+    { environment }: HotjarRuntimeContext,
 ) => {
     const trackingId = environment.siteInstallation?.configuration?.tracking_id;
     if (!trackingId) {
         throw new Error(
             `The Hotjar Site ID is missing from the configuration (ID: ${
                 'spaceId' in event ? event.spaceId : event.siteId
-            }).`
+            }).`,
         );
     }
 

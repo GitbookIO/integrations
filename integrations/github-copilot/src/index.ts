@@ -1,11 +1,7 @@
 import type { CopilotRequestPayload } from '@copilot-extensions/preview-sdk';
 import { Router } from 'itty-router';
 
-import {
-    createIntegration,
-    createOAuthHandler,
-    Logger,
-} from '@gitbook/runtime';
+import { createIntegration, createOAuthHandler, Logger } from '@gitbook/runtime';
 
 import { configurationComponent } from './configuration';
 import { streamCopilotResponse } from './copilot';
@@ -21,7 +17,7 @@ export default createIntegration({
         const router = Router({
             base: new URL(
                 environment.installation?.urls.publicEndpoint ||
-                    environment.integration.urls.publicEndpoint
+                    environment.integration.urls.publicEndpoint,
             ).pathname,
         });
 
@@ -32,7 +28,7 @@ export default createIntegration({
             '/oauth',
             createOAuthHandler(getGitHubOAuthConfiguration(ctx), {
                 replace: false,
-            })
+            }),
         );
 
         /**

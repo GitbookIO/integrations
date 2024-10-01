@@ -47,8 +47,8 @@ export async function tailLogs() {
             console.log('');
             console.log(
                 `[${event.status}][${new Date(event.createdAt).toISOString()}] ${JSON.stringify(
-                    event.payload
-                )}`
+                    event.payload,
+                )}`,
             );
 
             if (trace?.logs.length === 0) {

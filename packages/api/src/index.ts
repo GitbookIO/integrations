@@ -53,7 +53,7 @@ export class GitBookAPI extends Api<{
              * Authentication token to use.
              */
             authToken?: string;
-        } = {}
+        } = {},
     ) {
         const {
             endpoint = GITBOOK_DEFAULT_ENDPOINT,
@@ -117,12 +117,12 @@ export class GitBookAPI extends Api<{
      */
     public async createInstallationClient(
         integrationName: string,
-        installationId: string
+        installationId: string,
     ): Promise<GitBookAPI> {
         const { data: installationToken } =
             await this.integrations.createIntegrationInstallationToken(
                 integrationName,
-                installationId
+                installationId,
             );
 
         return new GitBookAPI({

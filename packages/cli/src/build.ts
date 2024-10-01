@@ -21,7 +21,7 @@ export async function buildScriptFromManifest(
     manifestSpecPath: string,
     options: {
         mode?: 'development' | 'production';
-    } = { mode: 'production' }
+    } = { mode: 'production' },
 ): Promise<BuildOutput> {
     const manifest = await readIntegrationManifest(manifestSpecPath);
     /**

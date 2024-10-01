@@ -18,7 +18,7 @@ export async function getJIRASites(accessToken: string): Promise<AccessibleResou
 
     // Find the JIRA sites and store their IDs and URLs.
     const sites = resources.filter((resource) =>
-        resource.scopes.find((scope) => scope.includes('jira'))
+        resource.scopes.find((scope) => scope.includes('jira')),
     );
 
     return sites;
@@ -33,7 +33,7 @@ export async function getJIRAIssue(
     options: {
         site: string;
         accessToken: string;
-    }
+    },
 ): Promise<JiraIssue> {
     const resp = await fetch(
         `https://api.atlassian.com/ex/jira/${options.site}/rest/api/3/issue/${issueIdOrKey}`,
@@ -42,7 +42,7 @@ export async function getJIRAIssue(
                 Authorization: `Bearer ${options.accessToken}`,
                 Accept: 'application/json',
             },
-        }
+        },
     );
 
     const issue = (await resp.json()) as JiraIssue;

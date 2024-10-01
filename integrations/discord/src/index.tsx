@@ -28,7 +28,7 @@ const handleFetchEvent: FetchEventCallback<DiscordRuntimeContext> = async (reque
         base: new URL(
             environment.spaceInstallation?.urls?.publicEndpoint ||
                 environment.installation?.urls.publicEndpoint ||
-                environment.integration.urls.publicEndpoint
+                environment.integration.urls.publicEndpoint,
         ).pathname,
     });
 
@@ -47,7 +47,7 @@ const handleFetchEvent: FetchEventCallback<DiscordRuntimeContext> = async (reque
             accessTokenURL: 'https://discord.com/api/oauth2/token',
             scopes: ['applications.commands', 'bot', 'webhook.incoming'],
             extractCredentials,
-        })
+        }),
     );
 
     const response = await router.handle(request, context);
@@ -60,7 +60,7 @@ const handleFetchEvent: FetchEventCallback<DiscordRuntimeContext> = async (reque
 };
 
 const extractCredentials = async (
-    response: OAuthResponseWebhook
+    response: OAuthResponseWebhook,
 ): Promise<RequestUpdateIntegrationInstallation> => {
     const { access_token, webhook } = response;
     return {

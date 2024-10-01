@@ -56,9 +56,11 @@
             send_page_view: false,
             anonymize_ip: true,
             groups: 'tracking_views',
-            ...(disableCookies ? {
-                client_storage: 'none',
-            } : {})
+            ...(disableCookies
+                ? {
+                      client_storage: 'none',
+                  }
+                : {}),
         });
         triggerView(win);
 

@@ -27,7 +27,7 @@ type IntercomRuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: IntercomRuntimeContext
+    { environment }: IntercomRuntimeContext,
 ) => {
     const config =
         environment.siteInstallation?.configuration ?? environment.spaceInstallation?.configuration;
@@ -64,7 +64,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
                 'Content-Type': 'application/javascript',
                 'Cache-Control': 'max-age=604800',
             },
-        }
+        },
     );
 };
 

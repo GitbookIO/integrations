@@ -21,7 +21,7 @@ const logger = Logger('github:webhooks');
 export async function verifyGitHubWebhookSignature(
     payload: string,
     signature: string,
-    secret: string
+    secret: string,
 ) {
     if (!signature) {
         throw new StatusError(400, 'No signature found on request');
@@ -50,7 +50,7 @@ export async function verifyGitHubWebhookSignature(
  */
 export async function handlePushEvent(
     context: GithubRuntimeContext,
-    payload: EventPayloadMap['push']
+    payload: EventPayloadMap['push'],
 ) {
     if (payload.installation) {
         const githubInstallationId = payload.installation.id;
@@ -58,7 +58,7 @@ export async function handlePushEvent(
         const githubRef = payload.ref;
 
         logger.info(
-            `handling push event on ref "${payload.ref}" of "${payload.repository.id}" (installation "${payload.installation.id}")`
+            `handling push event on ref "${payload.ref}" of "${payload.repository.id}" (installation "${payload.installation.id}")`,
         );
 
         const queryKey = computeConfigQueryKey(githubInstallationId, githubRepositoryId, githubRef);
@@ -79,7 +79,7 @@ export async function handlePushEvent(
  */
 export async function handlePullRequestEvents(
     context: GithubRuntimeContext,
-    payload: PullRequestOpenedEvent | PullRequestSynchronizeEvent
+    payload: PullRequestOpenedEvent | PullRequestSynchronizeEvent,
 ) {
     const eventType = `pull_request.${payload.action}`;
     const isPRFromFork = payload.pull_request.head.repo?.id !== payload.repository.id;
@@ -92,14 +92,14 @@ export async function handlePullRequestEvents(
         const githubRepositoryId = payload.repository.id;
 
         logger.info(
-            `handling ${eventType} event on ref "${headRef}" of "${payload.repository.id}" (installation "${payload.installation.id}")`
+            `handling ${eventType} event on ref "${headRef}" of "${payload.repository.id}" (installation "${payload.installation.id}")`,
         );
 
         const queryKey = computeConfigQueryKey(
             githubInstallationId,
             githubRepositoryId,
             baseRef,
-            isPRFromFork ? true : undefined
+            isPRFromFork ? true : undefined,
         );
 
         const total = await handleImportDispatchForSpaces(context, {

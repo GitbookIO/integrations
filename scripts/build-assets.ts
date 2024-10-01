@@ -37,7 +37,7 @@ const assetFilters = ['.png', '.svg', '.jpg', '.jpeg', '.webp'];
  */
 function listIntegrationPublicAssets(
     integration: string,
-    assetsFolderPath: string
+    assetsFolderPath: string,
 ): IntegrationPublicAsset[] {
     const integrationPublicAssetStats = fs.readdirSync(assetsFolderPath, {
         withFileTypes: true,
@@ -53,7 +53,7 @@ function listIntegrationPublicAssets(
             }
             return allFiles;
         },
-        []
+        [],
     );
 }
 
@@ -73,11 +73,11 @@ function listAllPublicFoldersContent() {
                 const integrationPublicFolderPath = path.join(
                     integrationsRootPath,
                     integrationName,
-                    'public'
+                    'public',
                 );
                 const integrationFunctionsFolderPath = path.join(
                     integrationPublicFolderPath,
-                    'functions'
+                    'functions',
                 );
 
                 if (
@@ -96,14 +96,14 @@ function listAllPublicFoldersContent() {
 
                 const integrationAssets = listIntegrationPublicAssets(
                     integrationName,
-                    integrationPublicFolderPath
+                    integrationPublicFolderPath,
                 );
 
                 return [...allAssets, ...integrationAssets];
             }
             return allAssets;
         },
-        []
+        [],
     );
 
     return {
@@ -123,16 +123,16 @@ async function writeAssetsToDistFolder(distFolder: string, assets: IntegrationPu
     await Promise.all(
         assets.map(async (asset) => {
             const assetFile = await fs.promises.readFile(
-                path.join(asset.assetsFolderPath, asset.assetFilename)
+                path.join(asset.assetsFolderPath, asset.assetFilename),
             );
             const assetDistFolderPath = path.join(distFolder, asset.integration);
             await fs.promises.mkdir(assetDistFolderPath, { recursive: true });
 
             await fs.promises.writeFile(
                 path.join(assetDistFolderPath, asset.assetFilename),
-                assetFile
+                assetFile,
             );
-        })
+        }),
     );
 }
 
@@ -141,7 +141,7 @@ async function writeAssetsToDistFolder(distFolder: string, assets: IntegrationPu
  */
 async function copyFunctionsToFunctionsFolder(
     functionsFolder: string,
-    functions: IntegrationFunctionsFolder[]
+    functions: IntegrationFunctionsFolder[],
 ) {
     if (fs.existsSync(functionsFolder)) {
         await fs.promises.rm(functionsFolder, { recursive: true });
@@ -152,9 +152,9 @@ async function copyFunctionsToFunctionsFolder(
             await fs.promises.cp(
                 integrationFunctions.functionsFolderPath,
                 path.join(functionsFolder, integrationFunctions.integration),
-                { recursive: true }
+                { recursive: true },
             );
-        })
+        }),
     );
 }
 

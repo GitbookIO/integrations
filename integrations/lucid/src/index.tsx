@@ -60,7 +60,7 @@ const handleFetchEvent: FetchEventCallback = async (request, context) => {
         base: new URL(
             environment.spaceInstallation?.urls?.publicEndpoint ||
                 environment.installation?.urls.publicEndpoint ||
-                environment.integration.urls.publicEndpoint
+                environment.integration.urls.publicEndpoint,
         ).pathname,
     });
 
@@ -69,10 +69,10 @@ const handleFetchEvent: FetchEventCallback = async (request, context) => {
             `<html>
                 <body>
                     <iframe id="lucid-embed" src="https://lucid.app/embeds/link?document=${new URL(
-                        request.url
+                        request.url,
                     ).searchParams.get('document')}&clientId=${
-                context.environment.secrets.CLIENT_ID
-            }" style="height:100%; width: 100%;" frameborder="0" border="0"></iframe>
+                        context.environment.secrets.CLIENT_ID
+                    }" style="height:100%; width: 100%;" frameborder="0" border="0"></iframe>
                 </body>
             </html>`,
             {
@@ -80,7 +80,7 @@ const handleFetchEvent: FetchEventCallback = async (request, context) => {
                     'Content-Type': 'text/html',
                     'Cache-Control': 'public, max-age=86400',
                 },
-            }
+            },
         );
     });
 

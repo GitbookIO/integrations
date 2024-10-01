@@ -11,7 +11,7 @@ import type { GitHubCopilotRuntimeContext } from './types';
 export async function* streamCopilotResponse(
     ctx: GitHubCopilotRuntimeContext,
     githubToken: string,
-    query: string | undefined
+    query: string | undefined,
 ): AsyncIterable<string> {
     const githubInstallations = await fetchGitHubInstallations(githubToken);
 
@@ -21,7 +21,7 @@ export async function* streamCopilotResponse(
             ctx.environment.integration.name,
             {
                 externalId: githubInstallation.id.toString(),
-            }
+            },
         );
 
         if (found.items[0]) {
@@ -32,7 +32,7 @@ export async function* streamCopilotResponse(
 
     if (!gitbookInstallation) {
         yield createTextEvent(
-            'GitBook For Copilot is not yet installed on your GitBook organization.\n\nTo get started, install the integration at https://app.gitbook.com/integrations/github-copilot\n\nThen come back and ask me anything!'
+            'GitBook For Copilot is not yet installed on your GitBook organization.\n\nTo get started, install the integration at https://app.gitbook.com/integrations/github-copilot\n\nThen come back and ask me anything!',
         );
         yield createDoneEvent();
         return;
@@ -46,7 +46,7 @@ export async function* streamCopilotResponse(
 
     const api = await ctx.api.createInstallationClient(
         ctx.environment.integration.name,
-        gitbookInstallation.id
+        gitbookInstallation.id,
     );
     const stream = api.orgs.streamAskInOrganization(gitbookInstallation.target.organization, {
         query,
@@ -83,7 +83,7 @@ export async function* streamCopilotResponse(
                         const { data: page } = await api.spaces.getPageInRevisionById(
                             source.space,
                             source.revision,
-                            source.page
+                            source.page,
                         );
 
                         return {
@@ -96,8 +96,8 @@ export async function* streamCopilotResponse(
                                 display_url: page.type === 'document' ? page.urls.app : undefined,
                             },
                         };
-                    })
-                )
+                    }),
+                ),
             );
         } catch (e) {
             console.error(e);

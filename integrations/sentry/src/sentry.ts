@@ -17,7 +17,7 @@ async function getToken(context: SentryRuntimeContext) {
  */
 export async function getIssue(
     issueId: string,
-    context: SentryRuntimeContext
+    context: SentryRuntimeContext,
 ): Promise<SentryIssue> {
     const token = await getToken(context);
 

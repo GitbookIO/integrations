@@ -79,7 +79,7 @@ export async function readIntegrationManifest(filePath: string): Promise<Integra
         return manifest;
     } catch (e) {
         throw new Error(
-            `Failed to read integration spec from ${prettyPath(filePath)}: ${e.message}`
+            `Failed to read integration spec from ${prettyPath(filePath)}: ${e.message}`,
         );
     }
 }
@@ -89,7 +89,7 @@ export async function readIntegrationManifest(filePath: string): Promise<Integra
  */
 export async function writeIntegrationManifest(
     filePath: string,
-    data: IntegrationManifest
+    data: IntegrationManifest,
 ): Promise<void> {
     const normalized = await validateIntegrationManifest(data);
     const content = yaml.dump(normalized);
@@ -125,37 +125,37 @@ async function getManifestSchema() {
             name: {
                 ...getAPIJsonSchemaFor(
                     openAPISpec,
-                    'components/schemas/Integration/properties/name'
+                    'components/schemas/Integration/properties/name',
                 ),
             },
             title: {
                 ...getAPIJsonSchemaFor(
                     openAPISpec,
-                    'components/schemas/Integration/properties/title'
+                    'components/schemas/Integration/properties/title',
                 ),
             },
             description: {
                 ...getAPIJsonSchemaFor(
                     openAPISpec,
-                    'components/schemas/Integration/properties/description'
+                    'components/schemas/Integration/properties/description',
                 ),
             },
             summary: {
                 ...getAPIJsonSchemaFor(
                     openAPISpec,
-                    'components/schemas/Integration/properties/summary'
+                    'components/schemas/Integration/properties/summary',
                 ),
             },
             visibility: {
                 ...getAPIJsonSchemaFor(
                     openAPISpec,
-                    'components/schemas/Integration/properties/visibility'
+                    'components/schemas/Integration/properties/visibility',
                 ),
             },
             target: {
                 ...getAPIJsonSchemaFor(
                     openAPISpec,
-                    'components/schemas/RequestPublishIntegration/properties/target'
+                    'components/schemas/RequestPublishIntegration/properties/target',
                 ),
             },
             icon: {
@@ -173,31 +173,31 @@ async function getManifestSchema() {
             externalLinks: {
                 ...getAPIJsonSchemaFor(
                     openAPISpec,
-                    'components/schemas/Integration/properties/externalLinks'
+                    'components/schemas/Integration/properties/externalLinks',
                 ),
             },
             scopes: {
                 ...getAPIJsonSchemaFor(
                     openAPISpec,
-                    'components/schemas/Integration/properties/scopes'
+                    'components/schemas/Integration/properties/scopes',
                 ),
             },
             blocks: {
                 ...getAPIJsonSchemaFor(
                     openAPISpec,
-                    'components/schemas/Integration/properties/blocks'
+                    'components/schemas/Integration/properties/blocks',
                 ),
             },
             categories: {
                 ...getAPIJsonSchemaFor(
                     openAPISpec,
-                    'components/schemas/Integration/properties/categories'
+                    'components/schemas/Integration/properties/categories',
                 ),
             },
             configurations: {
                 ...getAPIJsonSchemaFor(
                     openAPISpec,
-                    'components/schemas/Integration/properties/configurations'
+                    'components/schemas/Integration/properties/configurations',
                 ),
             },
             secrets: {
@@ -206,13 +206,13 @@ async function getManifestSchema() {
             contentSecurityPolicy: {
                 ...getAPIJsonSchemaFor(
                     openAPISpec,
-                    'components/schemas/IntegrationContentSecurityPolicy'
+                    'components/schemas/IntegrationContentSecurityPolicy',
                 ),
             },
             organization: {
                 ...getAPIJsonSchemaFor(
                     openAPISpec,
-                    'components/schemas/RequestPublishIntegration/properties/organization'
+                    'components/schemas/RequestPublishIntegration/properties/organization',
                 ),
             },
         },
@@ -232,7 +232,7 @@ function interpolateSecrets(secrets: { [key: string]: string }): { [key: string]
             const secretEnvVar = process.env[envVar];
             if (!secretEnvVar) {
                 throw new Error(
-                    `Missing environment variable: "${envVar}" used for secret "${key}"`
+                    `Missing environment variable: "${envVar}" used for secret "${key}"`,
                 );
             }
 

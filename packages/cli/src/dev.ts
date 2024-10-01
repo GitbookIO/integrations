@@ -72,7 +72,7 @@ export async function startIntegrationsDevServer(space: string | undefined) {
 
     spinner.succeed(`Dev server started on ${port} 🔥`);
     spinner.info(
-        `Integration events originating from space (${devConfig.space}) will be dispatched to your locally running version of the integration.`
+        `Integration events originating from space (${devConfig.space}) will be dispatched to your locally running version of the integration.`,
     );
 
     /**
@@ -127,7 +127,7 @@ async function readDevConfig(configFilePath: string): Promise<GitBookDevConfig> 
         return config;
     } catch (e) {
         throw new Error(
-            `Failed to read dev config from ${prettyPath(configFilePath)}: ${e.message}`
+            `Failed to read dev config from ${prettyPath(configFilePath)}: ${e.message}`,
         );
     }
 }
@@ -142,7 +142,7 @@ async function writeDevConfig(configFilePath: string, config: GitBookDevConfig):
         await fs.promises.writeFile(configFilePath, configContent, 'utf8');
     } catch (e) {
         throw new Error(
-            `Failed to write dev config to ${prettyPath(configFilePath)}: ${e.message}`
+            `Failed to write dev config to ${prettyPath(configFilePath)}: ${e.message}`,
         );
     }
 }

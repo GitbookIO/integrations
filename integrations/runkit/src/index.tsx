@@ -72,7 +72,7 @@ const handleFetchEvent: FetchEventCallback<RuntimeContext> = async (request, con
         base: new URL(
             environment.spaceInstallation?.urls?.publicEndpoint ||
                 environment.installation?.urls.publicEndpoint ||
-                environment.integration.urls.publicEndpoint
+                environment.integration.urls.publicEndpoint,
         ).pathname,
     });
 
@@ -88,7 +88,7 @@ const handleFetchEvent: FetchEventCallback<RuntimeContext> = async (request, con
                     'Content-Type': 'text/html',
                     'Cache-Control': cacheControl,
                 },
-            })
+            }),
     );
 
     const response = await router.handle(request, context);

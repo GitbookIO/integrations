@@ -18,7 +18,7 @@ type HelpScoutRuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: HelpScoutRuntimeContext
+    { environment }: HelpScoutRuntimeContext,
 ) => {
     const helpscoutID = environment.siteInstallation?.configuration?.helpscout_id;
 

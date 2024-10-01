@@ -18,14 +18,14 @@ type HeapRuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: HeapRuntimeContext
+    { environment }: HeapRuntimeContext,
 ) => {
     const trackingId = environment.siteInstallation?.configuration?.tracking_id;
     if (!trackingId) {
         throw new Error(
             `The Heap environment ID is missing from the configuration (ID: ${
                 'spaceId' in event ? event.spaceId : event.siteId
-            }).`
+            }).`,
         );
     }
 

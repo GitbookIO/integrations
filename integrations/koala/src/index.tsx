@@ -18,7 +18,7 @@ type KoalaRuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: KoalaRuntimeContext
+    { environment }: KoalaRuntimeContext,
 ) => {
     const koalaId = environment.siteInstallation?.configuration?.koala_key;
 

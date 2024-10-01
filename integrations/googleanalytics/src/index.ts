@@ -18,7 +18,7 @@ type GARuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: GARuntimeContext
+    { environment }: GARuntimeContext,
 ) => {
     const trackingId = environment.siteInstallation?.configuration?.tracking_id;
     if (!trackingId) {

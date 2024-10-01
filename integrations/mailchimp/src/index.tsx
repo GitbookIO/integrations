@@ -64,7 +64,7 @@ const mailchimpSubscribe = createComponent<
                     const listId = await resolveMailingListId(
                         element.props.listId,
                         configuration.api_endpoint,
-                        configuration.oauth_credentials?.access_token
+                        configuration.oauth_credentials?.access_token,
                     );
 
                     if (!listId) {
@@ -159,7 +159,7 @@ const mailchimpSubscribe = createComponent<
 async function resolveMailingListId(
     propListId: string,
     apiEndpoint: string,
-    accessToken: string
+    accessToken: string,
 ): Promise<string | undefined> {
     if (propListId) {
         return propListId;
@@ -203,7 +203,7 @@ const settingsModal = createComponent<
 
         const lists = await getMailingLists(
             configuration.api_endpoint,
-            configuration.oauth_credentials?.access_token
+            configuration.oauth_credentials?.access_token,
         );
 
         return (
@@ -267,7 +267,7 @@ export default createIntegration<MailchimpRuntimeContext>({
             base: new URL(
                 environment.spaceInstallation?.urls?.publicEndpoint ||
                     environment.installation?.urls.publicEndpoint ||
-                    environment.integration.urls.publicEndpoint
+                    environment.integration.urls.publicEndpoint,
             ).pathname,
         });
 
@@ -286,8 +286,8 @@ export default createIntegration<MailchimpRuntimeContext>({
                     if (!response.access_token) {
                         throw new Error(
                             `Could not extract access_token from response ${JSON.stringify(
-                                response
-                            )}`
+                                response,
+                            )}`,
                         );
                     }
 
@@ -302,7 +302,7 @@ export default createIntegration<MailchimpRuntimeContext>({
                         },
                     };
                 },
-            })
+            }),
         );
 
         const response = await router.handle(request, context);

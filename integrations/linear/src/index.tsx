@@ -38,7 +38,7 @@ function renderGenericCard(url: string, context: LinearRuntimeContext): ContentK
 function getIssueIconsURLs(
     context: LinearRuntimeContext,
     issueQueryResponse: IssueQuery,
-    theme: string
+    theme: string,
 ) {
     const { issue } = issueQueryResponse;
     const { state, priorityLabel: priority } = issue;
@@ -111,7 +111,7 @@ const embedBlock = createComponent<{
         } catch (error) {
             logger.info(
                 `API Error when fetching the issue (ID: ${issueId})`,
-                JSON.stringify(error)
+                JSON.stringify(error),
             );
             // Fallback to displaying a generic card on error
             return renderGenericCard(element.props.url, context);
@@ -219,7 +219,7 @@ const previewModal = createComponent<{
         } catch (error) {
             logger.info(
                 `API Error when fetching the issue (ID: ${issueId})`,
-                JSON.stringify(error)
+                JSON.stringify(error),
             );
             return renderGenericModal(element.props.url, context);
         }

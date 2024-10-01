@@ -71,7 +71,7 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                             configuration: {
                                 ...configurationBody,
                             },
-                        }
+                        },
                     );
                 } else {
                     await api.integrations.updateIntegrationSpaceInstallation(
@@ -82,7 +82,7 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                             configuration: {
                                 ...configurationBody,
                             },
-                        }
+                        },
                     );
                 }
                 return element;
@@ -211,7 +211,7 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                 try {
                     token = await sign(
                         { exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60) },
-                        privateKey
+                        privateKey,
                     );
                 } catch (e) {
                     return new Response('Error: Could not sign JWT token', {
@@ -262,7 +262,7 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                                 "Error: Either JWT token or space's published URL is missing",
                                 {
                                     status: 500,
-                                }
+                                },
                             );
                         }
                     } else {
@@ -270,7 +270,7 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                         logger.debug(
                             `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
                                 (resp && resp.error_description) || ''
-                            }`
+                            }`,
                         );
                         return new Response('Error: No Access Token found in response from Okta', {
                             status: 401,

@@ -51,7 +51,7 @@ export function createComponent<
     Props extends PlainObject = {},
     State extends PlainObject = {},
     Action = void,
-    Context extends RuntimeContext = RuntimeContext
+    Context extends RuntimeContext = RuntimeContext,
 >(component: {
     /**
      * Unique identifier for the component in the integration.

@@ -18,7 +18,7 @@ type MixpanelRuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: MixpanelRuntimeContext
+    { environment }: MixpanelRuntimeContext,
 ) => {
     const projectToken = environment.siteInstallation?.configuration?.project_token;
 
@@ -26,7 +26,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
         throw new Error(
             `The Mixpanel Project Token is missing from the configuration (ID: ${
                 'spaceId' in event ? event.spaceId : event.siteId
-            }).`
+            }).`,
         );
     }
 

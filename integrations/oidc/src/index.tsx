@@ -78,7 +78,7 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                     client_id: element.state.client_id,
                     client_secret: element.state.client_secret,
                     authorization_endpoint: getDomainWithHttps(
-                        element.state.authorization_endpoint
+                        element.state.authorization_endpoint,
                     ),
                     access_token_endpoint: getDomainWithHttps(element.state.access_token_endpoint),
                     scope: element.state.scope,
@@ -92,7 +92,7 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                             configuration: {
                                 ...configurationBody,
                             },
-                        }
+                        },
                     );
                 } else {
                     await api.integrations.updateIntegrationSpaceInstallation(
@@ -103,7 +103,7 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                             configuration: {
                                 ...configurationBody,
                             },
-                        }
+                        },
                     );
                 }
                 return element;
@@ -279,7 +279,7 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                 try {
                     token = await sign(
                         { exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60) },
-                        privateKey
+                        privateKey,
                     );
                 } catch (e) {
                     return new Response('Error: Could not sign JWT token', {
@@ -311,7 +311,7 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                                 'Error: Could not fetch access token from your authentication provider',
                                 {
                                     status: 401,
-                                }
+                                },
                             );
                         });
 
@@ -333,7 +333,7 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                                 "Error: Either JWT token or space's published URL is missing",
                                 {
                                     status: 500,
-                                }
+                                },
                             );
                         }
                     } else {
@@ -341,13 +341,13 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                         logger.debug(
                             `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
                                 (resp && resp.error_description) || ''
-                            }`
+                            }`,
                         );
                         return new Response(
                             'Error: No Access Token found in response from your OIDC provider',
                             {
                                 status: 401,
-                            }
+                            },
                         );
                     }
                 } else {

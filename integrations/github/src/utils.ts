@@ -19,7 +19,7 @@ export function getGitSyncCommitMessage(
     context: {
         change_request_number: number;
         change_request_subject: string;
-    }
+    },
 ): string {
     const usingCustomTemplate = !!templateInput;
     const template = usingCustomTemplate ? templateInput : GITSYNC_DEFAULT_COMMIT_MESSAGE;
@@ -51,7 +51,7 @@ export function getGitSyncStateDescription(state: GitSyncOperationState): string
  * This will throw an error if the space installation configuration is not defined.
  */
 export function getSpaceConfigOrThrow(
-    spaceInstallation: IntegrationSpaceInstallation
+    spaceInstallation: IntegrationSpaceInstallation,
 ): GitHubSpaceConfiguration {
     const config = spaceInstallation.configuration as GitHubSpaceConfiguration | undefined;
     assertIsDefined(config, { label: 'spaceInstallationConfiguration' });
@@ -67,7 +67,7 @@ export function computeConfigQueryKey(
     installationId: number,
     repoID: number,
     ref: string,
-    previewExternalBranches?: boolean
+    previewExternalBranches?: boolean,
 ): string {
     const base = `ins:${installationId}:rep:${repoID}:br:${ref}`;
     return previewExternalBranches ? `${base}:prv:${previewExternalBranches}` : base;
@@ -77,7 +77,7 @@ export function assertIsDefined<T>(
     value: T,
     options: {
         label: string;
-    }
+    },
 ): asserts value is NonNullable<T> {
     if (value === undefined || value === null) {
         throw new Error(`Expected value (${options.label}) to be defined, but received ${value}`);
@@ -115,7 +115,7 @@ export function safeCompare(expected: string, actual: string) {
  * We make sure that the value is normalized.
  */
 export function normalizeProjectDirectory(
-    projectDirectory: string | undefined
+    projectDirectory: string | undefined,
 ): string | undefined {
     if (typeof projectDirectory === 'undefined') {
         return projectDirectory;

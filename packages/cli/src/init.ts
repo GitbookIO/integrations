@@ -77,7 +77,7 @@ export async function promptNewIntegration(dir?: string): Promise<void> {
 
     if (await fileExists(path.join(dirPath, DEFAULT_MANIFEST_FILE))) {
         throw new Error(
-            `\n❌ The path ${dirPath} already contains a ${DEFAULT_MANIFEST_FILE} file.`
+            `\n❌ The path ${dirPath} already contains a ${DEFAULT_MANIFEST_FILE} file.`,
         );
     }
 
@@ -98,7 +98,7 @@ export async function initializeProject(
         title: string;
         organization: string;
         scopes: IntegrationScope[];
-    }
+    },
 ) {
     const srcPath = path.join(dirPath, 'src');
     const scriptPath = path.join(srcPath, 'index.tsx');

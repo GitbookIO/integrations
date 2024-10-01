@@ -59,7 +59,7 @@ configurations:
             server_address:
                 type: string
                 title: Server Address
-                default: "https://api.runllm.com"
+                default: 'https://api.runllm.com'
                 description: Your RunLLM server address. If you are unsure, please contact RunLLM.
             position:
                 type: string
@@ -88,14 +88,14 @@ configurations:
                 type: string
                 title: Community Type
                 description: Specify a community type. The chat widget renders a button for your user to join.
-                default: ""
+                default: ''
 
                 enum:
-                    - ""
-                    - "slack"
-                    - "discord"
-                    - "discourse"
-                    - "brand"
+                    - ''
+                    - 'slack'
+                    - 'discord'
+                    - 'discourse'
+                    - 'brand'
             community_url:
                 type: string
                 title: Community Url
@@ -121,7 +121,7 @@ configurations:
             server_address:
                 type: string
                 title: Server Address
-                default: "https://api.runllm.com"
+                default: 'https://api.runllm.com'
                 description: Your RunLLM server address. If you are unsure, please contact RunLLM.
             position:
                 type: string
@@ -150,14 +150,14 @@ configurations:
                 type: string
                 title: Community Type
                 description: Specify a community type. The chat widget renders a button for your user to join.
-                default: ""
+                default: ''
 
                 enum:
-                    - ""
-                    - "slack"
-                    - "discord"
-                    - "discourse"
-                    - "brand"
+                    - ''
+                    - 'slack'
+                    - 'discord'
+                    - 'discourse'
+                    - 'brand'
             community_url:
                 type: string
                 title: Community Url

@@ -19,7 +19,7 @@ type PlausibleRuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: PlausibleRuntimeContext
+    { environment }: PlausibleRuntimeContext,
 ) => {
     const domain = environment.siteInstallation?.configuration?.domain;
     const api = environment.siteInstallation?.configuration?.api || '';

@@ -156,7 +156,7 @@ export default createIntegration({
                     'Content-Type': 'text/html',
                     'Cache-Control': 'public, max-age=86400',
                 },
-            }
+            },
         );
     },
     components: [diagramBlock],

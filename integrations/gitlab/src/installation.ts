@@ -22,7 +22,7 @@ const logger = Logger('gitlab:installation');
  */
 export async function saveSpaceConfiguration(
     context: GitLabRuntimeContext,
-    state: GitlabConfigureState
+    state: GitlabConfigureState,
 ) {
     const { api, environment } = context;
     const spaceInstallation = environment.spaceInstallation;
@@ -63,7 +63,7 @@ export async function saveSpaceConfiguration(
     };
 
     logger.debug(
-        `Saving config for space ${spaceInstallation.space} of integration-installation ${spaceInstallation.installation}`
+        `Saving config for space ${spaceInstallation.space} of integration-installation ${spaceInstallation.installation}`,
     );
 
     // Save the space installation configuration
@@ -75,7 +75,7 @@ export async function saveSpaceConfiguration(
             {
                 externalIds,
                 configuration: configurationBody,
-            }
+            },
         );
 
     logger.info(`Saved config for space ${spaceInstallation.space}`);
@@ -99,12 +99,12 @@ export async function saveSpaceConfiguration(
     if (!configurationBody.webhookId) {
         const webhookToken = await signResponse(
             environment.integration.name,
-            environment.signingSecrets.integration
+            environment.signingSecrets.integration,
         );
         await installWebhook(
             updatedSpaceInstallation,
             createGitLabWebhookURL(context),
-            webhookToken
+            webhookToken,
         ).then(async (id) => {
             return api.integrations.updateIntegrationSpaceInstallation(
                 spaceInstallation.integration,
@@ -115,7 +115,7 @@ export async function saveSpaceConfiguration(
                         ...configurationBody,
                         webhookId: id,
                     },
-                }
+                },
             );
         });
     }
@@ -130,13 +130,13 @@ export async function querySpaceInstallations(
     options: {
         page?: string;
         limit?: number;
-    } = {}
+    } = {},
 ): Promise<{ data: Array<IntegrationSpaceInstallation>; nextPage?: string; total?: number }> {
     const { api, environment } = context;
     const { page, limit = 100 } = options;
 
     logger.debug(
-        `Querying space installations for external ID ${externalId} (${JSON.stringify(options)})`
+        `Querying space installations for external ID ${externalId} (${JSON.stringify(options)})`,
     );
 
     const { data } = await api.integrations.listIntegrationSpaceInstallations(
@@ -145,7 +145,7 @@ export async function querySpaceInstallations(
             limit,
             externalId,
             page,
-        }
+        },
     );
 
     return {

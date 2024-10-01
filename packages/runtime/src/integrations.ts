@@ -44,7 +44,7 @@ interface IntegrationRuntimeDefinition<Context extends RuntimeContext = RuntimeC
  * Create and initialize an integration runtime.
  */
 export function createIntegration<Context extends RuntimeContext = RuntimeContext>(
-    definition: IntegrationRuntimeDefinition<Context>
+    definition: IntegrationRuntimeDefinition<Context>,
 ) {
     const { events = {}, components = [] } = definition;
 
@@ -72,7 +72,7 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
             const fetchBody = formData.get('fetch-body');
             const context = createContext(
                 JSON.parse(formData.get('environment') as string) as IntegrationEnvironment,
-                ev.waitUntil.bind(ev) // internally, waitUntil contains a check on 'this' to ensure this === FetchEvent so we bind it here before passing it down
+                ev.waitUntil.bind(ev), // internally, waitUntil contains a check on 'this' to ensure this === FetchEvent so we bind it here before passing it down
             ) as Context;
 
             if (event.type === 'fetch' && definition.fetch) {
@@ -88,8 +88,8 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                 const resp = await definition.fetch(request, context);
                 logger.debug(
                     `response ${resp.status} ${resp.statusText} Content-Type: ${resp.headers.get(
-                        'content-type'
-                    )}`
+                        'content-type',
+                    )}`,
                 );
                 return resp;
             }
@@ -111,8 +111,8 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
 
                 logger.debug(
                     `response ${resp.status} ${resp.statusText} Content-Type: ${resp.headers.get(
-                        'content-type'
-                    )}`
+                        'content-type',
+                    )}`,
                 );
 
                 return resp;
@@ -126,8 +126,8 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
 
                 logger.debug(
                     `response ${resp.status} ${resp.statusText} Content-Type: ${resp.headers.get(
-                        'content-type'
-                    )}`
+                        'content-type',
+                    )}`,
                 );
 
                 return resp;
@@ -171,7 +171,7 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                 {
                     status: err.status || err.statusCode || err.code || 500,
                     headers: { 'content-type': 'application/json' },
-                }
+                },
             );
         }
     }

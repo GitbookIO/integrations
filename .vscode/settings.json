@@ -17,7 +17,5 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
     "svg.preview.background": "custom",
-    "prettier.documentSelectors": [
-        "{**/*,*}.{js,ts,jsx,tsx,md,mdx,yml,yaml,json,html,css}"
-    ]
+    "prettier.documentSelectors": ["{**/*,*}.{js,ts,jsx,tsx,md,mdx,yml,yaml,json,html,css}"]
 }

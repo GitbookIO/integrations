@@ -59,7 +59,7 @@ export interface OAuthConfig {
      * Extract the credentials from the code exchange response.
      */
     extractCredentials?: (
-        response: OAuthResponse
+        response: OAuthResponse,
     ) => RequestUpdateIntegrationInstallation | Promise<RequestUpdateIntegrationInstallation>;
 }
 
@@ -80,7 +80,7 @@ export function createOAuthHandler(
          * @default true
          */
         replace?: boolean;
-    } = {}
+    } = {},
 ): RuntimeCallback<[Request], Promise<Response>> {
     const { extractCredentials = defaultOAuthExtractCredentials } = config;
     const { replace = true } = options;
@@ -111,7 +111,7 @@ export function createOAuthHandler(
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                    }
+                    },
                 );
             }
 
@@ -128,7 +128,7 @@ export function createOAuthHandler(
                     ...(environment.spaceInstallation?.space
                         ? { spaceId: environment.spaceInstallation?.space }
                         : {}),
-                })
+                }),
             );
 
             if (config.scopes?.length) {
@@ -174,7 +174,7 @@ export function createOAuthHandler(
 
             if (!response.ok) {
                 throw new Error(
-                    `Failed to exchange code for access token ${await response.text()}`
+                    `Failed to exchange code for access token ${await response.text()}`,
                 );
             }
 
@@ -195,7 +195,7 @@ export function createOAuthHandler(
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                    }
+                    },
                 );
             }
 
@@ -223,7 +223,7 @@ export function createOAuthHandler(
                             await api.integrations.getIntegrationSpaceInstallation(
                                 environment.integration.name,
                                 state.installationId,
-                                state.spaceId
+                                state.spaceId,
                             );
                         existing.configuration = spaceInstallation.configuration;
                     }
@@ -243,14 +243,14 @@ export function createOAuthHandler(
                                 ...credentialsConfiguration,
                             },
                             ...credentialsMinusConfiguration,
-                        }
+                        },
                     );
                 } else {
                     if (!replace) {
                         const { data: installation } =
                             await api.integrations.getIntegrationInstallationById(
                                 environment.integration.name,
-                                state.installationId
+                                state.installationId,
                             );
                         existing.configuration = installation.configuration;
                     }
@@ -270,7 +270,7 @@ export function createOAuthHandler(
                                 ...credentialsConfiguration,
                             },
                             ...credentialsMinusConfiguration,
-                        }
+                        },
                     );
                 }
             } catch (err) {
@@ -289,7 +289,7 @@ export function createOAuthHandler(
                     headers: {
                         'Content-Type': 'text/html',
                     },
-                }
+                },
             );
         }
     };
@@ -305,7 +305,7 @@ export async function getOAuthToken(
         OAuthConfig,
         'accessTokenURL' | 'clientId' | 'clientSecret' | 'extractCredentials'
     >,
-    context: RuntimeContext
+    context: RuntimeContext,
 ): Promise<string> {
     const { extractCredentials = defaultOAuthExtractCredentials } = config;
 
@@ -340,7 +340,7 @@ export async function getOAuthToken(
     await context.api.integrations.updateIntegrationInstallation(
         context.environment.integration.name,
         context.environment.installation!.id,
-        creds
+        creds,
     );
 
     return creds.configuration.oauth_credentials.access_token;
@@ -351,7 +351,7 @@ export async function getOAuthToken(
  * throws an error if the `access_token` is not present in the response.
  */
 export function defaultOAuthExtractCredentials(
-    response: OAuthResponse
+    response: OAuthResponse,
 ): RequestUpdateIntegrationInstallation {
     if (!response.access_token) {
         const message = `Failed to retrieve access_token from response`;

@@ -73,7 +73,7 @@ const getHeaders = (authorise: boolean, accessToken = '') => {
 
 const getGithubApiResponse = async (
     headers: { 'User-Agent': string; Authorization?: string },
-    baseURL: string
+    baseURL: string,
 ) => {
     const res = await fetch(baseURL, { headers }).catch((err) => {
         throw new Error(`Error fetching content from ${baseURL}. ${err}`);
@@ -96,7 +96,7 @@ const fetchGithubFile = async (
     repoName: string,
     file: string,
     ref: string,
-    accessToken: string
+    accessToken: string,
 ) => {
     const baseURL = `https://api.github.com/repos/${orgName}/${repoName}/contents/${file}?ref=${ref}`;
     const headers = getHeaders(accessToken !== '', accessToken);
@@ -113,7 +113,7 @@ export const getGithubContent = async (url: string, context: GithubRuntimeContex
         urlObject.repoName,
         urlObject.fileName,
         urlObject.ref,
-        context.environment.installation.configuration.oauth_credentials?.access_token
+        context.environment.installation.configuration.oauth_credentials?.access_token,
     );
 
     if (content) {

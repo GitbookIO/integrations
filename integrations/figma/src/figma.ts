@@ -63,7 +63,7 @@ export async function fetchFigmaNode(fileId: string, nodeId: string, context: Fi
             fetchFigmaAPI<FigmaAPINodes>(
                 `files/${fileId}/nodes`,
                 { ids: nodeId, depth: 1 },
-                context
+                context,
             ),
             fetchFigmaImage(fileId, nodeId, context),
         ]);
@@ -84,13 +84,13 @@ export async function fetchFigmaNode(fileId: string, nodeId: string, context: Fi
 export async function fetchFigmaImage(
     fileId: string,
     nodeId: string,
-    context: FigmaRuntimeContext
+    context: FigmaRuntimeContext,
 ) {
     try {
         const image = await fetchFigmaAPI<FigmaAPIImages>(
             `images/${fileId}`,
             { ids: nodeId, format: 'svg' },
-            context
+            context,
         );
         const imageUrl = image.images?.[nodeId];
         if (!imageUrl) {
@@ -130,7 +130,7 @@ export async function fetchFigmaFile(fileId: string, context: FigmaRuntimeContex
 export async function fetchFigmaAPI<T>(
     path: string,
     params: object,
-    { environment }: FigmaRuntimeContext
+    { environment }: FigmaRuntimeContext,
 ): Promise<T> {
     const accessToken = environment.installation.configuration.oauth_credentials?.access_token;
     if (!accessToken) {

@@ -19,7 +19,7 @@ type FathomRuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: FathomRuntimeContext
+    { environment }: FathomRuntimeContext,
 ) => {
     const siteId = environment.siteInstallation?.configuration?.site_id;
 
