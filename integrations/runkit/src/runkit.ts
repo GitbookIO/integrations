@@ -39,7 +39,7 @@ async function fetchRunKitAPI<APIResponse>(path: string): Promise<APIResponse> {
  */
 export async function fetchRunKitFromLink(
     link: string,
-): Promise<{ content: string; nodeVersion: string }> {
+): Promise<{ content: string; nodeVersion: string } | undefined> {
     const url = new URL(link);
 
     if (url.hostname !== 'runkit.com') {

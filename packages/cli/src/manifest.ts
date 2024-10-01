@@ -26,7 +26,7 @@ export interface IntegrationManifest {
     visibility?: api.IntegrationVisibility;
     previewImages?: api.Integration['previewImages'];
     externalLinks?: api.Integration['externalLinks'];
-    organization?: string;
+    organization: string;
     secrets: { [key: string]: string };
     contentSecurityPolicy?: string;
 }
@@ -77,9 +77,9 @@ export async function readIntegrationManifest(filePath: string): Promise<Integra
         }
 
         return manifest;
-    } catch (e) {
+    } catch (error) {
         throw new Error(
-            `Failed to read integration spec from ${prettyPath(filePath)}: ${e.message}`,
+            `Failed to read integration spec from ${prettyPath(filePath)}: ${(error as Error).message}`,
         );
     }
 }
@@ -239,5 +239,5 @@ function interpolateSecrets(secrets: { [key: string]: string }): { [key: string]
             return secretEnvVar;
         });
         return acc;
-    }, {});
+    }, {} as { [key: string]: string });
 }

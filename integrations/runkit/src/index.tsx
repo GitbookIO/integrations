@@ -5,21 +5,30 @@ import {
     createComponent,
     RuntimeContext,
     FetchEventCallback,
+    ExposableError,
 } from '@gitbook/runtime';
 
 import { getWebframeCacheControl, getWebframeCacheKey } from './cache';
 import { fetchRunKitFromLink } from './runkit';
 import { webFrameHTML } from './webframe';
 
-const embedBlock = createComponent<{
+type EmbedBlockProps = {
     content?: string;
     nodeVersion?: string;
     url?: string;
-}>({
+}
+
+type EmbedBlockState = {
+    editable: boolean;
+    content: string;
+    nodeVersion?: string;
+}
+
+const embedBlock = createComponent<EmbedBlockProps, EmbedBlockState>({
     componentId: 'embed',
     initialState: (props, context) => {
         return {
-            editable: context.editable,
+            editable: context.type === 'document' ? context.editable : false,
             content: props.content || `// Hello world!`,
             nodeVersion: props.nodeVersion,
         };
@@ -28,13 +37,17 @@ const embedBlock = createComponent<{
         switch (action.action) {
             case '@link.unfurl': {
                 const { url } = action;
-                const { content, nodeVersion } = await fetchRunKitFromLink(url);
+                const match = await fetchRunKitFromLink(url);
+                if (!match) {
+                    throw new ExposableError('Invalid RunKit link');
+                }
 
                 return {
                     state: {
+                        editable: element.context.type === 'document' ? element.context.editable : false,
                         url,
-                        content,
-                        nodeVersion,
+                        content: match.content,
+                        nodeVersion: match.nodeVersion,
                     },
                 };
             }

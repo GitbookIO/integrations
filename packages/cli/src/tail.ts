@@ -20,7 +20,7 @@ export async function tailLogs() {
     const api = await getAPIClient(true);
     const printed = new Set<string>();
 
-    let scheduled: NodeJS.Timeout | null = null;
+    let scheduled: Timer | null = null;
 
     const printEvents = async () => {
         clearTimeout(scheduled!);

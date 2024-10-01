@@ -34,9 +34,9 @@ export async function publishIntegration(
         icon: manifest.icon
             ? await readImage(resolveFile(specFilePath, manifest.icon), 'icon')
             : undefined,
-        description: manifest.description,
+        description: manifest.description ?? '',
         summary: manifest.summary,
-        scopes: manifest.scopes,
+        scopes: manifest.scopes ?? [],
         categories: manifest.categories,
         blocks: manifest.blocks,
         configurations: manifest.configurations,

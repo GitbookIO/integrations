@@ -178,7 +178,7 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
                 );
             }
 
-            const json = await response.json<TOAuthResponse>();
+            const json = (await response.json()) as TOAuthResponse;
 
             // Store the credentials in the installation configuration
             // @ts-ignore
@@ -322,7 +322,7 @@ export async function getOAuthToken(
         throw new Error(`Failed to exchange code for access token ${await response.text()}`);
     }
 
-    const json = await response.json<OAuthResponse>();
+    const json = (await response.json()) as OAuthResponse;
     const creds = await extractCredentials(json);
     const accessToken = (creds.configuration?.['oauth_credentials'] as OAuthConfiguration)?.access_token;
     if (!accessToken) {

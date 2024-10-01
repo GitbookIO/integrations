@@ -1,7 +1,7 @@
 const gitbookWebFrame = window.top;
 
 let readOnly = false;
-let runKitNotebook: NotebookEmbed = null;
+let runKitNotebook: NotebookEmbed | null = null;
 let curProps: {
     content?: string;
     nodeVersion?: string;
@@ -13,7 +13,7 @@ console.info('runkit-embed: webframe initialize');
  * Send an action message back to the GitBook ContentKit component.
  */
 function sendAction(payload: ContentKitWebFrameActionPayload) {
-    gitbookWebFrame.postMessage({ action: payload }, '*');
+    gitbookWebFrame?.postMessage({ action: payload }, '*');
 }
 
 /**

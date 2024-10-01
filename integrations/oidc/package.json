@@ -13,7 +13,6 @@
         "@gitbook/tsconfig": "workspace:*"
     },
     "scripts": {
-        "typecheck": "tsc --noEmit",
         "publish-integrations-staging": "gitbook publish .",
         "publish-integrations": "gitbook publish ."
     }

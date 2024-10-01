@@ -48,7 +48,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     const disableAskAPerson = config?.disable_ask_a_person ? 'false' : '';
 
     return new Response(
-        script
+        (script as string)
             .replace('<ASSISTANT_ID>', assistantId)
             .replace('<NAME>', name)
             .replace('<SERVER_ADDRESS>', serverAddress)

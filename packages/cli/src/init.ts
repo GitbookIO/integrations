@@ -152,7 +152,7 @@ export async function extendPackageJson(dirPath: string, projectName: string): P
         },
         devDependencies: {
             [packageJSON.name]: `^${packageJSON.version}`,
-            '@gitbook/tsconfig': packageJSON.dependencies['@gitbook/tsconfig'],
+            '@gitbook/tsconfig': '*',
         },
     };
 

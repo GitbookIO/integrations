@@ -21,6 +21,7 @@ export function getAPIJsonSchemaFor(schema: object, path: string): Promise<objec
 
     const parts = path.split('/');
     for (const part of parts) {
+        // @ts-ignore
         result = result[part];
         if (!result) {
             throw new Error(`Could not find ${path} (${part}) in the API spec`);

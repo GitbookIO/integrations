@@ -14,7 +14,6 @@
     },
     "scripts": {
         "build": "bun run ./webframe/scripts/build.ts",
-        "typecheck": "tsc --noEmit",
         "publish-integrations": "gitbook publish .",
         "publish-integrations-staging": "gitbook publish ."
     }
