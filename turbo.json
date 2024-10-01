@@ -47,7 +47,7 @@
         "build": {
             "dependsOn": ["^build"],
             "inputs": ["src/**"],
-            "outputs": ["dist/**", ".gitbook/**"]
+            "outputs": ["dist/**"]
         },
         "api#build": {
             "cache": false,
@@ -76,6 +76,11 @@
             "dependsOn": ["build"],
             "outputs": [],
             "cache": false
+        },
+        "check": {
+            "dependsOn": ["^check"],
+            "inputs": ["src/**", "gitbook-manifest.yaml"],
+            "outputs": [".gitbook/**"]
         }
     },
     "globalDependencies": [".env"]
