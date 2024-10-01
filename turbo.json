@@ -78,7 +78,7 @@
             "cache": false
         },
         "check": {
-            "dependsOn": ["^check"],
+            "dependsOn": ["build", "^build"],
             "inputs": ["src/**", "gitbook-manifest.yaml"],
             "outputs": [".gitbook/**"]
         }
