@@ -113,7 +113,11 @@ export const configurationComponent = createComponent<
                                     multiple
                                     options={githubInstallations.map((githubInstallation) => ({
                                         id: githubInstallation.id.toString(),
-                                        label: githubInstallation.account?.name ?? 'Unknown',
+                                        label:
+                                            (githubInstallation.account &&
+                                            'login' in githubInstallation.account
+                                                ? githubInstallation.account.login
+                                                : githubInstallation.account?.name) ?? 'Unknown',
                                     }))}
                                 />
                             }

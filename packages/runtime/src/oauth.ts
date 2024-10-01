@@ -16,7 +16,7 @@ export interface OAuthResponse {
 export type OAuthConfiguration = {
     access_token: string;
     refresh_token?: string;
-    expires_at: string;
+    expires_at?: string;
 };
 
 export interface OAuthConfig<TOAuthResponse = OAuthResponse> {
@@ -293,12 +293,17 @@ export async function getOAuthToken(
 ): Promise<string> {
     const { extractCredentials = defaultOAuthExtractCredentials } = config;
 
-    if (new Date(credentials.expires_at).getTime() - Date.now() > 10000) {
+    if (
+        !credentials.expires_at ||
+        new Date(credentials.expires_at).getTime() - Date.now() > 10000
+    ) {
         return credentials.access_token;
     }
 
     if (!credentials.refresh_token) {
-        throw new Error('No refresh token available to refresh the OAuth token');
+        throw new Error(
+            `No refresh token available to refresh the OAuth token, expired at ${credentials.expires_at}`,
+        );
     }
 
     // Refresh using the refresh_token

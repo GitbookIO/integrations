@@ -11,7 +11,7 @@ import type { GitHubCopilotRuntimeContext } from './types';
  */
 const copyNoGitBookInstallation = `GitBook For Copilot is not yet installed on your GitBook organization.
 
-To get started, install the integration at https://app.gitbook.com/integrations/github-copilot
+To get started, install the integration at https://app.gitbook.com/integrations/github-copilot and authenticate with your GitHub account.
 
 Then come back and ask me anything!`;
 

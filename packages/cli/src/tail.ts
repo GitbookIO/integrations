@@ -61,7 +61,7 @@ export async function tailLogs() {
         }
 
         spinner.clear();
-        spinner.start('Waiting ${intervalSeconds}s for new events...');
+        spinner.start(`Waiting ${intervalSeconds}s for new events...`);
 
         clearTimeout(scheduled!);
         scheduled = setTimeout(() => {
