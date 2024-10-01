@@ -1,4 +1,5 @@
-import { GithubRuntimeContext } from './types';
+import { ExposableError } from '@gitbook/runtime';
+import { GithubInstallationConfiguration, GithubRuntimeContext } from './types';
 
 export interface GithubProps {
     url: string;
@@ -14,10 +15,13 @@ const splitGithubUrl = (url: string) => {
     let repoName = '';
     let ref = '';
     let fileName = '';
-    let lines = [];
+    let lines: number[] = [];
 
     if (url.match(permalinkRegex)) {
         const match = url.match(permalinkRegex);
+        if (!match) {
+            return;
+        }
 
         orgName = match[1];
         repoName = match[2];
@@ -40,6 +44,9 @@ const splitGithubUrl = (url: string) => {
         }
     } else if (url.match(wholeFileRegex)) {
         const match = url.match(wholeFileRegex);
+        if (!match) {
+            return;
+        }
 
         orgName = match[1];
         repoName = match[2];
@@ -55,7 +62,7 @@ const splitGithubUrl = (url: string) => {
     };
 };
 
-const getLinesFromGithubFile = (content, lines) => {
+const getLinesFromGithubFile = (content: string[], lines: number[]) => {
     return content.slice(lines[0] - 1, lines[1]);
 };
 
@@ -106,14 +113,24 @@ const fetchGithubFile = async (
 
 export const getGithubContent = async (url: string, context: GithubRuntimeContext) => {
     const urlObject = splitGithubUrl(url);
+    if (!urlObject) {
+        return;
+    }
+
+
     let content: string | boolean = '';
+    const configuration = context.environment.installation?.configuration as GithubInstallationConfiguration;
+    const accessToken = configuration.oauth_credentials?.access_token;
+    if (!accessToken) {
+        throw new ExposableError('Integration is not authenticated');
+    }
 
     content = await fetchGithubFile(
         urlObject.orgName,
         urlObject.repoName,
         urlObject.fileName,
         urlObject.ref,
-        context.environment.installation.configuration.oauth_credentials?.access_token,
+        accessToken,
     );
 
     if (content) {
@@ -121,9 +138,9 @@ export const getGithubContent = async (url: string, context: GithubRuntimeContex
             const contentArray = content.split('\n');
             const splitContent = getLinesFromGithubFile(contentArray, urlObject.lines);
 
-            return splitContent.join('\n');
+            content = splitContent.join('\n');
         }
     }
 
-    return [content, urlObject.fileName];
+    return { content, fileName: urlObject.fileName };
 };

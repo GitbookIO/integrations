@@ -1,10 +1,11 @@
-import { GitlabRuntimeContext } from './types';
+import { ExposableError } from '@gitbook/runtime';
+import { GitlabInstallationConfiguration, GitlabRuntimeContext } from './types';
 
 export interface GitlabProps {
     url: string;
 }
 
-function getProject(url) {
+function getProject(url: string) {
     const namespaceEndIndex = url.indexOf('/', 8);
     const projectStartIndex = url.indexOf('/', namespaceEndIndex + 1) + 1;
     const projectEndIndex = url.indexOf('/-/blob/', projectStartIndex);
@@ -13,7 +14,7 @@ function getProject(url) {
     return project.startsWith(`${namespace}/`) ? project.substring(namespace.length + 1) : project;
 }
 
-const splitGitlabUrl = (url) => {
+const splitGitlabUrl = (url: string) => {
     const gitlabLinkRegex =
         /^https?:\/\/(?:www\.)?gitlab\.com\/(?:(?:[^\/]+\/)+)?([^\/]+)\/([^\/]+)\/(?:-\/)?blob\/([^\/]+)\/(.+)$/;
     const matchGitlabLink = url.match(gitlabLinkRegex);
@@ -32,7 +33,7 @@ const splitGitlabUrl = (url) => {
     let projectName = '';
     let ref = '';
     let filePath = '';
-    let lines = [];
+    let lines: number[] = [];
 
     if (matchGitlabLink) {
         namespace = matchesNamespaceRegex ? matchesNamespaceRegex[1].split('/')[0] : '';
@@ -42,7 +43,7 @@ const splitGitlabUrl = (url) => {
 
         const hash = matchesHashRegex ? matchesHashRegex[0] : '';
         if (hash !== '') {
-            lines = hash.match(/\d+/g).map(Number);
+            lines = hash.match(/\d+/g)?.map(Number) ?? [];
         }
         return {
             namespace,
@@ -54,7 +55,7 @@ const splitGitlabUrl = (url) => {
     }
 };
 
-const getLinesFromGitlabFile = (content, lines) => {
+const getLinesFromGitlabFile = (content: string[], lines: number[]) => {
     if (lines.length > 1) {
         return content.slice(lines[0] - 1, lines[1]);
     } else {
@@ -114,13 +115,26 @@ export const getGitlabContent = async (url: string, context: GitlabRuntimeContex
     const textFileRegex = /\?plain=\d+/g;
     const urlToSplit = url.replace(textFileRegex, '');
     const urlObject = splitGitlabUrl(urlToSplit);
+
+    if (!urlObject) {
+        return;
+    }
+
+    const configuration = context.environment.installation?.configuration as GitlabInstallationConfiguration;
+    const accessToken = configuration.oauth_credentials?.access_token;
+
+    if (!accessToken) {
+        throw new ExposableError('Integration is not authenticated');
+    }
+
+
     let content: string | boolean = '';
     content = await fetchGitlabFile(
         urlObject.namespace,
         urlObject.projectName,
         urlObject.filePath.split('#')[0],
         urlObject.ref,
-        context.environment.installation.configuration.oauth_credentials?.access_token,
+        accessToken,
     );
 
     if (content) {
@@ -128,9 +142,9 @@ export const getGitlabContent = async (url: string, context: GitlabRuntimeContex
             const contentArray = content.split('\n');
             const splitContent = getLinesFromGitlabFile(contentArray, urlObject.lines);
 
-            return splitContent.join('\n');
+            content = splitContent.join('\n');
         }
     }
 
-    return [content, urlObject.filePath.split('#')[0]];
+    return { content, filePath: urlObject.filePath.split('#')[0] };
 };

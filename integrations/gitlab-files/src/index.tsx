@@ -7,7 +7,9 @@ import { getFileExtension } from './utils';
 const gitlabCodeBlock = createComponent<
     { url?: string },
     { visible: boolean },
-    {},
+    {
+        action: 'show' | 'hide';
+    },
     GitlabRuntimeContext
 >({
     componentId: 'gitlab-code-block',
@@ -37,10 +39,9 @@ const gitlabCodeBlock = createComponent<
     },
     async render(element, context) {
         const { url } = element.props as GitlabProps;
-        const [content, filePath] = await getGitlabContent(url, context);
-        const fileExtension = await getFileExtension(filePath);
+        const found = await getGitlabContent(url, context);
 
-        if (!content) {
+        if (!found) {
             return (
                 <block>
                     <card
@@ -50,17 +51,20 @@ const gitlabCodeBlock = createComponent<
                             url,
                         }}
                         icon={
-                            <image
+                            context.environment.integration.urls.icon ? <image
                                 source={{
                                     url: context.environment.integration.urls.icon,
                                 }}
                                 aspectRatio={1}
-                            />
+                            /> : undefined
                         }
                     />
                 </block>
             );
         }
+
+        const { content, filePath } = found;
+        const fileExtension = await getFileExtension(filePath);
 
         return (
             <block
@@ -90,26 +94,13 @@ const gitlabCodeBlock = createComponent<
                             : { action: 'null' }
                     }
                     icon={
-                        <image
+                        context.environment.integration.urls.icon ? <image
                             source={{
                                 url: context.environment.integration.urls.icon,
                             }}
                             aspectRatio={1}
-                        />
+                        /> : undefined
                     }
-                    buttons={[
-                        <button
-                            icon="maximize"
-                            tooltip="Open preview"
-                            onPress={{
-                                action: '@ui.modal.open',
-                                componentId: 'previewModal',
-                                props: {
-                                    url,
-                                },
-                            }}
-                        />,
-                    ]}
                 >
                     {content ? (
                         <codeblock

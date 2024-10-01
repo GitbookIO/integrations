@@ -16,7 +16,9 @@ import { getFileExtension } from './utils';
 const embedBlock = createComponent<
     { url?: string },
     { visible: boolean },
-    {},
+    {
+        action: 'show' | 'hide';
+    },
     GithubRuntimeContext
 >({
     componentId: 'github-code-block',
@@ -48,10 +50,9 @@ const embedBlock = createComponent<
 
     async render(element, context) {
         const { url } = element.props as GithubProps;
-        const [content, fileName] = await getGithubContent(url, context);
-        const fileExtension = await getFileExtension(fileName);
+        const found = await getGithubContent(url, context);
 
-        if (!content) {
+        if (!found) {
             return (
                 <block>
                     <card
@@ -61,17 +62,20 @@ const embedBlock = createComponent<
                             url,
                         }}
                         icon={
-                            <image
+                            context.environment.integration.urls.icon ? <image
                                 source={{
                                     url: context.environment.integration.urls.icon,
                                 }}
                                 aspectRatio={1}
-                            />
+                            /> : undefined
                         }
                     />
                 </block>
             );
         }
+
+        const { content, fileName } = found;
+        const fileExtension = await getFileExtension(fileName);
 
         return (
             <block
@@ -101,12 +105,12 @@ const embedBlock = createComponent<
                             : { action: 'null' }
                     }
                     icon={
-                        <image
+                        context.environment.integration.urls.icon ? <image
                             source={{
                                 url: context.environment.integration.urls.icon,
                             }}
                             aspectRatio={1}
-                        />
+                        /> :undefined
                     }
                 >
                     {content ? (
