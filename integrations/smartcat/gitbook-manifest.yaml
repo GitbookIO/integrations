@@ -1,0 +1,12 @@
+name: softwareone-smartcat
+title: Smartcat (SoftwareOne)
+organization: gitbook
+visibility: unlisted
+description: "The SoftwareOne instance of Smartcat’s translations."
+script: src/index.tsx
+scopes:
+  - space:script:inject
+  - site:script:inject
+secrets: {}
+contentSecurityPolicy:
+  script-src: https://cdn.smartcat-proxy.com;
