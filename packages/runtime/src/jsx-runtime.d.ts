@@ -22,7 +22,7 @@ import {
     ContentKitLink,
 } from '@gitbook/api';
 
-import { jsx, jsxDEV, jsxs, Fragment } from './src/contentkit-jsx';
+import { jsx, jsxDEV, jsxs, Fragment } from './contentkit-jsx';
 
 /**
  * This is a workaround for Typescript not supporting subpath exports in package.json

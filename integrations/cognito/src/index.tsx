@@ -9,34 +9,32 @@ import {
     RuntimeContext,
     RuntimeEnvironment,
     createComponent,
+    ExposableError,
 } from '@gitbook/runtime';
 
 const logger = Logger('cognito.visitor-auth');
 
 type CognitoRuntimeEnvironment = RuntimeEnvironment<
     {},
-    CognitoSiteOrSpaceInstallationConfiguration
+    CognitoSiteInstallationConfiguration
 >;
 
 type CognitoRuntimeContext = RuntimeContext<CognitoRuntimeEnvironment>;
 
-type CognitoSiteOrSpaceInstallationConfiguration = {
+type CognitoSiteInstallationConfiguration = {
     client_id?: string;
     cognito_domain?: string;
     client_secret?: string;
 };
 
-type CognitoState = CognitoSiteOrSpaceInstallationConfiguration;
+type CognitoState = CognitoSiteInstallationConfiguration;
 
 type CognitoProps = {
     installation: {
         configuration?: IntegrationInstallationConfiguration;
     };
-    spaceInstallation: {
-        configuration?: CognitoSiteOrSpaceInstallationConfiguration;
-    };
     siteInstallation: {
-        configuration?: CognitoSiteOrSpaceInstallationConfiguration;
+        configuration?: CognitoSiteInstallationConfiguration;
     };
 };
 
@@ -60,49 +58,35 @@ const configBlock = createComponent<
 >({
     componentId: 'config',
     initialState: (props) => {
-        const siteOrSpaceInstallation = props.siteInstallation ?? props.spaceInstallation;
+        const siteInstallation = props.siteInstallation;
         return {
-            client_id: siteOrSpaceInstallation.configuration?.client_id?.toString() || '',
-            cognito_domain: siteOrSpaceInstallation.configuration?.cognito_domain?.toString() || '',
-            client_secret: siteOrSpaceInstallation.configuration?.client_secret?.toString() || '',
+            client_id: siteInstallation.configuration?.client_id?.toString() || '',
+            cognito_domain: siteInstallation.configuration?.cognito_domain?.toString() || '',
+            client_secret: siteInstallation.configuration?.client_secret?.toString() || '',
         };
     },
     action: async (element, action, context) => {
         switch (action.action) {
             case 'save.config':
                 const { api, environment } = context;
-                const siteOrSpaceInstallation =
-                    environment.siteInstallation ?? environment.spaceInstallation;
+                const siteOrSpaceInstallation = assertInstallation(environment);
 
                 const configurationBody = {
                     ...siteOrSpaceInstallation.configuration,
                     client_id: element.state.client_id,
                     client_secret: element.state.client_secret,
-                    cognito_domain: getDomainWithHttps(element.state.cognito_domain),
+                    cognito_domain: getDomainWithHttps(element.state.cognito_domain ?? ''),
                 };
-                if ('site' in siteOrSpaceInstallation) {
-                    await api.integrations.updateIntegrationSiteInstallation(
-                        siteOrSpaceInstallation.integration,
-                        siteOrSpaceInstallation.installation,
-                        siteOrSpaceInstallation.site,
-                        {
-                            configuration: {
-                                ...configurationBody,
-                            },
+                await api.integrations.updateIntegrationSiteInstallation(
+                    siteOrSpaceInstallation.integration,
+                    siteOrSpaceInstallation.installation,
+                    siteOrSpaceInstallation.site,
+                    {
+                        configuration: {
+                            ...configurationBody,
                         },
-                    );
-                } else {
-                    await api.integrations.updateIntegrationSpaceInstallation(
-                        siteOrSpaceInstallation.integration,
-                        siteOrSpaceInstallation.installation,
-                        siteOrSpaceInstallation.space,
-                        {
-                            configuration: {
-                                ...configurationBody,
-                            },
-                        },
-                    );
-                }
+                    },
+                );
                 return element;
         }
     },
@@ -196,15 +180,20 @@ const configBlock = createComponent<
  * Get the published content (site or space) related urls.
  */
 async function getPublishedContentUrls(context: CognitoRuntimeContext) {
-    const organizationId = context.environment.installation?.target?.organization;
-    const siteOrSpaceInstallation =
-        context.environment.siteInstallation ?? context.environment.spaceInstallation;
-    const publishedContentData =
-        'site' in siteOrSpaceInstallation
-            ? await context.api.orgs.getSiteById(organizationId, siteOrSpaceInstallation.site)
-            : await context.api.spaces.getSpaceById(siteOrSpaceInstallation.space);
+    const organizationId = context.environment.installation?.target?.organization!;
+    const siteInstallation = assertInstallation(context.environment);
+    const publishedContentData =await context.api.orgs.getSiteById(organizationId, siteInstallation.site)
 
     return publishedContentData.data.urls;
+}
+
+function assertInstallation(environment: RuntimeEnvironment) {
+    const siteInstallation = environment.siteInstallation;
+    if (!siteInstallation) {
+        throw new Error('No site installation found');
+    }
+
+    return siteInstallation;
 }
 
 const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (request, context) => {
@@ -222,9 +211,7 @@ const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (reque
                 ('space' in siteOrSpaceInstallation && siteOrSpaceInstallation.space)
             ) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
-                const privateKey =
-                    context.environment.signingSecrets.siteInstallation ??
-                    context.environment.signingSecrets.spaceInstallation;
+                const privateKey =context.environment.signingSecrets.siteInstallation!;
                 let token;
                 try {
                     token = await sign(
@@ -272,7 +259,7 @@ const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (reque
                             );
                             url.searchParams.append('jwt_token', token);
                         } else {
-                            url = new URL(publishedContentUrls?.published);
+                            url = new URL(publishedContentUrls?.published!);
                             url.searchParams.append('jwt_token', token);
                         }
                         if (publishedContentUrls?.published && token) {
@@ -332,13 +319,17 @@ export default createIntegration({
     components: [configBlock],
     fetch_visitor_authentication: async (event, context) => {
         const { environment } = context;
-        const siteOrSpaceInstallation =
-            environment.siteInstallation ?? environment.spaceInstallation;
+        const siteInstallation = assertInstallation(environment);
 
-        const installationURL = siteOrSpaceInstallation?.urls?.publicEndpoint;
+        const installationURL = siteInstallation.urls.publicEndpoint;
 
-        const cognitoDomain = siteOrSpaceInstallation?.configuration.cognito_domain;
-        const clientId = siteOrSpaceInstallation?.configuration.client_id;
+        const configuration = siteInstallation.configuration as CognitoSiteInstallationConfiguration;
+        const cognitoDomain = configuration.cognito_domain;
+        const clientId = configuration.client_id;
+
+        if (!clientId || !cognitoDomain) {
+            throw new ExposableError('Cognito configuration is missing');
+        }
 
         const location = event.location ? event.location : '';
 
@@ -348,12 +339,6 @@ export default createIntegration({
         url.searchParams.append('redirect_uri', `${installationURL}/visitor-auth/response`);
         url.searchParams.append('state', location);
 
-        try {
-            return Response.redirect(url.toString());
-        } catch (e) {
-            return new Response(e.message, {
-                status: e.status || 500,
-            });
-        }
+        return Response.redirect(url.toString());
     },
 });

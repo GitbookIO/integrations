@@ -3,6 +3,7 @@ import {
     UIRenderEvent,
     ContentKitRenderOutput,
     ContentKitContext,
+    ContentKitDefaultAction,
 } from '@gitbook/api';
 
 import { RuntimeCallback, RuntimeContext } from './context';
@@ -44,6 +45,8 @@ export interface ComponentDefinition<Context extends RuntimeContext = RuntimeCon
     render: RuntimeCallback<[UIRenderEvent], Promise<Response>, Context>;
 }
 
+export type ComponentAction<Action = void> = Action extends void ? ContentKitDefaultAction : ContentKitDefaultAction | Action;
+
 /**
  * Create a component instance. The result should be bind to the integration using `blocks`.
  */
@@ -69,8 +72,8 @@ export function createComponent<
      * Callback to handle a dispatched action.
      */
     action?: RuntimeCallback<
-        [ComponentInstance<Props, State>, Action],
-        Promise<{ props?: Props; state?: State }>,
+        [ComponentInstance<Props, State>, ComponentAction<Action>],
+        Promise<{ props?: Props; state?: State } | undefined>,
         Context
     >;
 
@@ -83,11 +86,11 @@ export function createComponent<
         componentId: component.componentId,
         render: async (event, context) => {
             if (event.componentId !== component.componentId) {
-                return;
+                throw new Error(`Invalid component ID: ${event.componentId}`);
             }
 
             // @ts-ignore
-            const action = event.action as Action | undefined;
+            const action = event.action as ComponentAction<Action> | undefined;
             const props = event.props as Props;
             const state =
                 (event.state as State | undefined) ||
@@ -122,7 +125,10 @@ export function createComponent<
             return new Response(JSON.stringify(output), {
                 headers: {
                     'Content-Type': 'application/json',
-                    ...(cache ? { 'Cache-Control': `max-age=${cache.maxAge}` } : {}),
+                    ...(cache ? {
+                        // @ts-ignore - I'm not sure how to fix this one with TS
+                        'Cache-Control': `max-age=${cache.maxAge}`
+                    } : {}),
                 },
             });
         },

@@ -31,12 +31,12 @@ export function extractArcadeFlowFromURL(input: string): {
 } {
     const url = new URL(input);
     if (!['app.arcade.software', 'demo.arcade.software'].includes(url.hostname)) {
-        return;
+        return {};
     }
 
     const parts = url.pathname.split('/');
     if (!['flows', 'share'].includes(parts[1])) {
-        return;
+        return {};
     }
 
     return { flowId: parts[2] };

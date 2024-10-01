@@ -4,3 +4,6 @@ export * from './integrations';
 export * from './events';
 export * from './context';
 export * from './logger';
+export * from './errors';
+export * from './jsx-runtime';
+export * from './global';

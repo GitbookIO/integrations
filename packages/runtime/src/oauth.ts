@@ -141,7 +141,7 @@ export function createOAuthHandler(
 
             const url = redirectTo
                 .toString()
-                .replace('SCOPE_PLACEHOLDER', config.scopes?.join('%20'));
+                .replace('SCOPE_PLACEHOLDER', config.scopes?.join('%20') ?? '');
 
             logger.debug(`oauth redirecting to ${url}`);
 
@@ -181,101 +181,84 @@ export function createOAuthHandler(
             const json = await response.json<OAuthResponse>();
 
             // Store the credentials in the installation configuration
-            let credentials: RequestUpdateIntegrationInstallation;
-            try {
-                credentials = await extractCredentials(json);
-            } catch (error) {
-                logger.error(`extractCredentials error`, error.stack);
-                return new Response(
-                    JSON.stringify({
-                        error: `Failed to retrieve access_token from OAuth response. Please try again.`,
-                    }),
-                    {
-                        status: 400,
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    },
-                );
-            }
-
+            const credentials = await extractCredentials(json);
             logger.debug(`exchange code for credentials`, credentials);
 
-            try {
-                /**
-                 * Parse the JSON encoded state parameter.
-                 * If the state contains a spaceId, then the Oauth flow was initiated from a space installation
-                 * public url and thus we need to update the space installation config otherwise fallback to
-                 * updating the installation config.
-                 */
-                const state = JSON.parse(url.searchParams.get('state')) as {
-                    installationId: string;
-                    spaceId?: string;
-                };
+            const rawState = url.searchParams.get('state');
+            if (!rawState) {
+                throw new Error('Missing state parameter in OAuth callback');
+            }
 
-                const existing = {
-                    configuration: {},
-                };
+            /**
+             * Parse the JSON encoded state parameter.
+             * If the state contains a spaceId, then the Oauth flow was initiated from a space installation
+             * public url and thus we need to update the space installation config otherwise fallback to
+             * updating the installation config.
+             */
+            const state = JSON.parse(rawState) as {
+                installationId: string;
+                spaceId?: string;
+            };
 
-                if (state.spaceId) {
-                    if (!replace) {
-                        const { data: spaceInstallation } =
-                            await api.integrations.getIntegrationSpaceInstallation(
-                                environment.integration.name,
-                                state.installationId,
-                                state.spaceId,
-                            );
-                        existing.configuration = spaceInstallation.configuration;
-                    }
+            const existing = {
+                configuration: {},
+            };
 
-                    // We need to make sure that properties outside of the credentials configuration are also passed when updating the installation (such as externalIds)
-                    const {
-                        configuration: credentialsConfiguration,
-                        ...credentialsMinusConfiguration
-                    } = credentials;
-                    await api.integrations.updateIntegrationSpaceInstallation(
-                        environment.integration.name,
-                        state.installationId,
-                        state.spaceId,
-                        {
-                            configuration: {
-                                ...existing.configuration,
-                                ...credentialsConfiguration,
-                            },
-                            ...credentialsMinusConfiguration,
-                        },
-                    );
-                } else {
-                    if (!replace) {
-                        const { data: installation } =
-                            await api.integrations.getIntegrationInstallationById(
-                                environment.integration.name,
-                                state.installationId,
-                            );
-                        existing.configuration = installation.configuration;
-                    }
-
-                    // We need to make sure that properties outside of the credentials configuration are also passed when updating the installation (such as externalIds)
-                    const {
-                        configuration: credentialsConfiguration,
-                        ...credentialsMinusConfiguration
-                    } = credentials;
-
-                    await api.integrations.updateIntegrationInstallation(
-                        environment.integration.name,
-                        state.installationId,
-                        {
-                            configuration: {
-                                ...existing.configuration,
-                                ...credentialsConfiguration,
-                            },
-                            ...credentialsMinusConfiguration,
-                        },
-                    );
+            if (state.spaceId) {
+                if (!replace) {
+                    const { data: spaceInstallation } =
+                        await api.integrations.getIntegrationSpaceInstallation(
+                            environment.integration.name,
+                            state.installationId,
+                            state.spaceId,
+                        );
+                    existing.configuration = spaceInstallation.configuration;
                 }
-            } catch (err) {
-                logger.error(err.stack);
-                throw err;
+
+                // We need to make sure that properties outside of the credentials configuration are also passed when updating the installation (such as externalIds)
+                const {
+                    configuration: credentialsConfiguration,
+                    ...credentialsMinusConfiguration
+                } = credentials;
+                await api.integrations.updateIntegrationSpaceInstallation(
+                    environment.integration.name,
+                    state.installationId,
+                    state.spaceId,
+                    {
+                        configuration: {
+                            ...existing.configuration,
+                            ...credentialsConfiguration,
+                        },
+                        ...credentialsMinusConfiguration,
+                    },
+                );
+            } else {
+                if (!replace) {
+                    const { data: installation } =
+                        await api.integrations.getIntegrationInstallationById(
+                            environment.integration.name,
+                            state.installationId,
+                        );
+                    existing.configuration = installation.configuration;
+                }
+
+                // We need to make sure that properties outside of the credentials configuration are also passed when updating the installation (such as externalIds)
+                const {
+                    configuration: credentialsConfiguration,
+                    ...credentialsMinusConfiguration
+                } = credentials;
+
+                await api.integrations.updateIntegrationInstallation(
+                    environment.integration.name,
+                    state.installationId,
+                    {
+                        configuration: {
+                            ...existing.configuration,
+                            ...credentialsConfiguration,
+                        },
+                        ...credentialsMinusConfiguration,
+                    },
+                );
             }
 
             return new Response(
@@ -313,6 +296,10 @@ export async function getOAuthToken(
         return credentials.access_token;
     }
 
+    if (!credentials.refresh_token) {
+        throw new Error('No refresh token available to refresh the OAuth token');
+    }
+
     // Refresh using the refresh_token
     const params = new URLSearchParams();
     params.set('client_id', config.clientId);
@@ -336,6 +323,10 @@ export async function getOAuthToken(
 
     const json = await response.json<OAuthResponse>();
     const creds = await extractCredentials(json);
+    const accessToken = (creds.configuration?.['oauth_credentials'] as OAuthConfiguration)?.access_token;
+    if (!accessToken) {
+        throw new Error('Failed to retrieve access_token from OAuth response');
+    }
 
     await context.api.integrations.updateIntegrationInstallation(
         context.environment.integration.name,
@@ -343,7 +334,7 @@ export async function getOAuthToken(
         creds,
     );
 
-    return creds.configuration.oauth_credentials.access_token;
+    return accessToken;
 }
 
 /**

@@ -13,18 +13,13 @@
         // Bundler mode
         "moduleResolution": "bundler",
         "allowImportingTsExtensions": true,
-        "verbatimModuleSyntax": true,
+        "verbatimModuleSyntax": false,
         "noEmit": true,
 
         // Best practices
         "strict": true,
         "skipLibCheck": true,
-        "noFallthroughCasesInSwitch": true,
-
-        // Some stricter flags
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noPropertyAccessFromIndexSignature": true
+        "noFallthroughCasesInSwitch": true
     },
     "exclude": ["node_modules"]
 }

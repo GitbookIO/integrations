@@ -53,12 +53,12 @@ const embedBlock = createComponent<{
                             url,
                         }}
                         icon={
-                            <image
+                            environment.integration.urls.icon ? <image
                                 source={{
                                     url: environment.integration.urls.icon,
                                 }}
                                 aspectRatio={1}
-                            />
+                            /> : undefined
                         }
                     />
                 </block>
