@@ -27,7 +27,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
         return;
     }
 
-    return new Response(script.replace('<domain>', domain).replace('<api>', api), {
+    return new Response((script as string).replace('<domain>', domain).replace('<api>', api), {
         headers: {
             'Content-Type': 'application/javascript',
             'Cache-Control': 'max-age=604800',

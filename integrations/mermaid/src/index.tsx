@@ -18,6 +18,9 @@ const diagramBlock = createComponent<
         };
     },
     async render(element, { environment }) {
+        if (element.context.type !== 'document') {
+            throw new Error('Invalid context');
+        }
         const { editable } = element.context;
         const { content } = element.state;
 

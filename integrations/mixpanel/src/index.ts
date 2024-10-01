@@ -30,7 +30,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
         );
     }
 
-    return new Response(script.replace('<TO_REPLACE>', projectToken), {
+    return new Response((script as string).replace('<TO_REPLACE>', projectToken), {
         headers: {
             'Content-Type': 'application/javascript',
             'Cache-Control': 'max-age=604800',

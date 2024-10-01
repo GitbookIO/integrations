@@ -1,6 +1,6 @@
 import { Router } from 'itty-router';
 
-import { createIntegration, createComponent, FetchEventCallback } from '@gitbook/runtime';
+import { createIntegration, createComponent, FetchEventCallback, ExposableError } from '@gitbook/runtime';
 
 const defaultContent = '';
 
@@ -34,10 +34,14 @@ const LucidComponent = createComponent<{
 
     async render(element, context) {
         const { url } = element.props;
+        if (!url) {
+            throw new ExposableError('Missing URL');
+        }
+
         const urlObject = new URL(url);
         const documentId = urlObject.pathname.split('/')[2];
 
-        const frameUrl = new URL(context.environment.spaceInstallation?.urls?.publicEndpoint);
+        const frameUrl = new URL(context.environment.spaceInstallation?.urls?.publicEndpoint!);
         frameUrl.searchParams.set('document', documentId);
 
         const output = (

@@ -12,7 +12,7 @@ type PostHogRuntimeContext = RuntimeContext<
         {},
         {
             projectApiKey?: string;
-            instanceAddress?: string;
+            instanceAddress?: 'EU' | 'US';
         }
     >
 >;
@@ -43,7 +43,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     }
 
     return new Response(
-        script
+        (script as string)
             .replace('<ph_project_api_key>', projectApiKey)
             .replace('<ph_instance_address>', instancesURLs[instanceAddress]),
         {
