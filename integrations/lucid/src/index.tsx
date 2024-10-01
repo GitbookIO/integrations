@@ -1,6 +1,11 @@
 import { Router } from 'itty-router';
 
-import { createIntegration, createComponent, FetchEventCallback, ExposableError } from '@gitbook/runtime';
+import {
+    createIntegration,
+    createComponent,
+    FetchEventCallback,
+    ExposableError,
+} from '@gitbook/runtime';
 
 const defaultContent = '';
 

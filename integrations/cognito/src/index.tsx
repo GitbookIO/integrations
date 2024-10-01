@@ -14,10 +14,7 @@ import {
 
 const logger = Logger('cognito.visitor-auth');
 
-type CognitoRuntimeEnvironment = RuntimeEnvironment<
-    {},
-    CognitoSiteInstallationConfiguration
->;
+type CognitoRuntimeEnvironment = RuntimeEnvironment<{}, CognitoSiteInstallationConfiguration>;
 
 type CognitoRuntimeContext = RuntimeContext<CognitoRuntimeEnvironment>;
 
@@ -182,7 +179,10 @@ const configBlock = createComponent<
 async function getPublishedContentUrls(context: CognitoRuntimeContext) {
     const organizationId = context.environment.installation?.target?.organization!;
     const siteInstallation = assertInstallation(context.environment);
-    const publishedContentData =await context.api.orgs.getSiteById(organizationId, siteInstallation.site)
+    const publishedContentData = await context.api.orgs.getSiteById(
+        organizationId,
+        siteInstallation.site,
+    );
 
     return publishedContentData.data.urls;
 }
@@ -211,7 +211,7 @@ const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (reque
                 ('space' in siteOrSpaceInstallation && siteOrSpaceInstallation.space)
             ) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
-                const privateKey =context.environment.signingSecrets.siteInstallation!;
+                const privateKey = context.environment.signingSecrets.siteInstallation!;
                 let token;
                 try {
                     token = await sign(
@@ -323,7 +323,8 @@ export default createIntegration({
 
         const installationURL = siteInstallation.urls.publicEndpoint;
 
-        const configuration = siteInstallation.configuration as CognitoSiteInstallationConfiguration;
+        const configuration =
+            siteInstallation.configuration as CognitoSiteInstallationConfiguration;
         const cognitoDomain = configuration.cognito_domain;
         const clientId = configuration.client_id;
 

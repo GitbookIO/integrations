@@ -51,12 +51,14 @@ const gitlabCodeBlock = createComponent<
                             url,
                         }}
                         icon={
-                            context.environment.integration.urls.icon ? <image
-                                source={{
-                                    url: context.environment.integration.urls.icon,
-                                }}
-                                aspectRatio={1}
-                            /> : undefined
+                            context.environment.integration.urls.icon ? (
+                                <image
+                                    source={{
+                                        url: context.environment.integration.urls.icon,
+                                    }}
+                                    aspectRatio={1}
+                                />
+                            ) : undefined
                         }
                     />
                 </block>
@@ -94,12 +96,14 @@ const gitlabCodeBlock = createComponent<
                             : { action: 'null' }
                     }
                     icon={
-                        context.environment.integration.urls.icon ? <image
-                            source={{
-                                url: context.environment.integration.urls.icon,
-                            }}
-                            aspectRatio={1}
-                        /> : undefined
+                        context.environment.integration.urls.icon ? (
+                            <image
+                                source={{
+                                    url: context.environment.integration.urls.icon,
+                                }}
+                                aspectRatio={1}
+                            />
+                        ) : undefined
                     }
                 >
                     {content ? (

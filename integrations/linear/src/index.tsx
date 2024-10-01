@@ -9,23 +9,32 @@ const logger = Logger('linear');
 /**
  * Render a generic Linear issue card linking to the URL provided.
  */
-function renderGenericCard(url: string | undefined, context: LinearRuntimeContext): ContentKitBlock {
+function renderGenericCard(
+    url: string | undefined,
+    context: LinearRuntimeContext,
+): ContentKitBlock {
     return (
         <block>
             <card
                 title="Linear"
                 hint={url}
-                onPress={url ? {
-                    action: '@ui.url.open',
-                    url,
-                } : undefined}
+                onPress={
+                    url
+                        ? {
+                              action: '@ui.url.open',
+                              url,
+                          }
+                        : undefined
+                }
                 icon={
-                    context.environment.integration.urls.icon ? <image
-                        source={{
-                            url: context.environment.integration.urls.icon,
-                        }}
-                        aspectRatio={1}
-                    /> : undefined
+                    context.environment.integration.urls.icon ? (
+                        <image
+                            source={{
+                                url: context.environment.integration.urls.icon,
+                            }}
+                            aspectRatio={1}
+                        />
+                    ) : undefined
                 }
             />
         </block>
@@ -138,12 +147,14 @@ const embedBlock = createComponent<{
                         url,
                     }}
                     icon={
-                        context.environment.integration.urls.icon ? <image
-                            source={{
-                                url: context.environment.integration.urls.icon,
-                            }}
-                            aspectRatio={1}
-                        /> : undefined
+                        context.environment.integration.urls.icon ? (
+                            <image
+                                source={{
+                                    url: context.environment.integration.urls.icon,
+                                }}
+                                aspectRatio={1}
+                            />
+                        ) : undefined
                     }
                     buttons={
                         issue.description

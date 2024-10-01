@@ -59,24 +59,22 @@ const embedBlock = createComponent<{
                             url,
                         }}
                         icon={
-                            context.environment.integration.urls.icon ? <image
-                                source={{
-                                    url: context.environment.integration.urls.icon,
-                                }}
-                                aspectRatio={1}
-                            /> : undefined
+                            context.environment.integration.urls.icon ? (
+                                <image
+                                    source={{
+                                        url: context.environment.integration.urls.icon,
+                                    }}
+                                    aspectRatio={1}
+                                />
+                            ) : undefined
                         }
                     />
                 </block>
             );
         }
 
-        const file = nodeId
-            ? undefined
-            : await fetchFigmaFile(fileId, context);
-        const node = nodeId
-            ? await fetchFigmaNode(fileId, nodeId, context)
-            : undefined
+        const file = nodeId ? undefined : await fetchFigmaFile(fileId, context);
+        const node = nodeId ? await fetchFigmaNode(fileId, nodeId, context) : undefined;
 
         if (!file && !node) {
             return (
@@ -88,12 +86,14 @@ const embedBlock = createComponent<{
                             url,
                         }}
                         icon={
-                            context.environment.integration.urls.icon ? <image
-                                source={{
-                                    url: context.environment.integration.urls.icon,
-                                }}
-                                aspectRatio={1}
-                            /> : undefined
+                            context.environment.integration.urls.icon ? (
+                                <image
+                                    source={{
+                                        url: context.environment.integration.urls.icon,
+                                    }}
+                                    aspectRatio={1}
+                                />
+                            ) : undefined
                         }
                     />
                 </block>
@@ -104,18 +104,22 @@ const embedBlock = createComponent<{
         return (
             <block>
                 <card
-                    title={(node?.name ?? file?.name) + (node?.nodeName ? ` - ${node.nodeName}` : '')}
+                    title={
+                        (node?.name ?? file?.name) + (node?.nodeName ? ` - ${node.nodeName}` : '')
+                    }
                     onPress={{
                         action: '@ui.url.open',
                         url,
                     }}
                     icon={
-                        context.environment.integration.urls.icon ? <image
-                            source={{
-                                url: context.environment.integration.urls.icon,
-                            }}
-                            aspectRatio={1}
-                        /> : undefined
+                        context.environment.integration.urls.icon ? (
+                            <image
+                                source={{
+                                    url: context.environment.integration.urls.icon,
+                                }}
+                                aspectRatio={1}
+                            />
+                        ) : undefined
                     }
                     buttons={[
                         <button

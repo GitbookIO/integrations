@@ -120,13 +120,13 @@ export const getGitlabContent = async (url: string, context: GitlabRuntimeContex
         return;
     }
 
-    const configuration = context.environment.installation?.configuration as GitlabInstallationConfiguration;
+    const configuration = context.environment.installation
+        ?.configuration as GitlabInstallationConfiguration;
     const accessToken = configuration.oauth_credentials?.access_token;
 
     if (!accessToken) {
         throw new ExposableError('Integration is not authenticated');
     }
-
 
     let content: string | boolean = '';
     content = await fetchGitlabFile(

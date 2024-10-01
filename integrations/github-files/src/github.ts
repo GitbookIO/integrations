@@ -117,9 +117,9 @@ export const getGithubContent = async (url: string, context: GithubRuntimeContex
         return;
     }
 
-
     let content: string | boolean = '';
-    const configuration = context.environment.installation?.configuration as GithubInstallationConfiguration;
+    const configuration = context.environment.installation
+        ?.configuration as GithubInstallationConfiguration;
     const accessToken = configuration.oauth_credentials?.access_token;
     if (!accessToken) {
         throw new ExposableError('Integration is not authenticated');

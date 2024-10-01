@@ -96,7 +96,7 @@ const embedBlock = createComponent<Props, {}, void, IntegrationContext>({
                 accessTokenURL: 'https://auth.atlassian.com/oauth/token',
                 extractCredentials,
             },
-            context
+            context,
         );
 
         const issue = await getJIRAIssue(key, {
@@ -158,7 +158,7 @@ const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request,
         base: new URL(
             environment.spaceInstallation?.urls?.publicEndpoint ||
                 environment.installation?.urls.publicEndpoint ||
-                environment.integration.urls.publicEndpoint
+                environment.integration.urls.publicEndpoint,
         ).pathname,
     });
 
@@ -177,7 +177,7 @@ const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request,
             scopes: ['read:jira-work', 'read:jira-user', 'offline_access'],
             prompt: 'consent',
             extractCredentials,
-        })
+        }),
     );
 
     const response = await router.handle(request, context);
@@ -191,7 +191,7 @@ const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request,
 };
 
 const extractCredentials = async (
-    response: OAuthResponse
+    response: OAuthResponse,
 ): Promise<RequestUpdateIntegrationInstallation> => {
     const { access_token } = response;
     const sites = await getJIRASites(access_token);

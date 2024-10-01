@@ -1,4 +1,9 @@
-import { createIntegration, createComponent, RuntimeContext, RuntimeEnvironment } from '@gitbook/runtime';
+import {
+    createIntegration,
+    createComponent,
+    RuntimeContext,
+    RuntimeEnvironment,
+} from '@gitbook/runtime';
 
 import { handleSubmit } from './utils';
 
@@ -17,15 +22,14 @@ type FormspreeAction = {
 };
 
 const formspreeBlock = createComponent<
-    {
-        
-    },
-    {formSubmitted: true} | {
-        email: string;
-        name: string;
-        message: string;
-        formSubmitted: boolean;
-    },
+    {},
+    | { formSubmitted: true }
+    | {
+          email: string;
+          name: string;
+          message: string;
+          formSubmitted: boolean;
+      },
     FormspreeAction,
     FormspreeContext
 >({
@@ -43,11 +47,15 @@ const formspreeBlock = createComponent<
                     return element;
                 }
 
-                handleSubmit((context.environment.spaceInstallation?.configuration as FormspreeConfiguration).formspree_id, {
-                    email: element.state.email,
-                    name: element.state.name,
-                    message: element.state.message,
-                });
+                handleSubmit(
+                    (context.environment.spaceInstallation?.configuration as FormspreeConfiguration)
+                        .formspree_id,
+                    {
+                        email: element.state.email,
+                        name: element.state.name,
+                        message: element.state.message,
+                    },
+                );
                 return {
                     state: {
                         formSubmitted: true,
@@ -56,7 +64,8 @@ const formspreeBlock = createComponent<
         }
     },
     render: async (element, context: FormspreeContext) => {
-        const configuration = context.environment.spaceInstallation?.configuration as FormspreeConfiguration;
+        const configuration = context.environment.spaceInstallation
+            ?.configuration as FormspreeConfiguration;
 
         return (
             <block>
