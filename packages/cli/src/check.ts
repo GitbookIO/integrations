@@ -14,8 +14,6 @@ export async function checkIntegrationBuild() {
 
     const mf = new Miniflare({
         scriptPath,
-        liveReload: true,
-        watch: true,
     });
     await mf.ready;
 

@@ -57,8 +57,6 @@ export async function startIntegrationsDevServer(space: string | undefined) {
     const mf = new Miniflare({
         scriptPath,
         port,
-        liveReload: true,
-        watch: true,
     });
     await mf.ready;
 
@@ -88,6 +86,7 @@ export async function startIntegrationsDevServer(space: string | undefined) {
             console.log('🛠 Detected changes, rebuilding...');
             try {
                 await buildScriptFromManifest(manifestSpecPath, { mode: 'development' });
+                await mf.setOptions({ scriptPath });
                 console.log(`📦 Rebuilt in ${((performance.now() - p1) / 1000).toFixed(2)}s`);
             } catch (error) {
                 console.log(error);

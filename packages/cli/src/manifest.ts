@@ -91,9 +91,9 @@ const IntegrationManifestSchema = z.object({
             }),
         )
         .optional(),
-    organization: z.string().optional(),
+    organization: z.string(),
     secrets: z.record(z.string()).optional(),
-    contentSecurityPolicy: z.string().optional(),
+    contentSecurityPolicy: z.union([z.string(), z.record(z.string(), z.string())]).optional(),
 });
 
 export type IntegrationManifest = z.infer<typeof IntegrationManifestSchema>;
@@ -145,7 +145,6 @@ export async function readIntegrationManifest(filePath: string): Promise<Integra
 
         return manifest;
     } catch (error) {
-        console.log(error.stack);
         throw new Error(
             `Failed to read integration spec from ${prettyPath(filePath)}: ${(error as Error).message}`,
         );
