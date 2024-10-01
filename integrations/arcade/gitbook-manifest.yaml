@@ -19,6 +19,7 @@ summary: |
 
     To install on a single space navigate to integrations in sub-navigation. If you prefer to install the Arcade integration on multiple or all spaces, navigate to your organization settings and enable it from the integrations panel. This will give you access to the custom arcade block.
 visibility: public
+organization: gitbook
 script: ./src/index.tsx
 scopes: []
 blocks:

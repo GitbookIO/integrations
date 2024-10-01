@@ -1,6 +1,7 @@
 name: slack
 title: Slack
 icon: ./assets/icon.png
+organization: gitbook
 description: Ask questions, get answers and add information to your GitBook knowledge base, right in Slack.
 categories:
     - collaboration

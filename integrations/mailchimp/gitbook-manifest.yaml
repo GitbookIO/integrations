@@ -5,6 +5,7 @@ description: Grow your Mailchimp audiences, directly from your GitBook content.
 categories:
     - marketing
 visibility: public
+organization: gitbook
 script: ./src/index.tsx
 previewImages:
     - ./assets/mailchimp-preview.png

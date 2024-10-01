@@ -2,6 +2,7 @@ name: runllm
 title: RunLLM
 visibility: public
 icon: ./assets/icon.png
+organization: gitbook
 description: Add RunLLM chat widget to your doc site.
 summary: |
     # Overview
