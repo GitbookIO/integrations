@@ -10,12 +10,13 @@
     },
     "devDependencies": {
         "@gitbook/cli": "*",
-        "@graphql-codegen/cli": "2.13.3",
-        "@graphql-codegen/client-preset": "1.0.2",
-        "@graphql-codegen/typescript-graphql-request": "^4.5.5",
+        "@graphql-codegen/cli": "^5.0.2",
+        "@graphql-codegen/client-preset": "^4.3.3",
+        "@graphql-codegen/typescript-graphql-request": "^6.2.0",
         "dotenv-cli": "^6.0.0"
     },
     "scripts": {
+        "typecheck": "tsc --noEmit",
         "build": "graphql-codegen --config linear.sdk.codegen.yml",
         "publish-linear-dev": "dotenv gitbook publish .",
         "publish-integrations": "gitbook publish .",

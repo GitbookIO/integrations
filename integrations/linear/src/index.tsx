@@ -9,23 +9,23 @@ const logger = Logger('linear');
 /**
  * Render a generic Linear issue card linking to the URL provided.
  */
-function renderGenericCard(url: string, context: LinearRuntimeContext): ContentKitBlock {
+function renderGenericCard(url: string | undefined, context: LinearRuntimeContext): ContentKitBlock {
     return (
         <block>
             <card
                 title="Linear"
                 hint={url}
-                onPress={{
+                onPress={url ? {
                     action: '@ui.url.open',
                     url,
-                }}
+                } : undefined}
                 icon={
-                    <image
+                    context.environment.integration.urls.icon ? <image
                         source={{
                             url: context.environment.integration.urls.icon,
                         }}
                         aspectRatio={1}
-                    />
+                    /> : undefined
                 }
             />
         </block>
@@ -97,12 +97,12 @@ const embedBlock = createComponent<{
     async render(element, context) {
         const { environment } = context;
         const configuration = environment.installation?.configuration;
+        const { issueId, url } = element.props;
 
-        if (!configuration || !('oauth_credentials' in configuration)) {
-            return renderGenericCard(element.props.url, context);
+        if (!configuration || !('oauth_credentials' in configuration) || !url || !issueId) {
+            return renderGenericCard(url, context);
         }
 
-        const { issueId, url } = element.props;
         const linearClient = await getLinearAPIClient(configuration);
 
         let response: IssueQuery;
@@ -138,12 +138,12 @@ const embedBlock = createComponent<{
                         url,
                     }}
                     icon={
-                        <image
+                        context.environment.integration.urls.icon ? <image
                             source={{
                                 url: context.environment.integration.urls.icon,
                             }}
                             aspectRatio={1}
-                        />
+                        /> : undefined
                     }
                     buttons={
                         issue.description
