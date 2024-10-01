@@ -1,35 +1,102 @@
-import Ajv, { Schema } from 'ajv';
-import addFormats from 'ajv-formats';
+import { z } from 'zod';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import * as path from 'path';
 
 import * as api from '@gitbook/api';
 
-import { getAPISchema, getAPIJsonSchemaFor } from './api-spec';
 import { fileExists, prettyPath } from './files';
 
 export const DEFAULT_MANIFEST_FILE = 'gitbook-manifest.yaml';
 
-export interface IntegrationManifest {
-    name: string;
-    title: string;
-    script: string;
-    icon?: string;
-    description?: string;
-    summary?: string;
-    target?: api.IntegrationTarget;
-    scopes?: api.IntegrationScope[];
-    categories?: api.IntegrationCategory[];
-    blocks?: api.IntegrationBlock[];
-    configurations?: api.IntegrationConfigurations;
-    visibility?: api.IntegrationVisibility;
-    previewImages?: api.Integration['previewImages'];
-    externalLinks?: api.Integration['externalLinks'];
-    organization: string;
-    secrets: { [key: string]: string };
-    contentSecurityPolicy?: string;
-}
+const IntegrationManifestConfigurationComponent = z.object({
+    componentId: z.string(),
+});
+
+const JSONSchemaBaseSchema = z.object({
+    title: z.string().max(30).optional(),
+    description: z.string().max(100).optional(),
+});
+
+const IntegrationManifestSchemaConfiguration = z.object({
+    properties: z.record(
+        z.string(),
+        z.union([
+            JSONSchemaBaseSchema.extend({
+                type: z.literal('string'),
+                default: z.string().optional(),
+            }),
+            JSONSchemaBaseSchema.extend({
+                type: z.literal('number'),
+                default: z.number().optional(),
+            }),
+            JSONSchemaBaseSchema.extend({
+                type: z.literal('boolean'),
+                default: z.boolean().optional(),
+            }),
+            JSONSchemaBaseSchema.extend({
+                type: z.literal('button'),
+                callback_url: z.string(),
+                button_text: z.string(),
+            }),
+        ]),
+    ),
+    required: z.array(z.string()).optional(),
+});
+
+const IntegrationManifestConfiguration = z.union([
+    IntegrationManifestConfigurationComponent,
+    IntegrationManifestSchemaConfiguration,
+]);
+
+const IntegrationManifestBlock = z.object({
+    id: z.string(),
+    title: z.string().min(2).max(40),
+    description: z.string().min(0).max(150),
+    icon: z.string().optional(),
+    urlUnfurl: z.array(z.string()).optional(),
+    markdown: z
+        .object({
+            codeblock: z.string(),
+            body: z.string(),
+        })
+        .optional(),
+});
+
+const IntegrationManifestSchema = z.object({
+    name: z.string(),
+    title: z.string(),
+    script: z.string(),
+    icon: z.string().optional(),
+    description: z.string().optional(),
+    summary: z.string().optional(),
+    target: z.nativeEnum(api.IntegrationTarget).optional(),
+    scopes: z.array(z.nativeEnum(api.IntegrationScope)),
+    categories: z.array(z.nativeEnum(api.IntegrationCategory)).optional(),
+    blocks: z.array(IntegrationManifestBlock).optional(),
+    configurations: z
+        .object({
+            account: IntegrationManifestConfiguration.optional(),
+            space: IntegrationManifestConfiguration.optional(),
+            site: IntegrationManifestConfiguration.optional(),
+        })
+        .optional(),
+    visibility: z.nativeEnum(api.IntegrationVisibility).optional(),
+    previewImages: z.array(z.string()).optional(),
+    externalLinks: z
+        .array(
+            z.object({
+                label: z.string(),
+                url: z.string().url(),
+            }),
+        )
+        .optional(),
+    organization: z.string().optional(),
+    secrets: z.record(z.string()).optional(),
+    contentSecurityPolicy: z.string().optional(),
+});
+
+export type IntegrationManifest = z.infer<typeof IntegrationManifestSchema>;
 
 /**
  * Get the default manifest file path for the current working directory.
@@ -78,6 +145,7 @@ export async function readIntegrationManifest(filePath: string): Promise<Integra
 
         return manifest;
     } catch (error) {
+        console.log(error.stack);
         throw new Error(
             `Failed to read integration spec from ${prettyPath(filePath)}: ${(error as Error).message}`,
         );
@@ -100,127 +168,12 @@ export async function writeIntegrationManifest(
  * Validate the spec file.
  */
 async function validateIntegrationManifest(data: object): Promise<IntegrationManifest> {
-    const [validate, ajv] = await getManifestSchema();
-    const valid = validate(data);
-    if (!valid) {
-        throw new Error(ajv.errorsText(validate.errors));
+    try {
+        const manifest = IntegrationManifestSchema.parse(data);
+        return manifest;
+    } catch (error) {
+        throw new Error(`Invalid integration manifest: ${(error as z.ZodError).message}`);
     }
-
-    const manifest = data as IntegrationManifest;
-    return manifest;
-}
-
-/**
- * Create a schema to validate the manifest file.
- */
-async function getManifestSchema() {
-    const ajv = new Ajv();
-    addFormats(ajv);
-
-    const openAPISpec = await getAPISchema();
-
-    const manifestSchema: Schema = {
-        type: 'object',
-        properties: {
-            name: {
-                ...getAPIJsonSchemaFor(
-                    openAPISpec,
-                    'components/schemas/Integration/properties/name',
-                ),
-            },
-            title: {
-                ...getAPIJsonSchemaFor(
-                    openAPISpec,
-                    'components/schemas/Integration/properties/title',
-                ),
-            },
-            description: {
-                ...getAPIJsonSchemaFor(
-                    openAPISpec,
-                    'components/schemas/Integration/properties/description',
-                ),
-            },
-            summary: {
-                ...getAPIJsonSchemaFor(
-                    openAPISpec,
-                    'components/schemas/Integration/properties/summary',
-                ),
-            },
-            visibility: {
-                ...getAPIJsonSchemaFor(
-                    openAPISpec,
-                    'components/schemas/Integration/properties/visibility',
-                ),
-            },
-            target: {
-                ...getAPIJsonSchemaFor(
-                    openAPISpec,
-                    'components/schemas/RequestPublishIntegration/properties/target',
-                ),
-            },
-            icon: {
-                type: 'string',
-            },
-            script: {
-                type: 'string',
-            },
-            previewImages: {
-                type: 'array',
-                items: {
-                    type: 'string',
-                },
-            },
-            externalLinks: {
-                ...getAPIJsonSchemaFor(
-                    openAPISpec,
-                    'components/schemas/Integration/properties/externalLinks',
-                ),
-            },
-            scopes: {
-                ...getAPIJsonSchemaFor(
-                    openAPISpec,
-                    'components/schemas/Integration/properties/scopes',
-                ),
-            },
-            blocks: {
-                ...getAPIJsonSchemaFor(
-                    openAPISpec,
-                    'components/schemas/Integration/properties/blocks',
-                ),
-            },
-            categories: {
-                ...getAPIJsonSchemaFor(
-                    openAPISpec,
-                    'components/schemas/Integration/properties/categories',
-                ),
-            },
-            configurations: {
-                ...getAPIJsonSchemaFor(
-                    openAPISpec,
-                    'components/schemas/Integration/properties/configurations',
-                ),
-            },
-            secrets: {
-                ...getAPIJsonSchemaFor(openAPISpec, 'components/schemas/IntegrationSecrets'),
-            },
-            contentSecurityPolicy: {
-                ...getAPIJsonSchemaFor(
-                    openAPISpec,
-                    'components/schemas/IntegrationContentSecurityPolicy',
-                ),
-            },
-            organization: {
-                ...getAPIJsonSchemaFor(
-                    openAPISpec,
-                    'components/schemas/RequestPublishIntegration/properties/organization',
-                ),
-            },
-        },
-        required: ['name', 'title', 'script', 'scopes'],
-        additionalProperties: false,
-    };
-
-    return [ajv.compile(manifestSchema), ajv] as const;
 }
 
 /**
