@@ -2,6 +2,8 @@
     "$schema": "https://json.schemastore.org/tsconfig",
     "display": "Default",
     "compilerOptions": {
+        "module": "Preserve",
+        "moduleResolution": "bundler",
         "resolveJsonModule": true,
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,

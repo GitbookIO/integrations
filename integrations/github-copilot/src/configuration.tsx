@@ -1,8 +1,9 @@
-import { createComponent, getOAuthToken } from '@gitbook/runtime';
-import { GitHubCopilotConfiguration, GitHubCopilotRuntimeContext } from './types';
 import { ContentKitIcon } from '@gitbook/api';
+import { createComponent, getOAuthToken } from '@gitbook/runtime';
+
 import { fetchGitHubInstallations } from './github';
 import { getGitHubOAuthConfiguration } from './oauth';
+import { GitHubCopilotConfiguration, GitHubCopilotRuntimeContext } from './types';
 
 type ConfigureProps = {
     installation: {

@@ -1,27 +1,23 @@
-import { GitBookAPI, RequestUpdateIntegrationInstallation } from '@gitbook/api';
+import { RequestUpdateIntegrationInstallation } from '@gitbook/api';
 
 import { RuntimeCallback, RuntimeContext } from './context';
 import { Logger } from './logger';
 
 /**
  * Utility interface for typing the response from a Slack OAuth call.
- * TODO: Use the official Slack type
  */
 export interface OAuthResponse {
     ok?: boolean;
     access_token: string;
     refresh_token?: string;
     expires_in: number;
-    team: {
-        id: string;
-    };
 }
 
-export type OAuthConfiguration ={
+export type OAuthConfiguration = {
     access_token: string;
     refresh_token?: string;
     expires_at: string;
-}
+};
 
 export interface OAuthConfig {
     /**
@@ -354,7 +350,9 @@ export async function getOAuthToken(
  * Default implementation to extract the credentials from the OAuth response.
  * throws an error if the `access_token` is not present in the response.
  */
-export function defaultOAuthExtractCredentials(response: OAuthResponse): RequestUpdateIntegrationInstallation {
+export function defaultOAuthExtractCredentials(
+    response: OAuthResponse
+): RequestUpdateIntegrationInstallation {
     if (!response.access_token) {
         const message = `Failed to retrieve access_token from response`;
         logger.error(`${message} ${JSON.stringify(response, null, 2)} `);

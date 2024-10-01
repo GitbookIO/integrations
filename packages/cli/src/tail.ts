@@ -1,6 +1,13 @@
 import ora from 'ora';
-import { getAPIClient } from "./remote";
-import { getDefaultManifestPath, readIntegrationManifest, resolveIntegrationManifestPath } from "./manifest";
+
+import {
+    getDefaultManifestPath,
+    readIntegrationManifest,
+    resolveIntegrationManifestPath,
+} from './manifest';
+import { getAPIClient } from './remote';
+
+const intervalSeconds = 10;
 
 /**
  * Print the logs of an integration.
@@ -32,12 +39,17 @@ export async function tailLogs() {
             printed.add(event.id);
 
             spinner.start(`Fetching event ${event.id}...`);
-            const { data: { trace } } = await api.integrations.getIntegrationEvent(manifest.name, event.id);
+            const {
+                data: { trace },
+            } = await api.integrations.getIntegrationEvent(manifest.name, event.id);
             spinner.clear();
 
             console.log('');
-            console.log(`[${event.status}][${new Date(event.createdAt).toISOString()}] ${JSON.stringify(event.payload)}`);
-
+            console.log(
+                `[${event.status}][${new Date(event.createdAt).toISOString()}] ${JSON.stringify(
+                    event.payload
+                )}`
+            );
 
             if (trace?.logs.length === 0) {
                 console.log('No logs');
@@ -49,14 +61,16 @@ export async function tailLogs() {
         }
 
         spinner.clear();
-        // spinner.start('Waiting for new events...');
+        spinner.start('Waiting ${intervalSeconds}s for new events...');
 
-        // clearTimeout(scheduled!);
-        // scheduled = setTimeout(printEvents, 5000);
-    }
+        clearTimeout(scheduled!);
+        scheduled = setTimeout(() => {
+            spinner.clear();
+            printEvents();
+        }, intervalSeconds * 1000);
+    };
 
-    await printEvents();
-    return;
+    printEvents();
 
     /**
      * Stop the process

@@ -1,6 +1,7 @@
-import { defaultOAuthExtractCredentials } from "@gitbook/runtime";
-import { GitHubCopilotConfiguration, GitHubCopilotRuntimeContext } from "./types";
-import { fetchGitHubInstallations } from "./github";
+import { defaultOAuthExtractCredentials } from '@gitbook/runtime';
+
+import { fetchGitHubInstallations } from './github';
+import { GitHubCopilotConfiguration, GitHubCopilotRuntimeContext } from './types';
 
 /**
  * Get the OAut configuration for a context.
@@ -19,17 +20,19 @@ export function getGitHubOAuthConfiguration(ctx: GitHubCopilotRuntimeContext) {
         // The user can still edits the list from the configuration UI
         extractCredentials: async (response) => {
             const res = defaultOAuthExtractCredentials(response);
-            const token = (res.configuration as GitHubCopilotConfiguration).oauth_credentials?.access_token;
+            const token = (res.configuration as GitHubCopilotConfiguration).oauth_credentials
+                ?.access_token;
             if (!token) {
                 throw new Error('Expected a token');
             }
 
-            const githubInstallations = await fetchGitHubInstallations(token)
+            const githubInstallations = await fetchGitHubInstallations(token);
             return {
                 ...res,
-                externalIds: githubInstallations.map(githubInstallation => githubInstallation.id.toString()).slice(0, 5),
+                externalIds: githubInstallations
+                    .map((githubInstallation) => githubInstallation.id.toString())
+                    .slice(0, 5),
             };
         },
-    }
+    };
 }
-

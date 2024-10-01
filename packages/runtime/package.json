@@ -12,7 +12,7 @@
         "@gitbook/tsconfig": "*",
         "esbuild": "^0.14.42",
         "eslint": "^8.16.0",
-        "typescript": "^4.6.3"
+        "typescript": "^5.6.2"
     },
     "scripts": {
         "lint": "eslint ./src/**/*.ts",

@@ -13,7 +13,7 @@ import { promptNewIntegration } from './init';
 import { DEFAULT_MANIFEST_FILE, resolveIntegrationManifestPath } from './manifest';
 import { publishIntegration, unpublishIntegration } from './publish';
 import { authenticate, whoami } from './remote';
-import { tailLogs } from 'tail';
+import { tailLogs } from './tail';
 
 program
     .name(Object.keys(packageJSON.bin)[0])

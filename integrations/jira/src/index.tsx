@@ -70,7 +70,7 @@ const embedBlock = createComponent<Props, {}, {}, IntegrationContext>({
             );
         }
 
-        const { environment, api } = context;
+        const { environment } = context;
         const configuration = environment.installation?.configuration;
         const site = configuration.sites.find((site) => url.toString().startsWith(site.url));
 

@@ -7,7 +7,14 @@ import {
 
 import { RuntimeCallback, RuntimeContext } from './context';
 
-type PlainObjectValue = number | string | boolean | PlainObject | undefined | null | PlainObjectValue[];
+type PlainObjectValue =
+    | number
+    | string
+    | boolean
+    | PlainObject
+    | undefined
+    | null
+    | PlainObjectValue[];
 type PlainObject = {
     [key: string]: PlainObjectValue;
 };
@@ -54,7 +61,9 @@ export function createComponent<
     /**
      * Initial state of the component.
      */
-    initialState?: State | ((props: Props, renderContext: ContentKitContext, context: Context) => State);
+    initialState?:
+        | State
+        | ((props: Props, renderContext: ContentKitContext, context: Context) => State);
 
     /**
      * Callback to handle a dispatched action.
