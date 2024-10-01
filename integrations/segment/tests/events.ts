@@ -4,7 +4,6 @@ import test from 'test';
 import * as api from '@gitbook/api';
 
 import packageJson from '../package.json';
-// eslint-disable-next-line import/no-internal-modules
 import { generateSegmentTrackEvent } from '../src/events';
 
 const fakeSpaceViewEvent: api.SpaceViewEvent = {

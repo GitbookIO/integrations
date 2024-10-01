@@ -22,7 +22,6 @@ import {
     ContentKitLink,
 } from '@gitbook/api';
 
-// eslint-disable-next-line import/no-internal-modules
 import { jsx, jsxDEV, jsxs, Fragment } from './src/contentkit-jsx';
 
 /**

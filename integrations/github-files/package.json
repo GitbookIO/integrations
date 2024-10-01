@@ -9,7 +9,6 @@
         "@gitbook/api": "*"
     },
     "devDependencies": {
-        "@gitbook/eslint-config": "*",
         "@gitbook/cli": "workspace:*",
         "@gitbook/tsconfig": "workspace:*"
     },

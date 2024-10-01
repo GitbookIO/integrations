@@ -128,7 +128,6 @@ export async function initializeProject(
 
     await fs.promises.writeFile(scriptPath, generateScript(project));
     await fs.promises.writeFile(path.join(dirPath, 'tsconfig.json'), generateTSConfig());
-    await fs.promises.writeFile(path.join(dirPath, '.eslintrc.json'), generateESLint());
 
     await extendPackageJson(dirPath, project.name);
     console.log(`\n⬇️  Installing dependencies...\n`);
@@ -145,7 +144,6 @@ export async function extendPackageJson(dirPath: string, projectName: string): P
         name: projectName,
         private: true,
         scripts: {
-            lint: 'eslint --ext .js,.jsx,.ts,.tsx .',
             typecheck: 'tsc --noEmit',
             publish: 'gitbook publish .',
         },
@@ -154,8 +152,7 @@ export async function extendPackageJson(dirPath: string, projectName: string): P
         },
         devDependencies: {
             [packageJSON.name]: `^${packageJSON.version}`,
-            '@gitbook/eslint-config': '*',
-            '@gitbook/tsconfig': '*',
+            '@gitbook/tsconfig': packageJSON.dependencies['@gitbook/tsconfig'],
         },
     };
 
@@ -202,7 +199,6 @@ export function generateScript(project: { name: string }): string {
         request,
         context
       ) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { api } = context;
         const user = api.user.getAuthenticatedUser();
 
@@ -250,18 +246,7 @@ export function generateScript(project: { name: string }): string {
 export function generateTSConfig(): string {
     return detent(`
         {
-            "extends": "@gitbook/tsconfig/integration.json",
-            "compilerOptions": {
-                "lib": ["ES6", "DOM"],
-            }
-        }
-    `).trim();
-}
-
-export function generateESLint(): string {
-    return detent(`
-        {
-            "extends": ["@gitbook/eslint-config/integration"]
+            "extends": "@gitbook/tsconfig/integration.json"
         }
     `).trim();
 }

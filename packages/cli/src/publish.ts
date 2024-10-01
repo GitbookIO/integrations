@@ -15,8 +15,6 @@ const targetAll = api.IntegrationTarget.All;
  */
 export async function publishIntegration(
     specFilePath: string,
-    // will be fixed once we update eslint and everything
-    // eslint-disable-next-line no-undef
     updates: Partial<api.RequestPublishIntegration> = {}
 ): Promise<void> {
     // Build the script

@@ -1,7 +1,6 @@
 import toJsonSchema from '@openapi-contrib/openapi-schema-to-json-schema';
 import { Resolver } from '@stoplight/json-ref-resolver';
 
-// eslint-disable-next-line import/no-internal-modules
 import openAPISpec from '@gitbook/api/spec/openapi.json';
 
 /**

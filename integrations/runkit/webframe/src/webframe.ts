@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 const gitbookWebFrame = window.top;
 
 let readOnly = false;

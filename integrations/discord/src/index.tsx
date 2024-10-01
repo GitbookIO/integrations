@@ -1,6 +1,5 @@
 import { Router } from 'itty-router';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { RequestUpdateIntegrationInstallation } from '@gitbook/api';
 import {
     createIntegration,
