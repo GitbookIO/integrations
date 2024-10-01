@@ -7,8 +7,9 @@ import {
 
 import { RuntimeCallback, RuntimeContext } from './context';
 
+type PlainObjectValue = number | string | boolean | PlainObject | undefined | null | PlainObjectValue[];
 type PlainObject = {
-    [key: string]: number | string | boolean | PlainObject | undefined | null;
+    [key: string]: PlainObjectValue;
 };
 
 export interface ComponentRenderCache {
@@ -53,7 +54,7 @@ export function createComponent<
     /**
      * Initial state of the component.
      */
-    initialState?: State | ((props: Props, renderContext: ContentKitContext) => State);
+    initialState?: State | ((props: Props, renderContext: ContentKitContext, context: Context) => State);
 
     /**
      * Callback to handle a dispatched action.
@@ -82,7 +83,7 @@ export function createComponent<
             const state =
                 (event.state as State | undefined) ||
                 (typeof component.initialState === 'function'
-                    ? component.initialState(props, event.context)
+                    ? component.initialState(props, event.context, context)
                     : ((component.initialState || {}) as State));
 
             let cache: ComponentRenderCache | undefined = undefined;

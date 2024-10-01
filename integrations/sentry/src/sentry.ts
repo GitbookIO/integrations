@@ -3,12 +3,12 @@ import { Logger } from '@gitbook/runtime';
 import { SentryIssue, SentryRuntimeContext } from './types';
 
 export const logger = Logger('integration:sentry');
+
 /**
  * Fetches an API auth token
  */
 async function getToken(context: SentryRuntimeContext) {
     const { auth_token } = context.environment.installation.configuration;
-
     return auth_token;
 }
 

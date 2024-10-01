@@ -13,6 +13,7 @@ import { promptNewIntegration } from './init';
 import { DEFAULT_MANIFEST_FILE, resolveIntegrationManifestPath } from './manifest';
 import { publishIntegration, unpublishIntegration } from './publish';
 import { authenticate, whoami } from './remote';
+import { tailLogs } from 'tail';
 
 program
     .name(Object.keys(packageJSON.bin)[0])
@@ -95,6 +96,13 @@ program
         if (response.confirm) {
             await unpublishIntegration(name);
         }
+    });
+
+program
+    .command('tail')
+    .description('fetch and print the logs of the integration')
+    .action(async () => {
+        await tailLogs();
     });
 
 checkNodeVersion({ node: '>= 18' }, (error, result) => {

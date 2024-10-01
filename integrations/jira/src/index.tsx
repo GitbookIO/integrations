@@ -6,7 +6,7 @@ import {
     createIntegration,
     createOAuthHandler,
     FetchEventCallback,
-    getToken,
+    getOAuthToken,
     OAuthConfiguration,
     OAuthResponse,
     RuntimeContext,
@@ -85,15 +85,16 @@ const embedBlock = createComponent<Props, {}, {}, IntegrationContext>({
             );
         }
 
-        const accessToken = await getToken(configuration.oauth_credentials, {
-            clientId: environment.secrets.CLIENT_ID,
-            clientSecret: environment.secrets.CLIENT_SECRET,
-            accessTokenURL: 'https://auth.atlassian.com/oauth/token',
-            api,
-            installationId: environment.installation?.id,
-            installationName: environment.integration.name,
-            extractCredentials,
-        });
+        const accessToken = await getOAuthToken(
+            configuration.oauth_credentials,
+            {
+                clientId: environment.secrets.CLIENT_ID,
+                clientSecret: environment.secrets.CLIENT_SECRET,
+                accessTokenURL: 'https://auth.atlassian.com/oauth/token',
+                extractCredentials,
+            },
+            context
+        );
 
         const issue = await getJIRAIssue(key, {
             site: site.id,

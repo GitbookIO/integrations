@@ -1,6 +1,6 @@
 import { GitBookAPI, RequestUpdateIntegrationInstallation } from '@gitbook/api';
 
-import { RuntimeCallback } from './context';
+import { RuntimeCallback, RuntimeContext } from './context';
 import { Logger } from './logger';
 
 /**
@@ -17,7 +17,7 @@ export interface OAuthResponse {
     };
 }
 
-export interface OAuthConfiguration {
+export type OAuthConfiguration ={
     access_token: string;
     refresh_token?: string;
     expires_at: string;
@@ -86,7 +86,7 @@ export function createOAuthHandler(
         replace?: boolean;
     } = {}
 ): RuntimeCallback<[Request], Promise<Response>> {
-    const { extractCredentials = defaultExtractCredentials } = config;
+    const { extractCredentials = defaultOAuthExtractCredentials } = config;
     const { replace = true } = options;
 
     return async (request, { api, environment }) => {
@@ -299,18 +299,19 @@ export function createOAuthHandler(
     };
 }
 
-export async function getToken(
+/**
+ * Get the OAuth token from the credentials.
+ * It will refresh the token if it's expired.
+ */
+export async function getOAuthToken(
     credentials: OAuthConfiguration,
     config: Pick<
         OAuthConfig,
         'accessTokenURL' | 'clientId' | 'clientSecret' | 'extractCredentials'
-    > & {
-        api: GitBookAPI;
-        installationId: string;
-        installationName: string;
-    }
+    >,
+    context: RuntimeContext
 ): Promise<string> {
-    const { api, extractCredentials = defaultExtractCredentials } = config;
+    const { extractCredentials = defaultOAuthExtractCredentials } = config;
 
     if (new Date(credentials.expires_at).getTime() - Date.now() > 10000) {
         return credentials.access_token;
@@ -340,9 +341,9 @@ export async function getToken(
     const json = await response.json<OAuthResponse>();
     const creds = await extractCredentials(json);
 
-    await api.integrations.updateIntegrationInstallation(
-        config.installationName,
-        config.installationId,
+    await context.api.integrations.updateIntegrationInstallation(
+        context.environment.integration.name,
+        context.environment.installation!.id,
         creds
     );
 
@@ -353,7 +354,7 @@ export async function getToken(
  * Default implementation to extract the credentials from the OAuth response.
  * throws an error if the `access_token` is not present in the response.
  */
-function defaultExtractCredentials(response: OAuthResponse): RequestUpdateIntegrationInstallation {
+export function defaultOAuthExtractCredentials(response: OAuthResponse): RequestUpdateIntegrationInstallation {
     if (!response.access_token) {
         const message = `Failed to retrieve access_token from response`;
         logger.error(`${message} ${JSON.stringify(response, null, 2)} `);
