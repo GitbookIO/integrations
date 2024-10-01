@@ -324,7 +324,8 @@ export async function getOAuthToken(
 
     const json = (await response.json()) as OAuthResponse;
     const creds = await extractCredentials(json);
-    const accessToken = (creds.configuration?.['oauth_credentials'] as OAuthConfiguration)?.access_token;
+    const accessToken = (creds.configuration?.['oauth_credentials'] as OAuthConfiguration)
+        ?.access_token;
     if (!accessToken) {
         throw new Error('Failed to retrieve access_token from OAuth response');
     }

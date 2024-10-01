@@ -48,17 +48,23 @@ const embedBlock = createComponent<{
                 <block>
                     <card
                         title={'Toucan Toco'}
-                        onPress={url ? {
-                            action: '@ui.url.open',
-                            url,
-                        } : undefined}
+                        onPress={
+                            url
+                                ? {
+                                      action: '@ui.url.open',
+                                      url,
+                                  }
+                                : undefined
+                        }
                         icon={
-                            environment.integration.urls.icon ? <image
-                                source={{
-                                    url: environment.integration.urls.icon,
-                                }}
-                                aspectRatio={1}
-                            /> : undefined
+                            environment.integration.urls.icon ? (
+                                <image
+                                    source={{
+                                        url: environment.integration.urls.icon,
+                                    }}
+                                    aspectRatio={1}
+                                />
+                            ) : undefined
                         }
                     />
                 </block>

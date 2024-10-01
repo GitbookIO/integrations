@@ -24,9 +24,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     const trackingId = environment.siteInstallation?.configuration?.tracking_id;
 
     if (!trackingId) {
-        throw new ExposableError(
-            `The Reo.Dev tracking ID is missing from the configuration.`,
-        );
+        throw new ExposableError(`The Reo.Dev tracking ID is missing from the configuration.`);
     }
 
     return new Response((script as string).replace('<TO_REPLACE>', trackingId), {

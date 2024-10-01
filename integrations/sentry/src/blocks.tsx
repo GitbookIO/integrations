@@ -16,17 +16,23 @@ function defaultBlock(url: string | undefined, context: SentryRuntimeContext): C
             <card
                 title={'Sentry'}
                 hint={url}
-                onPress={url ? {
-                    action: '@ui.url.open',
-                    url,
-                } : undefined}
+                onPress={
+                    url
+                        ? {
+                              action: '@ui.url.open',
+                              url,
+                          }
+                        : undefined
+                }
                 icon={
-                    context.environment.integration.urls.icon ? <image
-                        source={{
-                            url: context.environment.integration.urls.icon,
-                        }}
-                        aspectRatio={1}
-                    /> : undefined
+                    context.environment.integration.urls.icon ? (
+                        <image
+                            source={{
+                                url: context.environment.integration.urls.icon,
+                            }}
+                            aspectRatio={1}
+                        />
+                    ) : undefined
                 }
             />
         </block>
@@ -94,12 +100,14 @@ export const embedBlock = createComponent<{
                         url,
                     }}
                     icon={
-                        context.environment.integration.urls.icon ? <image
-                            source={{
-                                url: context.environment.integration.urls.icon,
-                            }}
-                            aspectRatio={1}
-                        /> : undefined
+                        context.environment.integration.urls.icon ? (
+                            <image
+                                source={{
+                                    url: context.environment.integration.urls.icon,
+                                }}
+                                aspectRatio={1}
+                            />
+                        ) : undefined
                     }
                 />
             </block>

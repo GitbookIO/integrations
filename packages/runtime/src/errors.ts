@@ -1,4 +1,3 @@
-
 /**
  * Error that are exposable to the end user in the GitBook UI.
  */

@@ -227,17 +227,20 @@ async function getManifestSchema() {
  * Interpolate secrets with environment variables.
  */
 function interpolateSecrets(secrets: { [key: string]: string }): { [key: string]: string } {
-    return Object.keys(secrets).reduce((acc, key) => {
-        acc[key] = secrets[key].replace(/\${{\s*env.([\S]+)\s*}}/g, (_, envVar) => {
-            const secretEnvVar = process.env[envVar];
-            if (!secretEnvVar) {
-                throw new Error(
-                    `Missing environment variable: "${envVar}" used for secret "${key}"`,
-                );
-            }
+    return Object.keys(secrets).reduce(
+        (acc, key) => {
+            acc[key] = secrets[key].replace(/\${{\s*env.([\S]+)\s*}}/g, (_, envVar) => {
+                const secretEnvVar = process.env[envVar];
+                if (!secretEnvVar) {
+                    throw new Error(
+                        `Missing environment variable: "${envVar}" used for secret "${key}"`,
+                    );
+                }
 
-            return secretEnvVar;
-        });
-        return acc;
-    }, {} as { [key: string]: string });
+                return secretEnvVar;
+            });
+            return acc;
+        },
+        {} as { [key: string]: string },
+    );
 }

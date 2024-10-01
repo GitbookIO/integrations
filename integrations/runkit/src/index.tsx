@@ -16,13 +16,13 @@ type EmbedBlockProps = {
     content?: string;
     nodeVersion?: string;
     url?: string;
-}
+};
 
 type EmbedBlockState = {
     editable: boolean;
     content: string;
     nodeVersion?: string;
-}
+};
 
 const embedBlock = createComponent<EmbedBlockProps, EmbedBlockState>({
     componentId: 'embed',
@@ -44,7 +44,8 @@ const embedBlock = createComponent<EmbedBlockProps, EmbedBlockState>({
 
                 return {
                     state: {
-                        editable: element.context.type === 'document' ? element.context.editable : false,
+                        editable:
+                            element.context.type === 'document' ? element.context.editable : false,
                         url,
                         content: match.content,
                         nodeVersion: match.nodeVersion,

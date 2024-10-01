@@ -1,14 +1,9 @@
 {
     "extends": "@gitbook/tsconfig/base.json",
-    "include": [
-        "src/**/*",
-        "src/global.d.ts"
-    ],
+    "include": ["src/**/*", "src/global.d.ts"],
     "rootDir": "./src",
     "compilerOptions": {
         "baseUrl": "./src",
-        "types": [
-            "@cloudflare/workers-types"
-        ]
+        "types": ["@cloudflare/workers-types"]
     }
 }

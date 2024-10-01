@@ -103,7 +103,10 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                     logger.info(`handling fetch_script`);
 
                     if (!definition.fetch_published_script) {
-                        throw new ExposableError('Integration does not handle fetch_published_script', 400);
+                        throw new ExposableError(
+                            'Integration does not handle fetch_published_script',
+                            400,
+                        );
                     }
 
                     const resp = await definition.fetch_published_script(event, context);
@@ -130,7 +133,10 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                     logger.info(`handling fetch_visitor_authentication`);
 
                     if (!definition.fetch_visitor_authentication) {
-                        throw new ExposableError('Integration does not handle fetch_visitor_authentication', 400);
+                        throw new ExposableError(
+                            'Integration does not handle fetch_visitor_authentication',
+                            400,
+                        );
                     }
                     const resp = await definition.fetch_visitor_authentication(event, context);
 
@@ -177,11 +183,12 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                 }
             }
         } catch (err) {
-            const error = err as (Error | ExposableError);
+            const error = err as Error | ExposableError;
             logger.error(error.stack ?? error.message);
             return new Response(
                 JSON.stringify({
-                    error: error instanceof ExposableError ? error.message : 'Internal server error',
+                    error:
+                        error instanceof ExposableError ? error.message : 'Internal server error',
                 }),
                 {
                     status: error instanceof ExposableError ? error.code : 500,

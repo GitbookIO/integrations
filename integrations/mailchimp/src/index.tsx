@@ -208,10 +208,7 @@ const settingsModal = createComponent<
             throw new ExposableError('Mailchimp integration not configured');
         }
 
-        const lists = await getMailingLists(
-            configuration.api_endpoint,
-            accessToken,
-        );
+        const lists = await getMailingLists(configuration.api_endpoint, accessToken);
 
         return (
             <modal

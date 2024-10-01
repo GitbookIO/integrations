@@ -13,7 +13,7 @@ export async function getIssue(
 ): Promise<SentryIssue> {
     const token = context.environment.installation?.configuration.auth_token;
     if (!token) {
-        throw new ExposableError('Sentry integration is not configured')
+        throw new ExposableError('Sentry integration is not configured');
     }
 
     const response = await fetch(`https://sentry.io/api/0/issues/${issueId}/`, {

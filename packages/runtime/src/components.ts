@@ -45,7 +45,9 @@ export interface ComponentDefinition<Context extends RuntimeContext = RuntimeCon
     render: RuntimeCallback<[UIRenderEvent], Promise<Response>, Context>;
 }
 
-export type ComponentAction<Action = void> = Action extends void ? ContentKitDefaultAction : ContentKitDefaultAction | Action;
+export type ComponentAction<Action = void> = Action extends void
+    ? ContentKitDefaultAction
+    : ContentKitDefaultAction | Action;
 
 /**
  * Create a component instance. The result should be bind to the integration using `blocks`.
@@ -125,10 +127,12 @@ export function createComponent<
             return new Response(JSON.stringify(output), {
                 headers: {
                     'Content-Type': 'application/json',
-                    ...(cache ? {
-                        // @ts-ignore - I'm not sure how to fix this one with TS
-                        'Cache-Control': `max-age=${cache.maxAge}`
-                    } : {}),
+                    ...(cache
+                        ? {
+                              // @ts-ignore - I'm not sure how to fix this one with TS
+                              'Cache-Control': `max-age=${cache.maxAge}`,
+                          }
+                        : {}),
                 },
             });
         },
