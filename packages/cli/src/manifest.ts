@@ -52,7 +52,7 @@ const IntegrationManifestConfiguration = z.union([
 const IntegrationManifestBlock = z.object({
     id: z.string(),
     title: z.string().min(2).max(40),
-    description: z.string().min(0).max(150),
+    description: z.string().min(0).max(150).optional(),
     icon: z.string().optional(),
     urlUnfurl: z.array(z.string()).optional(),
     markdown: z
