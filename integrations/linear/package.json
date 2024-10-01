@@ -19,6 +19,7 @@
         "typecheck": "tsc --noEmit",
         "build": "graphql-codegen --config linear.sdk.codegen.yml",
         "publish-linear-dev": "dotenv gitbook publish .",
+        "check": "gitbook check",
         "publish-integrations": "gitbook publish .",
         "publish-integrations-staging": "gitbook publish ."
     }

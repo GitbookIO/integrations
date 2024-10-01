@@ -14,6 +14,7 @@
     },
     "scripts": {
         "build": "bun run ./webframe/scripts/build.ts",
+        "check": "gitbook check",
         "publish-integrations": "gitbook publish .",
         "publish-integrations-staging": "gitbook publish ."
     }

@@ -11,6 +11,7 @@
     },
     "scripts": {
         "typecheck": "tsc --noEmit",
+        "check": "gitbook check",
         "publish-integrations": "gitbook publish .",
         "publish-integrations-staging": "gitbook publish ."
     }

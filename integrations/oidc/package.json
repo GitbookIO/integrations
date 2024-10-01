@@ -14,6 +14,7 @@
     },
     "scripts": {
         "publish-integrations-staging": "gitbook publish .",
+        "check": "gitbook check",
         "publish-integrations": "gitbook publish ."
     }
 }
