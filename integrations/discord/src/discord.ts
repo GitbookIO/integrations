@@ -1,4 +1,7 @@
-export const sendDiscordMessage = async (event, context) => {
+import { EventByType } from "@gitbook/runtime";
+import { DiscordRuntimeContext } from "./types";
+
+export const sendDiscordMessage = async (event: EventByType<'space_content_updated'>, context: DiscordRuntimeContext) => {
     const { environment, api } = context;
     const { data: space } = await api.spaces.getSpaceById(event.spaceId);
 

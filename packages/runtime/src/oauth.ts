@@ -19,7 +19,7 @@ export type OAuthConfiguration = {
     expires_at: string;
 };
 
-export interface OAuthConfig {
+export interface OAuthConfig<TOAuthResponse = OAuthResponse> {
     /**
      * Redirect URL to use. When the OAuth identity provider only accept a static one.
      */
@@ -59,7 +59,7 @@ export interface OAuthConfig {
      * Extract the credentials from the code exchange response.
      */
     extractCredentials?: (
-        response: OAuthResponse,
+        response: TOAuthResponse,
     ) => RequestUpdateIntegrationInstallation | Promise<RequestUpdateIntegrationInstallation>;
 }
 
@@ -71,8 +71,8 @@ const logger = Logger('oauth');
  *
  * When using this handler, you must configure `https://integrations.gitbook.com/integrations/{name}/` as a redirect URI.
  */
-export function createOAuthHandler(
-    config: OAuthConfig,
+export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
+    config: OAuthConfig<TOAuthResponse>,
     options: {
         /**
          * Whether to replace the existing installation configuration or merge it
@@ -178,9 +178,10 @@ export function createOAuthHandler(
                 );
             }
 
-            const json = await response.json<OAuthResponse>();
+            const json = await response.json<TOAuthResponse>();
 
             // Store the credentials in the installation configuration
+            // @ts-ignore
             const credentials = await extractCredentials(json);
             logger.debug(`exchange code for credentials`, credentials);
 

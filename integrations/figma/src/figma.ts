@@ -45,10 +45,11 @@ export function extractNodeFromURL(input: string): FileNodeId | undefined {
     }
 
     let nodeId: string | undefined;
-    if (url.searchParams.has('node-id')) {
+    const rawNodeId = url.searchParams.get('node-id');
+    if (rawNodeId) {
         // some times the node-id in the URL has a dash instead of a colon but the figma API returns response
         // of nodes-id(s) with a colon so we're adopting that format
-        nodeId = url.searchParams.get('node-id').replaceAll('-', ':');
+        nodeId = rawNodeId.replaceAll('-', ':');
     }
 
     return { fileId: parts[2], nodeId };
@@ -132,7 +133,7 @@ export async function fetchFigmaAPI<T>(
     params: object,
     { environment }: FigmaRuntimeContext,
 ): Promise<T> {
-    const accessToken = environment.installation.configuration.oauth_credentials?.access_token;
+    const accessToken = environment.installation?.configuration.oauth_credentials?.access_token;
     if (!accessToken) {
         throw new Error('Missing authentication');
     }

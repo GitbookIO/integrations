@@ -18,6 +18,11 @@ export type EventType = Event['type'];
 type EventTypeMap = { [T in Event as T['type']]: T };
 
 /**
+ * Get the type of an event by its name.
+ */
+export type EventByType<T extends EventType> = EventTypeMap[T];
+
+/**
  * Callback for a specific event type.
  */
 export type EventCallback<
