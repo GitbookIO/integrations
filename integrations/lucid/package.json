@@ -3,7 +3,6 @@
     "version": "0.2.0",
     "private": true,
     "scripts": {
-        "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
         "typecheck": "tsc --noEmit",
         "publish-integrations-staging": "gitbook publish .",
         "publish-integrations": "gitbook publish ."
@@ -13,8 +12,7 @@
         "itty-router": "^4.0.27"
     },
     "devDependencies": {
-        "@gitbook/cli": "*",
-        "@gitbook/eslint-config": "*",
-        "@gitbook/tsconfig": "*"
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
     }
 }

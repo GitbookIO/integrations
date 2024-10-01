@@ -1,7 +1,7 @@
 import { defaultOAuthExtractCredentials } from '@gitbook/runtime';
 
 import { fetchGitHubInstallations } from './github';
-import { GitHubCopilotConfiguration, GitHubCopilotRuntimeContext } from './types';
+import type { GitHubCopilotConfiguration, GitHubCopilotRuntimeContext } from './types';
 
 /**
  * Get the OAut configuration for a context.

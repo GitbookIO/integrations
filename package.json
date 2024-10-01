@@ -9,7 +9,8 @@
     "scripts": {
         "build": "turbo run build",
         "test": "turbo run test",
-        "lint": "turbo run lint",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
         "publish": "turbo run publish",
         "typecheck": "turbo run typecheck",
         "publish-integrations": "turbo run publish-integrations",
@@ -27,7 +28,8 @@
         "test": "^3.2.1",
         "ts-node": "^10.9.1",
         "turbo": "latest",
-        "wrangler": "^2.1.12"
+        "wrangler": "^2.1.12",
+        "prettier": "^3.3.3"
     },
     "engines": {
         "npm": ">=7.0.0",

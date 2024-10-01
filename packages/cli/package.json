@@ -19,12 +19,10 @@
         "prompts": "^2.4.2"
     },
     "devDependencies": {
-        "@gitbook/eslint-config": "*",
         "@schemastore/package": "^0.0.10",
         "@types/node": "^22.7.4",
         "@types/prompts": "^2.0.14",
         "chokidar": "^3.5.3",
-        "eslint": "^8.16.0",
         "miniflare": "^2.12.1",
         "typescript": "^5.6.2"
     },
@@ -34,7 +32,6 @@
     ],
     "scripts": {
         "build": "./build.sh",
-        "lint": "eslint ./src/**/*.ts",
         "postinstall": "node postinstall.js",
         "typecheck": "tsc --noEmit"
     },

@@ -4,17 +4,16 @@
     "private": true,
     "dependencies": {
         "dotenv": "^16.0.3",
-        "itty-router": "^3.0.12"
+        "itty-router": "^3.0.12",
+        "@gitbook/runtime": "*",
+        "@gitbook/api": "*"
     },
     "devDependencies": {
-        "@gitbook/api": "*",
-        "@gitbook/cli": "^0.17.0",
         "@gitbook/eslint-config": "*",
-        "@gitbook/runtime": "*",
-        "@gitbook/tsconfig": "*"
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
     },
     "scripts": {
-        "lint": "eslint ./**/*.ts*",
         "typecheck": "tsc --noEmit",
         "publish-integrations": "dotenv gitbook publish .",
         "publish-integrations-staging": "gitbook publish ."

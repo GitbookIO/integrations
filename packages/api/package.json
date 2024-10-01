@@ -20,8 +20,6 @@
         "swagger-cli": "^4.0.4",
         "esbuild": "^0.14.42",
         "typescript": "^5.6.2",
-        "eslint": "^8.16.0",
-        "@gitbook/eslint-config": "*",
         "@gitbook/tsconfig": "*"
     },
     "overrides": {
@@ -31,7 +29,6 @@
     },
     "scripts": {
         "build": "./build.sh",
-        "lint": "eslint ./src/**/*.ts",
         "typecheck": "tsc --noEmit"
     },
     "exports": {

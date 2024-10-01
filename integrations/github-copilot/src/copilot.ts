@@ -1,9 +1,9 @@
 import type { CopilotReference } from '@copilot-extensions/preview-sdk';
 
-import { IntegrationInstallation, SearchAIAnswer } from '@gitbook/api';
+import type { IntegrationInstallation, SearchAIAnswer } from '@gitbook/api';
 
 import { fetchGitHubInstallations } from './github';
-import { GitHubCopilotRuntimeContext } from './types';
+import type { GitHubCopilotRuntimeContext } from './types';
 
 /**
  * Handle a query from Copilot and stream the answer.
