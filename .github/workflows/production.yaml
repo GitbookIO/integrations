@@ -19,31 +19,25 @@ jobs:
                       const integrationPackage = '@' + tag.split('@')[1];
                       core.setOutput('integrationPackage', integrationPackage)
 
-            - name: Checkout repo
-              uses: actions/checkout@v3
-
-            - name: Setup Node.js 20.x
-              uses: actions/setup-node@v3
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Setup bun
+              uses: oven-sh/setup-bun@v1
               with:
-                  node-version: 20.x
-
-            - name: Install Dependencies
-              # We need to build and then re-install so that the "bin" can be correctly linked
-              run: |
-                  npm ci
-                  npm run build
-                  npm ci
+                  bun-version: 1.1.18
+            - name: Install dependencies
+              run: bun install --frozen-lockfile
 
             # TODO: Remove this once we incorporate this in the publish API of the integration
             - name: Publish all integrations assets to production
-              run: npm run publish-assets
+              run: bun run publish-assets
               env:
                   CLOUDFLARE_PAGES_PROJECT: ${{ secrets.INTEGRATIONS_ASSETS_PROD_PROJECT }}
                   CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
                   CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
 
             - name: Deploy integration
-              run: npm run publish-integrations -- --filter=${{ steps.integration-package.outputs.integrationPackage }}
+              run: bun run publish-integrations -- --filter=${{ steps.integration-package.outputs.integrationPackage }}
               env:
                   GITBOOK_TOKEN: ${{ secrets.GITBOOK_PROD_API_TOKEN }}
                   GITBOOK_ENDPOINT: https://api.gitbook.com

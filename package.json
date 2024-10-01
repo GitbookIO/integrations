@@ -18,7 +18,7 @@
         "version-packages": "changeset version",
         "changeset": "changeset",
         "release": "turbo run build && changeset publish",
-        "build-assets": "ts-node ./scripts/build-assets.ts",
+        "build-assets": "bun run ./scripts/build-assets.ts",
         "publish-assets": "./scripts/publish-assets.sh"
     },
     "devDependencies": {
