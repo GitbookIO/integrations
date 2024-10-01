@@ -6,6 +6,7 @@ script: src/index.tsx
 previewImages:
     - ./assets/jira-preview.png
 scopes: []
+organization: gitbook
 summary: |
     # Overview
 
