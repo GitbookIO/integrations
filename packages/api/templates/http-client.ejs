@@ -227,18 +227,23 @@ export class HttpClient<SecurityDataType = unknown> {
         });
     };
 
-    public streamRequest = function<T, E>({
+    public streamRequest = <
+        T,
+        // @ts-ignore - unused error type
+        E = any
+    >({
         path,
         baseUrl,
         cancelToken,
         secure,
         ...params,
-    }: FullRequestParams) {
+    }: FullRequestParams) => {
         return new EventIterator<T>(
             (queue) => {
                 (async () => {
                     const secureParams = ((typeof secure === 'boolean' ? secure : this.baseApiParams.secure) && this.securityWorker && await this.securityWorker(this.securityData)) || {};
-                    const { query: requestQuery, ...requestParams } = this.mergeRequestParams(params, secureParams);
+                    const requestQuery = params.query;
+                    const requestParams = this.mergeRequestParams(params, secureParams);
                     const queryString = requestQuery ? this.toQueryString(requestQuery) : undefined;
 
                     const response = await this.customFetch(
@@ -251,7 +256,10 @@ export class HttpClient<SecurityDataType = unknown> {
 
                     if (!response.ok) {
                         throw new Error(`${response.status} ${response.statusText}`);
-                        return;
+                    }
+
+                    if (!response.body) {
+                        throw new Error('Response body is empty');
                     }
 
                     const reader = response.body.getReader();

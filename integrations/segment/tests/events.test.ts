@@ -1,5 +1,4 @@
-import * as assert from 'node:assert';
-import test from 'node:test';
+import { describe, it, expect } from 'bun:test';
 
 import * as api from '@gitbook/api';
 
@@ -24,8 +23,8 @@ const fakeSpaceViewEvent: api.SpaceViewEvent = {
     referrer: 'https://www.gitbook.com/',
 };
 
-test('events', async (t) => {
-    await t.test('should generate the Segment Track Event with expected properties', async () => {
+describe('events', () => {
+    it('should generate the Segment Track Event with expected properties', () => {
         const expectedSegmentEvent = {
             event: '[GitBook] space_view',
             anonymousId: 'gitbookAnonymousId',
@@ -49,33 +48,27 @@ test('events', async (t) => {
             },
         };
         const actualSegmentEvent = generateSegmentTrackEvent(fakeSpaceViewEvent);
-        assert.deepEqual(expectedSegmentEvent, actualSegmentEvent);
+        expect(expectedSegmentEvent).toMatchObject(actualSegmentEvent);
     });
 
-    await t.test(
-        'should send the Segment ajs_anonymous_id cookie value as anonymousId when present',
-        async () => {
-            const { visitor, ...restSpaceViewEvent } = fakeSpaceViewEvent;
-            const { cookies, ...restVisitor } = visitor;
-            const segmentEvent = generateSegmentTrackEvent({
-                ...restSpaceViewEvent,
-                visitor: {
-                    ...restVisitor,
-                    cookies: {
-                        ...cookies,
-                        ajs_anonymous_id: 'segmentAnonymousId',
-                    },
+    it('should send the Segment ajs_anonymous_id cookie value as anonymousId when present', () => {
+        const { visitor, ...restSpaceViewEvent } = fakeSpaceViewEvent;
+        const { cookies, ...restVisitor } = visitor;
+        const segmentEvent = generateSegmentTrackEvent({
+            ...restSpaceViewEvent,
+            visitor: {
+                ...restVisitor,
+                cookies: {
+                    ...cookies,
+                    ajs_anonymous_id: 'segmentAnonymousId',
                 },
-            });
-            assert.equal(segmentEvent.anonymousId, 'segmentAnonymousId');
-        },
-    );
+            },
+        });
+        expect(segmentEvent.anonymousId).toEqual('segmentAnonymousId');
+    });
 
-    await t.test(
-        'should fallback to sending GitBook anonymousId value as anonymousId when ajs_anonymous_id is not present',
-        async () => {
-            const segmentEvent = generateSegmentTrackEvent(fakeSpaceViewEvent);
-            assert.equal(segmentEvent.anonymousId, 'gitbookAnonymousId');
-        },
-    );
+    it('should fallback to sending GitBook anonymousId value as anonymousId when ajs_anonymous_id is not present', () => {
+        const segmentEvent = generateSegmentTrackEvent(fakeSpaceViewEvent);
+        expect(segmentEvent.anonymousId).toEqual('gitbookAnonymousId');
+    });
 });

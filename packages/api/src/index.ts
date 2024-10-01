@@ -64,7 +64,7 @@ export class GitBookAPI extends Api<{
         super({
             baseUrl: `${endpoint}/v1`,
             securityWorker: (securityData) => {
-                if (securityData.authToken) {
+                if (securityData && securityData.authToken) {
                     return {
                         headers: {
                             Authorization: `Bearer ${securityData.authToken}`,
@@ -80,11 +80,11 @@ export class GitBookAPI extends Api<{
                 // properties which are not supported by the version of fetch supported by CloudFlare.
                 // Remove those properties here, but a future version of the GitBook API should make
                 // this easier to configure.
-                if ('credentials' in init) {
+                if (init && 'credentials' in init) {
                     delete init.credentials;
                 }
 
-                if ('referrerPolicy' in init) {
+                if (init && 'referrerPolicy' in init) {
                     delete init.referrerPolicy;
                 }
 

@@ -20,7 +20,6 @@
     },
     "devDependencies": {
         "@schemastore/package": "^0.0.10",
-        "@types/node": "^22.7.4",
         "@types/prompts": "^2.0.14",
         "chokidar": "^3.5.3",
         "miniflare": "^2.12.1",

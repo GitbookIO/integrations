@@ -14,6 +14,6 @@
         "typecheck": "tsc --noEmit",
         "publish-integrations-staging": "gitbook publish .",
         "publish-integrations": "gitbook publish .",
-        "test": "bun test ./tests/index.ts"
+        "test": "bun test"
     }
 }
