@@ -1,9 +1,36 @@
 import type { CopilotReference } from '@copilot-extensions/preview-sdk';
 
-import type { IntegrationInstallation, SearchAIAnswer } from '@gitbook/api';
+import type { SearchAIAnswer } from '@gitbook/api';
 
 import { fetchGitHubInstallations } from './github';
 import type { GitHubCopilotRuntimeContext } from './types';
+
+/**
+ * Copy to display when GitBook For Copilot is not installed as an integration on the GitBook side.
+ * The user should install the integration (after creating a GitBook account if needed).
+ */
+const copyNoGitBookInstallation = `GitBook For Copilot is not yet installed on your GitBook organization.
+
+To get started, install the integration at https://app.gitbook.com/integrations/github-copilot
+
+Then come back and ask me anything!`;
+
+/**
+ * Copy when the integration is installed, but not enabled for spaces.
+ * It means no content can be fetched from GitBook.
+ */
+const copyNoSpaces = (
+    orgId: string,
+) => `GitBook For Copilot is installed on your GitBook organization, but it is not enabled for any spaces.
+
+To get started, grant access to all spaces or specific ones at https://app.gitbook.com/o/${orgId}/integrations/github-copilot
+
+Then come back and ask me anything!`;
+
+/**
+ * Copy to display when no query is provided.
+ */
+const copyNoQuery = `Get started by asking anything!`;
 
 /**
  * Handle a query from Copilot and stream the answer.
@@ -13,33 +40,22 @@ export async function* streamCopilotResponse(
     githubToken: string,
     query: string | undefined,
 ): AsyncIterable<string> {
-    const githubInstallations = await fetchGitHubInstallations(githubToken);
-
-    let gitbookInstallation: IntegrationInstallation | null = null;
-    for (const githubInstallation of githubInstallations) {
-        const { data: found } = await ctx.api.integrations.listIntegrationInstallations(
-            ctx.environment.integration.name,
-            {
-                externalId: githubInstallation.id.toString(),
-            },
-        );
-
-        if (found.items[0]) {
-            gitbookInstallation = found.items[0];
-            break;
-        }
-    }
+    const gitbookInstallation = await findGitBookInstallation(ctx, githubToken);
 
     if (!gitbookInstallation) {
-        yield createTextEvent(
-            'GitBook For Copilot is not yet installed on your GitBook organization.\n\nTo get started, install the integration at https://app.gitbook.com/integrations/github-copilot\n\nThen come back and ask me anything!',
-        );
+        yield createTextEvent(copyNoGitBookInstallation);
+        yield createDoneEvent();
+        return;
+    }
+
+    if (!gitbookInstallation.spaces) {
+        yield createTextEvent(copyNoSpaces(gitbookInstallation.target.organization));
         yield createDoneEvent();
         return;
     }
 
     if (!query) {
-        yield createTextEvent('Get started by asking anything!');
+        yield createTextEvent(copyNoQuery);
         yield createDoneEvent();
         return;
     }
@@ -48,6 +64,7 @@ export async function* streamCopilotResponse(
         ctx.environment.integration.name,
         gitbookInstallation.id,
     );
+
     const stream = api.orgs.streamAskInOrganization(gitbookInstallation.target.organization, {
         query,
         format: 'markdown',
@@ -105,6 +122,30 @@ export async function* streamCopilotResponse(
     }
 
     yield createDoneEvent();
+}
+
+/**
+ * Find the GitBook installations related to a current user.
+ */
+async function findGitBookInstallation(ctx: GitHubCopilotRuntimeContext, githubToken: string) {
+    const githubInstallations = await fetchGitHubInstallations(githubToken);
+
+    const found = await Promise.all(
+        githubInstallations.map(async (githubInstallation) => {
+            const { data: found } = await ctx.api.integrations.listIntegrationInstallations(
+                ctx.environment.integration.name,
+                {
+                    externalId: githubInstallation.id.toString(),
+                },
+            );
+
+            if (found.items[0]) {
+                return found.items[0];
+            }
+        }),
+    );
+
+    return found.find((installation) => !!installation);
 }
 
 function createTextEvent(message: string): string {
