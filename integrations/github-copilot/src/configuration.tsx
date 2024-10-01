@@ -39,7 +39,7 @@ export const configurationComponent = createComponent<
                     context.environment.installation!.id,
                     {
                         externalIds: action.installations.slice(0, 5),
-                    },
+                    }
                 );
 
                 return {
@@ -62,8 +62,8 @@ export const configurationComponent = createComponent<
                   await getOAuthToken(
                       installation.configuration.oauth_credentials,
                       getGitHubOAuthConfiguration(context),
-                      context,
-                  ),
+                      context
+                  )
               )
             : [];
 
@@ -113,7 +113,7 @@ export const configurationComponent = createComponent<
                                     multiple
                                     options={githubInstallations.map((githubInstallation) => ({
                                         id: githubInstallation.id.toString(),
-                                        label: githubInstallation.account.login,
+                                        label: githubInstallation.account?.name ?? 'Unknown',
                                     }))}
                                 />
                             }

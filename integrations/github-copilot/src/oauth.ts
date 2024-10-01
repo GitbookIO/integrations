@@ -1,4 +1,4 @@
-import { defaultOAuthExtractCredentials } from '@gitbook/runtime';
+import { defaultOAuthExtractCredentials, OAuthResponse } from '@gitbook/runtime';
 
 import { fetchGitHubInstallations } from './github';
 import type { GitHubCopilotConfiguration, GitHubCopilotRuntimeContext } from './types';
@@ -18,7 +18,7 @@ export function getGitHubOAuthConfiguration(ctx: GitHubCopilotRuntimeContext) {
 
         // By default select all accounts as enabled in the configuration
         // The user can still edits the list from the configuration UI
-        extractCredentials: async (response) => {
+        extractCredentials: async (response: OAuthResponse) => {
             const res = defaultOAuthExtractCredentials(response);
             const token = (res.configuration as GitHubCopilotConfiguration).oauth_credentials
                 ?.access_token;

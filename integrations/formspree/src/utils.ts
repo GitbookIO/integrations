@@ -1,9 +1,9 @@
 // Handle errors better
 
-export async function handleSubmit(formspree_id, body) {
+export async function handleSubmit(formspreeId: string, body: any) {
     const cleanedFormBody = await removeEmptyValues(body);
 
-    fetch(formspree_id, {
+    fetch(formspreeId, {
         method: 'POST',
         body: JSON.stringify({ data: cleanedFormBody, form: 'GitBook Integration' }),
         headers: {
@@ -23,7 +23,7 @@ export async function handleSubmit(formspree_id, body) {
 }
 
 // Clean data object being submitted
-export async function removeEmptyValues(object) {
+export async function removeEmptyValues(object: any) {
     for (const key in object) {
         if (object.hasOwnProperty(key)) {
             const value = object[key];
