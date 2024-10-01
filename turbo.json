@@ -44,13 +44,10 @@
         "GITHUBCOPILOT_CLIENT_SECRET"
     ],
     "tasks": {
-        "generate": {
-            "dependsOn": ["^generate"]
-        },
         "build": {
             "dependsOn": ["^build"],
             "inputs": ["src/**"],
-            "outputs": ["dist/**"]
+            "outputs": ["dist/**", ".gitbook/**"]
         },
         "api#build": {
             "cache": false,

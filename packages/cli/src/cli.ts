@@ -10,10 +10,15 @@ import { GITBOOK_DEFAULT_ENDPOINT } from '@gitbook/api';
 import packageJSON from '../package.json';
 import { startIntegrationsDevServer } from './dev';
 import { promptNewIntegration } from './init';
-import { DEFAULT_MANIFEST_FILE, resolveIntegrationManifestPath } from './manifest';
+import {
+    DEFAULT_MANIFEST_FILE,
+    getDefaultManifestPath,
+    resolveIntegrationManifestPath,
+} from './manifest';
 import { publishIntegration, unpublishIntegration } from './publish';
 import { authenticate, whoami } from './remote';
 import { tailLogs } from './tail';
+import { checkIntegrationBuild } from './check';
 
 program
     .name(Object.keys(packageJSON.bin)[0])
@@ -100,9 +105,16 @@ program
 
 program
     .command('tail')
-    .description('fetch and print the logs of the integration')
+    .description('fetch and print the execution logs of the integration')
     .action(async () => {
         await tailLogs();
+    });
+
+program
+    .command('check')
+    .description('check the integration build')
+    .action(async () => {
+        await checkIntegrationBuild();
     });
 
 checkNodeVersion({ node: '>= 18' }, (error, result) => {
