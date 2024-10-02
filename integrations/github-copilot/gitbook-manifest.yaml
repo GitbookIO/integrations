@@ -14,19 +14,25 @@ categories:
 summary: |
     # Overview
 
-    GitBook Copilot leverages your organization's documentation to answer user queries, providing instant and accurate responses based on your content. It integrates seamlessly with GitHub to assist developers while they code, offering relevant knowledge directly within their workflow. 
+    GitBook Copilot leverages your organization's documentation to answer team member queries, providing instant and accurate responses based on your content. It integrates seamlessly with GitHub to assist developers while they code, offering relevant knowledge directly within their workflow. 
 
     # Configure
 
     To configure GitBook Copilot with your GitBook workspace:
 
-    1. **Install the GitBook Copilot App to your GitBook organization**: 
+    1. **Install the [GitBook Copilot App](https://github.com/apps/gitbook-copilot) to your GitHub organization**
 
-    2. **Authenticate your GitHub account**
+    2. **Install the GitHub Copiot integration in your GitBook organization**
+
+    3. **Authenticate your GitHub account**
     - Log into your GitHub account, and select the account(s) you would like this integration to work in.
 
-    3. **Connect Your Documentation**:
+    4. **Connect Your Documentation**:
     - Under spaces, in the integration's configuration, select which spaces you would like GitBook Copilot to leverage information from. 
+
+    # How to use It
+
+    From Visual Studio Code or GitHub.com, open the Copilot chat and type `@gitbook-copilot` followed by your question.
 
     # Support
 
