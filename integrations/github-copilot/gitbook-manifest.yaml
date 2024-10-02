@@ -27,9 +27,22 @@ summary: |
     4. **Connect Your Documentation**:
       - Under spaces, in the integration's configuration, select which spaces you would like GitBook Copilot to leverage information from. 
 
-    # How to use It
+    # Use-cases & example prompts to get started
 
-    From Visual Studio Code or GitHub.com, open the Copilot chat and type `@gitbook-copilot` followed by your question.
+    The GitBook for GitHub Copilot integration allows your to ask questions and get instant answers based on your documentation. Here are some examples of questions you can ask:
+
+    Get information about a specific topic:
+    - `@gitbook-copilot` how do I set up a new project?
+    - `@gitbook-copilot` what is the best way to deploy my application?
+
+    Get help with code:
+    - `@gitbook-copilot` how do I import components from our design system?
+    - `@gitbook-copilot` what is the best way to handle an error with a missing variable?
+
+    Troubleshoot an issue:
+    - `@gitbook-copilot` why is my build failing?
+    - `@gitbook-copilot` how do I fix a broken link in my documentation?
+
 
     # Support
 
