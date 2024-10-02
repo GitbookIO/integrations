@@ -23,9 +23,9 @@ summary: |
     1. **Install the [GitBook Copilot App](https://github.com/apps/gitbook-copilot) to your GitHub organization**
     2. **Install the GitHub Copiot integration in your GitBook organization**
     3. **Authenticate your GitHub account**
-      - Log into your GitHub account, and select the account(s) you would like this integration to work in.
+        - Log into your GitHub account, and select the account(s) you would like this integration to work in.
     4. **Connect Your Documentation**:
-      - Under spaces, in the integration's configuration, select which spaces you would like GitBook Copilot to leverage information from. 
+        - Under spaces, in the integration's configuration, select which spaces you would like GitBook Copilot to leverage information from. 
 
     # Use-cases & example prompts to get started
 
