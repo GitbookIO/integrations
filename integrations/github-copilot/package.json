@@ -13,6 +13,8 @@
         "@copilot-extensions/preview-sdk": "^5.0.0",
         "itty-router": "^4.0.26",
         "octokit": "^4.0.2"
+        "octokit": "^4.0.2",
+        "@tsndr/cloudflare-worker-jwt": "2.3.2"
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",

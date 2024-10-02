@@ -4,6 +4,7 @@ import { createComponent, getOAuthToken } from '@gitbook/runtime';
 import { fetchGitHubInstallations } from './github';
 import { getGitHubOAuthConfiguration } from './oauth';
 import type { GitHubCopilotConfiguration, GitHubCopilotRuntimeContext } from './types';
+import { createGitHubSetupState } from './setup';
 
 type ConfigureProps = {
     installation: {
@@ -68,6 +69,14 @@ export const configurationComponent = createComponent<
               )
             : [];
 
+        const installURL = new URL(
+            context.environment.secrets.APP_INSTALL_URL + '/installations/new',
+        );
+        installURL.searchParams.set(
+            'state',
+            await createGitHubSetupState(context, context.environment.installation!),
+        );
+
         return (
             <block>
                 <vstack>
@@ -89,7 +98,22 @@ export const configurationComponent = createComponent<
                             />
                         }
                     />
-                    {installation.configuration?.oauth_credentials ? (
+                    {githubInstallations.length === 0 ? (
+                        <input
+                            label="Install on GitHub"
+                            hint="Install the GitBook Copilot extension on GitHub"
+                            element={
+                                <button
+                                    label={'Install on GitHub'}
+                                    icon={ContentKitIcon.Github}
+                                    onPress={{
+                                        action: '@ui.url.open',
+                                        url: installURL.toString(),
+                                    }}
+                                />
+                            }
+                        />
+                    ) : (
                         <input
                             label="Select accounts"
                             hint={
@@ -97,7 +121,7 @@ export const configurationComponent = createComponent<
                                     Choose the GitHub installation, user or organization.{' '}
                                     <link
                                         target={{
-                                            url: context.environment.secrets.APP_INSTALL_URL,
+                                            url: installURL.toString(),
                                         }}
                                     >
                                         Install the GitHub app
@@ -125,7 +149,7 @@ export const configurationComponent = createComponent<
                                 />
                             }
                         />
-                    ) : null}
+                    )}
                 </vstack>
             </block>
         );

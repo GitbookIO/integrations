@@ -6,6 +6,7 @@ import { createIntegration, createOAuthHandler, Logger } from '@gitbook/runtime'
 import { configurationComponent } from './configuration';
 import { streamCopilotResponse } from './copilot';
 import { getGitHubOAuthConfiguration } from './oauth';
+import { verifyGitHubSetupState } from './setup';
 
 const logger = Logger('github-copilot');
 
@@ -30,6 +31,49 @@ export default createIntegration({
                 replace: false,
             }),
         );
+
+        /**
+         * User is redirected after installing the application
+         */
+        router.get('/setup', async (request) => {
+            const url = new URL(request.url);
+            const githubInstallationId = url.searchParams.get('installation_id');
+            const state = url.searchParams.get('state');
+
+            if (!state || !githubInstallationId) {
+                // Installed from GitHub, without starting from the GitBook integration
+                return Response.redirect(environment.integration.urls.app);
+            }
+
+            const installationId = await verifyGitHubSetupState(ctx, state);
+
+            const { data: installation } =
+                await ctx.api.integrations.getIntegrationInstallationById(
+                    environment.integration.name,
+                    installationId,
+                );
+
+            await ctx.api.integrations.updateIntegrationInstallation(
+                ctx.environment.integration.name,
+                installation.id,
+                {
+                    externalIds: [
+                        githubInstallationId,
+                        ...(installation.externalIds || []).filter(
+                            (id) => id !== githubInstallationId,
+                        ),
+                    ].slice(0, 5),
+                    configuration: {
+                        ...installation.configuration,
+                        // Cache bust to refresh the configuration component
+                        // as the cache is not busted when updating the externalIds
+                        cacheBust: Date.now(),
+                    },
+                },
+            );
+
+            return Response.redirect(installation.urls.app);
+        });
 
         /**
          * Copilot messages.
