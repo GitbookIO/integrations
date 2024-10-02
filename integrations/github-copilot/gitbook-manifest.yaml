@@ -5,7 +5,10 @@ visibility: private
 description: GitBook Copilot uses your documentation to provide instant answers to your coding workflow.
 icon: ./assets/icon.png
 previewImages:
-    - ./assets/gitbook-copilot-preview.png
+    - ./assets/gitbook-copilot-preview1.png
+    - ./assets/gitbook-copilot-preview2.png
+    - ./assets/gitbook-copilot-preview3.png
+    - ./assets/gitbook-copilot-preview4.png
 externalLinks:
     - label: Documentation
       url: https://docs.gitbook.com/integrations/git-sync
