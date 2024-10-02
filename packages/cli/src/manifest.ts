@@ -82,7 +82,7 @@ const IntegrationManifestSchema = z.object({
         })
         .optional(),
     visibility: z.nativeEnum(api.IntegrationVisibility).optional(),
-    previewImages: z.array(z.string()).optional(),
+    previewImages: z.array(z.string()).max(3).optional(),
     externalLinks: z
         .array(
             z.object({
