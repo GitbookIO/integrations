@@ -1,7 +1,7 @@
 name: github-copilot
 title: GitHub Copilot
 organization: gitbook
-visibility: private
+visibility: public
 description: GitBook Copilot uses your documentation to provide instant answers to your coding workflow.
 icon: ./assets/icon.png
 previewImages:
