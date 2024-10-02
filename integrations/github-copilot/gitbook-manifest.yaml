@@ -2,7 +2,7 @@ name: github-copilot
 title: GitHub Copilot
 organization: gitbook
 visibility: private
-description: GitBook Copilot leverages your organization's documentation to answer user queries, providing instant and accurate responses based on your content.
+description: GitBook Copilot uses your documentation to provide instant, accurate answers to your coding workflow.
 icon: ./assets/icon.png
 previewImages:
     - ./assets/gitbook-copilot-preview.png
