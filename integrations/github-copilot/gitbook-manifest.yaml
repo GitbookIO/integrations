@@ -2,8 +2,10 @@ name: github-copilot
 title: GitHub Copilot
 organization: gitbook
 visibility: private
-description: Ask questions and get answers from your GitBook knowledge base from GitHub.
+description: GitBook Copilot leverages your organization's documentation to answer user queries, providing instant and accurate responses based on your content.
 icon: ./assets/icon.png
+previewImages:
+    - ./assets/gitbook-copilot-preview.png
 externalLinks:
     - label: Documentation
       url: https://docs.gitbook.com/integrations/git-sync
@@ -12,7 +14,26 @@ categories:
 summary: |
     # Overview
 
-    The GitBook for Copilot integration lets your team ask questions in GitHub Copilot (on GitHub.com or VS Code) and directly get an answer from your knowledge base.
+    GitBook Copilot leverages your organization's documentation to answer user queries, providing instant and accurate responses based on your content. It integrates seamlessly with GitHub to assist developers while they code, offering relevant knowledge directly within their workflow. 
+
+    # Configure
+
+    To configure GitBook Copilot with your GitBook workspace:
+
+    1. **Install the GitBook Copilot App to your GitBook organization**: 
+
+    2. **Authenticate your GitHub account**
+    - Log into your GitHub account, and select the account(s) you would like this integration to work in.
+
+    3. **Connect Your Documentation**:
+    - Under spaces, in the integration's configuration, select which spaces you would like GitBook Copilot to leverage information from. 
+
+    # Support
+
+    If you need assistance with GitBook Copilot:
+
+    - **Community Support**: Engage with other GitBook users in our [GitBook Community](https://github.com/GitbookIO/community).
+    - **Technical Support**: For more complex issues, reach out to our support team via email at [support@gitbook.com](mailto:support@gitbook.com).
 script: src/index.ts
 scopes:
     - space:metadata:read
