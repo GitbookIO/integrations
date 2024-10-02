@@ -20,7 +20,9 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
     { environment }: SmartcatRuntimeContext
 ) => {
-    return new Response(script, {
+    const smartCatScriptTag = environment.siteInstallation?.configuration?.site_tag;
+
+    return new Response(script.replace('<TO_REPLACE>', smartCatScriptTag), {
         headers: {
             'Content-Type': 'application/javascript',
             'Cache-Control': 'max-age=604800',
