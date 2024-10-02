@@ -54,6 +54,7 @@ export const configurationComponent = createComponent<
         return element;
     },
     render: async (element, context) => {
+        element.setCache({ maxAge: 0 });
         const {
             props: { installation },
         } = element;
@@ -99,8 +100,10 @@ export const configurationComponent = createComponent<
                                             url: context.environment.secrets.APP_INSTALL_URL,
                                         }}
                                     >
-                                        Install the GitHub app.
+                                        Install the GitHub app
                                     </link>
+                                    . If your account is not listed, reauthenticate with GitHub to
+                                    refresh the list.
                                 </text>
                             }
                             element={
