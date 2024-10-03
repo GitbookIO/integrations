@@ -17,6 +17,8 @@ jobs:
               with:
                   # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
                   fetch-depth: 0
+                  # Using a PAT instead of the default token to ensure commits trigger CI
+                  token: ${{ secrets.GH_PERSONAL_TOKEN }}
             - name: Setup bun
               uses: oven-sh/setup-bun@v1
               with:
@@ -28,6 +30,7 @@ jobs:
               uses: changesets/action@v1
               with:
                   publish: bun run release
+                  setupGitUser: false
               env:
                   # Using a PAT instead of GITHUB_TOKEN because we need to run workflows when releases are created
                   # https://github.com/orgs/community/discussions/26875#discussioncomment-3253761
