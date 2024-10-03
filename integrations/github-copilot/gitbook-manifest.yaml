@@ -23,7 +23,7 @@ summary: |
     To configure GitBook Copilot with your GitBook workspace:
 
     1. **Install the [GitBook Copilot App](https://github.com/apps/gitbook-copilot) to your GitHub organization**
-    2. **Install the GitHub Copiot integration in your GitBook organization**
+    2. **Install the GitHub Copilot integration in your GitBook organization**
     3. **Authenticate your GitHub account**
         - Log into your GitHub account, and select the account(s) you would like this integration to work in.
     4. **Connect Your Documentation**:
