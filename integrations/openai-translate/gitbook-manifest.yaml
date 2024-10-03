@@ -1,0 +1,31 @@
+name: openai-translate
+title: Translate with OpenAI
+organization: gitbook
+visibility: private
+description: Automatically generate translation content using OpenAI
+icon: ./assets/icon.png
+externalLinks:
+    - label: Documentation
+      url: https://docs.gitbook.com/integrations/github-copilot
+categories:
+    - collaboration
+summary: |
+    # Overview
+
+    Automically generate translations of your content that are kept to date to any changes using OpenAI GPT models.
+
+    # How to use it
+
+    Install the integration on your account and grant access to the source space and the target space.
+script: src/index.ts
+scopes:
+    - space:content:read
+configurations:
+    account:
+        componentId: configure
+contentSources:
+    - id: translate
+      title: Translate
+      description: Transate a source set of pages
+      configuration:
+            componentId: configureSource

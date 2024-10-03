@@ -7,18 +7,7 @@ import {
 } from '@gitbook/api';
 
 import { RuntimeCallback, RuntimeContext } from './context';
-
-type PlainObjectValue =
-    | number
-    | string
-    | boolean
-    | PlainObject
-    | undefined
-    | null
-    | PlainObjectValue[];
-type PlainObject = {
-    [key: string]: PlainObjectValue;
-};
+import { PlainObject } from './common';
 
 export interface ComponentRenderCache {
     maxAge: number;

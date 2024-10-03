@@ -1,0 +1,20 @@
+{
+    "name": "@gitbook/integration-openai-translate",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "check": "gitbook check",
+        "publish-integrations": "gitbook publish .",
+        "publish-integrations-staging": "gitbook publish ."
+    },
+    "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+        "openai": "^4.67.1"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
+    }
+}
