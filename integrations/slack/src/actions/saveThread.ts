@@ -21,7 +21,7 @@ export async function saveThread(
         thread_ts: string;
         userId: string;
     },
-    context: SlackRuntimeContext
+    context: SlackRuntimeContext,
 ) {
     const { accessToken, installation } = await getInstallationConfig(context, teamId);
 
@@ -39,7 +39,7 @@ export async function saveThread(
         },
         snippetsURL,
         context,
-        accessToken
+        accessToken,
     );
 
     const { capture, followupQuestions } = await createMessageThreadCapture(
@@ -48,7 +48,7 @@ export async function saveThread(
             channel: channelId,
             thread_ts,
         },
-        context
+        context,
     );
 
     // managed to avoid the timeout, clear the timeout
@@ -73,7 +73,7 @@ export async function saveThread(
                 unfurl_links: false,
             },
         },
-        { accessToken }
+        { accessToken },
     );
 }
 
@@ -101,7 +101,7 @@ async function createMessageThreadCapture(slackEvent, context: SlackRuntimeConte
     const { team_id, channel, thread_ts } = slackEvent;
     const { client: installationApiClient, installation } = await getInstallationApiClient(
         api,
-        team_id
+        team_id,
     );
     const orgId = installation.target.organization;
 
@@ -117,7 +117,7 @@ async function createMessageThreadCapture(slackEvent, context: SlackRuntimeConte
                 ts: thread_ts,
             },
         },
-        { accessToken }
+        { accessToken },
     );
 
     const { messages = [] } = messageReplies;
@@ -135,7 +135,7 @@ async function createMessageThreadCapture(slackEvent, context: SlackRuntimeConte
         },
         {
             accessToken,
-        }
+        },
     )) as { ok: boolean; permalink: string };
 
     // TODO what's to be done with new permissions needed "capture:write" and users needing to re-auth
@@ -185,7 +185,7 @@ async function createMessageThreadCapture(slackEvent, context: SlackRuntimeConte
         {}, // remove in api
         {
             format: 'markdown',
-        }
+        },
     );
 
     const outputCapture = stopCaptureRes.data;
@@ -216,7 +216,7 @@ export async function notifyOnlySupportedThreads(context, team, channel, user) {
                 unfurl_links: false,
             },
         },
-        { accessToken }
+        { accessToken },
     );
 }
 
@@ -231,7 +231,7 @@ async function notifySavingThread(
         userId: string;
     },
     context: SlackRuntimeContext,
-    accessToken: string
+    accessToken: string,
 ) {
     // acknowledge the request to the user
     await slackAPI(
@@ -248,7 +248,7 @@ async function notifySavingThread(
         },
         {
             accessToken,
-        }
+        },
     );
 }
 
@@ -264,7 +264,7 @@ function registerNotifyBeforeRuntimeLimit(
     },
     snippetsUrl: string,
     context: SlackRuntimeContext,
-    accessToken: string
+    accessToken: string,
 ) {
     const timeoutId = setTimeout(async () => {
         // acknowledge the request to the user
@@ -290,7 +290,7 @@ function registerNotifyBeforeRuntimeLimit(
             },
             {
                 accessToken,
-            }
+            },
         );
 
         // Set to a value slightly less than the actual runtime limit to notify just before

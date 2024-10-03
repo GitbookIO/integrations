@@ -3,17 +3,16 @@
     "version": "0.1.2",
     "private": true,
     "dependencies": {
-        "dotenv": "^16.1.1"
+        "dotenv": "^16.1.1",
+        "@gitbook/runtime": "*"
     },
     "devDependencies": {
-        "@gitbook/cli": "^0.17.0",
-        "@gitbook/runtime": "*",
-        "@gitbook/eslint-config": "*",
-        "@gitbook/tsconfig": "*"
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
     },
     "scripts": {
-        "lint": "eslint ./**/*.ts*",
         "typecheck": "tsc --noEmit",
+        "check": "gitbook check",
         "publish-integrations": "dotenv gitbook publish .",
         "publish-integrations-staging": "gitbook publish ."
     }

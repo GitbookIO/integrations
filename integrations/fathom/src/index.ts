@@ -19,7 +19,7 @@ type FathomRuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: FathomRuntimeContext
+    { environment }: FathomRuntimeContext,
 ) => {
     const siteId = environment.siteInstallation?.configuration?.site_id;
 
@@ -30,7 +30,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     const trackExternalLinks =
         environment.siteInstallation?.configuration?.track_external_links ?? false;
 
-    const updatedScript = script
+    const updatedScript = (script as string)
         .replace('<TO_REPLACE_SITE_ID>', siteId)
         .replace('<TO_REPLACE_TRACK_EXTERNAL_LINKS>', trackExternalLinks.toString());
 

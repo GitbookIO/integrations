@@ -13,7 +13,7 @@ scopes:
     - site:metadata:read
     - site:visitor:auth
     - space:content:read
-organization: d8f63b60-89ae-11e7-8574-5927d48c4877
+organization: gitbook
 summary: |
     # Overview
     Visitor Authentication allows you to publish content behind an authentication wall, so your content is only accessible to people you choose.

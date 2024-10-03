@@ -10,7 +10,7 @@ export function createSlackEventsHandler(
     handlers: {
         [type: string]: (event: object, context: SlackRuntimeContext) => Promise<any>;
     },
-    fallback?: FetchEventCallback
+    fallback?: FetchEventCallback,
 ): FetchEventCallback {
     return async (request, context) => {
         const eventPayload = await parseEventPayload(request);

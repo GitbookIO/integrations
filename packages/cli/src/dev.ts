@@ -57,10 +57,8 @@ export async function startIntegrationsDevServer(space: string | undefined) {
     const mf = new Miniflare({
         scriptPath,
         port,
-        liveReload: true,
-        watch: true,
     });
-    await mf.startServer();
+    await mf.ready;
 
     /**
      * Add the tunnel to the integration for the dev space events in the GitBook platform
@@ -72,7 +70,7 @@ export async function startIntegrationsDevServer(space: string | undefined) {
 
     spinner.succeed(`Dev server started on ${port} 🔥`);
     spinner.info(
-        `Integration events originating from space (${devConfig.space}) will be dispatched to your locally running version of the integration.`
+        `Integration events originating from space (${devConfig.space}) will be dispatched to your locally running version of the integration.`,
     );
 
     /**
@@ -88,6 +86,7 @@ export async function startIntegrationsDevServer(space: string | undefined) {
             console.log('🛠 Detected changes, rebuilding...');
             try {
                 await buildScriptFromManifest(manifestSpecPath, { mode: 'development' });
+                await mf.setOptions({ scriptPath });
                 console.log(`📦 Rebuilt in ${((performance.now() - p1) / 1000).toFixed(2)}s`);
             } catch (error) {
                 console.log(error);
@@ -125,9 +124,9 @@ async function readDevConfig(configFilePath: string): Promise<GitBookDevConfig> 
         const config = await validateDevConfig(doc as object);
 
         return config;
-    } catch (e) {
+    } catch (error) {
         throw new Error(
-            `Failed to read dev config from ${prettyPath(configFilePath)}: ${e.message}`
+            `Failed to read dev config from ${prettyPath(configFilePath)}: ${(error as Error).message}`,
         );
     }
 }
@@ -140,9 +139,9 @@ async function writeDevConfig(configFilePath: string, config: GitBookDevConfig):
         const normalized = await validateDevConfig(config);
         const configContent = yaml.dump(normalized);
         await fs.promises.writeFile(configFilePath, configContent, 'utf8');
-    } catch (e) {
+    } catch (error) {
         throw new Error(
-            `Failed to write dev config to ${prettyPath(configFilePath)}: ${e.message}`
+            `Failed to write dev config to ${prettyPath(configFilePath)}: ${(error as Error).message}`,
         );
     }
 }

@@ -8,6 +8,7 @@ externalLinks:
     - label: Documentation
       url: https://www.gitbook.com/integrations/segment
 visibility: public
+organization: gitbook
 script: ./src/index.ts
 scopes:
     - space:views:read

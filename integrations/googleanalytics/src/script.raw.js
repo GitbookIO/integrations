@@ -37,7 +37,6 @@
 
     win[layer] = win[layer] || [];
     win.gtag = function () {
-        // eslint-disable-next-line prefer-rest-params
         win[layer].push(arguments);
     };
 
@@ -57,9 +56,11 @@
             send_page_view: false,
             anonymize_ip: true,
             groups: 'tracking_views',
-            ...(disableCookies ? {
-                client_storage: 'none',
-            } : {})
+            ...(disableCookies
+                ? {
+                      client_storage: 'none',
+                  }
+                : {}),
         });
         triggerView(win);
 

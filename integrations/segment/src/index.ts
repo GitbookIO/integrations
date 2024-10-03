@@ -19,7 +19,7 @@ export default createIntegration<SegmentRuntimeContext>({
                 environment.spaceInstallation?.configuration?.write_key;
             if (!writeKey) {
                 throw new Error(
-                    `The Segment write key is missing from the Space (ID: ${event.spaceId}) installation.`
+                    `The Segment write key is missing from the Space (ID: ${event.spaceId}) installation.`,
                 );
             }
 

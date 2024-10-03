@@ -2,15 +2,15 @@
     "name": "@gitbook/integration-discord",
     "private": true,
     "scripts": {
-        "lint": "eslint ./**/*.ts*",
         "typecheck": "tsc --noEmit",
         "publish-integrations-staging": "gitbook publish ."
     },
     "devDependencies": {
-        "@gitbook/cli": "*",
-        "@gitbook/runtime": "*"
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
     },
     "dependencies": {
-        "itty-router": "^4.0.9"
+        "itty-router": "^4.0.9",
+        "@gitbook/runtime": "*"
     }
 }

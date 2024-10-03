@@ -7,17 +7,14 @@
         "@gitbook/runtime": "*"
     },
     "devDependencies": {
-        "@gitbook/cli": "*",
-        "@gitbook/eslint-config": "*",
-        "@gitbook/tsconfig": "*",
-        "test": "^3.2.1",
-        "assert": "^2.0.0"
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
     },
     "scripts": {
-        "lint": "eslint ./**/*.ts*",
         "typecheck": "tsc --noEmit",
+        "check": "gitbook check",
         "publish-integrations-staging": "gitbook publish .",
         "publish-integrations": "gitbook publish .",
-        "test": "node -r esbuild-register ./tests/index.ts"
+        "test": "bun test"
     }
 }

@@ -29,7 +29,7 @@ async function buildWebFrameHTML(htmlPath: string, webframeJS: string) {
     const htmlTemplate = await fs.promises.readFile(htmlPath, 'utf-8');
     return htmlTemplate.replace(
         '<!-- WEBFRAME_INTEGRATION_CODE -->',
-        `<script>${webframeJS}</script>`
+        `<script>${webframeJS}</script>`,
     );
 }
 
@@ -55,5 +55,5 @@ build().then(
     (error) => {
         console.error(`⨯ Generation of WebFrame HTML failed.`);
         process.exit(1);
-    }
+    },
 );

@@ -8,15 +8,13 @@
         "@gitbook/runtime": "*"
     },
     "devDependencies": {
-        "@gitbook/cli": "*",
-        "@gitbook/eslint-config": "*",
-        "@gitbook/tsconfig": "*",
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
         "esbuild": "^0.15.7"
     },
     "scripts": {
-        "build": "node -r esbuild-register ./webframe/scripts/build.ts",
-        "lint": "eslint ./**/*.ts*",
-        "typecheck": "tsc --noEmit",
+        "build": "bun run ./webframe/scripts/build.ts",
+        "check": "gitbook check",
         "publish-integrations": "gitbook publish .",
         "publish-integrations-staging": "gitbook publish ."
     }

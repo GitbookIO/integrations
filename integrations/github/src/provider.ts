@@ -52,7 +52,7 @@ export function getRepositoryUrl(config: GitHubSpaceConfiguration, withExtension
  */
 export async function getRepositoryAuth(
     context: GithubRuntimeContext,
-    config: GitHubSpaceConfiguration
+    config: GitHubSpaceConfiguration,
 ) {
     assertIsDefined(config.installation, { label: 'config.installation' });
 
@@ -60,7 +60,7 @@ export async function getRepositoryAuth(
     const installationAccessToken = await createAppInstallationAccessToken(
         context,
         appJWT,
-        config.installation
+        config.installation,
     );
 
     return {
@@ -82,7 +82,7 @@ export async function updateCommitStatus(
         state: GitSyncOperationState;
         url: string;
         description: string;
-    }
+    },
 ) {
     assertIsDefined(config.accountName, { label: 'config.accountName' });
     assertIsDefined(config.repoName, { label: 'config.repoName' });
@@ -92,7 +92,7 @@ export async function updateCommitStatus(
     const installationAccessToken = await createAppInstallationAccessToken(
         context,
         appJWT,
-        config.installation
+        config.installation,
     );
 
     await createCommitStatus(
@@ -106,11 +106,11 @@ export async function updateCommitStatus(
             target_url: update.url,
             description: update.description,
             context: update.context || 'GitBook',
-        }
+        },
     );
 
     logger.info(
-        `Commit status updated for ${commitSha} on GitHub repo (${config.accountName}/${config.repoName})`
+        `Commit status updated for ${commitSha} on GitHub repo (${config.accountName}/${config.repoName})`,
     );
 }
 

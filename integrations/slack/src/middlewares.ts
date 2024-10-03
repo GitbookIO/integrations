@@ -66,7 +66,7 @@ export function acknowledgeQuery({
         },
         {
             accessToken,
-        }
+        },
     );
 }
 

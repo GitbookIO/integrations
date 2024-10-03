@@ -38,7 +38,7 @@ export function createSlackCommandsHandler(handlers: {
         const requestText = await request.text();
 
         const slashEvent: SlashEvent = Object.fromEntries(
-            new URLSearchParams(requestText).entries()
+            new URLSearchParams(requestText).entries(),
         );
 
         const { command } = slashEvent;

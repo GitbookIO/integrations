@@ -27,7 +27,7 @@ type IntercomRuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: IntercomRuntimeContext
+    { environment }: IntercomRuntimeContext,
 ) => {
     const config =
         environment.siteInstallation?.configuration ?? environment.spaceInstallation?.configuration;
@@ -48,7 +48,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     const disableAskAPerson = config?.disable_ask_a_person ? 'false' : '';
 
     return new Response(
-        script
+        (script as string)
             .replace('<ASSISTANT_ID>', assistantId)
             .replace('<NAME>', name)
             .replace('<SERVER_ADDRESS>', serverAddress)
@@ -64,7 +64,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
                 'Content-Type': 'application/javascript',
                 'Cache-Control': 'max-age=604800',
             },
-        }
+        },
     );
 };
 

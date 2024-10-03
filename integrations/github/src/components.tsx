@@ -34,7 +34,7 @@ export const configBlock = createComponent<
                 props.spaceInstallation.configuration?.commitMessageTemplate &&
                     props.spaceInstallation.configuration?.commitMessageTemplate.length > 0 &&
                     props.spaceInstallation.configuration?.commitMessageTemplate !==
-                        GITSYNC_DEFAULT_COMMIT_MESSAGE
+                        GITSYNC_DEFAULT_COMMIT_MESSAGE,
             ),
             commitMessageTemplate:
                 props.spaceInstallation.configuration?.commitMessageTemplate ||
@@ -95,7 +95,7 @@ export const configBlock = createComponent<
                             {
                                 change_request_number: 123,
                                 change_request_subject: 'Fix documentation for /user/me',
-                            }
+                            },
                         ),
                     },
                 };
@@ -119,7 +119,7 @@ export const configBlock = createComponent<
         }
 
         const isSpaceConfigured = Boolean(
-            spaceInstallation.configuration?.key && spaceInstallation.configuration?.configuredAt
+            spaceInstallation.configuration?.key && spaceInstallation.configuration?.configuredAt,
         );
         // Show input elements in disabled state if the space is configured and the access token is missing
         const disableInputElements = isSpaceConfigured && !accessToken;
@@ -200,11 +200,11 @@ export const configBlock = createComponent<
                                                 : {
                                                       url: {
                                                           host: new URL(
-                                                              spaceInstallationPublicEndpoint
+                                                              spaceInstallationPublicEndpoint,
                                                           ).host,
                                                           pathname: `${
                                                               new URL(
-                                                                  spaceInstallationPublicEndpoint
+                                                                  spaceInstallationPublicEndpoint,
                                                               ).pathname
                                                           }/installations`,
                                                           query: {
@@ -253,21 +253,21 @@ export const configBlock = createComponent<
                                                         : {
                                                               url: {
                                                                   host: new URL(
-                                                                      spaceInstallationPublicEndpoint
+                                                                      spaceInstallationPublicEndpoint,
                                                                   ).host,
                                                                   pathname: `${
                                                                       new URL(
-                                                                          spaceInstallationPublicEndpoint
+                                                                          spaceInstallationPublicEndpoint,
                                                                       ).pathname
                                                                   }/repos`,
                                                                   query: {
                                                                       installation:
                                                                           element.dynamicState(
-                                                                              'installation'
+                                                                              'installation',
                                                                           ),
                                                                       selectedRepo:
                                                                           element.dynamicState(
-                                                                              'repository'
+                                                                              'repository',
                                                                           ),
                                                                       v: versionHash,
                                                                   },
@@ -299,28 +299,28 @@ export const configBlock = createComponent<
                                                               {
                                                                   id: `${spaceInstallation.configuration.branch}`,
                                                                   label: getPrettyGitRef(
-                                                                      `${spaceInstallation.configuration.branch}`
+                                                                      `${spaceInstallation.configuration.branch}`,
                                                                   ),
                                                               },
                                                           ]
                                                         : {
                                                               url: {
                                                                   host: new URL(
-                                                                      spaceInstallationPublicEndpoint
+                                                                      spaceInstallationPublicEndpoint,
                                                                   ).host,
                                                                   pathname: `${
                                                                       new URL(
-                                                                          spaceInstallationPublicEndpoint
+                                                                          spaceInstallationPublicEndpoint,
                                                                       ).pathname
                                                                   }/branches`,
                                                                   query: {
                                                                       repository:
                                                                           element.dynamicState(
-                                                                              'repository'
+                                                                              'repository',
                                                                           ),
                                                                       selectedBranch:
                                                                           element.dynamicState(
-                                                                              'branch'
+                                                                              'branch',
                                                                           ),
                                                                       v: versionHash,
                                                                   },

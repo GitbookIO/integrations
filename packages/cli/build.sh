@@ -5,9 +5,7 @@ esbuild ./src/cli.ts \
     --bundle \
     --platform=node \
     --external:esbuild \
-    --external:@stoplight/json-ref-resolver \
-    --external:@miniflare/storage-redis \
-    --external:ioredis \
+    --external:miniflare \
     --external:fsevents \
     --outfile=./dist/cli.js \
     --log-level=warning

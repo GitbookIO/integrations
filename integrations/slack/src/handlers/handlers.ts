@@ -94,7 +94,7 @@ export async function appMentionEventHandler(eventPayload: any, context: SlackRu
                     thread_ts,
                     userId: user,
                 },
-                context
+                context,
             );
         } else {
             // send to Lens

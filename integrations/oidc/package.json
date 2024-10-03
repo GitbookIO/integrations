@@ -9,12 +9,12 @@
         "@tsndr/cloudflare-worker-jwt": "2.3.2"
     },
     "devDependencies": {
-        "@gitbook/cli": "*"
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
     },
     "scripts": {
-        "lint": "eslint ./**/*.ts*",
-        "typecheck": "tsc --noEmit",
         "publish-integrations-staging": "gitbook publish .",
+        "check": "gitbook check",
         "publish-integrations": "gitbook publish ."
     }
 }

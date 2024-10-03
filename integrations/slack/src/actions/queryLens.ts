@@ -93,7 +93,7 @@ async function getRelatedSources(params: {
     // query for all Revisions (accounting for spaces that might not exist or any errors)
     const allRevisions: Array<Revision> = (
         await Promise.allSettled(
-            Array.from(allSpaces).map((space) => client.spaces.getCurrentRevision(space))
+            Array.from(allSpaces).map((space) => client.spaces.getCurrentRevision(space)),
         )
     ).reduce((accum, result) => {
         if (result.status === 'fulfilled') {
@@ -105,7 +105,7 @@ async function getRelatedSources(params: {
     const getResolvedPage = (page: SearchAIAnswerSource & { type: 'page' }) => {
         // TODO: we can probably combine finding the currentRevision with extracting the appropriate page
         const currentRevision = allRevisions.find((revision: Revision) =>
-            extractAllPages(revision.pages).find((revisionPage) => revisionPage.id === page.page)
+            extractAllPages(revision.pages).find((revisionPage) => revisionPage.id === page.page),
         );
 
         if (currentRevision) {
@@ -123,7 +123,7 @@ async function getRelatedSources(params: {
     };
 
     const getResolvedSnippet = async (
-        source: SearchAIAnswerSource & { type: 'snippet' | 'capture' }
+        source: SearchAIAnswerSource & { type: 'snippet' | 'capture' },
     ): Promise<RelatedSource> => {
         const snippetRequest = await client.orgs.getSnippet(organization, source.captureId);
         const snippet = snippetRequest.data;
@@ -140,7 +140,7 @@ async function getRelatedSources(params: {
     const resolvedSnippetsPromises = await Promise.allSettled(
         topSources
             .filter((source) => source.type === 'capture' || source.type === 'snippet')
-            .map(getResolvedSnippet)
+            .map(getResolvedSnippet),
     );
 
     const resolvedSnippets = resolvedSnippetsPromises.reduce((accum, result) => {
@@ -162,7 +162,7 @@ async function getRelatedSources(params: {
             case 'snippet':
             case 'capture':
                 const resolvedSnippet = resolvedSnippets.find(
-                    (snippet) => snippet.id === source.captureId
+                    (snippet) => snippet.id === source.captureId,
                 );
 
                 if (resolvedSnippet) {

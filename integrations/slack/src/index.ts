@@ -34,7 +34,7 @@ const handleSpaceContentUpdated: EventCallback<
         {
             // Ignore git metadata and custom field changes
             metadata: false,
-        }
+        },
     );
 
     if (semanticChanges.changes.length === 0) {

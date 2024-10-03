@@ -19,7 +19,7 @@ const logger = Logger('gitlab:provider');
 export async function installWebhook(
     spaceInstallation: IntegrationSpaceInstallation,
     webhookUrl: string,
-    webhookToken: string
+    webhookToken: string,
 ) {
     const config = getSpaceConfigOrThrow(spaceInstallation);
 
@@ -60,7 +60,7 @@ export async function updateCommitStatus(
         state: GitSyncOperationState;
         url: string;
         description: string;
-    }
+    },
 ) {
     assertIsDefined(config.project, { label: 'config.project' });
 

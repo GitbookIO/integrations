@@ -15,9 +15,7 @@ const targetAll = api.IntegrationTarget.All;
  */
 export async function publishIntegration(
     specFilePath: string,
-    // will be fixed once we update eslint and everything
-    // eslint-disable-next-line no-undef
-    updates: Partial<api.RequestPublishIntegration> = {}
+    updates: Partial<api.RequestPublishIntegration> = {},
 ): Promise<void> {
     // Build the script
     const { script, manifest } = await buildScriptFromManifest(specFilePath);
@@ -26,7 +24,7 @@ export async function publishIntegration(
 
     if (typeof manifest.target === 'string' && manifest.target !== targetAll) {
         console.log(
-            `ℹ️ Publishing integration with "${manifest.target}" as target for installations. Keep in mind this cannot be changed later.`
+            `ℹ️ Publishing integration with "${manifest.target}" as target for installations. Keep in mind this cannot be changed later.`,
         );
     }
 
@@ -36,9 +34,9 @@ export async function publishIntegration(
         icon: manifest.icon
             ? await readImage(resolveFile(specFilePath, manifest.icon), 'icon')
             : undefined,
-        description: manifest.description,
+        description: manifest.description ?? '',
         summary: manifest.summary,
-        scopes: manifest.scopes,
+        scopes: manifest.scopes ?? [],
         categories: manifest.categories,
         blocks: manifest.blocks,
         configurations: manifest.configurations,
@@ -49,8 +47,8 @@ export async function publishIntegration(
         externalLinks: manifest.externalLinks,
         previewImages: await Promise.all(
             (manifest.previewImages || []).map(async (imageFilePath) =>
-                readImage(resolveFile(specFilePath, imageFilePath), 'preview')
-            )
+                readImage(resolveFile(specFilePath, imageFilePath), 'preview'),
+            ),
         ),
         contentSecurityPolicy: manifest.contentSecurityPolicy,
         script,
@@ -86,14 +84,14 @@ async function readImage(filePath: string, type: 'icon' | 'preview'): Promise<st
 
     if (path.extname(filePath) !== '.png') {
         throw new Error(
-            `Invalid image file extension for ${filePath}. Only PNG files are accepted.`
+            `Invalid image file extension for ${filePath}. Only PNG files are accepted.`,
         );
     }
 
     const content = await fs.promises.readFile(filePath);
     if (content.length > sizeLimit) {
         throw new Error(
-            `Image file ${filePath} is too large. Maximum size is ${sizeLimit / 1024}KB.`
+            `Image file ${filePath} is too large. Maximum size is ${sizeLimit / 1024}KB.`,
         );
     }
 

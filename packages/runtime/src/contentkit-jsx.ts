@@ -9,12 +9,14 @@ export function Fragment() {
  * JSX factory function, to be exported from the JSX package entry point.
  */
 export function jsx(type: string | typeof Fragment | ((props: object) => any), props: object) {
+    // @ts-ignore
     let { children } = props;
 
     if (typeof children !== 'undefined' && !Array.isArray(children)) {
         children = [children];
     }
     if (children) {
+        // @ts-ignore
         children = children.flat().filter((child) => child !== null);
     }
 

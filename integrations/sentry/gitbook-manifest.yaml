@@ -4,6 +4,7 @@ icon: ./assets/icon.png
 description: Embed Sentry issues in your GitBook documentation.
 visibility: public
 script: ./src/index.tsx
+organization: gitbook
 previewImages:
     - ./assets/sentry-preview.png
 summary: |

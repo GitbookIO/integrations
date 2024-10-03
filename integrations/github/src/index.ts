@@ -35,14 +35,14 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         base: new URL(
             environment.spaceInstallation?.urls?.publicEndpoint ||
                 environment.installation?.urls.publicEndpoint ||
-                environment.integration.urls.publicEndpoint
+                environment.integration.urls.publicEndpoint,
         ).pathname,
     });
 
     async function verifyIntegrationSignature(
         payload: string,
         signature: string,
-        secret: string
+        secret: string,
     ): Promise<boolean> {
         if (!signature) {
             return false;
@@ -70,7 +70,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         const verified = await verifyIntegrationSignature(
             payloadString,
             signature,
-            environment.signingSecrets.integration
+            environment.signingSecrets.integration,
         );
 
         if (!verified) {
@@ -85,7 +85,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         context.waitUntil(
             (async () => {
                 await handleIntegrationTask(context, task);
-            })()
+            })(),
         );
 
         return new Response(JSON.stringify({ acknowledged: true }), {
@@ -109,7 +109,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
             await verifyGitHubWebhookSignature(
                 payloadString,
                 signature,
-                environment.secrets.WEBHOOK_SECRET
+                environment.secrets.WEBHOOK_SECRET,
             );
         } catch (error: any) {
             logger.error(`Error verifying signature ${error}`);
@@ -133,7 +133,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                 } else {
                     logger.debug('ignoring webhook event', { id, event });
                 }
-            })()
+            })(),
         );
 
         /**
@@ -164,8 +164,8 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
             },
             {
                 replace: false,
-            }
-        )
+            },
+        ),
     );
 
     /**
@@ -185,7 +185,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                         url: installation.account.avatar_url,
                     },
                 },
-            })
+            }),
         );
 
         return new Response(JSON.stringify(data), {
@@ -216,7 +216,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                 try {
                     const selectedRepo = await fetchRepository(
                         context,
-                        parseInt(querySelectedRepo, 10)
+                        parseInt(querySelectedRepo, 10),
                     );
 
                     selected.push({
@@ -236,7 +236,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                 const installationToken = await createAppInstallationAccessToken(
                     context,
                     appJWT,
-                    installationId
+                    installationId,
                 );
 
                 try {
@@ -245,7 +245,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                     }:${installation.account.login} fork:true`;
 
                     logger.debug(
-                        `Searching for repos matching ${q} for installation ${installationId}`
+                        `Searching for repos matching ${q} for installation ${installationId}`,
                     );
 
                     const searchedRepos = await searchRepositories(context, q, {
@@ -266,7 +266,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                                 repository.visibility === 'private'
                                     ? ContentKitIcon.Lock
                                     : undefined,
-                        })
+                        }),
                     );
 
                     return new Response(JSON.stringify({ items, selected }), {
@@ -290,7 +290,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                         id: `${repository.id}`,
                         label: repository.name,
                         icon: repository.visibility === 'private' ? ContentKitIcon.Lock : undefined,
-                    })
+                    }),
                 );
 
                 const nextPage = new URL(request.url);
@@ -306,7 +306,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                    }
+                    },
                 );
             }
         }
@@ -338,7 +338,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                 id: `refs/heads/${branch.name}`,
                 label: branch.name,
                 icon: branch.protected ? ContentKitIcon.Lock : undefined,
-            })
+            }),
         );
 
         /**
@@ -386,12 +386,12 @@ const handleSpaceContentUpdated: EventCallback<
 > = async (event, context) => {
     const { data: revision } = await context.api.spaces.getRevisionById(
         event.spaceId,
-        event.revisionId
+        event.revisionId,
     );
     if (revision.git?.oid) {
         const revisionStatus = revision.git.createdByGitBook ? 'exported' : 'imported';
         logger.info(
-            `skipping Git Sync for space ${event.spaceId} revision ${revision.id} as it was already ${revisionStatus}`
+            `skipping Git Sync for space ${event.spaceId} revision ${revision.id} as it was already ${revisionStatus}`,
         );
         return;
     }
@@ -417,10 +417,10 @@ const handleSpaceContentUpdated: EventCallback<
  */
 const handleGitSyncStarted: EventCallback<'space_gitsync_started', GithubRuntimeContext> = async (
     event,
-    context
+    context,
 ) => {
     logger.info(
-        `Git Sync started for space ${event.spaceId} revision ${event.revisionId}, updating commit status`
+        `Git Sync started for space ${event.spaceId} revision ${event.revisionId}, updating commit status`,
     );
 
     const spaceInstallation = context.environment.spaceInstallation;
@@ -434,7 +434,7 @@ const handleGitSyncStarted: EventCallback<'space_gitsync_started', GithubRuntime
         spaceInstallation,
         event.revisionId,
         event.commitId,
-        GitSyncOperationState.Running
+        GitSyncOperationState.Running,
     );
 };
 
@@ -446,7 +446,7 @@ const handleGitSyncCompleted: EventCallback<
     GithubRuntimeContext
 > = async (event, context) => {
     logger.info(
-        `Git Sync completed (${event.state}) for space ${event.spaceId} revision ${event.revisionId}, updating commit status`
+        `Git Sync completed (${event.state}) for space ${event.spaceId} revision ${event.revisionId}, updating commit status`,
     );
 
     const spaceInstallation = context.environment.spaceInstallation;
@@ -460,7 +460,7 @@ const handleGitSyncCompleted: EventCallback<
         spaceInstallation,
         event.revisionId,
         event.commitId,
-        event.state as GitSyncOperationState
+        event.state as GitSyncOperationState,
     );
 };
 

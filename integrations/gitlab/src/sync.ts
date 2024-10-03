@@ -51,7 +51,7 @@ export async function triggerImport(
          * in the same order on GitBook and on the remote repository.
          */
         eventTimestamp?: Date;
-    } = {}
+    } = {},
 ) {
     const { api } = context;
     const { force = false, updateGitInfo = false, standalone, eventTimestamp } = options;
@@ -108,7 +108,7 @@ export async function triggerExport(
          * in the same order on GitBook and on the remote repository.
          */
         eventTimestamp?: Date;
-    } = {}
+    } = {},
 ) {
     const { api } = context;
     const { force = false, updateGitInfo = false, eventTimestamp } = options;
@@ -156,7 +156,7 @@ export async function updateCommitWithPreviewLinks(
     spaceInstallation: IntegrationSpaceInstallation,
     revisionId: string,
     commitSha: string,
-    state: GitSyncOperationState
+    state: GitSyncOperationState,
 ) {
     const config = getSpaceConfigOrThrow(spaceInstallation);
 

@@ -21,7 +21,7 @@ export async function buildScriptFromManifest(
     manifestSpecPath: string,
     options: {
         mode?: 'development' | 'production';
-    } = { mode: 'production' }
+    } = { mode: 'production' },
 ): Promise<BuildOutput> {
     const manifest = await readIntegrationManifest(manifestSpecPath);
     /**
@@ -54,7 +54,7 @@ export async function buildScriptFromManifest(
         format: 'iife',
         globalName: '__gitbook_integration',
         loader: {
-            // If importing a file as `.raw.js`, eslint will convert to string so we can use that
+            // If importing a file as `.raw.js`, esbuild will convert to string so we can use that
             // file as a string without opening it.
             '.raw.js': 'text',
         },

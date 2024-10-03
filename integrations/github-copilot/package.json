@@ -1,0 +1,23 @@
+{
+    "name": "@gitbook/integration-github-copilot",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "check": "gitbook check",
+        "publish-integrations": "gitbook publish .",
+        "publish-integrations-staging": "gitbook publish ."
+    },
+    "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+        "@copilot-extensions/preview-sdk": "^5.0.0",
+        "itty-router": "^4.0.26",
+        "octokit": "^4.0.2",
+        "@tsndr/cloudflare-worker-jwt": "2.3.2"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
+    }
+}

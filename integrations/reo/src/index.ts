@@ -1,5 +1,6 @@
 import {
     createIntegration,
+    ExposableError,
     FetchPublishScriptEventCallback,
     RuntimeContext,
     RuntimeEnvironment,
@@ -18,17 +19,15 @@ type ReoDotDevRuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: ReoDotDevRuntimeContext
+    { environment }: ReoDotDevRuntimeContext,
 ) => {
     const trackingId = environment.siteInstallation?.configuration?.tracking_id;
 
     if (!trackingId) {
-        throw new Error(
-            `The Reo.Dev tracking ID is missing from the configuration (ID: ${event.spaceId}).`
-        );
+        throw new ExposableError(`The Reo.Dev tracking ID is missing from the configuration.`);
     }
 
-    return new Response(script.replace('<TO_REPLACE>', trackingId), {
+    return new Response((script as string).replace('<TO_REPLACE>', trackingId), {
         headers: {
             'Content-Type': 'application/javascript',
             'Cache-Control': 'max-age=604800',

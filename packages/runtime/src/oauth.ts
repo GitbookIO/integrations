@@ -1,29 +1,25 @@
-import { GitBookAPI, RequestUpdateIntegrationInstallation } from '@gitbook/api';
+import { RequestUpdateIntegrationInstallation } from '@gitbook/api';
 
-import { RuntimeCallback } from './context';
+import { RuntimeCallback, RuntimeContext } from './context';
 import { Logger } from './logger';
 
 /**
  * Utility interface for typing the response from a Slack OAuth call.
- * TODO: Use the official Slack type
  */
 export interface OAuthResponse {
     ok?: boolean;
     access_token: string;
     refresh_token?: string;
     expires_in: number;
-    team: {
-        id: string;
-    };
 }
 
-export interface OAuthConfiguration {
+export type OAuthConfiguration = {
     access_token: string;
     refresh_token?: string;
-    expires_at: string;
-}
+    expires_at?: string;
+};
 
-export interface OAuthConfig {
+export interface OAuthConfig<TOAuthResponse = OAuthResponse> {
     /**
      * Redirect URL to use. When the OAuth identity provider only accept a static one.
      */
@@ -63,7 +59,7 @@ export interface OAuthConfig {
      * Extract the credentials from the code exchange response.
      */
     extractCredentials?: (
-        response: OAuthResponse
+        response: TOAuthResponse,
     ) => RequestUpdateIntegrationInstallation | Promise<RequestUpdateIntegrationInstallation>;
 }
 
@@ -75,8 +71,8 @@ const logger = Logger('oauth');
  *
  * When using this handler, you must configure `https://integrations.gitbook.com/integrations/{name}/` as a redirect URI.
  */
-export function createOAuthHandler(
-    config: OAuthConfig,
+export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
+    config: OAuthConfig<TOAuthResponse>,
     options: {
         /**
          * Whether to replace the existing installation configuration or merge it
@@ -84,9 +80,9 @@ export function createOAuthHandler(
          * @default true
          */
         replace?: boolean;
-    } = {}
+    } = {},
 ): RuntimeCallback<[Request], Promise<Response>> {
-    const { extractCredentials = defaultExtractCredentials } = config;
+    const { extractCredentials = defaultOAuthExtractCredentials } = config;
     const { replace = true } = options;
 
     return async (request, { api, environment }) => {
@@ -115,7 +111,7 @@ export function createOAuthHandler(
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                    }
+                    },
                 );
             }
 
@@ -132,7 +128,7 @@ export function createOAuthHandler(
                     ...(environment.spaceInstallation?.space
                         ? { spaceId: environment.spaceInstallation?.space }
                         : {}),
-                })
+                }),
             );
 
             if (config.scopes?.length) {
@@ -145,7 +141,7 @@ export function createOAuthHandler(
 
             const url = redirectTo
                 .toString()
-                .replace('SCOPE_PLACEHOLDER', config.scopes?.join('%20'));
+                .replace('SCOPE_PLACEHOLDER', config.scopes?.join('%20') ?? '');
 
             logger.debug(`oauth redirecting to ${url}`);
 
@@ -178,108 +174,92 @@ export function createOAuthHandler(
 
             if (!response.ok) {
                 throw new Error(
-                    `Failed to exchange code for access token ${await response.text()}`
+                    `Failed to exchange code for access token ${await response.text()}`,
                 );
             }
 
-            const json = await response.json<OAuthResponse>();
+            const json = (await response.json()) as TOAuthResponse;
 
             // Store the credentials in the installation configuration
-            let credentials: RequestUpdateIntegrationInstallation;
-            try {
-                credentials = await extractCredentials(json);
-            } catch (error) {
-                logger.error(`extractCredentials error`, error.stack);
-                return new Response(
-                    JSON.stringify({
-                        error: `Failed to retrieve access_token from OAuth response. Please try again.`,
-                    }),
-                    {
-                        status: 400,
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    }
-                );
-            }
-
+            // @ts-ignore
+            const credentials = await extractCredentials(json);
             logger.debug(`exchange code for credentials`, credentials);
 
-            try {
-                /**
-                 * Parse the JSON encoded state parameter.
-                 * If the state contains a spaceId, then the Oauth flow was initiated from a space installation
-                 * public url and thus we need to update the space installation config otherwise fallback to
-                 * updating the installation config.
-                 */
-                const state = JSON.parse(url.searchParams.get('state')) as {
-                    installationId: string;
-                    spaceId?: string;
-                };
+            const rawState = url.searchParams.get('state');
+            if (!rawState) {
+                throw new Error('Missing state parameter in OAuth callback');
+            }
 
-                const existing = {
-                    configuration: {},
-                };
+            /**
+             * Parse the JSON encoded state parameter.
+             * If the state contains a spaceId, then the Oauth flow was initiated from a space installation
+             * public url and thus we need to update the space installation config otherwise fallback to
+             * updating the installation config.
+             */
+            const state = JSON.parse(rawState) as {
+                installationId: string;
+                spaceId?: string;
+            };
 
-                if (state.spaceId) {
-                    if (!replace) {
-                        const { data: spaceInstallation } =
-                            await api.integrations.getIntegrationSpaceInstallation(
-                                environment.integration.name,
-                                state.installationId,
-                                state.spaceId
-                            );
-                        existing.configuration = spaceInstallation.configuration;
-                    }
+            const existing = {
+                configuration: {},
+            };
 
-                    // We need to make sure that properties outside of the credentials configuration are also passed when updating the installation (such as externalIds)
-                    const {
-                        configuration: credentialsConfiguration,
-                        ...credentialsMinusConfiguration
-                    } = credentials;
-                    await api.integrations.updateIntegrationSpaceInstallation(
-                        environment.integration.name,
-                        state.installationId,
-                        state.spaceId,
-                        {
-                            configuration: {
-                                ...existing.configuration,
-                                ...credentialsConfiguration,
-                            },
-                            ...credentialsMinusConfiguration,
-                        }
-                    );
-                } else {
-                    if (!replace) {
-                        const { data: installation } =
-                            await api.integrations.getIntegrationInstallationById(
-                                environment.integration.name,
-                                state.installationId
-                            );
-                        existing.configuration = installation.configuration;
-                    }
-
-                    // We need to make sure that properties outside of the credentials configuration are also passed when updating the installation (such as externalIds)
-                    const {
-                        configuration: credentialsConfiguration,
-                        ...credentialsMinusConfiguration
-                    } = credentials;
-
-                    await api.integrations.updateIntegrationInstallation(
-                        environment.integration.name,
-                        state.installationId,
-                        {
-                            configuration: {
-                                ...existing.configuration,
-                                ...credentialsConfiguration,
-                            },
-                            ...credentialsMinusConfiguration,
-                        }
-                    );
+            if (state.spaceId) {
+                if (!replace) {
+                    const { data: spaceInstallation } =
+                        await api.integrations.getIntegrationSpaceInstallation(
+                            environment.integration.name,
+                            state.installationId,
+                            state.spaceId,
+                        );
+                    existing.configuration = spaceInstallation.configuration;
                 }
-            } catch (err) {
-                logger.error(err.stack);
-                throw err;
+
+                // We need to make sure that properties outside of the credentials configuration are also passed when updating the installation (such as externalIds)
+                const {
+                    configuration: credentialsConfiguration,
+                    ...credentialsMinusConfiguration
+                } = credentials;
+                await api.integrations.updateIntegrationSpaceInstallation(
+                    environment.integration.name,
+                    state.installationId,
+                    state.spaceId,
+                    {
+                        configuration: {
+                            ...existing.configuration,
+                            ...credentialsConfiguration,
+                        },
+                        ...credentialsMinusConfiguration,
+                    },
+                );
+            } else {
+                if (!replace) {
+                    const { data: installation } =
+                        await api.integrations.getIntegrationInstallationById(
+                            environment.integration.name,
+                            state.installationId,
+                        );
+                    existing.configuration = installation.configuration;
+                }
+
+                // We need to make sure that properties outside of the credentials configuration are also passed when updating the installation (such as externalIds)
+                const {
+                    configuration: credentialsConfiguration,
+                    ...credentialsMinusConfiguration
+                } = credentials;
+
+                await api.integrations.updateIntegrationInstallation(
+                    environment.integration.name,
+                    state.installationId,
+                    {
+                        configuration: {
+                            ...existing.configuration,
+                            ...credentialsConfiguration,
+                        },
+                        ...credentialsMinusConfiguration,
+                    },
+                );
             }
 
             return new Response(
@@ -293,27 +273,37 @@ export function createOAuthHandler(
                     headers: {
                         'Content-Type': 'text/html',
                     },
-                }
+                },
             );
         }
     };
 }
 
-export async function getToken(
+/**
+ * Get the OAuth token from the credentials.
+ * It will refresh the token if it's expired.
+ */
+export async function getOAuthToken(
     credentials: OAuthConfiguration,
     config: Pick<
         OAuthConfig,
         'accessTokenURL' | 'clientId' | 'clientSecret' | 'extractCredentials'
-    > & {
-        api: GitBookAPI;
-        installationId: string;
-        installationName: string;
-    }
+    >,
+    context: RuntimeContext,
 ): Promise<string> {
-    const { api, extractCredentials = defaultExtractCredentials } = config;
+    const { extractCredentials = defaultOAuthExtractCredentials } = config;
 
-    if (new Date(credentials.expires_at).getTime() - Date.now() > 10000) {
+    if (
+        !credentials.expires_at ||
+        new Date(credentials.expires_at).getTime() - Date.now() > 10000
+    ) {
         return credentials.access_token;
+    }
+
+    if (!credentials.refresh_token) {
+        throw new Error(
+            `No refresh token available to refresh the OAuth token, expired at ${credentials.expires_at}`,
+        );
     }
 
     // Refresh using the refresh_token
@@ -337,23 +327,30 @@ export async function getToken(
         throw new Error(`Failed to exchange code for access token ${await response.text()}`);
     }
 
-    const json = await response.json<OAuthResponse>();
+    const json = (await response.json()) as OAuthResponse;
     const creds = await extractCredentials(json);
+    const accessToken = (creds.configuration?.['oauth_credentials'] as OAuthConfiguration)
+        ?.access_token;
+    if (!accessToken) {
+        throw new Error('Failed to retrieve access_token from OAuth response');
+    }
 
-    await api.integrations.updateIntegrationInstallation(
-        config.installationName,
-        config.installationId,
-        creds
+    await context.api.integrations.updateIntegrationInstallation(
+        context.environment.integration.name,
+        context.environment.installation!.id,
+        creds,
     );
 
-    return creds.configuration.oauth_credentials.access_token;
+    return accessToken;
 }
 
 /**
  * Default implementation to extract the credentials from the OAuth response.
  * throws an error if the `access_token` is not present in the response.
  */
-function defaultExtractCredentials(response: OAuthResponse): RequestUpdateIntegrationInstallation {
+export function defaultOAuthExtractCredentials(
+    response: OAuthResponse,
+): RequestUpdateIntegrationInstallation {
     if (!response.access_token) {
         const message = `Failed to retrieve access_token from response`;
         logger.error(`${message} ${JSON.stringify(response, null, 2)} `);

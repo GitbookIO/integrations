@@ -1,6 +1,7 @@
 name: mermaid
 title: Mermaid
 icon: ./assets/icon.png
+organization: gitbook
 previewImages:
     - ./assets/mermaid-preview.png
 description: Build diagrams and visualizations using Markdown-inspired text definitions and code.

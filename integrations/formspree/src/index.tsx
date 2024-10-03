@@ -1,25 +1,38 @@
-import { createIntegration, createComponent } from '@gitbook/runtime';
+import {
+    createIntegration,
+    createComponent,
+    RuntimeContext,
+    RuntimeEnvironment,
+} from '@gitbook/runtime';
 
 import { handleSubmit } from './utils';
 
-type FormspreeContext = {
-    environment: {
-        spaceInstallation: {
-            configuration: {
-                formspree_id: string;
-                email: string;
-                name: string;
-                message: string;
-            };
-        };
-    };
+type FormspreeConfiguration = {
+    formspree_id: string;
+    email: string;
+    name: string;
+    message: string;
 };
+
+type FormspreeEnvironment = RuntimeEnvironment<FormspreeConfiguration>;
+type FormspreeContext = RuntimeContext<FormspreeEnvironment>;
 
 type FormspreeAction = {
-    action: any;
+    action: 'submit';
 };
 
-const formspreeBlock = createComponent({
+const formspreeBlock = createComponent<
+    {},
+    | { formSubmitted: true }
+    | {
+          email: string;
+          name: string;
+          message: string;
+          formSubmitted: boolean;
+      },
+    FormspreeAction,
+    FormspreeContext
+>({
     componentId: 'formspree',
     initialState: {
         email: '',
@@ -27,14 +40,22 @@ const formspreeBlock = createComponent({
         message: '',
         formSubmitted: false,
     },
-    action: async (element, action: FormspreeAction, context: FormspreeContext) => {
+    action: async (element, action, context) => {
         switch (action.action) {
             case 'submit':
-                handleSubmit(context.environment.spaceInstallation?.configuration.formspree_id, {
-                    email: element.state.email,
-                    name: element.state.name,
-                    message: element.state.message,
-                });
+                if (element.state.formSubmitted) {
+                    return element;
+                }
+
+                handleSubmit(
+                    (context.environment.spaceInstallation?.configuration as FormspreeConfiguration)
+                        .formspree_id,
+                    {
+                        email: element.state.email,
+                        name: element.state.name,
+                        message: element.state.message,
+                    },
+                );
                 return {
                     state: {
                         formSubmitted: true,
@@ -43,11 +64,14 @@ const formspreeBlock = createComponent({
         }
     },
     render: async (element, context: FormspreeContext) => {
+        const configuration = context.environment.spaceInstallation
+            ?.configuration as FormspreeConfiguration;
+
         return (
             <block>
                 <hstack>
                     {/* Email */}
-                    {context.environment.spaceInstallation?.configuration.email ? (
+                    {configuration.email ? (
                         <box grow={1}>
                             <input
                                 label="Email"
@@ -57,7 +81,7 @@ const formspreeBlock = createComponent({
                     ) : null}
 
                     {/* Name */}
-                    {context.environment.spaceInstallation?.configuration.name ? (
+                    {configuration.name ? (
                         <box grow={1}>
                             <input
                                 label="Name"
@@ -69,7 +93,7 @@ const formspreeBlock = createComponent({
 
                 <vstack>
                     {/* Message */}
-                    {context.environment.spaceInstallation?.configuration.message ? (
+                    {configuration.message ? (
                         <box grow={2}>
                             <input
                                 label="Message"

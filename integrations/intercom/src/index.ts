@@ -18,7 +18,7 @@ type IntercomRuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: IntercomRuntimeContext
+    { environment }: IntercomRuntimeContext,
 ) => {
     const appId = environment.siteInstallation?.configuration?.app_id;
 
@@ -26,7 +26,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
         return;
     }
 
-    return new Response(script.replace('<TO_REPLACE>', appId), {
+    return new Response((script as string).replace('<TO_REPLACE>', appId), {
         headers: {
             'Content-Type': 'application/javascript',
             'Cache-Control': 'max-age=604800',

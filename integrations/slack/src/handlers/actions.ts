@@ -9,7 +9,7 @@ import { getActionNameAndType, parseActionPayload } from '../utils';
 export function createSlackActionsHandler(
     handlers: {
         [type: string]: (event: object) => Promise<any>;
-    }
+    },
     // TODO: type output
 ): any {
     return async (request, context) => {

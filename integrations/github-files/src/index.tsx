@@ -1,6 +1,5 @@
 import { Router } from 'itty-router';
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { RequestUpdateIntegrationInstallation } from '@gitbook/api';
 import {
     createIntegration,
@@ -17,7 +16,9 @@ import { getFileExtension } from './utils';
 const embedBlock = createComponent<
     { url?: string },
     { visible: boolean },
-    {},
+    {
+        action: 'show' | 'hide';
+    },
     GithubRuntimeContext
 >({
     componentId: 'github-code-block',
@@ -49,10 +50,9 @@ const embedBlock = createComponent<
 
     async render(element, context) {
         const { url } = element.props as GithubProps;
-        const [content, fileName] = await getGithubContent(url, context);
-        const fileExtension = await getFileExtension(fileName);
+        const found = await getGithubContent(url, context);
 
-        if (!content) {
+        if (!found) {
             return (
                 <block>
                     <card
@@ -62,17 +62,22 @@ const embedBlock = createComponent<
                             url,
                         }}
                         icon={
-                            <image
-                                source={{
-                                    url: context.environment.integration.urls.icon,
-                                }}
-                                aspectRatio={1}
-                            />
+                            context.environment.integration.urls.icon ? (
+                                <image
+                                    source={{
+                                        url: context.environment.integration.urls.icon,
+                                    }}
+                                    aspectRatio={1}
+                                />
+                            ) : undefined
                         }
                     />
                 </block>
             );
         }
+
+        const { content, fileName } = found;
+        const fileExtension = await getFileExtension(fileName);
 
         return (
             <block
@@ -102,12 +107,14 @@ const embedBlock = createComponent<
                             : { action: 'null' }
                     }
                     icon={
-                        <image
-                            source={{
-                                url: context.environment.integration.urls.icon,
-                            }}
-                            aspectRatio={1}
-                        />
+                        context.environment.integration.urls.icon ? (
+                            <image
+                                source={{
+                                    url: context.environment.integration.urls.icon,
+                                }}
+                                aspectRatio={1}
+                            />
+                        ) : undefined
                     }
                 >
                     {content ? (
@@ -130,7 +137,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         base: new URL(
             environment.spaceInstallation?.urls?.publicEndpoint ||
                 environment.installation?.urls.publicEndpoint ||
-                environment.integration.urls.publicEndpoint
+                environment.integration.urls.publicEndpoint,
         ).pathname,
     });
 
@@ -149,7 +156,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
             scopes: ['repo'],
             prompt: 'consent',
             extractCredentials,
-        })
+        }),
     );
 
     const response = await router.handle(request, context);
@@ -163,7 +170,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
 };
 
 const extractCredentials = async (
-    response: OAuthResponse
+    response: OAuthResponse,
 ): Promise<RequestUpdateIntegrationInstallation> => {
     const { access_token } = response;
 

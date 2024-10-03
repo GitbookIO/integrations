@@ -53,7 +53,7 @@ export async function getChannelsPaginated(context: SlackRuntimeContext) {
     // Remove any duplicate as the pagination API could return duplicated channels
     return channels.filter(
         (value, index, self) =>
-            index === self.findIndex((t) => t.place === value.place && t.id === value.id)
+            index === self.findIndex((t) => t.place === value.place && t.id === value.id),
     );
 }
 
@@ -71,7 +71,7 @@ export async function slackAPI(
     options: {
         accessToken?: string;
     } = {},
-    retriesLeft = 1
+    retriesLeft = 1,
 ) {
     const { environment } = context;
 
@@ -139,7 +139,7 @@ export async function slackAPI(
                             },
                         },
                         options,
-                        0
+                        0,
                     );
 
                     return slackAPI(context, request, options, retriesLeft - 1);

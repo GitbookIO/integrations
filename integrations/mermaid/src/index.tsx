@@ -18,6 +18,9 @@ const diagramBlock = createComponent<
         };
     },
     async render(element, { environment }) {
+        if (element.context.type !== 'document') {
+            throw new Error('Invalid context');
+        }
         const { editable } = element.context;
         const { content } = element.state;
 
@@ -156,7 +159,7 @@ export default createIntegration({
                     'Content-Type': 'text/html',
                     'Cache-Control': 'public, max-age=86400',
                 },
-            }
+            },
         );
     },
     components: [diagramBlock],

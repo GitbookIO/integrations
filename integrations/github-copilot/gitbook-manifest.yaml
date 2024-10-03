@@ -1,0 +1,66 @@
+name: github-copilot
+title: GitHub Copilot
+organization: gitbook
+visibility: public
+description: GitBook Copilot uses your documentation to provide instant answers to your coding workflow.
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/gitbook-copilot-preview1.png
+    - ./assets/gitbook-copilot-preview2.png
+    - ./assets/gitbook-copilot-preview3.png
+externalLinks:
+    - label: Documentation
+      url: https://docs.gitbook.com/integrations/github-copilot
+categories:
+    - collaboration
+summary: |
+    # Overview
+
+    GitBook Copilot leverages your organization's documentation to answer team member queries, providing instant and accurate responses based on your content. It integrates seamlessly with GitHub to assist developers while they code, offering relevant knowledge directly within their workflow. 
+
+    # Configure
+
+    To configure GitBook Copilot with your GitBook workspace:
+
+    1. **Install the [GitBook Copilot App](https://github.com/apps/gitbook-copilot) to your GitHub organization**
+    2. **Install the GitHub Copilot integration in your GitBook organization**
+    3. **Authenticate your GitHub account**
+        - Log into your GitHub account, and select the account(s) you would like this integration to work in.
+    4. **Connect Your Documentation**:
+        - Under spaces, in the integration's configuration, select which spaces you would like GitBook Copilot to leverage information from. 
+
+    # Use-cases & example prompts to get started
+
+    The GitBook for GitHub Copilot integration allows your to ask questions and get instant answers based on your documentation. Here are some examples of questions you can ask:
+
+    Get information about a specific topic:
+    - `@gitbook-copilot` how do I set up a new project?
+    - `@gitbook-copilot` what is the best way to deploy my application?
+
+    Get help with code:
+    - `@gitbook-copilot` how do I import components from our design system?
+    - `@gitbook-copilot` what is the best way to handle an error with a missing variable?
+
+    Troubleshoot an issue:
+    - `@gitbook-copilot` why is my build failing?
+    - `@gitbook-copilot` how do I fix a broken link in my documentation?
+
+
+    # Support
+
+    If you need assistance with GitBook Copilot:
+
+    - **Community Support**: Engage with other GitBook users in our [GitBook Community](https://github.com/GitbookIO/community).
+    - **Technical Support**: For more complex issues, reach out to our support team via email at [support@gitbook.com](mailto:support@gitbook.com).
+script: src/index.ts
+scopes:
+    - space:metadata:read
+    - space:content:read
+configurations:
+    account:
+        componentId: configure
+secrets:
+    APP_ID: ${{ env.GITHUBCOPILOT_APP_ID }}
+    APP_INSTALL_URL: ${{ env.GITHUBCOPILOT_APP_URL }}
+    CLIENT_ID: ${{ env.GITHUBCOPILOT_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.GITHUBCOPILOT_CLIENT_SECRET }}

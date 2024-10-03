@@ -38,8 +38,8 @@ async function fetchRunKitAPI<APIResponse>(path: string): Promise<APIResponse> {
  * Fetch RunKit source
  */
 export async function fetchRunKitFromLink(
-    link: string
-): Promise<{ content: string; nodeVersion: string }> {
+    link: string,
+): Promise<{ content: string; nodeVersion: string } | undefined> {
     const url = new URL(link);
 
     if (url.hostname !== 'runkit.com') {
@@ -52,7 +52,7 @@ export async function fetchRunKitFromLink(
     }
 
     const repo = await fetchRunKitAPI<RunKitRepoContent>(
-        `users/${user}/repositories/${repoId}/default`
+        `users/${user}/repositories/${repoId}/default`,
     );
 
     const source = repo.content.cells

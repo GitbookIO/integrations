@@ -4,7 +4,7 @@
     "rootDir": "./src",
     "compilerOptions": {
         "lib": ["ES2020", "DOM"],
-        "types": ["node"],
+        "types": ["bun"],
         "typeRoots": ["./types"]
     }
 }
