@@ -7,7 +7,7 @@ type SourceConfigureProps = {
 };
 
 /**
- * ContentKit component to configure the GitHub Copilot integration.
+ * ContentKit component to configure the Translation source.
  */
 export const configureSourceComponent = createComponent<
 SourceConfigureProps,

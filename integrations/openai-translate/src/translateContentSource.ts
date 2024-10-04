@@ -18,21 +18,24 @@ type TranslateProps = {
     language: string;
     /** ID of the space */
     space: string;
-    /** ID of the root page in the space */
-    // page?: string;
 };
+
+type TranslateDocumentProps = TranslateProps & {
+    /** ID of the origin document in the source space */
+    document: string;
+}
 
 /**
  * Content source that translates pages from an origin space into a given language.
  */
 export const translateContentSource = createContentSource<
-    TranslateProps,
+    TranslateProps | TranslateDocumentProps,
     OpenAITranslateRuntimeContext
 >({
     sourceId: 'translate',
     getPages: async (input, ctx) => {
         const { data: revision } = await ctx.api.spaces.getCurrentRevision(input.props.space);
-        const inputs = getInputsFromRevision(revision);
+        const inputs = getInputsFromRevision(ctx, input.props, revision);
 
         const translated = await translateJSON(ctx, input.props.language, inputs, [
             'title',
@@ -41,37 +44,36 @@ export const translateContentSource = createContentSource<
         return translated;
     },
     getPageDocument: async (input, ctx) => {
-        const { data: page } = await ctx.api.spaces.getPageById(input.props.space, input.page.id, {
-            format: 'document',
-        });
-
-        if (page.type !== 'document') {
-            throw new Error('Unexpected, Only documents can be translated');
-        }
-
-        const jsonDocument = 'document' in page ? page.document : null;
-        if (!jsonDocument) {
+        if (!('document' in input.props)) {
             return;
         }
 
-        const translated = await translateJSON(ctx, input.props.language, jsonDocument, ['text']);
+        const { data: document } = await ctx.api.spaces.getDocumentById(input.props.space, input.props.document);
+        const translated = await translateJSON(ctx, input.props.language, document, ['text']);
         return translated;
     },
 });
 
-function getInputsFromRevision(revision: Revision) {
-    return getInputsFromPages(revision.pages);
+function getInputsFromRevision(
+    ctx: OpenAITranslateRuntimeContext,
+    inputProps: TranslateProps,
+    revision: Revision) {
+    return getInputsFromPages(ctx, inputProps, revision.pages);
 }
 
 function getInputsFromPages(
+    ctx: OpenAITranslateRuntimeContext,
+    inputProps: TranslateProps,
     pages: Array<
         RevisionPageGroup | RevisionPageLink | RevisionPageDocument | RevisionPageComputed
     >,
 ) {
-    return pages.map(getInputFromPage);
+    return pages.map(page => getInputFromPage(ctx, inputProps, page));
 }
 
 function getInputFromPage(
+    ctx: OpenAITranslateRuntimeContext,
+    inputProps: TranslateProps,
     page: RevisionPageGroup | RevisionPageLink | RevisionPageDocument | RevisionPageComputed,
 ): InputPageDocument | InputPageGroup | InputPageLink | InputPageComputed {
     switch (page.type) {
@@ -82,9 +84,17 @@ function getInputFromPage(
                 title: page.title,
                 slug: page.slug,
                 description: page.description,
-                pages: getInputsFromPages(page.pages) as Array<
+                pages: getInputsFromPages(ctx, inputProps, page.pages) as Array<
                     InputPageDocument | InputPageLink | InputPageComputed
                 >,
+                computed: {
+                    integration: ctx.environment.integration.name,
+                    source: 'translate',
+                    props: page.documentId ? {
+                        ...inputProps,
+                        document: page.documentId,
+                    } : inputProps
+                }
             };
         case 'group':
             return {
@@ -92,7 +102,7 @@ function getInputFromPage(
                 id: page.id,
                 title: page.title,
                 slug: page.slug,
-                pages: getInputsFromPages(page.pages) as Array<
+                pages: getInputsFromPages(ctx, inputProps, page.pages) as Array<
                     InputPageDocument | InputPageLink | InputPageComputed
                 >,
             };

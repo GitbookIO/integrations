@@ -1,22 +1,20 @@
 import { ContentKitIcon } from '@gitbook/api';
-import { createComponent, getOAuthToken } from '@gitbook/runtime';
+import { InstallationConfigurationProps, createComponent, getOAuthToken } from '@gitbook/runtime';
 
 import { fetchGitHubInstallations } from './github';
 import { getGitHubOAuthConfiguration } from './oauth';
-import type { GitHubCopilotConfiguration, GitHubCopilotRuntimeContext } from './types';
+import type {
+    GitHubCopilotConfiguration,
+    GitHubCopilotRuntimeContext,
+    GitHubCopilotRuntimeEnvironment,
+} from './types';
 import { createGitHubSetupState } from './setup';
-
-type ConfigureProps = {
-    installation: {
-        configuration?: GitHubCopilotConfiguration;
-    };
-};
 
 /**
  * ContentKit component to configure the GitHub Copilot integration.
  */
 export const configurationComponent = createComponent<
-    ConfigureProps,
+    InstallationConfigurationProps<GitHubCopilotRuntimeEnvironment>,
     {
         installations: string[];
     },
@@ -40,7 +38,7 @@ export const configurationComponent = createComponent<
                     context.environment.installation!.id,
                     {
                         externalIds: action.installations.slice(0, 5),
-                    },
+                    }
                 );
 
                 return {
@@ -64,17 +62,17 @@ export const configurationComponent = createComponent<
                   await getOAuthToken(
                       installation.configuration.oauth_credentials,
                       getGitHubOAuthConfiguration(context),
-                      context,
-                  ),
+                      context
+                  )
               )
             : [];
 
         const installURL = new URL(
-            context.environment.secrets.APP_INSTALL_URL + '/installations/new',
+            context.environment.secrets.APP_INSTALL_URL + '/installations/new'
         );
         installURL.searchParams.set(
             'state',
-            await createGitHubSetupState(context, context.environment.installation!),
+            await createGitHubSetupState(context, context.environment.installation!)
         );
 
         return (

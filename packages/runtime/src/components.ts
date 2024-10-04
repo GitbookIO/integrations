@@ -6,13 +6,37 @@ import {
     ContentKitDefaultAction,
 } from '@gitbook/api';
 
-import { RuntimeCallback, RuntimeContext } from './context';
+import { RuntimeCallback, RuntimeEnvironment, RuntimeContext } from './context';
 import { PlainObject } from './common';
 
+/**
+ * Props for an installation configuration component. 
+ */
+export type InstallationConfigurationProps<Env extends RuntimeEnvironment> = {
+    installation: {
+        configuration: Env extends RuntimeEnvironment<infer Config, any> ? Config : never;
+    };
+}
+
+/**
+ * Props for an installation configuration component. 
+ */
+export type SpaceInstallationConfigurationProps<Env extends RuntimeEnvironment> = InstallationConfigurationProps<Env> & {
+    spaceInstallation: {
+        configuration?: Env extends RuntimeEnvironment<any, infer Config> ? Config : never;
+    };
+}
+
+/**
+ * Cache configuration for the output of a component.
+ */
 export interface ComponentRenderCache {
     maxAge: number;
 }
 
+/**
+ * Instance of a component, passed to the `render` and `action` function.
+ */
 export interface ComponentInstance<Props extends PlainObject, State extends PlainObject> {
     props: Props;
     state: State;
@@ -29,6 +53,9 @@ export interface ComponentInstance<Props extends PlainObject, State extends Plai
     dynamicState<Key extends keyof State>(key: Key): { $state: Key };
 }
 
+/**
+ * Definition of a component. Exported from `createComponent` and should be passed to `components` in the integration.
+ */
 export interface ComponentDefinition<Context extends RuntimeContext = RuntimeContext> {
     componentId: string;
     render: RuntimeCallback<[UIRenderEvent], Promise<Response>, Context>;

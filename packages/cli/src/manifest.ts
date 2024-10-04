@@ -63,6 +63,14 @@ const IntegrationManifestBlock = z.object({
         .optional(),
 });
 
+const IntegrationManifestContentSource = z.object({
+    id: z.string(),
+    title: z.string().min(2).max(40),
+    description: z.string().min(0).max(150).optional(),
+    icon: z.string().optional(),
+    configuration: IntegrationManifestConfigurationComponent.optional(),
+});
+
 const IntegrationManifestSchema = z.object({
     name: z.string(),
     title: z.string(),
@@ -74,6 +82,7 @@ const IntegrationManifestSchema = z.object({
     scopes: z.array(z.nativeEnum(api.IntegrationScope)),
     categories: z.array(z.nativeEnum(api.IntegrationCategory)).optional(),
     blocks: z.array(IntegrationManifestBlock).optional(),
+    contentSources: z.array(IntegrationManifestContentSource).optional(),
     configurations: z
         .object({
             account: IntegrationManifestConfiguration.optional(),

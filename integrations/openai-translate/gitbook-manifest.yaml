@@ -1,7 +1,7 @@
 name: openai-translate
 title: Translate with OpenAI
 organization: gitbook
-visibility: private
+visibility: public
 description: Automatically generate translation content using OpenAI
 icon: ./assets/icon.png
 externalLinks:

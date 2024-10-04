@@ -1,5 +1,7 @@
 import type { RuntimeContext, RuntimeEnvironment } from '@gitbook/runtime';
 
+export const DEFAULT_MODEL = 'gpt-4o';
+
 export type OpenAITranslateConfiguration = {
     /**
      * API key for OpenAI.

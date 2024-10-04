@@ -6,8 +6,6 @@ import {
     InputPageDocument,
     InputPageGroup,
     InputPageLink,
-    RevisionPageComputed,
-    RevisionPageDocument,
 } from '@gitbook/api';
 import { PlainObject } from './common';
 import { RuntimeCallback, RuntimeContext } from './context';
@@ -39,7 +37,6 @@ export function createContentSource<
     getPages: RuntimeCallback<
         [
             {
-                page: RevisionPageComputed;
                 props: Props;
             },
         ],
@@ -53,7 +50,6 @@ export function createContentSource<
     getPageDocument: RuntimeCallback<
         [
             {
-                page: RevisionPageDocument;
                 props: Props;
             },
         ],
@@ -69,7 +65,6 @@ export function createContentSource<
                     ? {
                           pages: await source.getPages(
                               {
-                                  page: event.page,
                                   props: event.props as Props,
                               },
                               context,
@@ -78,7 +73,6 @@ export function createContentSource<
                     : {
                           document: await source.getPageDocument(
                               {
-                                  page: event.page,
                                   props: event.props as Props,
                               },
                               context,
