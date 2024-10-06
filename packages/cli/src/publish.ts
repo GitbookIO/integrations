@@ -40,6 +40,7 @@ export async function publishIntegration(
         categories: manifest.categories,
         blocks: manifest.blocks,
         configurations: manifest.configurations,
+        contentSources: manifest.contentSources,
         secrets: manifest.secrets,
         visibility: manifest.visibility,
         target: manifest.target,

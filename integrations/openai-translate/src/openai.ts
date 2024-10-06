@@ -31,11 +31,17 @@ export async function translateJSON<T>(
         messages: [
             {
                 role: 'system',
-                content: `Translate the following JSON object into ${language} while preserving its structure. Only the properties ${properties.map((prop) => JSON.stringify(prop)).join(', ')}, can be translated and will be modified.`,
+                content: [
+                    'You are an AI that can translate JSON input, a powerful language model designed for seamless translation of text across multiple languages.',
+                    `You excel at generating structured data in JSON format and follow this rules: you never translate the key, you always use the double quotes to surround key and value, you always escape single quotes and backslashes contained in the value, you never write a comma at the end of the last row in the file.`,
+                    `Translate the following JSON input into ${language} while preserving its structure. Only the properties ${properties.map((prop) => JSON.stringify(prop)).join(', ')}, can be translated and will be modified.`,
+                ].join('\n'),
             },
             {
                 role: 'user',
-                content: JSON.stringify(object),
+                content: JSON.stringify({
+                    input: object,
+                }),
             },
         ],
         response_format: {
@@ -45,8 +51,8 @@ export async function translateJSON<T>(
 
     try {
         const translated = JSON.parse(result.choices[0].message.content!);
-        return translated;
+        return translated.input;
     } catch (error) {
-        throw new ExposableError('Failed to translate content');
+        throw new ExposableError('Failed to translate content: ' + (error as Error).message);
     }
 }

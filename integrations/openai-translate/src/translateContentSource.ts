@@ -37,6 +37,7 @@ export const translateContentSource = createContentSource<
         const { data: revision } = await ctx.api.spaces.getCurrentRevision(input.props.space);
         const inputs = getInputsFromRevision(ctx, input.props, revision);
 
+        // TODO: optimize to annotate JSON after translation
         const translated = await translateJSON(ctx, input.props.language, inputs, [
             'title',
             'description',
@@ -57,7 +58,8 @@ export const translateContentSource = createContentSource<
 function getInputsFromRevision(
     ctx: OpenAITranslateRuntimeContext,
     inputProps: TranslateProps,
-    revision: Revision) {
+    revision: Revision
+) {
     return getInputsFromPages(ctx, inputProps, revision.pages);
 }
 
@@ -68,7 +70,9 @@ function getInputsFromPages(
         RevisionPageGroup | RevisionPageLink | RevisionPageDocument | RevisionPageComputed
     >,
 ) {
-    return pages.map(page => getInputFromPage(ctx, inputProps, page));
+    return pages
+        .slice(0, 3) // TODO: remove this limit
+        .map(page => getInputFromPage(ctx, inputProps, page));
 }
 
 function getInputFromPage(
@@ -118,7 +122,7 @@ function getInputFromPage(
                 type: 'computed',
                 id: page.id,
                 title: page.title,
-                source: page.source,
+                computed: page.computed,
             };
     }
 }

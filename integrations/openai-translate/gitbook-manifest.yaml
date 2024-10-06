@@ -25,7 +25,7 @@ configurations:
         componentId: configure
 contentSources:
     - id: translate
-      title: Translate
-      description: Transate a source set of pages
+      title: Translate with AI
+      description: Generate automatic translation from a space using AI.
       configuration:
             componentId: configureSource
