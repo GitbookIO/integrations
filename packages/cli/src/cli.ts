@@ -10,11 +10,7 @@ import { GITBOOK_DEFAULT_ENDPOINT } from '@gitbook/api';
 import packageJSON from '../package.json';
 import { startIntegrationsDevServer } from './dev';
 import { promptNewIntegration } from './init';
-import {
-    DEFAULT_MANIFEST_FILE,
-    getDefaultManifestPath,
-    resolveIntegrationManifestPath,
-} from './manifest';
+import { DEFAULT_MANIFEST_FILE, resolveIntegrationManifestPath } from './manifest';
 import { publishIntegration, unpublishIntegration } from './publish';
 import { authenticate, whoami } from './remote';
 import { tailLogs } from './tail';
@@ -63,9 +59,11 @@ program
 program
     .command('dev')
     .description('run the integrations dev server')
-    .argument('[space]', 'ID of the development space', undefined)
-    .action(async (space?: string) => {
-        await startIntegrationsDevServer(space);
+    .option('-a, --all', 'Proxy all events from all installations')
+    .action(async (options) => {
+        await startIntegrationsDevServer({
+            all: options.all ?? false,
+        });
     });
 
 program
