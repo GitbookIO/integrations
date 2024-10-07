@@ -76,6 +76,8 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                 ev.waitUntil.bind(ev), // internally, waitUntil contains a check on 'this' to ensure this === FetchEvent so we bind it here before passing it down
             ) as Context;
 
+            logger.info(`[${event.eventId}] ${event.type}`);
+
             switch (event.type) {
                 case 'fetch': {
                     logger.info(`handling fetch ${event.request.method} ${event.request.url}`);

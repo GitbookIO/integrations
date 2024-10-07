@@ -1,6 +1,6 @@
 import chokidar from 'chokidar';
 import getPort from 'get-port';
-import { Miniflare } from 'miniflare';
+import { Log, LogLevel, Miniflare } from 'miniflare';
 import ora from 'ora';
 import * as path from 'path';
 
@@ -8,8 +8,6 @@ import { buildScriptFromManifest } from './build';
 import { getDefaultManifestPath, resolveFile, resolveIntegrationManifestPath } from './manifest';
 import { getAPIClient } from './remote';
 import { createDevTunnel } from './tunnel';
-
-const spinner = ora({ color: 'blue' });
 
 /**
  * Start the integrations dev server on a random available port.
@@ -21,44 +19,63 @@ export async function startIntegrationsDevServer(
     } = {},
 ) {
     const { all = false } = options;
+    const spinner = ora({ color: 'blue' });
 
-    spinner.start('Starting dev server...\n');
-    const port = await getPort();
     /**
      * Read the integration manifest and build the integration script so that
      * it can be served by the dev server.
      */
+    spinner.start('Building integration script...');
     const manifestSpecPath = await resolveIntegrationManifestPath(getDefaultManifestPath());
     const { path: scriptPath, manifest } = await buildScriptFromManifest(manifestSpecPath, {
         mode: 'development',
     });
+    spinner.succeed(`Integration built`);
+
+    spinner.start('Allocating local port...');
+    const port = await getPort();
+    spinner.succeed(`Local port ${port} allocated`);
 
     /**
      * Create a tunnel to allow the dev server to receive integration events
      * from the GitBook platform
      */
+    spinner.start('Creating HTTPS tunnel...');
     const tunnelUrl = await createDevTunnel(port);
+    spinner.succeed(`Tunnel created ${tunnelUrl}`);
 
     /**
      * Start the miniflare dev server. It will automatically reload the script
      * when it detects a change with watch mode
      */
-    const mf = new Miniflare({
+    spinner.start('Starting dev server...');
+    const mermaidOptions = {
         scriptPath,
         port,
-    });
+        verbose: true,
+        log: new Log(LogLevel.DEBUG, {
+            prefix: manifest.name,
+        }),
+    };
+    const mf = new Miniflare(mermaidOptions);
     await mf.ready;
+    spinner.succeed(`Dev server started`);
 
     /**
      * Add the tunnel to the integration for the dev space events in the GitBook platform
      */
+    spinner.start(`Enabling development mode for ${manifest.name}...`);
     const api = await getAPIClient(true);
     await api.integrations.setIntegrationDevelopmentMode(manifest.name, { tunnelUrl, all });
+    spinner.succeed(`Development mode enabled`);
 
-    spinner.succeed(`Dev server started on ${port} 🔥`);
+    spinner.succeed(`Dev server 🔥`);
     spinner.info(
         `Integration events${all ? ` originating from the organization ${manifest.organization}` : ''} will be dispatched to your locally running version of the integration.`,
     );
+    spinner.info(`Use the integration in the GitBook application and see the logs here.`);
+    spinner.info(`The integration will be updated when code changes.`);
+    spinner.info(`Press Ctrl/CMD+C to exit.`);
 
     /**
      * Additionally, watch the directory of the script file for changes. When a change is
@@ -70,13 +87,13 @@ export async function startIntegrationsDevServer(
         })
         .on('all', async () => {
             const p1 = performance.now();
-            console.log('🛠 Detected changes, rebuilding...');
+            spinner.start('🛠  Detected changes, rebuilding...');
             try {
                 await buildScriptFromManifest(manifestSpecPath, { mode: 'development' });
-                await mf.setOptions({ scriptPath });
-                console.log(`📦 Rebuilt in ${((performance.now() - p1) / 1000).toFixed(2)}s`);
+                await mf.setOptions(mermaidOptions);
+                spinner.succeed(`📦 Rebuilt in ${((performance.now() - p1) / 1000).toFixed(2)}s`);
             } catch (error) {
-                console.log(error);
+                spinner.fail((error as Error).message);
             }
         });
 
