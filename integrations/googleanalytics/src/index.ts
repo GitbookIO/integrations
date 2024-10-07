@@ -5,6 +5,7 @@ import {
     RuntimeEnvironment,
 } from '@gitbook/runtime';
 
+import { configBlock } from './components';
 import script from './script.raw.js';
 
 type GARuntimeContext = RuntimeContext<
@@ -35,4 +36,5 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 
 export default createIntegration<GARuntimeContext>({
     fetch_published_script: handleFetchEvent,
+    components: [configBlock],
 });
