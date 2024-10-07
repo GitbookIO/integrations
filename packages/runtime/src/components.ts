@@ -10,22 +10,23 @@ import { RuntimeCallback, RuntimeEnvironment, RuntimeContext } from './context';
 import { PlainObject } from './common';
 
 /**
- * Props for an installation configuration component. 
+ * Props for an installation configuration component.
  */
 export type InstallationConfigurationProps<Env extends RuntimeEnvironment> = {
     installation: {
         configuration: Env extends RuntimeEnvironment<infer Config, any> ? Config : never;
     };
-}
+};
 
 /**
- * Props for an installation configuration component. 
+ * Props for an installation configuration component.
  */
-export type SpaceInstallationConfigurationProps<Env extends RuntimeEnvironment> = InstallationConfigurationProps<Env> & {
-    spaceInstallation: {
-        configuration?: Env extends RuntimeEnvironment<any, infer Config> ? Config : never;
+export type SpaceInstallationConfigurationProps<Env extends RuntimeEnvironment> =
+    InstallationConfigurationProps<Env> & {
+        spaceInstallation: {
+            configuration?: Env extends RuntimeEnvironment<any, infer Config> ? Config : never;
+        };
     };
-}
 
 /**
  * Cache configuration for the output of a component.

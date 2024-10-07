@@ -18,7 +18,7 @@ export const configureSourceComponent = createComponent<
     initialState: (props, _, context) => {
         return {
             language: 'en',
-        }
+        };
     },
     render: async (element, context) => {
         const { api, environment } = context;
@@ -28,7 +28,12 @@ export const configureSourceComponent = createComponent<
             throw new Error('Installation not found');
         }
 
-        const { data: { items: spaces } } = await api.integrations.listIntegrationInstallationSpaces(integration.name, installation.id);
+        const {
+            data: { items: spaces },
+        } = await api.integrations.listIntegrationInstallationSpaces(
+            integration.name,
+            installation.id,
+        );
         return (
             <block>
                 <input
@@ -37,7 +42,7 @@ export const configureSourceComponent = createComponent<
                     element={
                         <select
                             state="space"
-                            options={spaces.map(space => ({
+                            options={spaces.map((space) => ({
                                 id: space.space,
                                 label: space.space,
                             }))}
@@ -64,21 +69,25 @@ export const configureSourceComponent = createComponent<
                         />
                     }
                 />
-                <button style="primary" label="Continue" onPress={{
-                    action: '@ui.submit',
-                    returnValue: {
-                        props: {
-                            space: element.dynamicState('space'),
-                            language: element.dynamicState('language'),
-                        },
-                        dependsOn: [
-                            {
-                                kind: 'space',
+                <button
+                    style="primary"
+                    label="Continue"
+                    onPress={{
+                        action: '@ui.submit',
+                        returnValue: {
+                            props: {
                                 space: element.dynamicState('space'),
-                            }
-                        ]
-                    }
-                }} />
+                                language: element.dynamicState('language'),
+                            },
+                            dependsOn: [
+                                {
+                                    kind: 'space',
+                                    space: element.dynamicState('space'),
+                                },
+                            ],
+                        },
+                    }}
+                />
             </block>
         );
     },

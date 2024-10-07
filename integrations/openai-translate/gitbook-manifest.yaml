@@ -28,4 +28,4 @@ contentSources:
       title: Translate with AI
       description: Generate automatic translation from a space using AI.
       configuration:
-            componentId: configureSource
+          componentId: configureSource

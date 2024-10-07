@@ -23,7 +23,7 @@ type TranslateProps = {
 type TranslateDocumentProps = TranslateProps & {
     /** ID of the origin document in the source space */
     document: string;
-}
+};
 
 /**
  * Content source that translates pages from an origin space into a given language.
@@ -49,7 +49,10 @@ export const translateContentSource = createContentSource<
             return;
         }
 
-        const { data: document } = await ctx.api.spaces.getDocumentById(input.props.space, input.props.document);
+        const { data: document } = await ctx.api.spaces.getDocumentById(
+            input.props.space,
+            input.props.document,
+        );
         const translated = await translateJSON(ctx, input.props.language, document, ['text']);
         return translated;
     },
@@ -58,7 +61,7 @@ export const translateContentSource = createContentSource<
 function getInputsFromRevision(
     ctx: OpenAITranslateRuntimeContext,
     inputProps: TranslateProps,
-    revision: Revision
+    revision: Revision,
 ) {
     return getInputsFromPages(ctx, inputProps, revision.pages);
 }
@@ -72,7 +75,7 @@ function getInputsFromPages(
 ) {
     return pages
         .slice(0, 3) // TODO: remove this limit
-        .map(page => getInputFromPage(ctx, inputProps, page));
+        .map((page) => getInputFromPage(ctx, inputProps, page));
 }
 
 function getInputFromPage(
@@ -94,11 +97,13 @@ function getInputFromPage(
                 computed: {
                     integration: ctx.environment.integration.name,
                     source: 'translate',
-                    props: page.documentId ? {
-                        ...inputProps,
-                        document: page.documentId,
-                    } : inputProps
-                }
+                    props: page.documentId
+                        ? {
+                              ...inputProps,
+                              document: page.documentId,
+                          }
+                        : inputProps,
+                },
             };
         case 'group':
             return {

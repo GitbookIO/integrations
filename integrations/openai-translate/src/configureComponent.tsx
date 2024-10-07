@@ -1,6 +1,10 @@
 import { createComponent, InstallationConfigurationProps } from '@gitbook/runtime';
 
-import { DEFAULT_MODEL, type OpenAITranslateRuntimeContext, type OpenAITranslateRuntimeEnvironment } from './types';
+import {
+    DEFAULT_MODEL,
+    type OpenAITranslateRuntimeContext,
+    type OpenAITranslateRuntimeEnvironment,
+} from './types';
 
 /**
  * ContentKit component to configure the integration.
@@ -21,7 +25,7 @@ export const configureComponent = createComponent<
             apiKey: props.installation.configuration.apiKey ?? '',
             model: props.installation.configuration.model ?? DEFAULT_MODEL,
             apiUrl: props.installation.configuration.apiUrl ?? '',
-        }
+        };
     },
     action: async (element, action, ctx) => {
         const { integration, installation } = ctx.environment;
@@ -35,8 +39,8 @@ export const configureComponent = createComponent<
                         model: element.state.model,
                         apiUrl: element.state.apiUrl,
                     },
-                }
-            )
+                },
+            );
         }
 
         return element;
@@ -47,16 +51,12 @@ export const configureComponent = createComponent<
                 <input
                     label="API Key"
                     hint="OpenAI API key"
-                    element={
-                        <textinput state="apiKey" />
-                    }
+                    element={<textinput state="apiKey" />}
                 />
                 <input
                     label="API URL"
                     hint="When using a custom provider or proxy, enter the URL of the OpenAI API."
-                    element={
-                        <textinput state="apiUrl" />
-                    }
+                    element={<textinput state="apiUrl" />}
                 />
                 <input
                     label="Model"
@@ -68,18 +68,22 @@ export const configureComponent = createComponent<
                                 {
                                     id: 'gpt-4',
                                     label: 'GPT-4',
-                                }, 
+                                },
                                 {
                                     id: 'gpt-4o',
                                     label: 'GPT-4o',
                                 },
                             ]}
-                            />
+                        />
                     }
                 />
-                <button style="primary" label="Save" onPress={{
-                    action: 'save'
-                }} />
+                <button
+                    style="primary"
+                    label="Save"
+                    onPress={{
+                        action: 'save',
+                    }}
+                />
             </block>
         );
     },
