@@ -1,5 +1,13 @@
 # @gitbook/runtime
 
+## 0.15.0
+
+### Minor Changes
+
+-   09ac8f9: Improve typing and utilies for OAuth
+-   09ac8f9: Export a `ExposableError` to show errors to the end users
+-   09ac8f9: Improve overall typing and utilities for ContentKit components
+
 ## 0.14.1
 
 ### Patch Changes
