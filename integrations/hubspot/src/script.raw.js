@@ -1,25 +1,25 @@
-function loadScScript() {
-    if (!u.getElementById(b)) {
+function loadScript() {
+    if (!document.getElementById(b)) {
         const trackingID = '<TO_REPLACE_SCRIPT_LOADER_ID>';
 
         const scriptLoaderURL = '//js.hs-scripts.com/' + trackingID + '.js';
-        s = u.getElementsByTagName('head')[0];
-        p = u.createElement('script');
-        p.src = scriptLoaderURL;
-        p.type = 'text/javascript';
-        p.id = b;
-        p.async = 1;
-        p.defer = 1;
-        s.appendChild(p);
-        o = h._hsp = h._hsp || [];
+        const headTag = document.getElementsByTagName('head')[0];
+        const scriptTag = document.createElement('script');
+        scriptTag.src = scriptLoaderURL;
+        scriptTag.type = 'text/javascript';
+        scriptTag.id = 'hs-script-loader';
+        scriptTag.async = 1;
+        scriptTag.defer = 1;
+        headTag.appendChild(scriptTag);
+        const o = (window._hsp = window._hsp || []);
         o.push(['setContentType', 'knowledge-article']);
     }
 }
 
-(function (h, u, b, s, p, o, t) {
+(function () {
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadScScript);
+        document.addEventListener('DOMContentLoaded', loadScript);
     } else {
-        loadScScript();
+        loadScript();
     }
-})(window, document, 'hs-script-loader');
+})();
