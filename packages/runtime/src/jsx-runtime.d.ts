@@ -20,6 +20,7 @@ import {
     ContentKitInput,
     ContentKitHint,
     ContentKitLink,
+    ContentKitConfiguration,
 } from '@gitbook/api';
 
 import { jsx, jsxDEV, jsxs, Fragment } from './contentkit-jsx';
@@ -45,6 +46,7 @@ declare global {
         }
 
         interface IntrinsicElements {
+            configuration: OmitType<ContentKitConfiguration>;
             block: OmitType<ContentKitBlock>;
             button: OmitType<ContentKitButton>;
             box: OmitType<ContentKitBox>;
