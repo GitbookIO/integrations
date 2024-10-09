@@ -13,6 +13,8 @@ import {
     ContentKitBlock,
     ContentKitImage,
     ContentKitSelect,
+    ContentKitStepper,
+    ContentKitStepperStep,
     ContentKitSwitch,
     ContentKitRadio,
     ContentKitCheckbox,
@@ -20,6 +22,7 @@ import {
     ContentKitInput,
     ContentKitHint,
     ContentKitLink,
+    ContentKitConfiguration,
 } from '@gitbook/api';
 
 import { jsx, jsxDEV, jsxs, Fragment } from './contentkit-jsx';
@@ -45,6 +48,7 @@ declare global {
         }
 
         interface IntrinsicElements {
+            configuration: OmitType<ContentKitConfiguration>;
             block: OmitType<ContentKitBlock>;
             button: OmitType<ContentKitButton>;
             box: OmitType<ContentKitBox>;
@@ -66,6 +70,8 @@ declare global {
             radio: OmitType<ContentKitRadio>;
             modal: OmitType<ContentKitModal>;
             checkbox: OmitType<ContentKitCheckbox>;
+            stepper: OmitType<ContentKitStepper>;
+            step: OmitType<ContentKitStepperStep>;
         }
     }
 }
