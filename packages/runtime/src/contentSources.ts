@@ -60,11 +60,11 @@ export function createContentSource<
             const output =
                 event.type === 'content_compute_revision'
                     ? await source.getRevision(
-                        {
-                            props: event.props as Props,
-                        },
-                        context,
-                    )
+                          {
+                              props: event.props as Props,
+                          },
+                          context,
+                      )
                     : {
                           document: await source.getPageDocument(
                               {

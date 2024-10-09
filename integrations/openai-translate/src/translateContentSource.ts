@@ -57,7 +57,7 @@ export const translateContentSource = createContentSource<
             input.props.document,
         );
         const translated = await translateJSON(ctx, input.props.language, document, ['text']);
-        return { document: translated};
+        return { document: translated };
     },
 });
 

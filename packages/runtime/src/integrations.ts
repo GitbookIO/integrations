@@ -195,7 +195,10 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                         return new Response('OK', { status: 200 });
                     }
 
-                    throw new ExposableError(`Integration does not handle "${event.type}" events`, 406);
+                    throw new ExposableError(
+                        `Integration does not handle "${event.type}" events`,
+                        406,
+                    );
                 }
             }
         } catch (err) {
