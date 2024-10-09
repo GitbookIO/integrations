@@ -35,15 +35,19 @@ export const translateContentSource = createContentSource<
     sourceId: 'translate',
     getRevision: async (input, ctx) => {
         const { data: revision } = await ctx.api.spaces.getCurrentRevision(input.props.space);
-        const inputs = getInputsFromRevision(ctx, input.props, revision);
+        const pages = getInputsFromRevision(ctx, input.props, revision);
 
-        // TODO: optimize to annotate JSON after translation
-        const pages = await translateJSON(ctx, input.props.language, inputs, [
-            'title',
-            'description',
-        ]);
+        const translated = await translateJSON(
+            ctx,
+            input.props.language,
+            {
+                pages,
+            },
+            ['title', 'description'],
+        );
+
         return {
-            pages,
+            pages: translated.pages,
             files: revision.files,
         };
     },
@@ -56,6 +60,7 @@ export const translateContentSource = createContentSource<
             input.props.space,
             input.props.document,
         );
+
         const translated = await translateJSON(ctx, input.props.language, document, ['text']);
         return { document: translated };
     },
@@ -76,9 +81,7 @@ function getInputsFromPages(
         RevisionPageGroup | RevisionPageLink | RevisionPageDocument | RevisionPageComputed
     >,
 ) {
-    return pages
-        .slice(0, 3) // TODO: remove this limit
-        .map((page) => getInputFromPage(ctx, inputProps, page));
+    return pages.map((page) => getInputFromPage(ctx, inputProps, page));
 }
 
 function getInputFromPage(
@@ -97,16 +100,16 @@ function getInputFromPage(
                 pages: getInputsFromPages(ctx, inputProps, page.pages) as Array<
                     InputPageDocument | InputPageLink | InputPageComputed
                 >,
-                computed: {
-                    integration: ctx.environment.integration.name,
-                    source: 'translate',
-                    props: page.documentId
-                        ? {
+                computed: page.documentId
+                    ? {
+                          integration: ctx.environment.integration.name,
+                          source: 'translate',
+                          props: {
                               ...inputProps,
                               document: page.documentId,
-                          }
-                        : inputProps,
-                },
+                          },
+                      }
+                    : undefined,
             };
         case 'group':
             return {

@@ -1,6 +1,7 @@
 import { OpenAI } from 'openai';
-import { OpenAITranslateRuntimeContext } from './types';
 import { ExposableError } from '@gitbook/runtime';
+import { OpenAITranslateRuntimeContext } from './types';
+import { deepExtract, deepMerge } from './utils';
 
 /**
  * Get the OpenAI client associated with the current runtime context.
@@ -19,12 +20,25 @@ export function getOpenAI(ctx: OpenAITranslateRuntimeContext): OpenAI {
 /**
  * Translate a JSON object using OpenAI, by indicating the properties that can be translated.
  */
-export async function translateJSON<T>(
+export async function translateJSON<T extends object>(
     ctx: OpenAITranslateRuntimeContext,
     language: string,
     object: T,
     properties: string[],
 ): Promise<T> {
+    // To optimize AI performances, we want to pass a minimal JSON structure to it.
+    const partial = deepExtract(object, (input) => {
+        return properties.reduce(
+            (acc, prop) => {
+                if (prop in input && typeof input[prop] === 'string') {
+                    acc[prop] = input[prop];
+                }
+                return acc;
+            },
+            {} as { [key: string]: string },
+        );
+    });
+
     const openai = getOpenAI(ctx);
     const result = await openai.chat.completions.create({
         model: ctx.environment.installation?.configuration.model ?? 'gpt-4o',
@@ -39,9 +53,7 @@ export async function translateJSON<T>(
             },
             {
                 role: 'user',
-                content: JSON.stringify({
-                    input: object,
-                }),
+                content: JSON.stringify(partial),
             },
         ],
         response_format: {
@@ -51,7 +63,7 @@ export async function translateJSON<T>(
 
     try {
         const translated = JSON.parse(result.choices[0].message.content!);
-        return translated.input;
+        return deepMerge(object, translated);
     } catch (error) {
         throw new ExposableError('Failed to translate content: ' + (error as Error).message);
     }

@@ -3,6 +3,7 @@
     "compilerOptions": {
         "strict": true,
         "lib": ["ESNext", "DOM"],
-        "downlevelIteration": true
+        "downlevelIteration": true,
+        "types": ["bun"]
     }
 }
