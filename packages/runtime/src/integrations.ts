@@ -167,7 +167,7 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                     return await component.render(event, context);
                 }
 
-                case 'content_compute_pages':
+                case 'content_compute_revision':
                 case 'content_compute_document': {
                     const contentSource = contentSources.find((c) => c.sourceId === event.sourceId);
 
@@ -195,10 +195,7 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                         return new Response('OK', { status: 200 });
                     }
 
-                    logger.info(`integration does not handle ${event.type} events`);
-                    return new Response(`Integration does not handle ${event.type} events`, {
-                        status: 200,
-                    });
+                    throw new ExposableError(`Integration does not handle "${event.type}" events`, 406);
                 }
             }
         } catch (err) {

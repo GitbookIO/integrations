@@ -33,16 +33,19 @@ export const translateContentSource = createContentSource<
     OpenAITranslateRuntimeContext
 >({
     sourceId: 'translate',
-    getPages: async (input, ctx) => {
+    getRevision: async (input, ctx) => {
         const { data: revision } = await ctx.api.spaces.getCurrentRevision(input.props.space);
         const inputs = getInputsFromRevision(ctx, input.props, revision);
 
         // TODO: optimize to annotate JSON after translation
-        const translated = await translateJSON(ctx, input.props.language, inputs, [
+        const pages = await translateJSON(ctx, input.props.language, inputs, [
             'title',
             'description',
         ]);
-        return translated;
+        return {
+            pages,
+            files: revision.files,
+        };
     },
     getPageDocument: async (input, ctx) => {
         if (!('document' in input.props)) {
@@ -54,7 +57,7 @@ export const translateContentSource = createContentSource<
             input.props.document,
         );
         const translated = await translateJSON(ctx, input.props.language, document, ['text']);
-        return translated;
+        return { document: translated};
     },
 });
 

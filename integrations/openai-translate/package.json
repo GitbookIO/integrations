@@ -7,7 +7,8 @@
         "check": "gitbook check",
         "publish-integrations": "gitbook publish .",
         "publish-integrations-staging": "gitbook publish .",
-        "logs": "gitbook tail"
+        "logs": "gitbook tail",
+        "dev": "gitbook dev"
     },
     "dependencies": {
         "@gitbook/api": "*",

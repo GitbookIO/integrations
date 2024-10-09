@@ -1,11 +1,8 @@
 import {
     ContentComputeDocumentEvent,
-    ContentComputePagesEvent,
+    ContentComputeRevisionEventResponse,
+    ContentComputeRevisionEvent,
     Document,
-    InputPageComputed,
-    InputPageDocument,
-    InputPageGroup,
-    InputPageLink,
 } from '@gitbook/api';
 import { PlainObject } from './common';
 import { RuntimeCallback, RuntimeContext } from './context';
@@ -13,7 +10,7 @@ import { RuntimeCallback, RuntimeContext } from './context';
 export interface ContentSourceDefinition<Context extends RuntimeContext = RuntimeContext> {
     sourceId: string;
     compute: RuntimeCallback<
-        [ContentComputePagesEvent | ContentComputeDocumentEvent],
+        [ContentComputeRevisionEvent | ContentComputeDocumentEvent],
         Promise<Response>,
         Context
     >;
@@ -34,13 +31,13 @@ export function createContentSource<
     /**
      * Callback to generate the pages.
      */
-    getPages: RuntimeCallback<
+    getRevision: RuntimeCallback<
         [
             {
                 props: Props;
             },
         ],
-        Promise<Array<InputPageDocument | InputPageGroup | InputPageLink | InputPageComputed>>,
+        Promise<ContentComputeRevisionEventResponse>,
         Context
     >;
 
@@ -61,15 +58,13 @@ export function createContentSource<
         sourceId: source.sourceId,
         compute: async (event, context) => {
             const output =
-                event.type === 'content_compute_pages'
-                    ? {
-                          pages: await source.getPages(
-                              {
-                                  props: event.props as Props,
-                              },
-                              context,
-                          ),
-                      }
+                event.type === 'content_compute_revision'
+                    ? await source.getRevision(
+                        {
+                            props: event.props as Props,
+                        },
+                        context,
+                    )
                     : {
                           document: await source.getPageDocument(
                               {
