@@ -1,5 +1,16 @@
 # @gitbook/runtime
 
+## 0.16.0
+
+### Minor Changes
+
+-   4842312: Add two new UI elements, configuration and stepper
+
+### Patch Changes
+
+-   Updated dependencies [0cd6eb4]
+    -   @gitbook/api@0.65.0
+
 ## 0.15.0
 
 ### Minor Changes
