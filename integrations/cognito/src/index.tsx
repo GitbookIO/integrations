@@ -1,7 +1,10 @@
 import { sign } from '@tsndr/cloudflare-worker-jwt';
 import { Router } from 'itty-router';
 
-import { IntegrationInstallationConfiguration } from '@gitbook/api';
+import {
+    FetchVisitorAuthenticationEvent,
+    IntegrationInstallationConfiguration,
+} from '@gitbook/api';
 import {
     createIntegration,
     FetchEventCallback,
@@ -82,7 +85,7 @@ const configBlock = createComponent<
                         configuration: {
                             ...configurationBody,
                         },
-                    },
+                    }
                 );
                 return element;
         }
@@ -181,7 +184,7 @@ async function getPublishedContentUrls(context: CognitoRuntimeContext) {
     const siteInstallation = assertInstallation(context.environment);
     const publishedContentData = await context.api.orgs.getSiteById(
         organizationId,
-        siteInstallation.site,
+        siteInstallation.site
     );
 
     return publishedContentData.data.urls;
@@ -216,7 +219,7 @@ const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (reque
                 try {
                     token = await sign(
                         { exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60) },
-                        privateKey,
+                        privateKey
                     );
                 } catch (e) {
                     return new Response('Error: Could not sign JWT token', {
@@ -247,7 +250,7 @@ const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (reque
                                 'Error: Could not fetch access token from Cognito',
                                 {
                                     status: 401,
-                                },
+                                }
                             );
                         });
 
@@ -255,7 +258,7 @@ const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (reque
                         let url;
                         if (request.query.state) {
                             url = new URL(
-                                `${publishedContentUrls?.published}${request.query.state}`,
+                                `${publishedContentUrls?.published}${request.query.state}`
                             );
                             url.searchParams.append('jwt_token', token);
                         } else {
@@ -269,7 +272,7 @@ const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (reque
                                 "Error: Either JWT token or space's published URL is missing",
                                 {
                                     status: 500,
-                                },
+                                }
                             );
                         }
                     } else {
@@ -277,13 +280,13 @@ const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (reque
                         logger.debug(
                             `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
                                 (resp && resp.error_description) || ''
-                            }`,
+                            }`
                         );
                         return new Response(
                             'Error: No Access Token found in response from Cognito',
                             {
                                 status: 401,
-                            },
+                            }
                         );
                     }
                 } else {
@@ -317,7 +320,10 @@ const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (reque
 export default createIntegration({
     fetch: handleFetchEvent,
     components: [configBlock],
-    fetch_visitor_authentication: async (event, context) => {
+    fetch_visitor_authentication: async (
+        event: FetchVisitorAuthenticationEvent,
+        context: CognitoRuntimeContext
+    ) => {
         const { environment } = context;
         const siteInstallation = assertInstallation(environment);
 

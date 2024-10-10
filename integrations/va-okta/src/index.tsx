@@ -9,31 +9,29 @@ import {
     RuntimeContext,
     RuntimeEnvironment,
     createComponent,
+    ExposableError,
 } from '@gitbook/runtime';
 
 const logger = Logger('okta.visitor-auth');
 
-type OktaRuntimeEnvironment = RuntimeEnvironment<{}, OktaSiteOrSpaceInstallationConfiguration>;
+type OktaRuntimeEnvironment = RuntimeEnvironment<{}, OktaSiteInstallationConfiguration>;
 
 type OktaRuntimeContext = RuntimeContext<OktaRuntimeEnvironment>;
 
-type OktaSiteOrSpaceInstallationConfiguration = {
+type OktaSiteInstallationConfiguration = {
     client_id?: string;
     okta_domain?: string;
     client_secret?: string;
 };
 
-type OktaState = OktaSiteOrSpaceInstallationConfiguration;
+type OktaState = OktaSiteInstallationConfiguration;
 
 type OktaProps = {
     installation: {
         configuration?: IntegrationInstallationConfiguration;
     };
-    spaceInstallation?: {
-        configuration?: OktaSiteOrSpaceInstallationConfiguration;
-    };
     siteInstallation?: {
-        configuration?: OktaSiteOrSpaceInstallationConfiguration;
+        configuration?: OktaSiteInstallationConfiguration;
     };
 };
 
@@ -42,56 +40,41 @@ export type OktaAction = { action: 'save.config' };
 const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntimeContext>({
     componentId: 'config',
     initialState: (props) => {
-        const siteOrSpaceInstallation = props.siteInstallation ?? props.spaceInstallation;
+        const siteInstallation = props.siteInstallation;
         return {
-            client_id: siteOrSpaceInstallation?.configuration?.client_id?.toString() || '',
-            okta_domain: siteOrSpaceInstallation?.configuration?.okta_domain?.toString() || '',
-            client_secret: siteOrSpaceInstallation?.configuration?.client_secret?.toString() || '',
+            client_id: siteInstallation?.configuration?.client_id?.toString() || '',
+            okta_domain: siteInstallation?.configuration?.okta_domain?.toString() || '',
+            client_secret: siteInstallation?.configuration?.client_secret?.toString() || '',
         };
     },
     action: async (element, action, context) => {
         switch (action.action) {
             case 'save.config':
                 const { api, environment } = context;
-                const siteOrSpaceInstallation =
-                    environment.siteInstallation ?? environment.spaceInstallation;
+                const siteInstallation = assertSiteInstallation(environment);
 
                 const configurationBody = {
-                    ...siteOrSpaceInstallation.configuration,
+                    ...siteInstallation.configuration,
                     client_id: element.state.client_id,
                     client_secret: element.state.client_secret,
                     okta_domain: element.state.okta_domain,
                 };
-                if ('site' in siteOrSpaceInstallation) {
-                    await api.integrations.updateIntegrationSiteInstallation(
-                        siteOrSpaceInstallation.integration,
-                        siteOrSpaceInstallation.installation,
-                        siteOrSpaceInstallation.site,
-                        {
-                            configuration: {
-                                ...configurationBody,
-                            },
+                await api.integrations.updateIntegrationSiteInstallation(
+                    siteInstallation.integration,
+                    siteInstallation.installation,
+                    siteInstallation.site,
+                    {
+                        configuration: {
+                            ...configurationBody,
                         },
-                    );
-                } else {
-                    await api.integrations.updateIntegrationSpaceInstallation(
-                        siteOrSpaceInstallation.integration,
-                        siteOrSpaceInstallation.installation,
-                        siteOrSpaceInstallation.space,
-                        {
-                            configuration: {
-                                ...configurationBody,
-                            },
-                        },
-                    );
-                }
+                    }
+                );
                 return element;
         }
     },
     render: async (element, context) => {
-        const siteOrSpaceInstallation =
-            context.environment.siteInstallation ?? context.environment.spaceInstallation;
-        const VACallbackURL = `${siteOrSpaceInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
+        const siteInstallation = context.environment.siteInstallation;
+        const VACallbackURL = `${siteInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
         return (
             <block>
                 <input
@@ -178,40 +161,43 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
  * Get the published content (site or space) related urls.
  */
 async function getPublishedContentUrls(context: OktaRuntimeContext) {
-    const organizationId = context.environment.installation?.target?.organization;
-    const siteOrSpaceInstallation =
-        context.environment.siteInstallation ?? context.environment.spaceInstallation;
-    const publishedContentData =
-        'site' in siteOrSpaceInstallation
-            ? await context.api.orgs.getSiteById(organizationId, siteOrSpaceInstallation.site)
-            : await context.api.spaces.getSpaceById(siteOrSpaceInstallation.space);
+    const organizationId = context.environment.installation?.target?.organization!;
+    const siteInstallation = assertSiteInstallation(context.environment);
+    const publishedContentData = await context.api.orgs.getSiteById(
+        organizationId,
+        siteInstallation.site
+    );
 
     return publishedContentData.data.urls;
 }
 
+function assertSiteInstallation(environment: OktaRuntimeEnvironment) {
+    const siteInstallation = environment.siteInstallation;
+    if (!siteInstallation) {
+        throw new Error('No site installation found');
+    }
+
+    return siteInstallation;
+}
+
 const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request, context) => {
     const { environment } = context;
-    const siteOrSpaceInstallation = environment.siteInstallation ?? environment.spaceInstallation;
-    const installationURL = siteOrSpaceInstallation?.urls?.publicEndpoint;
+    const siteInstallation = assertSiteInstallation(environment);
+    const installationURL = siteInstallation.urls?.publicEndpoint;
     if (installationURL) {
         const router = Router({
             base: new URL(installationURL).pathname,
         });
 
         router.get('/visitor-auth/response', async (request) => {
-            if (
-                ('site' in siteOrSpaceInstallation && siteOrSpaceInstallation.site) ||
-                ('space' in siteOrSpaceInstallation && siteOrSpaceInstallation.space)
-            ) {
+            if ('site' in siteInstallation && siteInstallation.site) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
-                const privateKey =
-                    context.environment.signingSecrets.siteInstallation ??
-                    context.environment.signingSecrets.spaceInstallation;
+                const privateKey = context.environment.signingSecrets.siteInstallation!;
                 let token;
                 try {
                     token = await sign(
                         { exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60) },
-                        privateKey,
+                        privateKey
                     );
                 } catch (e) {
                     return new Response('Error: Could not sign JWT token', {
@@ -219,9 +205,9 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                     });
                 }
 
-                const oktaDomain = siteOrSpaceInstallation?.configuration.okta_domain;
-                const clientId = siteOrSpaceInstallation?.configuration.client_id;
-                const clientSecret = siteOrSpaceInstallation?.configuration.client_secret;
+                const oktaDomain = siteInstallation.configuration.okta_domain;
+                const clientId = siteInstallation.configuration.client_id;
+                const clientSecret = siteInstallation.configuration.client_secret;
 
                 if (clientId && clientSecret) {
                     const searchParams = new URLSearchParams({
@@ -246,13 +232,13 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                         });
                     if ('access_token' in resp) {
                         let url;
-                        const state = request.query.state.toString();
+                        const state = request.query.state!.toString();
                         const location = state.substring(state.indexOf('-') + 1);
                         if (location) {
                             url = new URL(`${publishedContentUrls?.published}${location}`);
                             url.searchParams.append('jwt_token', token);
                         } else {
-                            url = new URL(publishedContentUrls?.published);
+                            url = new URL(publishedContentUrls?.published!);
                             url.searchParams.append('jwt_token', token);
                         }
                         if (token && publishedContentUrls?.published) {
@@ -262,7 +248,7 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                                 "Error: Either JWT token or space's published URL is missing",
                                 {
                                     status: 500,
-                                },
+                                }
                             );
                         }
                     } else {
@@ -270,7 +256,7 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                         logger.debug(
                             `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
                                 (resp && resp.error_description) || ''
-                            }`,
+                            }`
                         );
                         return new Response('Error: No Access Token found in response from Okta', {
                             status: 401,
@@ -309,12 +295,18 @@ export default createIntegration({
     components: [configBlock],
     fetch_visitor_authentication: async (event, context) => {
         const { environment } = context;
-        const siteOrSpaceInstallation =
-            environment.siteInstallation ?? environment.spaceInstallation;
-        const installationURL = siteOrSpaceInstallation?.urls?.publicEndpoint;
-        const oktaDomain = siteOrSpaceInstallation?.configuration.okta_domain;
-        const clientId = siteOrSpaceInstallation?.configuration.client_id;
+        const siteInstallation = assertSiteInstallation(environment);
+
+        const installationURL = siteInstallation.urls.publicEndpoint;
+        const configuration = siteInstallation.configuration;
+
+        const oktaDomain = configuration.okta_domain;
+        const clientId = configuration.client_id;
         const location = event.location ? event.location : '';
+
+        if (!clientId || !oktaDomain) {
+            throw new ExposableError('OIDC configuration is missing');
+        }
 
         const url = new URL(`https://${oktaDomain}/oauth2/v1/authorize`);
         url.searchParams.append('client_id', clientId);
@@ -324,12 +316,6 @@ export default createIntegration({
         url.searchParams.append('scope', 'openid');
         url.searchParams.append('state', `state-${location}`);
 
-        try {
-            return Response.redirect(url.toString());
-        } catch (e) {
-            return new Response(e.message, {
-                status: e.status || 500,
-            });
-        }
+        return Response.redirect(url.toString());
     },
 });
