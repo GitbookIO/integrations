@@ -122,7 +122,7 @@ export const getGithubContent = async (url: string, context: GithubRuntimeContex
         ?.configuration as GithubInstallationConfiguration;
     const accessToken = configuration.oauth_credentials?.access_token;
     if (!accessToken) {
-        throw new ExposableError('Integration is not authenticated');
+        throw new ExposableError('Integration is not authenticated with GitHub');
     }
 
     content = await fetchGithubFile(
