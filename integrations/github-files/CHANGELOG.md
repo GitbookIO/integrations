@@ -1,5 +1,15 @@
 # @gitbook/integration-github
 
+## 0.1.5
+
+### Patch Changes
+
+-   144bcc3: Fix errors and improve some messages
+-   Updated dependencies [0cd6eb4]
+-   Updated dependencies [4842312]
+    -   @gitbook/api@0.65.0
+    -   @gitbook/runtime@0.16.0
+
 ## 0.1.4
 
 ### Patch Changes
