@@ -17,7 +17,7 @@ export default createIntegration<SegmentRuntimeContext>({
             const writeKey = environment.siteInstallation?.configuration.write_key;
             if (!writeKey) {
                 throw new Error(
-                    `The Segment write key is missing from the Site (ID: ${event.siteId}) installation.`
+                    `The Segment write key is missing from the Site (ID: ${event.siteId}) installation.`,
                 );
             }
 
