@@ -67,8 +67,8 @@ export function createComponent<
      * Initial state of the component.
      */
     initialState?:
-    | State
-    | ((props: Props, renderContext: ContentKitContext, context: Context) => State);
+        | State
+        | ((props: Props, renderContext: ContentKitContext, context: Context) => State);
 
     /**
      * Callback to handle a dispatched action.
@@ -122,9 +122,9 @@ export function createComponent<
                         'Content-Type': 'application/json',
                         ...(cache
                             ? {
-                                // @ts-ignore - I'm not sure how to fix this one with TS
-                                'Cache-Control': `max-age=${cache.maxAge}`,
-                            }
+                                  // @ts-ignore - I'm not sure how to fix this one with TS
+                                  'Cache-Control': `max-age=${cache.maxAge}`,
+                              }
                             : {}),
                     },
                 });
