@@ -1,5 +1,25 @@
-import { it, expect } from 'bun:test';
+import { describe, it, expect } from 'bun:test';
 import { deepExtract, deepMerge } from './utils';
+
+describe('deepMerge', () => {
+    it('should replace values', () => {
+        expect(deepMerge({ a: 1 }, { a: 2 })).toEqual({ a: 2 });
+    });
+
+    it('should preserve other values', () => {
+        expect(deepMerge({ a: 1, c: 3 }, { a: 2 })).toEqual({ a: 2, c: 3 });
+    });
+
+    it('should recurse over objects', () => {
+        expect(deepMerge({ a: { b: 1, c: 3 } }, { a: { b: 2 } })).toEqual({ a: { b: 2, c: 3 } });
+    });
+
+    it('should recurse over array', () => {
+        expect(
+            deepMerge({ a: [{ b: 1 }, { b: 2 }, { b: 3 }] }, { a: [{ b: 4 }, { b: 5 }, { b: 6 }] }),
+        ).toEqual({ a: [{ b: 4 }, { b: 5 }, { b: 6 }] });
+    });
+});
 
 it('should merge back as expected', () => {
     const inputs = {
@@ -55,7 +75,13 @@ it('should merge back as expected', () => {
         ],
     });
 
+    // Test with an a non-modified extracted object
     const merged = deepMerge(inputs, extracted);
-
     expect(merged).toEqual(inputs);
+
+    // Modify the extracted object
+    extracted.pages[0].title = 'new title';
+    const merged2 = deepMerge(inputs, extracted);
+    expect(merged2).not.toEqual(inputs);
+    expect(merged2.pages[0].title).toEqual('new title');
 });

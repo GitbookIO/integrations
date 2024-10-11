@@ -7,7 +7,7 @@ import { PlainObject } from '@gitbook/api';
 export function deepExtract<T extends PlainObject>(
     input: T,
     extract: (input: PlainObject) => PlainObject,
-): T {
+): any {
     const keys = Object.keys(input as object);
     const output = extract(input);
 
@@ -47,14 +47,18 @@ export function deepExtract<T extends PlainObject>(
  * Annotate the JSON structure with the annotations splitted from `deepExtract`.
  */
 export function deepMerge<T extends PlainObject>(input: T, extracted: object): T {
-    const keys = Object.keys(extracted);
+    const keys = Object.keys(input as object);
     // @ts-ignore
     const result = { ...input };
 
     const mergeValues = (value: any, extractedValue: any): any => {
         if (Array.isArray(value)) {
             return value.map((item, index) => {
-                return mergeValues(item, extractedValue[index]);
+                const other = extractedValue?.[index];
+                if (other === undefined || other === null) {
+                    return item;
+                }
+                return mergeValues(item, other);
             });
         }
         if (typeof value === 'object') {
@@ -66,6 +70,11 @@ export function deepMerge<T extends PlainObject>(input: T, extracted: object): T
     for (const key of keys) {
         // @ts-ignore
         const extractedValue = extracted[key];
+
+        if (extractedValue === undefined || extractedValue === null) {
+            continue;
+        }
+
         result[key] = mergeValues(result[key], extractedValue);
     }
 
