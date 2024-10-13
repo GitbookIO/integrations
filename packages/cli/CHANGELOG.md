@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.18.1
+
+### Patch Changes
+
+-   f95262e: Fix missing dependencies when running the CLI
+
 ## 0.18.0
 
 ### Minor Changes
