@@ -105,7 +105,7 @@ export const configBlock = createComponent<
                             ...installation.configuration,
                             default_channel: element.state.defaultChannel,
                         },
-                    }
+                    },
                 );
 
                 await api.integrations.updateIntegrationSpaceInstallation(
@@ -119,7 +119,7 @@ export const configBlock = createComponent<
                             notify_content_update: element.state.notifyContentUpdate,
                             notify_visibility_update: element.state.notifyVisibilityUpdate,
                         },
-                    }
+                    },
                 );
 
                 return element;

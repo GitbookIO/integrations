@@ -34,7 +34,7 @@ export const configBlock = createComponent<
             accessToken: props.spaceInstallation.configuration?.accessToken,
             withCustomInstanceUrl: Boolean(
                 props.spaceInstallation.configuration?.customInstanceUrl &&
-                    props.spaceInstallation.configuration?.customInstanceUrl.length > 0
+                    props.spaceInstallation.configuration?.customInstanceUrl.length > 0,
             ),
             customInstanceUrl: props.spaceInstallation.configuration?.customInstanceUrl,
             project: props.spaceInstallation.configuration?.project?.toString(),
@@ -44,7 +44,7 @@ export const configBlock = createComponent<
                 props.spaceInstallation.configuration?.commitMessageTemplate &&
                     props.spaceInstallation.configuration?.commitMessageTemplate.length > 0 &&
                     props.spaceInstallation.configuration?.commitMessageTemplate !==
-                        GITSYNC_DEFAULT_COMMIT_MESSAGE
+                        GITSYNC_DEFAULT_COMMIT_MESSAGE,
             ),
             commitMessageTemplate:
                 props.spaceInstallation.configuration?.commitMessageTemplate ||
@@ -79,7 +79,7 @@ export const configBlock = createComponent<
                             ...config,
                             userId: glUser.id,
                         },
-                    }
+                    },
                 );
                 return element;
             }
@@ -141,7 +141,7 @@ export const configBlock = createComponent<
                             {
                                 change_request_number: 123,
                                 change_request_subject: 'Fix documentation for /user/me',
-                            }
+                            },
                         ),
                     },
                 };

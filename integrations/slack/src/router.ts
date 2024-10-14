@@ -27,7 +27,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         base: new URL(
             environment.spaceInstallation?.urls?.publicEndpoint ||
                 environment.installation?.urls.publicEndpoint ||
-                environment.integration.urls.publicEndpoint
+                environment.integration.urls.publicEndpoint,
         ).pathname,
     });
 
@@ -43,7 +43,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             'commands',
             'channels:history',
             'im:history',
-        ].join(' ')
+        ].join(' '),
     );
 
     /*
@@ -61,7 +61,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
                 extractCredentials: (response) => {
                     if (!response.ok) {
                         throw new Error(
-                            `Failed to exchange code for access token ${JSON.stringify(response)}`
+                            `Failed to exchange code for access token ${JSON.stringify(response)}`,
                         );
                     }
 
@@ -73,8 +73,8 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
                     };
                 },
             },
-            { replace: false }
-        )
+            { replace: false },
+        ),
     );
 
     /*
@@ -92,7 +92,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             app_mention: appMentionEventHandler,
             link_shared: unfurlLink,
         }),
-        acknowledgeSlackRequest
+        acknowledgeSlackRequest,
     );
 
     /* Handle shortcuts and interactivity via Slack UI blocks
@@ -104,7 +104,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         createSlackActionsHandler({
             queryLens,
         }),
-        acknowledgeSlackRequest
+        acknowledgeSlackRequest,
     );
 
     /* Handle slash commands
@@ -117,7 +117,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             '/gitbook': queryLensSlashHandler,
             '/gitbookstaging': queryLensSlashHandler, // needed to allow our staging app to co-exist with the prod app
         }),
-        acknowledgeSlackRequest
+        acknowledgeSlackRequest,
     );
 
     /*

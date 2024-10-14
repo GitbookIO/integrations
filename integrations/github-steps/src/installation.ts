@@ -15,7 +15,7 @@ const logger = Logger('github:installation');
  */
 export async function saveSpaceConfiguration(
     context: GithubRuntimeContext,
-    state: GithubConfigureState
+    state: GithubConfigureState,
 ) {
     const { api, environment } = context;
     const spaceInstallation = environment.spaceInstallation;
@@ -25,7 +25,7 @@ export async function saveSpaceConfiguration(
     if (!state.installation || !state.repository || !state.branch) {
         throw new StatusError(
             400,
-            'Incomplete configuration: missing installation, repository or branch'
+            'Incomplete configuration: missing installation, repository or branch',
         );
     }
 
@@ -61,7 +61,7 @@ export async function saveSpaceConfiguration(
     };
 
     logger.debug(
-        `Saving config for space ${spaceInstallation.space} of integration-installation ${spaceInstallation.installation}`
+        `Saving config for space ${spaceInstallation.space} of integration-installation ${spaceInstallation.installation}`,
     );
 
     const githubRepo = await fetchRepository(context, repoID);
@@ -79,7 +79,7 @@ export async function saveSpaceConfiguration(
                     accountName: githubRepo.owner.login,
                     repoName: githubRepo.name,
                 },
-            }
+            },
         );
 
     logger.info(`Saved config for space ${spaceInstallation.space}`);
@@ -109,13 +109,13 @@ export async function querySpaceInstallations(
     options: {
         page?: string;
         limit?: number;
-    } = {}
+    } = {},
 ): Promise<{ data: Array<IntegrationSpaceInstallation>; nextPage?: string; total?: number }> {
     const { api, environment } = context;
     const { page, limit = 100 } = options;
 
     logger.debug(
-        `Querying space installations for external ID ${externalId} (${JSON.stringify(options)})`
+        `Querying space installations for external ID ${externalId} (${JSON.stringify(options)})`,
     );
 
     const { data } = await api.integrations.listIntegrationSpaceInstallations(
@@ -124,7 +124,7 @@ export async function querySpaceInstallations(
             limit,
             externalId,
             page,
-        }
+        },
     );
 
     return {

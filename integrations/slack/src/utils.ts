@@ -141,7 +141,7 @@ export type OAuthTokenCredentials = NonNullable<FullInstallationConfiguration['o
  * This will throw an error if the access token is not defined.
  */
 export function extractTokenCredentialsOrThrow(
-    context: SlackRuntimeContext
+    context: SlackRuntimeContext,
 ): OAuthTokenCredentials {
     const installation = context.environment.installation;
     assertIsDefined(installation, {
@@ -163,7 +163,7 @@ export function assertIsDefined<T>(
     value: T,
     options: {
         label: string;
-    }
+    },
 ): asserts value is NonNullable<T> {
     if (value === undefined || value === null) {
         throw new Error(`Expected value (${options.label}) to be defined, but received ${value}`);

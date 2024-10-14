@@ -19,7 +19,7 @@ export function getGitSyncCommitMessage(
     context: {
         change_request_number: number;
         change_request_subject: string;
-    }
+    },
 ): string {
     const usingCustomTemplate = !!templateInput;
     const template = usingCustomTemplate ? templateInput : GITSYNC_DEFAULT_COMMIT_MESSAGE;
@@ -51,7 +51,7 @@ export function getGitSyncStateDescription(state: GitSyncOperationState): string
  * This will throw an error if the space installation configuration is not defined.
  */
 export function getSpaceConfigOrThrow(
-    spaceInstallation: IntegrationSpaceInstallation
+    spaceInstallation: IntegrationSpaceInstallation,
 ): GitLabSpaceConfiguration {
     const config = spaceInstallation.configuration as GitLabSpaceConfiguration | undefined;
     assertIsDefined(config, { label: 'spaceInstallationConfiguration' });
@@ -91,7 +91,7 @@ export async function signResponse(message: string, secret: string): Promise<str
 export async function verifySignature(
     message: string,
     signature: string,
-    secret: string
+    secret: string,
 ): Promise<boolean> {
     const key = await importKey(secret);
     const sigBuf = hexToArray(signature);
@@ -100,7 +100,7 @@ export async function verifySignature(
 
 export function assertIsDefined<T>(
     value: T,
-    options: { label: string }
+    options: { label: string },
 ): asserts value is NonNullable<T> {
     if (value === undefined || value === null) {
         throw new Error(`Expected value (${options.label}) to be defined, but received ${value}`);
@@ -156,6 +156,6 @@ async function importKey(secret: string): Promise<CryptoKey> {
         new TextEncoder().encode(secret),
         { name: 'HMAC', hash: 'SHA-256' },
         false,
-        ['sign', 'verify']
+        ['sign', 'verify'],
     );
 }

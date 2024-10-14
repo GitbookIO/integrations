@@ -12,7 +12,7 @@ const logger = Logger('gitlab:tasks');
  */
 export async function queueTaskForImportSpaces(
     context: GitLabRuntimeContext,
-    task: IntegrationTaskImportSpaces
+    task: IntegrationTaskImportSpaces,
 ): Promise<void> {
     const { api, environment } = context;
     await api.integrations.queueIntegrationTask(environment.integration.name, {
@@ -28,7 +28,7 @@ export async function queueTaskForImportSpaces(
  */
 export async function handleIntegrationTask(
     context: GitLabRuntimeContext,
-    task: IntegrationTask
+    task: IntegrationTask,
 ): Promise<void> {
     switch (task.type) {
         case 'import:spaces':
@@ -48,7 +48,7 @@ export async function handleIntegrationTask(
  */
 export async function handleImportDispatchForSpaces(
     context: GitLabRuntimeContext,
-    payload: IntegrationTaskImportSpaces['payload']
+    payload: IntegrationTaskImportSpaces['payload'],
 ): Promise<number | undefined> {
     const { configQuery, page, standaloneRef, eventTimestamp } = payload;
 
@@ -70,7 +70,7 @@ export async function handleImportDispatchForSpaces(
                 const { data: installationAPIToken } =
                     await context.api.integrations.createIntegrationInstallationToken(
                         spaceInstallation.integration,
-                        spaceInstallation.installation
+                        spaceInstallation.installation,
                     );
 
                 // Set the token in the duplicated context to be used by the API client
@@ -100,10 +100,10 @@ export async function handleImportDispatchForSpaces(
                     `error while triggering ${
                         standaloneRef ? `standalone (${standaloneRef})` : ''
                     } import for space ${spaceInstallation.space}`,
-                    error
+                    error,
                 );
             }
-        })
+        }),
     );
 
     // Queue the next page if there is one
