@@ -1,5 +1,16 @@
 # @gitbook/runtime
 
+## 0.17.0
+
+### Minor Changes
+
+-   a1b07be: Add support for new render output types
+
+### Patch Changes
+
+-   Updated dependencies [597ba64]
+    -   @gitbook/api@0.67.0
+
 ## 0.16.0
 
 ### Minor Changes
