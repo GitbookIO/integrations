@@ -28,3 +28,4 @@ blocks:
       description: Embedded Analytics, powered by Toucan Toco
       urlUnfurl:
           - https://*.toucantoco.com/embed.html*
+target: space

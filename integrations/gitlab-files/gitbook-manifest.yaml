@@ -45,3 +45,4 @@ configurations:
 secrets:
     CLIENT_ID: ${{ env.GITLAB_CLIENT_ID }}
     CLIENT_SECRET: ${{ env.GITLAB_CLIENT_SECRET }}
+target: all

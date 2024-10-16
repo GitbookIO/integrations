@@ -43,3 +43,4 @@ configurations:
 secrets:
     CLIENT_ID: ${{ env.MAILCHIMP_CLIENT_ID }}
     CLIENT_SECRET: ${{ env.MAILCHIMP_CLIENT_SECRET }}
+target: all

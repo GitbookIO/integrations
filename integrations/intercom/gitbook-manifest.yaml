@@ -83,3 +83,4 @@ configurations:
                 description: You can find it in your Intercom account, under the "Installation" section of the "Settings" page.
         required:
             - app_id
+target: all

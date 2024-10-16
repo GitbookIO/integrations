@@ -60,3 +60,4 @@ configurations:
                 description: Look for this in your Google Analytics account.
         required:
             - tracking_id
+target: site

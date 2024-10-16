@@ -40,3 +40,4 @@ configurations:
                 description: Available in Hotjar's Organization & sites section
         required:
             - tracking_id
+target: all

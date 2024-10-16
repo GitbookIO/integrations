@@ -33,3 +33,4 @@ blocks:
 secrets:
     CLIENT_ID: ${{ env.LUCID_CLIENT_ID }}
     CLIENT_SECRET: ${{ env.LUCID_CLIENT_SECRET }}
+target: space

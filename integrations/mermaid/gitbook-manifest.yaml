@@ -29,3 +29,4 @@ blocks:
       markdown:
           codeblock: mermaid
           body: content
+target: space

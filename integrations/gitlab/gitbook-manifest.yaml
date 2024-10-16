@@ -41,3 +41,4 @@ scopes:
 configurations:
     space:
         componentId: configure
+target: space

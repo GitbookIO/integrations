@@ -177,3 +177,4 @@ previewImages:
     - ./assets/modal.png
     - ./assets/widget.png
     - ./assets/session.png
+target: all

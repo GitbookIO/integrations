@@ -49,3 +49,4 @@ configurations:
         required:
             - projectApiKey
             - instanceAddress
+target: all
