@@ -29,8 +29,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
     { environment }: IntercomRuntimeContext,
 ) => {
-    const config =
-        environment.siteInstallation?.configuration ?? environment.spaceInstallation?.configuration;
+    const config = environment.siteInstallation?.configuration;
     const assistantId = config?.assistant_id;
 
     if (!assistantId) {
