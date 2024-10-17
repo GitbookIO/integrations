@@ -85,72 +85,68 @@ const formspreeBlock = createComponent({
         console.log('Rendering Configuration: ', spaceInstallationConfigration);
         return (
             <block
-                controls={[
-                    {
-                        label: 'Toggle Email',
-                        onPress: {
-                            action: 'toggleEmail',
-                        },
-                    },
-                    {
-                        label: 'Toggle Name',
-                        onPress: {
-                            action: 'toggleName',
-                        },
-                    },
-                    {
-                        label: 'Toggle Messsage',
-                        onPress: {
-                            action: 'toggleMessage',
-                        },
-                    },
-                ]}
+            // controls={[
+            //     {
+            //         label: 'Toggle Email',
+            //         onPress: {
+            //             action: 'toggleEmail',
+            //         },
+            //     },
+            //     {
+            //         label: 'Toggle Name',
+            //         onPress: {
+            //             action: 'toggleName',
+            //         },
+            //     },
+            //     {
+            //         label: 'Toggle Messsage',
+            //         onPress: {
+            //             action: 'toggleMessage',
+            //         },
+            //     },
+            // ]}
             >
                 <hstack>
                     {/* Email */}
-                    {spaceInstallationConfigration?.emailVisible ? (
-                        <box grow={1}>
-                            <input
-                                label="Email"
-                                element={<textinput state="email" placeholder="Your email" />}
-                            />
-                        </box>
-                    ) : null}
+                    <box grow={1}>
+                        <input
+                            label="Email"
+                            element={<textinput state="email" placeholder="Your email" />}
+                        />
+                    </box>
 
                     {/* Name */}
-                    {spaceInstallationConfigration?.nameVisible ? (
-                        <box grow={1}>
-                            <input
-                                label="Name"
-                                element={<textinput state="name" placeholder="Your name" />}
-                            />
-                        </box>
-                    ) : null}
+                    <box grow={1}>
+                        <input
+                            label="Name"
+                            element={<textinput state="name" placeholder="Your name" />}
+                        />
+                    </box>
                 </hstack>
 
                 <vstack>
                     {/* Message */}
-                    {spaceInstallationConfigration?.messageVisible ? (
-                        <box grow={2}>
-                            <input
-                                label="Message"
-                                element={
-                                    <textinput
-                                        state="message"
-                                        placeholder="Your message"
-                                        multiline={true}
-                                    />
-                                }
-                            />
-                        </box>
-                    ) : null}
+                    <box grow={2}>
+                        <input
+                            label="Message"
+                            element={
+                                <textinput
+                                    state="message"
+                                    placeholder="Your message"
+                                    multiline={true}
+                                />
+                            }
+                        />
+                    </box>
                 </vstack>
 
-                <button
-                    label={element.state.formSubmitted ? 'Submitted' : 'Submit'}
-                    onPress={{ action: 'submit' }}
-                    disabled={element.state.formSubmitted}
-                />
+                <box grow={2}>
+                    <button
+                        label={element.state.formSubmitted ? 'Submitted' : 'Submit'}
+                        onPress={{ action: 'submit' }}
+                        disabled={element.state.formSubmitted}
+                    />
+                </box>
             </block>
         );
     },
