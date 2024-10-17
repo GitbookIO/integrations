@@ -1,5 +1,11 @@
 # @gitbook/integration-koala
 
+## 1.2.1
+
+### Patch Changes
+
+-   acdb30e: Update manifest files for integrations so they don't include unused scopes
+
 ## 1.2.0
 
 ### Minor Changes

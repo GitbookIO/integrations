@@ -1,5 +1,11 @@
 # @gitbook/integration-fathom
 
+## 0.3.1
+
+### Patch Changes
+
+-   acdb30e: Update manifest files for integrations so they don't include unused scopes
+
 ## 0.3.0
 
 ### Minor Changes
