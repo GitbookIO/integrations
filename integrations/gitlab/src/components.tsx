@@ -147,9 +147,10 @@ export const configBlock = createComponent<
                 };
             }
 
-            case 'save.configuration':
+            case 'save.configuration': {
                 await saveSpaceConfiguration(context, element.state);
-                return element;
+                return { type: 'complete' };
+            }
         }
     },
     render: async (element, context) => {
@@ -173,7 +174,7 @@ export const configBlock = createComponent<
         const versionHash = hash(element.props);
 
         return (
-            <block>
+            <configuration>
                 <card>
                     <vstack>
                         <box grow={1}>
@@ -470,7 +471,7 @@ export const configBlock = createComponent<
                         ) : null}
                     </>
                 ) : null}
-            </block>
+            </configuration>
         );
     },
 });

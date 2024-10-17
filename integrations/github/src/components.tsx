@@ -99,9 +99,10 @@ export const configBlock = createComponent<
                         ),
                     },
                 };
-            case 'save.config':
+            case 'save.config': {
                 await saveSpaceConfiguration(context, element.state);
-                return element;
+                return { type: 'complete' };
+            }
         }
     },
     render: async (element, context) => {
@@ -131,7 +132,7 @@ export const configBlock = createComponent<
         const versionHash = hash(element.props);
 
         return (
-            <block>
+            <configuration>
                 <input
                     label="Authenticate"
                     hint="Authenticate using your GitHub account"
@@ -531,7 +532,7 @@ export const configBlock = createComponent<
                         ) : null}
                     </box>
                 )}
-            </block>
+            </configuration>
         );
     },
 });
