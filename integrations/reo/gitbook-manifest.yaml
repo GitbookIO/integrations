@@ -40,4 +40,4 @@ configurations:
                 description: Available in Reo.dev's Integration -> Documentation section
         required:
             - tracking_id
-target: all
+target: site

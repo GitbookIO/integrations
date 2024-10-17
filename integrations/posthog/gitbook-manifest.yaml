@@ -48,4 +48,4 @@ configurations:
         required:
             - projectApiKey
             - instanceAddress
-target: all
+target: site

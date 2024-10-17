@@ -37,4 +37,4 @@ configurations:
                 description: Your HelpScout integration ID.
         required:
             - helpscout_id
-target: all
+target: site

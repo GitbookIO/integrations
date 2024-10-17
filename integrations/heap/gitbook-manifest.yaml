@@ -47,4 +47,4 @@ configurations:
                 description: Available in Heap's Web installation flow `heap.load("YOUR_ID_IS_HERE")`
         required:
             - tracking_id
-target: all
+target: site

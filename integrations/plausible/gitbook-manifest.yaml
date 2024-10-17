@@ -47,4 +47,4 @@ configurations:
                 description: When self-hosting, configure the url of the instance API (empty when using plausible.io).
         required:
             - domain
-target: all
+target: site

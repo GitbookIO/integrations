@@ -44,4 +44,4 @@ configurations:
                 description: Available in the URL from your Crisp dashboard
         required:
             - tracking_id
-target: all
+target: site
