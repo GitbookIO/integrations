@@ -1,5 +1,11 @@
 # @gitbook/integration-googleanalytics
 
+## 0.4.0
+
+### Minor Changes
+
+-   50ad8ec: Update scopes of the GA and Intercom integrations
+
 ## 0.3.0
 
 ### Minor Changes
