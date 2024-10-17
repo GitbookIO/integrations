@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.71.0
+
+### Minor Changes
+
+-   788cc8a: Bump GitBook API to most recent version.
+
 ## 0.70.0
 
 ### Minor Changes
