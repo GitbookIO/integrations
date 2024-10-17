@@ -48,3 +48,4 @@ configurations:
                 description: Enable tracking of clicks on external links
         required:
             - site_id
+target: site

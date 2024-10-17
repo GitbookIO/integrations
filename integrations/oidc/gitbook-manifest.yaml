@@ -31,3 +31,4 @@ configurations:
         componentId: config
     site:
         componentId: config
+target: all

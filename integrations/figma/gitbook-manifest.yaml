@@ -42,3 +42,4 @@ configurations:
 secrets:
     CLIENT_ID: ${{ env.FIGMA_CLIENT_ID }}
     CLIENT_SECRET: ${{ env.FIGMA_CLIENT_SECRET }}
+target: space

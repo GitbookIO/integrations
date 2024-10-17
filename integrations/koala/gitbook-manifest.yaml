@@ -37,3 +37,4 @@ configurations:
                 description: Available in Koala snippet https://cdn.getkoala.com/v1/<pk_xxxxxxxxxxxxxxxxxxx>/sdk.js
         required:
             - koala_key
+target: site

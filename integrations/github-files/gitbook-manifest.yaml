@@ -45,3 +45,4 @@ configurations:
 secrets:
     CLIENT_ID: ${{ env.UNFURL_GITHUB_CLIENT_ID }}
     CLIENT_SECRET: ${{ env.UNFURL_GITHUB_CLIENT_SECRET }}
+target: space

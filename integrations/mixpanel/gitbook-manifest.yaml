@@ -34,3 +34,4 @@ configurations:
                 description: Available in Mixpanel's Project Settings section
         required:
             - project_token
+target: site
