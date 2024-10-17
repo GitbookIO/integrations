@@ -24,7 +24,6 @@ categories:
     - analytics
 script: src/index.tsx
 scopes:
-    - space:script:inject
     - site:script:inject
 secrets: {}
 contentSecurityPolicy:
