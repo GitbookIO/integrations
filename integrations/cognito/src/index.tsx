@@ -1,7 +1,10 @@
 import { sign } from '@tsndr/cloudflare-worker-jwt';
 import { Router } from 'itty-router';
 
-import { IntegrationInstallationConfiguration } from '@gitbook/api';
+import {
+    FetchVisitorAuthenticationEvent,
+    IntegrationInstallationConfiguration,
+} from '@gitbook/api';
 import {
     createIntegration,
     FetchEventCallback,
@@ -317,7 +320,10 @@ const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (reque
 export default createIntegration({
     fetch: handleFetchEvent,
     components: [configBlock],
-    fetch_visitor_authentication: async (event, context) => {
+    fetch_visitor_authentication: async (
+        event: FetchVisitorAuthenticationEvent,
+        context: CognitoRuntimeContext,
+    ) => {
         const { environment } = context;
         const siteInstallation = assertInstallation(environment);
 
