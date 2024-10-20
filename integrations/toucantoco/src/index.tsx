@@ -73,7 +73,7 @@ const embedBlock = createComponent<{
                                     source={{
                                         url: environment.integration.urls.icon,
                                     }}
-                                    aspectRatio={aspectRatio}
+                                    aspectRatio={1}
                                 />
                             ) : undefined
                         }
@@ -88,7 +88,7 @@ const embedBlock = createComponent<{
                     source={{
                         url,
                     }}
-                    aspectRatio={1}
+                    aspectRatio={aspectRatio}
                 />
             </block>
         );
