@@ -1,5 +1,11 @@
 # @gitbook/integration-runllm-widget
 
+## 0.3.0
+
+### Minor Changes
+
+-   ee488d1: Bump integrations' target
+
 ## 0.2.0
 
 ### Minor Changes

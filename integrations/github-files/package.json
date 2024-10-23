@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-github-files",
-    "version": "0.1.5",
+    "version": "0.2.0",
     "private": true,
     "dependencies": {
         "dotenv": "^16.0.3",

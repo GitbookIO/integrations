@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-gitlab-files",
-    "version": "0.1.2",
+    "version": "0.2.0",
     "private": true,
     "dependencies": {
         "dotenv": "^16.1.1",

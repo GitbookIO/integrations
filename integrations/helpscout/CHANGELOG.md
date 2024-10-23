@@ -1,5 +1,11 @@
 # @gitbook/integration-helpscout
 
+## 1.4.0
+
+### Minor Changes
+
+-   ee488d1: Bump integrations' target
+
 ## 1.3.0
 
 ### Minor Changes

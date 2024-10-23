@@ -1,5 +1,11 @@
 # @gitbook/integration-segment
 
+## 2.1.0
+
+### Minor Changes
+
+-   ee488d1: Bump integrations' target
+
 ## 2.0.0
 
 ### Major Changes
