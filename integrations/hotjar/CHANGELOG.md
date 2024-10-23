@@ -1,5 +1,11 @@
 # @gitbook/integration-hotjar
 
+## 0.5.0
+
+### Minor Changes
+
+-   ee488d1: Bump integrations' target
+
 ## 0.4.0
 
 ### Minor Changes

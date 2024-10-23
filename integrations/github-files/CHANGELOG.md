@@ -1,5 +1,11 @@
 # @gitbook/integration-github
 
+## 0.2.0
+
+### Minor Changes
+
+-   ee488d1: Bump integrations' target
+
 ## 0.1.5
 
 ### Patch Changes

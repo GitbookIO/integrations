@@ -1,5 +1,11 @@
 # @gitbook/integration-reo.dev
 
+## 0.3.0
+
+### Minor Changes
+
+-   ee488d1: Bump integrations' target
+
 ## 0.2.1
 
 ### Patch Changes

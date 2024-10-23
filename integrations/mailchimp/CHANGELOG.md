@@ -1,5 +1,11 @@
 # @gitbook/integration-mailchimp
 
+## 1.1.0
+
+### Minor Changes
+
+-   ee488d1: Bump integrations' target
+
 ## 1.0.2
 
 ### Patch Changes
