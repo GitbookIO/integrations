@@ -1,5 +1,11 @@
 # @gitbook/integration-runllm-widget
 
+## 0.2.0
+
+### Minor Changes
+
+-   bce5dce: Bump version of integrations with inject script scope to work with latest API changes
+
 ## 0.1.2
 
 ### Patch Changes

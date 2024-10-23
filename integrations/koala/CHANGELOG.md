@@ -1,5 +1,11 @@
 # @gitbook/integration-koala
 
+## 1.3.0
+
+### Minor Changes
+
+-   bce5dce: Bump version of integrations with inject script scope to work with latest API changes
+
 ## 1.2.1
 
 ### Patch Changes
