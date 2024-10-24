@@ -10,6 +10,7 @@ import {
 } from './events';
 import { Logger } from './logger';
 import { ExposableError } from './errors';
+import { ContentSourceDefinition } from './contentSources';
 
 const logger = Logger('integrations');
 
@@ -39,6 +40,11 @@ interface IntegrationRuntimeDefinition<Context extends RuntimeContext = RuntimeC
      * Components to expose in the integration.
      */
     components?: Array<ComponentDefinition<Context>>;
+
+    /**
+     * Content sources to expose in the integration.
+     */
+    contentSources?: Array<ContentSourceDefinition<Context>>;
 }
 
 /**
@@ -47,7 +53,7 @@ interface IntegrationRuntimeDefinition<Context extends RuntimeContext = RuntimeC
 export function createIntegration<Context extends RuntimeContext = RuntimeContext>(
     definition: IntegrationRuntimeDefinition<Context>,
 ) {
-    const { events = {}, components = [] } = definition;
+    const { events = {}, components = [], contentSources = [] } = definition;
 
     /**
      * Handle a fetch event sent by the integration dispatcher.
@@ -161,6 +167,17 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                     return await component.render(event, context);
                 }
 
+                case 'content_compute_revision':
+                case 'content_compute_document': {
+                    const contentSource = contentSources.find((c) => c.sourceId === event.sourceId);
+
+                    if (!contentSource) {
+                        throw new ExposableError(`Content source ${event.sourceId} not found`, 404);
+                    }
+
+                    return await contentSource.compute(event, context);
+                }
+
                 default: {
                     const cb = events[event.type];
 
@@ -178,10 +195,10 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                         return new Response('OK', { status: 200 });
                     }
 
-                    logger.info(`integration does not handle ${event.type} events`);
-                    return new Response(`Integration does not handle ${event.type} events`, {
-                        status: 200,
-                    });
+                    throw new ExposableError(
+                        `Integration does not handle "${event.type}" events`,
+                        406,
+                    );
                 }
             }
         } catch (err) {
