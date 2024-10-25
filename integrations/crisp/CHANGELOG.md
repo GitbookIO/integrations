@@ -1,5 +1,23 @@
 # @gitbook/integration-crisp
 
+## 0.4.0
+
+### Minor Changes
+
+-   ee488d1: Bump integrations' target
+
+## 0.3.0
+
+### Minor Changes
+
+-   bce5dce: Bump version of integrations with inject script scope to work with latest API changes
+
+## 0.2.1
+
+### Patch Changes
+
+-   acdb30e: Update manifest files for integrations so they don't include unused scopes
+
 ## 0.2.0
 
 ### Minor Changes

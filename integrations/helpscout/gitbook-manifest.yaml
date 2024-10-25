@@ -24,7 +24,6 @@ previewImages:
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
-    - space:script:inject
     - site:script:inject
 secrets: {}
 contentSecurityPolicy:
@@ -38,3 +37,4 @@ configurations:
                 description: Your HelpScout integration ID.
         required:
             - helpscout_id
+target: site

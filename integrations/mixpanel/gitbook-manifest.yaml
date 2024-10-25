@@ -7,7 +7,6 @@ script: ./src/index.ts
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
-    - space:script:inject
     - site:script:inject
 organization: gitbook
 contentSecurityPolicy:
@@ -35,3 +34,4 @@ configurations:
                 description: Available in Mixpanel's Project Settings section
         required:
             - project_token
+target: site

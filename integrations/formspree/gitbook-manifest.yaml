@@ -46,3 +46,4 @@ configurations:
                 description: A message field for your form
                 default: false
 secrets: {}
+target: space

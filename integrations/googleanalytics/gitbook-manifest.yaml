@@ -13,8 +13,6 @@ script: ./src/index.ts
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
-    - space:script:inject
-    - space:script:cookies
     - site:script:inject
     - site:script:cookies
 contentSecurityPolicy:
@@ -60,3 +58,4 @@ configurations:
                 description: Look for this in your Google Analytics account.
         required:
             - tracking_id
+target: site

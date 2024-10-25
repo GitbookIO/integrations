@@ -1,7 +1,7 @@
 {
     "name": "@gitbook/integration-helpscout",
     "private": true,
-    "version": "1.2.0",
+    "version": "1.4.0",
     "scripts": {
         "typecheck": "tsc --noEmit",
         "publish": "gitbook publish ."

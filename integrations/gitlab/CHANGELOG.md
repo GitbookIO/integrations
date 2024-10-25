@@ -1,5 +1,17 @@
 # @gitbook/integration-gitlab
 
+## 0.4.0
+
+### Minor Changes
+
+-   ee488d1: Bump integrations' target
+
+## 0.3.0
+
+### Minor Changes
+
+-   0b70110: Update configuration of GitSync integrations
+
 ## 0.2.0
 
 ### Minor Changes

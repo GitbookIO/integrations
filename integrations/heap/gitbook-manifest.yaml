@@ -13,7 +13,6 @@ script: ./src/index.ts
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
-    - space:script:inject
     - site:script:inject
 organization: gitbook
 contentSecurityPolicy:
@@ -48,3 +47,4 @@ configurations:
                 description: Available in Heap's Web installation flow `heap.load("YOUR_ID_IS_HERE")`
         required:
             - tracking_id
+target: site

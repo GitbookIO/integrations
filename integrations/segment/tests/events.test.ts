@@ -5,9 +5,10 @@ import * as api from '@gitbook/api';
 import packageJson from '../package.json';
 import { generateSegmentTrackEvent } from '../src/events';
 
-const fakeSpaceViewEvent: api.SpaceViewEvent = {
+const fakeSpaceViewEvent: api.SiteViewEvent = {
     eventId: 'fake-event-id',
-    type: 'space_view',
+    type: 'site_view',
+    siteId: 'fake-site-id',
     spaceId: 'fake-space-id',
     pageId: 'fake-page-id',
     installationId: 'fake-installation-id',
@@ -43,6 +44,7 @@ describe('events', () => {
                 ip: '127.0.0.1',
             },
             properties: {
+                siteId: 'fake-site-id',
                 spaceId: 'fake-space-id',
                 pageId: 'fake-page-id',
             },

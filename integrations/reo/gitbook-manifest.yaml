@@ -12,7 +12,6 @@ script: ./src/index.ts
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
-    - space:script:inject
     - site:script:inject
 organization: gitbook
 contentSecurityPolicy:
@@ -41,3 +40,4 @@ configurations:
                 description: Available in Reo.dev's Integration -> Documentation section
         required:
             - tracking_id
+target: site

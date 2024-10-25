@@ -11,7 +11,7 @@ visibility: public
 organization: gitbook
 script: ./src/index.ts
 scopes:
-    - space:views:read
+    - site:views:read
 summary: |
     # Overview
 
@@ -33,6 +33,14 @@ summary: |
 categories:
     - analytics
 configurations:
+    site:
+        properties:
+            write_key:
+                type: string
+                title: Write Key
+                description: Key provided by Segment to identify the data source.
+        required:
+            - write_key
     space:
         properties:
             write_key:
@@ -41,3 +49,4 @@ configurations:
                 description: Key provided by Segment to identify the data source.
         required:
             - write_key
+target: site

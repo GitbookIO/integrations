@@ -1,5 +1,11 @@
 # @gitbook/integration-cognito
 
+## 0.1.0
+
+### Minor Changes
+
+-   ee488d1: Bump integrations' target
+
 ## 0.0.5
 
 ### Patch Changes

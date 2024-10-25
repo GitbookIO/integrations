@@ -24,7 +24,6 @@ categories:
     - analytics
 script: src/index.tsx
 scopes:
-    - space:script:inject
     - site:script:inject
 secrets: {}
 contentSecurityPolicy:
@@ -38,3 +37,4 @@ configurations:
                 description: Available in Koala snippet https://cdn.getkoala.com/v1/<pk_xxxxxxxxxxxxxxxxxxx>/sdk.js
         required:
             - koala_key
+target: site

@@ -1,5 +1,23 @@
 # @gitbook/integration-intercom
 
+## 0.5.0
+
+### Minor Changes
+
+-   ee488d1: Bump integrations' target
+
+## 0.4.0
+
+### Minor Changes
+
+-   bce5dce: Bump version of integrations with inject script scope to work with latest API changes
+
+## 0.3.0
+
+### Minor Changes
+
+-   50ad8ec: Update scopes of the GA and Intercom integrations
+
 ## 0.2.0
 
 ### Minor Changes

@@ -1,5 +1,22 @@
 # @gitbook/integration-segment
 
+## 2.1.0
+
+### Minor Changes
+
+-   ee488d1: Bump integrations' target
+
+## 2.0.0
+
+### Major Changes
+
+-   4c31923: Migrate Segment integration to site
+
+### Patch Changes
+
+-   Updated dependencies [3b3316a]
+    -   @gitbook/api@0.66.0
+
 ## 1.1.0
 
 ### Minor Changes
