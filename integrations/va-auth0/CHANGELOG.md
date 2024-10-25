@@ -1,5 +1,11 @@
 # @gitbook/integration-va-auth0
 
+## 0.1.1
+
+### Patch Changes
+
+-   e0efa2c: Remove space code from VA integrations
+
 ## 0.1.0
 
 ### Minor Changes
