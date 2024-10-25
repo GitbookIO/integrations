@@ -9,31 +9,29 @@ import {
     RuntimeContext,
     RuntimeEnvironment,
     createComponent,
+    ExposableError,
 } from '@gitbook/runtime';
 
 const logger = Logger('azure.visitor-auth');
 
-type AzureRuntimeEnvironment = RuntimeEnvironment<{}, AzureSiteOrSpaceInstallationConfiguration>;
+type AzureRuntimeEnvironment = RuntimeEnvironment<{}, AzureSiteInstallationConfiguration>;
 
 type AzureRuntimeContext = RuntimeContext<AzureRuntimeEnvironment>;
 
-type AzureSiteOrSpaceInstallationConfiguration = {
+type AzureSiteInstallationConfiguration = {
     client_id?: string;
     tenant_id?: string;
     client_secret?: string;
 };
 
-type AzureState = AzureSiteOrSpaceInstallationConfiguration;
+type AzureState = AzureSiteInstallationConfiguration;
 
 type AzureProps = {
     installation: {
         configuration?: IntegrationInstallationConfiguration;
     };
-    spaceInstallation?: {
-        configuration?: AzureSiteOrSpaceInstallationConfiguration;
-    };
     siteInstallation?: {
-        configuration?: AzureSiteOrSpaceInstallationConfiguration;
+        configuration?: AzureSiteInstallationConfiguration;
     };
 };
 
@@ -42,57 +40,42 @@ export type AzureAction = { action: 'save.config' };
 const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRuntimeContext>({
     componentId: 'config',
     initialState: (props) => {
-        const siteOrSpaceInstallation = props.siteInstallation ?? props.spaceInstallation;
+        const siteInstallation = props.siteInstallation;
         return {
-            client_id: siteOrSpaceInstallation?.configuration?.client_id?.toString() || '',
-            tenant_id: siteOrSpaceInstallation?.configuration?.tenant_id?.toString() || '',
-            client_secret: siteOrSpaceInstallation?.configuration?.client_secret?.toString() || '',
+            client_id: siteInstallation?.configuration?.client_id || '',
+            tenant_id: siteInstallation?.configuration?.tenant_id || '',
+            client_secret: siteInstallation?.configuration?.client_secret || '',
         };
     },
     action: async (element, action, context) => {
         switch (action.action) {
             case 'save.config':
                 const { api, environment } = context;
-                const siteOrSpaceInstallation =
-                    environment.siteInstallation ?? environment.spaceInstallation;
+                const siteInstallation = assertSiteInstallation(environment);
 
                 const configurationBody = {
-                    ...siteOrSpaceInstallation.configuration,
+                    ...siteInstallation.configuration,
                     client_id: element.state.client_id,
                     client_secret: element.state.client_secret,
                     tenant_id: element.state.tenant_id,
                 };
 
-                if ('site' in siteOrSpaceInstallation) {
-                    await api.integrations.updateIntegrationSiteInstallation(
-                        siteOrSpaceInstallation.integration,
-                        siteOrSpaceInstallation.installation,
-                        siteOrSpaceInstallation.site,
-                        {
-                            configuration: {
-                                ...configurationBody,
-                            },
+                await api.integrations.updateIntegrationSiteInstallation(
+                    siteInstallation.integration,
+                    siteInstallation.installation,
+                    siteInstallation.site,
+                    {
+                        configuration: {
+                            ...configurationBody,
                         },
-                    );
-                } else {
-                    await api.integrations.updateIntegrationSpaceInstallation(
-                        siteOrSpaceInstallation.integration,
-                        siteOrSpaceInstallation.installation,
-                        siteOrSpaceInstallation.space,
-                        {
-                            configuration: {
-                                ...configurationBody,
-                            },
-                        },
-                    );
-                }
+                    },
+                );
                 return element;
         }
     },
     render: async (element, context) => {
-        const siteOrSpaceInstallation =
-            context.environment.siteInstallation ?? context.environment.spaceInstallation;
-        const VACallbackURL = `${siteOrSpaceInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
+        const siteInstallation = context.environment.siteInstallation;
+        const VACallbackURL = `${siteInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
         return (
             <block>
                 <input
@@ -177,38 +160,50 @@ const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRu
 });
 
 /**
- * Get the published content (site or space) related urls.
+ * Get the published content related urls.
  */
 async function getPublishedContentUrls(context: AzureRuntimeContext) {
-    const organizationId = context.environment.installation?.target?.organization;
-    const siteOrSpaceInstallation =
-        context.environment.siteInstallation ?? context.environment.spaceInstallation;
-    const publishedContentData =
-        'site' in siteOrSpaceInstallation
-            ? await context.api.orgs.getSiteById(organizationId, siteOrSpaceInstallation.site)
-            : await context.api.spaces.getSpaceById(siteOrSpaceInstallation.space);
+    const organizationId = assertOrgId(context.environment);
+    const siteInstallation = assertSiteInstallation(context.environment);
+    const publishedContentData = await context.api.orgs.getSiteById(
+        organizationId,
+        siteInstallation.site,
+    );
 
     return publishedContentData.data.urls;
 }
 
+function assertSiteInstallation(environment: AzureRuntimeEnvironment) {
+    const siteInstallation = environment.siteInstallation;
+    if (!siteInstallation) {
+        throw new Error('No site installation found');
+    }
+
+    return siteInstallation;
+}
+
+function assertOrgId(environment: AzureRuntimeEnvironment) {
+    const orgId = environment.installation?.target?.organization!;
+    if (!orgId) {
+        throw new Error('No org ID found');
+    }
+
+    return orgId;
+}
+
 const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request, context) => {
     const { environment } = context;
-    const siteOrSpaceInstallation = environment.siteInstallation ?? environment.spaceInstallation;
-    const installationURL = siteOrSpaceInstallation?.urls?.publicEndpoint;
+    const siteInstallation = assertSiteInstallation(environment);
+    const installationURL = siteInstallation.urls?.publicEndpoint;
     if (installationURL) {
         const router = Router({
             base: new URL(installationURL).pathname,
         });
 
         router.get('/visitor-auth/response', async (request) => {
-            if (
-                ('site' in siteOrSpaceInstallation && siteOrSpaceInstallation.site) ||
-                ('space' in siteOrSpaceInstallation && siteOrSpaceInstallation.space)
-            ) {
+            if ('site' in siteInstallation && siteInstallation.site) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
-                const privateKey =
-                    context.environment.signingSecrets.siteInstallation ??
-                    context.environment.signingSecrets.spaceInstallation;
+                const privateKey = context.environment.signingSecrets.siteInstallation!;
                 let token;
                 try {
                     token = await sign(
@@ -221,9 +216,9 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                     });
                 }
 
-                const tenantId = siteOrSpaceInstallation?.configuration.tenant_id;
-                const clientId = siteOrSpaceInstallation?.configuration.client_id;
-                const clientSecret = siteOrSpaceInstallation?.configuration.client_secret;
+                const tenantId = siteInstallation?.configuration.tenant_id;
+                const clientId = siteInstallation?.configuration.client_id;
+                const clientSecret = siteInstallation?.configuration.client_secret;
                 if (clientId && clientSecret) {
                     const searchParams = new URLSearchParams({
                         grant_type: 'authorization_code',
@@ -254,7 +249,7 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                             );
                             url.searchParams.append('jwt_token', token);
                         } else {
-                            url = new URL(publishedContentUrls?.published);
+                            url = new URL(publishedContentUrls?.published!);
                             url.searchParams.append('jwt_token', token);
                         }
                         if (publishedContentUrls?.published && token) {
@@ -311,12 +306,17 @@ export default createIntegration({
     components: [configBlock],
     fetch_visitor_authentication: async (event, context) => {
         const { environment } = context;
-        const siteOrSpaceInstallation =
-            environment.siteInstallation ?? environment.spaceInstallation;
-        const installationURL = siteOrSpaceInstallation?.urls?.publicEndpoint;
-        const tenantId = siteOrSpaceInstallation?.configuration.tenant_id;
-        const clientId = siteOrSpaceInstallation?.configuration.client_id;
+        const siteInstallation = assertSiteInstallation(environment);
+
+        const installationURL = siteInstallation.urls.publicEndpoint;
+        const configuration = siteInstallation.configuration;
+
+        const tenantId = configuration.tenant_id;
+        const clientId = configuration.client_id;
         const location = event.location ? event.location : '';
+        if (!clientId || !tenantId) {
+            throw new ExposableError('Azure configuration is missing');
+        }
 
         const url = new URL(`https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize`);
         url.searchParams.append('client_id', clientId);
@@ -326,12 +326,6 @@ export default createIntegration({
         url.searchParams.append('scope', 'openid');
         url.searchParams.append('state', location);
 
-        try {
-            return Response.redirect(url.toString());
-        } catch (e) {
-            return new Response(e.message, {
-                status: e.status || 500,
-            });
-        }
+        return Response.redirect(url.toString());
     },
 });

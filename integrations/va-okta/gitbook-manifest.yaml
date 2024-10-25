@@ -7,11 +7,8 @@ description: Control who has access to your published documentation with Okta
 visibility: public
 script: ./src/index.tsx
 scopes:
-    - space:metadata:read
-    - space:visitor:auth
     - site:metadata:read
     - site:visitor:auth
-    - space:content:read
 organization: gitbook
 summary: |
     # Overview
@@ -27,8 +24,6 @@ summary: |
 categories:
     - visitor-auth
 configurations:
-    space:
-        componentId: config
     site:
         componentId: config
 target: site
