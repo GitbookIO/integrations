@@ -26,3 +26,4 @@ categories:
 configurations:
     site:
         componentId: config
+target: site
