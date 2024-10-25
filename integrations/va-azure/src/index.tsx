@@ -42,9 +42,9 @@ const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRu
     initialState: (props) => {
         const siteInstallation = props.siteInstallation;
         return {
-            client_id: siteInstallation?.configuration?.client_id?.toString() || '',
-            tenant_id: siteInstallation?.configuration?.tenant_id?.toString() || '',
-            client_secret: siteInstallation?.configuration?.client_secret?.toString() || '',
+            client_id: siteInstallation?.configuration?.client_id || '',
+            tenant_id: siteInstallation?.configuration?.tenant_id || '',
+            client_secret: siteInstallation?.configuration?.client_secret || '',
         };
     },
     action: async (element, action, context) => {
@@ -68,7 +68,7 @@ const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRu
                         configuration: {
                             ...configurationBody,
                         },
-                    },
+                    }
                 );
                 return element;
         }
@@ -163,11 +163,11 @@ const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRu
  * Get the published content related urls.
  */
 async function getPublishedContentUrls(context: AzureRuntimeContext) {
-    const organizationId = context.environment.installation?.target?.organization!;
+    const organizationId = assertOrgId(context.environment);
     const siteInstallation = assertSiteInstallation(context.environment);
     const publishedContentData = await context.api.orgs.getSiteById(
         organizationId,
-        siteInstallation.site,
+        siteInstallation.site
     );
 
     return publishedContentData.data.urls;
@@ -180,6 +180,15 @@ function assertSiteInstallation(environment: AzureRuntimeEnvironment) {
     }
 
     return siteInstallation;
+}
+
+function assertOrgId(environment: AzureRuntimeEnvironment) {
+    const orgId = environment.installation?.target?.organization!;
+    if (!orgId) {
+        throw new Error('No org ID found');
+    }
+
+    return orgId;
 }
 
 const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request, context) => {
@@ -199,7 +208,7 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                 try {
                     token = await sign(
                         { exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60) },
-                        privateKey,
+                        privateKey
                     );
                 } catch (e) {
                     return new Response('Error: Could not sign JWT token', {
@@ -236,7 +245,7 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                         let url;
                         if (request.query.state) {
                             url = new URL(
-                                `${publishedContentUrls?.published}${request.query.state}`,
+                                `${publishedContentUrls?.published}${request.query.state}`
                             );
                             url.searchParams.append('jwt_token', token);
                         } else {
@@ -250,7 +259,7 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                                 "Error: Either JWT token or space's published URL is missing",
                                 {
                                     status: 500,
-                                },
+                                }
                             );
                         }
                     } else {
@@ -258,7 +267,7 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                         logger.debug(
                             `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
                                 (resp && resp.error_description) || ''
-                            }`,
+                            }`
                         );
                         return new Response('Error: No Access Token found in response from Azure', {
                             status: 401,

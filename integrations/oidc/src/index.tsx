@@ -55,13 +55,11 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
     initialState: (props) => {
         const siteInstallation = props.siteInstallation;
         return {
-            client_id: siteInstallation.configuration?.client_id?.toString() || '',
-            authorization_endpoint:
-                siteInstallation.configuration?.authorization_endpoint?.toString() || '',
-            access_token_endpoint:
-                siteInstallation.configuration?.access_token_endpoint?.toString() || '',
-            client_secret: siteInstallation.configuration?.client_secret?.toString() || '',
-            scope: siteInstallation.configuration?.scope?.toString() || '',
+            client_id: siteInstallation.configuration?.client_id || '',
+            authorization_endpoint: siteInstallation.configuration?.authorization_endpoint || '',
+            access_token_endpoint: siteInstallation.configuration?.access_token_endpoint || '',
+            client_secret: siteInstallation.configuration?.client_secret || '',
+            scope: siteInstallation.configuration?.scope || '',
         };
     },
     action: async (element, action, context) => {
@@ -76,10 +74,10 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                     client_id: element.state.client_id,
                     client_secret: element.state.client_secret,
                     authorization_endpoint: getDomainWithHttps(
-                        element.state.authorization_endpoint ?? '',
+                        element.state.authorization_endpoint ?? ''
                     ),
                     access_token_endpoint: getDomainWithHttps(
-                        element.state.access_token_endpoint ?? '',
+                        element.state.access_token_endpoint ?? ''
                     ),
                     scope: element.state.scope,
                 };
@@ -91,7 +89,7 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                         configuration: {
                             ...configurationBody,
                         },
-                    },
+                    }
                 );
                 return element;
         }
@@ -232,11 +230,11 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
  * Get the published content related urls.
  */
 async function getPublishedContentUrls(context: OIDCRuntimeContext) {
-    const organizationId = context.environment.installation?.target?.organization!;
+    const organizationId = assertOrgId(context.environment);
     const siteInstallation = assertSiteInstallation(context.environment);
     const publishedContentData = await context.api.orgs.getSiteById(
         organizationId,
-        siteInstallation.site,
+        siteInstallation.site
     );
 
     return publishedContentData.data.urls;
@@ -249,6 +247,15 @@ function assertSiteInstallation(environment: OIDCRuntimeEnvironment) {
     }
 
     return siteInstallation;
+}
+
+function assertOrgId(environment: OIDCRuntimeEnvironment) {
+    const orgId = environment.installation?.target?.organization!;
+    if (!orgId) {
+        throw new Error('No org ID found');
+    }
+
+    return orgId;
 }
 
 const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request, context) => {
@@ -268,7 +275,7 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                 try {
                     token = await sign(
                         { exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60) },
-                        privateKey,
+                        privateKey
                     );
                 } catch (e) {
                     return new Response('Error: Could not sign JWT token', {
@@ -299,7 +306,7 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                                 'Error: Could not fetch access token from your authentication provider',
                                 {
                                     status: 401,
-                                },
+                                }
                             );
                         });
 
@@ -321,7 +328,7 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                                 "Error: Either JWT token or space's published URL is missing",
                                 {
                                     status: 500,
-                                },
+                                }
                             );
                         }
                     } else {
@@ -329,13 +336,13 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                         logger.debug(
                             `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
                                 (resp && resp.error_description) || ''
-                            }`,
+                            }`
                         );
                         return new Response(
                             'Error: No Access Token found in response from your OIDC provider',
                             {
                                 status: 401,
-                            },
+                            }
                         );
                     }
                 } else {
@@ -343,7 +350,7 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                         'Error: Either ClientId or Client Secret or Access Token Endpoint is missing',
                         {
                             status: 400,
-                        },
+                        }
                     );
                 }
             }

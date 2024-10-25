@@ -52,9 +52,9 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
     initialState: (props) => {
         const siteInstallation = props.siteInstallation;
         return {
-            client_id: siteInstallation?.configuration?.client_id?.toString() || '',
-            issuer_base_url: siteInstallation?.configuration?.issuer_base_url?.toString() || '',
-            client_secret: siteInstallation?.configuration?.client_secret?.toString() || '',
+            client_id: siteInstallation?.configuration?.client_id || '',
+            issuer_base_url: siteInstallation?.configuration?.issuer_base_url || '',
+            client_secret: siteInstallation?.configuration?.client_secret || '',
         };
     },
     action: async (element, action, context) => {
@@ -78,7 +78,7 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
                         configuration: {
                             ...configurationBody,
                         },
-                    },
+                    }
                 );
 
                 return element;
@@ -174,16 +174,24 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
  * Get the published content related urls.
  */
 async function getPublishedContentUrls(context: Auth0RuntimeContext) {
-    const organizationId = context.environment.installation?.target?.organization!;
+    const organizationId = assertOrgId(context.environment);
     const siteInstallation = assertSiteInstallation(context.environment);
     const publishedContentData = await context.api.orgs.getSiteById(
         organizationId,
-        siteInstallation.site,
+        siteInstallation.site
     );
 
     return publishedContentData.data.urls;
 }
 
+function assertOrgId(environment: Auth0RuntimeEnvironment) {
+    const orgId = environment.installation?.target?.organization!;
+    if (!orgId) {
+        throw new Error('No org ID found');
+    }
+
+    return orgId;
+}
 function assertSiteInstallation(environment: Auth0RuntimeEnvironment) {
     const siteInstallation = environment.siteInstallation;
     if (!siteInstallation) {
@@ -210,7 +218,7 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                 try {
                     token = await sign(
                         { exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60) },
-                        privateKey,
+                        privateKey
                     );
                 } catch (e) {
                     return new Response('Error: Could not sign JWT token', {
@@ -246,7 +254,7 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                         let url;
                         if (request.query.state) {
                             url = new URL(
-                                `${publishedContentUrls?.published}${request.query.state}`,
+                                `${publishedContentUrls?.published}${request.query.state}`
                             );
                             url.searchParams.append('jwt_token', token);
                         } else {
@@ -260,7 +268,7 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                                 "Error: Either JWT token or space's published URL is missing",
                                 {
                                     status: 500,
-                                },
+                                }
                             );
                         }
                     } else {
@@ -268,7 +276,7 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                         logger.debug(
                             `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
                                 (resp && resp.error_description) || ''
-                            }`,
+                            }`
                         );
                         return new Response('Error: No Access Token found in response from Auth0', {
                             status: 401,

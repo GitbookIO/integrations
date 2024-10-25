@@ -42,9 +42,9 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
     initialState: (props) => {
         const siteInstallation = props.siteInstallation;
         return {
-            client_id: siteInstallation?.configuration?.client_id?.toString() || '',
-            okta_domain: siteInstallation?.configuration?.okta_domain?.toString() || '',
-            client_secret: siteInstallation?.configuration?.client_secret?.toString() || '',
+            client_id: siteInstallation?.configuration?.client_id || '',
+            okta_domain: siteInstallation?.configuration?.okta_domain || '',
+            client_secret: siteInstallation?.configuration?.client_secret || '',
         };
     },
     action: async (element, action, context) => {
@@ -67,7 +67,7 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                         configuration: {
                             ...configurationBody,
                         },
-                    },
+                    }
                 );
                 return element;
         }
@@ -161,11 +161,11 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
  * Get the published content (site or space) related urls.
  */
 async function getPublishedContentUrls(context: OktaRuntimeContext) {
-    const organizationId = context.environment.installation?.target?.organization!;
+    const organizationId = assertOrgId(context.environment);
     const siteInstallation = assertSiteInstallation(context.environment);
     const publishedContentData = await context.api.orgs.getSiteById(
         organizationId,
-        siteInstallation.site,
+        siteInstallation.site
     );
 
     return publishedContentData.data.urls;
@@ -178,6 +178,15 @@ function assertSiteInstallation(environment: OktaRuntimeEnvironment) {
     }
 
     return siteInstallation;
+}
+
+function assertOrgId(environment: OktaRuntimeEnvironment) {
+    const orgId = environment.installation?.target?.organization!;
+    if (!orgId) {
+        throw new Error('No org ID found');
+    }
+
+    return orgId;
 }
 
 const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request, context) => {
@@ -197,7 +206,7 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                 try {
                     token = await sign(
                         { exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60) },
-                        privateKey,
+                        privateKey
                     );
                 } catch (e) {
                     return new Response('Error: Could not sign JWT token', {
@@ -248,7 +257,7 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                                 "Error: Either JWT token or space's published URL is missing",
                                 {
                                     status: 500,
-                                },
+                                }
                             );
                         }
                     } else {
@@ -256,7 +265,7 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                         logger.debug(
                             `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
                                 (resp && resp.error_description) || ''
-                            }`,
+                            }`
                         );
                         return new Response('Error: No Access Token found in response from Okta', {
                             status: 401,
