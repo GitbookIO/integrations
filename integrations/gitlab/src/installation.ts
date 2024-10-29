@@ -63,7 +63,7 @@ export async function saveSpaceConfiguration(
     };
 
     logger.debug(
-        `Saving config for space ${spaceInstallation.space} of integration-installation ${spaceInstallation.installation}`,
+        `Saving config for space ${spaceInstallation.space.key} of integration-installation ${spaceInstallation.installation}`,
     );
 
     // Save the space installation configuration
@@ -71,24 +71,24 @@ export async function saveSpaceConfiguration(
         await api.integrations.updateIntegrationSpaceInstallation(
             spaceInstallation.integration,
             spaceInstallation.installation,
-            spaceInstallation.space,
+            spaceInstallation.space.key,
             {
                 externalIds,
                 configuration: configurationBody,
             },
         );
 
-    logger.info(`Saved config for space ${spaceInstallation.space}`);
+    logger.info(`Saved config for space ${spaceInstallation.space.key}`);
 
     // Force a synchronization
     if (configurationBody.priority === 'gitlab') {
-        logger.debug(`Forcing import for space ${spaceInstallation.space}`);
+        logger.debug(`Forcing import for space ${spaceInstallation.space.key}`);
         await triggerImport(context, updatedSpaceInstallation, {
             force: true,
             updateGitInfo: true,
         });
     } else {
-        logger.debug(`Forcing export for space ${spaceInstallation.space}`);
+        logger.debug(`Forcing export for space ${spaceInstallation.space.key}`);
         await triggerExport(context, updatedSpaceInstallation, {
             force: true,
             updateGitInfo: true,
@@ -109,7 +109,7 @@ export async function saveSpaceConfiguration(
             return api.integrations.updateIntegrationSpaceInstallation(
                 spaceInstallation.integration,
                 spaceInstallation.installation,
-                spaceInstallation.space,
+                spaceInstallation.space.key,
                 {
                     configuration: {
                         ...configurationBody,

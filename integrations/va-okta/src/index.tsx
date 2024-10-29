@@ -62,7 +62,7 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                 await api.integrations.updateIntegrationSiteInstallation(
                     siteInstallation.integration,
                     siteInstallation.installation,
-                    siteInstallation.site,
+                    siteInstallation.site.id,
                     {
                         configuration: {
                             ...configurationBody,

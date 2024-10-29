@@ -63,7 +63,7 @@ const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRu
                 await api.integrations.updateIntegrationSiteInstallation(
                     siteInstallation.integration,
                     siteInstallation.installation,
-                    siteInstallation.site,
+                    siteInstallation.site.id,
                     {
                         configuration: {
                             ...configurationBody,

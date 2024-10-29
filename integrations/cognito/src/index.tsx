@@ -80,7 +80,7 @@ const configBlock = createComponent<
                 await api.integrations.updateIntegrationSiteInstallation(
                     siteOrSpaceInstallation.integration,
                     siteOrSpaceInstallation.installation,
-                    siteOrSpaceInstallation.site,
+                    siteOrSpaceInstallation.site.id,
                     {
                         configuration: {
                             ...configurationBody,

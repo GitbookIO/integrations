@@ -73,7 +73,7 @@ export const configBlock = createComponent<
                 await context.api.integrations.updateIntegrationSpaceInstallation(
                     spaceInstallation.integration,
                     spaceInstallation.installation,
-                    spaceInstallation.space,
+                    spaceInstallation.space.key,
                     {
                         configuration: {
                             ...config,

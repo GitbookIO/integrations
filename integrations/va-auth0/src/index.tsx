@@ -73,7 +73,7 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
                 await api.integrations.updateIntegrationSiteInstallation(
                     siteInstallation.integration,
                     siteInstallation.installation,
-                    siteInstallation.site,
+                    siteInstallation.site.id,
                     {
                         configuration: {
                             ...configurationBody,

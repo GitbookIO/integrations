@@ -323,7 +323,7 @@ async function requestGitHubAPI(
             await context.api.integrations.updateIntegrationSpaceInstallation(
                 spaceInstallation.integration,
                 spaceInstallation.installation,
-                spaceInstallation.space,
+                spaceInstallation.space.key,
                 {
                     configuration: {
                         ...spaceInstallation.configuration,
