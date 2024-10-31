@@ -69,11 +69,12 @@ export const configBlock = createComponent<
                 };
 
                 const glUser = await getCurrentUser(config);
+                const spaceId = typeof spaceInstallation.space === 'string' ? spaceInstallation.space : spaceInstallation.space.key;
 
                 await context.api.integrations.updateIntegrationSpaceInstallation(
                     spaceInstallation.integration,
                     spaceInstallation.installation,
-                    spaceInstallation.space.key,
+                    spaceId,
                     {
                         configuration: {
                             ...config,

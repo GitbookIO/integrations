@@ -312,7 +312,9 @@ async function requestGitHubAPI(
             const spaceInstallation = context.environment.spaceInstallation;
             assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
-            logger.debug(`refreshing OAuth credentials for space ${spaceInstallation.space}`);
+            const spaceId = typeof spaceInstallation.space === 'string' ? spaceInstallation.space : spaceInstallation.space.key;
+
+            logger.debug(`refreshing OAuth credentials for space ${spaceId}`);
 
             const refreshed = await refreshCredentials(
                 context.environment.secrets.CLIENT_ID,
@@ -323,7 +325,7 @@ async function requestGitHubAPI(
             await context.api.integrations.updateIntegrationSpaceInstallation(
                 spaceInstallation.integration,
                 spaceInstallation.installation,
-                spaceInstallation.space.key,
+                spaceId,
                 {
                     configuration: {
                         ...spaceInstallation.configuration,
@@ -332,7 +334,7 @@ async function requestGitHubAPI(
                 },
             );
 
-            logger.info(`refreshed OAuth credentials for space ${spaceInstallation.space}`);
+            logger.info(`refreshed OAuth credentials for space ${spaceId}`);
 
             // Retry the request with the refreshed credentials
             return requestGitHubAPI(context, refreshed, url, options, retriesLeft - 1);

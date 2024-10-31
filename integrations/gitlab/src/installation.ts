@@ -62,8 +62,10 @@ export async function saveSpaceConfiguration(
         customInstanceUrl: state.customInstanceUrl,
     };
 
+    const spaceId = typeof spaceInstallation.space === 'string' ? spaceInstallation.space : spaceInstallation.space.key;
+
     logger.debug(
-        `Saving config for space ${spaceInstallation.space.key} of integration-installation ${spaceInstallation.installation}`,
+        `Saving config for space ${spaceId} of integration-installation ${spaceInstallation.installation}`,
     );
 
     // Save the space installation configuration
@@ -71,24 +73,24 @@ export async function saveSpaceConfiguration(
         await api.integrations.updateIntegrationSpaceInstallation(
             spaceInstallation.integration,
             spaceInstallation.installation,
-            spaceInstallation.space.key,
+            spaceId,
             {
                 externalIds,
                 configuration: configurationBody,
             },
         );
 
-    logger.info(`Saved config for space ${spaceInstallation.space.key}`);
+    logger.info(`Saved config for space ${spaceId}`);
 
     // Force a synchronization
     if (configurationBody.priority === 'gitlab') {
-        logger.debug(`Forcing import for space ${spaceInstallation.space.key}`);
+        logger.debug(`Forcing import for space ${spaceId}`);
         await triggerImport(context, updatedSpaceInstallation, {
             force: true,
             updateGitInfo: true,
         });
     } else {
-        logger.debug(`Forcing export for space ${spaceInstallation.space.key}`);
+        logger.debug(`Forcing export for space ${spaceId}`);
         await triggerExport(context, updatedSpaceInstallation, {
             force: true,
             updateGitInfo: true,
@@ -109,7 +111,7 @@ export async function saveSpaceConfiguration(
             return api.integrations.updateIntegrationSpaceInstallation(
                 spaceInstallation.integration,
                 spaceInstallation.installation,
-                spaceInstallation.space.key,
+                spaceId,
                 {
                     configuration: {
                         ...configurationBody,

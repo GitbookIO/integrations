@@ -65,8 +65,10 @@ export async function saveSpaceConfiguration(
         priority: state.priority,
     };
 
+    const spaceId = typeof spaceInstallation.space === 'string' ? spaceInstallation.space : spaceInstallation.space.key;
+
     logger.debug(
-        `Saving config for space ${spaceInstallation.space.key} of integration-installation ${spaceInstallation.installation}`,
+        `Saving config for space ${spaceId} of integration-installation ${spaceInstallation.installation}`,
     );
 
     const githubRepo = await fetchRepository(context, repoID);
@@ -76,7 +78,7 @@ export async function saveSpaceConfiguration(
         await api.integrations.updateIntegrationSpaceInstallation(
             spaceInstallation.integration,
             spaceInstallation.installation,
-            spaceInstallation.space.key,
+            spaceId,
             {
                 externalIds,
                 configuration: {
@@ -87,17 +89,17 @@ export async function saveSpaceConfiguration(
             },
         );
 
-    logger.info(`Saved config for space ${spaceInstallation.space.key}`);
+    logger.info(`Saved config for space ${spaceId}`);
 
     // Force a synchronization
     if (state.priority === 'github') {
-        logger.debug(`Forcing import for space ${spaceInstallation.space.key}`);
+        logger.debug(`Forcing import for space ${spaceId}`);
         await triggerImport(context, updatedSpaceInstallation, {
             force: true,
             updateGitInfo: true,
         });
     } else {
-        logger.debug(`Forcing export for space ${spaceInstallation.space.key}`);
+        logger.debug(`Forcing export for space ${spaceId}`);
         await triggerExport(context, updatedSpaceInstallation, {
             force: true,
             updateGitInfo: true,
