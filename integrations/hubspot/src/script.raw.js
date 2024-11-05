@@ -1,5 +1,5 @@
 function loadScript() {
-    if (!document.getElementById(b)) {
+    if (!document.getElementById('hs-script-loader')) {
         const trackingID = '<TO_REPLACE_SCRIPT_LOADER_ID>';
 
         const scriptLoaderURL = '//js.hs-scripts.com/' + trackingID + '.js';
