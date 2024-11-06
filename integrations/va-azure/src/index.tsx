@@ -167,7 +167,7 @@ async function getPublishedContentUrls(context: AzureRuntimeContext) {
     const siteInstallation = assertSiteInstallation(context.environment);
     const publishedContentData = await context.api.orgs.getSiteById(
         organizationId,
-        siteInstallation.site,
+        typeof siteInstallation.site === 'string' ? siteInstallation.site : siteInstallation.site.id,
     );
 
     return publishedContentData.data.urls;
