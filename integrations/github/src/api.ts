@@ -312,7 +312,7 @@ async function requestGitHubAPI(
             const spaceInstallation = context.environment.spaceInstallation;
             assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
-            const spaceId = typeof spaceInstallation.space === 'string' ? spaceInstallation.space : spaceInstallation.space.key;
+            const spaceId = typeof spaceInstallation.space === 'string' ? spaceInstallation.space : spaceInstallation.space.id;
 
             logger.debug(`refreshing OAuth credentials for space ${spaceId}`);
 

@@ -65,7 +65,7 @@ export async function saveSpaceConfiguration(
         priority: state.priority,
     };
 
-    const spaceId = typeof spaceInstallation.space === 'string' ? spaceInstallation.space : spaceInstallation.space.key;
+    const spaceId = typeof spaceInstallation.space === 'string' ? spaceInstallation.space : spaceInstallation.space.id;
 
     logger.debug(
         `Saving config for space ${spaceId} of integration-installation ${spaceInstallation.installation}`,
