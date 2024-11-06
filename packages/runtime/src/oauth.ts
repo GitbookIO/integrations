@@ -126,7 +126,12 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
                 JSON.stringify({
                     installationId: environment.installation.id,
                     ...(environment.spaceInstallation?.space
-                        ? { spaceId: typeof environment.spaceInstallation?.space === 'string' ? environment.spaceInstallation?.space : environment.spaceInstallation?.space.id }
+                        ? {
+                              spaceId:
+                                  typeof environment.spaceInstallation?.space === 'string'
+                                      ? environment.spaceInstallation?.space
+                                      : environment.spaceInstallation?.space.id,
+                          }
                         : {}),
                 }),
             );

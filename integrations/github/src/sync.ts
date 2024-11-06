@@ -58,7 +58,10 @@ export async function triggerImport(
 
     const config = getSpaceConfigOrThrow(spaceInstallation);
 
-    const spaceId = typeof spaceInstallation.space === 'string' ? spaceInstallation.space : spaceInstallation.space.id;
+    const spaceId =
+        typeof spaceInstallation.space === 'string'
+            ? spaceInstallation.space
+            : spaceInstallation.space.id;
 
     if (!config.key) {
         logger.info(`No configuration found for space ${spaceId}, skipping import`);
@@ -117,7 +120,10 @@ export async function triggerExport(
 
     const config = getSpaceConfigOrThrow(spaceInstallation);
 
-    const spaceId = typeof spaceInstallation.space === 'string' ? spaceInstallation.space : spaceInstallation.space.id;
+    const spaceId =
+        typeof spaceInstallation.space === 'string'
+            ? spaceInstallation.space
+            : spaceInstallation.space.id;
 
     if (!config.key) {
         logger.info(`No configuration found for space ${spaceId}, skipping export`);
@@ -164,7 +170,11 @@ export async function updateCommitWithPreviewLinks(
 ) {
     const config = getSpaceConfigOrThrow(spaceInstallation);
 
-    const { data: space } = await runtime.api.spaces.getSpaceById(typeof spaceInstallation.space === 'string' ? spaceInstallation.space : spaceInstallation.space.id);
+    const { data: space } = await runtime.api.spaces.getSpaceById(
+        typeof spaceInstallation.space === 'string'
+            ? spaceInstallation.space
+            : spaceInstallation.space.id,
+    );
 
     const context = `GitBook${config.projectDirectory ? ` (${config.projectDirectory})` : ''}`;
 

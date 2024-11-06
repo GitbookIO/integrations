@@ -73,7 +73,9 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
                 await api.integrations.updateIntegrationSiteInstallation(
                     siteInstallation.integration,
                     siteInstallation.installation,
-                    typeof siteInstallation.site === 'string' ? siteInstallation.site : siteInstallation.site.id,
+                    typeof siteInstallation.site === 'string'
+                        ? siteInstallation.site
+                        : siteInstallation.site.id,
                     {
                         configuration: {
                             ...configurationBody,
@@ -178,7 +180,9 @@ async function getPublishedContentUrls(context: Auth0RuntimeContext) {
     const siteInstallation = assertSiteInstallation(context.environment);
     const publishedContentData = await context.api.orgs.getSiteById(
         organizationId,
-        typeof siteInstallation.site === 'string' ? siteInstallation.site : siteInstallation.site.id,
+        typeof siteInstallation.site === 'string'
+            ? siteInstallation.site
+            : siteInstallation.site.id,
     );
 
     return publishedContentData.data.urls;

@@ -80,7 +80,9 @@ const configBlock = createComponent<
                 await api.integrations.updateIntegrationSiteInstallation(
                     siteOrSpaceInstallation.integration,
                     siteOrSpaceInstallation.installation,
-                    typeof siteOrSpaceInstallation.site === 'string' ? siteOrSpaceInstallation.site : siteOrSpaceInstallation.site.id,
+                    typeof siteOrSpaceInstallation.site === 'string'
+                        ? siteOrSpaceInstallation.site
+                        : siteOrSpaceInstallation.site.id,
                     {
                         configuration: {
                             ...configurationBody,
@@ -184,7 +186,9 @@ async function getPublishedContentUrls(context: CognitoRuntimeContext) {
     const siteInstallation = assertInstallation(context.environment);
     const publishedContentData = await context.api.orgs.getSiteById(
         organizationId,
-        typeof siteInstallation.site === 'string' ? siteInstallation.site : siteInstallation.site.id,
+        typeof siteInstallation.site === 'string'
+            ? siteInstallation.site
+            : siteInstallation.site.id,
     );
 
     return publishedContentData.data.urls;
