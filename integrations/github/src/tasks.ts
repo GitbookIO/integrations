@@ -99,7 +99,7 @@ export async function handleImportDispatchForSpaces(
                 logger.error(
                     `error while triggering ${
                         standaloneRef ? `standalone (${standaloneRef})` : ''
-                    } import for space ${spaceInstallation.space}`,
+                    } import for space ${typeof spaceInstallation.space === 'string' ? spaceInstallation.space : spaceInstallation.space.id}`,
                     error,
                 );
             }
