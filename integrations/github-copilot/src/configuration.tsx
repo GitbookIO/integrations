@@ -52,7 +52,7 @@ export const configurationComponent = createComponent<
             }
         }
 
-        return element;
+        return { type: 'complete' };
     },
     render: async (element, context) => {
         element.setCache({ maxAge: 0 });

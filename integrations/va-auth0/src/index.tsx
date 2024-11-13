@@ -81,7 +81,7 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
                     },
                 );
 
-                return element;
+                return { type: 'complete' };
         }
     },
     render: async (element, context) => {
