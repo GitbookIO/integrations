@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.75.0
+
+### Minor Changes
+
+-   763949e: Adding site space information to page views
+
 ## 0.74.0
 
 ### Minor Changes
