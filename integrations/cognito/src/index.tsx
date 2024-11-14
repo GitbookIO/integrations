@@ -87,7 +87,8 @@ const configBlock = createComponent<
                         },
                     },
                 );
-                return element;
+
+                return { type: 'complete' };
         }
     },
     render: async (element, context) => {

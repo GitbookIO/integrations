@@ -91,7 +91,8 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                         },
                     },
                 );
-                return element;
+
+                return { type: 'complete' };
         }
     },
     render: async (element, context) => {

@@ -69,7 +69,8 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                         },
                     },
                 );
-                return element;
+
+                return { type: 'complete' };
         }
     },
     render: async (element, context) => {
