@@ -56,16 +56,21 @@ export async function triggerImport(
     const { api } = context;
     const { force = false, updateGitInfo = false, standalone, eventTimestamp } = options;
 
+    const spaceId =
+        typeof spaceInstallation.space === 'string'
+            ? spaceInstallation.space
+            : spaceInstallation.space.id;
+
     const config = getSpaceConfigOrThrow(spaceInstallation);
 
     if (!config.key) {
-        logger.info(`No configuration found for space ${spaceInstallation.space}, skipping import`);
+        logger.info(`No configuration found for space ${spaceId}, skipping import`);
         return;
     }
 
     assertIsDefined(config.branch, { label: 'config.branch' });
 
-    logger.info(`Initiating an import from GitHub to GitBook space ${spaceInstallation.space}`);
+    logger.info(`Initiating an import from GitHub to GitBook space ${spaceId}`);
 
     const auth = await getRepositoryAuth(context, config);
     const repoTreeURL = getGitTreeURL(config);
@@ -74,7 +79,7 @@ export async function triggerImport(
     urlWithAuth.username = auth.username;
     urlWithAuth.password = auth.password;
 
-    await api.spaces.importGitRepository(spaceInstallation.space, {
+    await api.spaces.importGitRepository(spaceId, {
         url: urlWithAuth.toString(),
         ref: standalone?.ref || config.branch,
         repoTreeURL,
@@ -113,18 +118,23 @@ export async function triggerExport(
     const { api } = context;
     const { force = false, updateGitInfo = false, eventTimestamp } = options;
 
+    const spaceId =
+        typeof spaceInstallation.space === 'string'
+            ? spaceInstallation.space
+            : spaceInstallation.space.id;
+
     const config = getSpaceConfigOrThrow(spaceInstallation);
 
     if (!config.key) {
-        logger.info(`No configuration found for space ${spaceInstallation.space}, skipping export`);
+        logger.info(`No configuration found for space ${spaceId}, skipping export`);
         return;
     }
 
     assertIsDefined(config.branch, { label: 'config.branch' });
 
-    logger.info(`Initiating an export from space ${spaceInstallation.space} to GitHub`);
+    logger.info(`Initiating an export from space ${spaceId} to GitHub`);
 
-    const { data: revision } = await api.spaces.getCurrentRevision(spaceInstallation.space);
+    const { data: revision } = await api.spaces.getCurrentRevision(spaceId);
 
     const auth = await getRepositoryAuth(context, config);
     const repoTreeURL = getGitTreeURL(config);
@@ -133,7 +143,7 @@ export async function triggerExport(
     urlWithAuth.username = auth.username;
     urlWithAuth.password = auth.password;
 
-    await api.spaces.exportToGitRepository(spaceInstallation.space, {
+    await api.spaces.exportToGitRepository(spaceId, {
         url: urlWithAuth.toString(),
         ref: config.branch,
         repoTreeURL,
@@ -160,7 +170,12 @@ export async function updateCommitWithPreviewLinks(
 ) {
     const config = getSpaceConfigOrThrow(spaceInstallation);
 
-    const { data: space } = await runtime.api.spaces.getSpaceById(spaceInstallation.space);
+    const spaceId =
+        typeof spaceInstallation.space === 'string'
+            ? spaceInstallation.space
+            : spaceInstallation.space.id;
+
+    const { data: space } = await runtime.api.spaces.getSpaceById(spaceId);
 
     const context = `GitBook${config.projectDirectory ? ` (${config.projectDirectory})` : ''}`;
 
