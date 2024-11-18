@@ -1,5 +1,11 @@
 # @gitbook/integration-github-copilot
 
+## 0.2.0
+
+### Minor Changes
+
+-   65e6924: Update the completion action for integrations controlling their own configuration
+
 ## 0.1.0
 
 ### Minor Changes

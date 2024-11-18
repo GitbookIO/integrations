@@ -70,7 +70,8 @@ const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRu
                         },
                     },
                 );
-                return element;
+
+                return { type: 'complete' };
         }
     },
     render: async (element, context) => {
