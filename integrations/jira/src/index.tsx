@@ -58,15 +58,23 @@ const embedBlock = createComponent<Props, {}, void, IntegrationContext>({
         element.setCache({ maxAge: 0 });
 
         const { url: rawUrl } = element.props;
+        const { environment } = context;
+        const configuration = environment.installation?.configuration as JiraConfiguration;
+        if (!configuration.oauth_credentials || !configuration.sites) {
+            return (
+                <block>
+                    <card title="Integration misconfigured">
+                        <text>{rawUrl ?? ''}</text>
+                    </card>
+                </block>
+            );
+        }
 
         const url = rawUrl ? new URL(rawUrl) : null;
         const parts = url?.pathname.split('/');
         const key = parts ? parts[parts.length - 1] : null;
 
-        const { environment } = context;
-        const configuration = environment.installation?.configuration as JiraConfiguration;
-
-        if (!url || !key || !configuration.oauth_credentials) {
+        if (!url || !key) {
             return (
                 <block>
                     <card title="Not Found">
@@ -76,7 +84,7 @@ const embedBlock = createComponent<Props, {}, void, IntegrationContext>({
             );
         }
 
-        const site = configuration.sites?.find((site) => url.toString().startsWith(site.url));
+        const site = configuration.sites.find((site) => url.toString().startsWith(site.url));
         if (!site) {
             // JIRA site not part of this installation
             return (
