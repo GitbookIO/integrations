@@ -23,8 +23,8 @@ interface Site {
 }
 
 type JiraConfiguration = {
-    sites: Site[];
-    oauth_credentials: OAuthConfiguration;
+    sites?: Site[];
+    oauth_credentials?: OAuthConfiguration;
 };
 
 type IntegrationEnvironment = RuntimeEnvironment<JiraConfiguration>;
@@ -63,7 +63,10 @@ const embedBlock = createComponent<Props, {}, void, IntegrationContext>({
         const parts = url?.pathname.split('/');
         const key = parts ? parts[parts.length - 1] : null;
 
-        if (!url || !key) {
+        const { environment } = context;
+        const configuration = environment.installation?.configuration as JiraConfiguration;
+
+        if (!url || !key || !configuration.oauth_credentials) {
             return (
                 <block>
                     <card title="Not Found">
@@ -73,10 +76,7 @@ const embedBlock = createComponent<Props, {}, void, IntegrationContext>({
             );
         }
 
-        const { environment } = context;
-        const configuration = environment.installation?.configuration as JiraConfiguration;
-        const site = configuration.sites.find((site) => url.toString().startsWith(site.url));
-
+        const site = configuration.sites?.find((site) => url.toString().startsWith(site.url));
         if (!site) {
             // JIRA site not part of this installation
             return (
