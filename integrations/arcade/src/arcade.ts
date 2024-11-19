@@ -1,3 +1,5 @@
+import { ExposableError } from '@gitbook/runtime';
+
 export interface ArcadeOEmbed {
     type: 'rich';
     title: string;
@@ -15,6 +17,10 @@ export async function fetchArcadeOEmbedData(flowId: string): Promise<ArcadeOEmbe
     const response = await fetch(url.toString());
 
     if (!response.ok) {
+        if (response.status < 500) {
+            throw new ExposableError(response.statusText, response.status);
+        }
+
         throw new Error(`${response.status} ${response.statusText}`);
     }
 
