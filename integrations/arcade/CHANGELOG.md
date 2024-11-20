@@ -1,5 +1,16 @@
 # @gitbook/integration-arcade
 
+## 0.2.0
+
+### Minor Changes
+
+-   e1b0f6d: Make Arcade integration's embeds fetch errors public when they are
+
+### Patch Changes
+
+-   Updated dependencies [c3a7bb5]
+    -   @gitbook/api@0.77.0
+
 ## 0.1.0
 
 ### Minor Changes
