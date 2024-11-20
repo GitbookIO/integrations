@@ -1,5 +1,5 @@
 import * as jwt from '@tsndr/cloudflare-worker-jwt';
-import { Router } from 'itty-router';
+import { Router, StatusError } from 'itty-router';
 
 import { IntegrationInstallationConfiguration } from '@gitbook/api';
 import {
@@ -22,6 +22,7 @@ type Auth0SiteInstallationConfiguration = {
     client_id?: string;
     issuer_base_url?: string;
     client_secret?: string;
+    include_claims_in_va_token?: boolean;
 };
 
 type Auth0State = Auth0SiteInstallationConfiguration;
@@ -47,6 +48,8 @@ type Auth0TokenResponseError = {
     error_description: string;
 };
 
+const EXCLUDED_CLAIMS = ['iat', 'exp', 'iss', 'aud', 'jti'];
+
 export type Auth0Action = { action: 'save.config' };
 
 const getDomainWithHttps = (url: string): string => {
@@ -67,6 +70,8 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
             client_id: siteInstallation?.configuration?.client_id || '',
             issuer_base_url: siteInstallation?.configuration?.issuer_base_url || '',
             client_secret: siteInstallation?.configuration?.client_secret || '',
+            include_claims_in_va_token:
+                siteInstallation?.configuration?.include_claims_in_va_token || false,
         };
     },
     action: async (element, action, context) => {
@@ -80,6 +85,7 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
                     client_id: element.state.client_id,
                     client_secret: element.state.client_secret,
                     issuer_base_url: getDomainWithHttps(element.state.issuer_base_url ?? ''),
+                    include_claims_in_va_token: element.state.include_claims_in_va_token,
                 };
 
                 await api.integrations.updateIntegrationSiteInstallation(
@@ -101,83 +107,104 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
 
         const VACallbackURL = `${siteInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
         return (
-            <block>
-                <input
-                    label="Client ID"
-                    hint={
-                        <text>
-                            The unique identifier of your Auth0 application.
-                            <link
-                                target={{
-                                    url: 'https://auth0.com/docs/get-started/applications/application-settings',
-                                }}
-                            >
-                                {' '}
-                                More Details
-                            </link>
-                        </text>
-                    }
-                    element={<textinput state="client_id" placeholder="Client ID" />}
-                />
-
-                <input
-                    label="Auth0 Domain"
-                    hint={
-                        <text>
-                            The Auth0 domain (also known as tenant).
-                            <link
-                                target={{
-                                    url: 'https://auth0.com/docs/get-started/applications/application-settings',
-                                }}
-                            >
-                                {' '}
-                                More Details
-                            </link>
-                        </text>
-                    }
-                    element={<textinput state="issuer_base_url" placeholder="Domain" />}
-                />
-
-                <input
-                    label="Client Secret"
-                    hint={
-                        <text>
-                            The secret used for signing and validating tokens.
-                            <link
-                                target={{
-                                    url: 'https://auth0.com/docs/get-started/applications/application-settings',
-                                }}
-                            >
-                                {' '}
-                                More Details
-                            </link>
-                        </text>
-                    }
-                    element={<textinput state="client_secret" placeholder="Client Secret" />}
-                />
-                <divider size="medium" />
-                <hint>
-                    <text style="bold">
-                        The following URL needs to be saved as an allowed callback URL in Auth0:
-                    </text>
-                </hint>
-                <codeblock content={VACallbackURL} />
-                <input
-                    label=""
-                    hint=""
-                    element={
-                        <button
-                            style="primary"
-                            disabled={false}
-                            label="Save"
-                            tooltip="Save configuration"
-                            onPress={{
-                                action: 'save.config',
-                            }}
+            <configuration>
+                <box>
+                    <markdown content="### Auth0 application" />
+                    <vstack>
+                        <input
+                            label="Auth0 Domain"
+                            hint={
+                                <text>
+                                    The Auth0 domain (also known as tenant).
+                                    <link
+                                        target={{
+                                            url: 'https://auth0.com/docs/get-started/applications/application-settings',
+                                        }}
+                                    >
+                                        {' '}
+                                        More Details
+                                    </link>
+                                </text>
+                            }
+                            element={<textinput state="issuer_base_url" placeholder="Domain" />}
                         />
-                    }
-                />
-            </block>
+
+                        <input
+                            label="Client ID"
+                            hint={
+                                <text>
+                                    The unique identifier of your Auth0 application.
+                                    <link
+                                        target={{
+                                            url: 'https://auth0.com/docs/get-started/applications/application-settings',
+                                        }}
+                                    >
+                                        {' '}
+                                        More Details
+                                    </link>
+                                </text>
+                            }
+                            element={<textinput state="client_id" placeholder="Client ID" />}
+                        />
+
+                        <input
+                            label="Client Secret"
+                            hint={
+                                <text>
+                                    The secret used for signing and validating tokens.
+                                    <link
+                                        target={{
+                                            url: 'https://auth0.com/docs/get-started/applications/application-settings',
+                                        }}
+                                    >
+                                        {' '}
+                                        More Details
+                                    </link>
+                                </text>
+                            }
+                            element={
+                                <textinput state="client_secret" placeholder="Client Secret" />
+                            }
+                        />
+
+                        <input
+                            label="Add Callback URL"
+                            hint={
+                                <text>
+                                    Add this URL to the{' '}
+                                    <text style="bold">Allowed Callback URLs</text> section in your
+                                    application's settings in Auth0.
+                                </text>
+                            }
+                            element={<codeblock content={VACallbackURL} />}
+                        />
+                    </vstack>
+                    <divider size="medium" />
+
+                    <markdown content="### Visitor authentication settings" />
+                    <input
+                        label="Include claims in JWT token"
+                        hint="Add user & custom claims from Auth0 backend to the JWT token to enrich the user's experience while navigating the site"
+                        element={<switch state="include_claims_in_va_token" />}
+                    />
+
+                    <input
+                        label=""
+                        hint=""
+                        element={
+                            <button
+                                style="primary"
+                                disabled={false}
+                                label="Save"
+                                tooltip="Save configuration"
+                                onPress={{
+                                    action: 'save.config',
+                                }}
+                            />
+                        }
+                    />
+                </box>
+            </configuration>
         );
     },
 });
@@ -226,6 +253,8 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
             if ('site' in siteInstallation && siteInstallation.site) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
 
+                const includeClaimsInToken =
+                    siteInstallation?.configuration.include_claims_in_va_token;
                 const issuerBaseUrl = siteInstallation?.configuration.issuer_base_url;
                 const clientId = siteInstallation?.configuration.client_id;
                 const clientSecret = siteInstallation?.configuration.client_secret;
@@ -266,37 +295,41 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                     });
                 }
 
-                // Auth0 returns an opaque access token (i.e., one that doesn't include user or custom claims) when
-                // exchanging an authorization code for a token—unless an audience (aud parameter) is set to a valid
-                // Auth0 API application during the authorization request.
-                // In this case, since we only request a token to verify authentication and generate the VA,
-                // there is no valid API target to specify as audience.
-                // As a result, we must call the /userinfo endpoint (an OIDC-compliant endpoint) to retrieve user claims.
-                //
-                // An alternative approach would be to request an ID Token using the Implicit Grant flow (with form post).
-                // However, many authentication providers discourage this method in favor of the Authorization Code flow.
-                // Additionally, some customers may disable the Implicit Grant flow in their Auth0 application.
-                // Therefore, retrieving user data via the /userinfo endpoint is a more robust solution.
-                const auth0TokenData = await auth0TokenResp.json<Auth0TokenResponseData>();
-                if (!auth0TokenData.access_token) {
-                    return new Response('Error: No Access Token found in response from Auth0', {
-                        status: 401,
+                let userInfo;
+                if (includeClaimsInToken) {
+                    // Auth0 returns an opaque access token (i.e., one that doesn't include user or custom claims) when
+                    // exchanging an authorization code for a token—unless an audience (aud parameter) is set to a valid
+                    // Auth0 API application during the authorization request.
+                    // In this case, since we only request a token to verify authentication and generate the VA,
+                    // there is no valid API target to specify as audience.
+                    // As a result, we must call the /userinfo endpoint (an OIDC-compliant endpoint) to retrieve user claims.
+                    //
+                    // An alternative approach would be to request an ID Token using the Implicit Grant flow (with form post).
+                    // However, many authentication providers discourage this method in favor of the Authorization Code flow.
+                    // Additionally, some customers may disable the Implicit Grant flow in their Auth0 application.
+                    // Therefore, retrieving user data via the /userinfo endpoint is a more robust solution.
+                    const auth0TokenData = await auth0TokenResp.json<Auth0TokenResponseData>();
+                    if (!auth0TokenData.access_token) {
+                        return new Response('Error: No Access Token found in response from Auth0', {
+                            status: 401,
+                        });
+                    }
+
+                    const userInfoURL = `${issuerBaseUrl}/userinfo/`;
+                    const userInfoResp = await fetch(userInfoURL, {
+                        method: 'GET',
+                        headers: { Authorization: `Bearer ${auth0TokenData.access_token}` },
                     });
+
+                    if (!userInfoResp.ok) {
+                        return new Response('Error: Unable to fetch user info from Auth0', {
+                            status: 401,
+                        });
+                    }
+
+                    userInfo = await userInfoResp.json<Record<string, any>>();
                 }
 
-                const userInfoURL = `${issuerBaseUrl}/userinfo/`;
-                const userInfoResp = await fetch(userInfoURL, {
-                    method: 'GET',
-                    headers: { Authorization: `Bearer ${auth0TokenData.access_token}` },
-                });
-
-                if (!userInfoResp.ok) {
-                    return new Response('Error: Unable to fetch user info from Auth0', {
-                        status: 401,
-                    });
-                }
-
-                const userInfo = await userInfoResp.json<Record<string, any>>();
                 try {
                     const privateKey = context.environment.signingSecrets.siteInstallation;
                     if (!privateKey) {
@@ -386,7 +419,7 @@ function sanitizeJWTTokenClaims(claims: jwt.JwtPayload) {
     const result: Record<string, any> = {};
 
     Object.entries(claims).forEach(([key, value]) => {
-        if (['iat', 'exp'].includes(key)) {
+        if (EXCLUDED_CLAIMS.includes(key)) {
             return;
         }
         result[key] = value;
