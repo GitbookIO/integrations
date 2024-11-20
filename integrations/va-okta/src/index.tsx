@@ -1,4 +1,4 @@
-import { sign } from '@tsndr/cloudflare-worker-jwt';
+import * as jwt from '@tsndr/cloudflare-worker-jwt';
 import { Router } from 'itty-router';
 
 import { IntegrationInstallationConfiguration } from '@gitbook/api';
@@ -33,6 +33,18 @@ type OktaProps = {
     siteInstallation?: {
         configuration?: OktaSiteInstallationConfiguration;
     };
+};
+
+type OktaTokenResponseData = {
+    access_token?: string;
+    refresh_token?: string;
+    token_type: 'Bearer';
+    expires_in: number;
+};
+
+type OktaTokenResponseError = {
+    error: string;
+    error_description: string;
 };
 
 export type OktaAction = { action: 'save.config' };
@@ -202,79 +214,90 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
         router.get('/visitor-auth/response', async (request) => {
             if ('site' in siteInstallation && siteInstallation.site) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
-                const privateKey = context.environment.signingSecrets.siteInstallation!;
-                let token;
-                try {
-                    token = await sign(
-                        { exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60) },
-                        privateKey,
-                    );
-                } catch (e) {
-                    return new Response('Error: Could not sign JWT token', {
-                        status: 500,
-                    });
-                }
 
                 const oktaDomain = siteInstallation.configuration.okta_domain;
                 const clientId = siteInstallation.configuration.client_id;
                 const clientSecret = siteInstallation.configuration.client_secret;
 
-                if (clientId && clientSecret) {
-                    const searchParams = new URLSearchParams({
-                        grant_type: 'authorization_code',
-                        client_id: clientId,
-                        client_secret: clientSecret,
-                        code: `${request.query.code}`,
-                        scope: 'openid',
-                        redirect_uri: `${installationURL}/visitor-auth/response`,
+                if (!clientId || !clientSecret || !oktaDomain) {
+                    return new Response(
+                        'Error: Either client id, client secret or okta domain is missing',
+                        {
+                            status: 400,
+                        },
+                    );
+                }
+
+                const searchParams = new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    client_id: clientId,
+                    client_secret: clientSecret,
+                    code: `${request.query.code}`,
+                    redirect_uri: `${installationURL}/visitor-auth/response`,
+                });
+                const accessTokenURL = `https://${oktaDomain}/oauth2/v1/token/`;
+                const oktaTokenResp = await fetch(accessTokenURL, {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+                    body: searchParams,
+                });
+
+                if (!oktaTokenResp.ok) {
+                    const errorResponse = await oktaTokenResp.json<OktaTokenResponseError>();
+                    logger.debug(JSON.stringify(errorResponse, null, 2));
+                    logger.debug(
+                        `Did not receive access token. Error: ${(errorResponse && errorResponse.error) || ''} ${
+                            (errorResponse && errorResponse.error_description) || ''
+                        }`,
+                    );
+                    return new Response('Error: Could not fetch token from Okta', {
+                        status: 401,
                     });
-                    const accessTokenURL = `https://${oktaDomain}/oauth2/v1/token/`;
-                    const resp: any = await fetch(accessTokenURL, {
-                        method: 'POST',
-                        headers: { 'content-type': 'application/x-www-form-urlencoded' },
-                        body: searchParams,
-                    })
-                        .then((response) => response.json())
-                        .catch((err) => {
-                            return new Response('Error: Could not fetch access token from Okta', {
-                                status: 401,
-                            });
-                        });
-                    if ('access_token' in resp) {
-                        let url;
-                        const state = request.query.state!.toString();
-                        const location = state.substring(state.indexOf('-') + 1);
-                        if (location) {
-                            url = new URL(`${publishedContentUrls?.published}${location}`);
-                            url.searchParams.append('jwt_token', token);
-                        } else {
-                            url = new URL(publishedContentUrls?.published!);
-                            url.searchParams.append('jwt_token', token);
-                        }
-                        if (token && publishedContentUrls?.published) {
-                            return Response.redirect(url.toString());
-                        } else {
-                            return new Response(
-                                "Error: Either JWT token or space's published URL is missing",
-                                {
-                                    status: 500,
-                                },
-                            );
-                        }
-                    } else {
-                        logger.debug(JSON.stringify(resp, null, 2));
-                        logger.debug(
-                            `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
-                                (resp && resp.error_description) || ''
-                            }`,
-                        );
-                        return new Response('Error: No Access Token found in response from Okta', {
-                            status: 401,
+                }
+
+                const oktaTokenData = await oktaTokenResp.json<OktaTokenResponseData>();
+                if (!oktaTokenData.access_token) {
+                    return new Response('Error: No Access Token found in response from Okta', {
+                        status: 401,
+                    });
+                }
+
+                // Okta already include user/custom claims in the access token so we can just decode it
+                const decodedOktaToken = await jwt.decode(oktaTokenData.access_token);
+                try {
+                    const privateKey = context.environment.signingSecrets.siteInstallation;
+                    if (!privateKey) {
+                        return new Response('Error: Missing private key from site installation', {
+                            status: 400,
                         });
                     }
-                } else {
-                    return new Response('Error: Either ClientId or Client Secret is missing', {
-                        status: 400,
+                    const jwtToken = await jwt.sign(
+                        {
+                            ...sanitizeJWTTokenClaims(decodedOktaToken.payload || {}),
+                            exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60),
+                        },
+                        privateKey,
+                    );
+
+                    const publishedContentUrl = publishedContentUrls?.published;
+                    if (!publishedContentUrl || !jwtToken) {
+                        return new Response(
+                            "Error: Either JWT token or site's published URL is missing",
+                            {
+                                status: 500,
+                            },
+                        );
+                    }
+
+                    const state = request.query.state?.toString();
+                    const location = state ? state.substring(state.indexOf('-') + 1) : '';
+                    const url = new URL(`${publishedContentUrl}${location || ''}`);
+                    url.searchParams.append('jwt_token', jwtToken);
+
+                    return Response.redirect(url.toString());
+                } catch (e) {
+                    return new Response('Error: Could not sign JWT token', {
+                        status: 500,
                     });
                 }
             }
@@ -329,3 +352,15 @@ export default createIntegration({
         return Response.redirect(url.toString());
     },
 });
+
+function sanitizeJWTTokenClaims(claims: jwt.JwtPayload) {
+    const result: Record<string, any> = {};
+
+    Object.entries(claims).forEach(([key, value]) => {
+        if (['iat', 'exp'].includes(key)) {
+            return;
+        }
+        result[key] = value;
+    });
+    return result;
+}
