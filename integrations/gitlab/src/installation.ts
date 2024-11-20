@@ -1,7 +1,5 @@
-import { StatusError } from 'itty-router';
-
 import { IntegrationSpaceInstallation } from '@gitbook/api';
-import { Logger } from '@gitbook/runtime';
+import { Logger, ExposableError } from '@gitbook/runtime';
 
 import { fetchProject } from './api';
 import { createGitLabWebhookURL, installWebhook } from './provider';
@@ -30,7 +28,7 @@ export async function saveSpaceConfiguration(
     assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
     if (!state.project || !state.branch) {
-        throw new StatusError(400, 'Incomplete configuration: missing project or branch');
+        throw new ExposableError('Incomplete configuration: missing project or branch');
     }
 
     const projectId = parseInt(state.project, 10);
