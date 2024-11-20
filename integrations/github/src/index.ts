@@ -1,4 +1,4 @@
-import { Router, error, StatusError } from 'itty-router';
+import { Router, error } from 'itty-router';
 
 import { ContentKitIcon, ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
 import {
@@ -7,6 +7,7 @@ import {
     createOAuthHandler,
     Logger,
     EventCallback,
+    ExposableError,
 } from '@gitbook/runtime';
 
 import {
@@ -76,7 +77,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
         if (!verified) {
             const message = `Invalid signature for integration task`;
             logger.error(message);
-            throw new StatusError(400, message);
+            throw new ExposableError(message);
         }
 
         const { task } = JSON.parse(payloadString) as { task: IntegrationTask };
@@ -113,7 +114,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
             );
         } catch (error: any) {
             logger.error(`Error verifying signature ${error}`);
-            throw new StatusError(400, error.message);
+            throw new ExposableError(error.message);
         }
 
         logger.debug('received webhook event', { id, event });

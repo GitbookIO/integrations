@@ -1,7 +1,5 @@
-import { StatusError } from 'itty-router';
-
 import { IntegrationSpaceInstallation } from '@gitbook/api';
-import { Logger } from '@gitbook/runtime';
+import { Logger, ExposableError } from '@gitbook/runtime';
 
 import { fetchRepository } from './api';
 import { triggerExport, triggerImport } from './sync';
@@ -28,8 +26,7 @@ export async function saveSpaceConfiguration(
     assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
     if (!state.installation || !state.repository || !state.branch) {
-        throw new StatusError(
-            400,
+        throw new ExposableError(
             'Incomplete configuration: missing installation, repository or branch',
         );
     }
