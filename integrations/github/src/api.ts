@@ -1,7 +1,6 @@
 import LinkHeader from 'http-link-header';
-import { StatusError } from 'itty-router';
 
-import { Logger } from '@gitbook/runtime';
+import { Logger, ExposableError } from '@gitbook/runtime';
 
 import type { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
 import { assertIsDefined, getSpaceConfigOrThrow } from './utils';
@@ -343,7 +342,7 @@ async function requestGitHubAPI(
         logger.error(`[${options.method}] (${response.status}) GitHub API error: ${text}`);
 
         // Otherwise, we throw an error
-        throw new StatusError(response.status, `GitHub API error: ${response.statusText}`);
+        throw new ExposableError(`GitHub API error: ${response.statusText}`, response.status);
     }
 
     return response;
@@ -370,7 +369,7 @@ async function refreshCredentials(
 
     if (!resp.ok) {
         // If refresh fails for whatever reason, we ask the user to re-authenticate
-        throw new StatusError(401, `Unauthorized: kindly re-authenticate!`);
+        throw new ExposableError(`Unauthorized: kindly re-authenticate!`, 401);
     }
 
     const data = await resp.formData();
@@ -398,7 +397,7 @@ export function extractTokenCredentialsOrThrow(
 
     const oAuthCredentials = config?.oauth_credentials;
     if (!oAuthCredentials?.access_token) {
-        throw new StatusError(401, 'Unauthorized: kindly re-authenticate!');
+        throw new ExposableError('Unauthorized: kindly re-authenticate!', 401);
     }
 
     return oAuthCredentials;

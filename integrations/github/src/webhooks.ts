@@ -3,9 +3,8 @@ import type {
     PullRequestOpenedEvent,
     PullRequestSynchronizeEvent,
 } from '@octokit/webhooks-types';
-import { StatusError } from 'itty-router';
 
-import { Logger } from '@gitbook/runtime';
+import { Logger, ExposableError } from '@gitbook/runtime';
 
 import { handleImportDispatchForSpaces } from './tasks';
 import { GithubRuntimeContext } from './types';
@@ -24,9 +23,9 @@ export async function verifyGitHubWebhookSignature(
     secret: string,
 ) {
     if (!signature) {
-        throw new StatusError(400, 'No signature found on request');
+        throw new ExposableError('No signature found on request');
     } else if (!signature.startsWith('sha256=')) {
-        throw new StatusError(400, 'Invalid format: signature is not using sha256');
+        throw new ExposableError('Invalid format: signature is not using sha256');
     }
 
     const algorithm = { name: 'HMAC', hash: 'SHA-256' };
@@ -39,7 +38,7 @@ export async function verifyGitHubWebhookSignature(
     const signed = await crypto.subtle.sign(algorithm.name, key, enc.encode(payload));
     const expectedSignature = `sha256=${arrayToHex(signed)}`;
     if (!safeCompare(expectedSignature, signature)) {
-        throw new StatusError(400, 'Signature does not match event payload and secret');
+        throw new ExposableError('Signature does not match event payload and secret');
     }
 
     // All good!
