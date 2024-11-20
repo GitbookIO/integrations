@@ -1,7 +1,6 @@
 import LinkHeader from 'http-link-header';
-import { StatusError } from 'itty-router';
 
-import { Logger } from '@gitbook/runtime';
+import { Logger, ExposableError } from '@gitbook/runtime';
 
 import type { GitLabSpaceConfiguration } from './types';
 
@@ -275,7 +274,7 @@ async function requestGitLab(
 
         logger.error(`[${options.method}] (${response.status}) GitLab API error: ${text}`);
 
-        throw new StatusError(response.status, `GitLab API error: ${response.statusText}`);
+        throw new ExposableError(`GitLab API error: ${response.statusText}`, response.status);
     }
 
     return response;
@@ -296,7 +295,10 @@ function getEndpoint(config: GitLabSpaceConfiguration): string {
 export function getAccessTokenOrThrow(config: GitLabSpaceConfiguration): string {
     const { accessToken } = config;
     if (!accessToken) {
-        throw new StatusError(401, 'Unauthorized: kindly re-authenticate with a new access token.');
+        throw new ExposableError(
+            'Unauthorized: kindly re-authenticate with a new access token.',
+            401,
+        );
     }
 
     return accessToken;
