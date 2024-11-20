@@ -1,5 +1,5 @@
 import * as jwt from '@tsndr/cloudflare-worker-jwt';
-import { Router, StatusError } from 'itty-router';
+import { Router } from 'itty-router';
 
 import { IntegrationInstallationConfiguration } from '@gitbook/api';
 import {
