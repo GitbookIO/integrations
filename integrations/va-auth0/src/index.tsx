@@ -1,4 +1,4 @@
-import { sign } from '@tsndr/cloudflare-worker-jwt';
+import * as jwt from '@tsndr/cloudflare-worker-jwt';
 import { Router } from 'itty-router';
 
 import { IntegrationInstallationConfiguration } from '@gitbook/api';
@@ -33,6 +33,18 @@ type Auth0Props = {
     siteInstallation?: {
         configuration?: Auth0SiteInstallationConfiguration;
     };
+};
+
+type Auth0TokenResponseData = {
+    access_token?: string;
+    refresh_token?: string;
+    token_type: 'Bearer';
+    expires_in: number;
+};
+
+type Auth0TokenResponseError = {
+    error: string;
+    error_description: string;
 };
 
 export type Auth0Action = { action: 'save.config' };
@@ -213,78 +225,110 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
         router.get('/visitor-auth/response', async (request) => {
             if ('site' in siteInstallation && siteInstallation.site) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
-                const privateKey = context.environment.signingSecrets.siteInstallation!;
-                let token;
-                try {
-                    token = await sign(
-                        { exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60) },
-                        privateKey,
-                    );
-                } catch (e) {
-                    return new Response('Error: Could not sign JWT token', {
-                        status: 500,
-                    });
-                }
 
                 const issuerBaseUrl = siteInstallation?.configuration.issuer_base_url;
                 const clientId = siteInstallation?.configuration.client_id;
                 const clientSecret = siteInstallation?.configuration.client_secret;
-                if (clientId && clientSecret) {
-                    const searchParams = new URLSearchParams({
-                        grant_type: 'authorization_code',
-                        client_id: clientId,
-                        client_secret: clientSecret,
-                        code: `${request.query.code}`,
-                        redirect_uri: `${installationURL}/visitor-auth/response`,
-                    });
-                    const accessTokenURL = `${issuerBaseUrl}/oauth/token/`;
-                    const resp: any = await fetch(accessTokenURL, {
-                        method: 'POST',
-                        headers: { 'content-type': 'application/x-www-form-urlencoded' },
-                        body: searchParams,
-                    })
-                        .then((response) => response.json())
-                        .catch((err) => {
-                            return new Response('Error: Could not fetch access token from Auth0', {
-                                status: 401,
-                            });
-                        });
 
-                    if ('access_token' in resp) {
-                        let url;
-                        if (request.query.state) {
-                            url = new URL(
-                                `${publishedContentUrls?.published}${request.query.state}`,
-                            );
-                            url.searchParams.append('jwt_token', token);
-                        } else {
-                            url = new URL(publishedContentUrls?.published!);
-                            url.searchParams.append('jwt_token', token);
-                        }
-                        if (publishedContentUrls?.published && token) {
-                            return Response.redirect(url.toString());
-                        } else {
-                            return new Response(
-                                "Error: Either JWT token or space's published URL is missing",
-                                {
-                                    status: 500,
-                                },
-                            );
-                        }
-                    } else {
-                        logger.debug(JSON.stringify(resp, null, 2));
-                        logger.debug(
-                            `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
-                                (resp && resp.error_description) || ''
-                            }`,
-                        );
-                        return new Response('Error: No Access Token found in response from Auth0', {
-                            status: 401,
+                if (!clientId || !clientSecret || !issuerBaseUrl) {
+                    return new Response(
+                        'Error: Either client id, client secret or issuer base url is missing',
+                        {
+                            status: 400,
+                        },
+                    );
+                }
+
+                const searchParams = new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    client_id: clientId,
+                    client_secret: clientSecret,
+                    code: `${request.query.code}`,
+                    redirect_uri: `${installationURL}/visitor-auth/response`,
+                });
+                const accessTokenURL = `${issuerBaseUrl}/oauth/token/`;
+                const auth0TokenResp = await fetch(accessTokenURL, {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+                    body: searchParams,
+                });
+
+                if (!auth0TokenResp.ok) {
+                    const errorResponse = await auth0TokenResp.json<Auth0TokenResponseError>();
+                    logger.debug(JSON.stringify(errorResponse, null, 2));
+                    logger.debug(
+                        `Did not receive access token. Error: ${(errorResponse && errorResponse.error) || ''} ${
+                            (errorResponse && errorResponse.error_description) || ''
+                        }`,
+                    );
+                    return new Response('Error: Could not fetch token from Auth0', {
+                        status: 401,
+                    });
+                }
+
+                // Auth0 returns an opaque access token (i.e., one that doesn't include user or custom claims) when
+                // exchanging an authorization code for a token—unless an audience (aud parameter) is set to a valid
+                // Auth0 API application during the authorization request.
+                // In this case, since we only request a token to verify authentication and generate the VA,
+                // there is no valid API target to specify as audience.
+                // As a result, we must call the /userinfo endpoint (an OIDC-compliant endpoint) to retrieve user claims.
+                //
+                // An alternative approach would be to request an ID Token using the Implicit Grant flow (with form post).
+                // However, many authentication providers discourage this method in favor of the Authorization Code flow.
+                // Additionally, some customers may disable the Implicit Grant flow in their Auth0 application.
+                // Therefore, retrieving user data via the /userinfo endpoint is a more robust solution.
+                const auth0TokenData = await auth0TokenResp.json<Auth0TokenResponseData>();
+                if (!auth0TokenData.access_token) {
+                    return new Response('Error: No Access Token found in response from Auth0', {
+                        status: 401,
+                    });
+                }
+
+                const userInfoURL = `${issuerBaseUrl}/userinfo/`;
+                const userInfoResp = await fetch(userInfoURL, {
+                    method: 'GET',
+                    headers: { Authorization: `Bearer ${auth0TokenData.access_token}` },
+                });
+
+                if (!userInfoResp.ok) {
+                    return new Response('Error: Unable to fetch user info from Auth0', {
+                        status: 401,
+                    });
+                }
+
+                const userInfo = await userInfoResp.json<Record<string, any>>();
+                try {
+                    const privateKey = context.environment.signingSecrets.siteInstallation;
+                    if (!privateKey) {
+                        return new Response('Error: Missing private key from site installation', {
+                            status: 400,
                         });
                     }
-                } else {
-                    return new Response('Error: Either ClientId or Client Secret is missing', {
-                        status: 400,
+                    const jwtToken = await jwt.sign(
+                        {
+                            ...sanitizeJWTTokenClaims(userInfo || {}),
+                            exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60),
+                        },
+                        privateKey,
+                    );
+
+                    const publishedContentUrl = publishedContentUrls?.published;
+                    if (!publishedContentUrl || !jwtToken) {
+                        return new Response(
+                            "Error: Either JWT token or site's published URL is missing",
+                            {
+                                status: 500,
+                            },
+                        );
+                    }
+
+                    const url = new URL(`${publishedContentUrl}${request.query.state || ''}`);
+                    url.searchParams.append('jwt_token', jwtToken);
+
+                    return Response.redirect(url.toString());
+                } catch (e) {
+                    return new Response('Error: Could not sign JWT token', {
+                        status: 500,
                     });
                 }
             }
@@ -330,9 +374,22 @@ export default createIntegration({
         const url = new URL(`${issuerBaseUrl}/authorize`);
         url.searchParams.append('client_id', clientId);
         url.searchParams.append('response_type', 'code');
+        url.searchParams.append('scope', 'openid');
         url.searchParams.append('redirect_uri', `${installationURL}/visitor-auth/response`);
         url.searchParams.append('state', location);
 
         return Response.redirect(url.toString());
     },
 });
+
+function sanitizeJWTTokenClaims(claims: jwt.JwtPayload) {
+    const result: Record<string, any> = {};
+
+    Object.entries(claims).forEach(([key, value]) => {
+        if (['iat', 'exp'].includes(key)) {
+            return;
+        }
+        result[key] = value;
+    });
+    return result;
+}
