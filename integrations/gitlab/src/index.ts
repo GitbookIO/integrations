@@ -1,8 +1,13 @@
-import { StatusError, error } from 'itty-router';
-import { Router } from 'itty-router';
+import { Router, error } from 'itty-router';
 
 import { ContentKitIcon, ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
-import { createIntegration, FetchEventCallback, Logger, EventCallback } from '@gitbook/runtime';
+import {
+    createIntegration,
+    FetchEventCallback,
+    Logger,
+    EventCallback,
+    ExposableError,
+} from '@gitbook/runtime';
 
 import { fetchProject, fetchProjectBranches, fetchProjects, searchUserProjects } from './api';
 import { configBlock } from './components';
@@ -70,7 +75,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
         if (!verified) {
             const message = `Invalid signature for integration task`;
             logger.error(message);
-            throw new StatusError(400, message);
+            throw new ExposableError(message);
         }
 
         const { task } = JSON.parse(payloadString) as { task: IntegrationTask };
@@ -110,11 +115,11 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
                 if (!valid) {
                     const message = `Invalid signature for webhook event ${eventUuid}`;
                     logger.error(message);
-                    throw new StatusError(400, message);
+                    throw new ExposableError(message);
                 }
             } catch (error: any) {
                 logger.error(`Error verifying signature ${error}`);
-                throw new StatusError(400, error.message);
+                throw new ExposableError(error.message);
             }
         }
 
