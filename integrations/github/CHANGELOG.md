@@ -1,5 +1,11 @@
 # @gitbook/integration-github
 
+## 0.6.0
+
+### Minor Changes
+
+-   d6ec68a: Use ExposableError for public errors in GitHub integration
+
 ## 0.5.0
 
 ### Minor Changes

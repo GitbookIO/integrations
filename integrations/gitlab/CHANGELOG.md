@@ -1,5 +1,11 @@
 # @gitbook/integration-gitlab
 
+## 0.5.0
+
+### Minor Changes
+
+-   9bce519: Use ExposableError for public errors in GitLab integration
+
 ## 0.4.0
 
 ### Minor Changes
