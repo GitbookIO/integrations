@@ -18,13 +18,25 @@ type OktaRuntimeEnvironment = RuntimeEnvironment<{}, OktaSiteInstallationConfigu
 
 type OktaRuntimeContext = RuntimeContext<OktaRuntimeEnvironment>;
 
-type OktaSiteInstallationConfiguration = {
+type OktaSiteInstallationBaseConfiguration = {
     client_id?: string;
     okta_domain?: string;
     client_secret?: string;
+    include_claims_in_va_token?: boolean;
 };
 
-type OktaState = OktaSiteInstallationConfiguration;
+type OktaSiteInstallationConfiguration = OktaSiteInstallationBaseConfiguration & {
+    okta_custom_auth_server?: OktaCustomAuthServerConfiguration;
+};
+
+type OktaCustomAuthServerConfiguration = { id: string } & Pick<
+    OktaCustomAuthServerDiscoveryData,
+    'authorization_endpoint' | 'token_endpoint'
+>;
+
+type OktaState = OktaSiteInstallationBaseConfiguration & {
+    okta_custom_auth_server_id?: string;
+};
 
 type OktaProps = {
     installation: {
@@ -47,7 +59,20 @@ type OktaTokenResponseError = {
     error_description: string;
 };
 
-export type OktaAction = { action: 'save.config' };
+type OktaCustomAuthServerDiscoveryData = {
+    issuer: string;
+    authorization_endpoint: string;
+    token_endpoint: string;
+    userinfo_endpoint: string;
+    registration_endpoint: string;
+    jwks_uri: string;
+};
+
+const EXCLUDED_CLAIMS = ['iat', 'exp', 'iss', 'aud', 'jti'];
+
+export type OktaAction =
+    | { action: 'save.config' }
+    | { action: 'toggle.include_claims_in_va_token'; includeClaimsInVAToken: boolean };
 
 const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntimeContext>({
     componentId: 'config',
@@ -57,19 +82,65 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
             client_id: siteInstallation?.configuration?.client_id || '',
             okta_domain: siteInstallation?.configuration?.okta_domain || '',
             client_secret: siteInstallation?.configuration?.client_secret || '',
+            include_claims_in_va_token:
+                siteInstallation?.configuration?.include_claims_in_va_token || false,
+            okta_custom_auth_server_id:
+                siteInstallation?.configuration?.okta_custom_auth_server?.id || 'default',
         };
     },
     action: async (element, action, context) => {
         switch (action.action) {
+            case 'toggle.include_claims_in_va_token':
+                return {
+                    ...element,
+                    state: {
+                        ...element.state,
+                        include_claims_in_va_token: action.includeClaimsInVAToken,
+                    },
+                };
             case 'save.config':
                 const { api, environment } = context;
                 const siteInstallation = assertSiteInstallation(environment);
 
-                const configurationBody = {
+                let oktaCustomServerInfo: OktaCustomAuthServerConfiguration | undefined;
+
+                // When using a custom auth server fetch the OAuth endpoints from the discovery URL.
+                if (
+                    element.state.include_claims_in_va_token &&
+                    element.state.okta_custom_auth_server_id
+                ) {
+                    const customAuthServerDiscoveryURL = new URL(
+                        `oauth2/${element.state.okta_custom_auth_server_id}/.well-known/openid-configuration`,
+                        `https://${element.state.okta_domain}/`,
+                    );
+                    const discoveryResp = await fetch(customAuthServerDiscoveryURL, {
+                        method: 'GET',
+                    });
+
+                    if (!discoveryResp.ok) {
+                        throw new ExposableError(
+                            'Error: The Okta custom auth server ID provided is invalid',
+                        );
+                    }
+                    const { authorization_endpoint, token_endpoint } =
+                        await discoveryResp.json<OktaCustomAuthServerDiscoveryData>();
+
+                    oktaCustomServerInfo = {
+                        id: element.state.okta_custom_auth_server_id,
+                        authorization_endpoint,
+                        token_endpoint,
+                    };
+                }
+
+                const configurationBody: OktaSiteInstallationConfiguration = {
                     ...siteInstallation.configuration,
                     client_id: element.state.client_id,
                     client_secret: element.state.client_secret,
                     okta_domain: element.state.okta_domain,
+                    include_claims_in_va_token: element.state.include_claims_in_va_token,
+                    okta_custom_auth_server: element.state.include_claims_in_va_token
+                        ? oktaCustomServerInfo
+                        : undefined,
                 };
                 await api.integrations.updateIntegrationSiteInstallation(
                     siteInstallation.integration,
@@ -89,83 +160,124 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
         const siteInstallation = context.environment.siteInstallation;
         const VACallbackURL = `${siteInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
         return (
-            <block>
-                <input
-                    label="Client ID"
-                    hint={
-                        <text>
-                            The Client ID of your Okta application.
-                            <link
-                                target={{
-                                    url: 'https://developer.okta.com/docs/guides/find-your-app-credentials/main/#find-your-app-integration-credentials',
-                                }}
-                            >
-                                {' '}
-                                More Details
-                            </link>
-                        </text>
-                    }
-                    element={<textinput state="client_id" placeholder="Client ID" />}
-                />
-
-                <input
-                    label="Okta Domain"
-                    hint={
-                        <text>
-                            The Domain of your Okta instance.
-                            <link
-                                target={{
-                                    url: 'https://developer.okta.com/docs/guides/find-your-domain/main/',
-                                }}
-                            >
-                                {' '}
-                                More Details
-                            </link>
-                        </text>
-                    }
-                    element={<textinput state="okta_domain" placeholder="Okta Domain" />}
-                />
-
-                <input
-                    label="Client Secret"
-                    hint={
-                        <text>
-                            The Client Secret of your Okta application.
-                            <link
-                                target={{
-                                    url: 'https://developer.okta.com/docs/guides/find-your-app-credentials/main/#find-your-app-integration-credentials',
-                                }}
-                            >
-                                {' '}
-                                More Details
-                            </link>
-                        </text>
-                    }
-                    element={<textinput state="client_secret" placeholder="Client Secret" />}
-                />
-                <divider size="medium" />
-                <hint>
-                    <text style="bold">
-                        The following URL needs to be saved as a Sign-In Redirect URI in Okta:
-                    </text>
-                </hint>
-                <codeblock content={VACallbackURL} />
-                <input
-                    label=""
-                    hint=""
-                    element={
-                        <button
-                            style="primary"
-                            disabled={false}
-                            label="Save"
-                            tooltip="Save configuration"
-                            onPress={{
-                                action: 'save.config',
-                            }}
+            <configuration>
+                <box>
+                    <markdown content="### Okta application" />
+                    <vstack>
+                        <input
+                            label="Okta Domain"
+                            hint={
+                                <text>
+                                    The Domain of your Okta instance.
+                                    <link
+                                        target={{
+                                            url: 'https://developer.okta.com/docs/guides/find-your-domain/main/',
+                                        }}
+                                    >
+                                        {' '}
+                                        More Details
+                                    </link>
+                                </text>
+                            }
+                            element={<textinput state="okta_domain" placeholder="Okta Domain" />}
                         />
-                    }
-                />
-            </block>
+
+                        <input
+                            label="Client ID"
+                            hint={
+                                <text>
+                                    The Client ID of your Okta application.
+                                    <link
+                                        target={{
+                                            url: 'https://developer.okta.com/docs/guides/find-your-app-credentials/main/#find-your-app-integration-credentials',
+                                        }}
+                                    >
+                                        {' '}
+                                        More Details
+                                    </link>
+                                </text>
+                            }
+                            element={<textinput state="client_id" placeholder="Client ID" />}
+                        />
+
+                        <input
+                            label="Client Secret"
+                            hint={
+                                <text>
+                                    The Client Secret of your Okta application.
+                                    <link
+                                        target={{
+                                            url: 'https://developer.okta.com/docs/guides/find-your-app-credentials/main/#find-your-app-integration-credentials',
+                                        }}
+                                    >
+                                        {' '}
+                                        More Details
+                                    </link>
+                                </text>
+                            }
+                            element={
+                                <textinput state="client_secret" placeholder="Client Secret" />
+                            }
+                        />
+
+                        <input
+                            label="Add Sign-In Redirect URI"
+                            hint={
+                                <text>
+                                    Add this URL to the{' '}
+                                    <text style="bold">Sign-In Redirect URIs</text> section in your
+                                    application's settings in Okta.
+                                </text>
+                            }
+                            element={<codeblock content={VACallbackURL} />}
+                        />
+                    </vstack>
+
+                    <divider size="medium" />
+
+                    <markdown content="### Visitor authentication settings" />
+                    <input
+                        label="Include claims in JWT token"
+                        hint="Add user & custom claims from Auth0 backend to the JWT token to enrich the user's experience while navigating the site"
+                        element={
+                            <switch
+                                state="include_claims_in_va_token"
+                                onValueChange={{
+                                    action: 'toggle.include_claims_in_va_token',
+                                    includeClaimsInVAToken: element.dynamicState(
+                                        'include_claims_in_va_token',
+                                    ),
+                                }}
+                            />
+                        }
+                    />
+                    {element.state.include_claims_in_va_token ? (
+                        <input
+                            label="Okta Authorization server ID"
+                            hint="The ID of the custom authorization server in your Okta organization used to include additional claims in the users tokens."
+                            element={
+                                <textinput state="okta_auth_server_id" placeholder="default" />
+                            }
+                        />
+                    ) : null}
+
+                    <input
+                        label=""
+                        hint=""
+                        element={
+                            <button
+                                style="primary"
+                                disabled={false}
+                                label="Save"
+                                tooltip="Save configuration"
+                                onPress={{
+                                    action: 'save.config',
+                                }}
+                            />
+                        }
+                    />
+                </box>
+            </configuration>
         );
     },
 });
@@ -218,6 +330,10 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                 const oktaDomain = siteInstallation.configuration.okta_domain;
                 const clientId = siteInstallation.configuration.client_id;
                 const clientSecret = siteInstallation.configuration.client_secret;
+                const oktaCustomAuthServerConfig =
+                    siteInstallation.configuration.okta_custom_auth_server;
+                const includeClaimsInVAToken =
+                    siteInstallation.configuration.include_claims_in_va_token;
 
                 if (!clientId || !clientSecret || !oktaDomain) {
                     return new Response(
@@ -235,7 +351,10 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                     code: `${request.query.code}`,
                     redirect_uri: `${installationURL}/visitor-auth/response`,
                 });
-                const accessTokenURL = `https://${oktaDomain}/oauth2/v1/token/`;
+                const accessTokenURL =
+                    includeClaimsInVAToken && oktaCustomAuthServerConfig
+                        ? oktaCustomAuthServerConfig.token_endpoint
+                        : `https://${oktaDomain}/oauth2/v1/token/`;
                 const oktaTokenResp = await fetch(accessTokenURL, {
                     method: 'POST',
                     headers: { 'content-type': 'application/x-www-form-urlencoded' },
@@ -341,7 +460,14 @@ export default createIntegration({
             throw new ExposableError('OIDC configuration is missing');
         }
 
-        const url = new URL(`https://${oktaDomain}/oauth2/v1/authorize`);
+        const oktaCustomAuthServerConfig = siteInstallation.configuration.okta_custom_auth_server;
+        const includeClaimsInVAToken = siteInstallation.configuration.include_claims_in_va_token;
+
+        const url = new URL(
+            includeClaimsInVAToken && oktaCustomAuthServerConfig
+                ? oktaCustomAuthServerConfig.authorization_endpoint
+                : `https://${oktaDomain}/oauth2/v1/authorize`,
+        );
         url.searchParams.append('client_id', clientId);
         url.searchParams.append('response_type', 'code');
         url.searchParams.append('redirect_uri', `${installationURL}/visitor-auth/response`);
@@ -357,7 +483,7 @@ function sanitizeJWTTokenClaims(claims: jwt.JwtPayload) {
     const result: Record<string, any> = {};
 
     Object.entries(claims).forEach(([key, value]) => {
-        if (['iat', 'exp'].includes(key)) {
+        if (EXCLUDED_CLAIMS.includes(key)) {
             return;
         }
         result[key] = value;
