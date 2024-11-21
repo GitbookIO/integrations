@@ -283,10 +283,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
         });
     });
 
-    const response = (await router.handle(request, context).catch((err) => {
-        logger.error(`error handling request ${err.message} ${err.stack}`);
-        return error(err);
-    })) as Response | undefined;
+    const response = (await router.handle(request, context)) as Response | undefined;
 
     if (!response) {
         return new Response(`No route matching ${request.method} ${request.url}`, {
