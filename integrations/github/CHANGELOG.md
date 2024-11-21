@@ -1,5 +1,11 @@
 # @gitbook/integration-github
 
+## 0.6.1
+
+### Patch Changes
+
+-   62f857f: Don't catch router errors to allow them to be caught and processed in GitHub and GitLab integrations
+
 ## 0.6.0
 
 ### Minor Changes
