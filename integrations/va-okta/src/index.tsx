@@ -68,7 +68,7 @@ type OktaCustomAuthServerDiscoveryData = {
     jwks_uri: string;
 };
 
-const EXCLUDED_CLAIMS = ['iat', 'exp', 'iss', 'aud', 'jti'];
+const EXCLUDED_CLAIMS = ['iat', 'exp', 'iss', 'aud', 'jti', 'ver'];
 
 export type OktaAction =
     | { action: 'save.config' }
@@ -382,6 +382,7 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                 }
 
                 // Okta already include user/custom claims in the access token so we can just decode it
+                // TODO: verify token using JWKS and check audience (aud) claims
                 const decodedOktaToken = await jwt.decode(oktaTokenData.access_token);
                 try {
                     const privateKey = context.environment.signingSecrets.siteInstallation;

@@ -48,7 +48,7 @@ type Auth0TokenResponseError = {
     error_description: string;
 };
 
-const EXCLUDED_CLAIMS = ['iat', 'exp', 'iss', 'aud', 'jti'];
+const EXCLUDED_CLAIMS = ['iat', 'exp', 'iss', 'aud', 'jti', 'ver'];
 
 export type Auth0Action = { action: 'save.config' };
 
