@@ -1,7 +1,6 @@
 import { GitSyncOperationState, IntegrationSpaceInstallation } from '@gitbook/api';
 
 import type { GitHubSpaceConfiguration } from './types';
-import { ExposableError } from '@gitbook/runtime';
 
 export const BRANCH_REF_PREFIX = 'refs/heads/';
 
@@ -76,17 +75,12 @@ export function computeConfigQueryKey(
 
 export function assertIsDefined<T>(
     value: T,
-    options: { label: string; statusCode?: number },
+    options: {
+        label: string;
+    },
 ): asserts value is NonNullable<T> {
-    const { label, statusCode = 500 } = options;
-
     if (value === undefined || value === null) {
-        const errorMsg = `Expected value (${label}) to be defined, but received ${value}`;
-        if (statusCode >= 400 && statusCode < 500) {
-            throw new ExposableError(errorMsg, statusCode);
-        }
-
-        throw new Error(errorMsg);
+        throw new Error(`Expected value (${options.label}) to be defined, but received ${value}`);
     }
 }
 
