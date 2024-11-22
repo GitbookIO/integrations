@@ -23,7 +23,7 @@ export async function installWebhook(
 ) {
     const config = getSpaceConfigOrThrow(spaceInstallation);
 
-    assertIsDefined(config.project, { label: 'config.project' });
+    assertIsDefined(config.project, { label: 'config.project', statusCode: 400 });
 
     const projectId = config.project;
     const id = await addProjectWebhook(config, config.project, webhookUrl, webhookToken);
@@ -38,8 +38,8 @@ export async function installWebhook(
  * project.
  */
 export async function uninstallWebhook(config: GitLabSpaceConfiguration) {
-    assertIsDefined(config.project, { label: 'config.project' });
-    assertIsDefined(config.webhookId, { label: 'config.webhookId' });
+    assertIsDefined(config.project, { label: 'config.project', statusCode: 400 });
+    assertIsDefined(config.webhookId, { label: 'config.webhookId', statusCode: 400 });
 
     const projectId = config.project;
     const webhookId = config.webhookId;
@@ -62,7 +62,7 @@ export async function updateCommitStatus(
         description: string;
     },
 ) {
-    assertIsDefined(config.project, { label: 'config.project' });
+    assertIsDefined(config.project, { label: 'config.project', statusCode: 400 });
 
     const projectId = config.project;
 
