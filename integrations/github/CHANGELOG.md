@@ -1,5 +1,11 @@
 # @gitbook/integration-github
 
+## 0.6.2
+
+### Patch Changes
+
+-   953d82a: Throw 400 exposable errors instead of internal errors when Git sync config value are missing/incomplete
+
 ## 0.6.1
 
 ### Patch Changes
