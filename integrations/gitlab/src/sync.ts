@@ -4,7 +4,7 @@ import {
     IntegrationSpaceInstallation,
     Revision,
 } from '@gitbook/api';
-import { ExposableError, Logger } from '@gitbook/runtime';
+import { Logger } from '@gitbook/runtime';
 
 import {
     getGitCommitURL,
@@ -68,7 +68,7 @@ export async function triggerImport(
         return;
     }
 
-    assertIsDefined(config.branch, { label: 'config.branch', statusCode: 400 });
+    assertIsDefined(config.branch, { label: 'config.branch' });
 
     logger.info(`Initiating an import from GitLab to GitBook space ${spaceId}`);
 
@@ -130,7 +130,7 @@ export async function triggerExport(
         return;
     }
 
-    assertIsDefined(config.branch, { label: 'config.branch', statusCode: 400 });
+    assertIsDefined(config.branch, { label: 'config.branch' });
 
     logger.info(`Initiating an export from space ${spaceId} to GitLab`);
 
