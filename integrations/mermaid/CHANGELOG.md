@@ -1,5 +1,11 @@
 # @gitbook/integration-mermaid
 
+## 0.2.1
+
+### Patch Changes
+
+-   97786d8: Make the mermaid block recover from errors when rendering; to ensure the user can continue editing it
+
 ## 0.2.0
 
 ### Minor Changes
