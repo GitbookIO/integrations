@@ -1,5 +1,11 @@
 # @gitbook/integration-mermaid
 
+## 0.3.0
+
+### Minor Changes
+
+-   1803bae: Update mermaid to version 11
+
 ## 0.2.1
 
 ### Patch Changes
