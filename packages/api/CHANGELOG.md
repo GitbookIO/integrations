@@ -1,5 +1,59 @@
 # @gitbook/api
 
+## 0.60.0
+
+### Minor Changes
+
+-   dfbbfb0: Update API client with latest OpenAPI spec
+
+## 0.59.0
+
+### Minor Changes
+
+-   75466c1: Update API client with latest OpenAPI spec
+
+## 0.58.0
+
+### Minor Changes
+
+-   a04dfb8: Bump @gitbook/api to use the latest OpenAPI spec
+
+## 0.57.0
+
+### Minor Changes
+
+-   d3fcacc: Bump @gitbook/api to use the latest OpenAPI spec
+
+## 0.56.0
+
+### Minor Changes
+
+-   436f5b6: Update API client with latest OpenAPI spec
+
+## 0.55.0
+
+### Minor Changes
+
+-   8f8179d: Update API client with latest OpenAPI spec
+
+## 0.54.0
+
+### Minor Changes
+
+-   e3944b8: Adds new endpoint for searching specific to Sites
+
+## 0.53.0
+
+### Minor Changes
+
+-   59ea476: Bump @gitbook/api to use the latest OpenAPI spec
+
+## 0.52.0
+
+### Minor Changes
+
+-   35b8bf0: Add in source details when there is no AI answer
+
 ## 0.51.0
 
 ### Minor Changes

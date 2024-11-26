@@ -1,5 +1,22 @@
 # @gitbook/integration-googleanalytics
 
+## 0.2.0
+
+### Minor Changes
+
+-   80e4d20: Add an extra check for variables that may be undefined in space integrations
+
+### Patch Changes
+
+-   Updated dependencies [a04dfb8]
+    -   @gitbook/api@0.58.0
+
+## 0.1.5
+
+### Patch Changes
+
+-   923b241: Disable gtag storage when cookies consent is no
+
 ## 0.1.4
 
 ### Patch Changes

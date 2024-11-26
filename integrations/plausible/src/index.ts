@@ -23,10 +23,10 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 ) => {
     const domain =
         environment.siteInstallation?.configuration?.domain ??
-        environment.spaceInstallation.configuration.domain;
+        environment.spaceInstallation?.configuration?.domain;
     const api =
         environment.siteInstallation?.configuration?.api ??
-        (environment.spaceInstallation.configuration.api || '');
+        (environment.spaceInstallation?.configuration?.api || '');
     if (!domain) {
         return;
     }

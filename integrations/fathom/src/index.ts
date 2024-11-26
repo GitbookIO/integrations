@@ -22,7 +22,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 ) => {
     const siteId =
         environment.siteInstallation?.configuration?.site_id ??
-        environment.spaceInstallation.configuration.site_id;
+        environment.spaceInstallation?.configuration?.site_id;
 
     if (!siteId) {
         return;

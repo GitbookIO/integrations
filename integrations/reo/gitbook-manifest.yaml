@@ -1,0 +1,51 @@
+name: reodotdev
+title: Reo.dev
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/preview.png
+description: Plug your GitBook site to your Reo.dev installation.
+externalLinks:
+    - label: Website
+      url: https://www.reo.dev/
+visibility: public
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - space:script:inject
+    - site:script:inject
+organization: d8f63b60-89ae-11e7-8574-5927d48c4877
+contentSecurityPolicy:
+    script-src: static.reo.dev www.ipapi.co;
+summary: |
+    # Overview
+    Reo.Dev is the Business to Developer (B2D) ABM platform that helps you find revenue opportunity from developer activity.
+    This integration lets you add the Reo.Dev Javascript on your published GitBook site to seamlessly analyze developer intent through any interactions with your content on GitBook.
+
+    # How it works
+    The integration injects the Reo.dev script on your page, using the configured client ID, 
+    so that you can get analytics information from your GitBook site directly inside of Reo.
+
+    # Configure
+    Install the integration on the GitBook space of your choice.
+    Locate the Reo.dev's client ID you want to use, which is available in Reo.dev's Integration -> Documentation section
+
+categories:
+    - analytics
+configurations:
+    space:
+        properties:
+            tracking_id:
+                type: string
+                title: Client ID
+                description: Available in Reo.dev's Integration -> Documentation section
+        required:
+            - tracking_id
+    site:
+        properties:
+            tracking_id:
+                type: string
+                title: Client ID
+                description: Available in Reo.dev's Integration -> Documentation section
+        required:
+            - tracking_id
