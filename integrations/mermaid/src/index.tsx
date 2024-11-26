@@ -93,7 +93,11 @@ export default createIntegration({
                             console.log('mermaid: process queue', queue.length);
                             if (queue.length > 0) {
                                 const content = queue[0];
-                                await renderDiagram(content);
+                                try {
+                                    await renderDiagram(content);
+                                } catch (error) {
+                                    console.error('mermaid: render error', error);
+                                }
 
                                 queue.shift();
                             }
