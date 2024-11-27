@@ -75,7 +75,7 @@ export default createIntegration({
                 </style>
                 <body>
                     <script type="module">
-                        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+                        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
                         mermaid.initialize({ startOnLoad: false });
 
                         const queue = [];
@@ -93,7 +93,11 @@ export default createIntegration({
                             console.log('mermaid: process queue', queue.length);
                             if (queue.length > 0) {
                                 const content = queue[0];
-                                await renderDiagram(content);
+                                try {
+                                    await renderDiagram(content);
+                                } catch (error) {
+                                    console.error('mermaid: render error', error);
+                                }
 
                                 queue.shift();
                             }
