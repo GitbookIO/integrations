@@ -279,13 +279,15 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                 });
 
                 if (!auth0TokenResp.ok) {
-                    const errorResponse = await auth0TokenResp.json<Auth0TokenResponseError>();
-                    logger.debug(JSON.stringify(errorResponse, null, 2));
-                    logger.debug(
-                        `Did not receive access token. Error: ${
-                            (errorResponse && errorResponse.error) || ''
-                        } ${(errorResponse && errorResponse.error_description) || ''}`,
-                    );
+                    if (auth0TokenResp.headers.get('content-type')?.includes('application/json')) {
+                        const errorResponse = await auth0TokenResp.json<Auth0TokenResponseError>();
+                        logger.debug(JSON.stringify(errorResponse, null, 2));
+                        logger.debug(
+                            `Did not receive access token. Error: ${
+                                (errorResponse && errorResponse.error) || ''
+                            } ${(errorResponse && errorResponse.error_description) || ''}`,
+                        );
+                    }
                     return new Response('Error: Could not fetch token from Auth0', {
                         status: 401,
                     });
