@@ -326,13 +326,14 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                     userInfo = await userInfoResp.json<Record<string, any>>();
                 }
 
+                const privateKey = context.environment.signingSecrets.siteInstallation;
+                if (!privateKey) {
+                    return new Response('Error: Missing private key from site installation', {
+                        status: 400,
+                    });
+                }
+
                 try {
-                    const privateKey = context.environment.signingSecrets.siteInstallation;
-                    if (!privateKey) {
-                        return new Response('Error: Missing private key from site installation', {
-                            status: 400,
-                        });
-                    }
                     const jwtToken = await jwt.sign(
                         {
                             ...(userInfo ?? {}),
