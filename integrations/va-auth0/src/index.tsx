@@ -22,7 +22,7 @@ type Auth0SiteInstallationConfiguration = {
     client_id?: string;
     issuer_base_url?: string;
     client_secret?: string;
-    include_claims_in_va_token?: boolean;
+    enrich_session?: boolean;
 };
 
 type Auth0State = Auth0SiteInstallationConfiguration;
@@ -70,8 +70,7 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
             client_id: siteInstallation?.configuration?.client_id || '',
             issuer_base_url: siteInstallation?.configuration?.issuer_base_url || '',
             client_secret: siteInstallation?.configuration?.client_secret || '',
-            include_claims_in_va_token:
-                siteInstallation?.configuration?.include_claims_in_va_token || false,
+            enrich_session: siteInstallation?.configuration?.enrich_session || false,
         };
     },
     action: async (element, action, context) => {
@@ -85,7 +84,7 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
                     client_id: element.state.client_id,
                     client_secret: element.state.client_secret,
                     issuer_base_url: getDomainWithHttps(element.state.issuer_base_url ?? ''),
-                    include_claims_in_va_token: element.state.include_claims_in_va_token,
+                    enrich_session: element.state.enrich_session,
                 };
 
                 await api.integrations.updateIntegrationSiteInstallation(
@@ -184,8 +183,8 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
                     <markdown content="### Visitor authentication settings" />
                     <input
                         label="Include claims in JWT token"
-                        hint="Add user & custom claims from Auth0 backend to the JWT token to enrich the user's experience while navigating the site"
-                        element={<switch state="include_claims_in_va_token" />}
+                        hint="Enhance the user's site navigation experience based on user information and attributes provided by your Auth0 authorization backend."
+                        element={<switch state="enrich_session" />}
                     />
 
                     <input
@@ -253,8 +252,7 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
             if ('site' in siteInstallation && siteInstallation.site) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
 
-                const includeClaimsInToken =
-                    siteInstallation?.configuration.include_claims_in_va_token;
+                const includeClaimsInToken = siteInstallation?.configuration.enrich_session;
                 const issuerBaseUrl = siteInstallation?.configuration.issuer_base_url;
                 const clientId = siteInstallation?.configuration.client_id;
                 const clientSecret = siteInstallation?.configuration.client_secret;
@@ -407,7 +405,9 @@ export default createIntegration({
         const url = new URL(`${issuerBaseUrl}/authorize`);
         url.searchParams.append('client_id', clientId);
         url.searchParams.append('response_type', 'code');
-        url.searchParams.append('scope', 'openid');
+        if (configuration.enrich_session) {
+            url.searchParams.append('scope', 'openid');
+        }
         url.searchParams.append('redirect_uri', `${installationURL}/visitor-auth/response`);
         url.searchParams.append('state', location);
 
