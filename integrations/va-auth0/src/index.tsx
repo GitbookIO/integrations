@@ -48,8 +48,6 @@ type Auth0TokenResponseError = {
     error_description: string;
 };
 
-const EXCLUDED_CLAIMS = ['iat', 'exp', 'iss', 'aud', 'jti', 'ver'];
-
 export type Auth0Action = { action: 'save.config' };
 
 const getDomainWithHttps = (url: string): string => {
@@ -337,7 +335,7 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                     }
                     const jwtToken = await jwt.sign(
                         {
-                            ...sanitizeJWTTokenClaims(userInfo || {}),
+                            ...(userInfo ?? {}),
                             exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60),
                         },
                         privateKey,
@@ -414,15 +412,3 @@ export default createIntegration({
         return Response.redirect(url.toString());
     },
 });
-
-function sanitizeJWTTokenClaims(claims: jwt.JwtPayload) {
-    const result: Record<string, any> = {};
-
-    Object.entries(claims).forEach(([key, value]) => {
-        if (EXCLUDED_CLAIMS.includes(key)) {
-            return;
-        }
-        result[key] = value;
-    });
-    return result;
-}
