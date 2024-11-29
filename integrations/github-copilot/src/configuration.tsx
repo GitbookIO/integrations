@@ -1,22 +1,20 @@
 import { ContentKitIcon } from '@gitbook/api';
-import { createComponent, getOAuthToken } from '@gitbook/runtime';
+import { InstallationConfigurationProps, createComponent, getOAuthToken } from '@gitbook/runtime';
 
 import { fetchGitHubInstallations } from './github';
 import { getGitHubOAuthConfiguration } from './oauth';
-import type { GitHubCopilotConfiguration, GitHubCopilotRuntimeContext } from './types';
+import type {
+    GitHubCopilotConfiguration,
+    GitHubCopilotRuntimeContext,
+    GitHubCopilotRuntimeEnvironment,
+} from './types';
 import { createGitHubSetupState } from './setup';
-
-type ConfigureProps = {
-    installation: {
-        configuration?: GitHubCopilotConfiguration;
-    };
-};
 
 /**
  * ContentKit component to configure the GitHub Copilot integration.
  */
 export const configurationComponent = createComponent<
-    ConfigureProps,
+    InstallationConfigurationProps<GitHubCopilotRuntimeEnvironment>,
     {
         installations: string[];
     },
