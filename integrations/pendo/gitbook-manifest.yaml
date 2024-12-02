@@ -16,7 +16,7 @@ scopes:
     - site:script:inject
 organization: gitbook
 contentSecurityPolicy:
-    script-src: https://cdn.eu.pendo.io
+    script-src: https://cdn.eu.pendo.io https://cdn.pendo.io
 summary: |
     # Overview
     This integration allows to add Pendo Analytics on your published GitBook site.
