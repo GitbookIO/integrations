@@ -16,7 +16,8 @@
             })(v[w]);
         y = e.createElement(n);
         y.async = !0;
-        y.src = 'https://cdn.eu.pendo.io/agent/static/' + apiKey + '/pendo.js';
+        cdn = '<REGION>' === 'EU' ? 'https://cdn.eu.pendo.io' : 'https://cdn.pendo.io';
+        y.src = `${cdn}/agent/static/` + apiKey + '/pendo.js';
         z = e.getElementsByTagName(n)[0];
         z.parentNode.insertBefore(y, z);
     })(window, document, 'script', 'pendo');

@@ -8,7 +8,7 @@ description: Plug your GitBook site to your Pendo Analytics instance.
 externalLinks:
     - label: Documentation
       url: https://www.gitbook.com/integrations/pendo
-visibility: public
+visibility: private
 script: ./src/index.ts
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
@@ -33,11 +33,5 @@ categories:
     - analytics
 configurations:
     site:
-        properties:
-            api_key:
-                type: string
-                title: API Key
-                description: Pendo Analytics API Key
-        required:
-            - api_key
+        componentId: config
 target: site
