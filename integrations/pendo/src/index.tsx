@@ -48,7 +48,7 @@ const configBlock = createComponent<PendoProps, PendoState, PendoAction, PendoRu
 
                 const configurationBody = {
                     ...siteInstallation.configuration,
-                    apiKey: element.state.api_key,
+                    api_key: element.state.api_key,
                     is_eu_region: element.state.is_eu_region,
                 };
 
