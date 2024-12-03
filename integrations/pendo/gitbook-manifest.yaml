@@ -23,7 +23,7 @@ summary: |
 
     # How it works
     The integration injects the Pendo Analytics script on your page, using the configured API Key, 
-    so that you can get analytics information from your GitBook site directly inside of Heap.
+    so that you can get analytics information from your GitBook site directly inside of Pendo.
 
     # Configure
     Install the integration on the GitBook site of your choice.
