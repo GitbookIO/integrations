@@ -9,7 +9,7 @@ externalLinks:
     - label: Documentation
       url: https://www.gitbook.com/integrations/pendo
 visibility: private
-script: ./src/index.ts
+script: ./src/index.tsx
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
