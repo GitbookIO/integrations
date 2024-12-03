@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.79.0
+
+### Minor Changes
+
+-   9dd3c5f: Bump @gitbook/api version to include latest tint customization options
+
 ## 0.78.0
 
 ### Minor Changes
