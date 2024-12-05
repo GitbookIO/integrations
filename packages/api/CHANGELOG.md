@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.80.0
+
+### Minor Changes
+
+-   610c240: Bump @gitbook/api version for customization settings (tint)
+
 ## 0.79.0
 
 ### Minor Changes
