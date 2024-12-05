@@ -4,10 +4,10 @@ icon: ./assets/icon.png
 previewImages:
     - ./assets/heap-preview-1.png
     - ./assets/heap-preview-2.png
-description: Plug your GitBook site to your Heap Analytics instance.
+description: Plug your GitBook site to your ZoomInfo instance.
 externalLinks:
     - label: Documentation
-      url: https://www.gitbook.com/integrations/heap
+      url: https://www.gitbook.com/integrations/zoominfo
 visibility: private
 script: ./src/index.ts
 # The following scope(s) are available only to GitBook Staff
@@ -19,18 +19,16 @@ contentSecurityPolicy:
     script-src: https://js.zi-scripts.com 'unsafe-inline';
 summary: |
     # Overview
-    This integration allows to add the Heap Analytics tracker on your published GitBook site.
+    This integration allows to add the ZoomInfo Analytics tracker on your published GitBook site.
 
     # How it works
-    The integration injects the Heap Analytics script on your page, using the configured environment ID, 
-    so that you can get analytics information from your GitBook site directly inside of Heap.
+    The integration injects the ZoomInfo script on your page, using the script you provide during configuration, 
+    so that you can get analytics information from your GitBook site directly inside of ZoomInfo.
 
     # Configure
-    Install the integration on the GitBook space of your choice.
-    Locate the Heap environment ID you want to use, which is available in Heap's dashboard under "Account > Install":
-     * choose "Install Heap myself", then "Web" and "Code"
-     * locate the line showing `heap.load("some ID here")`
-     * copy the ID and paste it in the GitBook integration's configuration screen
+    Install the integration on the GitBook site of your choice.
+    Locate the ZoomInfo script you want to use, which is available in WebSights management:
+     * copy the script and paste it in the GitBook integration's configuration screen
 
 categories:
     - analytics

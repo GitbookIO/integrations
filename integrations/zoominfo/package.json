@@ -1,6 +1,6 @@
 {
-    "name": "@gitbook/integration-heap",
-    "version": "0.5.0",
+    "name": "@gitbook/integration-zoominfo",
+    "version": "0.0.1",
     "private": true,
     "dependencies": {
         "@gitbook/api": "*",

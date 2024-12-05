@@ -21,7 +21,6 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     { environment }: ZoomInfoRuntimeContext,
 ) => {
     const script = environment.siteInstallation?.configuration?.script;
-    console.log('handling fetch');
     if (!script) {
         throw new Error(
             `The ZoomInfo script is missing from the configuration (ID: ${
@@ -40,8 +39,6 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 
     // match[0] looks like "'abc...'" we need to remove the single quotes
     const siteId = match[0].replace(/\'/g, '');
-    console.log('siteId', siteId);
-    console.log('rawScript', rawScript);
 
     return new Response((rawScript as string).replace('<TO_REPLACE>', siteId), {
         headers: {
