@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.81.0
+
+### Minor Changes
+
+-   5c14848: Bump GitBook API.
+
 ## 0.80.1
 
 ### Patch Changes
