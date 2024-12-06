@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.80.1
+
+### Patch Changes
+
+-   879203a: Fix an issue where body data was not passed when using a streamed endpoint. It allows body data to be passed to POST endpoints that stream their response.
+
 ## 0.80.0
 
 ### Minor Changes
