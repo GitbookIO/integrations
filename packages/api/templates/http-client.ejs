@@ -232,7 +232,9 @@ export class HttpClient<SecurityDataType = unknown> {
         // @ts-ignore - unused error type
         E = any
     >({
+        body,
         path,
+        type,
         baseUrl,
         cancelToken,
         secure,
@@ -245,12 +247,18 @@ export class HttpClient<SecurityDataType = unknown> {
                     const requestQuery = params.query;
                     const requestParams = this.mergeRequestParams(params, secureParams);
                     const queryString = requestQuery ? this.toQueryString(requestQuery) : undefined;
+                    const payloadFormatter = this.contentFormatters[type || ContentType.Json];
 
                     const response = await this.customFetch(
                         `${baseUrl || this.baseUrl || ""}${path}${queryString ? `?${queryString}` : ""}`,
                         {
                             ...requestParams,
+                            headers: {
+                                ...(requestParams.headers || {}),
+                                ...(type && type !== ContentType.FormData ? { "Content-Type": type } : {}),
+                            },
                             signal: cancelToken ? this.createAbortSignal(cancelToken) : requestParams.signal,
+                            body: typeof body === "undefined" || body === null ? null : payloadFormatter(body)
                         }
                     )
 
