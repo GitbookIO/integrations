@@ -1,5 +1,16 @@
 # @gitbook/integration-va-auth0
 
+## 0.3.0
+
+### Minor Changes
+
+-   db68a17: Add support to VA Auth0 integration to include claims from backend in token
+
+### Patch Changes
+
+-   Updated dependencies [9dd3c5f]
+    -   @gitbook/api@0.79.0
+
 ## 0.2.0
 
 ### Minor Changes
