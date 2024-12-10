@@ -7,7 +7,7 @@ description: Plug your GitBook site to your ZoomInfo instance.
 externalLinks:
     - label: Documentation
       url: https://www.gitbook.com/integrations/zoominfo
-visibility: private
+visibility: public
 script: ./src/index.ts
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes

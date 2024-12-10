@@ -8,7 +8,7 @@ description: Plug your GitBook site to your Pendo Analytics instance.
 externalLinks:
     - label: Documentation
       url: https://www.gitbook.com/integrations/pendo
-visibility: private
+visibility: public
 script: ./src/index.tsx
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
