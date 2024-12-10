@@ -2,8 +2,7 @@ name: zoominfo
 title: ZoomInfo
 icon: ./assets/icon.png
 previewImages:
-    - ./assets/heap-preview-1.png
-    - ./assets/heap-preview-2.png
+    - ./assets/preview.png
 description: Plug your GitBook site to your ZoomInfo instance.
 externalLinks:
     - label: Documentation
