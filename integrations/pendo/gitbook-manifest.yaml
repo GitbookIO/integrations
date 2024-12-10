@@ -1,0 +1,37 @@
+name: pendo
+title: Pendo
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/preview-1.png
+    - ./assets/preview-2.png
+description: Plug your GitBook site to your Pendo Analytics instance.
+externalLinks:
+    - label: Documentation
+      url: https://www.gitbook.com/integrations/pendo
+visibility: private
+script: ./src/index.tsx
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+organization: gitbook
+contentSecurityPolicy:
+    script-src: https://cdn.eu.pendo.io https://cdn.pendo.io
+summary: |
+    # Overview
+    This integration allows to add Pendo Analytics on your published GitBook site.
+
+    # How it works
+    The integration injects the Pendo Analytics script on your page, using the configured API Key, 
+    so that you can get analytics information from your GitBook site directly inside of Pendo.
+
+    # Configure
+    Install the integration on the GitBook site of your choice.
+    Locate the Pendo API Key you want to use from Pendo and paste it in the GitBook integration's configuration screen
+
+categories:
+    - analytics
+configurations:
+    site:
+        componentId: config
+target: site
