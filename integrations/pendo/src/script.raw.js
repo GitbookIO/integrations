@@ -21,5 +21,8 @@
         y.src = `${cdn}/agent/static/` + apiKey + '/pendo.js';
         z = e.getElementsByTagName(n)[0];
         z.parentNode.insertBefore(y, z);
+        y.onload = function () {
+            pendo.initialize({});
+        };
     })(window, document, 'script', 'pendo');
 })('<TO_REPLACE>');
