@@ -1,5 +1,11 @@
 # @gitbook/integration-pendo
 
+## 0.0.4
+
+### Patch Changes
+
+- 1424b23: Initialize Pendo script
+
 ## 0.0.3
 
 ### Patch Changes
