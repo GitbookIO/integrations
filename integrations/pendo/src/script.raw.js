@@ -22,19 +22,7 @@
         z = e.getElementsByTagName(n)[0];
         z.parentNode.insertBefore(y, z);
         y.onload = function () {
-            pendo.initialize({
-                visitor: {
-                    id: 'id',
-                    email: 'email',
-                    firstName: 'firstName',
-                    lastName: 'lastName',
-                },
-                account: {
-                    id: 'accountId',
-                    accountName: 'accountName',
-                    payingStatus: 'payingStatus',
-                },
-            });
+            pendo.initialize({});
         };
     })(window, document, 'script', 'pendo');
 })('<TO_REPLACE>');
