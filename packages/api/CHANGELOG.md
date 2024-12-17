@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.83.0
+
+### Minor Changes
+
+- 70e35fb: Bump API version to expose redirectOnError query param for getPublishedContentByURL
+
 ## 0.82.0
 
 ### Minor Changes
