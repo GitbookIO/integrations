@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.84.0
+
+### Minor Changes
+
+- e3d615d: Bump API version to expose site events tracking.
+
 ## 0.83.0
 
 ### Minor Changes
