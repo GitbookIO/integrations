@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.85.0
+
+### Minor Changes
+
+- 55ca36f: Bump API version to expose new site insight events.
+
 ## 0.84.0
 
 ### Minor Changes
