@@ -2,8 +2,7 @@ name: pendo
 title: Pendo
 icon: ./assets/icon.png
 previewImages:
-    - ./assets/preview-1.png
-    - ./assets/preview-2.png
+    - ./assets/pendo-preview.png
 description: Plug your GitBook site to your Pendo Analytics instance.
 externalLinks:
     - label: Documentation
