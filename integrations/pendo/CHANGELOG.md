@@ -1,5 +1,12 @@
 # @gitbook/integration-pendo
 
+## 0.0.5
+
+### Patch Changes
+
+- 8a8a07d: Update preview images and old logos
+- 8a8a07d: Update images
+
 ## 0.0.4
 
 ### Patch Changes

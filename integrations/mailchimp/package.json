@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-mailchimp",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "private": true,
     "scripts": {
         "typecheck": "tsc --noEmit",
