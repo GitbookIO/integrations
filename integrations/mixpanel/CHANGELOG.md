@@ -1,5 +1,11 @@
 # @gitbook/integration-mixpanel
 
+## 0.4.2
+
+### Patch Changes
+
+- 126f152: Update images to 2x exports
+
 ## 0.4.1
 
 ### Patch Changes

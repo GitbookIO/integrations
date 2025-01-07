@@ -1,5 +1,11 @@
 # @gitbook/integration-pendo
 
+## 0.0.6
+
+### Patch Changes
+
+- 126f152: Update images to 2x exports
+
 ## 0.0.5
 
 ### Patch Changes

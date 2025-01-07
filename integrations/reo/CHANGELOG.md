@@ -1,5 +1,11 @@
 # @gitbook/integration-reo.dev
 
+## 0.3.2
+
+### Patch Changes
+
+- 126f152: Update images to 2x exports
+
 ## 0.3.1
 
 ### Patch Changes
