@@ -1,5 +1,11 @@
 # @gitbook/integration-plausible
 
+## 0.5.2
+
+### Patch Changes
+
+- 126f152: Update images to 2x exports
+
 ## 0.5.1
 
 ### Patch Changes

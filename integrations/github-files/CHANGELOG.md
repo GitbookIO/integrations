@@ -1,5 +1,11 @@
 # @gitbook/integration-github
 
+## 0.2.2
+
+### Patch Changes
+
+- 126f152: Update images to 2x exports
+
 ## 0.2.1
 
 ### Patch Changes
