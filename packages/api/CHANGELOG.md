@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.87.0
+
+### Minor Changes
+
+- 4315745: Bump API for vertical alignment types
+
 ## 0.86.0
 
 ### Minor Changes
