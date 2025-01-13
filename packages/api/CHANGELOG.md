@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.86.0
+
+### Minor Changes
+
+- 3111054: Bump API version to enable vertical-align in table text cells
+
 ## 0.85.0
 
 ### Minor Changes
