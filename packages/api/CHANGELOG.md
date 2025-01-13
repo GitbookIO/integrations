@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.88.0
+
+### Minor Changes
+
+- 3c684e6: Revert integration images for now and release API changes
+
 ## 0.87.0
 
 ### Minor Changes
