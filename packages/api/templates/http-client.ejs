@@ -2,7 +2,7 @@
 const { apiConfig, generateResponses, config } = it;
 %>
 import { EventIterator } from 'event-iterator';
-import { createParser, type ParsedEvent, type ReconnectInterval } from 'eventsource-parser';
+import { createParser, type EventSourceMessage } from 'eventsource-parser';
 
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
@@ -277,15 +277,23 @@ export class HttpClient<SecurityDataType = unknown> {
                         queue.stop();
                     }
 
-                    const parser = createParser((event: ParsedEvent | ReconnectInterval) => {
-                        if (event.type === 'event') {
-                            if (event.data === 'done') {
+                    const parser = createParser({
+                        onEvent: (event: EventSourceMessage) => {
+                            if (event.event === 'done') {
                                 stop();
+                            } else if (event.event === 'error') {
+                                const data = JSON.parse(event.data);
+                                reader.cancel();
+                                queue.fail(new Error(data.error.message));
                             } else {
                                 const data = JSON.parse(event.data);
                                 queue.push(data);
                             }
-                        }
+                        },
+                        onError: (error: Error) => {
+                            reader.cancel();
+                            queue.fail(error);
+                        },
                     })
 
                     const decoder = new TextDecoder();
