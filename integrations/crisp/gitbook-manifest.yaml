@@ -18,8 +18,8 @@ contentSecurityPolicy:
     script-src: |
         client.crisp.chat;
     style-src: |
-        client.crisp.chat;
-        https://client.crisp.chat
+        client.crisp.chat
+        https://client.crisp.chat;
 summary: |
     # Overview
 
