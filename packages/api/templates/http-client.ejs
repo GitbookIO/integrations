@@ -290,7 +290,7 @@ export class HttpClient<SecurityDataType = unknown> {
                                 queue.push(data);
                             }
                         },
-                        onError: (error: Error) => {
+                        onError: (error) => {
                             reader.cancel();
                             queue.fail(error);
                         },
