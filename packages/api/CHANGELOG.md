@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.88.1
+
+### Patch Changes
+
+- 1950ba3: Improve error handling for streamed API operations.
+
 ## 0.88.0
 
 ### Minor Changes
