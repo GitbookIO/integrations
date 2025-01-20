@@ -1,5 +1,13 @@
 # @gitbook/integration-crisp
 
+## 0.4.3
+
+### Patch Changes
+
+- 827b288: Fix CSP format
+- Updated dependencies [1950ba3]
+    - @gitbook/api@0.88.1
+
 ## 0.4.2
 
 ### Patch Changes
