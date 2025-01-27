@@ -1,0 +1,59 @@
+name: salesmartly
+title: Salesmartly
+icon: ./assets/icon.png
+organization: gitbook
+description: Add the Salesmartly chat widget to your published GitBook content
+previewImages:
+    - ./assets/salesmartly-preview.png
+externalLinks:
+    - label: Documentation
+      url: https://www.gitbook.com/integrations/salesmartly
+visibility: public
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+    - site:script:cookies
+contentSecurityPolicy:
+    script-src: |
+        https://assets.salesmartly.com
+        https://client.salesmartly.com
+        https://api.salesmartly.com
+        https://srz.salesmartly.com;
+    style-src: |
+        'unsafe-inline';
+    img-src: |
+        data:
+        blob:
+        assets-cdn.salesmartly.com
+    connect-src: |
+        wss://msg-ws.salesmartly.com
+    form-action: |
+        msg.salesmartly.com
+    media-src: |
+        assets-cdn.salesmartly.com;
+summary: |
+    # Overview
+
+    The Salesmartly integration for GitBook allows you to display the Salesmartly chat widget on your public documentation to connect and interact with your readers.
+
+    # How it works
+
+    Automatic chat widget on your documentation: Each of your connected GitBook spaces will fetch the Salesmartly chat widget script and inject it in your published content.
+
+    # Configure
+
+    You can configure the integration on single or multiple public spaces by navigating to the integrations in sub-navigation or org settings. You will then have to provide Application ID to finish the configuration.
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            app_id:
+                type: string
+                title: Application ID
+                description: You can find it in your Salesmartly account, under the "Installation" section of the "Settings" page.
+        required:
+            - app_id
+target: site
