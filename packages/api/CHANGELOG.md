@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.89.0
+
+### Minor Changes
+
+- ffe5fd1: Update with latest OpenAPI changes.
+
 ## 0.88.1
 
 ### Patch Changes
