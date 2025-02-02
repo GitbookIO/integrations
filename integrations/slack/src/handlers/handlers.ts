@@ -1,7 +1,7 @@
 import { Logger } from '@gitbook/runtime';
 
 import type { SlashEvent } from './commands';
-import { notifyOnlySupportedThreads, queryLens, saveThread } from '../actions';
+import { queryLens } from '../actions';
 import { SlackRuntimeContext } from '../configuration';
 import { isAllowedToRespond, isSaveThreadMessage, stripBotName } from '../utils';
 
@@ -80,23 +80,6 @@ export async function appMentionEventHandler(eventPayload: any, context: SlackRu
         // @ts-ignore
         const parsedMessage = stripBotName(text, eventPayload.authorizations[0]?.user_id);
 
-        if (isSaveThreadMessage(parsedMessage)) {
-            // not supported outside threads
-            if (!thread_ts) {
-                await notifyOnlySupportedThreads(context, team, channel, user);
-                return;
-            }
-
-            await saveThread(
-                {
-                    teamId: team,
-                    channelId: channel,
-                    thread_ts,
-                    userId: user,
-                },
-                context,
-            );
-        } else {
             // send to Lens
             await queryLens({
                 teamId: team,
@@ -109,6 +92,5 @@ export async function appMentionEventHandler(eventPayload: any, context: SlackRu
                 // @ts-ignore
                 authorization: eventPayload.authorizations[0],
             });
-        }
     }
 }
