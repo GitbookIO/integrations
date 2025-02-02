@@ -91,7 +91,7 @@ async function getRelatedSources(params: {
     }, new Set<string>());
 
     // query for all Revisions (accounting for spaces that might not exist or any errors)
-    const allRevisions: Array<Revision> = (
+    const allRevisions = (
         await Promise.allSettled(
             Array.from(allSpaces).map((space) => client.spaces.getCurrentRevision(space)),
         )
@@ -100,7 +100,7 @@ async function getRelatedSources(params: {
             accum.push(result.value.data);
         }
         return accum;
-    }, []);
+    }, [] as Array<Revision>);
 
     const getResolvedPage = (page: SearchAIAnswerSource & { type: 'page' }) => {
         // TODO: we can probably combine finding the currentRevision with extracting the appropriate page
@@ -114,6 +114,10 @@ async function getRelatedSources(params: {
             const allRevisionPages = extractAllPages(currentRevision.pages);
             const revisionPage = allRevisionPages.find((revPage) => revPage.id === page.page);
 
+            if (!revisionPage || revisionPage.type !== 'document') {
+                return null;
+            }
+
             return {
                 id: page.page,
                 sourceUrl,
@@ -122,57 +126,19 @@ async function getRelatedSources(params: {
         }
     };
 
-    const getResolvedSnippet = async (
-        source: SearchAIAnswerSource & { type: 'snippet' | 'capture' },
-    ): Promise<RelatedSource> => {
-        const snippetRequest = await client.orgs.getSnippet(organization, source.captureId);
-        const snippet = snippetRequest.data;
-
-        const sourceUrl = snippet.urls.app;
-
-        return {
-            id: snippet.id,
-            sourceUrl,
-            page: { title: snippet.title },
-        };
-    };
-
-    const resolvedSnippetsPromises = await Promise.allSettled(
-        topSources
-            .filter((source) => source.type === 'capture' || source.type === 'snippet')
-            .map(getResolvedSnippet),
-    );
-
-    const resolvedSnippets = resolvedSnippetsPromises.reduce((accum, result) => {
-        if (result.status === 'fulfilled') {
-            accum.push(result.value);
-        }
-
-        return accum;
-    }, [] as RelatedSource[]);
-
     // extract all related sources from the Revisions along with the related public URL
-    const relatedSources: Array<RelatedSource> = topSources.reduce((accum, source) => {
+    const relatedSources = topSources.reduce((accum, source) => {
         switch (source.type) {
             case 'page':
                 const resolvedPage = getResolvedPage(source);
+                if (resolvedPage) {
                 accum.push(resolvedPage);
-                break;
-
-            case 'snippet':
-            case 'capture':
-                const resolvedSnippet = resolvedSnippets.find(
-                    (snippet) => snippet.id === source.captureId,
-                );
-
-                if (resolvedSnippet) {
-                    accum.push(resolvedSnippet);
                 }
                 break;
         }
 
         return accum;
-    }, []);
+    }, [] as Array<RelatedSource>);
 
     // filter related sources from current revision
     return relatedSources;
@@ -221,20 +187,26 @@ export async function queryAskAI({
 
     const result = await client.orgs.askInOrganization(installation.target.organization, {
         query: parsedQuery,
+    }, {
+        format: 'markdown',
     });
-    const answer: SearchAIAnswer = result.data?.answer;
+    const answer = result.data?.answer;
 
     const messageTypePath = messageType === 'ephemeral' ? 'chat.postEphemeral' : 'chat.postMessage';
 
-    if (answer && answer.text) {
+    if (answer && answer.answer) {
+        if (!('markdown' in answer.answer)) {
+            throw new Error('Answer is not in markdown format');
+        }
+
+        const answerText = capitalizeFirstLetter(answer.answer.markdown);
+
         const relatedSources = await getRelatedSources({
             sources: answer.sources,
             client,
             environment,
             organization: installation.target.organization,
         });
-
-        const answerText = capitalizeFirstLetter(answer.text);
 
         const header = text.length > 150 ? `${text.slice(0, 140)}...` : text;
         const blocks = [
