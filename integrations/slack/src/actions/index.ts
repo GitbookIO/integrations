@@ -1,1 +1,1 @@
-export * from './queryLens';
+export * from './queryAskAI';

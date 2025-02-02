@@ -23,7 +23,7 @@ export type RelatedSource = {
     page: { path?: string; title: string };
 };
 
-export interface IQueryLens {
+export interface IQueryAskAI {
     channelId: string;
     channelName?: string;
     responseUrl?: string;
@@ -37,7 +37,7 @@ export interface IQueryLens {
     /* needed for postEphemeral */
     userId?: string;
 
-    /* Get lens reply in thread */
+    /* Get AskAI reply in thread */
     threadId?: string;
 
     authorization?: string;
@@ -65,7 +65,7 @@ const capitalizeFirstLetter = (text: string) =>
     text?.trim().charAt(0).toUpperCase() + text?.trim().slice(1);
 
 /*
- * Pulls out the top related pages from page IDs returned from Lens and resolves them using a provided GitBook API client.
+ * Pulls out the top related pages from page IDs returned from AskAI and resolves them using a provided GitBook API client.
  */
 async function getRelatedSources(params: {
     sources?: SearchAIAnswer['sources'];
@@ -179,9 +179,9 @@ async function getRelatedSources(params: {
 }
 
 /*
- * Queries GitBook Lens via the GitBook API and posts the answer in the form of Slack UI Blocks back to the original channel/conversation/thread.
+ * Queries GitBook AskAI via the GitBook API and posts the answer in the form of Slack UI Blocks back to the original channel/conversation/thread.
  */
-export async function queryLens({
+export async function queryAskAI({
     channelId,
     teamId,
     threadId,
@@ -193,7 +193,7 @@ export async function queryLens({
 
     responseUrl,
     channelName,
-}: IQueryLens) {
+}: IQueryAskAI) {
     const { environment, api } = context;
     const { client, installation } = await getInstallationApiClient(api, teamId);
     if (!installation) {

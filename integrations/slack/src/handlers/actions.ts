@@ -1,4 +1,4 @@
-import { type IQueryLens } from '../actions';
+import { type IQueryAskAI } from '../actions';
 import { getActionNameAndType, parseActionPayload } from '../utils';
 
 /**
@@ -23,8 +23,8 @@ export function createSlackActionsHandler(
             const { actionName, actionPostType } = getActionNameAndType(action.action_id);
 
             // dispatch the action to an appropriate action function
-            if (actionName === 'queryLens') {
-                const params: IQueryLens = {
+            if (actionName === 'queryAskAI') {
+                const params: IQueryAskAI = {
                     channelId: channel.id,
                     teamId: team.id,
                     text: action.value ?? action.text.text,
@@ -38,7 +38,7 @@ export function createSlackActionsHandler(
                     context,
                 };
 
-                // queryLens:ephemeral, queryLens:permanent
+                // queryAskAI:ephemeral, queryAskAI:permanent
                 const handlerPromise = handlers[actionName](params);
 
                 context.waitUntil(handlerPromise);
