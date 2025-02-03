@@ -4,7 +4,6 @@ import { SlackRuntimeContext } from './configuration';
 
 const logger = Logger('slack:api');
 
-
 type SlackResponse<Result> = {
     ok: boolean;
     error?: string;
@@ -13,7 +12,7 @@ type SlackResponse<Result> = {
 type SlackChannel = {
     id: string;
     name: string;
-}
+};
 
 /**
  * Cloudflare workers have a maximum number of subrequests we can call (20 according to my
@@ -68,8 +67,7 @@ export async function getChannelsPaginated(context: SlackRuntimeContext) {
 
     // Remove any duplicate as the pagination API could return duplicated channels
     return channels.filter(
-        (value, index, self) =>
-            index === self.findIndex((t) => t.id === value.id),
+        (value, index, self) => index === self.findIndex((t) => t.id === value.id),
     );
 }
 

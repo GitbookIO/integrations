@@ -80,17 +80,17 @@ export async function appMentionEventHandler(eventPayload: any, context: SlackRu
         // @ts-ignore
         const parsedMessage = stripBotName(text, eventPayload.authorizations[0]?.user_id);
 
-            // send to AskAI
-            await queryAskAI({
-                teamId: team,
-                channelId: channel,
-                threadId: thread_ts,
-                userId: user,
-                messageType: 'permanent',
-                text: parsedMessage,
-                context,
-                // @ts-ignore
-                authorization: eventPayload.authorizations[0],
-            });
+        // send to AskAI
+        await queryAskAI({
+            teamId: team,
+            channelId: channel,
+            threadId: thread_ts,
+            userId: user,
+            messageType: 'permanent',
+            text: parsedMessage,
+            context,
+            // @ts-ignore
+            authorization: eventPayload.authorizations[0],
+        });
     }
 }

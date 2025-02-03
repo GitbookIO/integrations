@@ -4,7 +4,6 @@ import { GitBookAPI } from '@gitbook/api';
 
 import { SlackInstallationConfiguration, SlackRuntimeContext } from './configuration';
 
-
 export function stripMarkdown(text: string) {
     return removeMarkdown(text);
 }

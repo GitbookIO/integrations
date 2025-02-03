@@ -50,11 +50,13 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
      */
     router.get(
         '/oauth',
-        createOAuthHandler<OAuthResponse & {
-            team: {
-                id: string;
-            };
-        }>({
+        createOAuthHandler<
+            OAuthResponse & {
+                team: {
+                    id: string;
+                };
+            }
+        >({
             clientId: environment.secrets.CLIENT_ID,
             clientSecret: environment.secrets.CLIENT_SECRET,
             // TODO: use the yaml as SoT for scopes
@@ -98,12 +100,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
     /* Handle shortcuts and interactivity via Slack UI blocks
      * shortcuts & interactivity
      */
-    router.post(
-        '/actions',
-        verifySlackRequest,
-        slackActionsHandler,
-        acknowledgeSlackRequest,
-    );
+    router.post('/actions', verifySlackRequest, slackActionsHandler, acknowledgeSlackRequest);
 
     /* Handle slash commands
      * eg. /gitbook [command]

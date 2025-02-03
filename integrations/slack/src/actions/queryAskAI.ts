@@ -131,7 +131,7 @@ async function getRelatedSources(params: {
             case 'page':
                 const resolvedPage = getResolvedPage(source);
                 if (resolvedPage) {
-                accum.push(resolvedPage);
+                    accum.push(resolvedPage);
                 }
                 break;
         }
@@ -191,11 +191,15 @@ export async function queryAskAI({
         },
     );
 
-    const result = await client.orgs.askInOrganization(installation.target.organization, {
-        query: parsedQuery,
-    }, {
-        format: 'markdown',
-    });
+    const result = await client.orgs.askInOrganization(
+        installation.target.organization,
+        {
+            query: parsedQuery,
+        },
+        {
+            format: 'markdown',
+        },
+    );
     const answer = result.data?.answer;
 
     const messageTypePath = messageType === 'ephemeral' ? 'chat.postEphemeral' : 'chat.postMessage';

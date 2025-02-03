@@ -29,14 +29,10 @@ const handleSpaceContentUpdated: EventCallback<
     }
 
     const [{ data: semanticChanges }, { data: space }] = await Promise.all([
-        api.spaces.getRevisionSemanticChanges(
-            event.spaceId,
-            event.revisionId,
-            {
-                // Ignore git metadata changes
-                metadata: false,
-            },
-        ),
+        api.spaces.getRevisionSemanticChanges(event.spaceId, event.revisionId, {
+            // Ignore git metadata changes
+            metadata: false,
+        }),
         api.spaces.getSpaceById(event.spaceId),
     ]);
 
