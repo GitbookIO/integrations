@@ -37,6 +37,7 @@ export async function publishIntegration(
         scopes: manifest.scopes ?? [],
         categories: manifest.categories,
         blocks: manifest.blocks,
+        contentSources: manifest.contentSources,
         configurations: manifest.configurations,
         secrets: manifest.secrets,
         visibility: manifest.visibility,
