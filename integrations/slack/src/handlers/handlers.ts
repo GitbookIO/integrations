@@ -68,7 +68,7 @@ export async function messageEventHandler(eventPayload: any, context: SlackRunti
 }
 
 /**
- * Handle an Event request and route it to either GitBook AskAI' query function or saveThread function.
+ * Handle an Event request and route it to AskAI's query function.
  */
 export async function appMentionEventHandler(eventPayload: any, context: SlackRuntimeContext) {
     // pull out required params from the slashEvent for queryAskAI
