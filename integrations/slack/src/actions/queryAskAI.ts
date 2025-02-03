@@ -12,7 +12,6 @@ import {
     SlackRuntimeEnvironment,
     SlackRuntimeContext,
 } from '../configuration';
-import { acknowledgeQuery } from '../middlewares';
 import { slackAPI } from '../slack';
 import { QueryDisplayBlock, ShareTools, decodeSlackEscapeChars, Spacer, SourcesBlock } from '../ui';
 import { getInstallationApiClient, stripBotName, stripMarkdown } from '../utils';
@@ -174,16 +173,23 @@ export async function queryAskAI({
     const parsedQuery = stripMarkdown(stripBotName(text, authorization?.user_id));
 
     // async acknowledge the request to the end user early
-    acknowledgeQuery({
+    slackAPI(
         context,
-        text: parsedQuery,
-        userId,
-        threadId,
-        channelId,
-        responseUrl,
-        accessToken,
-        messageType,
-    });
+        {
+            method: 'POST',
+            path: messageType === 'ephemeral' ? 'chat.postEphemeral' : 'chat.postMessage',
+            responseUrl,
+            payload: {
+                channel: channelId,
+                text: `_Asking: ${stripMarkdown(text)}_`,
+                ...(userId ? { user: userId } : {}), // actually shouldn't be optional
+                ...(threadId ? { thread_ts: threadId } : {}),
+            },
+        },
+        {
+            accessToken,
+        },
+    );
 
     const result = await client.orgs.askInOrganization(installation.target.organization, {
         query: parsedQuery,

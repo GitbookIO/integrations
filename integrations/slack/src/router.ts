@@ -1,6 +1,6 @@
 import { Router } from 'itty-router';
 
-import { createOAuthHandler, FetchEventCallback } from '@gitbook/runtime';
+import { createOAuthHandler, FetchEventCallback, OAuthResponse } from '@gitbook/runtime';
 
 import { queryAskAI } from './actions';
 import {
@@ -51,7 +51,11 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
      */
     router.get(
         '/oauth',
-        createOAuthHandler({
+        createOAuthHandler<OAuthResponse & {
+            team: {
+                id: string;
+            };
+        }>({
             clientId: environment.secrets.CLIENT_ID,
             clientSecret: environment.secrets.CLIENT_SECRET,
             // TODO: use the yaml as SoT for scopes

@@ -12,10 +12,12 @@ export async function verifySlackRequest(request: Request, { environment }: Slac
     // Clone the request as to not use up the only read the body allows for future requests
     const req = request.clone();
 
-    // @ts-ignore
     const slackSignature = req.headers.get('x-slack-signature');
-    // @ts-ignore
     const slackTimestamp = req.headers.get('x-slack-request-timestamp');
+
+    if (!slackSignature || !slackTimestamp) {
+        throw new Error('Missing Slack signature or timestamp');
+    }
 
     // Check for replay attacks
     const now = Math.floor(Date.now() / 1000);
@@ -34,40 +36,6 @@ export async function verifySlackRequest(request: Request, { environment }: Slac
     if (!secureCompare(slackSignature, computedSignature)) {
         throw new Error('Invalid signature');
     }
-}
-
-export function acknowledgeQuery({
-    context,
-    text,
-    userId,
-    channelId,
-    responseUrl,
-    threadId,
-    accessToken,
-    messageType = 'ephemeral',
-}) {
-    const slackMessageTypes = {
-        ephemeral: 'chat.postEphemeral',
-        permanent: 'chat.postMessage',
-    };
-
-    return slackAPI(
-        context,
-        {
-            method: 'POST',
-            path: slackMessageTypes[messageType], // probably alwasy ephemeral? or otherwise have replies in same thread
-            responseUrl,
-            payload: {
-                channel: channelId,
-                text: `_Asking: ${stripMarkdown(text)}_`,
-                ...(userId ? { user: userId } : {}), // actually shouldn't be optional
-                ...(threadId ? { thread_ts: threadId } : {}),
-            },
-        },
-        {
-            accessToken,
-        },
-    );
 }
 
 /**

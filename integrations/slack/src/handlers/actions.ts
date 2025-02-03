@@ -1,4 +1,5 @@
 import { type IQueryAskAI } from '../actions';
+import { SlackRuntimeContext } from '../configuration';
 import { getActionNameAndType, parseActionPayload } from '../utils';
 
 /**
@@ -11,8 +12,8 @@ export function createSlackActionsHandler(
         [type: string]: (event: object) => Promise<any>;
     },
     // TODO: type output
-): any {
-    return async (request, context) => {
+) {
+    return async (request: Request, context: SlackRuntimeContext) => {
         const actionPayload = await parseActionPayload(request);
 
         const { actions, container, channel, team, user } = actionPayload;

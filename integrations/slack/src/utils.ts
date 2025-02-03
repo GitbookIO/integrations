@@ -2,7 +2,7 @@ import removeMarkdown from 'remove-markdown';
 
 import { GitBookAPI } from '@gitbook/api';
 
-import { SlackInstallationConfiguration } from './configuration';
+import { SlackInstallationConfiguration, SlackRuntimeContext } from './configuration';
 
 
 export function stripMarkdown(text: string) {
@@ -35,7 +35,7 @@ export async function getInstallationApiClient(api: GitBookAPI, externalId: stri
     return { client: installationApiClient, installation };
 }
 
-export async function getInstallationConfig(context, externalId) {
+export async function getInstallationConfig(context: SlackRuntimeContext, externalId: string) {
     const { api, environment } = context;
 
     // Lookup the concerned installations

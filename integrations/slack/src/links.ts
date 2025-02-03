@@ -43,7 +43,7 @@ export async function unfurlLink(event: LinkSharedSlackEvent, context: SlackRunt
     const installationApiClient = await api.createInstallationClient('slack', installation.id);
 
     // Resolve links to their content
-    const unfurls = {};
+    const unfurls: Record<string, any> = {};
     await Promise.all(
         event.event.links.map(async (link) => {
             const { data: content } = await installationApiClient.urls.getContentByUrl({

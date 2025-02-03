@@ -3,7 +3,7 @@ import { Logger } from '@gitbook/runtime';
 import type { SlashEvent } from './commands';
 import { queryAskAI } from '../actions';
 import { SlackRuntimeContext } from '../configuration';
-import { isAllowedToRespond, isSaveThreadMessage, stripBotName } from '../utils';
+import { isAllowedToRespond, stripBotName } from '../utils';
 
 const logger = Logger('slack:api');
 
