@@ -12,7 +12,6 @@ import {
     SlackRuntimeEnvironment,
     SlackRuntimeContext,
 } from '../configuration';
-import { acknowledgeQuery } from '../middlewares';
 import { slackAPI } from '../slack';
 import { QueryDisplayBlock, ShareTools, decodeSlackEscapeChars, Spacer, SourcesBlock } from '../ui';
 import { getInstallationApiClient, stripBotName, stripMarkdown } from '../utils';
@@ -23,7 +22,7 @@ export type RelatedSource = {
     page: { path?: string; title: string };
 };
 
-export interface IQueryLens {
+export interface IQueryAskAI {
     channelId: string;
     channelName?: string;
     responseUrl?: string;
@@ -37,7 +36,7 @@ export interface IQueryLens {
     /* needed for postEphemeral */
     userId?: string;
 
-    /* Get lens reply in thread */
+    /* Get AskAI reply in thread */
     threadId?: string;
 
     authorization?: string;
@@ -65,7 +64,7 @@ const capitalizeFirstLetter = (text: string) =>
     text?.trim().charAt(0).toUpperCase() + text?.trim().slice(1);
 
 /*
- * Pulls out the top related pages from page IDs returned from Lens and resolves them using a provided GitBook API client.
+ * Pulls out the top related pages from page IDs returned from AskAI and resolves them using a provided GitBook API client.
  */
 async function getRelatedSources(params: {
     sources?: SearchAIAnswer['sources'];
@@ -91,7 +90,7 @@ async function getRelatedSources(params: {
     }, new Set<string>());
 
     // query for all Revisions (accounting for spaces that might not exist or any errors)
-    const allRevisions: Array<Revision> = (
+    const allRevisions = (
         await Promise.allSettled(
             Array.from(allSpaces).map((space) => client.spaces.getCurrentRevision(space)),
         )
@@ -100,7 +99,7 @@ async function getRelatedSources(params: {
             accum.push(result.value.data);
         }
         return accum;
-    }, []);
+    }, [] as Array<Revision>);
 
     const getResolvedPage = (page: SearchAIAnswerSource & { type: 'page' }) => {
         // TODO: we can probably combine finding the currentRevision with extracting the appropriate page
@@ -114,6 +113,10 @@ async function getRelatedSources(params: {
             const allRevisionPages = extractAllPages(currentRevision.pages);
             const revisionPage = allRevisionPages.find((revPage) => revPage.id === page.page);
 
+            if (!revisionPage || revisionPage.type !== 'document') {
+                return null;
+            }
+
             return {
                 id: page.page,
                 sourceUrl,
@@ -122,66 +125,28 @@ async function getRelatedSources(params: {
         }
     };
 
-    const getResolvedSnippet = async (
-        source: SearchAIAnswerSource & { type: 'snippet' | 'capture' },
-    ): Promise<RelatedSource> => {
-        const snippetRequest = await client.orgs.getSnippet(organization, source.captureId);
-        const snippet = snippetRequest.data;
-
-        const sourceUrl = snippet.urls.app;
-
-        return {
-            id: snippet.id,
-            sourceUrl,
-            page: { title: snippet.title },
-        };
-    };
-
-    const resolvedSnippetsPromises = await Promise.allSettled(
-        topSources
-            .filter((source) => source.type === 'capture' || source.type === 'snippet')
-            .map(getResolvedSnippet),
-    );
-
-    const resolvedSnippets = resolvedSnippetsPromises.reduce((accum, result) => {
-        if (result.status === 'fulfilled') {
-            accum.push(result.value);
-        }
-
-        return accum;
-    }, [] as RelatedSource[]);
-
     // extract all related sources from the Revisions along with the related public URL
-    const relatedSources: Array<RelatedSource> = topSources.reduce((accum, source) => {
+    const relatedSources = topSources.reduce((accum, source) => {
         switch (source.type) {
             case 'page':
                 const resolvedPage = getResolvedPage(source);
-                accum.push(resolvedPage);
-                break;
-
-            case 'snippet':
-            case 'capture':
-                const resolvedSnippet = resolvedSnippets.find(
-                    (snippet) => snippet.id === source.captureId,
-                );
-
-                if (resolvedSnippet) {
-                    accum.push(resolvedSnippet);
+                if (resolvedPage) {
+                    accum.push(resolvedPage);
                 }
                 break;
         }
 
         return accum;
-    }, []);
+    }, [] as Array<RelatedSource>);
 
     // filter related sources from current revision
     return relatedSources;
 }
 
 /*
- * Queries GitBook Lens via the GitBook API and posts the answer in the form of Slack UI Blocks back to the original channel/conversation/thread.
+ * Queries GitBook AskAI via the GitBook API and posts the answer in the form of Slack UI Blocks back to the original channel/conversation/thread.
  */
-export async function queryLens({
+export async function queryAskAI({
     channelId,
     teamId,
     threadId,
@@ -193,7 +158,7 @@ export async function queryLens({
 
     responseUrl,
     channelName,
-}: IQueryLens) {
+}: IQueryAskAI) {
     const { environment, api } = context;
     const { client, installation } = await getInstallationApiClient(api, teamId);
     if (!installation) {
@@ -208,33 +173,50 @@ export async function queryLens({
     const parsedQuery = stripMarkdown(stripBotName(text, authorization?.user_id));
 
     // async acknowledge the request to the end user early
-    acknowledgeQuery({
+    slackAPI(
         context,
-        text: parsedQuery,
-        userId,
-        threadId,
-        channelId,
-        responseUrl,
-        accessToken,
-        messageType,
-    });
+        {
+            method: 'POST',
+            path: messageType === 'ephemeral' ? 'chat.postEphemeral' : 'chat.postMessage',
+            responseUrl,
+            payload: {
+                channel: channelId,
+                text: `_Asking: ${stripMarkdown(text)}_`,
+                ...(userId ? { user: userId } : {}), // actually shouldn't be optional
+                ...(threadId ? { thread_ts: threadId } : {}),
+            },
+        },
+        {
+            accessToken,
+        },
+    );
 
-    const result = await client.orgs.askInOrganization(installation.target.organization, {
-        query: parsedQuery,
-    });
-    const answer: SearchAIAnswer = result.data?.answer;
+    const result = await client.orgs.askInOrganization(
+        installation.target.organization,
+        {
+            query: parsedQuery,
+        },
+        {
+            format: 'markdown',
+        },
+    );
+    const answer = result.data?.answer;
 
     const messageTypePath = messageType === 'ephemeral' ? 'chat.postEphemeral' : 'chat.postMessage';
 
-    if (answer && answer.text) {
+    if (answer && answer.answer) {
+        if (!('markdown' in answer.answer)) {
+            throw new Error('Answer is not in markdown format');
+        }
+
+        const answerText = capitalizeFirstLetter(answer.answer.markdown);
+
         const relatedSources = await getRelatedSources({
             sources: answer.sources,
             client,
             environment,
             organization: installation.target.organization,
         });
-
-        const answerText = capitalizeFirstLetter(answer.text);
 
         const header = text.length > 150 ? `${text.slice(0, 140)}...` : text;
         const blocks = [

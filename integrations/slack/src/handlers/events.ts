@@ -8,15 +8,21 @@ import { isAllowedToRespond, parseEventPayload } from '../utils';
  */
 export function createSlackEventsHandler(
     handlers: {
-        [type: string]: (event: object, context: SlackRuntimeContext) => Promise<any>;
+        [type: string]: (event: any, context: SlackRuntimeContext) => Promise<any>;
     },
     fallback?: FetchEventCallback,
-): FetchEventCallback {
-    return async (request, context) => {
+) {
+    return async (request: Request, context: SlackRuntimeContext) => {
         const eventPayload = await parseEventPayload(request);
 
         // url_verification doesn't have an event object
         const { type } = eventPayload.event ?? eventPayload;
+
+        if (!type) {
+            return new Response(`No event type found`, {
+                status: 404,
+            });
+        }
 
         const handler = handlers[type];
 
