@@ -2,11 +2,10 @@ import { Router } from 'itty-router';
 
 import { createOAuthHandler, FetchEventCallback, OAuthResponse } from '@gitbook/runtime';
 
-import { queryAskAI } from './actions';
 import {
     createSlackEventsHandler,
     createSlackCommandsHandler,
-    createSlackActionsHandler,
+    slackActionsHandler,
     queryAskAISlashHandler,
     messageEventHandler,
     appMentionEventHandler,
@@ -102,9 +101,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
     router.post(
         '/actions',
         verifySlackRequest,
-        createSlackActionsHandler({
-            queryAskAI,
-        }),
+        slackActionsHandler,
         acknowledgeSlackRequest,
     );
 
