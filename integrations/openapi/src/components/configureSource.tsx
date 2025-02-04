@@ -1,4 +1,4 @@
-import { createComponent, InstallationConfigurationProps } from '@gitbook/runtime';
+import { createComponent, ExposableError, InstallationConfigurationProps } from '@gitbook/runtime';
 
 import type {
     OpenAPIRuntimeEnvironment,
@@ -13,7 +13,7 @@ export const configureComponent = createComponent<
     {
         specURL: string;
     },
-    void,
+    { action: 'submit' },
     OpenAPIRuntimeContext
 >({
     componentId: 'configureSource',
@@ -23,11 +23,30 @@ export const configureComponent = createComponent<
         };
     },
     action: async (element, action, ctx) => {
+        if (action.action === 'submit') {
+            if (!element.state.specURL) {
+                throw new ExposableError('Invalid spec URL');
+            }
+
+            return {
+                type: 'complete',
+                returnValue: {
+                    props: {
+                        specURL: element.state.specURL,
+                    },
+                    dependencies: {
+                        // Align with GenerateContentSourceDependencies
+                        // spec: { kind: 'openapi', spec: element.dynamicState('spec') }
+                    },
+                }
+            }
+        }
+
         return element;
     },
     render: async (element, context) => {
         return (
-            <block>
+            <configuration>
                 <input
                     label="Spec URL"
                     hint="Enter the URL of the OpenAPI specification."
@@ -37,19 +56,10 @@ export const configureComponent = createComponent<
                     style="primary"
                     label="Continue"
                     onPress={{
-                        action: '@ui.submit',
-                        returnValue: {
-                            props: {
-                                specURL: element.state.specURL,
-                            },
-                            dependencies: {
-                                // Align with GenerateContentSourceDependencies
-                                // spec: { kind: 'openapi', spec: element.dynamicState('spec') }
-                            },
-                        },
+                        action: 'submit',
                     }}
                 />
-            </block>
+            </configuration>
         );
     },
 });
