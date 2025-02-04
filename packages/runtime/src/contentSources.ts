@@ -2,6 +2,8 @@ import {
     ContentComputeDocumentEvent,
     ContentComputeRevisionEventResponse,
     ContentComputeRevisionEvent,
+    ComputedContentDependencyValue,
+    ComputedContentDependencyRef,
     Document,
 } from '@gitbook/api';
 import { PlainObject } from './common';
@@ -16,11 +18,21 @@ export interface ContentSourceDefinition<Context extends RuntimeContext = Runtim
     >;
 }
 
+export type ContentSourceDependenciesValueFromRef<Dependencies extends Record<string, {
+    ref: ComputedContentDependencyRef;
+}>> = {
+    // TODO: extend to support other types once ComputedContentDependencyRef becomes a union
+    [K in keyof Dependencies]: ComputedContentDependencyValue;
+}
+
 /**
  * Create a content source. The result should be bind to the integration using `contentSources`.
  */
 export function createContentSource<
     Props extends PlainObject = {},
+    Dependencies extends Record<string, {
+        ref: ComputedContentDependencyRef;
+    }> = {},
     Context extends RuntimeContext = RuntimeContext,
 >(source: {
     /**
@@ -35,6 +47,7 @@ export function createContentSource<
         [
             {
                 props: Props;
+                dependencies: ContentSourceDependenciesValueFromRef<Dependencies>;
             },
         ],
         Promise<ContentComputeRevisionEventResponse>,
@@ -48,6 +61,7 @@ export function createContentSource<
         [
             {
                 props: Props;
+                dependencies: ContentSourceDependenciesValueFromRef<Dependencies>;
             },
         ],
         Promise<Document | void>,
@@ -62,6 +76,7 @@ export function createContentSource<
                     ? await source.getRevision(
                           {
                               props: event.props as Props,
+                              dependencies: event.dependencies as ContentSourceDependenciesValueFromRef<Dependencies>,
                           },
                           context,
                       )
@@ -69,6 +84,7 @@ export function createContentSource<
                           document: await source.getPageDocument(
                               {
                                   props: event.props as Props,
+                                  dependencies: event.dependencies as ContentSourceDependenciesValueFromRef<Dependencies>,
                               },
                               context,
                           ),

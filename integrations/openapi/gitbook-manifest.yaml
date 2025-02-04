@@ -1,0 +1,24 @@
+name: openapi
+title: OpenAPI
+organization: gitbook
+visibility: public
+description: Auto-generate an API reference from an OpenAPI specification
+icon: ./assets/icon.png
+externalLinks:
+    - label: Documentation
+      url: https://docs.gitbook.com/integrations/openapi
+categories:
+    - collaboration
+summary: |
+    # Overview
+
+script: src/index.ts
+scopes:
+    - space:content:read
+target: space
+contentSources:
+    - id: generate
+      title: Generate API documentation
+      description: Generate and keep documentation from OpenAPI.
+      configuration:
+          componentId: configureSource

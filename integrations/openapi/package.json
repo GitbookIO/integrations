@@ -1,0 +1,20 @@
+{
+    "name": "@gitbook/integration-openapi",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "check": "gitbook check",
+        "publish-integrations-staging": "gitbook publish ."
+    },
+    "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+        "@scalar/openapi-parser": "^0.10.4",
+        "@scalar/openapi-types": "^0.1.6"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
+    }
+}
