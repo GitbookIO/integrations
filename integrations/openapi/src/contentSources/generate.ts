@@ -1,4 +1,5 @@
-import { InputPage } from '@gitbook/api';
+import { DocumentBlockOpenAPI, InputPage } from '@gitbook/api';
+import * as doc from '@gitbook/document';
 import { createContentSource, ExposableError } from '@gitbook/runtime';
 import { openapi } from '@scalar/openapi-parser'
 import { fetchUrls } from '@scalar/openapi-parser/plugins/fetch-urls';
@@ -44,7 +45,7 @@ export const generateContentSource = createContentSource<GenerateContentSourcePr
 
                 const page: InputPage = {
                     type: 'document',
-                    title: group.tag?.name ?? 'Default',
+                    title: group.tag?.name ?? group.id,
                     description: group.tag?.description ?? '',
                     computed: {
                         integration: 'openapi',
@@ -71,28 +72,20 @@ export const generateContentSource = createContentSource<GenerateContentSourcePr
             throw new Error(`Group ${props.group} not found`);
         }
 
+        const operations = extractOperations(group);
+
         return {
-            document: {
-                object: 'document',
-                nodes: [
-                    {
-                       object: 'block',
-                       type: 'paragraph',
-                       nodes: [
-                        {
-                            object: 'text',
-                            leaves: [
-                                {
-                                    object: 'leaf',
-                                    text: group.tag?.description ?? '',
-                                }
-                            ]
-                        }
-                       ] 
-                    }
-                ]
-            }
-        }
+            document: doc.document([
+                doc.paragraph(doc.text(group.tag?.description ?? '')),
+                ...operations.map(operation => {
+                    return doc.openapi({
+                        ref: { url: props.specURL, kind: 'url' },
+                        method: operation.method,
+                        path: operation.path,
+                    });
+                })
+            ])
+        };
     },
 });
 
@@ -172,10 +165,33 @@ function divideOpenAPISpec(props: GenerateContentSourceProps, spec: OpenAPIV3.Do
                 const tag = spec.tags?.find(t => t.name === firstTag);
                 indexOperation(firstTag, tag, path, pathItem, httpMethod, operation);
             } else {
-                indexOperation('default', undefined, path, pathItem, httpMethod, operation);
+                indexOperation('default', {
+                    id: 'default',
+                    name: 'Default',
+                }, path, pathItem, httpMethod, operation);
             }
         });
     });
 
     return groups;
+}
+
+/**
+ * Extract all operations in a group.
+ */
+function extractOperations(group: OpenAPIGroup) {
+    const operations: Array<{ method: OpenAPIV3.HttpMethods, path: string }> = [];
+
+    Object.entries(group.paths).forEach(([path, pathItem]) => {
+        HTTP_METHODS.forEach(httpMethod => {
+            const operation = pathItem[httpMethod];
+            if (!operation) {
+                return;
+            }
+
+            operations.push({ method: httpMethod, path });
+        });
+    }); 
+
+    return operations;
 }

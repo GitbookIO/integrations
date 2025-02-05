@@ -10,6 +10,7 @@
     "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
+        "@gitbook/document": "*",
         "@scalar/openapi-parser": "^0.10.4",
         "@scalar/openapi-types": "^0.1.6"
     },
