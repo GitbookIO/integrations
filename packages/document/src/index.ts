@@ -1,13 +1,26 @@
 import type * as api from '@gitbook/api';
 
+/**
+ * Document
+ */
 
-export function document(nodes: api.DocumentBlocksTopLevels[]): api.JSONDocument {
+export function document(nodes: api.DocumentBlocksTopLevels[]): api.Document {
     return {
         object: 'document',
         nodes,
         data: {},
     };
 }
+
+export function markdown(markdown: string): api.MarkdownDocument {
+    return {
+        markdown,
+    };
+}
+
+/**
+ * Blocks
+ */
 
 export const paragraph = blockFactory<api.DocumentBlockParagraph>('paragraph');
 export const heading1 = blockFactory<api.DocumentBlockHeading>('heading-1');
@@ -24,6 +37,10 @@ export const divider = voidBlockFactory<api.DocumentBlockDivider>('divider');
 export const file = voidBlockFactory<api.DocumentBlockFile>('file');
 export const openapi = voidBlockFactory<api.DocumentBlockOpenAPI>('swagger');
 
+/**
+ * Text
+ */
+
 export function text(text: string | api.DocumentTextLeaf[]): api.DocumentText {
     return {
         object: 'text',
@@ -39,12 +56,56 @@ export function textLeaf(text: string, marks?: api.DocumentTextMark[]): api.Docu
     };
 }
 
-export function bold() {
+/**
+ * Marks
+ */
+
+export function bold(): api.DocumentMarkBold {
     return {
         object: 'mark',
         type: 'bold',
     }
 }
+
+export function italic(): api.DocumentMarkItalic {
+    return {
+        object: 'mark',
+        type: 'italic',
+    }
+}
+
+export function code(): api.DocumentMarkCode {
+    return {
+        object: 'mark',
+        type: 'code',
+    }
+}
+
+export function keyboard(): api.DocumentMarkKeyboard {
+    return {
+        object: 'mark',
+        type: 'keyboard',
+    }
+}
+
+export function strikethrough(): api.DocumentMarkStrikethrough {
+    return {
+        object: 'mark',
+        type: 'strikethrough',
+    }
+}
+
+export function color(data: api.DocumentMarkColor['data']): api.DocumentMarkColor {
+    return {
+        object: 'mark',
+        type: 'color',
+        data,
+    }
+}
+
+/**
+ * Factories
+ */
 
 function blockFactory<Block extends {
     object: 'block';

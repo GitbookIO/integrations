@@ -1,4 +1,4 @@
-import { DocumentBlockOpenAPI, InputPage } from '@gitbook/api';
+import { InputPage } from '@gitbook/api';
 import * as doc from '@gitbook/document';
 import { createContentSource, ExposableError } from '@gitbook/runtime';
 import { openapi } from '@scalar/openapi-parser'
@@ -16,10 +16,12 @@ const HTTP_METHODS = [
     OpenAPIV3.HttpMethods.TRACE,
 ];
 
+/** Props passed to the `getRevision` method. */
 export type GenerateContentSourceProps = {
     specURL: string;
 }
 
+/** Props passed to the `getPageDocument` method. */
 export type GenerateContentSourceDocumentProps = GenerateContentSourceProps & {
     group: string;
 }
@@ -29,6 +31,9 @@ export type GenerateContentSourceDependencies = {
     // spec: ContentRefOpenAPI;
 }
 
+/**
+ * Content source to generate pages from an OpenAPI specification.
+ */
 export const generateContentSource = createContentSource<GenerateContentSourceProps | GenerateContentSourceDocumentProps, GenerateContentSourceDependencies>({
     sourceId: 'generate',
 
@@ -74,18 +79,17 @@ export const generateContentSource = createContentSource<GenerateContentSourcePr
 
         const operations = extractOperations(group);
 
-        return {
-            document: doc.document([
-                doc.paragraph(doc.text(group.tag?.description ?? '')),
-                ...operations.map(operation => {
-                    return doc.openapi({
-                        ref: { url: props.specURL, kind: 'url' },
-                        method: operation.method,
-                        path: operation.path,
-                    });
-                })
-            ])
-        };
+        return doc.document([
+            // TODO: return or parse the description as markdown
+            ...(group.tag?.description ? [doc.paragraph(doc.text(group.tag.description))] : []),
+            ...operations.map(operation => {
+                return doc.openapi({
+                    ref: { url: props.specURL, kind: 'url' },
+                    method: operation.method,
+                    path: operation.path,
+                });
+            })
+        ]);
     },
 });
 
