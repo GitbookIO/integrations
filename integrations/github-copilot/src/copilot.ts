@@ -106,7 +106,7 @@ export async function* streamCopilotResponse(
                         return {
                             type: source.type,
                             id: source.page,
-                            data: source,
+                            data: source as any,
                             is_implicit: false,
                             metadata: {
                                 display_name: page.title,

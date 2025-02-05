@@ -1,29 +1,43 @@
 import {
     ContentKitBlock,
+    UIRenderEvent,
+    ContentKitRenderOutput,
     ContentKitContext,
     ContentKitDefaultAction,
-    ContentKitRenderOutput,
-    UIRenderEvent,
 } from '@gitbook/api';
 
-import { RuntimeCallback, RuntimeContext } from './context';
+import { RuntimeCallback, RuntimeEnvironment, RuntimeContext } from './context';
+import { PlainObject } from './common';
 
-type PlainObjectValue =
-    | number
-    | string
-    | boolean
-    | PlainObject
-    | undefined
-    | null
-    | PlainObjectValue[];
-type PlainObject = {
-    [key: string]: PlainObjectValue;
+/**
+ * Props for an installation configuration component.
+ */
+export type InstallationConfigurationProps<Env extends RuntimeEnvironment> = {
+    installation: {
+        configuration: Env extends RuntimeEnvironment<infer Config, any> ? Config : never;
+    };
 };
 
+/**
+ * Props for an installation configuration component.
+ */
+export type SpaceInstallationConfigurationProps<Env extends RuntimeEnvironment> =
+    InstallationConfigurationProps<Env> & {
+        spaceInstallation: {
+            configuration?: Env extends RuntimeEnvironment<any, infer Config> ? Config : never;
+        };
+    };
+
+/**
+ * Cache configuration for the output of a component.
+ */
 export interface ComponentRenderCache {
     maxAge: number;
 }
 
+/**
+ * Instance of a component, passed to the `render` and `action` function.
+ */
 export interface ComponentInstance<Props extends PlainObject, State extends PlainObject> {
     props: Props;
     state: State;
@@ -40,6 +54,9 @@ export interface ComponentInstance<Props extends PlainObject, State extends Plai
     dynamicState<Key extends keyof State>(key: Key): { $state: Key };
 }
 
+/**
+ * Definition of a component. Exported from `createComponent` and should be passed to `components` in the integration.
+ */
 export interface ComponentDefinition<Context extends RuntimeContext = RuntimeContext> {
     componentId: string;
     render: RuntimeCallback<[UIRenderEvent], Promise<Response>, Context>;
@@ -116,7 +133,7 @@ export function createComponent<
                 dynamicState: (key) => ({ $state: key }),
             };
 
-            const wrapResponse = (output: ContentKitRenderOutput) => {
+            const respondWithOutput = (output: ContentKitRenderOutput) => {
                 return new Response(JSON.stringify(output), {
                     headers: {
                         'Content-Type': 'application/json',
@@ -135,7 +152,7 @@ export function createComponent<
 
                 // If the action is complete, return the result directly. No need to render the component.
                 if (actionResult?.type === 'complete') {
-                    return wrapResponse(actionResult);
+                    return respondWithOutput(actionResult);
                 }
 
                 instance = { ...instance, ...actionResult };
@@ -144,14 +161,13 @@ export function createComponent<
             const element = await component.render(instance, context);
 
             const output: ContentKitRenderOutput = {
-                // for backward compatibility always default to 'element'
                 type: 'element',
                 state: instance.state,
                 props: instance.props,
                 element,
             };
 
-            return wrapResponse(output);
+            return respondWithOutput(output);
         },
     };
 }
