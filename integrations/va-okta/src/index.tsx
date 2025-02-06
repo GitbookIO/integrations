@@ -85,7 +85,7 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
             client_secret: siteInstallation?.configuration?.client_secret || '',
             enrich_session: siteInstallation?.configuration?.enrich_session || false,
             okta_custom_auth_server_id:
-                siteInstallation?.configuration?.okta_custom_auth_server?.id || 'default',
+                siteInstallation?.configuration?.okta_custom_auth_server?.id || '',
         };
     },
     action: async (element, action, context) => {
@@ -251,7 +251,10 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                             label="Okta Authorization server ID"
                             hint="The ID of the custom authorization server in your Okta organization used to include additional claims in the users tokens."
                             element={
-                                <textinput state="okta_auth_server_id" placeholder="default" />
+                                <textinput
+                                    state="okta_custom_auth_server_id"
+                                    placeholder="default"
+                                />
                             }
                         />
                     ) : null}
