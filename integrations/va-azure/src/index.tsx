@@ -42,8 +42,6 @@ type AzureTokenResponseData = {
     expires_in: number;
 };
 
-const EXCLUDED_CLAIMS = ['iat', 'exp', 'iss', 'aud', 'jti', 'ver'];
-
 export type AzureAction = { action: 'save.config' };
 
 const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRuntimeContext>({
@@ -249,7 +247,7 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
 
                 const azureTokenData = await azureTokenResp.json<AzureTokenResponseData>();
                 if (!azureTokenData.access_token) {
-                    return new Response('Error: No Access Token found in response from Okta', {
+                    return new Response('Error: No Access Token found in response from Azure', {
                         status: 401,
                     });
                 }
@@ -266,7 +264,7 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                     }
                     const jwtToken = await jwt.sign(
                         {
-                            ...sanitizeJWTTokenClaims(decodedOktaToken.payload || {}),
+                            ...(decodedOktaToken.payload ?? {}),
                             exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60),
                         },
                         privateKey,
@@ -342,15 +340,3 @@ export default createIntegration({
         return Response.redirect(url.toString());
     },
 });
-
-function sanitizeJWTTokenClaims(claims: jwt.JwtPayload) {
-    const result: Record<string, any> = {};
-
-    Object.entries(claims).forEach(([key, value]) => {
-        if (EXCLUDED_CLAIMS.includes(key)) {
-            return;
-        }
-        result[key] = value;
-    });
-    return result;
-}
