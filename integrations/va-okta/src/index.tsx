@@ -22,7 +22,7 @@ type OktaSiteInstallationBaseConfiguration = {
     client_id?: string;
     okta_domain?: string;
     client_secret?: string;
-    include_claims_in_va_token?: boolean;
+    enrich_session?: boolean;
 };
 
 type OktaSiteInstallationConfiguration = OktaSiteInstallationBaseConfiguration & {
@@ -85,8 +85,7 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
             client_id: siteInstallation?.configuration?.client_id || '',
             okta_domain: siteInstallation?.configuration?.okta_domain || '',
             client_secret: siteInstallation?.configuration?.client_secret || '',
-            include_claims_in_va_token:
-                siteInstallation?.configuration?.include_claims_in_va_token || false,
+            enrich_session: siteInstallation?.configuration?.enrich_session || false,
             okta_custom_auth_server_id:
                 siteInstallation?.configuration?.okta_custom_auth_server?.id || 'default',
         };
@@ -98,7 +97,7 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                     ...element,
                     state: {
                         ...element.state,
-                        include_claims_in_va_token: action.includeClaimsInVAToken,
+                        enrich_session: action.includeClaimsInVAToken,
                     },
                 };
             case 'save.config':
@@ -108,10 +107,7 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                 let oktaCustomServerInfo: OktaCustomAuthServerConfiguration | undefined;
 
                 // When using a custom auth server fetch the OAuth endpoints from the discovery URL.
-                if (
-                    element.state.include_claims_in_va_token &&
-                    element.state.okta_custom_auth_server_id
-                ) {
+                if (element.state.enrich_session && element.state.okta_custom_auth_server_id) {
                     const customAuthServerDiscoveryURL = new URL(
                         `oauth2/${element.state.okta_custom_auth_server_id}/.well-known/openid-configuration`,
                         `https://${element.state.okta_domain}/`,
@@ -140,8 +136,8 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                     client_id: element.state.client_id,
                     client_secret: element.state.client_secret,
                     okta_domain: element.state.okta_domain,
-                    include_claims_in_va_token: element.state.include_claims_in_va_token,
-                    okta_custom_auth_server: element.state.include_claims_in_va_token
+                    enrich_session: element.state.enrich_session,
+                    okta_custom_auth_server: element.state.enrich_session
                         ? oktaCustomServerInfo
                         : undefined,
                 };
@@ -241,20 +237,18 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                     <markdown content="### Visitor authentication settings" />
                     <input
                         label="Include claims in JWT token"
-                        hint="Add user & custom claims from Auth0 backend to the JWT token to enrich the user's experience while navigating the site"
+                        hint="Enhance the user's site navigation experience based on user information and attributes provided by your Okta authorization backend."
                         element={
                             <switch
-                                state="include_claims_in_va_token"
+                                state="enrich_session"
                                 onValueChange={{
-                                    action: 'toggle.include_claims_in_va_token',
-                                    includeClaimsInVAToken: element.dynamicState(
-                                        'include_claims_in_va_token',
-                                    ),
+                                    action: 'toggle.enrich_session',
+                                    includeClaimsInVAToken: element.dynamicState('enrich_session'),
                                 }}
                             />
                         }
                     />
-                    {element.state.include_claims_in_va_token ? (
+                    {element.state.enrich_session ? (
                         <input
                             label="Okta Authorization server ID"
                             hint="The ID of the custom authorization server in your Okta organization used to include additional claims in the users tokens."
@@ -335,8 +329,7 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                 const clientSecret = siteInstallation.configuration.client_secret;
                 const oktaCustomAuthServerConfig =
                     siteInstallation.configuration.okta_custom_auth_server;
-                const includeClaimsInVAToken =
-                    siteInstallation.configuration.include_claims_in_va_token;
+                const includeClaimsInVAToken = siteInstallation.configuration.enrich_session;
 
                 if (!clientId || !clientSecret || !oktaDomain) {
                     return new Response(
@@ -465,7 +458,7 @@ export default createIntegration({
         }
 
         const oktaCustomAuthServerConfig = siteInstallation.configuration.okta_custom_auth_server;
-        const includeClaimsInVAToken = siteInstallation.configuration.include_claims_in_va_token;
+        const includeClaimsInVAToken = siteInstallation.configuration.enrich_session;
 
         const url = new URL(
             includeClaimsInVAToken && oktaCustomAuthServerConfig
