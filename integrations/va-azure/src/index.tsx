@@ -35,8 +35,18 @@ type AzureProps = {
     };
 };
 
+type AzureTokenErrorResponseData = {
+    error: string;
+    error_description: string;
+    error_codes: Array<number>;
+    timestamp: string;
+    trace_id: string;
+    correlation_id: string;
+};
+
 type AzureTokenResponseData = {
     access_token?: string;
+    id_token?: string;
     refresh_token?: string;
     token_type: 'Bearer';
     expires_in: number;
@@ -232,29 +242,39 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                     code: `${request.query.code}`,
                     redirect_uri: `${installationURL}/visitor-auth/response`,
                 });
-                const accessTokenURL = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token/`;
-                const azureTokenResp = await fetch(accessTokenURL, {
+                const tokenURL = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token/`;
+                const azureTokenResp = await fetch(tokenURL, {
                     method: 'POST',
                     headers: { 'content-type': 'application/x-www-form-urlencoded' },
                     body: searchParams,
                 });
 
                 if (!azureTokenResp.ok) {
+                    if (azureTokenResp.headers.get('content-type')?.includes('application/json')) {
+                        const errorResponse =
+                            await azureTokenResp.json<AzureTokenErrorResponseData>();
+                        logger.debug(JSON.stringify(errorResponse, null, 2));
+                        logger.debug(
+                            `Did not receive access token. Error: ${
+                                (errorResponse && errorResponse.error) || ''
+                            } ${(errorResponse && errorResponse.error_description) || ''}`,
+                        );
+                    }
                     return new Response('Error: Could not fetch token from Azure', {
                         status: 401,
                     });
                 }
 
                 const azureTokenData = await azureTokenResp.json<AzureTokenResponseData>();
-                if (!azureTokenData.access_token) {
-                    return new Response('Error: No Access Token found in response from Azure', {
+                if (!azureTokenData.id_token) {
+                    return new Response('Error: No ID Token found in response from Azure', {
                         status: 401,
                     });
                 }
 
-                // Azure already include user/custom claims in the access token so we can just decode it
+                // Azure already include user/custom claims in the ID token so we can just decode it
                 // TODO: verify token using JWKS and check audience (aud) claims
-                const decodedOktaToken = await jwt.decode(azureTokenData.access_token);
+                const decodedAzureToken = await jwt.decode(azureTokenData.id_token);
                 try {
                     const privateKey = context.environment.signingSecrets.siteInstallation;
                     if (!privateKey) {
@@ -264,7 +284,7 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                     }
                     const jwtToken = await jwt.sign(
                         {
-                            ...(decodedOktaToken.payload ?? {}),
+                            ...(decodedAzureToken.payload ?? {}),
                             exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60),
                         },
                         privateKey,
