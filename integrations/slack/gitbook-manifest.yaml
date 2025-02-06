@@ -2,7 +2,7 @@ name: slack
 title: Slack
 icon: ./assets/icon.png
 organization: gitbook
-description: Ask questions, get answers and add information to your GitBook knowledge base, right in Slack.
+description: Ask questions and get answers to your documentation, right in Slack.
 categories:
     - collaboration
     - captures
@@ -20,11 +20,9 @@ script: ./src/index.ts
 scopes:
     - space:content:read
     - space:metadata:read
-    - capture:write
-    - snippets:read
 summary: |
     # Overview
-    With the GitBook Slack integration, your teams have instant access to your GitBook knowledge base, and can get AI-summarized answers about your content. Plus, if you solve a problem in a thread, you can ask GitBook AI to summarize it into useable documentation.
+    With the GitBook Slack integration, your teams have instant access to your documentation, and can get AI-summarized answers about your content.
 
     [Head to our documentation to find out more](https://docs.gitbook.com/integrations/integrations-beta/slack)
 
@@ -32,8 +30,6 @@ summary: |
 
     # How it works
     **Find information faster:** Getting an answer has never been easier. Just summon our Slackbot and ask a question — GitBook AI will scan your documentation and summarize an answer in seconds.
-
-    **Turn conversations into documentation:** Just solved a problem in an epic, 168-message thread? Ask GitBook AI to summarize the conversation and it’ll save it to your knowledge base so anyone can find out how you got there.
 
     **Real-time notifications:** Get notified in real-time when something important happens with your GitBook content — from small updates, to someone publishing a space. You choose what you get notifications for, and where you see them.
 

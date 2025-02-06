@@ -1,13 +1,12 @@
 import { Router } from 'itty-router';
 
-import { createOAuthHandler, FetchEventCallback } from '@gitbook/runtime';
+import { createOAuthHandler, FetchEventCallback, OAuthResponse } from '@gitbook/runtime';
 
-import { queryLens } from './actions';
 import {
     createSlackEventsHandler,
     createSlackCommandsHandler,
-    createSlackActionsHandler,
-    queryLensSlashHandler,
+    slackActionsHandler,
+    queryAskAISlashHandler,
     messageEventHandler,
     appMentionEventHandler,
 } from './handlers';
@@ -51,7 +50,13 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
      */
     router.get(
         '/oauth',
-        createOAuthHandler({
+        createOAuthHandler<
+            OAuthResponse & {
+                team: {
+                    id: string;
+                };
+            }
+        >({
             clientId: environment.secrets.CLIENT_ID,
             clientSecret: environment.secrets.CLIENT_SECRET,
             // TODO: use the yaml as SoT for scopes
@@ -95,14 +100,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
     /* Handle shortcuts and interactivity via Slack UI blocks
      * shortcuts & interactivity
      */
-    router.post(
-        '/actions',
-        verifySlackRequest,
-        createSlackActionsHandler({
-            queryLens,
-        }),
-        acknowledgeSlackRequest,
-    );
+    router.post('/actions', verifySlackRequest, slackActionsHandler, acknowledgeSlackRequest);
 
     /* Handle slash commands
      * eg. /gitbook [command]
@@ -111,8 +109,8 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         '/commands',
         verifySlackRequest,
         createSlackCommandsHandler({
-            '/gitbook': queryLensSlashHandler,
-            '/gitbookstaging': queryLensSlashHandler, // needed to allow our staging app to co-exist with the prod app
+            '/gitbook': queryAskAISlashHandler,
+            '/gitbookstaging': queryAskAISlashHandler, // needed to allow our staging app to co-exist with the prod app
         }),
         acknowledgeSlackRequest,
     );

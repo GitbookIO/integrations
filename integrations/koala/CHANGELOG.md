@@ -1,5 +1,11 @@
 # @gitbook/integration-koala
 
+## 1.5.0
+
+### Minor Changes
+
+- 4f40362: Update scopes and target
+
 ## 1.4.2
 
 ### Patch Changes
