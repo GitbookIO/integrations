@@ -4,6 +4,7 @@ import { createContentSource, ExposableError } from '@gitbook/runtime';
 import { openapi } from '@scalar/openapi-parser'
 import { fetchUrls } from '@scalar/openapi-parser/plugins/fetch-urls';
 import { OpenAPIV3 } from '@scalar/openapi-types'
+import { getTagTitle } from './utils';
 
 const HTTP_METHODS = [
     OpenAPIV3.HttpMethods.GET,
@@ -50,8 +51,9 @@ export const generateContentSource = createContentSource<GenerateContentSourcePr
 
                 const page: InputPage = {
                     type: 'document',
-                    title: group.tag?.name ?? group.id,
-                    description: group.tag?.description ?? '',
+                    title: (group.tag ? getTagTitle(group.tag) : '') || group.id,
+                    icon: group.tag?.['x-page-icon'],
+                    description: group.tag?.['x-page-description'] ?? '',
                     computed: {
                         integration: 'openapi',
                         source: 'generate',
