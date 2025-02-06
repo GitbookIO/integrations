@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-slack",
-    "version": "1.4.0",
+    "version": "2.0.0",
     "private": true,
     "dependencies": {
         "@gitbook/runtime": "*",
@@ -14,6 +14,7 @@
         "@gitbook/tsconfig": "workspace:*"
     },
     "scripts": {
+        "typecheck": "tsc --noEmit",
         "check": "gitbook check",
         "publish-integrations": "gitbook publish .",
         "publish-integrations-staging": "gitbook publish ."

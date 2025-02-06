@@ -2,7 +2,7 @@ name: reodotdev
 title: Reo.dev
 icon: ./assets/icon.png
 previewImages:
-    - ./assets/preview.png
+    - ./assets/reo-preview.png
 description: Plug your GitBook site to your Reo.dev installation.
 externalLinks:
     - label: Website

@@ -1,6 +1,8 @@
 name: mixpanel
 title: Mixpanel
 icon: ./assets/icon.png
+previewImages:
+    - ./assets/mixpanel-preview.png
 description: Plug your GitBook site to your Mixpanel account.
 visibility: public
 script: ./src/index.ts
