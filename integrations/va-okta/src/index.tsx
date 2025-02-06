@@ -68,12 +68,10 @@ type OktaCustomAuthServerDiscoveryData = {
     jwks_uri: string;
 };
 
-const EXCLUDED_CLAIMS = ['iat', 'exp', 'iss', 'aud', 'jti', 'ver'];
-
 export type OktaAction =
     | { action: 'save.config' }
     | {
-          action: 'toggle.include_claims_in_va_token';
+          action: 'toggle.enrich_session';
           includeClaimsInVAToken: boolean;
       };
 
@@ -92,7 +90,7 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
     },
     action: async (element, action, context) => {
         switch (action.action) {
-            case 'toggle.include_claims_in_va_token':
+            case 'toggle.enrich_session':
                 return {
                     ...element,
                     state: {
@@ -389,7 +387,7 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                     }
                     const jwtToken = await jwt.sign(
                         {
-                            ...sanitizeJWTTokenClaims(decodedOktaToken.payload || {}),
+                            ...(decodedOktaToken.payload ?? {}),
                             exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60),
                         },
                         privateKey,
@@ -475,15 +473,3 @@ export default createIntegration({
         return Response.redirect(url.toString());
     },
 });
-
-function sanitizeJWTTokenClaims(claims: jwt.JwtPayload) {
-    const result: Record<string, any> = {};
-
-    Object.entries(claims).forEach(([key, value]) => {
-        if (EXCLUDED_CLAIMS.includes(key)) {
-            return;
-        }
-        result[key] = value;
-    });
-    return result;
-}
