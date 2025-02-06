@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.92.0
+
+### Minor Changes
+
+- a5d441f: Bump API to include section groups and section description
+
 ## 0.91.0
 
 ### Minor Changes
