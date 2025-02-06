@@ -401,7 +401,7 @@ export default createIntegration({
         url.searchParams.append('response_type', 'code');
         url.searchParams.append('redirect_uri', `${installationURL}/visitor-auth/response`);
         url.searchParams.append('scope', scope.toLowerCase());
-        url.searchParams.append('state', `state-${location}`);
+        url.searchParams.append('state', `oidcstate-${location}`);
 
         return Response.redirect(url.toString());
     },

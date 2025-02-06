@@ -5,13 +5,9 @@ display_information:
     long_description: |
         Experience the power of GitBook in your Slack workspace! 🚀
 
-        💾 *Save Threads in GitBook:*
-
-        Simply type ‘@gitbook save' in your Slack thread, and we'll swiftly capture it, turning your discussion into a living document. Now, anyone can easily search your team's captures and documents whenever they need them.
-
         🔍 *Effortless Search:*
 
-        Start by using @gitbook [question]. Our advanced AI quickly scans your knowledge base, providing accurate and concise responses within seconds.
+        Start by using @gitbook [question]. Our advanced AI quickly scans your documentation, providing accurate and concise responses within seconds.
 
         📢 *Stay Informed:*
 
