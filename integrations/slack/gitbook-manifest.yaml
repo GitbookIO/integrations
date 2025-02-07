@@ -5,7 +5,6 @@ organization: gitbook
 description: Ask questions and get answers to your documentation, right in Slack.
 categories:
     - collaboration
-    - captures
 previewImages:
     - ./assets/slack-preview.png
     - ./assets/slack-marketplace-1.png

@@ -49,18 +49,6 @@ export function SourcesBlock(params: { title?: string; items: Array<RelatedSourc
     ];
 }
 
-export function ConversationSavedBlock(snippetsUrl: string) {
-    return [
-        {
-            type: 'section',
-            text: {
-                type: 'mrkdwn',
-                text: `:white_check_mark: Conversation saved in <${snippetsUrl}|GitBook>`,
-            },
-        },
-    ];
-}
-
 export function QueryDisplayBlock(params: { queries: Array<string>; heading?: string }) {
     const { queries, heading } = params;
 
