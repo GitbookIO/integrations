@@ -276,7 +276,7 @@ const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (reque
 
                 const cognitoTokenData = await cognitoTokenResp.json<CognitoTokenResponseData>();
                 if (!cognitoTokenData.access_token) {
-                    return new Response('Error: No ID Token found in response from Cognito', {
+                    return new Response('Error: No access token found in response from Cognito', {
                         status: 401,
                     });
                 }
