@@ -1,5 +1,11 @@
 # @gitbook/integration-slack
 
+## 2.0.1
+
+### Patch Changes
+
+- e4ba11b: Remove category `captures` from the integration
+
 ## 2.0.0
 
 ### Major Changes
