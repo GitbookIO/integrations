@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.93.0
+
+### Minor Changes
+
+- 30caa3e: Update API with latest OpenAPI spec
+
 ## 0.92.0
 
 ### Minor Changes
