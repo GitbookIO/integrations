@@ -1,4 +1,4 @@
-import { sign } from '@tsndr/cloudflare-worker-jwt';
+import * as jwt from '@tsndr/cloudflare-worker-jwt';
 import { Router } from 'itty-router';
 
 import {
@@ -36,6 +36,19 @@ type CognitoProps = {
     siteInstallation: {
         configuration?: CognitoSiteInstallationConfiguration;
     };
+};
+
+type CognitoTokenErrorResponseData = {
+    error: string;
+    error_description: string;
+};
+
+type CognitoTokenResponseData = {
+    access_token?: string;
+    id_token?: string;
+    refresh_token?: string;
+    token_type: 'Bearer';
+    expires_in: number;
 };
 
 export type CognitoAction = { action: 'save.config' };
@@ -215,84 +228,94 @@ const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (reque
                 ('space' in siteOrSpaceInstallation && siteOrSpaceInstallation.space)
             ) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
-                const privateKey = context.environment.signingSecrets.siteInstallation!;
-                let token;
-                try {
-                    token = await sign(
-                        { exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60) },
-                        privateKey,
-                    );
-                } catch (e) {
-                    return new Response('Error: Could not sign JWT token', {
-                        status: 500,
-                    });
-                }
 
                 const cognitoDomain = siteOrSpaceInstallation.configuration.cognito_domain;
                 const clientId = siteOrSpaceInstallation.configuration.client_id;
                 const clientSecret = siteOrSpaceInstallation.configuration.client_secret;
-                if (clientId && clientSecret) {
-                    const searchParams = new URLSearchParams({
-                        grant_type: 'authorization_code',
-                        client_id: clientId,
-                        client_secret: clientSecret,
-                        code: `${request.query.code}`,
-                        redirect_uri: `${installationURL}/visitor-auth/response`,
-                    });
-                    const accessTokenURL = `${cognitoDomain}/oauth2/token/`;
-                    const resp: any = await fetch(accessTokenURL, {
-                        method: 'POST',
-                        headers: { 'content-type': 'application/x-www-form-urlencoded' },
-                        body: searchParams,
-                    })
-                        .then((response) => response.json())
-                        .catch((err) => {
-                            return new Response(
-                                'Error: Could not fetch access token from Cognito',
-                                {
-                                    status: 401,
-                                },
-                            );
-                        });
 
-                    if ('access_token' in resp) {
-                        let url;
-                        if (request.query.state) {
-                            url = new URL(
-                                `${publishedContentUrls?.published}${request.query.state}`,
-                            );
-                            url.searchParams.append('jwt_token', token);
-                        } else {
-                            url = new URL(publishedContentUrls?.published!);
-                            url.searchParams.append('jwt_token', token);
-                        }
-                        if (publishedContentUrls?.published && token) {
-                            return Response.redirect(url.toString());
-                        } else {
-                            return new Response(
-                                "Error: Either JWT token or space's published URL is missing",
-                                {
-                                    status: 500,
-                                },
-                            );
-                        }
-                    } else {
-                        logger.debug(JSON.stringify(resp, null, 2));
+                if (!clientId || !clientSecret || !clientId) {
+                    return new Response(
+                        'Error: Either client id, client secret or cognito domain is missing',
+                        {
+                            status: 400,
+                        },
+                    );
+                }
+
+                const searchParams = new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    client_id: clientId,
+                    client_secret: clientSecret,
+                    code: `${request.query.code}`,
+                    redirect_uri: `${installationURL}/visitor-auth/response`,
+                });
+                const tokenRequestURL = `${cognitoDomain}/oauth2/token/`;
+                const cognitoTokenResp = await fetch(tokenRequestURL, {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+                    body: searchParams,
+                });
+
+                if (!cognitoTokenResp.ok) {
+                    if (
+                        cognitoTokenResp.headers.get('content-type')?.includes('application/json')
+                    ) {
+                        const errorResponse =
+                            await cognitoTokenResp.json<CognitoTokenErrorResponseData>();
+                        logger.debug(JSON.stringify(errorResponse, null, 2));
                         logger.debug(
-                            `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
-                                (resp && resp.error_description) || ''
-                            }`,
+                            `Did not receive access token. Error: ${
+                                (errorResponse && errorResponse.error) || ''
+                            } ${(errorResponse && errorResponse.error_description) || ''}`,
                         );
+                    }
+                    return new Response('Error: Could not fetch token from Cognito', {
+                        status: 401,
+                    });
+                }
+
+                const cognitoTokenData = await cognitoTokenResp.json<CognitoTokenResponseData>();
+                if (!cognitoTokenData.access_token) {
+                    return new Response('Error: No access token found in response from Cognito', {
+                        status: 401,
+                    });
+                }
+
+                // Cognito already include user/custom claims in the access token so we can just decode it
+                // TODO: verify token using JWKS and check audience (aud) claims
+                const decodedCognitoToken = await jwt.decode(cognitoTokenData.access_token);
+                try {
+                    const privateKey = context.environment.signingSecrets.siteInstallation;
+                    if (!privateKey) {
+                        return new Response('Error: Missing private key from site installation', {
+                            status: 400,
+                        });
+                    }
+                    const jwtToken = await jwt.sign(
+                        {
+                            ...(decodedCognitoToken.payload ?? {}),
+                            exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60),
+                        },
+                        privateKey,
+                    );
+
+                    const publishedContentUrl = publishedContentUrls?.published;
+                    if (!publishedContentUrl || !jwtToken) {
                         return new Response(
-                            'Error: No Access Token found in response from Cognito',
+                            "Error: Either JWT token or site's published URL is missing",
                             {
-                                status: 401,
+                                status: 500,
                             },
                         );
                     }
-                } else {
-                    return new Response('Error: Either ClientId or Client Secret is missing', {
-                        status: 400,
+
+                    const url = new URL(`${publishedContentUrl}${request.query.state || ''}`);
+                    url.searchParams.append('jwt_token', jwtToken);
+
+                    return Response.redirect(url.toString());
+                } catch (e) {
+                    return new Response('Error: Could not sign JWT token', {
+                        status: 500,
                     });
                 }
             }
