@@ -64,7 +64,7 @@ export function createContentSource<
                 dependencies: ContentSourceDependenciesValueFromRef<Dependencies>;
             },
         ],
-        Promise<Document | void>,
+        Promise<Document>,
         Context
     >;
 }): ContentSourceDefinition<Context> {

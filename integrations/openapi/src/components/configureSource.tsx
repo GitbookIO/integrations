@@ -12,6 +12,7 @@ export const configureComponent = createComponent<
     InstallationConfigurationProps<OpenAPIRuntimeEnvironment>,
     {
         specURL: string;
+        models: boolean;
     },
     { action: 'submit' },
     OpenAPIRuntimeContext
@@ -20,6 +21,7 @@ export const configureComponent = createComponent<
     initialState: (props, _, context) => {
         return {
             specURL: '',
+            models: true,
         };
     },
     action: async (element, action, ctx) => {
@@ -33,6 +35,7 @@ export const configureComponent = createComponent<
                 returnValue: {
                     props: {
                         specURL: element.state.specURL,
+                        models: element.state.models,
                     },
                     dependencies: {
                         // Align with GenerateContentSourceDependencies
@@ -48,9 +51,14 @@ export const configureComponent = createComponent<
         return (
             <configuration>
                 <input
-                    label="Spec URL"
+                    label="URL"
                     hint="Enter the URL of the OpenAPI specification."
                     element={<textinput state="specURL" />}
+                />
+                <input
+                    label="Generate models"
+                    hint="Generate a models page for all schema components."
+                    element={<switch state="models" />}
                 />
                 <button
                     style="primary"

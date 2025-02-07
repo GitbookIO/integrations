@@ -4,7 +4,7 @@ import { createContentSource, ExposableError } from '@gitbook/runtime';
 import { openapi } from '@scalar/openapi-parser'
 import { fetchUrls } from '@scalar/openapi-parser/plugins/fetch-urls';
 import { OpenAPIV3 } from '@scalar/openapi-types'
-import { getTagTitle } from './utils';
+import { getTagTitle, improveTagName } from './utils';
 
 const HTTP_METHODS = [
     OpenAPIV3.HttpMethods.GET,
@@ -19,12 +19,26 @@ const HTTP_METHODS = [
 
 /** Props passed to the `getRevision` method. */
 export type GenerateContentSourceProps = {
+    /**
+     * URL of the OpenAPI specification.
+     * TODO: It'll be replaced by a dependency to an OpenAPI spec when shipped.
+     */
     specURL: string;
+
+    /**
+     * Should a models page be generated?
+     * @default true
+     */
+    models?: boolean;
 }
 
 /** Props passed to the `getPageDocument` method. */
-export type GenerateContentSourceDocumentProps = GenerateContentSourceProps & {
+type GenerateGroupPageProps = GenerateContentSourceProps & {
+    doc: 'operations';
     group: string;
+}
+type GenerateModelsPageProps = GenerateContentSourceProps & {
+    doc: 'models';
 }
 
 export type GenerateContentSourceDependencies = {
@@ -35,65 +49,121 @@ export type GenerateContentSourceDependencies = {
 /**
  * Content source to generate pages from an OpenAPI specification.
  */
-export const generateContentSource = createContentSource<GenerateContentSourceProps | GenerateContentSourceDocumentProps, GenerateContentSourceDependencies>({
+export const generateContentSource = createContentSource<GenerateContentSourceProps | GenerateGroupPageProps | GenerateModelsPageProps, GenerateContentSourceDependencies>({
     sourceId: 'generate',
 
     getRevision: async ({ props }, ctx) => {
         const spec = await getOpenAPISpec(props.specURL);
         const groups = divideOpenAPISpec(props, spec);
 
-        return {
-            pages: groups.map(group => {
-                const documentProps: GenerateContentSourceDocumentProps = {
-                    specURL: props.specURL,
-                    group: group.id,
+        const groupPages = groups.map(group => {
+            const documentProps: GenerateGroupPageProps = {
+                doc: 'operations',
+                specURL: props.specURL,
+                group: group.id,
+            }
+
+            const page: InputPage = {
+                type: 'document',
+                title: (group.tag ? getTagTitle(group.tag) : '') || improveTagName(group.id),
+                icon: group.tag?.['x-page-icon'],
+                description: group.tag?.['x-page-description'] ?? '',
+                computed: {
+                    integration: 'openapi',
+                    source: 'generate',
+                    props: documentProps
                 }
+            };
 
-                const page: InputPage = {
-                    type: 'document',
-                    title: (group.tag ? getTagTitle(group.tag) : '') || group.id,
-                    icon: group.tag?.['x-page-icon'],
-                    description: group.tag?.['x-page-description'] ?? '',
-                    computed: {
-                        integration: 'openapi',
-                        source: 'generate',
-                        props: documentProps
+            return page;
+        })
+
+        return {
+            pages: [
+                ...groupPages,
+                ...(props.models ? [
+                    {
+                        type: 'document' as const,
+                        title: 'Models',
+                        computed: {
+                            integration: 'openapi',
+                            source: 'generate',
+                            props: { doc: 'models', specURL: props.specURL }
+                        }
                     }
-                };
-
-                return page;
-            })
+                ] : [])
+            ]
         }
     },
 
     getPageDocument: async ({ props }, ctx) => {
-        if (!('group' in props)) {
-            throw new Error('Group is required');
+        if (!('doc' in props)) {
+            throw new Error('Doc is required');
         }
 
-        const spec = await getOpenAPISpec(props.specURL);
-        const groups = divideOpenAPISpec(props, spec);
-
-        const group = groups.find(g => g.id === props.group);
-        if (!group) {
-            throw new Error(`Group ${props.group} not found`);
+        if (props.doc === 'models') {
+            return generateModelsDocument(props);
         }
 
-        const operations = extractOperations(group);
+        if (props.doc === 'operations') {
+            return generateGroupDocument(props);
+        }
 
-        return doc.document([
-            // TODO: return or parse the description as markdown
-            ...(group.tag?.description ? [doc.paragraph(doc.text(group.tag.description))] : []),
-            ...operations.map(operation => {
-                return doc.openapi({
-                    ref: { url: props.specURL, kind: 'url' },
-                    method: operation.method,
-                    path: operation.path,
-                });
-            })
-        ]);
+        throw new Error('Invalid document generation request');
     },
 });
+
+/**
+ * Generate a document for a group in the OpenAPI specification.
+ */
+async function generateGroupDocument(props: GenerateGroupPageProps) {
+    const spec = await getOpenAPISpec(props.specURL);
+    const groups = divideOpenAPISpec(props, spec);
+
+    const group = groups.find(g => g.id === props.group);
+    if (!group) {
+        throw new Error(`Group ${props.group} not found`);
+    }
+
+    const operations = extractOperations(group);
+
+    return doc.document([
+        // TODO: return or parse the description as markdown
+        ...(group.tag?.description ? [doc.paragraph(doc.text(group.tag.description))] : []),
+        ...operations.map(operation => {
+            return doc.openapi({
+                ref: { url: props.specURL, kind: 'url' },
+                method: operation.method,
+                path: operation.path,
+            });
+        })
+    ]);
+}
+
+/**
+ * Generate a document for the models page in the OpenAPI specification.
+ */
+async function generateModelsDocument(props: GenerateModelsPageProps) {
+    const spec = await getOpenAPISpec(props.specURL);
+    
+    return doc.document([
+        doc.paragraph(doc.text('Models')),
+        ...Object.entries(spec.components?.schemas ?? {}).map(([name, schema]) => {
+            if ('$ref' in schema) {
+                return [
+                    doc.heading1(doc.text(name)),
+                    doc.paragraph(doc.text(schema.$ref))
+                ];
+            }
+
+            return [
+                doc.heading1(doc.text(name)),
+                doc.paragraph(doc.text(schema.description ?? '')),
+                doc.codeblock(JSON.stringify(schema, null, 2))
+            ];
+        }).flat()
+    ])
+}
 
 /**
  * Get the OpenAPI specification from the given URL.
@@ -166,16 +236,9 @@ function divideOpenAPISpec(props: GenerateContentSourceProps, spec: OpenAPIV3.Do
                 return;
             }
 
-            const firstTag = operation.tags?.[0];
-            if (firstTag) {
-                const tag = spec.tags?.find(t => t.name === firstTag);
-                indexOperation(firstTag, tag, path, pathItem, httpMethod, operation);
-            } else {
-                indexOperation('default', {
-                    id: 'default',
-                    name: 'Default',
-                }, path, pathItem, httpMethod, operation);
-            }
+            const firstTag = operation.tags?.[0] ?? 'default';
+            const tag = spec.tags?.find(t => t.name === firstTag);
+            indexOperation(firstTag, tag, path, pathItem, httpMethod, operation);
         });
     });
 

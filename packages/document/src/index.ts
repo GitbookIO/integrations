@@ -6,9 +6,11 @@ import type * as api from '@gitbook/api';
 
 export function document(nodes: api.DocumentBlocksTopLevels[]): api.Document {
     return {
-        object: 'document',
-        nodes,
-        data: {},
+        document: {
+            object: 'document',
+            nodes,
+            data: {},
+        }
     };
 }
 
@@ -36,6 +38,19 @@ export const images = blockFactory<api.DocumentBlockImages>('images');
 export const divider = voidBlockFactory<api.DocumentBlockDivider>('divider');
 export const file = voidBlockFactory<api.DocumentBlockFile>('file');
 export const openapi = voidBlockFactory<api.DocumentBlockOpenAPI>('swagger');
+
+/**
+ * Code blocks.
+ */
+export const codeblockLine = blockFactory<api.DocumentBlockCodeLine>('code-line');
+export function codeblock(nodes: string |api.DocumentBlockCodeLine[], data: api.DocumentBlockCode['data'] = {}): api.DocumentBlockCode {
+    return {
+        object: 'block',
+        type: 'code',
+        nodes: typeof nodes === 'string' ? nodes.split('\n').map(line => codeblockLine(text(line))) : nodes,
+        data,
+    }
+}
 
 /**
  * Text
@@ -114,7 +129,7 @@ function blockFactory<Block extends {
     data?: object;
 }>(type: Block['type']) {
     // @ts-ignore
-    return (nodes: Block['nodes'] | Block['nodes'][0], data?: Block['data']): Block => ({
+    return (nodes: Block['nodes'] | Block['nodes'][0], data: Block['data'] = {}): Block => ({
         object: 'block',
         type,
         nodes: Array.isArray(nodes) ? nodes : [nodes],
