@@ -22,17 +22,20 @@ contentSecurityPolicy:
         https://api.salesmartly.com
         https://srz.salesmartly.com;
     style-src: |
-        'unsafe-inline';
+        'unsafe-inline'
+        assets.salesmartly.com;
     img-src: |
         data:
         blob:
         assets-cdn.salesmartly.com
+        assets.salesmartly.com
     connect-src: |
         wss://msg-ws.salesmartly.com
     form-action: |
         msg.salesmartly.com
     media-src: |
-        assets-cdn.salesmartly.com;
+        assets-cdn.salesmartly.com
+        assets.salesmartly.com;
 summary: |
     # Overview
 
@@ -53,7 +56,7 @@ configurations:
             app_id:
                 type: string
                 title: Application ID
-                description: You can find it in your Salesmartly account, under the "Installation" section of the "Settings" page.
+                description: You can find it in your Salesmartly account.
         required:
             - app_id
 target: site
