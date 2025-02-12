@@ -1,5 +1,11 @@
 # @gitbook/integration-crisp
 
+## 0.4.4
+
+### Patch Changes
+
+- 136f055: Add font-src for Crisp integration
+
 ## 0.4.3
 
 ### Patch Changes
