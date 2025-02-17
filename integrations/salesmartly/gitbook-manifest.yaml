@@ -31,11 +31,15 @@ contentSecurityPolicy:
         assets.salesmartly.com
     connect-src: |
         wss://msg-ws.salesmartly.com
+        assets.salesmartly.com
     form-action: |
         msg.salesmartly.com
+        assets.salesmartly.com
     media-src: |
         assets-cdn.salesmartly.com
         assets.salesmartly.com;
+    font-src: |
+        assets.salesmartly.com
 summary: |
     # Overview
 
