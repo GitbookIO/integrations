@@ -1,4 +1,4 @@
-import { sign } from '@tsndr/cloudflare-worker-jwt';
+import * as jwt from '@tsndr/cloudflare-worker-jwt';
 import { Router } from 'itty-router';
 
 import { IntegrationInstallationConfiguration } from '@gitbook/api';
@@ -33,6 +33,23 @@ type AzureProps = {
     siteInstallation?: {
         configuration?: AzureSiteInstallationConfiguration;
     };
+};
+
+type AzureTokenErrorResponseData = {
+    error: string;
+    error_description: string;
+    error_codes: Array<number>;
+    timestamp: string;
+    trace_id: string;
+    correlation_id: string;
+};
+
+type AzureTokenResponseData = {
+    access_token?: string;
+    id_token?: string;
+    refresh_token?: string;
+    token_type: 'Bearer';
+    expires_in: number;
 };
 
 export type AzureAction = { action: 'save.config' };
@@ -204,79 +221,92 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
         router.get('/visitor-auth/response', async (request) => {
             if ('site' in siteInstallation && siteInstallation.site) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
-                const privateKey = context.environment.signingSecrets.siteInstallation!;
-                let token;
-                try {
-                    token = await sign(
-                        { exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60) },
-                        privateKey,
-                    );
-                } catch (e) {
-                    return new Response('Error: Could not sign JWT token', {
-                        status: 500,
-                    });
-                }
 
                 const tenantId = siteInstallation?.configuration.tenant_id;
                 const clientId = siteInstallation?.configuration.client_id;
                 const clientSecret = siteInstallation?.configuration.client_secret;
-                if (clientId && clientSecret) {
-                    const searchParams = new URLSearchParams({
-                        grant_type: 'authorization_code',
-                        client_id: clientId,
-                        client_secret: clientSecret,
-                        code: `${request.query.code}`,
-                        scope: 'openid',
-                        redirect_uri: `${installationURL}/visitor-auth/response`,
-                    });
-                    const accessTokenURL = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token/`;
-                    const resp: any = await fetch(accessTokenURL, {
-                        method: 'POST',
-                        headers: { 'content-type': 'application/x-www-form-urlencoded' },
-                        body: searchParams,
-                    })
-                        .then((response) => response.json())
-                        .catch((err) => {
-                            return new Response('Error: Could not fetch access token from Azure', {
-                                status: 401,
-                            });
-                        });
 
-                    if ('access_token' in resp) {
-                        let url;
-                        if (request.query.state) {
-                            url = new URL(
-                                `${publishedContentUrls?.published}${request.query.state}`,
-                            );
-                            url.searchParams.append('jwt_token', token);
-                        } else {
-                            url = new URL(publishedContentUrls?.published!);
-                            url.searchParams.append('jwt_token', token);
-                        }
-                        if (publishedContentUrls?.published && token) {
-                            return Response.redirect(url.toString());
-                        } else {
-                            return new Response(
-                                "Error: Either JWT token or space's published URL is missing",
-                                {
-                                    status: 500,
-                                },
-                            );
-                        }
-                    } else {
-                        logger.debug(JSON.stringify(resp, null, 2));
+                if (!clientId || !clientSecret || !tenantId) {
+                    return new Response(
+                        'Error: Either client id, client secret or tenant id is missing',
+                        {
+                            status: 400,
+                        },
+                    );
+                }
+
+                const searchParams = new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    client_id: clientId,
+                    client_secret: clientSecret,
+                    code: `${request.query.code}`,
+                    redirect_uri: `${installationURL}/visitor-auth/response`,
+                });
+                const tokenURL = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token/`;
+                const azureTokenResp = await fetch(tokenURL, {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+                    body: searchParams,
+                });
+
+                if (!azureTokenResp.ok) {
+                    if (azureTokenResp.headers.get('content-type')?.includes('application/json')) {
+                        const errorResponse =
+                            await azureTokenResp.json<AzureTokenErrorResponseData>();
+                        logger.debug(JSON.stringify(errorResponse, null, 2));
                         logger.debug(
-                            `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
-                                (resp && resp.error_description) || ''
-                            }`,
+                            `Did not receive access token. Error: ${
+                                (errorResponse && errorResponse.error) || ''
+                            } ${(errorResponse && errorResponse.error_description) || ''}`,
                         );
-                        return new Response('Error: No Access Token found in response from Azure', {
-                            status: 401,
+                    }
+                    return new Response('Error: Could not fetch token from Azure', {
+                        status: 401,
+                    });
+                }
+
+                const azureTokenData = await azureTokenResp.json<AzureTokenResponseData>();
+                if (!azureTokenData.id_token) {
+                    return new Response('Error: No ID Token found in response from Azure', {
+                        status: 401,
+                    });
+                }
+
+                // Azure already include user/custom claims in the ID token so we can just decode it
+                // TODO: verify token using JWKS and check audience (aud) claims
+                const decodedAzureToken = await jwt.decode(azureTokenData.id_token);
+                try {
+                    const privateKey = context.environment.signingSecrets.siteInstallation;
+                    if (!privateKey) {
+                        return new Response('Error: Missing private key from site installation', {
+                            status: 400,
                         });
                     }
-                } else {
-                    return new Response('Error: Either ClientId or Client Secret is missing', {
-                        status: 400,
+                    const jwtToken = await jwt.sign(
+                        {
+                            ...(decodedAzureToken.payload ?? {}),
+                            exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60),
+                        },
+                        privateKey,
+                    );
+
+                    const publishedContentUrl = publishedContentUrls?.published;
+                    if (!publishedContentUrl || !jwtToken) {
+                        return new Response(
+                            "Error: Either JWT token or site's published URL is missing",
+                            {
+                                status: 500,
+                            },
+                        );
+                    }
+
+                    const url = new URL(`${publishedContentUrl}${request.query.state || ''}`);
+                    url.searchParams.append('jwt_token', jwtToken);
+
+                    return Response.redirect(url.toString());
+                } catch (e) {
+                    return new Response('Error: Could not sign JWT token', {
+                        status: 500,
                     });
                 }
             }

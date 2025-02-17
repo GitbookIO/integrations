@@ -1,5 +1,24 @@
 # @gitbook/cli
 
+## 0.20.1
+
+### Patch Changes
+
+-   34b1ae9: Improve CLI to support definition of content sources
+-   Updated dependencies [ac4735e]
+    -   @gitbook/api@0.94.0
+
+## 0.20.0
+
+### Minor Changes
+
+-   ebfa12c: Allow publishing integrations with content sources
+
+### Patch Changes
+
+-   Updated dependencies [a5d441f]
+    -   @gitbook/api@0.92.0
+
 ## 0.19.0
 
 ### Minor Changes

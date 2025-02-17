@@ -15,6 +15,9 @@ scopes:
     - site:script:inject
 organization: gitbook
 contentSecurityPolicy:
+    font-src: |
+        client.crisp.chat
+        https://client.crisp.chat;
     script-src: |
         client.crisp.chat;
     style-src: |
