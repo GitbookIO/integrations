@@ -32,5 +32,5 @@
         "@types/bun": "^1.1.10"
     },
     "dependencies": {},
-    "packageManager": "bun@1.1.29"
+    "packageManager": "bun@1.2.2"
 }
