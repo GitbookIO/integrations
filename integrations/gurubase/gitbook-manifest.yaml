@@ -1,0 +1,111 @@
+name: gurubase
+title: Gurubase
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/gurubase-preview.png
+description: Add the Gurubase widget to your published GitBook content.
+externalLinks:
+    - label: Website
+      url: https://gurubase.io/
+visibility: public
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+organization: gitbook
+contentSecurityPolicy:
+    font-src: |
+        *.gurubase.io;
+    script-src: |
+        *.gurubase.io;
+    style-src: |
+        'self'
+        'unsafe-inline'
+        fonts.googleapis.com
+        *.gurubase.io;
+    frame-src: |
+        *.gurubase.io;
+    child-src: |
+        *.gurubase.io;
+    img-src: |
+        *.gurubase.io;
+    connect-src: |
+        *.gurubase.io;
+    media-src: |
+        *.gurubase.io;
+summary: |
+    # Overview
+    Add an AI-powered chat widget to your GitBook documentation using Gurubase. This integration enables real-time AI assistance for your readers directly within your documentation pages.
+
+    ## Prerequisites
+    - You need to have a Guru created on Gurubase.io
+    - You need a Widget ID from your Guru's settings page
+      1. Go to "My Gurus" page
+      2. Select your Guru
+      3. Click "Integrations" then "Web Widget"
+      4. Create a new widget and copy the Widget ID
+
+    ## Features
+    - Seamless integration with GitBook pages
+    - Customizable widget appearance
+    - Light/Dark mode support
+    - Custom positioning
+    - Custom branding options
+
+    # Configuration
+    1. Install the integration on your GitBook site
+    2. Add your Widget ID from Gurubase dashboard
+    3. Customize the widget appearance (optional)
+
+categories:
+    - content
+configurations:
+    site:
+        componentId: gurubase-widget
+        properties:
+            widgetId:
+                type: string
+                title: Widget ID
+                description: Your Gurubase Widget ID (from your Guru's settings page)
+                required: true
+            text:
+                type: string
+                title: Button Text
+                description: Text displayed on the chat button
+                default: 'Ask AI'
+            marginBottom:
+                type: string
+                title: Bottom Margin
+                description: Bottom margin of the widget button
+                default: "20px"
+            marginRight:
+                type: string
+                title: Right Margin
+                description: Right margin of the widget button
+                default: "20px"
+            bgColor:
+                type: string
+                title: Background Color
+                description: Primary color for the widget (hex format)
+            iconUrl:
+                type: string
+                title: Icon URL
+                description: URL to your company/product logo
+            name:
+                type: string
+                title: Widget Name
+                description: Your company/product name
+                default: 'AI Assistant'
+            lightMode:
+                type: boolean
+                title: Light Mode
+                description: Enable light mode for the widget
+                default: false
+            baseUrl:
+                type: string
+                title: Backend URL
+                description: URL to your Gurubase backend (only for self-hosted Gurubase)
+        required:
+            - widgetId
+target: site
