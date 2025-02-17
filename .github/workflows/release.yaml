@@ -22,7 +22,7 @@ jobs:
             - name: Setup bun
               uses: oven-sh/setup-bun@v1
               with:
-                  bun-version: 1.1.29
+                  bun-version-file: '.bun-version'
             - name: Install dependencies
               run: bun install --frozen-lockfile
             - name: Create Release Pull Request or Publish to npm
@@ -45,7 +45,7 @@ jobs:
             - name: Setup bun
               uses: oven-sh/setup-bun@v1
               with:
-                  bun-version: 1.1.29
+                  bun-version-file: '.bun-version'
             - name: Install dependencies
               run: bun install --frozen-lockfile
             - name: Publish all integrations assets to staging

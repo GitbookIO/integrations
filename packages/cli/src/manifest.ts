@@ -18,7 +18,7 @@ const IntegrationManifestContentSource = z.object({
     title: z.string().min(2).max(40),
     description: z.string().min(0).max(150).optional(),
     icon: z.string().optional(),
-    configuration: IntegrationManifestConfigurationComponent.optional(),
+    configuration: IntegrationManifestConfigurationComponent,
 });
 
 const JSONSchemaBaseSchema = z.object({

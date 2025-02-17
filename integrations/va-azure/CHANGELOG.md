@@ -1,5 +1,16 @@
 # @gitbook/integration-va-azure
 
+## 0.3.0
+
+### Minor Changes
+
+-   eb83ca5: Add support to VA Azure integration to include claims from backend in token
+
+### Patch Changes
+
+-   Updated dependencies [ac4735e]
+    -   @gitbook/api@0.94.0
+
 ## 0.2.0
 
 ### Minor Changes
