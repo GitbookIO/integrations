@@ -1,0 +1,12 @@
+{
+    "extends": "@gitbook/tsconfig/base.json",
+    "include": ["src/**/*"],
+    "rootDir": "./src",
+    "compilerOptions": {
+        "outDir": "./dist",
+        "baseUrl": "./src",
+        "allowImportingTsExtensions": false,
+        "noEmit": false,
+        "declaration": true
+    }
+}
