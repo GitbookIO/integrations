@@ -1,5 +1,16 @@
 # @gitbook/integration-va-okta
 
+## 0.3.0
+
+### Minor Changes
+
+-   d83963c: Add support to VA Azure integration to include claims from backend in VA token
+
+### Patch Changes
+
+-   Updated dependencies [ac4735e]
+    -   @gitbook/api@0.94.0
+
 ## 0.2.0
 
 ### Minor Changes
