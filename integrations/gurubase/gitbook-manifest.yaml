@@ -1,0 +1,72 @@
+name: gurubase
+title: Gurubase
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/gurubase-preview.png
+description: Add the Gurubase widget to your published GitBook content.
+externalLinks:
+    - label: Website
+      url: https://gurubase.io/
+visibility: public
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+organization: hY1Io78AJIno02pEZkOX
+contentSecurityPolicy:
+    font-src: |
+        *.gurubase.io;
+    script-src: |
+        *.gurubase.io;
+    style-src: |
+        'self'
+        'unsafe-inline'
+        fonts.googleapis.com
+        *.gurubase.io;
+    frame-src: |
+        *.gurubase.io;
+    child-src: |
+        *.gurubase.io;
+    img-src: |
+        *.gurubase.io;
+    connect-src: |
+        *.gurubase.io;
+    media-src: |
+        *.gurubase.io;
+summary: |
+    # Overview
+    Add an AI-powered chat widget to your GitBook documentation using Gurubase. This integration enables real-time AI assistance for your readers directly within your documentation pages.
+
+    ## Prerequisites
+    - You need to have a Guru created on Gurubase.io
+    - You need a Widget ID from your Guru's settings page
+      1. Go to "My Gurus" page
+      2. Select your Guru
+      3. Click "Integrations" then "Web Widget"
+      4. Create a new widget and copy the Widget ID
+
+    ## Features
+    - Seamless integration with GitBook pages
+    - Customizable widget appearance
+    - Light/Dark mode support
+    - Custom positioning
+    - Custom branding options
+
+    # Configuration
+    1. Install the integration on your GitBook site
+    2. Add your Widget ID from Gurubase dashboard
+    3. Customize the widget appearance (optional)
+
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            widgetId:
+                type: string
+                title: Gurubase Widget ID
+                description: Available in your Guru's settings page under Integrations > Web Widget
+        required:
+            - widgetId
+target: site
