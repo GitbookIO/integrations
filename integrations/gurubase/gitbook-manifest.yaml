@@ -13,7 +13,7 @@ script: ./src/index.ts
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
     - site:script:inject
-organization: gitbook
+organization: hY1Io78AJIno02pEZkOX
 contentSecurityPolicy:
     font-src: |
         *.gurubase.io;
