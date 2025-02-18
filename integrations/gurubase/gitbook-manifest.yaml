@@ -59,53 +59,14 @@ summary: |
     3. Customize the widget appearance (optional)
 
 categories:
-    - content
+    - analytics
 configurations:
     site:
-        componentId: gurubase-widget
         properties:
             widgetId:
                 type: string
-                title: Widget ID
-                description: Your Gurubase Widget ID (from your Guru's settings page)
-                required: true
-            text:
-                type: string
-                title: Button Text
-                description: Text displayed on the chat button
-                default: 'Ask AI'
-            marginBottom:
-                type: string
-                title: Bottom Margin
-                description: Bottom margin of the widget button
-                default: "20px"
-            marginRight:
-                type: string
-                title: Right Margin
-                description: Right margin of the widget button
-                default: "20px"
-            bgColor:
-                type: string
-                title: Background Color
-                description: Primary color for the widget (hex format)
-            iconUrl:
-                type: string
-                title: Icon URL
-                description: URL to your company/product logo
-            name:
-                type: string
-                title: Widget Name
-                description: Your company/product name
-                default: 'AI Assistant'
-            lightMode:
-                type: boolean
-                title: Light Mode
-                description: Enable light mode for the widget
-                default: false
-            baseUrl:
-                type: string
-                title: Backend URL
-                description: URL to your Gurubase backend (only for self-hosted Gurubase)
+                title: Gurubase Widget ID
+                description: Available in your Guru's settings page under Integrations > Web Widget
         required:
             - widgetId
 target: site
