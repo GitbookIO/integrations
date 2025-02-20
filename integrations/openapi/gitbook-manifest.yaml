@@ -9,12 +9,12 @@ externalLinks:
       url: https://docs.gitbook.com/integrations/openapi
 categories:
     - collaboration
+scopes:
+    - openapi:write
 summary: |
     # Overview
 
 script: src/index.ts
-scopes:
-    - space:content:read
 target: space
 contentSources:
     - id: generate
