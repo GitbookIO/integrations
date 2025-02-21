@@ -34,7 +34,7 @@ export const configureComponent = createComponent<
                 type: 'complete',
                 returnValue: {
                     props: {
-                        instruction: element.state.instruction,
+                        language: element.state.language,
                     },
                     dependencies: {
                         space: {

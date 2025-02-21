@@ -17,7 +17,6 @@ import { translateJSON } from './openai';
 /** Props passed to the `getRevision` method. */
 export type TranslateContentSourceProps = {
     language: string;
-    instruction: string;
 };
 
 export type TranslateContentSourceDependencies = {
