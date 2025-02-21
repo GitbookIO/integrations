@@ -70,7 +70,7 @@ configurations:
             text:
                 type: string
                 title: Text (Optional)
-                description: "Text to display in the widget button. (default: 'Ask a question')"
+                description: "Text to display in the widget button. (default: 'Ask AI')"
             bottomMargin:
                 type: string
                 title: Bottom Margin (Optional)
