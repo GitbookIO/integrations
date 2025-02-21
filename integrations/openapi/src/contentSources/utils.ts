@@ -1,12 +1,10 @@
-import { OpenAPIV3 } from "@scalar/openapi-types";
+import { OpenAPIV3 } from '@scalar/openapi-types';
 
 /**
  * Get the title for a tag.
  */
 export function getTagTitle(tag: OpenAPIV3.TagObject) {
-    return (
-        tag['x-page-title'] ?? improveTagName(tag.name ?? '')
-    )
+    return tag['x-page-title'] ?? improveTagName(tag.name ?? '');
 }
 
 /**
@@ -17,6 +15,6 @@ export function getTagTitle(tag: OpenAPIV3.TagObject) {
 export function improveTagName(tagName: string) {
     return tagName
         .split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 }

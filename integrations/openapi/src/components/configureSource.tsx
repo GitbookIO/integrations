@@ -1,9 +1,6 @@
 import { createComponent, ExposableError, InstallationConfigurationProps } from '@gitbook/runtime';
 
-import type {
-    OpenAPIRuntimeEnvironment,
-    OpenAPIRuntimeContext,
-} from '../types';
+import type { OpenAPIRuntimeEnvironment, OpenAPIRuntimeContext } from '../types';
 
 /**
  * ContentKit component to configure the content source.
@@ -14,7 +11,7 @@ export const configureComponent = createComponent<
         spec: string | null;
         models: boolean;
     },
-    { action: 'submit' } | { action: 'selectSpec', spec: string },
+    { action: 'submit' } | { action: 'selectSpec'; spec: string },
     OpenAPIRuntimeContext
 >({
     componentId: 'configureSource',
@@ -41,11 +38,11 @@ export const configureComponent = createComponent<
                             ref: {
                                 kind: 'openapi',
                                 spec: element.state.spec,
-                            }
-                        }
-                    }
+                            },
+                        },
+                    },
                 },
-            }
+            };
         }
 
         if (action.action === 'selectSpec') {
@@ -54,8 +51,8 @@ export const configureComponent = createComponent<
                 state: {
                     ...element.state,
                     spec: action.spec,
-                }
-            }
+                },
+            };
         }
 
         return element;
@@ -69,24 +66,25 @@ export const configureComponent = createComponent<
             throw new ExposableError('Installation not found');
         }
 
-        const { data: { items: specs } } = await api.orgs.listOpenApiSpecs(installation.target.organization);
+        const {
+            data: { items: specs },
+        } = await api.orgs.listOpenApiSpecs(installation.target.organization);
         return (
             <configuration>
                 <input
                     label="OpenAPI Specification"
                     hint="Choose the OpenAPI specification to use."
                     element={
-                        <select state="spec"
-                        options={
-                            specs.map((spec) => ({
-                                    label: spec.slug,
-                                    id: spec.slug,
-                                }))
-                        }
-                        onValueChange={{
-                            action: 'selectSpec',
-                            spec: element.dynamicState('spec')
-                        }}
+                        <select
+                            state="spec"
+                            options={specs.map((spec) => ({
+                                label: spec.slug,
+                                id: spec.slug,
+                            }))}
+                            onValueChange={{
+                                action: 'selectSpec',
+                                spec: element.dynamicState('spec'),
+                            }}
                         />
                     }
                 />

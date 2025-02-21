@@ -10,7 +10,7 @@ export function document(nodes: api.DocumentBlocksTopLevels[]): api.Document {
             object: 'document',
             nodes,
             data: {},
-        }
+        },
     };
 }
 
@@ -43,13 +43,19 @@ export const openapi = voidBlockFactory<api.DocumentBlockOpenAPI>('swagger');
  * Code blocks.
  */
 export const codeblockLine = blockFactory<api.DocumentBlockCodeLine>('code-line');
-export function codeblock(nodes: string |api.DocumentBlockCodeLine[], data: api.DocumentBlockCode['data'] = {}): api.DocumentBlockCode {
+export function codeblock(
+    nodes: string | api.DocumentBlockCodeLine[],
+    data: api.DocumentBlockCode['data'] = {},
+): api.DocumentBlockCode {
     return {
         object: 'block',
         type: 'code',
-        nodes: typeof nodes === 'string' ? nodes.split('\n').map(line => codeblockLine(text(line))) : nodes,
+        nodes:
+            typeof nodes === 'string'
+                ? nodes.split('\n').map((line) => codeblockLine(text(line)))
+                : nodes,
         data,
-    }
+    };
 }
 
 /**
@@ -79,35 +85,35 @@ export function bold(): api.DocumentMarkBold {
     return {
         object: 'mark',
         type: 'bold',
-    }
+    };
 }
 
 export function italic(): api.DocumentMarkItalic {
     return {
         object: 'mark',
         type: 'italic',
-    }
+    };
 }
 
 export function code(): api.DocumentMarkCode {
     return {
         object: 'mark',
         type: 'code',
-    }
+    };
 }
 
 export function keyboard(): api.DocumentMarkKeyboard {
     return {
         object: 'mark',
         type: 'keyboard',
-    }
+    };
 }
 
 export function strikethrough(): api.DocumentMarkStrikethrough {
     return {
         object: 'mark',
         type: 'strikethrough',
-    }
+    };
 }
 
 export function color(data: api.DocumentMarkColor['data']): api.DocumentMarkColor {
@@ -115,19 +121,21 @@ export function color(data: api.DocumentMarkColor['data']): api.DocumentMarkColo
         object: 'mark',
         type: 'color',
         data,
-    }
+    };
 }
 
 /**
  * Factories
  */
 
-function blockFactory<Block extends {
-    object: 'block';
-    type: string;
-    nodes: any[];
-    data?: object;
-}>(type: Block['type']) {
+function blockFactory<
+    Block extends {
+        object: 'block';
+        type: string;
+        nodes: any[];
+        data?: object;
+    },
+>(type: Block['type']) {
     // @ts-ignore
     return (nodes: Block['nodes'] | Block['nodes'][0], data: Block['data'] = {}): Block => ({
         object: 'block',
@@ -137,11 +145,13 @@ function blockFactory<Block extends {
     });
 }
 
-function voidBlockFactory<Block extends {
-    object: 'block';
-    type: string;
-    data?: object;
-}>(type: Block['type']) {
+function voidBlockFactory<
+    Block extends {
+        object: 'block';
+        type: string;
+        data?: object;
+    },
+>(type: Block['type']) {
     // @ts-ignore
     return (data?: Block['data']): Block => ({
         object: 'block',
@@ -150,4 +160,3 @@ function voidBlockFactory<Block extends {
         data,
     });
 }
-
