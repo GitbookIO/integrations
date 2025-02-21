@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.95.0
+
+### Minor Changes
+
+-   0d67d6e: Bump API version to include latest customization settings
+
 ## 0.94.0
 
 ### Minor Changes
