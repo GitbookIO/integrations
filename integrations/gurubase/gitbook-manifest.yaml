@@ -95,6 +95,10 @@ configurations:
                 type: string
                 title: Name (Optional)
                 description: "Name of the widget. (default: Guru's name)"
+            baseUrl:
+                type: string
+                title: Base Backend URL (Optional)
+                description: 'Base URL for Gurubase backend. (default: https://api.gurubase.io)'
 
         required:
             - widgetId

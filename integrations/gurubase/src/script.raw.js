@@ -29,6 +29,9 @@
     if (config.name) {
         s.setAttribute('data-name', config.name);
     }
+    if (config.baseUrl) {
+        s.setAttribute('data-baseUrl', config.baseUrl);
+    }
 
     s.id = 'guru-widget-id';
     d.getElementsByTagName('head')[0].appendChild(s);

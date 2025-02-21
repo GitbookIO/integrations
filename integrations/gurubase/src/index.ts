@@ -19,6 +19,7 @@ type GurubaseRuntimeContext = RuntimeContext<
             bgColor?: string;
             iconUrl?: string;
             name?: string;
+            baseUrl?: string;
         }
     >
 >;
@@ -49,6 +50,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
         bgColor: config.bgColor,
         iconUrl: config.iconUrl,
         name: config.name,
+        baseUrl: config.baseUrl,
     };
 
     // Properly escape the config JSON for safe insertion into JavaScript
