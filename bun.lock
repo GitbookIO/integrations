@@ -479,7 +479,7 @@
     },
     "integrations/va-azure": {
       "name": "@gitbook/integration-va-azure",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -493,7 +493,7 @@
     },
     "integrations/va-okta": {
       "name": "@gitbook/integration-va-okta",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "dependencies": {
         "@gitbook/api": "packages/api",
         "@gitbook/runtime": "packages/runtime",
@@ -519,7 +519,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.93.0",
+      "version": "0.94.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -534,7 +534,7 @@
     },
     "packages/cli": {
       "name": "@gitbook/cli",
-      "version": "0.20.0",
+      "version": "0.20.1",
       "bin": {
         "gitbook": "./cli.js"
       },
