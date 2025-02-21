@@ -14,6 +14,8 @@ scopes:
 summary: |
     # Overview
 
+    Auto-generate pages in your GitBook documentation from an OpenAPI specification. Everytime your OpenAPI specification changes, your API reference will be updated.
+
 script: src/index.ts
 target: space
 contentSources:
