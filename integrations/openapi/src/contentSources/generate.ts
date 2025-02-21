@@ -41,8 +41,6 @@ type GenerateModelsPageProps = GenerateContentSourceProps & {
 };
 
 export type GenerateContentSourceDependencies = {
-    // TODO: add openapi dependency here
-    // spec: ContentRefOpenAPI;
     spec: { ref: ContentRefOpenAPI };
 };
 
