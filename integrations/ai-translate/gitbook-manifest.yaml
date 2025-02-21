@@ -1,0 +1,27 @@
+name: ai-translate
+title: Translate with AI
+organization: gitbook
+visibility: public
+description: Translate your documentation with AI
+externalLinks:
+    - label: Documentation
+      url: https://docs.gitbook.com/integrations/ai-translate
+categories:
+    - collaboration
+scopes:
+    - space:content:read
+summary: |
+    # Overview
+
+    Translate your documentation with AI by generating a new language version of your documentation from an original space in any language.
+
+script: src/index.ts
+target: space
+contentSources:
+    - id: translate
+      title: Translate with AI
+      description: Translate with AI
+      configuration:
+          componentId: configureSource
+secrets:
+    OPENAI_API_KEY: ${{ env.OPENAI_API_KEY }}
