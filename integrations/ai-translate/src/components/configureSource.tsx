@@ -89,7 +89,7 @@ export const configureComponent = createComponent<
                             state="space"
                             options={spaces.map((space) => ({
                                 label: typeof space.space === 'string' ? space.space : space.space.title,
-                                id: space.space,
+                                id: typeof space.space === 'string' ? space.space : space.space.id,
                             }))}
                             onValueChange={{
                                 action: 'selectSpace',
