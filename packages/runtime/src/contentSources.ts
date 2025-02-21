@@ -27,15 +27,21 @@ export type ContentSourceDependenciesValueFromRef<
     >,
 > = {
     // TODO: extend to support other types once ComputedContentDependencyRef becomes a union
-    [K in keyof Dependencies]: Extract<ComputedContentDependencyValue, { ref: Dependencies[K]['ref'] }>;
+    [K in keyof Dependencies]: Extract<
+        ComputedContentDependencyValue,
+        { ref: Dependencies[K]['ref'] }
+    >;
 };
 
-export type ContentSourceInput<Props extends PlainObject = {}, Dependencies extends Record<
-string,
-{
-    ref: ComputedContentDependencyRef;
-}
-> = {}> = {
+export type ContentSourceInput<
+    Props extends PlainObject = {},
+    Dependencies extends Record<
+        string,
+        {
+            ref: ComputedContentDependencyRef;
+        }
+    > = {},
+> = {
     props: Props;
     dependencies: ContentSourceDependenciesValueFromRef<Dependencies>;
 };

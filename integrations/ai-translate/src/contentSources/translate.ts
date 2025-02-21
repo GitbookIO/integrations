@@ -1,9 +1,16 @@
-import { ContentRefSpace, InputPage, InputPageComputed, InputPageDocument, InputPageGroup, InputPageLink, Revision, RevisionPageComputed, RevisionPageDocument, RevisionPageGroup, RevisionPageLink } from '@gitbook/api';
 import {
-    ContentSourceInput,
-    createContentSource,
-    ExposableError,
-} from '@gitbook/runtime';
+    ContentRefSpace,
+    InputPageComputed,
+    InputPageDocument,
+    InputPageGroup,
+    InputPageLink,
+    Revision,
+    RevisionPageComputed,
+    RevisionPageDocument,
+    RevisionPageGroup,
+    RevisionPageLink,
+} from '@gitbook/api';
+import { ContentSourceInput, createContentSource, ExposableError } from '@gitbook/runtime';
 import { AiTranslateRuntimeContext } from '../types';
 import { translateJSON } from './openai';
 
@@ -37,7 +44,10 @@ export const translateContentSource = createContentSource<
             throw new ExposableError('Space not found');
         }
 
-        const { data: revision } = await ctx.api.spaces.getRevisionById(spaceDep.id, spaceDep.revision);
+        const { data: revision } = await ctx.api.spaces.getRevisionById(
+            spaceDep.id,
+            spaceDep.revision,
+        );
 
         const pages = getInputsFromRevision(ctx, { props, dependencies }, revision);
 
@@ -115,8 +125,11 @@ function getInputFromPage(
                           integration: ctx.environment.integration.name,
                           source: 'translate',
                           props: {
-                              ...inputProps,
+                              ...inputProps.props,
                               document: page.documentId,
+                          },
+                          dependencies: {
+                              space: { ref: inputProps.dependencies.space.ref },
                           },
                       }
                     : undefined,

@@ -1,10 +1,6 @@
 import { ContentRefOpenAPI, InputPage } from '@gitbook/api';
 import * as doc from '@gitbook/document';
-import {
-    ContentSourceInput,
-    createContentSource,
-    ExposableError,
-} from '@gitbook/runtime';
+import { ContentSourceInput, createContentSource, ExposableError } from '@gitbook/runtime';
 import { openapi } from '@scalar/openapi-parser';
 import { fetchUrls } from '@scalar/openapi-parser/plugins/fetch-urls';
 import { OpenAPIV3 } from '@scalar/openapi-types';

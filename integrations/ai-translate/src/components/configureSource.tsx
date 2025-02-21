@@ -76,7 +76,7 @@ export const configureComponent = createComponent<
             installation.id,
             {
                 extended: true,
-            }
+            },
         );
 
         return (
@@ -88,7 +88,10 @@ export const configureComponent = createComponent<
                         <select
                             state="space"
                             options={spaces.map((space) => ({
-                                label: typeof space.space === 'string' ? space.space : space.space.title,
+                                label:
+                                    typeof space.space === 'string'
+                                        ? space.space
+                                        : space.space.title,
                                 id: typeof space.space === 'string' ? space.space : space.space.id,
                             }))}
                             onValueChange={{
@@ -101,12 +104,7 @@ export const configureComponent = createComponent<
                 <input
                     label="Language"
                     hint="Choose the language to translate the documentation to."
-                    element={
-                        <select
-                            state="language"
-                            options={languages}
-                        />
-                    }
+                    element={<select state="language" options={languages} />}
                 />
 
                 <divider />

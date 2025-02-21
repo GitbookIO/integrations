@@ -10,7 +10,8 @@ import { languages } from '../languages';
 export function getOpenAI(ctx: AiTranslateRuntimeContext): OpenAI {
     return new OpenAI({
         apiKey: ctx.environment.secrets.OPENAI_API_KEY,
-        baseURL: 'https://gateway.ai.cloudflare.com/v1/4401d86825a13bf607936cc3a9f3897a/integrations/openai' // ctx.environment.installation?.configuration.apiUrl,
+        baseURL:
+            'https://gateway.ai.cloudflare.com/v1/4401d86825a13bf607936cc3a9f3897a/integrations/openai', // ctx.environment.installation?.configuration.apiUrl,
     });
 }
 
