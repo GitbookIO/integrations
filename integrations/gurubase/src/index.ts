@@ -12,6 +12,13 @@ type GurubaseRuntimeContext = RuntimeContext<
         {},
         {
             widgetId?: string;
+            text?: string;
+            bottomMargin?: string;
+            rightMargin?: string;
+            lightMode?: boolean;
+            bgColor?: string;
+            iconUrl?: string;
+            name?: string;
         }
     >
 >;
@@ -20,7 +27,9 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
     { environment }: GurubaseRuntimeContext,
 ) => {
-    const widgetId = environment.siteInstallation?.configuration?.widgetId;
+    const config = environment.siteInstallation?.configuration || {};
+    const widgetId = config.widgetId;
+
     if (!widgetId) {
         throw new Error(
             `The Gurubase Widget ID is missing from the configuration (ID: ${
@@ -29,7 +38,23 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
         );
     }
 
-    return new Response((script as string).replace('<TO_REPLACE>', widgetId), {
+    const scriptConfig = {
+        widgetId,
+        text: config.text,
+        margins: JSON.stringify({
+            bottom: config.bottomMargin || '20px',
+            right: config.rightMargin || '20px',
+        }),
+        lightMode: config.lightMode,
+        bgColor: config.bgColor,
+        iconUrl: config.iconUrl,
+        name: config.name,
+    };
+
+    // Properly escape the config JSON for safe insertion into JavaScript
+    const escapedConfig = JSON.stringify(scriptConfig).replace(/'/g, "\\'").replace(/"/g, '\\"');
+
+    return new Response((script as string).replace("'<TO_REPLACE>'", `'${escapedConfig}'`), {
         headers: {
             'Content-Type': 'application/javascript',
             'Cache-Control': 'max-age=604800',

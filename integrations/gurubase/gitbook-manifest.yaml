@@ -66,7 +66,36 @@ configurations:
             widgetId:
                 type: string
                 title: Gurubase Widget ID
-                description: Available in your Guru's settings page under Integrations > Web Widget
+                description: "Available in your Guru's settings page under Integrations > Web Widget"
+            text:
+                type: string
+                title: Text (Optional)
+                description: "Text to display in the widget button. (default: 'Ask a question')"
+            bottomMargin:
+                type: string
+                title: Bottom Margin (Optional)
+                description: 'Bottom margin of the widget. Examples: 20px, 1rem. (default: 20px)'
+            rightMargin:
+                type: string
+                title: Right Margin (Optional)
+                description: 'Right margin of the widget. Examples: 20px, 1rem. (default: 20px)'
+            lightMode:
+                type: boolean
+                title: Light Mode
+                description: Whether to use light mode
+            bgColor:
+                type: string
+                title: Main Color (Optional)
+                description: "Main color of the widget. Examples: #000000, #ffffff. (default: Guru's main color)"
+            iconUrl:
+                type: string
+                title: Icon URL (Optional)
+                description: "URL of the icon to display in the widget. (default: Guru's avatar)"
+            name:
+                type: string
+                title: Name (Optional)
+                description: "Name of the widget. (default: Guru's name)"
+
         required:
             - widgetId
 target: site
