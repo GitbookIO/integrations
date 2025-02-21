@@ -172,7 +172,7 @@ async function generateModelsDocument(
         props,
         dependencies,
     }: {
-        props: GenerateGroupPageProps;
+        props: GenerateModelsPageProps;
         dependencies: ContentSourceDependenciesValueFromRef<GenerateContentSourceDependencies>;
     },
     ctx: OpenAPIRuntimeContext,
