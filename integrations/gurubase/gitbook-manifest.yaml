@@ -23,7 +23,9 @@ contentSecurityPolicy:
         'self'
         'unsafe-inline'
         fonts.googleapis.com
-        *.gurubase.io;
+        *.gurubase.io
+        unpkg.com
+        cdnjs.cloudflare.com;
     frame-src: |
         *.gurubase.io;
     child-src: |
