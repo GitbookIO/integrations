@@ -97,7 +97,6 @@ const formspreeBlock = createComponent<
                 </vstack>
 
                 <button
-                    type="button"
                     label={element.state.formSubmitted ? 'Submitted' : 'Submit'}
                     onPress={{ action: 'submit' }}
                     disabled={element.state.formSubmitted}

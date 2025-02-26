@@ -50,8 +50,7 @@ declare global {
         interface IntrinsicElements {
             configuration: OmitType<ContentKitConfiguration>;
             block: OmitType<ContentKitBlock>;
-            // No need to omit type here, as it is required on the DOM element
-            button: ContentKitButton;
+            button: OmitType<ContentKitButton>;
             box: OmitType<ContentKitBox>;
             vstack: OmitType<ContentKitVStack>;
             hstack: OmitType<ContentKitHStack>;
