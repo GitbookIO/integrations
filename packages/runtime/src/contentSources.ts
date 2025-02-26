@@ -27,7 +27,23 @@ export type ContentSourceDependenciesValueFromRef<
     >,
 > = {
     // TODO: extend to support other types once ComputedContentDependencyRef becomes a union
-    [K in keyof Dependencies]: ComputedContentDependencyValue;
+    [K in keyof Dependencies]: Extract<
+        ComputedContentDependencyValue,
+        { ref: Dependencies[K]['ref'] }
+    >;
+};
+
+export type ContentSourceInput<
+    Props extends PlainObject = {},
+    Dependencies extends Record<
+        string,
+        {
+            ref: ComputedContentDependencyRef;
+        }
+    > = {},
+> = {
+    props: Props;
+    dependencies: ContentSourceDependenciesValueFromRef<Dependencies>;
 };
 
 /**
@@ -53,12 +69,7 @@ export function createContentSource<
      * Callback to generate the pages.
      */
     getRevision: RuntimeCallback<
-        [
-            {
-                props: GetRevisionProps;
-                dependencies: ContentSourceDependenciesValueFromRef<Dependencies>;
-            },
-        ],
+        [ContentSourceInput<GetRevisionProps, Dependencies>],
         Promise<ContentComputeRevisionEventResponse>,
         Context
     >;
@@ -67,12 +78,7 @@ export function createContentSource<
      * Callback to generate the document of a page.
      */
     getPageDocument: RuntimeCallback<
-        [
-            {
-                props: GetPageDocumentProps;
-                dependencies: ContentSourceDependenciesValueFromRef<Dependencies>;
-            },
-        ],
+        [ContentSourceInput<GetPageDocumentProps, Dependencies>],
         Promise<Document>,
         Context
     >;

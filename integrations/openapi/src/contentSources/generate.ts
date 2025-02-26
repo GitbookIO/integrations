@@ -7,6 +7,7 @@ import type {
 import * as doc from '@gitbook/document';
 import {
     type ContentSourceDependenciesValueFromRef,
+    ContentSourceInput,
     createContentSource,
     ExposableError,
 } from '@gitbook/runtime';
@@ -59,7 +60,7 @@ export const generateContentSource = createContentSource<
     sourceId: 'generate',
 
     getRevision: async ({ props, dependencies }, ctx) => {
-        const spec = await getOpenAPISpec({ dependencies }, ctx);
+        const spec = await getOpenAPISpec(dependencies, ctx);
         const groups = divideOpenAPISpec(spec.schema);
 
         const groupPages = groups.map((group) => {
@@ -129,14 +130,11 @@ export const generateContentSource = createContentSource<
  * Generate a document for a group in the OpenAPI specification.
  */
 async function generateGroupDocument(
-    input: {
-        props: GenerateGroupPageProps;
-        dependencies: ContentSourceDependenciesValueFromRef<GenerateContentSourceDependencies>;
-    },
+    input: ContentSourceInput<GenerateGroupPageProps, GenerateContentSourceDependencies>,
     ctx: OpenAPIRuntimeContext,
 ) {
     const { props, dependencies } = input;
-    const spec = await getOpenAPISpec({ dependencies }, ctx);
+    const spec = await getOpenAPISpec(dependencies, ctx);
     const groups = divideOpenAPISpec(spec.schema);
 
     const group = groups.find((g) => g.id === props.group);
@@ -176,14 +174,11 @@ function getTagDescriptionNodes(tag: OpenAPIV3.TagObject): DocumentBlocksTopLeve
  * Generate a document for the models page in the OpenAPI specification.
  */
 async function generateModelsDocument(
-    input: {
-        props: GenerateModelsPageProps;
-        dependencies: ContentSourceDependenciesValueFromRef<GenerateContentSourceDependencies>;
-    },
+    input: ContentSourceInput<GenerateModelsPageProps, GenerateContentSourceDependencies>,
     ctx: OpenAPIRuntimeContext,
 ) {
     const { props, dependencies } = input;
-    const spec = await getOpenAPISpec({ dependencies }, ctx);
+    const spec = await getOpenAPISpec(dependencies, ctx);
 
     return doc.document([
         doc.paragraph(doc.text('Models')),
@@ -207,12 +202,9 @@ async function generateModelsDocument(
  * Get the OpenAPI specification from the OpenAPI specification dependency.
  */
 async function getOpenAPISpec(
-    input: {
-        dependencies: ContentSourceDependenciesValueFromRef<GenerateContentSourceDependencies>;
-    },
+    dependencies: ContentSourceDependenciesValueFromRef<GenerateContentSourceDependencies>,
     ctx: OpenAPIRuntimeContext,
 ) {
-    const { dependencies } = input;
     const { api } = ctx;
     const { installation } = ctx.environment;
     const specValue = dependencies.spec.value;
