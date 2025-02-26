@@ -1,35 +1,16 @@
-import {
-    createIntegration,
-    createComponent,
-    RuntimeContext,
-    RuntimeEnvironment,
-} from '@gitbook/runtime';
+import { createIntegration, createComponent } from '@gitbook/runtime';
 
 import { handleSubmit } from './utils';
-
-type FormspreeConfiguration = {
-    formspree_id: string;
-    email: string;
-    name: string;
-    message: string;
-};
-
-type FormspreeEnvironment = RuntimeEnvironment<FormspreeConfiguration>;
-type FormspreeContext = RuntimeContext<FormspreeEnvironment>;
-
-type FormspreeAction = {
-    action: 'submit';
-};
+import type {
+    FormspreeActionResponse,
+    FormspreeConfiguration,
+    FormspreeAction,
+    FormspreeContext,
+} from './types';
 
 const formspreeBlock = createComponent<
-    {},
-    | { formSubmitted: true }
-    | {
-          email: string;
-          name: string;
-          message: string;
-          formSubmitted: boolean;
-      },
+    Record<string, string>,
+    FormspreeActionResponse,
     FormspreeAction,
     FormspreeContext
 >({
@@ -42,12 +23,12 @@ const formspreeBlock = createComponent<
     },
     action: async (element, action, context) => {
         switch (action.action) {
-            case 'submit':
+            case 'submit': {
                 if (element.state.formSubmitted) {
                     return element;
                 }
 
-                handleSubmit(
+                const success = await handleSubmit(
                     (context.environment.spaceInstallation?.configuration as FormspreeConfiguration)
                         .formspree_id,
                     {
@@ -56,11 +37,17 @@ const formspreeBlock = createComponent<
                         message: element.state.message,
                     },
                 );
+
+                if (!success) {
+                    return element;
+                }
+
                 return {
                     state: {
                         formSubmitted: true,
                     },
                 };
+            }
         }
     },
     render: async (element, context: FormspreeContext) => {
@@ -110,9 +97,11 @@ const formspreeBlock = createComponent<
                 </vstack>
 
                 <button
+                    type="button"
                     label={element.state.formSubmitted ? 'Submitted' : 'Submit'}
                     onPress={{ action: 'submit' }}
                     disabled={element.state.formSubmitted}
+                    style="primary"
                 />
             </block>
         );
