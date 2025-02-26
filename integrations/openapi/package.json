@@ -11,8 +11,7 @@
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
         "@gitbook/document": "*",
-        "@scalar/openapi-parser": "^0.10.4",
-        "@scalar/openapi-types": "^0.1.6"
+        "@gitbook/openapi-parser": "^1.0.1"
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",

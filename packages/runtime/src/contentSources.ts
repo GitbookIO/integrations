@@ -34,7 +34,8 @@ export type ContentSourceDependenciesValueFromRef<
  * Create a content source. The result should be bind to the integration using `contentSources`.
  */
 export function createContentSource<
-    Props extends PlainObject = {},
+    GetRevisionProps extends PlainObject = {},
+    GetPageDocumentProps extends PlainObject = {},
     Dependencies extends Record<
         string,
         {
@@ -54,7 +55,7 @@ export function createContentSource<
     getRevision: RuntimeCallback<
         [
             {
-                props: Props;
+                props: GetRevisionProps;
                 dependencies: ContentSourceDependenciesValueFromRef<Dependencies>;
             },
         ],
@@ -68,7 +69,7 @@ export function createContentSource<
     getPageDocument: RuntimeCallback<
         [
             {
-                props: Props;
+                props: GetPageDocumentProps;
                 dependencies: ContentSourceDependenciesValueFromRef<Dependencies>;
             },
         ],
@@ -79,26 +80,34 @@ export function createContentSource<
     return {
         sourceId: source.sourceId,
         compute: async (event, context) => {
-            const output =
-                event.type === 'content_compute_revision'
-                    ? await source.getRevision(
-                          {
-                              props: event.props as Props,
-                              dependencies:
-                                  event.dependencies as ContentSourceDependenciesValueFromRef<Dependencies>,
-                          },
-                          context,
-                      )
-                    : {
-                          document: await source.getPageDocument(
-                              {
-                                  props: event.props as Props,
-                                  dependencies:
-                                      event.dependencies as ContentSourceDependenciesValueFromRef<Dependencies>,
-                              },
-                              context,
-                          ),
-                      };
+            const output = await (async () => {
+                switch (event.type) {
+                    case 'content_compute_revision': {
+                        return source.getRevision(
+                            {
+                                props: event.props as GetRevisionProps,
+                                dependencies:
+                                    event.dependencies as ContentSourceDependenciesValueFromRef<Dependencies>,
+                            },
+                            context,
+                        );
+                    }
+                    case 'content_compute_document': {
+                        return {
+                            document: await source.getPageDocument(
+                                {
+                                    props: event.props as GetPageDocumentProps,
+                                    dependencies:
+                                        event.dependencies as ContentSourceDependenciesValueFromRef<Dependencies>,
+                                },
+                                context,
+                            ),
+                        };
+                    }
+                    default:
+                        assertNever(event);
+                }
+            })();
 
             return new Response(JSON.stringify(output), {
                 headers: {
@@ -107,4 +116,8 @@ export function createContentSource<
             });
         },
     };
+}
+
+function assertNever(value: never): never {
+    throw new Error(`Unhandled discriminated union member: ${JSON.stringify(value)}`);
 }

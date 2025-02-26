@@ -1,29 +1,31 @@
-import { ContentRefOpenAPI, InputPage } from '@gitbook/api';
+import type {
+    ContentRefOpenAPI,
+    DocumentBlocksTopLevels,
+    InputPage,
+    JSONDocument,
+} from '@gitbook/api';
 import * as doc from '@gitbook/document';
 import {
-    ContentSourceDependenciesValueFromRef,
+    type ContentSourceDependenciesValueFromRef,
     createContentSource,
     ExposableError,
 } from '@gitbook/runtime';
-import { openapi } from '@scalar/openapi-parser';
-import { fetchUrls } from '@scalar/openapi-parser/plugins/fetch-urls';
-import { OpenAPIV3 } from '@scalar/openapi-types';
-import { getTagTitle, improveTagName } from './utils';
-import { OpenAPIRuntimeContext } from '../types';
+import { dereference, type OpenAPIV3 } from '@gitbook/openapi-parser';
+import { assertNever, getTagTitle, improveTagName } from './utils';
+import type { OpenAPIRuntimeContext } from '../types';
 
 const HTTP_METHODS = [
-    OpenAPIV3.HttpMethods.GET,
-    OpenAPIV3.HttpMethods.POST,
-    OpenAPIV3.HttpMethods.PUT,
-    OpenAPIV3.HttpMethods.DELETE,
-    OpenAPIV3.HttpMethods.OPTIONS,
-    OpenAPIV3.HttpMethods.HEAD,
-    OpenAPIV3.HttpMethods.PATCH,
-    OpenAPIV3.HttpMethods.TRACE,
-];
+    'get',
+    'post',
+    'put',
+    'delete',
+    'options',
+    'head',
+    'patch',
+    'trace',
+] as OpenAPIV3.HttpMethods[]; // @TODO expose enum in @gitbook/openapi-parser
 
-/** Props passed to the `getRevision` method. */
-export type GenerateContentSourceProps = {
+type GetRevisionProps = {
     /**
      * Should a models page be generated?
      * @default true
@@ -31,14 +33,16 @@ export type GenerateContentSourceProps = {
     models?: boolean;
 };
 
-/** Props passed to the `getPageDocument` method. */
-type GenerateGroupPageProps = GenerateContentSourceProps & {
+type GenerateGroupPageProps = {
     doc: 'operations';
     group: string;
 };
-type GenerateModelsPageProps = GenerateContentSourceProps & {
+
+type GenerateModelsPageProps = {
     doc: 'models';
 };
+
+type GetPageDocumentProps = GenerateGroupPageProps | GenerateModelsPageProps;
 
 export type GenerateContentSourceDependencies = {
     spec: { ref: ContentRefOpenAPI };
@@ -48,18 +52,18 @@ export type GenerateContentSourceDependencies = {
  * Content source to generate pages from an OpenAPI specification.
  */
 export const generateContentSource = createContentSource<
-    GenerateContentSourceProps | GenerateGroupPageProps | GenerateModelsPageProps,
+    GetRevisionProps,
+    GetPageDocumentProps,
     GenerateContentSourceDependencies
 >({
     sourceId: 'generate',
 
     getRevision: async ({ props, dependencies }, ctx) => {
-        const { data: spec, specSlug } = await getOpenAPISpec({ props, dependencies }, ctx);
-        const groups = divideOpenAPISpec(props, spec);
+        const spec = await getOpenAPISpec({ dependencies }, ctx);
+        const groups = divideOpenAPISpec(spec.schema);
 
         const groupPages = groups.map((group) => {
             const documentProps: GenerateGroupPageProps = {
-                ...props,
                 doc: 'operations',
                 group: group.id,
             };
@@ -75,7 +79,7 @@ export const generateContentSource = createContentSource<
                     props: documentProps,
                     dependencies: {
                         spec: {
-                            ref: { kind: 'openapi' as const, spec: specSlug },
+                            ref: { kind: 'openapi' as const, spec: spec.slug },
                         },
                     },
                 },
@@ -98,7 +102,7 @@ export const generateContentSource = createContentSource<
                                   props: { doc: 'models' },
                                   dependencies: {
                                       spec: {
-                                          ref: { kind: 'openapi' as const, spec: specSlug },
+                                          ref: { kind: 'openapi' as const, spec: spec.slug },
                                       },
                                   },
                               },
@@ -110,19 +114,14 @@ export const generateContentSource = createContentSource<
     },
 
     getPageDocument: async ({ props, dependencies }, ctx) => {
-        if (!('doc' in props)) {
-            throw new Error('Doc is required');
+        switch (props.doc) {
+            case 'operations':
+                return generateGroupDocument({ props, dependencies }, ctx);
+            case 'models':
+                return generateModelsDocument({ props, dependencies }, ctx);
+            default:
+                assertNever(props);
         }
-
-        if (props.doc === 'models') {
-            return generateModelsDocument({ props, dependencies }, ctx);
-        }
-
-        if (props.doc === 'operations') {
-            return generateGroupDocument({ props, dependencies }, ctx);
-        }
-
-        throw new Error('Invalid document generation request');
     },
 });
 
@@ -130,19 +129,18 @@ export const generateContentSource = createContentSource<
  * Generate a document for a group in the OpenAPI specification.
  */
 async function generateGroupDocument(
-    {
-        props,
-        dependencies,
-    }: {
+    input: {
         props: GenerateGroupPageProps;
         dependencies: ContentSourceDependenciesValueFromRef<GenerateContentSourceDependencies>;
     },
     ctx: OpenAPIRuntimeContext,
 ) {
-    const { data: spec, specSlug } = await getOpenAPISpec({ props, dependencies }, ctx);
-    const groups = divideOpenAPISpec(props, spec);
+    const { props, dependencies } = input;
+    const spec = await getOpenAPISpec({ dependencies }, ctx);
+    const groups = divideOpenAPISpec(spec.schema);
 
     const group = groups.find((g) => g.id === props.group);
+
     if (!group) {
         throw new Error(`Group ${props.group} not found`);
     }
@@ -150,11 +148,10 @@ async function generateGroupDocument(
     const operations = extractOperations(group);
 
     return doc.document([
-        // TODO: return or parse the description as markdown
-        ...(group.tag?.description ? [doc.paragraph(doc.text(group.tag.description))] : []),
+        ...(group.tag ? getTagDescriptionNodes(group.tag) : []),
         ...operations.map((operation) => {
             return doc.openapi({
-                ref: { kind: 'openapi', spec: specSlug },
+                ref: { kind: 'openapi', spec: spec.slug },
                 method: operation.method,
                 path: operation.path,
             });
@@ -162,24 +159,35 @@ async function generateGroupDocument(
     ]);
 }
 
+function getTagDescriptionNodes(tag: OpenAPIV3.TagObject): DocumentBlocksTopLevels[] {
+    if ('x-gitbook-description-document' in tag && tag['x-gitbook-description-document']) {
+        const descriptionDocument = tag['x-gitbook-description-document'] as JSONDocument;
+        return descriptionDocument.nodes;
+    }
+
+    if (tag.description) {
+        return [doc.paragraph(doc.text(tag.description))];
+    }
+
+    return [];
+}
+
 /**
  * Generate a document for the models page in the OpenAPI specification.
  */
 async function generateModelsDocument(
-    {
-        props,
-        dependencies,
-    }: {
+    input: {
         props: GenerateModelsPageProps;
         dependencies: ContentSourceDependenciesValueFromRef<GenerateContentSourceDependencies>;
     },
     ctx: OpenAPIRuntimeContext,
 ) {
-    const { data: spec } = await getOpenAPISpec({ props, dependencies }, ctx);
+    const { props, dependencies } = input;
+    const spec = await getOpenAPISpec({ dependencies }, ctx);
 
     return doc.document([
         doc.paragraph(doc.text('Models')),
-        ...Object.entries(spec.components?.schemas ?? {})
+        ...Object.entries(spec.schema.components?.schemas ?? {})
             .map(([name, schema]) => {
                 if ('$ref' in schema) {
                     return [doc.heading1(doc.text(name)), doc.paragraph(doc.text(schema.$ref))];
@@ -199,14 +207,12 @@ async function generateModelsDocument(
  * Get the OpenAPI specification from the OpenAPI specification dependency.
  */
 async function getOpenAPISpec(
-    {
-        dependencies,
-    }: {
-        props: GenerateContentSourceProps;
+    input: {
         dependencies: ContentSourceDependenciesValueFromRef<GenerateContentSourceDependencies>;
     },
     ctx: OpenAPIRuntimeContext,
 ) {
+    const { dependencies } = input;
     const { api } = ctx;
     const { installation } = ctx.environment;
     const specValue = dependencies.spec.value;
@@ -214,6 +220,7 @@ async function getOpenAPISpec(
     if (!installation) {
         throw new ExposableError('Installation not found');
     }
+
     if (specValue?.object !== 'openapi-spec') {
         throw new ExposableError('Invalid spec');
     }
@@ -222,28 +229,23 @@ async function getOpenAPISpec(
         throw new ExposableError('No version found for spec');
     }
 
-    const { data: version } = await api.orgs.getOpenApiSpecVersionById(
+    const { data: content } = await api.orgs.getOpenApiSpecVersionContentById(
         installation.target.organization,
         specValue.slug,
         specValue.lastVersion,
     );
 
-    const result = await openapi()
-        .load(version.url, {
-            plugins: [
-                fetchUrls({
-                    limit: 10,
-                }),
-            ],
-        })
-        .upgrade()
-        .get();
+    const dereferenceResult = await dereference(content.filesystem);
 
-    if (result.errors && result.errors.length > 0) {
-        throw new ExposableError(`Failed to parse OpenAPI spec`);
+    if (!dereferenceResult.schema) {
+        throw new ExposableError('Failed to dereference OpenAPI spec');
     }
 
-    return { data: result.specification as OpenAPIV3.Document, specSlug: specValue.slug };
+    return {
+        schema: dereferenceResult.schema as OpenAPIV3.Document,
+        url: content.url,
+        slug: specValue.slug,
+    };
 }
 
 interface OpenAPIGroup {
@@ -255,7 +257,7 @@ interface OpenAPIGroup {
 /**
  * Split the OpenAPI specification into a set of pages
  */
-function divideOpenAPISpec(props: GenerateContentSourceProps, spec: OpenAPIV3.Document) {
+function divideOpenAPISpec(schema: OpenAPIV3.Document) {
     const groups: OpenAPIGroup[] = [];
     const groupsIndexById = new Map<string, number>();
 
@@ -286,7 +288,7 @@ function divideOpenAPISpec(props: GenerateContentSourceProps, spec: OpenAPIV3.Do
         }
     };
 
-    Object.entries(spec.paths ?? {}).forEach(([path, pathItem]) => {
+    Object.entries(schema.paths ?? {}).forEach(([path, pathItem]) => {
         if (!pathItem) {
             return;
         }
@@ -298,7 +300,7 @@ function divideOpenAPISpec(props: GenerateContentSourceProps, spec: OpenAPIV3.Do
             }
 
             const firstTag = operation.tags?.[0] ?? 'default';
-            const tag = spec.tags?.find((t) => t.name === firstTag);
+            const tag = schema.tags?.find((t) => t.name === firstTag);
             indexOperation(firstTag, tag, path, pathItem, httpMethod, operation);
         });
     });
