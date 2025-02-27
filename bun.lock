@@ -344,7 +344,7 @@
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/document": "*",
-        "@gitbook/openapi-parser": "^1.0.1",
+        "@gitbook/openapi-parser": "^2.0.0",
         "@gitbook/runtime": "*",
       },
       "devDependencies": {
@@ -916,7 +916,7 @@
 
     "@gitbook/integration-zoominfo": ["@gitbook/integration-zoominfo@workspace:integrations/zoominfo"],
 
-    "@gitbook/openapi-parser": ["@gitbook/openapi-parser@1.0.1", "", { "dependencies": { "@scalar/openapi-parser": "^0.10.4", "@scalar/openapi-types": "^0.1.6", "swagger2openapi": "^7.0.8", "yaml": "1.10.2" } }, "sha512-aq0y6mrlnJmp6wRUEasqF8P0g3J/nBV3acGntj4aUtkaOdKizFr4C+kACv73xdzp57hN9Umd7RFbQ/DajMnhkw=="],
+    "@gitbook/openapi-parser": ["@gitbook/openapi-parser@2.0.0", "", { "dependencies": { "@scalar/openapi-parser": "^0.10.4", "@scalar/openapi-types": "^0.1.6" } }, "sha512-jF2B+XeWpFLvIjCvczOlssJmSV/QHOmfp9j47xX8qTN/yX/QX+ApL5RWtM4Hggf7GvgbnEwXKuB2pLEhP0FjIA=="],
 
     "@gitbook/runtime": ["@gitbook/runtime@workspace:packages/runtime"],
 
@@ -2255,8 +2255,6 @@
     "@gitbook/integration-runkit/itty-router": ["itty-router@2.6.6", "", {}, "sha512-hIPHtXGymCX7Lzb2I4G6JgZFE4QEEQwst9GORK7sMYUpJvLfy4yZJr95r04e8DzoAnj6HcxM2m4TbK+juu+18g=="],
 
     "@gitbook/integration-slack/itty-router": ["itty-router@2.6.6", "", {}, "sha512-hIPHtXGymCX7Lzb2I4G6JgZFE4QEEQwst9GORK7sMYUpJvLfy4yZJr95r04e8DzoAnj6HcxM2m4TbK+juu+18g=="],
-
-    "@gitbook/openapi-parser/yaml": ["yaml@1.10.2", "", {}, "sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg=="],
 
     "@graphql-codegen/add/tslib": ["tslib@2.6.3", "", {}, "sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ=="],
 
