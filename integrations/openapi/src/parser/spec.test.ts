@@ -18,6 +18,18 @@ describe('#divideOpenAPISpecSchema', () => {
             },
         });
     });
+
+    it('respects the tags', async () => {
+        const schema = await dereferenceOpenAPISpec(rawSpec);
+        // Change the order of tags
+        schema.tags = [{ name: 'store' }, { name: 'pet' }];
+        const groups = divideOpenAPISpecSchema(schema);
+        expect(groups).toHaveLength(2);
+        expect(groups[0].id).toBe('store');
+        expect(groups[0].tag).toEqual({ name: 'store' });
+        expect(groups[1].id).toBe('pet');
+        expect(groups[1].tag).toEqual({ name: 'pet' });
+    });
 });
 
 describe('#extractGroupOperations', () => {

@@ -1,6 +1,7 @@
 import { ExposableError } from '@gitbook/runtime';
 import { dereference, type OpenAPIV3 } from '@gitbook/openapi-parser';
 import { GitBookAPI, OpenAPISpec } from '@gitbook/api';
+import { assert } from '../utils';
 
 type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'options' | 'head' | 'patch' | 'trace';
 
@@ -121,11 +122,23 @@ export function divideOpenAPISpecSchema(schema: OpenAPIV3.Document): OpenAPIGrou
                 return;
             }
 
-            const firstTag = operation.tags?.[0] ?? 'default';
+            const firstExistingTag = operation.tags?.find((tag) =>
+                schema.tags?.some((t) => t.name === tag),
+            );
+            const firstTag = firstExistingTag ?? operation.tags?.[0] ?? 'default';
             const tag = schema.tags?.find((t) => t.name === firstTag);
             indexOperation(firstTag, tag, path, pathItem, httpMethod, operation);
         });
     });
+
+    // If the schema has tags, use this order to sort the groups.
+    if (schema.tags) {
+        return schema.tags.map((tag) => {
+            const group = groups.find((group) => group.id === tag.name);
+            assert(group, `Group not found for tag ${tag.name}`);
+            return group;
+        });
+    }
 
     return groups;
 }
