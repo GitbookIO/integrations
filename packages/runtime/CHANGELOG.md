@@ -1,5 +1,11 @@
 # @gitbook/runtime
 
+## 0.19.1
+
+### Patch Changes
+
+-   99ac594: Update OpenAPI spec parsing and take order of tags in consideration
+
 ## 0.19.0
 
 ### Minor Changes
