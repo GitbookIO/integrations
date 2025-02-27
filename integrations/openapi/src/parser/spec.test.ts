@@ -22,7 +22,7 @@ describe('#divideOpenAPISpecSchema', () => {
     it('respects the tags', async () => {
         const schema = await dereferenceOpenAPISpec(rawSpec);
         // Change the order of tags
-        schema.tags = [{ name: 'store' }, { name: 'pet' }];
+        schema.tags = [{ name: 'store' }, { name: 'pet' }, { name: 'unknown' }];
         const groups = divideOpenAPISpecSchema(schema);
         expect(groups).toHaveLength(2);
         expect(groups[0].id).toBe('store');

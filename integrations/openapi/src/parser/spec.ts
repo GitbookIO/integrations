@@ -133,11 +133,13 @@ export function divideOpenAPISpecSchema(schema: OpenAPIV3.Document): OpenAPIGrou
 
     // If the schema has tags, use this order to sort the groups.
     if (schema.tags) {
-        return schema.tags.map((tag) => {
+        return schema.tags.reduce<OpenAPIGroup[]>((tagGroups, tag) => {
             const group = groups.find((group) => group.id === tag.name);
-            assert(group, `Group not found for tag ${tag.name}`);
-            return group;
-        });
+            if (group) {
+                tagGroups.push(group);
+            }
+            return tagGroups;
+        }, []);
     }
 
     return groups;
