@@ -9,4 +9,6 @@ bun run build
 cd ../../integrations/gurubase
 bun install
 gitbook publish
+cd ../../
+bun changeset
 ```

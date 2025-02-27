@@ -87,7 +87,7 @@
     },
     "integrations/formspree": {
       "name": "@gitbook/integration-formspree",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "dependencies": {
         "@gitbook/runtime": "packages/runtime",
       },
@@ -186,6 +186,18 @@
       "devDependencies": {
         "@gitbook/cli": "packages/cli",
         "@gitbook/tsconfig": "packages/tsconfig",
+      },
+    },
+    "integrations/gurubase": {
+      "name": "@gitbook/integration-gurubase",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
       },
     },
     "integrations/heap": {
@@ -340,7 +352,7 @@
     },
     "integrations/openapi": {
       "name": "@gitbook/integration-openapi",
-      "version": "0.0.0",
+      "version": "0.0.1",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/document": "*",
@@ -534,7 +546,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.94.0",
+      "version": "0.96.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -577,7 +589,7 @@
     },
     "packages/document": {
       "name": "@gitbook/document",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "dependencies": {
         "@gitbook/api": "*",
       },
@@ -588,7 +600,7 @@
     },
     "packages/runtime": {
       "name": "@gitbook/runtime",
-      "version": "0.18.0",
+      "version": "0.19.0",
       "dependencies": {
         "@gitbook/api": "*",
       },
@@ -862,6 +874,8 @@
     "@gitbook/integration-gitlab-files": ["@gitbook/integration-gitlab-files@workspace:integrations/gitlab-files"],
 
     "@gitbook/integration-googleanalytics": ["@gitbook/integration-googleanalytics@workspace:integrations/googleanalytics"],
+
+    "@gitbook/integration-gurubase": ["@gitbook/integration-gurubase@workspace:integrations/gurubase"],
 
     "@gitbook/integration-heap": ["@gitbook/integration-heap@workspace:integrations/heap"],
 
