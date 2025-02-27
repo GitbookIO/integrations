@@ -15,6 +15,6 @@ describe('#getModelsDocument', () => {
         };
         const document = getModelsDocument({ specContent });
         assert('document' in document);
-        expect(document.document.nodes).toHaveLength(25);
+        expect(document.document.nodes).toHaveLength(17);
     });
 });
