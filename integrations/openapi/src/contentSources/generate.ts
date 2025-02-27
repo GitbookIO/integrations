@@ -1,10 +1,6 @@
 import { ContentRefOpenAPI, InputPage } from '@gitbook/api';
 import * as doc from '@gitbook/document';
-import {
-    ContentSourceDependenciesValueFromRef,
-    createContentSource,
-    ExposableError,
-} from '@gitbook/runtime';
+import { ContentSourceInput, createContentSource, ExposableError } from '@gitbook/runtime';
 import { openapi } from '@scalar/openapi-parser';
 import { fetchUrls } from '@scalar/openapi-parser/plugins/fetch-urls';
 import { OpenAPIV3 } from '@scalar/openapi-types';
@@ -133,10 +129,7 @@ async function generateGroupDocument(
     {
         props,
         dependencies,
-    }: {
-        props: GenerateGroupPageProps;
-        dependencies: ContentSourceDependenciesValueFromRef<GenerateContentSourceDependencies>;
-    },
+    }: ContentSourceInput<GenerateGroupPageProps, GenerateContentSourceDependencies>,
     ctx: OpenAPIRuntimeContext,
 ) {
     const { data: spec, specSlug } = await getOpenAPISpec({ props, dependencies }, ctx);
@@ -169,10 +162,7 @@ async function generateModelsDocument(
     {
         props,
         dependencies,
-    }: {
-        props: GenerateModelsPageProps;
-        dependencies: ContentSourceDependenciesValueFromRef<GenerateContentSourceDependencies>;
-    },
+    }: ContentSourceInput<GenerateModelsPageProps, GenerateContentSourceDependencies>,
     ctx: OpenAPIRuntimeContext,
 ) {
     const { data: spec } = await getOpenAPISpec({ props, dependencies }, ctx);
@@ -201,10 +191,7 @@ async function generateModelsDocument(
 async function getOpenAPISpec(
     {
         dependencies,
-    }: {
-        props: GenerateContentSourceProps;
-        dependencies: ContentSourceDependenciesValueFromRef<GenerateContentSourceDependencies>;
-    },
+    }: ContentSourceInput<GenerateContentSourceProps, GenerateContentSourceDependencies>,
     ctx: OpenAPIRuntimeContext,
 ) {
     const { api } = ctx;
@@ -214,11 +201,7 @@ async function getOpenAPISpec(
     if (!installation) {
         throw new ExposableError('Installation not found');
     }
-    if (specValue?.object !== 'openapi-spec') {
-        throw new ExposableError('Invalid spec');
-    }
-
-    if (!specValue.lastVersion) {
+    if (!specValue?.lastVersion) {
         throw new ExposableError('No version found for spec');
     }
 
