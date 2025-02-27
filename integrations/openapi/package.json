@@ -5,7 +5,8 @@
     "scripts": {
         "typecheck": "tsc --noEmit",
         "check": "gitbook check",
-        "publish-integrations-staging": "gitbook publish ."
+        "publish-integrations-staging": "gitbook publish .",
+        "test": "bun test"
     },
     "dependencies": {
         "@gitbook/api": "*",
@@ -15,6 +16,7 @@
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",
-        "@gitbook/tsconfig": "workspace:*"
+        "@gitbook/tsconfig": "workspace:*",
+        "bun-types": "^1.2.4"
     }
 }
