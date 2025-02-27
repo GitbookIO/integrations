@@ -1,0 +1,30 @@
+{
+    "name": "@gitbook/document",
+    "description": "Utility to create GitBook documents",
+    "type": "module",
+    "version": "0.1.0",
+    "sideEffects": false,
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "README.md",
+        "dist/**"
+    ],
+    "dependencies": {
+        "@gitbook/api": "*"
+    },
+    "devDependencies": {
+        "@gitbook/tsconfig": "*",
+        "typescript": "^5.6.2"
+    },
+    "scripts": {
+        "build": "tsc",
+        "typecheck": "tsc --noEmit"
+    },
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    }
+}
