@@ -1,5 +1,11 @@
 # @gitbook/integration-formspree
 
+## 0.2.5
+
+### Patch Changes
+
+-   9823932: Fix formspree submit function
+
 ## 0.2.4
 
 ### Patch Changes
