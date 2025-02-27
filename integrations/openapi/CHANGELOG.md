@@ -1,5 +1,13 @@
 # @gitbook/integration-openapi
 
+## 0.0.2
+
+### Patch Changes
+
+-   99ac594: Update OpenAPI spec parsing and take order of tags in consideration
+-   Updated dependencies [99ac594]
+    -   @gitbook/runtime@0.19.1
+
 ## 0.0.1
 
 ### Patch Changes
