@@ -87,7 +87,7 @@
     },
     "integrations/formspree": {
       "name": "@gitbook/integration-formspree",
-      "version": "0.2.6",
+      "version": "0.2.7",
       "dependencies": {
         "@gitbook/runtime": "packages/runtime",
       },
@@ -344,7 +344,7 @@
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/document": "*",
-        "@gitbook/openapi-parser": "^2.0.0",
+        "@gitbook/openapi-parser": "^2.0.1",
         "@gitbook/runtime": "*",
       },
       "devDependencies": {
@@ -551,7 +551,7 @@
       "name": "@gitbook/cli",
       "version": "0.20.1",
       "bin": {
-        "gitbook": "./cli.js"
+        "gitbook": "./cli.js",
       },
       "dependencies": {
         "@gitbook/api": "*",
@@ -917,7 +917,7 @@
 
     "@gitbook/integration-zoominfo": ["@gitbook/integration-zoominfo@workspace:integrations/zoominfo"],
 
-    "@gitbook/openapi-parser": ["@gitbook/openapi-parser@2.0.0", "", { "dependencies": { "@scalar/openapi-parser": "^0.10.4", "@scalar/openapi-types": "^0.1.6" } }, "sha512-jF2B+XeWpFLvIjCvczOlssJmSV/QHOmfp9j47xX8qTN/yX/QX+ApL5RWtM4Hggf7GvgbnEwXKuB2pLEhP0FjIA=="],
+    "@gitbook/openapi-parser": ["@gitbook/openapi-parser@2.0.1", "", { "dependencies": { "@scalar/openapi-parser": "^0.10.4", "@scalar/openapi-types": "^0.1.6" } }, "sha512-vHGt+SzBVyKgJuIJNjfc3Z+8IFVcDLYXSqxpYM0NQN56DWPRJRaWBZJf6y8nbHAqH0txJwLt5XqbWLU4dAlB4Q=="],
 
     "@gitbook/runtime": ["@gitbook/runtime@workspace:packages/runtime"],
 

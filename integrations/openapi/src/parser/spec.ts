@@ -1,7 +1,6 @@
 import { ExposableError } from '@gitbook/runtime';
-import { dereference, type OpenAPIV3 } from '@gitbook/openapi-parser';
-import { GitBookAPI, OpenAPISpec } from '@gitbook/api';
-import { assert } from '../utils';
+import { dereference, type OpenAPIV3, shouldIgnoreEntity } from '@gitbook/openapi-parser';
+import { GitBookAPI } from '@gitbook/api';
 
 type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'options' | 'head' | 'patch' | 'trace';
 
@@ -122,6 +121,12 @@ export function divideOpenAPISpecSchema(schema: OpenAPIV3.Document): OpenAPIGrou
                 return;
             }
 
+            // Ignore operations marked as ignored in the spec.
+            // @ts-expect-error will be fixed in next @gitbook/openapi-parser release
+            if (shouldIgnoreEntity(operation)) {
+                return;
+            }
+
             const firstExistingTag = operation.tags?.find((tag) =>
                 schema.tags?.some((t) => t.name === tag),
             );
@@ -134,6 +139,11 @@ export function divideOpenAPISpecSchema(schema: OpenAPIV3.Document): OpenAPIGrou
     // If the schema has tags, use this order to sort the groups.
     if (schema.tags) {
         return schema.tags.reduce<OpenAPIGroup[]>((tagGroups, tag) => {
+            // Ignore tags marked as ignored in the spec.
+            // @ts-expect-error will be fixed in next @gitbook/openapi-parser release
+            if (shouldIgnoreEntity(tag)) {
+                return tagGroups;
+            }
             const group = groups.find((group) => group.id === tag.name);
             if (group) {
                 tagGroups.push(group);
