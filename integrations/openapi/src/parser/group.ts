@@ -17,7 +17,7 @@ export function getGroupDocument(args: {
     return doc.document([
         ...(group.tag ? getTagDescriptionNodes(group.tag) : []),
         ...operations.map((operation) => {
-            return doc.openapi({
+            return doc.openapiOperation({
                 ref: { kind: 'openapi', spec: specContent.slug },
                 method: operation.method,
                 path: operation.path,

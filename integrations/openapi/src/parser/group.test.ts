@@ -50,7 +50,7 @@ describe('#getGroupDocument', () => {
             },
             isVoid: true,
             object: 'block',
-            type: 'swagger',
+            type: 'openapi-operation',
         });
     });
 
@@ -118,7 +118,7 @@ describe('#getGroupDocument', () => {
             },
             isVoid: true,
             object: 'block',
-            type: 'swagger',
+            type: 'openapi-operation',
         });
     });
 });
