@@ -87,7 +87,7 @@
     },
     "integrations/formspree": {
       "name": "@gitbook/integration-formspree",
-      "version": "0.2.5",
+      "version": "0.2.6",
       "dependencies": {
         "@gitbook/runtime": "packages/runtime",
       },
@@ -340,7 +340,7 @@
     },
     "integrations/openapi": {
       "name": "@gitbook/integration-openapi",
-      "version": "0.0.1",
+      "version": "0.0.2",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/document": "*",
@@ -534,7 +534,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.96.0",
+      "version": "0.96.1",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -551,7 +551,7 @@
       "name": "@gitbook/cli",
       "version": "0.20.1",
       "bin": {
-        "gitbook": "./cli.js",
+        "gitbook": "./cli.js"
       },
       "dependencies": {
         "@gitbook/api": "*",
@@ -577,7 +577,7 @@
     },
     "packages/document": {
       "name": "@gitbook/document",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "dependencies": {
         "@gitbook/api": "*",
       },
@@ -588,7 +588,7 @@
     },
     "packages/runtime": {
       "name": "@gitbook/runtime",
-      "version": "0.19.0",
+      "version": "0.19.1",
       "dependencies": {
         "@gitbook/api": "*",
       },
