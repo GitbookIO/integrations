@@ -62,7 +62,13 @@ const formspreeBlock = createComponent<
                         <box grow={1}>
                             <input
                                 label="Email"
-                                element={<textinput state="email" placeholder="Your email" />}
+                                element={
+                                    <textinput
+                                        inputType="email"
+                                        state="email"
+                                        placeholder="Your email"
+                                    />
+                                }
                             />
                         </box>
                     ) : null}
