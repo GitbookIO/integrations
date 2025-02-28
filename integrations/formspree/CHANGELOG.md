@@ -1,5 +1,11 @@
 # @gitbook/integration-formspree
 
+## 0.2.7
+
+### Patch Changes
+
+-   62c10ef: Add inputType email to formspree
+
 ## 0.2.6
 
 ### Patch Changes
