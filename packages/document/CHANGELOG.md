@@ -1,5 +1,13 @@
 # @gitbook/document
 
+## 0.1.1
+
+### Patch Changes
+
+-   e0b1bea: Add support for openapi-operation block
+-   Updated dependencies [c24bcd1]
+    -   @gitbook/api@0.96.1
+
 ## 0.1.0
 
 ### Minor Changes

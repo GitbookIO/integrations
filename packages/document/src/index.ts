@@ -38,6 +38,8 @@ export const images = blockFactory<api.DocumentBlockImages>('images');
 export const divider = voidBlockFactory<api.DocumentBlockDivider>('divider');
 export const file = voidBlockFactory<api.DocumentBlockFile>('file');
 export const openapi = voidBlockFactory<api.DocumentBlockOpenAPI>('swagger');
+export const openapiOperation =
+    voidBlockFactory<api.DocumentBlockOpenAPIOperation>('openapi-operation');
 
 /**
  * Code blocks.

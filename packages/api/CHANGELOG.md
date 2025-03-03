@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.96.1
+
+### Patch Changes
+
+-   c24bcd1: Add support for OpenAPI operation block
+
 ## 0.96.0
 
 ### Minor Changes
