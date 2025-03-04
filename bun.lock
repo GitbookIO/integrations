@@ -551,7 +551,7 @@
       "name": "@gitbook/cli",
       "version": "0.20.1",
       "bin": {
-        "gitbook": "./cli.js",
+        "gitbook": "./cli.js"
       },
       "dependencies": {
         "@gitbook/api": "*",
