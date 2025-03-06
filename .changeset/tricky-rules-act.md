@@ -2,4 +2,4 @@
 '@gitbook/integration-openapi': patch
 ---
 
-Initial code for the OpenAPI integration
+Filter out ignored tags and operations

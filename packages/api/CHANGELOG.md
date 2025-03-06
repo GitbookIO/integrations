@@ -1,5 +1,23 @@
 # @gitbook/api
 
+## 0.96.1
+
+### Patch Changes
+
+-   c24bcd1: Add support for OpenAPI operation block
+
+## 0.96.0
+
+### Minor Changes
+
+-   7fbee58: Update API client with latest OpenAPI spec.
+
+## 0.95.0
+
+### Minor Changes
+
+-   0d67d6e: Bump API version to include latest customization settings
+
 ## 0.94.0
 
 ### Minor Changes

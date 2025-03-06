@@ -1,4 +1,4 @@
-import {
+import type {
     ContentKitBox,
     ContentKitButton,
     ContentKitCard,
@@ -25,7 +25,7 @@ import {
     ContentKitConfiguration,
 } from '@gitbook/api';
 
-import { jsx, jsxDEV, jsxs, Fragment } from './contentkit-jsx';
+import type { jsx, jsxDEV, jsxs, Fragment } from './contentkit-jsx';
 
 /**
  * This is a workaround for Typescript not supporting subpath exports in package.json
@@ -44,7 +44,7 @@ type OmitType<T> = Omit<T, 'type'>;
 declare global {
     namespace JSX {
         interface ElementChildrenAttribute {
-            children: {}; // specify children name to use
+            children: Record<string, unknown>; // specify children name to use
         }
 
         interface IntrinsicElements {
