@@ -32,7 +32,8 @@ type TranslateDocumentProps = TranslateContentSourceProps & {
  * Content source to generate pages from an OpenAPI specification.
  */
 export const translateContentSource = createContentSource<
-    TranslateContentSourceProps | TranslateDocumentProps,
+    TranslateContentSourceProps,
+    TranslateDocumentProps,
     TranslateContentSourceDependencies
 >({
     sourceId: 'translate',
@@ -69,10 +70,6 @@ export const translateContentSource = createContentSource<
         const spaceDep = dependencies.space.value;
         if (!spaceDep) {
             throw new ExposableError('Space not found');
-        }
-
-        if (!('document' in props)) {
-            throw new ExposableError('Document not found');
         }
 
         const { data: document } = await ctx.api.spaces.getDocumentById(

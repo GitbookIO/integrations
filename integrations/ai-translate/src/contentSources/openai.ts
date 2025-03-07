@@ -46,9 +46,9 @@ export async function translateJSON<T extends object>(
             {
                 role: 'system',
                 content: [
-                    'You are an AI that can translate JSON input, a powerful language model designed for seamless translation of text across multiple languages.',
-                    `You excel at generating structured data in JSON format and follow this rules: you never translate the key, you always use the double quotes to surround key and value, you always escape single quotes and backslashes contained in the value, you never write a comma at the end of the last row in the file.`,
-                    `Translate the following JSON input into ${languageEntry?.label ?? language} while preserving its structure. Only the properties ${properties.map((prop) => JSON.stringify(prop)).join(', ')} can be translated and will be modified.`,
+                    'You are an AI that can translate a JSON input, a powerful language model designed for seamless translation of text across multiple languages.',
+                    `You excel at translating structured data in JSON format and follow this rules: you never translate the key, you always use the double quotes to surround key and value, you always escape single quotes and backslashes contained in the value, you never write a comma at the end of the last row in the file.`,
+                    `Translate the following JSON input into ${languageEntry?.label ?? language} (${language}) while preserving its structure. Only the properties ${properties.map((prop) => JSON.stringify(prop)).join(', ')} should be translated and will be modified.`,
                 ].join('\n'),
             },
             {

@@ -11,6 +11,7 @@ export const configureComponent = createComponent<
     {
         space: string | null;
         language: string;
+        specialTerms: string;
         instruction: string;
     },
     { action: 'submit' } | { action: 'selectSpace'; space: string },
@@ -20,8 +21,9 @@ export const configureComponent = createComponent<
     initialState: (props, _, context) => {
         return {
             space: null,
-            language: 'en',
+            language: 'fr',
             instruction: '',
+            specialTerms: '',
         };
     },
     action: async (element, action, ctx) => {
@@ -35,6 +37,8 @@ export const configureComponent = createComponent<
                 returnValue: {
                     props: {
                         language: element.state.language,
+                        instruction: element.state.instruction,
+                        specialTerms: element.state.specialTerms,
                     },
                     dependencies: {
                         space: {
@@ -83,7 +87,7 @@ export const configureComponent = createComponent<
             <configuration>
                 <input
                     label="Original Space"
-                    hint="Choose the space to translate the documentation from."
+                    hint="Choose a space to translate the content from. The content will be translated to the language you choose below and automatically updated as the original content changes."
                     element={
                         <select
                             state="space"
@@ -110,8 +114,14 @@ export const configureComponent = createComponent<
                 <divider />
 
                 <input
-                    label="Instruction"
-                    hint="Provide instructions for the translation."
+                    label="Special terms"
+                    hint="Provide special terms that should not be translated. Each term should be separated by a comma."
+                    element={<textinput multiline state="specialTerms" />}
+                />
+
+                <input
+                    label="Advanced Instruction"
+                    hint="Provide special instructions for the translation."
                     element={<textinput multiline state="instruction" />}
                 />
                 <button
