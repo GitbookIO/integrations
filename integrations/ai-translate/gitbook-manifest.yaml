@@ -27,4 +27,4 @@ contentSources:
       configuration:
           componentId: configureSource
 secrets:
-    OPENAI_API_KEY: ${{ env.OPENAI_API_KEY }}
+    OPENAI_API_KEY: ${{ env.AITRANSLATE_OPENAI_API_KEY }}
