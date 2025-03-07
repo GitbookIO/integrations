@@ -1,8 +1,9 @@
 name: ai-translate
 title: Translate with AI
+icon: ./assets/icon.png
 organization: gitbook
 visibility: public
-description: Translate your documentation with AI
+description: Translate your documentation content with AI
 externalLinks:
     - label: Documentation
       url: https://docs.gitbook.com/integrations/ai-translate
@@ -14,6 +15,8 @@ summary: |
     # Overview
 
     Translate your documentation with AI by generating a new language version of your documentation from an original space in any language.
+
+    After selecting the original space and the language you want to translate to, the integration will automatically update the translated content when the original content changes.
 
 script: src/index.ts
 target: space
