@@ -83,3 +83,5 @@ jobs:
                   GITHUBCOPILOT_APP_URL: ${{ secrets.GITHUBCOPILOT_PROD_APP_URL }}
                   GITHUBCOPILOT_CLIENT_ID: ${{ secrets.GITHUBCOPILOT_PROD_CLIENT_ID }}
                   GITHUBCOPILOT_CLIENT_SECRET: ${{ secrets.GITHUBCOPILOT_PROD_CLIENT_SECRET }}
+                  # AI Translate
+                  OPENAI_API_KEY: ${{ secrets.AITRANSLATE_OPENAI_API_KEY }}
