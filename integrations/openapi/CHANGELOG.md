@@ -1,5 +1,11 @@
 # @gitbook/integration-openapi
 
+## 0.0.3
+
+### Patch Changes
+
+-   497ee68: Filter out ignored tags and operations
+
 ## 0.0.2
 
 ### Patch Changes
