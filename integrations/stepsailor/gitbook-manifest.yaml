@@ -1,0 +1,56 @@
+name: stepsailor
+title: Stepsailor Assistant
+script: src/index.ts
+icon: ./assets/logo.png
+description: 'Add the Stepsailor assistant to your documentation'
+externalLinks:
+    - label: Website
+      url: https://www.stepsailor.com/
+visibility: public
+target: site
+scopes:
+  - site:script:inject
+contentSecurityPolicy:
+    font-src: |
+        static.api.stepsailor.com
+    script-src: |
+        static.api.stepsailor.com;
+        https://static.api.stepsailor.com/orion-ai/index.js;
+    style-src: |
+        static.api.stepsailor.com
+        https://static.api.stepsailor.com/orion-ai/main.css;
+summary: |
+    # Overview
+
+    The Stepsailor integration for GitBook brings Orion, an AI-powered assistant, to your documentation that enables your users to ask questions and get answers directly within your documentation.
+
+    # How it works
+
+    Orion provides an in-app AI assistant that answers product questions, displays educational videos within your published content.
+
+    # Configure
+
+    You can configure the integration on your GitBook spaces by providing your organization ID, deployConfig ID and API Key. These credentials connect your documentation to Stepsailor's knowledge base and enable the AI-powered features in your published content.
+configurations:
+    site:
+        properties:
+            organizationId:
+                type: string
+                title: Organization ID
+                description: You can copy that in the deploy config page
+            deployConfigId:
+                type: number
+                title: Deploy Config ID
+                description: You can copy that in the deploy config page
+            apiKey:
+                type: string
+                title: API Key
+                description: You can copy that in the deploy config page
+        required:
+            - organizationId
+            - deployConfigId
+            - apiKey
+categories:
+  - ai
+organization: GXGct7gbl46efsxXM5JQ
+secrets: {}
