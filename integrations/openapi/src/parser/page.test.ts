@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'bun:test';
-import { dereferenceOpenAPISpec, divideOpenAPISpecSchema } from './spec';
-import { getGroupDocument } from './group';
+import { dereferenceOpenAPISpec, getOpenAPITree } from './spec';
+import { getOpenAPIPageDocument } from './page';
 import assert from 'assert';
 import * as doc from '@gitbook/document';
 import { JSONDocument } from '@gitbook/api';
 
 const rawSpec = await Bun.file(new URL('../__fixtures__/petstore3.yml', import.meta.url)).text();
 
-describe('#getGroupDocument', () => {
+describe('#getOpenAPIPageDocument', () => {
     it('generates a document from a group', async () => {
         const schema = await dereferenceOpenAPISpec(rawSpec);
         const specContent = {
@@ -15,8 +15,8 @@ describe('#getGroupDocument', () => {
             url: 'http://example.com',
             slug: 'petstore',
         };
-        const groups = divideOpenAPISpecSchema(schema);
-        const document = getGroupDocument({ group: groups[0], specContent });
+        const pages = getOpenAPITree(schema);
+        const document = getOpenAPIPageDocument({ page: pages[0], specContent });
         assert('document' in document);
         // First node is the tag description
         expect(document.document.nodes[0]).toEqual({
@@ -61,13 +61,13 @@ describe('#getGroupDocument', () => {
             url: 'http://example.com',
             slug: 'petstore',
         };
-        const groups = divideOpenAPISpecSchema(schema);
-        groups[0].tag!['x-gitbook-description-document'] = (
+        const pages = getOpenAPITree(schema);
+        pages[0].tag!['x-gitbook-description-document'] = (
             doc.document([doc.paragraph(doc.text('Hello')), doc.paragraph(doc.text('World'))]) as {
                 document: JSONDocument;
             }
         ).document;
-        const document = getGroupDocument({ group: groups[0], specContent });
+        const document = getOpenAPIPageDocument({ page: pages[0], specContent });
         assert('document' in document);
         // First nodes are the spread of the previous document
         expect(document.document.nodes[0]).toEqual({

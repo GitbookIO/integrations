@@ -1,6 +1,6 @@
 import { ExposableError } from '@gitbook/runtime';
 import { dereference, type OpenAPIV3, shouldIgnoreEntity } from '@gitbook/openapi-parser';
-import { GitBookAPI } from '@gitbook/api';
+import { GitBookAPI, type JSONDocument } from '@gitbook/api';
 
 type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'options' | 'head' | 'patch' | 'trace';
 
@@ -70,43 +70,46 @@ export async function dereferenceOpenAPISpec(
     return dereferenceResult.schema as OpenAPIV3.Document;
 }
 
-export interface OpenAPIGroup {
+export interface OpenAPIPage {
     id: string;
+    title: string;
     tag?: OpenAPIV3.TagObject;
     paths: Record<string, OpenAPIV3.PathItemObject>;
+    pages?: OpenAPIPage[];
 }
 
 /**
- * Split the OpenAPI specification schema into a set of groups.
+ * Split the OpenAPI specification schema into a set of pages.
  */
-export function divideOpenAPISpecSchema(schema: OpenAPIV3.Document): OpenAPIGroup[] {
-    const groups: OpenAPIGroup[] = [];
-    const groupsIndexById = new Map<string, number>();
+export function getAllOpenAPIPages(schema: OpenAPIV3.Document): OpenAPIPage[] {
+    const pages: OpenAPIPage[] = [];
+    const pagesIndexById = new Map<string, number>();
 
     const indexOperation = (
-        groupId: string,
+        pageId: string,
         tag: OpenAPIV3.TagObject | undefined,
         path: string,
         pathItem: OpenAPIV3.PathItemObject,
         httpMethod: HttpMethod,
         operation: OpenAPIV3.OperationObject,
     ) => {
-        const groupIndex = groupsIndexById.get(groupId);
-        const group =
-            groupIndex !== undefined
-                ? groups[groupIndex]
+        const pageIndex = pagesIndexById.get(pageId);
+        const page =
+            pageIndex !== undefined
+                ? pages[pageIndex]
                 : {
-                      id: groupId,
+                      id: pageId,
+                      title: (tag ? getTagTitle(tag) : '') || getTitleFromTagName(pageId),
                       tag,
                       paths: {},
                   };
 
-        group.paths[path] = group.paths[path] ?? pathItem;
-        group.paths[path][httpMethod] = operation;
+        page.paths[path] = page.paths[path] ?? pathItem;
+        page.paths[path][httpMethod] = operation;
 
-        if (groupIndex === undefined) {
-            groupsIndexById.set(groupId, groups.length);
-            groups.push(group);
+        if (pageIndex === undefined) {
+            pagesIndexById.set(pageId, pages.length);
+            pages.push(page);
         }
     };
 
@@ -122,7 +125,6 @@ export function divideOpenAPISpecSchema(schema: OpenAPIV3.Document): OpenAPIGrou
             }
 
             // Ignore operations marked as ignored in the spec.
-            // @ts-expect-error will be fixed in next @gitbook/openapi-parser release
             if (shouldIgnoreEntity(operation)) {
                 return;
             }
@@ -136,23 +138,83 @@ export function divideOpenAPISpecSchema(schema: OpenAPIV3.Document): OpenAPIGrou
         });
     });
 
-    // If the schema has tags, use this order to sort the groups.
-    if (schema.tags) {
-        return schema.tags.reduce<OpenAPIGroup[]>((tagGroups, tag) => {
-            // Ignore tags marked as ignored in the spec.
-            // @ts-expect-error will be fixed in next @gitbook/openapi-parser release
-            if (shouldIgnoreEntity(tag)) {
-                return tagGroups;
-            }
-            const group = groups.find((group) => group.id === tag.name);
-            if (group) {
-                tagGroups.push(group);
-            }
-            return tagGroups;
-        }, []);
+    return pages;
+}
+
+/**
+ * Get the OpenAPI tree from the schema.
+ * This will organize the pages by their tags and parent tags.
+ * It will also remove any pages that are marked as ignored in the spec.
+ * The root pages will be the ones that have no parent tag.
+ * The pages will be organized in a tree structure.
+ */
+export function getOpenAPITree(schema: OpenAPIV3.Document): OpenAPIPage[] {
+    const pages = getAllOpenAPIPages(schema);
+
+    if (!schema.tags) {
+        return pages;
     }
 
-    return groups;
+    const pagesByParent: Record<string, OpenAPIPage[]> = {};
+    const rootPages: OpenAPIPage[] = [];
+
+    // First pass: organize pages by parent
+    schema.tags.forEach((tag) => {
+        // Ignore tags marked as ignored in the spec
+        if (shouldIgnoreEntity(tag)) {
+            return;
+        }
+
+        if (!tag.name) {
+            return;
+        }
+
+        const existingPage = pages.find((p) => p.id === tag.name);
+        const page =
+            existingPage ??
+            (schema.tags?.some((t) => getTagParent(t) === tag.name)
+                ? {
+                      id: tag.name,
+                      title: getTagTitle(tag),
+                      tag,
+                      paths: {},
+                  }
+                : null);
+
+        if (!page) {
+            return;
+        }
+
+        const parent = getTagParent(tag);
+
+        if (!parent) {
+            rootPages.push(page);
+        } else {
+            pagesByParent[parent] = pagesByParent[parent] || [];
+            pagesByParent[parent].push(page);
+        }
+    });
+
+    // Second pass: attach children to their parents
+    function attachChildren(parentPage: OpenAPIPage) {
+        const children = pagesByParent[parentPage.id];
+        if (children) {
+            parentPage.pages = children;
+            children.forEach(attachChildren);
+        }
+    }
+
+    rootPages.forEach(attachChildren);
+
+    return rootPages;
+}
+
+function getTagParent(tag: OpenAPIV3.TagObject): string | undefined {
+    return typeof tag.parent === 'string'
+        ? tag.parent
+        : typeof tag['x-parent'] === 'string'
+          ? tag['x-parent']
+          : undefined;
 }
 
 export type OpenAPIOperation = {
@@ -161,12 +223,12 @@ export type OpenAPIOperation = {
 };
 
 /**
- * Extract all operations from a group.
+ * Extract all operations from a page.
  */
-export function extractGroupOperations(group: OpenAPIGroup): OpenAPIOperation[] {
+export function extractPageOperations(page: OpenAPIPage): OpenAPIOperation[] {
     const operations: OpenAPIOperation[] = [];
 
-    Object.entries(group.paths).forEach(([path, pathItem]) => {
+    Object.entries(page.paths).forEach(([path, pathItem]) => {
         HTTP_METHODS.forEach((httpMethod) => {
             const operation = pathItem[httpMethod];
             if (!operation) {
@@ -178,4 +240,29 @@ export function extractGroupOperations(group: OpenAPIGroup): OpenAPIOperation[] 
     });
 
     return operations;
+}
+
+/**
+ * Get the title for a tag.
+ */
+function getTagTitle(tag: OpenAPIV3.TagObject) {
+    if (typeof tag['x-page-title'] === 'string' && tag['x-page-title']) {
+        return tag['x-page-title'];
+    }
+    if (typeof tag.name === 'string' && tag.name) {
+        return getTitleFromTagName(tag.name);
+    }
+    return 'Unknown';
+}
+
+/**
+ * Improve a tag name to be used as a page title:
+ * - Capitalize the first letter
+ * - Split on - and capitalize each word
+ */
+function getTitleFromTagName(tagName: string) {
+    return tagName
+        .split('-')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
 }

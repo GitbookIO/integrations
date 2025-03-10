@@ -12,7 +12,7 @@
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
         "@gitbook/document": "*",
-        "@gitbook/openapi-parser": "^2.0.1"
+        "@gitbook/openapi-parser": "^2.1.0"
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",
