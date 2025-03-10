@@ -34,7 +34,7 @@ describe('#getOpenAPITree', () => {
         expect(tree[1].tag).toEqual({ name: 'pet' });
     });
 
-    it.only('supports nested tags', async () => {
+    it('supports nested tags', async () => {
         const schema = await dereferenceOpenAPISpec(petstoreWithNestedTags);
         const tree = getOpenAPITree(schema);
         expect(tree).toHaveLength(2);
@@ -48,6 +48,18 @@ describe('#getOpenAPITree', () => {
             name: 'user',
             description: 'Operations about user',
         });
+    });
+
+    it('supports x-displayName and x-page-title has precendence', async () => {
+        const schema = await dereferenceOpenAPISpec(petstoreWithNestedTags);
+        schema.tags![0]['x-displayName'] = 'Awesome root';
+        schema.tags![4]['x-displayName'] = 'Bad user';
+        schema.tags![4]['x-page-title'] = 'Awesome user';
+        const tree = getOpenAPITree(schema);
+        expect(tree[0].id).toBe('root');
+        expect(tree[0].title).toBe('Awesome root');
+        expect(tree[1].id).toBe('user');
+        expect(tree[1].title).toBe('Awesome user');
     });
 });
 

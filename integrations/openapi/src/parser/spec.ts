@@ -249,6 +249,9 @@ function getTagTitle(tag: OpenAPIV3.TagObject) {
     if (typeof tag['x-page-title'] === 'string' && tag['x-page-title']) {
         return tag['x-page-title'];
     }
+    if (typeof tag['x-displayName'] === 'string' && tag['x-displayName']) {
+        return tag['x-displayName'];
+    }
     if (typeof tag.name === 'string' && tag.name) {
         return getTitleFromTagName(tag.name);
     }
