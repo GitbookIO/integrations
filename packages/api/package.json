@@ -11,6 +11,15 @@
         "spec/**",
         "dist/**"
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/GitbookIO/integrations.git",
+        "directory": "packages/api"
+    },
+    "bugs": {
+        "url": "https://github.com/GitbookIO/integrations/issues"
+    },
+    "homepage": "https://github.com/GitbookIO/integrations",
     "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0"
