@@ -76,7 +76,7 @@ export class GitBookAPI extends Api<{
             userAgent = `${name}/${version}`,
             serviceBinding = {
                 fetch,
-            }
+            },
         } = options;
 
         const normalizedEndpoint = endpoint.endsWith('/') ? endpoint.slice(0, -1) : endpoint;
