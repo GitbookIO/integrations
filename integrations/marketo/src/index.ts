@@ -1,24 +1,17 @@
+import { Router } from 'itty-router';
 import {
     createIntegration,
     FetchEventCallback,
     FetchPublishScriptEventCallback,
-    RuntimeContext,
-    RuntimeEnvironment,
 } from '@gitbook/runtime';
 
 import script from './marketoMunchkin.raw.js';
+import { marketoFormBlock, settingsModal } from './form';
+import { MarketoRuntimeContext } from './types';
+import { webFrameHTML } from './webframe.js';
+import { getWebframeCacheControl } from './cache.js';
 
-type MarketoRuntimeContext = RuntimeContext<
-    RuntimeEnvironment<
-        {},
-        {
-            account?: string;
-            workspace?: string;
-        }
-    >
->;
-
-export const handleFetchEvent: FetchPublishScriptEventCallback = async (
+export const handleFetchScriptEvent: FetchPublishScriptEventCallback = async (
     event,
     { environment }: MarketoRuntimeContext,
 ) => {
@@ -40,6 +33,41 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     );
 };
 
+const handleFetchEvent: FetchEventCallback<MarketoRuntimeContext> = async (request, context) => {
+    const { environment } = context;
+    const router = Router({
+        base: new URL(
+            environment.siteInstallation?.urls?.publicEndpoint ||
+                environment.installation?.urls.publicEndpoint ||
+                environment.integration.urls.publicEndpoint,
+        ).pathname,
+    });
+
+    /**
+     * Handle requests to serve the webframe content.
+     */
+    // const cacheControl = getWebframeCacheControl();
+    router.get(
+        '/webframe',
+        async (request) =>
+            new Response(webFrameHTML, {
+                headers: {
+                    'Content-Type': 'text/html',
+                    'Cache-Control': 'no-cache, no-store',
+                },
+            }),
+    );
+
+    const response = await router.handle(request, context);
+    if (!response) {
+        return new Response(`No route matching`, { status: 404 });
+    }
+
+    return response;
+};
+
 export default createIntegration<MarketoRuntimeContext>({
-    fetch_published_script: handleFetchEvent,
+    fetch_published_script: handleFetchScriptEvent,
+    fetch: handleFetchEvent,
+    components: [marketoFormBlock, settingsModal],
 });

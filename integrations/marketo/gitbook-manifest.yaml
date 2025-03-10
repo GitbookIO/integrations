@@ -9,6 +9,10 @@ externalLinks:
       url: https://www.gitbook.com/integrations/marketo
 visibility: private
 organization: gitbook
+blocks:
+    - id: form
+      title: Marketo Forms
+      description: Embed a Marketo form in your content.
 script: ./src/index.ts
 scopes:
     - site:script:inject
