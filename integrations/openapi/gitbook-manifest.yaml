@@ -10,7 +10,7 @@ externalLinks:
 categories:
     - collaboration
 scopes:
-    - openapi:write
+    - openapi:read
 summary: |
     # Overview
 
