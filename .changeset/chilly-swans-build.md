@@ -2,4 +2,4 @@
 '@gitbook/api': minor
 ---
 
-Add support for a 'service' options to pass a custom service binding
+Add support for a 'serviceBinding' options to pass a custom service binding

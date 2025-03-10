@@ -13,7 +13,7 @@ interface GitBookAPIErrorResponse {
     error: { code: number; message: string };
 }
 
-interface GitBookAPIService {
+export interface GitBookAPIServiceBinding {
     fetch: typeof fetch;
 }
 
@@ -40,9 +40,9 @@ export class GitBookAPI extends Api<{
     public readonly userAgent: string;
 
     /**
-     * Service used by the API client.
+     * Service binding used to request the API.
      */
-    public readonly service: GitBookAPIService;
+    public readonly serviceBinding: GitBookAPIServiceBinding;
 
     constructor(
         options: {
@@ -54,7 +54,7 @@ export class GitBookAPI extends Api<{
 
             /**
              * User agent to use.
-             * It'll default to the package name and version.
+             * It defaults to the package name and version.
              */
             userAgent?: string;
 
@@ -64,16 +64,17 @@ export class GitBookAPI extends Api<{
             authToken?: string;
 
             /**
-             * Custom API service binding.
+             * Service binding used to request the API.
+             * It defaults to the HTTP fetch.
              */
-            service?: GitBookAPIService;
+            serviceBinding?: GitBookAPIServiceBinding;
         } = {},
     ) {
         const {
             endpoint = GITBOOK_DEFAULT_ENDPOINT,
             authToken,
             userAgent = `${name}/${version}`,
-            service = {
+            serviceBinding = {
                 fetch,
             }
         } = options;
@@ -107,7 +108,7 @@ export class GitBookAPI extends Api<{
                     delete init.referrerPolicy;
                 }
 
-                const response = await service.fetch(input, init);
+                const response = await this.serviceBinding.fetch(input, init);
 
                 if (!response.ok) {
                     let error: string = response.statusText;
@@ -128,7 +129,7 @@ export class GitBookAPI extends Api<{
         this.endpoint = normalizedEndpoint;
         this.userAgent = userAgent;
         this.authToken = authToken;
-        this.service = service;
+        this.serviceBinding = serviceBinding;
         this.setSecurityData({ authToken });
     }
 
@@ -149,7 +150,7 @@ export class GitBookAPI extends Api<{
             endpoint: this.endpoint,
             userAgent: this.userAgent,
             authToken: installationToken.token,
-            service: this.service,
+            serviceBinding: this.serviceBinding,
         });
     }
 }
