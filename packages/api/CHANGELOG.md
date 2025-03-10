@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.97.0
+
+### Minor Changes
+
+-   f1616a0: Update API spec
+
 ## 0.96.1
 
 ### Patch Changes
