@@ -80,7 +80,7 @@ function updateWebFrameSize(notebook: NotebookEmbed, { height }) {
     const notebookContainer = document.getElementById('notebook');
     const size = {
         aspectRatio: notebookContainer.offsetWidth / height,
-        maxHeight: height,
+        height,
     };
     sendAction({
         action: '@webframe.resize',
