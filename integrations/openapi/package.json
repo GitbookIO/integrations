@@ -12,7 +12,8 @@
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
         "@gitbook/document": "*",
-        "@gitbook/openapi-parser": "^2.1.0"
+        "@gitbook/openapi-parser": "^2.1.0",
+        "@gitbook/react-openapi": "^1.1.4"
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",

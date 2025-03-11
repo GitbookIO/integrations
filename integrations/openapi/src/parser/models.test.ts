@@ -15,6 +15,23 @@ describe('#getModelsDocument', () => {
         };
         const document = getModelsDocument({ specContent });
         assert('document' in document);
-        expect(document.document.nodes).toHaveLength(17);
+        expect(document.document.nodes).toHaveLength(2);
+        expect(document.document.nodes[1].type).toBe('openapi-schemas');
+        expect(document.document.nodes[1].data).toMatchObject({
+            schemas: [
+                'Order',
+                'Customer',
+                'Address',
+                'Category',
+                'User',
+                'Tag',
+                'Pet',
+                'ApiResponse',
+            ],
+            ref: {
+                kind: 'openapi',
+                spec: 'petstore',
+            },
+        });
     });
 });
