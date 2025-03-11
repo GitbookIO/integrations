@@ -1,5 +1,20 @@
 # @gitbook/integration-openapi
 
+## 0.1.0
+
+### Minor Changes
+
+-   f1616a0: Use new OpenAPI content kit select and reduce required permissions scope
+
+### Patch Changes
+
+-   2244ca2: Support tag hierarchy
+-   95c4f33: Support x-displayName in OpenAPI tag
+-   497ee68: Filter out ignored tags and operations
+-   Updated dependencies [4540a2b]
+-   Updated dependencies [f1616a0]
+    -   @gitbook/api@0.97.0
+
 ## 0.0.2
 
 ### Patch Changes

@@ -1,22 +1,20 @@
 {
-    "name": "@gitbook/integration-openapi",
-    "version": "0.1.0",
+    "name": "@gitbook/integration-ai-translate",
+    "version": "0.0.0",
     "private": true,
     "scripts": {
         "typecheck": "tsc --noEmit",
         "check": "gitbook check",
-        "publish-integrations-staging": "gitbook publish .",
-        "test": "bun test"
+        "publish-integrations-staging": "gitbook publish ."
     },
     "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
         "@gitbook/document": "*",
-        "@gitbook/openapi-parser": "^2.1.0"
+        "openai": "^4.85.3"
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",
-        "@gitbook/tsconfig": "workspace:*",
-        "bun-types": "^1.2.4"
+        "@gitbook/tsconfig": "workspace:*"
     }
 }

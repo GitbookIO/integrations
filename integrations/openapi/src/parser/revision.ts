@@ -1,7 +1,15 @@
-import type { ContentComputeRevisionEventResponse, InputPage } from '@gitbook/api';
-import type { GenerateGroupPageProps } from '../contentSources';
-import { divideOpenAPISpecSchema, type OpenAPISpecContent } from './spec';
-import { OpenAPIV3 } from '@gitbook/openapi-parser';
+import type {
+    ContentComputeRevisionEventResponse,
+    InputPageDocument,
+    InputPageGroup,
+} from '@gitbook/api';
+import type { GenerateOperationsPageProps } from '../contentSources';
+import {
+    extractPageOperations,
+    getOpenAPITree,
+    type OpenAPIPage,
+    type OpenAPISpecContent,
+} from './spec';
 
 /**
  * Generate the revision for the OpenAPI specification.
@@ -13,37 +21,11 @@ export function getRevisionFromSpec(args: {
     };
 }): ContentComputeRevisionEventResponse {
     const { specContent, props } = args;
-    const groups = divideOpenAPISpecSchema(specContent.schema);
-
-    const groupPages = groups.map((group) => {
-        const documentProps: GenerateGroupPageProps = {
-            doc: 'operations' as const,
-            group: group.id,
-        };
-
-        const page: InputPage = {
-            type: 'document',
-            title: (group.tag ? getTagTitle(group.tag) : '') || improveTagName(group.id),
-            icon: group.tag?.['x-page-icon'],
-            description: group.tag?.['x-page-description'] ?? '',
-            computed: {
-                integration: 'openapi',
-                source: 'generate',
-                props: documentProps,
-                dependencies: {
-                    spec: {
-                        ref: { kind: 'openapi' as const, spec: specContent.slug },
-                    },
-                },
-            },
-        };
-
-        return page;
-    });
+    const tree = getOpenAPITree(specContent.schema);
 
     return {
         pages: [
-            ...groupPages,
+            ...openAPIPagesToInputPages(tree, specContent),
             ...(props?.models
                 ? [
                       {
@@ -65,22 +47,38 @@ export function getRevisionFromSpec(args: {
         ],
     };
 }
+function openAPIPagesToInputPages(
+    pages: OpenAPIPage[],
+    specContent: OpenAPISpecContent,
+): InputPageDocument[] {
+    return pages.map((openAPIPage) => {
+        const operations = extractPageOperations(openAPIPage);
 
-/**
- * Get the title for a tag.
- */
-function getTagTitle(tag: OpenAPIV3.TagObject) {
-    return tag['x-page-title'] ?? improveTagName(tag.name ?? '');
-}
+        const page: InputPageDocument = {
+            type: 'document',
+            title: openAPIPage.title,
+            icon: openAPIPage.tag?.['x-page-icon'],
+            description: openAPIPage.tag?.['x-page-description'] ?? '',
+            pages: openAPIPage.pages
+                ? openAPIPagesToInputPages(openAPIPage.pages, specContent)
+                : undefined,
+            computed: operations.length
+                ? {
+                      integration: 'openapi',
+                      source: 'generate',
+                      props: {
+                          doc: 'operations' as const,
+                          page: openAPIPage.id,
+                      },
+                      dependencies: {
+                          spec: {
+                              ref: { kind: 'openapi' as const, spec: specContent.slug },
+                          },
+                      },
+                  }
+                : undefined,
+        };
 
-/**
- * Improve a tag name to be used as a page title:
- * - Capitalize the first letter
- * - Split on - and capitalize each word
- */
-function improveTagName(tagName: string) {
-    return tagName
-        .split('-')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
+        return page;
+    });
 }

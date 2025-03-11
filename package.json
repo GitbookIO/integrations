@@ -29,8 +29,9 @@
         "turbo": "^2.4.2",
         "wrangler": "^2.1.12",
         "prettier": "^3.3.3",
-        "@types/bun": "^1.1.10"
+        "@types/bun": "^1.1.10",
+        "pkg-pr-new": "^0.0.40"
     },
     "dependencies": {},
-    "packageManager": "bun@1.2.2"
+    "packageManager": "bun@1.2.4"
 }

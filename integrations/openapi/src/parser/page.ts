@@ -1,21 +1,21 @@
 import type { Document, DocumentBlocksTopLevels, JSONDocument } from '@gitbook/api';
 import * as doc from '@gitbook/document';
 import { type OpenAPIV3 } from '@gitbook/openapi-parser';
-import { extractGroupOperations, OpenAPIGroup, OpenAPISpecContent } from './spec';
+import { extractPageOperations, OpenAPIPage, OpenAPISpecContent } from './spec';
 
 /**
  * Generate a document for a group in the OpenAPI specification.
  */
-export function getGroupDocument(args: {
-    group: OpenAPIGroup;
+export function getOpenAPIPageDocument(args: {
+    page: OpenAPIPage;
     specContent: OpenAPISpecContent;
 }): Document {
-    const { group, specContent } = args;
+    const { page, specContent } = args;
 
-    const operations = extractGroupOperations(group);
+    const operations = extractPageOperations(page);
 
     return doc.document([
-        ...(group.tag ? getTagDescriptionNodes(group.tag) : []),
+        ...(page.tag ? getTagDescriptionNodes(page.tag) : []),
         ...operations.map((operation) => {
             return doc.openapiOperation({
                 ref: { kind: 'openapi', spec: specContent.slug },
