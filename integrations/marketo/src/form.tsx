@@ -12,7 +12,7 @@ export const marketoFormBlock = createComponent<
         formId?: string | undefined;
     },
     {},
-    undefined,
+    Action,
     MarketoRuntimeContext
 >({
     componentId: 'form',
@@ -33,22 +33,34 @@ export const marketoFormBlock = createComponent<
 
     async render(element, { environment }) {
         element.setCache({ maxAge: 0 });
-        const formId = element.props.formId || '1498';
+        const formId = element.props.formId || '3317';
         const accountId = environment.installation?.configuration?.account;
+
+        if (!accountId) {
+            return (
+                <text>
+                    Your Marketo integration isn't configured correctly: missing Munchkin account
+                    ID.
+                </text>
+            );
+        }
+
+        if (!formId) {
+            return (
+                <text>Select "Configure" from the block menu to choose which form to embed.</text>
+            );
+        }
 
         const webframeURL = new URL(`${environment.integration.urls.publicEndpoint}/webframe`);
         webframeURL.searchParams.set('formId', formId);
         webframeURL.searchParams.set('munchkinId', accountId);
 
-        // const value =
-        //     typeof formId === 'undefined' ? 'undefined' : formId.length ? formId : 'empty';
-
         return (
             <block
                 controls={[
                     {
-                        label: 'Edit',
-                        icon: ContentKitIcon.Edit,
+                        label: 'Configure',
+                        icon: ContentKitIcon.Settings,
                         onPress: {
                             action: '@ui.modal.open',
                             componentId: 'settingsModal',
@@ -63,7 +75,6 @@ export const marketoFormBlock = createComponent<
                     source={{
                         url: webframeURL.toString(),
                     }}
-                    aspectRatio={16 / 9}
                 />
             </block>
         );

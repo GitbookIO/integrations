@@ -1,17 +1,19 @@
 const gitbookWebFrame = window.top;
-const munchkinId = window.location.search.split('munchkinId=')[1].split('&')[0];
-const formId = window.location.search.split('formId=')[1].split('&')[0];
-const elId = 'mktoForm_' + formId;
+const params = new URLSearchParams(window.location.search);
+const formId = params.get('formId');
+const munchkinId = params.get('munchkinId');
 
-const debounce = (callback: () => void, wait: number) => {
-    let timeoutId: number | undefined = undefined;
-    return () => {
-        window.clearTimeout(timeoutId);
-        timeoutId = window.setTimeout(() => {
-            callback.call(null);
-        }, wait);
-    };
-};
+let cachedSize: { height: number; maxWidth: number } | undefined;
+
+if (!formId) {
+    throw new Error('missing formId parameter');
+}
+
+if (!munchkinId) {
+    throw new Error('missing munchkinId parameter');
+}
+
+const elId = 'mktoForm_' + formId;
 
 /**
  * Send an action message back to the GitBook ContentKit component.
@@ -20,21 +22,30 @@ function sendAction(payload: ContentKitWebFrameActionPayload) {
     gitbookWebFrame?.postMessage({ action: payload }, '*');
 }
 
-const recalculateSize = debounce(() => {
+/**
+ * Recalculate the size of the element and send it to the parent.
+ */
+function recalculateSize() {
     const el = document.getElementById(elId);
 
     if (!el) {
         throw new Error("missing element with id '" + elId + "'");
     }
 
-    const size = { maxHeight: el.offsetHeight, maxWidth: el.offsetWidth, aspectRadio: 16 / 9 };
-    console.info('marketo-embed: recalculate size', size);
+    const size = { height: el.offsetHeight, maxWidth: el.offsetWidth };
 
+    if (cachedSize && cachedSize.height === size.height && cachedSize.maxWidth === size.maxWidth) {
+        // Don't send a resize if no change.
+        return;
+    }
+
+    console.info('marketo-embed: recalculate size', size);
+    cachedSize = size;
     sendAction({
         action: '@webframe.resize',
         size,
     });
-}, 10);
+}
 
 const form = document.getElementById('mktoForm_pending');
 
@@ -52,6 +63,8 @@ window.MktoForms2.loadForm('//app-sj15.marketo.com', munchkinId, formId, () => {
 
     recalculateSize();
 
+    // Listen for any DOM changes and send the new size to the parent.
+    // Marketo provides some utility functions to listen for form changes, but they don't work in every case.
     const observer = new MutationObserver(() => recalculateSize());
     observer.observe(form, { attributes: true, childList: true, subtree: true });
 });
