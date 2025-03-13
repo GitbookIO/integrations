@@ -51,6 +51,6 @@ configurations:
             - deployConfigId
             - apiKey
 categories:
-    - other
+    - content
 organization: GXGct7gbl46efsxXM5JQ
 secrets: {}
