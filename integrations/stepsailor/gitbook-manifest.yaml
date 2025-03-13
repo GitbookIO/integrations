@@ -9,7 +9,7 @@ externalLinks:
 visibility: public
 target: site
 scopes:
-  - site:script:inject
+    - site:script:inject
 contentSecurityPolicy:
     font-src: |
         static.api.stepsailor.com
@@ -39,7 +39,7 @@ configurations:
                 title: Organization ID
                 description: You can copy that in the deploy config page
             deployConfigId:
-                type: number
+                type: string
                 title: Deploy Config ID
                 description: You can copy that in the deploy config page
             apiKey:
@@ -51,6 +51,6 @@ configurations:
             - deployConfigId
             - apiKey
 categories:
-  - ai
+    - other
 organization: GXGct7gbl46efsxXM5JQ
 secrets: {}
