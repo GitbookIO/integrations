@@ -15,13 +15,11 @@ export const configureComponent = createComponent<
     OpenAPIRuntimeContext
 >({
     componentId: 'configureSource',
-    initialState: (props, _, context) => {
-        return {
-            spec: null,
-            models: true,
-        };
-    },
-    action: async (element, action, ctx) => {
+    initialState: () => ({
+        spec: null,
+        models: true,
+    }),
+    action: async (element, action, _ctx) => {
         if (action.action === 'submit') {
             if (!element.state.spec) {
                 throw new ExposableError('Invalid spec URL');
@@ -58,7 +56,6 @@ export const configureComponent = createComponent<
         return element;
     },
     render: async (element, context) => {
-        const { api } = context;
         const { installation } = context.environment;
         const { state } = element;
 
@@ -66,9 +63,6 @@ export const configureComponent = createComponent<
             throw new ExposableError('Installation not found');
         }
 
-        const {
-            data: { items: specs },
-        } = await api.orgs.listOpenApiSpecs(installation.target.organization);
         return (
             <configuration>
                 <input
@@ -77,10 +71,7 @@ export const configureComponent = createComponent<
                     element={
                         <select
                             state="spec"
-                            options={specs.map((spec) => ({
-                                label: spec.slug,
-                                id: spec.slug,
-                            }))}
+                            options={{ source: 'openapi' }}
                             onValueChange={{
                                 action: 'selectSpec',
                                 spec: element.dynamicState('spec'),
@@ -88,9 +79,7 @@ export const configureComponent = createComponent<
                         />
                     }
                 />
-
                 <divider />
-
                 <input
                     label="Generate models"
                     hint="Generate a models page for all schema components."

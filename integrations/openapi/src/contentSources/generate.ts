@@ -7,9 +7,14 @@ import {
 } from '@gitbook/runtime';
 import { assertNever } from '../utils';
 import type { OpenAPIRuntimeContext } from '../types';
-import { divideOpenAPISpecSchema, getLatestOpenAPISpecContent } from '../parser/spec';
+import {
+    getOpenAPITree,
+    getLatestOpenAPISpecContent,
+    type OpenAPIPage,
+    getAllOpenAPIPages,
+} from '../parser/spec';
 import { getRevisionFromSpec } from '../parser/revision';
-import { getGroupDocument } from '../parser/group';
+import { getOpenAPIPageDocument } from '../parser/page';
 import { getModelsDocument } from '../parser/models';
 
 type GetRevisionProps = {
@@ -20,16 +25,16 @@ type GetRevisionProps = {
     models?: boolean;
 };
 
-export type GenerateGroupPageProps = {
+export type GenerateOperationsPageProps = {
     doc: 'operations';
-    group: string;
+    page: string;
 };
 
 type GenerateModelsPageProps = {
     doc: 'models';
 };
 
-type GetPageDocumentProps = GenerateGroupPageProps | GenerateModelsPageProps;
+type GetPageDocumentProps = GenerateOperationsPageProps | GenerateModelsPageProps;
 
 export type GenerateContentSourceDependencies = {
     spec: { ref: ContentRefOpenAPI };
@@ -53,7 +58,7 @@ export const generateContentSource = createContentSource<
     getPageDocument: async ({ props, dependencies }, ctx) => {
         switch (props.doc) {
             case 'operations':
-                return generateGroupDocument({ props, dependencies }, ctx);
+                return generateOperationsDocument({ props, dependencies }, ctx);
             case 'models':
                 return generateModelsDocument({ props, dependencies }, ctx);
             default:
@@ -65,21 +70,21 @@ export const generateContentSource = createContentSource<
 /**
  * Generate a document for a group in the OpenAPI specification.
  */
-async function generateGroupDocument(
-    input: ContentSourceInput<GenerateGroupPageProps, GenerateContentSourceDependencies>,
+async function generateOperationsDocument(
+    input: ContentSourceInput<GenerateOperationsPageProps, GenerateContentSourceDependencies>,
     ctx: OpenAPIRuntimeContext,
 ) {
     const { props, dependencies } = input;
     const spec = await getOpenAPISpecFromDependencies(dependencies, ctx);
-    const groups = divideOpenAPISpecSchema(spec.schema);
+    const pages = getAllOpenAPIPages(spec.schema);
 
-    const group = groups.find((g) => g.id === props.group);
+    const page = pages.find((page) => page.id === props.page);
 
-    if (!group) {
-        throw new Error(`Group ${props.group} not found`);
+    if (!page) {
+        throw new Error(`Group ${props.page} not found`);
     }
 
-    return getGroupDocument({ group, specContent: spec });
+    return getOpenAPIPageDocument({ page, specContent: spec });
 }
 
 /**
