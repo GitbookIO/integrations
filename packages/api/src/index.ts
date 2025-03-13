@@ -108,7 +108,9 @@ export class GitBookAPI extends Api<{
 
                 // To avoid errors "TypeError: Illegal invocation: function called with incorrect this reference" on Cloudflare
                 // we always call `fetch` without passing it in an object.
-                const response = await (this.serviceBinding ? this.serviceBinding.fetch(input, init) : fetch(input, init));
+                const response = await (this.serviceBinding
+                    ? this.serviceBinding.fetch(input, init)
+                    : fetch(input, init));
 
                 if (!response.ok) {
                     let error: string = response.statusText;
