@@ -1,5 +1,15 @@
 # @gitbook/api
 
+## 0.98.0
+
+### Minor Changes
+
+-   6341510: Bump API version to include search bar styles customization option
+
+### Patch Changes
+
+-   f0d076e: Fix use of the API client in some Cloudflare environment where it throws "Illegal invocation"
+
 ## 0.97.0
 
 ### Minor Changes
