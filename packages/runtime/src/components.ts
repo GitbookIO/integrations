@@ -15,6 +15,7 @@ import type { ContentSourceInput } from './contentSources';
  */
 export type ConfigureContentSourceProps<T extends ContentSourceInput> = {
     contentSource: T;
+    submitLabel?: string;
 };
 
 /**

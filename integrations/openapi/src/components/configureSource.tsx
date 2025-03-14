@@ -13,7 +13,7 @@ export const configureComponent = createComponent<
         spec: string | null;
         models: boolean;
     },
-    { action: 'submit' } | { action: 'selectSpec'; spec: string },
+    { action: 'submit' },
     OpenAPIRuntimeContext
 >({
     componentId: 'configureSource',
@@ -53,16 +53,6 @@ export const configureComponent = createComponent<
             };
         }
 
-        if (action.action === 'selectSpec') {
-            return {
-                ...element,
-                state: {
-                    ...element.state,
-                    spec: action.spec,
-                },
-            };
-        }
-
         return element;
     },
     render: async (element, context) => {
@@ -78,16 +68,7 @@ export const configureComponent = createComponent<
                 <input
                     label="OpenAPI Specification"
                     hint="Choose the OpenAPI specification to use."
-                    element={
-                        <select
-                            state="spec"
-                            options={{ source: 'openapi' }}
-                            onValueChange={{
-                                action: 'selectSpec',
-                                spec: element.dynamicState('spec'),
-                            }}
-                        />
-                    }
+                    element={<select state="spec" options={{ source: 'openapi' }} />}
                 />
                 <divider />
                 <input
@@ -97,7 +78,7 @@ export const configureComponent = createComponent<
                 />
                 <button
                     style="primary"
-                    label="Continue"
+                    label={element.props.submitLabel ?? 'Continue'}
                     disabled={!state.spec}
                     onPress={{
                         action: 'submit',
