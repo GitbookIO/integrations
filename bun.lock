@@ -315,6 +315,18 @@
         "@gitbook/tsconfig": "packages/tsconfig",
       },
     },
+    "integrations/marketo": {
+      "name": "@gitbook/integration-marketo",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
     "integrations/mermaid": {
       "name": "@gitbook/integration-mermaid",
       "version": "0.3.2",
@@ -355,7 +367,7 @@
     },
     "integrations/openapi": {
       "name": "@gitbook/integration-openapi",
-      "version": "0.0.2",
+      "version": "0.1.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/document": "*",
@@ -549,7 +561,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.96.1",
+      "version": "0.97.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -897,6 +909,8 @@
     "@gitbook/integration-lucid": ["@gitbook/integration-lucid@workspace:integrations/lucid"],
 
     "@gitbook/integration-mailchimp": ["@gitbook/integration-mailchimp@workspace:integrations/mailchimp"],
+
+    "@gitbook/integration-marketo": ["@gitbook/integration-marketo@workspace:integrations/marketo"],
 
     "@gitbook/integration-mermaid": ["@gitbook/integration-mermaid@workspace:integrations/mermaid"],
 

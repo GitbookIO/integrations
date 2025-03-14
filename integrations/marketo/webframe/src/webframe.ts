@@ -3,7 +3,7 @@ const params = new URLSearchParams(window.location.search);
 const formId = params.get('formId');
 const munchkinId = params.get('munchkinId');
 
-let cachedSize: { height: number; maxWidth: number } | undefined;
+let cachedSize: { height: number } | undefined;
 
 if (!formId) {
     throw new Error('missing formId parameter');
@@ -32,9 +32,9 @@ function recalculateSize() {
         throw new Error("missing element with id '" + elId + "'");
     }
 
-    const size = { height: el.offsetHeight, maxWidth: el.offsetWidth };
+    const size = { height: el.offsetHeight };
 
-    if (cachedSize && cachedSize.height === size.height && cachedSize.maxWidth === size.maxWidth) {
+    if (cachedSize && cachedSize.height === size.height) {
         // Don't send a resize if no change.
         return;
     }

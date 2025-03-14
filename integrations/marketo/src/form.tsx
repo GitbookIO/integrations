@@ -33,27 +33,12 @@ export const marketoFormBlock = createComponent<
 
     async render(element, { environment }) {
         element.setCache({ maxAge: 0 });
-        const formId = element.props.formId || '3317';
+        const formId = element.props.formId;
         const accountId = environment.installation?.configuration?.account;
 
-        if (!accountId) {
-            return (
-                <text>
-                    Your Marketo integration isn't configured correctly: missing Munchkin account
-                    ID.
-                </text>
-            );
-        }
-
-        if (!formId) {
-            return (
-                <text>Select "Configure" from the block menu to choose which form to embed.</text>
-            );
-        }
-
         const webframeURL = new URL(`${environment.integration.urls.publicEndpoint}/webframe`);
-        webframeURL.searchParams.set('formId', formId);
-        webframeURL.searchParams.set('munchkinId', accountId);
+        webframeURL.searchParams.set('formId', formId || '');
+        webframeURL.searchParams.set('munchkinId', accountId || '');
 
         return (
             <block
@@ -71,11 +56,27 @@ export const marketoFormBlock = createComponent<
                     },
                 ]}
             >
-                <webframe
-                    source={{
-                        url: webframeURL.toString(),
-                    }}
-                />
+                {!accountId ? (
+                    <hint>
+                        <text style="bold">
+                            Your Marketo integration isn't configured correctly: missing Munchkin
+                            account ID.
+                        </text>
+                    </hint>
+                ) : !formId ? (
+                    <hint>
+                        <text style="bold">
+                            Select "Configure" from the block control menu to choose the form you'd
+                            like to embed.
+                        </text>
+                    </hint>
+                ) : (
+                    <webframe
+                        source={{
+                            url: webframeURL.toString(),
+                        }}
+                    />
+                )}
             </block>
         );
     },
@@ -93,7 +94,7 @@ export const settingsModal = createComponent<
     componentId: 'settingsModal',
 
     initialState: (props) => ({
-        formId: props.currentFormId,
+        formId: props.currentFormId || '',
     }),
 
     async render(element, context) {
@@ -115,7 +116,7 @@ export const settingsModal = createComponent<
             >
                 <vstack>
                     <box>
-                        <text>Marketo form id</text>
+                        <text>Marketo Form ID</text>
                         <textinput state="formId" />
                     </box>
                 </vstack>

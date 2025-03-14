@@ -139,7 +139,6 @@ export function createComponent<
                         'Content-Type': 'application/json',
                         ...(cache
                             ? {
-                                  // @ts-ignore - I'm not sure how to fix this one with TS
                                   'Cache-Control': `max-age=${cache.maxAge}`,
                               }
                             : {}),
