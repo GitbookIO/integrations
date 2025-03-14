@@ -1,5 +1,15 @@
 # @gitbook/integration-openapi
 
+## 0.1.1
+
+### Patch Changes
+
+-   89b1298: Allow to inject props in OpenAPI configuration
+-   5bb843c: Add ids to pages
+-   89b1298: Use sha1 for page ids
+-   Updated dependencies [89b1298]
+    -   @gitbook/runtime@0.19.2
+
 ## 0.1.0
 
 ### Minor Changes
