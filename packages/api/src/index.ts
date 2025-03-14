@@ -42,7 +42,7 @@ export class GitBookAPI extends Api<{
     /**
      * Service binding used to request the API.
      */
-    public readonly serviceBinding: GitBookAPIServiceBinding;
+    public readonly serviceBinding: GitBookAPIServiceBinding | undefined;
 
     constructor(
         options: {
@@ -74,9 +74,7 @@ export class GitBookAPI extends Api<{
             endpoint = GITBOOK_DEFAULT_ENDPOINT,
             authToken,
             userAgent = `${name}/${version}`,
-            serviceBinding = {
-                fetch,
-            },
+            serviceBinding,
         } = options;
 
         const normalizedEndpoint = endpoint.endsWith('/') ? endpoint.slice(0, -1) : endpoint;
@@ -108,7 +106,11 @@ export class GitBookAPI extends Api<{
                     delete init.referrerPolicy;
                 }
 
-                const response = await this.serviceBinding.fetch(input, init);
+                // To avoid errors "TypeError: Illegal invocation: function called with incorrect this reference" on Cloudflare
+                // we always call `fetch` without passing it in an object.
+                const response = await (this.serviceBinding
+                    ? this.serviceBinding.fetch(input, init)
+                    : fetch(input, init));
 
                 if (!response.ok) {
                     let error: string = response.statusText;
