@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.99.0
+
+### Minor Changes
+
+-   523ded0: Bump API - OpenAPI schemas
+
 ## 0.98.0
 
 ### Minor Changes
