@@ -26,7 +26,7 @@ export const configureComponent = createComponent<
         }
         return {
             spec: null,
-            models: false,
+            models: true,
         };
     },
     action: async (element, action, _ctx) => {
