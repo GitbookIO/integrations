@@ -1,6 +1,6 @@
 import { ExposableError } from '@gitbook/runtime';
 import { dereference, type OpenAPIV3, shouldIgnoreEntity } from '@gitbook/openapi-parser';
-import { GitBookAPI, type JSONDocument } from '@gitbook/api';
+import { GitBookAPI } from '@gitbook/api';
 
 type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'options' | 'head' | 'patch' | 'trace';
 

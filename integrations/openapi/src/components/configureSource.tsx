@@ -1,24 +1,34 @@
-import { createComponent, ExposableError, InstallationConfigurationProps } from '@gitbook/runtime';
+import { ConfigureContentSourceProps, createComponent, ExposableError } from '@gitbook/runtime';
 
-import type { OpenAPIRuntimeEnvironment, OpenAPIRuntimeContext } from '../types';
+import type { OpenAPIRuntimeContext } from '../types';
+import type { OpenAPIContentSource } from '../contentSources';
 
 /**
  * ContentKit component to configure the content source.
  */
 export const configureComponent = createComponent<
-    InstallationConfigurationProps<OpenAPIRuntimeEnvironment>,
+    // @ts-expect-error incompatible with PlainObject
+    ConfigureContentSourceProps<OpenAPIContentSource>,
     {
         spec: string | null;
         models: boolean;
     },
-    { action: 'submit' } | { action: 'selectSpec'; spec: string },
+    { action: 'submit' },
     OpenAPIRuntimeContext
 >({
     componentId: 'configureSource',
-    initialState: () => ({
-        spec: null,
-        models: true,
-    }),
+    initialState: (props) => {
+        if (props.contentSource) {
+            return {
+                spec: props.contentSource.dependencies.spec.ref.spec,
+                models: props.contentSource.props.models,
+            };
+        }
+        return {
+            spec: null,
+            models: true,
+        };
+    },
     action: async (element, action, _ctx) => {
         if (action.action === 'submit') {
             if (!element.state.spec) {
@@ -43,16 +53,6 @@ export const configureComponent = createComponent<
             };
         }
 
-        if (action.action === 'selectSpec') {
-            return {
-                ...element,
-                state: {
-                    ...element.state,
-                    spec: action.spec,
-                },
-            };
-        }
-
         return element;
     },
     render: async (element, context) => {
@@ -68,16 +68,7 @@ export const configureComponent = createComponent<
                 <input
                     label="OpenAPI Specification"
                     hint="Choose the OpenAPI specification to use."
-                    element={
-                        <select
-                            state="spec"
-                            options={{ source: 'openapi' }}
-                            onValueChange={{
-                                action: 'selectSpec',
-                                spec: element.dynamicState('spec'),
-                            }}
-                        />
-                    }
+                    element={<select state="spec" options={{ source: 'openapi' }} />}
                 />
                 <divider />
                 <input
@@ -87,7 +78,7 @@ export const configureComponent = createComponent<
                 />
                 <button
                     style="primary"
-                    label="Continue"
+                    label={element.props.submitLabel ?? 'Continue'}
                     disabled={!state.spec}
                     onPress={{
                         action: 'submit',

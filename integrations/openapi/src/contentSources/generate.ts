@@ -7,23 +7,25 @@ import {
 } from '@gitbook/runtime';
 import { assertNever } from '../utils';
 import type { OpenAPIRuntimeContext } from '../types';
-import {
-    getOpenAPITree,
-    getLatestOpenAPISpecContent,
-    type OpenAPIPage,
-    getAllOpenAPIPages,
-} from '../parser/spec';
+import { getLatestOpenAPISpecContent, getAllOpenAPIPages } from '../parser/spec';
 import { getRevisionFromSpec } from '../parser/revision';
 import { getOpenAPIPageDocument } from '../parser/page';
 import { getModelsDocument } from '../parser/models';
 
-type GetRevisionProps = {
-    /**
-     * Should a models page be generated?
-     * @default true
-     */
-    models?: boolean;
-};
+export type OpenAPIContentSource = ContentSourceInput<
+    {
+        /**
+         * Should a models page be generated?
+         * @default true
+         */
+        models?: boolean;
+    },
+    {
+        spec: {
+            ref: ContentRefOpenAPI;
+        };
+    }
+>;
 
 export type GenerateOperationsPageProps = {
     doc: 'operations';
@@ -36,17 +38,13 @@ type GenerateModelsPageProps = {
 
 type GetPageDocumentProps = GenerateOperationsPageProps | GenerateModelsPageProps;
 
-export type GenerateContentSourceDependencies = {
-    spec: { ref: ContentRefOpenAPI };
-};
-
 /**
  * Content source to generate pages from an OpenAPI specification.
  */
 export const generateContentSource = createContentSource<
-    GetRevisionProps,
+    OpenAPIContentSource['props'],
     GetPageDocumentProps,
-    GenerateContentSourceDependencies
+    OpenAPIContentSource['dependencies']
 >({
     sourceId: 'generate',
 
@@ -71,7 +69,7 @@ export const generateContentSource = createContentSource<
  * Generate a document for a group in the OpenAPI specification.
  */
 async function generateOperationsDocument(
-    input: ContentSourceInput<GenerateOperationsPageProps, GenerateContentSourceDependencies>,
+    input: ContentSourceInput<GenerateOperationsPageProps, OpenAPIContentSource['dependencies']>,
     ctx: OpenAPIRuntimeContext,
 ) {
     const { props, dependencies } = input;
@@ -91,7 +89,7 @@ async function generateOperationsDocument(
  * Generate a document for the models page in the OpenAPI specification.
  */
 async function generateModelsDocument(
-    input: ContentSourceInput<GenerateModelsPageProps, GenerateContentSourceDependencies>,
+    input: ContentSourceInput<GenerateModelsPageProps, OpenAPIContentSource['dependencies']>,
     ctx: OpenAPIRuntimeContext,
 ) {
     const { dependencies } = input;
@@ -103,7 +101,7 @@ async function generateModelsDocument(
  * Get the OpenAPI specification from the OpenAPI specification dependency.
  */
 async function getOpenAPISpecFromDependencies(
-    dependencies: ContentSourceDependenciesValueFromRef<GenerateContentSourceDependencies>,
+    dependencies: ContentSourceDependenciesValueFromRef<OpenAPIContentSource['dependencies']>,
     ctx: OpenAPIRuntimeContext,
 ) {
     const { api } = ctx;
