@@ -41,6 +41,7 @@ describe('#getRevisionFromSpec', () => {
             icon: undefined,
             title: 'Pet',
             type: 'document',
+            id: 'tag-pet',
         });
     });
 
@@ -102,14 +103,17 @@ describe('#getRevisionFromSpec', () => {
                             pages: undefined,
                             title: 'Store',
                             type: 'document',
+                            id: 'tag-store',
                         },
                     ],
                     title: 'Pet',
                     type: 'document',
+                    id: 'tag-pet',
                 },
             ],
             title: 'Root',
             type: 'document',
+            id: 'tag-root',
         });
     });
 

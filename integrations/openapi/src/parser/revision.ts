@@ -1,9 +1,4 @@
-import type {
-    ContentComputeRevisionEventResponse,
-    InputPageDocument,
-    InputPageGroup,
-} from '@gitbook/api';
-import type { GenerateOperationsPageProps } from '../contentSources';
+import type { ContentComputeRevisionEventResponse, InputPageDocument } from '@gitbook/api';
 import {
     extractPageOperations,
     getOpenAPITree,
@@ -29,6 +24,7 @@ export function getRevisionFromSpec(args: {
             ...(props?.models
                 ? [
                       {
+                          id: 'models',
                           type: 'document' as const,
                           title: 'Models',
                           computed: {
@@ -55,6 +51,7 @@ function openAPIPagesToInputPages(
         const operations = extractPageOperations(openAPIPage);
 
         const page: InputPageDocument = {
+            id: `tag-${openAPIPage.id}`,
             type: 'document',
             title: openAPIPage.title,
             icon: openAPIPage.tag?.['x-page-icon'],
