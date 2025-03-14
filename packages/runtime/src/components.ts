@@ -8,6 +8,14 @@ import {
 
 import { RuntimeCallback, RuntimeEnvironment, RuntimeContext } from './context';
 import { PlainObject } from './common';
+import type { ContentSourceInput } from './contentSources';
+
+/**
+ * Props for a content source configuration component.
+ */
+export type ConfigureContentSourceProps<T extends ContentSourceInput> = {
+    contentSource: T;
+};
 
 /**
  * Props for an installation configuration component.

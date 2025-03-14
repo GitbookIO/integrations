@@ -1,12 +1,14 @@
-import { createComponent, ExposableError, InstallationConfigurationProps } from '@gitbook/runtime';
+import { ConfigureContentSourceProps, createComponent, ExposableError } from '@gitbook/runtime';
 
-import type { OpenAPIRuntimeEnvironment, OpenAPIRuntimeContext } from '../types';
+import type { OpenAPIRuntimeContext } from '../types';
+import type { OpenAPIContentSource } from '../contentSources';
 
 /**
  * ContentKit component to configure the content source.
  */
 export const configureComponent = createComponent<
-    InstallationConfigurationProps<OpenAPIRuntimeEnvironment>,
+    // @ts-expect-error incompatible with PlainObject
+    ConfigureContentSourceProps<OpenAPIContentSource>,
     {
         spec: string | null;
         models: boolean;
@@ -15,10 +17,18 @@ export const configureComponent = createComponent<
     OpenAPIRuntimeContext
 >({
     componentId: 'configureSource',
-    initialState: () => ({
-        spec: null,
-        models: true,
-    }),
+    initialState: (props) => {
+        if (props.contentSource) {
+            return {
+                spec: props.contentSource.dependencies.spec.ref.spec,
+                models: props.contentSource.props.models,
+            };
+        }
+        return {
+            spec: null,
+            models: false,
+        };
+    },
     action: async (element, action, _ctx) => {
         if (action.action === 'submit') {
             if (!element.state.spec) {
