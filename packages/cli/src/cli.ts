@@ -15,6 +15,7 @@ import { publishIntegration, unpublishIntegration } from './publish';
 import { authenticate, whoami } from './remote';
 import { tailLogs } from './tail';
 import { checkIntegrationBuild } from './check';
+import { publishOpenAPISpecification } from 'openapi/publish';
 
 program
     .name(Object.keys(packageJSON.bin)[0])
@@ -113,6 +114,23 @@ program
     .description('check the integration build')
     .action(async () => {
         await checkIntegrationBuild();
+    });
+
+const openAPIProgram = program.command('openapi').description('manage OpenAPI specifications');
+
+openAPIProgram
+    .command('publish')
+    .description('publish an OpenAPI specification')
+    .argument('<file>', 'OpenAPI specification file path')
+    .requiredOption('-s, --spec <spec>', 'name of the OpenAPI specification')
+    .requiredOption('-o, --organization <organization>', 'organization to publish to')
+    .action(async (filepath, options) => {
+        const spec = await publishOpenAPISpecification({
+            specSlug: options.spec,
+            specFilepath: path.resolve(process.cwd(), filepath),
+            organizationId: options.organization,
+        });
+        console.log(`OpenAPI specification "${options.spec}" published to ${spec.urls.app}`);
     });
 
 checkNodeVersion({ node: '>= 18' }, (error, result) => {
