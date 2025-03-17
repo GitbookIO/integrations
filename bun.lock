@@ -102,7 +102,7 @@
     },
     "integrations/formspree": {
       "name": "@gitbook/integration-formspree",
-      "version": "0.2.7",
+      "version": "0.2.8",
       "dependencies": {
         "@gitbook/runtime": "workspace:*",
       },
@@ -355,7 +355,7 @@
     },
     "integrations/openapi": {
       "name": "@gitbook/integration-openapi",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/document": "*",
@@ -604,7 +604,7 @@
     },
     "packages/runtime": {
       "name": "@gitbook/runtime",
-      "version": "0.19.1",
+      "version": "0.19.2",
       "dependencies": {
         "@gitbook/api": "*",
       },
