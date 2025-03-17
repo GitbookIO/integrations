@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.21.0
+
+### Minor Changes
+
+-   0cbe3ea: Add command to publish OpenAPI specification
+
 ## 0.20.1
 
 ### Patch Changes
