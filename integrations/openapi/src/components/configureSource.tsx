@@ -13,7 +13,7 @@ export const configureComponent = createComponent<
         spec: string | null;
         models: boolean;
     },
-    { action: 'submit' },
+    { action: 'submit' } | { action: 'selectSpec'; spec: string },
     OpenAPIRuntimeContext
 >({
     componentId: 'configureSource',
@@ -32,7 +32,7 @@ export const configureComponent = createComponent<
     action: async (element, action, _ctx) => {
         if (action.action === 'submit') {
             if (!element.state.spec) {
-                throw new ExposableError('Invalid spec URL');
+                throw new ExposableError('An OpenAPI specification is required');
             }
 
             return {
@@ -53,6 +53,16 @@ export const configureComponent = createComponent<
             };
         }
 
+        if (action.action === 'selectSpec') {
+            return {
+                ...element,
+                state: {
+                    ...element.state,
+                    spec: action.spec,
+                },
+            };
+        }
+
         return element;
     },
     render: async (element, context) => {
@@ -68,7 +78,16 @@ export const configureComponent = createComponent<
                 <input
                     label="OpenAPI Specification"
                     hint="Choose the OpenAPI specification to use."
-                    element={<select state="spec" options={{ source: 'openapi' }} />}
+                    element={
+                        <select
+                            state="spec"
+                            options={{ source: 'openapi' }}
+                            onValueChange={{
+                                action: 'selectSpec',
+                                spec: element.dynamicState('spec'),
+                            }}
+                        />
+                    }
                 />
                 <divider />
                 <input
@@ -78,11 +97,9 @@ export const configureComponent = createComponent<
                 />
                 <button
                     style="primary"
-                    label={element.props.submitLabel ?? 'Continue'}
                     disabled={!state.spec}
-                    onPress={{
-                        action: 'submit',
-                    }}
+                    label={element.props.submitLabel ?? 'Continue'}
+                    onPress={{ action: 'submit' }}
                 />
             </configuration>
         );
