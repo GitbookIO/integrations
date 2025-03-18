@@ -7,7 +7,7 @@ previewImages:
 externalLinks:
     - label: Documentation
       url: https://www.gitbook.com/integrations/marketo
-visibility: private
+visibility: public
 organization: gitbook
 blocks:
     - id: form
