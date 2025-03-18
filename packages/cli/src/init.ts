@@ -11,6 +11,20 @@ import packageJSON from '../package.json';
 import { fileExists } from './files';
 import { DEFAULT_MANIFEST_FILE, writeIntegrationManifest } from './manifest';
 
+function validateURLSlug(slug: string): boolean {
+    return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
+}
+
+function validateIntegrationName(name: string) {
+    const validName = /^[a-z0-9-]+$/g.test(name) as boolean;
+    const validSlug = validateURLSlug(name);
+    if (!validName || !validSlug) {
+        throw new Error(
+            `Invalid integration name: ${name}, it must begin with an alphanumeric character and only contain alphanumeric characters and hyphens.`
+        );
+    }
+}
+
 /**
  * Interactive prompt to create a new integration.
  * @param dir directory to create the integration project in.
@@ -22,6 +36,14 @@ export async function promptNewIntegration(dir?: string): Promise<void> {
             name: 'name',
             message: 'Name of the integration:',
             initial: path.basename(dir || process.cwd()),
+            validate: (value) => {
+                try {
+                    validateIntegrationName(value);
+                    return true;
+                } catch (error) {
+                    return error.message;
+                }
+            }
         },
         {
             type: 'text',
