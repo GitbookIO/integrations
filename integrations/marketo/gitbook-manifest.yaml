@@ -1,0 +1,50 @@
+name: marketo
+title: Marketo
+icon: ./assets/icon.png
+description: Use Marketo's automation platform (part of the Adobe Experience Cloud) with your GitBook docs.
+previewImages:
+    - ./assets/marketo-preview.png
+externalLinks:
+    - label: Documentation
+      url: https://www.gitbook.com/integrations/marketo
+visibility: private
+organization: gitbook
+blocks:
+    - id: form
+      title: Marketo Form
+      description: Embed a Marketo form in your content.
+script: ./src/index.ts
+scopes:
+    - site:script:inject
+contentSecurityPolicy:
+    script-src: |
+        https://munchkin.marketo.net;
+    connect-src: |
+        munchkin.marketo.net
+        *;
+summary: |
+    # Overview
+
+    Marketo Engage is a complete AI-powered marketing automation platform, and part of the Adobe Experience Cloud. This integration provides support for Marketo forms and the Munchkin tracking script.
+
+    # How it works
+
+    This integration allows you to connect the Munchkin tracking script to your GitBook docs site, and embed Marketo forms in your content.
+
+    # Configure
+
+    You can enable the integration on single published space by navigating to the sub-navigation and clicking on Integrations button. If you prefer to enable the integration or multiple or all published spaces you can do so by navigating to the org settings and clicking the Integrations tab. You will need your Domain to finish the configuration.
+categories:
+    - analytics
+    - content
+    - marketing
+configurations:
+    account:
+        properties:
+            account:
+                type: string
+                title: Munchkin Account ID
+                description: Your account ID, found in the Marketo app under Admin > Integration > Munchkin menu.
+        required:
+            - account
+target: all

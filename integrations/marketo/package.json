@@ -1,0 +1,20 @@
+{
+    "name": "@gitbook/integration-marketo",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
+    },
+    "scripts": {
+        "build": "bun run ./webframe/scripts/build.ts",
+        "typecheck": "tsc --noEmit",
+        "publish-integrations-staging": "gitbook publish .",
+        "publish-integrations": "gitbook publish .",
+        "check": "gitbook check"
+    }
+}
