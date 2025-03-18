@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.100.0
+
+### Minor Changes
+
+-   0cf871d: Bump API to include fonts updates
+
 ## 0.99.0
 
 ### Minor Changes

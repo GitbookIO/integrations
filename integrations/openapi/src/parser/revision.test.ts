@@ -11,7 +11,7 @@ const petstoreWithNestedTags = await Bun.file(
 describe('#getRevisionFromSpec', () => {
     it('generates a revision from the spec', async () => {
         const schema = await dereferenceOpenAPISpec(petstore);
-        const revision = getRevisionFromSpec({
+        const revision = await getRevisionFromSpec({
             specContent: {
                 schema,
                 url: 'http://example.com',
@@ -41,13 +41,13 @@ describe('#getRevisionFromSpec', () => {
             icon: undefined,
             title: 'Pet',
             type: 'document',
-            id: 'tag-pet',
+            id: 'd028ae04f21cfbda361fa9f78f733d76f96ad0f6',
         });
     });
 
     it('generates nested pages', async () => {
         const schema = await dereferenceOpenAPISpec(petstoreWithNestedTags);
-        const revision = getRevisionFromSpec({
+        const revision = await getRevisionFromSpec({
             specContent: {
                 schema,
                 url: 'http://example.com',
@@ -103,17 +103,17 @@ describe('#getRevisionFromSpec', () => {
                             pages: undefined,
                             title: 'Store',
                             type: 'document',
-                            id: 'tag-store',
+                            id: 'f428951c7433fb01868928bc37eaf009ab42045b',
                         },
                     ],
                     title: 'Pet',
                     type: 'document',
-                    id: 'tag-pet',
+                    id: 'd028ae04f21cfbda361fa9f78f733d76f96ad0f6',
                 },
             ],
             title: 'Root',
             type: 'document',
-            id: 'tag-root',
+            id: '237181e75895f80491f1fd21cf0c4fb91654134a',
         });
     });
 
@@ -122,7 +122,7 @@ describe('#getRevisionFromSpec', () => {
         // Add star icon to the first tag
         schema.tags![0]['x-page-icon'] = 'star';
 
-        const revision = getRevisionFromSpec({
+        const revision = await getRevisionFromSpec({
             specContent: {
                 schema,
                 url: 'http://example.com',
@@ -139,7 +139,7 @@ describe('#getRevisionFromSpec', () => {
         // Add star icon to the first tag
         schema.tags![0]['x-page-description'] = 'My description';
 
-        const revision = getRevisionFromSpec({
+        const revision = await getRevisionFromSpec({
             specContent: {
                 schema,
                 url: 'http://example.com',
