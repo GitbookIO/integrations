@@ -1,5 +1,30 @@
 # @gitbook/integration-openapi
 
+## 0.1.1
+
+### Patch Changes
+
+-   89b1298: Allow to inject props in OpenAPI configuration
+-   5bb843c: Add ids to pages
+-   89b1298: Use sha1 for page ids
+-   Updated dependencies [89b1298]
+    -   @gitbook/runtime@0.19.2
+
+## 0.1.0
+
+### Minor Changes
+
+-   f1616a0: Use new OpenAPI content kit select and reduce required permissions scope
+
+### Patch Changes
+
+-   2244ca2: Support tag hierarchy
+-   95c4f33: Support x-displayName in OpenAPI tag
+-   497ee68: Filter out ignored tags and operations
+-   Updated dependencies [4540a2b]
+-   Updated dependencies [f1616a0]
+    -   @gitbook/api@0.97.0
+
 ## 0.0.2
 
 ### Patch Changes

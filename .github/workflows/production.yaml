@@ -22,9 +22,9 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
             - name: Setup bun
-              uses: oven-sh/setup-bun@v1
+              uses: oven-sh/setup-bun@v2
               with:
-                  bun-version-file: '.bun-version'
+                  bun-version-file: 'package.json'
             - name: Install dependencies
               run: bun install --frozen-lockfile
 
@@ -83,3 +83,5 @@ jobs:
                   GITHUBCOPILOT_APP_URL: ${{ secrets.GITHUBCOPILOT_PROD_APP_URL }}
                   GITHUBCOPILOT_CLIENT_ID: ${{ secrets.GITHUBCOPILOT_PROD_CLIENT_ID }}
                   GITHUBCOPILOT_CLIENT_SECRET: ${{ secrets.GITHUBCOPILOT_PROD_CLIENT_SECRET }}
+                  # AI Translate
+                  AITRANSLATE_OPENAI_API_KEY: ${{ secrets.AITRANSLATE_OPENAI_API_KEY }}

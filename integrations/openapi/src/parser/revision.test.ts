@@ -3,12 +3,15 @@ import { dereferenceOpenAPISpec } from './spec';
 import { getRevisionFromSpec } from './revision';
 import { InputPageDocument } from '@gitbook/api';
 
-const rawSpec = await Bun.file(new URL('../__fixtures__/petstore3.yml', import.meta.url)).text();
+const petstore = await Bun.file(new URL('../__fixtures__/petstore3.yml', import.meta.url)).text();
+const petstoreWithNestedTags = await Bun.file(
+    new URL('../__fixtures__/petstore3-with-nested-tags.yml', import.meta.url),
+).text();
 
 describe('#getRevisionFromSpec', () => {
     it('generates a revision from the spec', async () => {
-        const schema = await dereferenceOpenAPISpec(rawSpec);
-        const revision = getRevisionFromSpec({
+        const schema = await dereferenceOpenAPISpec(petstore);
+        const revision = await getRevisionFromSpec({
             specContent: {
                 schema,
                 url: 'http://example.com',
@@ -30,7 +33,7 @@ describe('#getRevisionFromSpec', () => {
                 integration: 'openapi',
                 props: {
                     doc: 'operations',
-                    group: 'pet',
+                    page: 'pet',
                 },
                 source: 'generate',
             },
@@ -38,15 +41,88 @@ describe('#getRevisionFromSpec', () => {
             icon: undefined,
             title: 'Pet',
             type: 'document',
+            id: 'd028ae04f21cfbda361fa9f78f733d76f96ad0f6',
+        });
+    });
+
+    it('generates nested pages', async () => {
+        const schema = await dereferenceOpenAPISpec(petstoreWithNestedTags);
+        const revision = await getRevisionFromSpec({
+            specContent: {
+                schema,
+                url: 'http://example.com',
+                slug: 'petstore',
+            },
+            props: {},
+        });
+        expect(revision.pages).toHaveLength(2);
+        expect(revision.pages![0]).toEqual({
+            computed: undefined,
+            description: '',
+            icon: undefined,
+            pages: [
+                {
+                    computed: {
+                        dependencies: {
+                            spec: {
+                                ref: {
+                                    kind: 'openapi',
+                                    spec: 'petstore',
+                                },
+                            },
+                        },
+                        integration: 'openapi',
+                        props: {
+                            doc: 'operations',
+                            page: 'pet',
+                        },
+                        source: 'generate',
+                    },
+                    description: '',
+                    icon: undefined,
+                    pages: [
+                        {
+                            computed: {
+                                dependencies: {
+                                    spec: {
+                                        ref: {
+                                            kind: 'openapi',
+                                            spec: 'petstore',
+                                        },
+                                    },
+                                },
+                                integration: 'openapi',
+                                props: {
+                                    doc: 'operations',
+                                    page: 'store',
+                                },
+                                source: 'generate',
+                            },
+                            description: '',
+                            icon: undefined,
+                            pages: undefined,
+                            title: 'Store',
+                            type: 'document',
+                            id: 'f428951c7433fb01868928bc37eaf009ab42045b',
+                        },
+                    ],
+                    title: 'Pet',
+                    type: 'document',
+                    id: 'd028ae04f21cfbda361fa9f78f733d76f96ad0f6',
+                },
+            ],
+            title: 'Root',
+            type: 'document',
+            id: '237181e75895f80491f1fd21cf0c4fb91654134a',
         });
     });
 
     it('parses icon', async () => {
-        const schema = await dereferenceOpenAPISpec(rawSpec);
+        const schema = await dereferenceOpenAPISpec(petstore);
         // Add star icon to the first tag
         schema.tags![0]['x-page-icon'] = 'star';
 
-        const revision = getRevisionFromSpec({
+        const revision = await getRevisionFromSpec({
             specContent: {
                 schema,
                 url: 'http://example.com',
@@ -59,11 +135,11 @@ describe('#getRevisionFromSpec', () => {
     });
 
     it('parses description', async () => {
-        const schema = await dereferenceOpenAPISpec(rawSpec);
+        const schema = await dereferenceOpenAPISpec(petstore);
         // Add star icon to the first tag
         schema.tags![0]['x-page-description'] = 'My description';
 
-        const revision = getRevisionFromSpec({
+        const revision = await getRevisionFromSpec({
             specContent: {
                 schema,
                 url: 'http://example.com',

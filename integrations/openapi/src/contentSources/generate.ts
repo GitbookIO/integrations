@@ -7,41 +7,44 @@ import {
 } from '@gitbook/runtime';
 import { assertNever } from '../utils';
 import type { OpenAPIRuntimeContext } from '../types';
-import { divideOpenAPISpecSchema, getLatestOpenAPISpecContent } from '../parser/spec';
+import { getLatestOpenAPISpecContent, getAllOpenAPIPages } from '../parser/spec';
 import { getRevisionFromSpec } from '../parser/revision';
-import { getGroupDocument } from '../parser/group';
+import { getOpenAPIPageDocument } from '../parser/page';
 import { getModelsDocument } from '../parser/models';
 
-type GetRevisionProps = {
-    /**
-     * Should a models page be generated?
-     * @default true
-     */
-    models?: boolean;
-};
+export type OpenAPIContentSource = ContentSourceInput<
+    {
+        /**
+         * Should a models page be generated?
+         * @default true
+         */
+        models?: boolean;
+    },
+    {
+        spec: {
+            ref: ContentRefOpenAPI;
+        };
+    }
+>;
 
-export type GenerateGroupPageProps = {
+export type GenerateOperationsPageProps = {
     doc: 'operations';
-    group: string;
+    page: string;
 };
 
 type GenerateModelsPageProps = {
     doc: 'models';
 };
 
-type GetPageDocumentProps = GenerateGroupPageProps | GenerateModelsPageProps;
-
-export type GenerateContentSourceDependencies = {
-    spec: { ref: ContentRefOpenAPI };
-};
+type GetPageDocumentProps = GenerateOperationsPageProps | GenerateModelsPageProps;
 
 /**
  * Content source to generate pages from an OpenAPI specification.
  */
 export const generateContentSource = createContentSource<
-    GetRevisionProps,
+    OpenAPIContentSource['props'],
     GetPageDocumentProps,
-    GenerateContentSourceDependencies
+    OpenAPIContentSource['dependencies']
 >({
     sourceId: 'generate',
 
@@ -53,7 +56,7 @@ export const generateContentSource = createContentSource<
     getPageDocument: async ({ props, dependencies }, ctx) => {
         switch (props.doc) {
             case 'operations':
-                return generateGroupDocument({ props, dependencies }, ctx);
+                return generateOperationsDocument({ props, dependencies }, ctx);
             case 'models':
                 return generateModelsDocument({ props, dependencies }, ctx);
             default:
@@ -65,28 +68,28 @@ export const generateContentSource = createContentSource<
 /**
  * Generate a document for a group in the OpenAPI specification.
  */
-async function generateGroupDocument(
-    input: ContentSourceInput<GenerateGroupPageProps, GenerateContentSourceDependencies>,
+async function generateOperationsDocument(
+    input: ContentSourceInput<GenerateOperationsPageProps, OpenAPIContentSource['dependencies']>,
     ctx: OpenAPIRuntimeContext,
 ) {
     const { props, dependencies } = input;
     const spec = await getOpenAPISpecFromDependencies(dependencies, ctx);
-    const groups = divideOpenAPISpecSchema(spec.schema);
+    const pages = getAllOpenAPIPages(spec.schema);
 
-    const group = groups.find((g) => g.id === props.group);
+    const page = pages.find((page) => page.id === props.page);
 
-    if (!group) {
-        throw new Error(`Group ${props.group} not found`);
+    if (!page) {
+        throw new Error(`Group ${props.page} not found`);
     }
 
-    return getGroupDocument({ group, specContent: spec });
+    return getOpenAPIPageDocument({ page, specContent: spec });
 }
 
 /**
  * Generate a document for the models page in the OpenAPI specification.
  */
 async function generateModelsDocument(
-    input: ContentSourceInput<GenerateModelsPageProps, GenerateContentSourceDependencies>,
+    input: ContentSourceInput<GenerateModelsPageProps, OpenAPIContentSource['dependencies']>,
     ctx: OpenAPIRuntimeContext,
 ) {
     const { dependencies } = input;
@@ -98,7 +101,7 @@ async function generateModelsDocument(
  * Get the OpenAPI specification from the OpenAPI specification dependency.
  */
 async function getOpenAPISpecFromDependencies(
-    dependencies: ContentSourceDependenciesValueFromRef<GenerateContentSourceDependencies>,
+    dependencies: ContentSourceDependenciesValueFromRef<OpenAPIContentSource['dependencies']>,
     ctx: OpenAPIRuntimeContext,
 ) {
     const { api } = ctx;

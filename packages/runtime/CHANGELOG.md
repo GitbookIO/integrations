@@ -1,5 +1,11 @@
 # @gitbook/runtime
 
+## 0.19.2
+
+### Patch Changes
+
+-   89b1298: Allow to inject props in OpenAPI configuration
+
 ## 0.19.1
 
 ### Patch Changes

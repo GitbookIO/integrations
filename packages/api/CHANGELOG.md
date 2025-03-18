@@ -1,5 +1,28 @@
 # @gitbook/api
 
+## 0.99.0
+
+### Minor Changes
+
+-   523ded0: Bump API - OpenAPI schemas
+
+## 0.98.0
+
+### Minor Changes
+
+-   6341510: Bump API version to include search bar styles customization option
+
+### Patch Changes
+
+-   f0d076e: Fix use of the API client in some Cloudflare environment where it throws "Illegal invocation"
+
+## 0.97.0
+
+### Minor Changes
+
+-   4540a2b: Add support for a 'serviceBinding' options to pass a custom service binding
+-   f1616a0: Update API spec
+
 ## 0.96.1
 
 ### Patch Changes

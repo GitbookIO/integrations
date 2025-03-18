@@ -120,8 +120,7 @@ export default createIntegration({
                                 action: '@webframe.resize',
                                 size: {
                                     aspectRatio: size.width / size.height,
-                                    maxHeight: size.height,
-                                    maxWidth: size.width,
+                                    height: size.height,
                                 }
                             });
                         }

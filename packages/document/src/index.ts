@@ -40,6 +40,7 @@ export const file = voidBlockFactory<api.DocumentBlockFile>('file');
 export const openapi = voidBlockFactory<api.DocumentBlockOpenAPI>('swagger');
 export const openapiOperation =
     voidBlockFactory<api.DocumentBlockOpenAPIOperation>('openapi-operation');
+export const openapiSchemas = voidBlockFactory<api.DocumentBlockOpenAPISchemas>('openapi-schemas');
 
 /**
  * Code blocks.
