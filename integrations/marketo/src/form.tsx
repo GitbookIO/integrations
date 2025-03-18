@@ -47,7 +47,7 @@ export const marketoFormBlock = createComponent<
             <block
                 controls={[
                     {
-                        label: 'Configure',
+                        label: 'Select Marketo form',
                         icon: ContentKitIcon.Settings,
                         onPress: {
                             action: '@ui.modal.open',
@@ -69,8 +69,7 @@ export const marketoFormBlock = createComponent<
                 ) : !formId ? (
                     <hint>
                         <text style="bold">
-                            Select "Configure" from the block control menu to choose the form you'd
-                            like to embed.
+                            Marketo Form: use the block menu to choose the form you'd like to embed.
                         </text>
                     </hint>
                 ) : (
