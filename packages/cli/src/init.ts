@@ -20,7 +20,7 @@ function validateIntegrationName(name: string) {
     const validSlug = validateURLSlug(name);
     if (!validName || !validSlug) {
         throw new Error(
-            `Invalid integration name: ${name}, it must begin with an alphanumeric character and only contain alphanumeric characters and hyphens.`
+            `Invalid integration name: ${name}, it must begin with an alphanumeric character and only contain alphanumeric characters and hyphens.`,
         );
     }
 }
@@ -43,7 +43,7 @@ export async function promptNewIntegration(dir?: string): Promise<void> {
                 } catch (error) {
                     return error.message;
                 }
-            }
+            },
         },
         {
             type: 'text',
