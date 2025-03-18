@@ -46,14 +46,14 @@ const handleFetchEvent: FetchEventCallback<MarketoRuntimeContext> = async (reque
     /**
      * Handle requests to serve the webframe content.
      */
-    // const cacheControl = getWebframeCacheControl();
+    const cacheControl = getWebframeCacheControl();
     router.get(
         '/webframe',
         async (request) =>
             new Response(webFrameHTML, {
                 headers: {
                     'Content-Type': 'text/html',
-                    'Cache-Control': 'no-cache, no-store',
+                    'Cache-Control': cacheControl,
                 },
             }),
     );
