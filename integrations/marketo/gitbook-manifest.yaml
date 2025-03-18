@@ -11,7 +11,7 @@ visibility: private
 organization: gitbook
 blocks:
     - id: form
-      title: Marketo Forms
+      title: Marketo Form
       description: Embed a Marketo form in your content.
 script: ./src/index.ts
 scopes:
@@ -44,7 +44,7 @@ configurations:
             account:
                 type: string
                 title: Munchkin Account ID
-                description: Your account ID, found under Admin > Integration > Munchkin menu.
+                description: Your account ID, found in the Marketo app under Admin > Integration > Munchkin menu.
         required:
             - account
 target: all
