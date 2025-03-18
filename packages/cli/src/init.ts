@@ -40,8 +40,8 @@ export async function promptNewIntegration(dir?: string): Promise<void> {
                 try {
                     validateIntegrationName(value);
                     return true;
-                } catch (error) {
-                    return error.message;
+                } catch (error: unknown) {
+                    return (error as Error).message;
                 }
             },
         },
