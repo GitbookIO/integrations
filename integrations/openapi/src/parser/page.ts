@@ -1,7 +1,9 @@
 import type { Document, DocumentBlocksTopLevels, JSONDocument } from '@gitbook/api';
 import * as doc from '@gitbook/document';
 import { type OpenAPIV3 } from '@gitbook/openapi-parser';
-import { extractPageOperations, OpenAPIPage, OpenAPISpecContent } from './spec';
+import type { OpenAPIPage } from './pages';
+import type { OpenAPISpecContent } from './spec';
+import { assertNever } from '../utils';
 
 /**
  * Generate a document for a group in the OpenAPI specification.
@@ -12,18 +14,25 @@ export function getOpenAPIPageDocument(args: {
 }): Document {
     const { page, specContent } = args;
 
-    const operations = extractPageOperations(page);
-
-    return doc.document([
-        ...(page.tag ? getTagDescriptionNodes(page.tag) : []),
-        ...operations.map((operation) => {
-            return doc.openapiOperation({
-                ref: { kind: 'openapi', spec: specContent.slug },
-                method: operation.method,
-                path: operation.path,
-            });
-        }),
-    ]);
+    switch (page.type) {
+        case 'operations': {
+            return doc.document([
+                ...(page.tag ? getTagDescriptionNodes(page.tag) : []),
+                ...page.operations.map((operation) => {
+                    return doc.openapiOperation({
+                        ref: { kind: 'openapi', spec: specContent.slug },
+                        method: operation.method,
+                        path: operation.path,
+                    });
+                }),
+            ]);
+        }
+        case 'info': {
+            return doc.document(page.content.nodes);
+        }
+        default:
+            assertNever(page);
+    }
 }
 
 function getTagDescriptionNodes(tag: OpenAPIV3.TagObject): DocumentBlocksTopLevels[] {

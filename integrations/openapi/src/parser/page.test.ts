@@ -1,21 +1,23 @@
 import { describe, expect, it } from 'bun:test';
-import { dereferenceOpenAPISpec, getOpenAPITree } from './spec';
 import { getOpenAPIPageDocument } from './page';
 import assert from 'assert';
 import * as doc from '@gitbook/document';
 import { JSONDocument } from '@gitbook/api';
+import { getDereferencedSchema } from './dereference';
+import { getRootPages } from './pages';
+import type { OpenAPIOperationsPage } from './pages/operations';
 
 const rawSpec = await Bun.file(new URL('../__fixtures__/petstore3.yml', import.meta.url)).text();
 
 describe('#getOpenAPIPageDocument', () => {
     it('generates a document from a group', async () => {
-        const schema = await dereferenceOpenAPISpec(rawSpec);
+        const schema = await getDereferencedSchema(rawSpec);
         const specContent = {
             schema,
             url: 'http://example.com',
             slug: 'petstore',
         };
-        const pages = getOpenAPITree(schema);
+        const pages = getRootPages(schema);
         const document = getOpenAPIPageDocument({ page: pages[0], specContent });
         assert('document' in document);
         // First node is the tag description
@@ -55,14 +57,14 @@ describe('#getOpenAPIPageDocument', () => {
     });
 
     it('supports x-gitbook-description-document', async () => {
-        const schema = await dereferenceOpenAPISpec(rawSpec);
+        const schema = await getDereferencedSchema(rawSpec);
         const specContent = {
             schema,
             url: 'http://example.com',
             slug: 'petstore',
         };
-        const pages = getOpenAPITree(schema);
-        pages[0].tag!['x-gitbook-description-document'] = (
+        const pages = getRootPages(schema);
+        (pages[0] as OpenAPIOperationsPage).tag!['x-gitbook-description-document'] = (
             doc.document([doc.paragraph(doc.text('Hello')), doc.paragraph(doc.text('World'))]) as {
                 document: JSONDocument;
             }
