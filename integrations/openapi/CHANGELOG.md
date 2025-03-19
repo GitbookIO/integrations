@@ -1,5 +1,17 @@
 # @gitbook/integration-openapi
 
+## 0.2.0
+
+### Minor Changes
+
+- f6cd69e: Support rich info description
+
+### Patch Changes
+
+- 70d2876: Improve spec not found error message
+- Updated dependencies [b1b1931]
+    - @gitbook/api@0.101.0
+
 ## 0.1.2
 
 ### Patch Changes
