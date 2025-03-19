@@ -7,7 +7,7 @@ import {
 } from '@gitbook/runtime';
 import { assertNever } from '../utils';
 import type { OpenAPIRuntimeContext } from '../types';
-import { getLatestOpenAPISpecContent } from '../parser/spec';
+import { getLatestOpenAPISpecContent, type OpenAPISpecContent } from '../parser/spec';
 import { getRevisionFromSpec } from '../parser/revision';
 import { getOpenAPIPageDocument } from '../parser/page';
 import { getModelsDocument } from '../parser/models';
@@ -96,7 +96,7 @@ export const generateContentSource = createContentSource<
 async function getOpenAPISpecFromDependencies(
     dependencies: ContentSourceDependenciesValueFromRef<OpenAPIContentSource['dependencies']>,
     ctx: OpenAPIRuntimeContext,
-) {
+): Promise<OpenAPISpecContent> {
     const { api } = ctx;
     const { installation } = ctx.environment;
     const specValue = dependencies.spec.value;
@@ -106,7 +106,7 @@ async function getOpenAPISpecFromDependencies(
     }
 
     if (specValue?.object !== 'openapi-spec') {
-        throw new ExposableError('Invalid spec');
+        throw new ExposableError('OpenAPI specification not found', 404);
     }
 
     return getLatestOpenAPISpecContent({
