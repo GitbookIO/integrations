@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
-import { dereferenceOpenAPISpec } from './spec';
 import { getRevisionFromSpec } from './revision';
 import { InputPageDocument } from '@gitbook/api';
+import { getDereferencedSchema } from './dereference';
 
 const petstore = await Bun.file(new URL('../__fixtures__/petstore3.yml', import.meta.url)).text();
 const petstoreWithNestedTags = await Bun.file(
@@ -10,7 +10,7 @@ const petstoreWithNestedTags = await Bun.file(
 
 describe('#getRevisionFromSpec', () => {
     it('generates a revision from the spec', async () => {
-        const schema = await dereferenceOpenAPISpec(petstore);
+        const schema = await getDereferencedSchema(petstore);
         const revision = await getRevisionFromSpec({
             specContent: {
                 schema,
@@ -33,7 +33,7 @@ describe('#getRevisionFromSpec', () => {
                 integration: 'openapi',
                 props: {
                     doc: 'operations',
-                    page: 'pet',
+                    page: 'tag-pet',
                 },
                 source: 'generate',
             },
@@ -46,7 +46,7 @@ describe('#getRevisionFromSpec', () => {
     });
 
     it('generates nested pages', async () => {
-        const schema = await dereferenceOpenAPISpec(petstoreWithNestedTags);
+        const schema = await getDereferencedSchema(petstoreWithNestedTags);
         const revision = await getRevisionFromSpec({
             specContent: {
                 schema,
@@ -74,7 +74,7 @@ describe('#getRevisionFromSpec', () => {
                         integration: 'openapi',
                         props: {
                             doc: 'operations',
-                            page: 'pet',
+                            page: 'tag-pet',
                         },
                         source: 'generate',
                     },
@@ -94,7 +94,7 @@ describe('#getRevisionFromSpec', () => {
                                 integration: 'openapi',
                                 props: {
                                     doc: 'operations',
-                                    page: 'store',
+                                    page: 'tag-store',
                                 },
                                 source: 'generate',
                             },
@@ -118,7 +118,7 @@ describe('#getRevisionFromSpec', () => {
     });
 
     it('parses icon', async () => {
-        const schema = await dereferenceOpenAPISpec(petstore);
+        const schema = await getDereferencedSchema(petstore);
         // Add star icon to the first tag
         schema.tags![0]['x-page-icon'] = 'star';
 
@@ -135,7 +135,7 @@ describe('#getRevisionFromSpec', () => {
     });
 
     it('parses description', async () => {
-        const schema = await dereferenceOpenAPISpec(petstore);
+        const schema = await getDereferencedSchema(petstore);
         // Add star icon to the first tag
         schema.tags![0]['x-page-description'] = 'My description';
 
