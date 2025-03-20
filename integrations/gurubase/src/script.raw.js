@@ -17,9 +17,7 @@
     if (config.margins) {
         s.setAttribute('data-margins', config.margins);
     }
-    if (config.lightMode !== undefined) {
-        s.setAttribute('data-light-mode', config.lightMode.toString());
-    }
+    s.setAttribute('data-light-mode', "auto");
     if (config.bgColor) {
         s.setAttribute('data-bg-color', config.bgColor);
     }
