@@ -9,21 +9,7 @@ import { IntegrationScope, IntegrationVisibility } from '@gitbook/api';
 
 import packageJSON from '../package.json';
 import { fileExists } from './files';
-import { DEFAULT_MANIFEST_FILE, writeIntegrationManifest } from './manifest';
-
-function validateURLSlug(slug: string): boolean {
-    return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
-}
-
-function validateIntegrationName(name: string) {
-    const validName = /^[a-z0-9-]+$/g.test(name) as boolean;
-    const validSlug = validateURLSlug(name);
-    if (!validName || !validSlug) {
-        throw new Error(
-            `Invalid integration name: ${name}, it must begin with an alphanumeric character and only contain alphanumeric characters and hyphens.`,
-        );
-    }
-}
+import { DEFAULT_MANIFEST_FILE, writeIntegrationManifest, IntegrationNameSchema } from './manifest';
 
 /**
  * Interactive prompt to create a new integration.
@@ -36,12 +22,12 @@ export async function promptNewIntegration(dir?: string): Promise<void> {
             name: 'name',
             message: 'Name of the integration:',
             initial: path.basename(dir || process.cwd()),
-            validate: (value) => {
-                try {
-                    validateIntegrationName(value);
+            validate: (value: string) => {
+                const result = IntegrationNameSchema.safeParse(value);
+                if (result.success) {
                     return true;
-                } catch (error: unknown) {
-                    return (error as Error).message;
+                } else {
+                    return `Invalid integration name: ${value}, it must begin with an alphanumeric character and only contain alphanumeric characters and hyphens.`;
                 }
             },
         },
