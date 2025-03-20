@@ -71,10 +71,12 @@ const IntegrationManifestBlock = z.object({
         .optional(),
 });
 
-export const IntegrationNameSchema = z.string().regex(
-    /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-    "Name must begin with an alphanumeric character and only contain alphanumeric characters and hyphens."
-);
+export const IntegrationNameSchema = z
+    .string()
+    .regex(
+        /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+        'Name must begin with an alphanumeric character and only contain alphanumeric characters and hyphens.',
+    );
 
 const IntegrationManifestSchema = z.object({
     name: IntegrationNameSchema,
