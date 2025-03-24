@@ -81,10 +81,6 @@ configurations:
                 type: string
                 title: Right Margin (Optional)
                 description: 'Right margin of the widget. Examples: 20px, 1rem. (default: 20px)'
-            lightMode:
-                type: boolean
-                title: Light Mode
-                description: Whether to use light mode
             bgColor:
                 type: string
                 title: Main Color (Optional)

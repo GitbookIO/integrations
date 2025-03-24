@@ -43,7 +43,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
         widgetId,
         text: config.text,
         margins: JSON.stringify({
-            bottom: config.bottomMargin || '20px',
+            bottom: config.bottomMargin || '60px',
             right: config.rightMargin || '20px',
         }),
         lightMode: config.lightMode,
