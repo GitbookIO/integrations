@@ -15,7 +15,6 @@ type GurubaseRuntimeContext = RuntimeContext<
             text?: string;
             bottomMargin?: string;
             rightMargin?: string;
-            lightMode?: boolean;
             bgColor?: string;
             iconUrl?: string;
             name?: string;
@@ -46,7 +45,6 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
             bottom: config.bottomMargin || '60px',
             right: config.rightMargin || '20px',
         }),
-        lightMode: config.lightMode,
         bgColor: config.bgColor,
         iconUrl: config.iconUrl,
         name: config.name,
