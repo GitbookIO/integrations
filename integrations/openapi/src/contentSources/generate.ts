@@ -7,10 +7,12 @@ import {
 } from '@gitbook/runtime';
 import { assertNever } from '../utils';
 import type { OpenAPIRuntimeContext } from '../types';
-import { getLatestOpenAPISpecContent, getAllOpenAPIPages } from '../parser/spec';
+import { getLatestOpenAPISpecContent, type OpenAPISpecContent } from '../parser/spec';
 import { getRevisionFromSpec } from '../parser/revision';
 import { getOpenAPIPageDocument } from '../parser/page';
 import { getModelsDocument } from '../parser/models';
+import * as infoPages from '../parser/pages/info';
+import * as operationsPages from '../parser/pages/operations';
 
 export type OpenAPIContentSource = ContentSourceInput<
     {
@@ -28,7 +30,7 @@ export type OpenAPIContentSource = ContentSourceInput<
 >;
 
 export type GenerateOperationsPageProps = {
-    doc: 'operations';
+    doc: 'operations' | 'info';
     page: string;
 };
 
@@ -54,11 +56,34 @@ export const generateContentSource = createContentSource<
     },
 
     getPageDocument: async ({ props, dependencies }, ctx) => {
-        switch (props.doc) {
+        const { doc } = props;
+        const specContent = await getOpenAPISpecFromDependencies(dependencies, ctx);
+
+        switch (doc) {
             case 'operations':
-                return generateOperationsDocument({ props, dependencies }, ctx);
-            case 'models':
-                return generateModelsDocument({ props, dependencies }, ctx);
+            case 'info': {
+                const page = (() => {
+                    switch (props.doc) {
+                        case 'info': {
+                            return infoPages.getPageById(specContent.schema, props.page);
+                        }
+                        case 'operations': {
+                            return operationsPages.getPageById(specContent.schema, props.page);
+                        }
+                        default:
+                            assertNever(props);
+                    }
+                })();
+
+                if (!page) {
+                    throw new ExposableError(`OpenAPI page (id: "${props.page}") not found`);
+                }
+
+                return getOpenAPIPageDocument({ page, specContent });
+            }
+            case 'models': {
+                return getModelsDocument({ specContent });
+            }
             default:
                 assertNever(props);
         }
@@ -66,44 +91,12 @@ export const generateContentSource = createContentSource<
 });
 
 /**
- * Generate a document for a group in the OpenAPI specification.
- */
-async function generateOperationsDocument(
-    input: ContentSourceInput<GenerateOperationsPageProps, OpenAPIContentSource['dependencies']>,
-    ctx: OpenAPIRuntimeContext,
-) {
-    const { props, dependencies } = input;
-    const spec = await getOpenAPISpecFromDependencies(dependencies, ctx);
-    const pages = getAllOpenAPIPages(spec.schema);
-
-    const page = pages.find((page) => page.id === props.page);
-
-    if (!page) {
-        throw new Error(`Group ${props.page} not found`);
-    }
-
-    return getOpenAPIPageDocument({ page, specContent: spec });
-}
-
-/**
- * Generate a document for the models page in the OpenAPI specification.
- */
-async function generateModelsDocument(
-    input: ContentSourceInput<GenerateModelsPageProps, OpenAPIContentSource['dependencies']>,
-    ctx: OpenAPIRuntimeContext,
-) {
-    const { dependencies } = input;
-    const specContent = await getOpenAPISpecFromDependencies(dependencies, ctx);
-    return getModelsDocument({ specContent });
-}
-
-/**
  * Get the OpenAPI specification from the OpenAPI specification dependency.
  */
 async function getOpenAPISpecFromDependencies(
     dependencies: ContentSourceDependenciesValueFromRef<OpenAPIContentSource['dependencies']>,
     ctx: OpenAPIRuntimeContext,
-) {
+): Promise<OpenAPISpecContent> {
     const { api } = ctx;
     const { installation } = ctx.environment;
     const specValue = dependencies.spec.value;
@@ -113,7 +106,7 @@ async function getOpenAPISpecFromDependencies(
     }
 
     if (specValue?.object !== 'openapi-spec') {
-        throw new ExposableError('Invalid spec');
+        throw new ExposableError('OpenAPI specification not found', 404);
     }
 
     return getLatestOpenAPISpecContent({

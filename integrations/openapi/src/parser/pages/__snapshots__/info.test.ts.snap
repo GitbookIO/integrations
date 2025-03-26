@@ -1,0 +1,95 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Info #getRootPages divides the OpenAPI specification schema into a set of tree 1`] = `
+[
+  {
+    "content": {
+      "data": {},
+      "nodes": [
+        {
+          "data": {},
+          "isVoid": false,
+          "nodes": [
+            {
+              "leaves": [
+                {
+                  "marks": [],
+                  "object": "leaf",
+                  "text": "This is great!",
+                },
+              ],
+              "object": "text",
+            },
+          ],
+          "object": "block",
+          "type": "paragraph",
+        },
+      ],
+      "object": "document",
+    },
+    "id": "info-0",
+    "pages": [
+      {
+        "content": {
+          "data": {},
+          "nodes": [
+            {
+              "data": {},
+              "isVoid": false,
+              "nodes": [
+                {
+                  "leaves": [
+                    {
+                      "marks": [],
+                      "object": "leaf",
+                      "text": "This is the petstore!",
+                    },
+                  ],
+                  "object": "text",
+                },
+              ],
+              "object": "block",
+              "type": "paragraph",
+            },
+            {
+              "data": {
+                "style": "info",
+              },
+              "isVoid": false,
+              "nodes": [
+                {
+                  "data": {},
+                  "isVoid": false,
+                  "nodes": [
+                    {
+                      "leaves": [
+                        {
+                          "marks": [],
+                          "object": "leaf",
+                          "text": "We have a beautiful hint here",
+                        },
+                      ],
+                      "object": "text",
+                    },
+                  ],
+                  "object": "block",
+                  "type": "paragraph",
+                },
+              ],
+              "object": "block",
+              "type": "hint",
+            },
+          ],
+          "object": "document",
+        },
+        "id": "info-1",
+        "pages": [],
+        "title": "About",
+        "type": "info",
+      },
+    ],
+    "title": "Getting started now",
+    "type": "info",
+  },
+]
+`;
