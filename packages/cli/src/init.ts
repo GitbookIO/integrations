@@ -153,6 +153,7 @@ export async function extendPackageJson(dirPath: string, projectName: string): P
         devDependencies: {
             [packageJSON.name]: `^${packageJSON.version}`,
             '@gitbook/tsconfig': '*',
+            '@cloudflare/workers-types': '*',
         },
     };
 
@@ -202,7 +203,9 @@ export function generateScript(project: { name: string }): string {
         const { api } = context;
         const user = api.user.getAuthenticatedUser();
 
-        return new Response(JSON.stringify(user));
+          return new Response(JSON.stringify(user), {
+             headers: { "Content-Type": "application/json" },
+          });
       };
 
       const exampleBlock = createComponent<
@@ -245,8 +248,13 @@ export function generateScript(project: { name: string }): string {
 
 export function generateTSConfig(): string {
     return detent(`
-        {
-            "extends": "@gitbook/tsconfig/integration.json"
-        }
+            {
+                "extends": "@gitbook/tsconfig/integration.json",
+                "compilerOptions": {
+                    "lib": ["ES2015", "DOM"],
+                    "moduleResolution": "bundler",
+                    "module": "ES2015"
+                }
+            }
     `).trim();
 }
