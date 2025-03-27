@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.104.0
+
+### Minor Changes
+
+- f505435: Bump API to use the latest spec
+
 ## 0.103.0
 
 ### Minor Changes
