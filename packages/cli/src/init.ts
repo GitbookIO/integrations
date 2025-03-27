@@ -251,9 +251,10 @@ export function generateTSConfig(): string {
         {
             "extends": "@gitbook/tsconfig/integration.json",
             "compilerOptions": {
-                "lib": ["ES2015", "DOM"],
+                "lib": ["ESNext", "DOM"],
                 "moduleResolution": "bundler",
-                "module": "ES2015"
+                "module": "ESNext",
+                "strict": true
             }
         }
     `).trim();
