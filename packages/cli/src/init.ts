@@ -203,9 +203,7 @@ export function generateScript(project: { name: string }): string {
         const { api } = context;
         const user = api.user.getAuthenticatedUser();
 
-        return new Response(JSON.stringify(user), {
-            headers: { "Content-Type": "application/json" },
-        });
+        return new Response(JSON.stringify(user));
       };
 
       const exampleBlock = createComponent<
