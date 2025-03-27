@@ -69,10 +69,10 @@ configurations:
                 type: string
                 title: Gurubase Widget ID
                 description: "Available in your Guru's settings page under Integrations > Web Widget"
-            overlapContent:
+            shrinkContent:
                 type: boolean
-                title: Overlap Content
-                description: 'If true, the widget will overlap the website content. If false, it will shrink content width'
+                title: Shrink Content
+                description: 'Shrink content to fit the sidebar. Otherwise, the widget will overlap the website content.'
             text:
                 type: string
                 title: Text (Optional)
