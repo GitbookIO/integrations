@@ -17,7 +17,7 @@
     if (config.margins) {
         s.setAttribute('data-margins', config.margins);
     }
-    s.setAttribute('data-light-mode', "auto");
+    s.setAttribute('data-light-mode', 'auto');
     if (config.bgColor) {
         s.setAttribute('data-bg-color', config.bgColor);
     }
@@ -29,6 +29,9 @@
     }
     if (config.baseUrl) {
         s.setAttribute('data-baseUrl', config.baseUrl);
+    }
+    if (config.overlapContent) {
+        s.setAttribute('data-overlap-content', config.overlapContent);
     }
 
     s.id = 'guru-widget-id';
