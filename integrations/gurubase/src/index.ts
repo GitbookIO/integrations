@@ -19,7 +19,7 @@ type GurubaseRuntimeContext = RuntimeContext<
             iconUrl?: string;
             name?: string;
             baseUrl?: string;
-            overlapContent?: boolean;
+            shrinkContent?: boolean;
         }
     >
 >;
@@ -50,7 +50,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
         iconUrl: config.iconUrl,
         name: config.name,
         baseUrl: config.baseUrl,
-        overlapContent: config.overlapContent,
+        overlapContent: !config.shrinkContent,
     };
 
     // Properly escape the config JSON for safe insertion into JavaScript
