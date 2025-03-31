@@ -1,0 +1,42 @@
+name: ahrefs
+title: Ahrefs
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/ahrefs-preview.png
+description: Receive GitBook traffic insights directly in your Ahrefs dashboard.
+externalLinks:
+    - label: Documentation
+      url: https://www.gitbook.com/integrations/ahrefs
+visibility: public
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+organization: gitbook
+contentSecurityPolicy:
+    script-src: https://analytics.ahrefs.com
+    connect-src: analytics.ahrefs.com
+summary: |
+    # Overview
+    [Ahrefs Web Analytics](https://ahrefs.com/web-analytics) is a privacy-friendly analytics platform that provides you with a simple and free solution to track and report your published spaces' traffic.  No cookies by default.  Just the metrics you need.
+
+    # How it works
+    The Ahrefs integration allows you to track traffic in your published spaces from your Ahrefs dashboard.
+
+    Automatic tracking in your documentation: Each of your connected GitBook spaces will fetch the Ahrefs Web Analytics tracking script and inject it in your public content.
+
+    # Configure
+    Enable the Ahrefs integration by navigating to organization settings.  The integration can be enabled on single or multiple spaces available publicly.
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            tracking_id:
+                type: string
+                title: Tracking ID
+                description: Look for this in your Ahrefs Web Analytics account.
+        required:
+            - tracking_id
+target: site
