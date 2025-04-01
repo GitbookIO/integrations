@@ -317,7 +317,7 @@
     },
     "integrations/marketo": {
       "name": "@gitbook/integration-marketo",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -367,7 +367,7 @@
     },
     "integrations/openapi": {
       "name": "@gitbook/integration-openapi",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/document": "*",
@@ -562,7 +562,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.100.0",
+      "version": "0.105.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
