@@ -2,8 +2,8 @@ import {
     ContentComputeDocumentEvent,
     ContentComputeRevisionEventResponse,
     ContentComputeRevisionEvent,
-    ComputedContentDependencyValue,
-    ComputedContentDependencyRef,
+    ComputedContentDependencyResolved,
+    ComputedContentDependency,
     Document,
 } from '@gitbook/api';
 import { PlainObject } from './common';
@@ -21,14 +21,12 @@ export interface ContentSourceDefinition<Context extends RuntimeContext = Runtim
 export type ContentSourceDependenciesValueFromRef<
     Dependencies extends Record<
         string,
-        {
-            ref: ComputedContentDependencyRef;
-        }
+        ComputedContentDependency
     >,
 > = {
     // TODO: extend to support other types once ComputedContentDependencyRef becomes a union
     [K in keyof Dependencies]: Extract<
-        ComputedContentDependencyValue,
+    ComputedContentDependencyResolved,
         { ref: Dependencies[K]['ref'] }
     >;
 };
@@ -37,9 +35,7 @@ export type ContentSourceInput<
     Props extends PlainObject = {},
     Dependencies extends Record<
         string,
-        {
-            ref: ComputedContentDependencyRef;
-        }
+        ComputedContentDependency
     > = {},
 > = {
     props: Props;
@@ -54,9 +50,7 @@ export function createContentSource<
     GetPageDocumentProps extends PlainObject = {},
     Dependencies extends Record<
         string,
-        {
-            ref: ComputedContentDependencyRef;
-        }
+        ComputedContentDependency
     > = {},
     Context extends RuntimeContext = RuntimeContext,
 >(source: {
