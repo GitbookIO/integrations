@@ -118,7 +118,6 @@ function getInputFromPage(
                 >,
                 computed: page.documentId
                     ? {
-                          // @ts-expect-error TODO: fix it
                           integration: ctx.environment.integration.name,
                           source: 'translate',
                           props: {
