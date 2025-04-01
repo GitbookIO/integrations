@@ -33,6 +33,8 @@ const IntegrationManifestSchemaConfiguration = z.object({
             JSONSchemaBaseSchema.extend({
                 type: z.literal('string'),
                 default: z.string().optional(),
+                completion_url: z.string().optional(),
+                enum: z.array(z.string()).optional(),
             }),
             JSONSchemaBaseSchema.extend({
                 type: z.literal('number'),
