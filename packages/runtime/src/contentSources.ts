@@ -9,9 +9,6 @@ import {
 import { PlainObject } from './common';
 import { RuntimeCallback, RuntimeContext } from './context';
 
-type ComputedContentDependencyValue = any;
-type ComputedContentDependencyRef = any;
-
 export interface ContentSourceDefinition<Context extends RuntimeContext = RuntimeContext> {
     sourceId: string;
     compute: RuntimeCallback<
