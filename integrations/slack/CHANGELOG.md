@@ -1,5 +1,11 @@
 # @gitbook/integration-slack
 
+## 2.0.2
+
+### Patch Changes
+
+- 24eecd3: Fix an issue where Slack channels were not being correctly shown.
+
 ## 2.0.1
 
 ### Patch Changes
