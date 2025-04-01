@@ -41,8 +41,7 @@
         "GITHUBCOPILOT_APP_ID",
         "GITHUBCOPILOT_APP_URL",
         "GITHUBCOPILOT_CLIENT_ID",
-        "GITHUBCOPILOT_CLIENT_SECRET",
-        "AITRANSLATE_OPENAI_API_KEY"
+        "GITHUBCOPILOT_CLIENT_SECRET"
     ],
     "tasks": {
         "build": {

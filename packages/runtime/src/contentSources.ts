@@ -2,13 +2,12 @@ import {
     ContentComputeDocumentEvent,
     ContentComputeRevisionEventResponse,
     ContentComputeRevisionEvent,
+    ComputedContentDependencyResolved,
+    ComputedContentDependency,
     Document,
 } from '@gitbook/api';
 import { PlainObject } from './common';
 import { RuntimeCallback, RuntimeContext } from './context';
-
-type ComputedContentDependencyValue = any;
-type ComputedContentDependencyRef = any;
 
 export interface ContentSourceDefinition<Context extends RuntimeContext = RuntimeContext> {
     sourceId: string;
@@ -20,28 +19,17 @@ export interface ContentSourceDefinition<Context extends RuntimeContext = Runtim
 }
 
 export type ContentSourceDependenciesValueFromRef<
-    Dependencies extends Record<
-        string,
-        {
-            ref: ComputedContentDependencyRef;
-        }
-    >,
+    Dependencies extends Record<string, ComputedContentDependency>,
 > = {
-    // TODO: extend to support other types once ComputedContentDependencyRef becomes a union
     [K in keyof Dependencies]: Extract<
-        ComputedContentDependencyValue,
+        ComputedContentDependencyResolved,
         { ref: Dependencies[K]['ref'] }
     >;
 };
 
 export type ContentSourceInput<
     Props extends PlainObject = {},
-    Dependencies extends Record<
-        string,
-        {
-            ref: ComputedContentDependencyRef;
-        }
-    > = {},
+    Dependencies extends Record<string, ComputedContentDependency> = {},
 > = {
     props: Props;
     dependencies: ContentSourceDependenciesValueFromRef<Dependencies>;
@@ -53,12 +41,7 @@ export type ContentSourceInput<
 export function createContentSource<
     GetRevisionProps extends PlainObject = {},
     GetPageDocumentProps extends PlainObject = {},
-    Dependencies extends Record<
-        string,
-        {
-            ref: ComputedContentDependencyRef;
-        }
-    > = {},
+    Dependencies extends Record<string, ComputedContentDependency> = {},
     Context extends RuntimeContext = RuntimeContext,
 >(source: {
     /**
