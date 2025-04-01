@@ -7,7 +7,6 @@ import type { OpenAPIContentSource } from '../contentSources';
  * ContentKit component to configure the content source.
  */
 export const configureComponent = createComponent<
-    // @ts-expect-error incompatible with PlainObject
     ConfigureContentSourceProps<OpenAPIContentSource>,
     {
         spec: string | null;
@@ -17,6 +16,8 @@ export const configureComponent = createComponent<
     OpenAPIRuntimeContext
 >({
     componentId: 'configureSource',
+
+    // @ts-ignore
     initialState: (props) => {
         if (props.contentSource) {
             return {

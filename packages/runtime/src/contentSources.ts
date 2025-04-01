@@ -3,14 +3,12 @@ import {
     ContentComputeRevisionEventResponse,
     ContentComputeRevisionEvent,
     Document,
-    ComputedContentDependencyResolved,
-    ComputedContentDependency,
 } from '@gitbook/api';
 import { PlainObject } from './common';
 import { RuntimeCallback, RuntimeContext } from './context';
 
-type ComputedContentDependencyValue = ComputedContentDependencyResolved['value'];
-type ComputedContentDependencyRef = ComputedContentDependency['ref'];
+type ComputedContentDependencyValue = any;
+type ComputedContentDependencyRef = any;
 
 export interface ContentSourceDefinition<Context extends RuntimeContext = RuntimeContext> {
     sourceId: string;
