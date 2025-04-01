@@ -21,7 +21,6 @@ export interface ContentSourceDefinition<Context extends RuntimeContext = Runtim
 export type ContentSourceDependenciesValueFromRef<
     Dependencies extends Record<string, ComputedContentDependency>,
 > = {
-    // TODO: extend to support other types once ComputedContentDependencyRef becomes a union
     [K in keyof Dependencies]: Extract<
         ComputedContentDependencyResolved,
         { ref: Dependencies[K]['ref'] }
