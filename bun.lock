@@ -532,7 +532,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.105.0",
+      "version": "0.106.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -547,9 +547,9 @@
     },
     "packages/cli": {
       "name": "@gitbook/cli",
-      "version": "0.21.0",
+      "version": "0.21.1",
       "bin": {
-        "gitbook": "./cli.js",
+        "gitbook": "./cli.js"
       },
       "dependencies": {
         "@gitbook/api": "*",
@@ -603,9 +603,6 @@
         "@cloudflare/workers-types": "^4.20240925.0",
       },
     },
-  },
-  "overrides": {
-    "@gitbook/openapi-parser": "^2.1.0",
   },
   "packages": {
     "@ampproject/remapping": ["@ampproject/remapping@2.3.0", "", { "dependencies": { "@jridgewell/gen-mapping": "^0.3.5", "@jridgewell/trace-mapping": "^0.3.24" } }, "sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw=="],
