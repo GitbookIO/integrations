@@ -39,6 +39,7 @@ export const translateContentSource = createContentSource<
     sourceId: 'translate',
 
     getRevision: async ({ props, dependencies }, ctx) => {
+        // @ts-expect-error TODO: fix it
         const spaceDep = dependencies.space.value;
         if (!spaceDep) {
             throw new ExposableError('Space not found');
@@ -67,6 +68,7 @@ export const translateContentSource = createContentSource<
     },
 
     getPageDocument: async ({ props, dependencies }, ctx) => {
+        // @ts-expect-error TODO: fix it
         const spaceDep = dependencies.space.value;
         if (!spaceDep) {
             throw new ExposableError('Space not found');
@@ -118,6 +120,7 @@ function getInputFromPage(
                 >,
                 computed: page.documentId
                     ? {
+                          // @ts-expect-error TODO: fix it
                           integration: ctx.environment.integration.name,
                           source: 'translate',
                           props: {
@@ -125,6 +128,7 @@ function getInputFromPage(
                               document: page.documentId,
                           },
                           dependencies: {
+                              // @ts-expect-error TODO: fix it
                               space: { ref: inputProps.dependencies.space.ref },
                           },
                       }

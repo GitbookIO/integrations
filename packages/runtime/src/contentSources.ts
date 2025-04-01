@@ -2,11 +2,15 @@ import {
     ContentComputeDocumentEvent,
     ContentComputeRevisionEventResponse,
     ContentComputeRevisionEvent,
-    ComputedContentDependency,
     Document,
+    ComputedContentDependencyResolved,
+    ComputedContentDependency,
 } from '@gitbook/api';
 import { PlainObject } from './common';
 import { RuntimeCallback, RuntimeContext } from './context';
+
+type ComputedContentDependencyValue = ComputedContentDependencyResolved['value'];
+type ComputedContentDependencyRef = ComputedContentDependency['ref'];
 
 export interface ContentSourceDefinition<Context extends RuntimeContext = RuntimeContext> {
     sourceId: string;
@@ -18,18 +22,28 @@ export interface ContentSourceDefinition<Context extends RuntimeContext = Runtim
 }
 
 export type ContentSourceDependenciesValueFromRef<
-    Dependencies extends Record<string, ComputedContentDependency>,
+    Dependencies extends Record<
+        string,
+        {
+            ref: ComputedContentDependencyRef;
+        }
+    >,
 > = {
     // TODO: extend to support other types once ComputedContentDependencyRef becomes a union
     [K in keyof Dependencies]: Extract<
-        ComputedContentDependency['ref'],
+        ComputedContentDependencyValue,
         { ref: Dependencies[K]['ref'] }
     >;
 };
 
 export type ContentSourceInput<
     Props extends PlainObject = {},
-    Dependencies extends Record<string, ComputedContentDependency> = {},
+    Dependencies extends Record<
+        string,
+        {
+            ref: ComputedContentDependencyRef;
+        }
+    > = {},
 > = {
     props: Props;
     dependencies: ContentSourceDependenciesValueFromRef<Dependencies>;
@@ -41,7 +55,12 @@ export type ContentSourceInput<
 export function createContentSource<
     GetRevisionProps extends PlainObject = {},
     GetPageDocumentProps extends PlainObject = {},
-    Dependencies extends Record<string, ComputedContentDependency> = {},
+    Dependencies extends Record<
+        string,
+        {
+            ref: ComputedContentDependencyRef;
+        }
+    > = {},
     Context extends RuntimeContext = RuntimeContext,
 >(source: {
     /**
