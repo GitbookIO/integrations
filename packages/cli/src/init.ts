@@ -161,6 +161,7 @@ export async function extendPackageJson(dirPath: string, projectName: string): P
         devDependencies: {
             [packageJSON.name]: `^${packageJSON.version}`,
             '@gitbook/tsconfig': '*',
+            '@cloudflare/workers-types': '*',
         },
     };
 
@@ -254,7 +255,13 @@ export function generateScript(project: { name: string }): string {
 export function generateTSConfig(): string {
     return detent(`
         {
-            "extends": "@gitbook/tsconfig/integration.json"
+            "extends": "@gitbook/tsconfig/integration.json",
+            "compilerOptions": {
+                "lib": ["ESNext", "DOM"],
+                "moduleResolution": "bundler",
+                "module": "ESNext",
+                "strict": true
+            }
         }
     `).trim();
 }
