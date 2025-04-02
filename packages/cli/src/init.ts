@@ -9,7 +9,7 @@ import { IntegrationScope, IntegrationVisibility } from '@gitbook/api';
 
 import packageJSON from '../package.json';
 import { fileExists } from './files';
-import { DEFAULT_MANIFEST_FILE, writeIntegrationManifest } from './manifest';
+import { DEFAULT_MANIFEST_FILE, writeIntegrationManifest, IntegrationNameSchema } from './manifest';
 
 /**
  * Interactive prompt to create a new integration.
@@ -22,6 +22,14 @@ export async function promptNewIntegration(dir?: string): Promise<void> {
             name: 'name',
             message: 'Name of the integration:',
             initial: path.basename(dir || process.cwd()),
+            validate: (value: string) => {
+                const result = IntegrationNameSchema.safeParse(value);
+                if (result.success) {
+                    return true;
+                } else {
+                    return `Invalid integration name: ${value}, it must begin with an alphanumeric character and only contain alphanumeric characters and hyphens.`;
+                }
+            },
         },
         {
             type: 'text',
