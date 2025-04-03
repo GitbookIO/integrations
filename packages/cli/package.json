@@ -1,7 +1,7 @@
 {
     "name": "@gitbook/cli",
     "description": "CLI to build and publish integrations on GitBook.com",
-    "version": "0.21.1",
+    "version": "0.21.2",
     "dependencies": {
         "@gitbook/api": "*",
         "check-node-version": "^4.2.1",

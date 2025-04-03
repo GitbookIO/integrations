@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.21.2
+
+### Patch Changes
+
+- ee7f211: Allow to publish an OpenAPI spec from URL
+
 ## 0.21.1
 
 ### Patch Changes
