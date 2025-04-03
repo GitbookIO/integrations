@@ -3,6 +3,7 @@
 import checkNodeVersion from 'check-node-version';
 import { program } from 'commander';
 import * as path from 'path';
+import { URL } from 'url';
 import prompts from 'prompts';
 
 import { GITBOOK_DEFAULT_ENDPOINT } from '@gitbook/api';
@@ -15,7 +16,11 @@ import { publishIntegration, unpublishIntegration } from './publish';
 import { authenticate, whoami } from './remote';
 import { tailLogs } from './tail';
 import { checkIntegrationBuild } from './check';
-import { publishOpenAPISpecification } from 'openapi/publish';
+import {
+    publishOpenAPISpecificationFromFilepath,
+    publishOpenAPISpecificationFromURL,
+} from 'openapi/publish';
+import { checkIsHTTPURL } from './util';
 
 program
     .name(Object.keys(packageJSON.bin)[0])
@@ -120,16 +125,22 @@ const openAPIProgram = program.command('openapi').description('manage OpenAPI sp
 
 openAPIProgram
     .command('publish')
-    .description('publish an OpenAPI specification')
-    .argument('<file>', 'OpenAPI specification file path')
+    .description('publish an OpenAPI specification from a file or URL')
+    .argument('<file-or-url>', 'OpenAPI specification file path or URL')
     .requiredOption('-s, --spec <spec>', 'name of the OpenAPI specification')
     .requiredOption('-o, --organization <organization>', 'organization to publish to')
-    .action(async (filepath, options) => {
-        const spec = await publishOpenAPISpecification({
-            specSlug: options.spec,
-            specFilepath: path.resolve(process.cwd(), filepath),
-            organizationId: options.organization,
-        });
+    .action(async (filepathOrURL, options) => {
+        const spec = checkIsHTTPURL(filepathOrURL)
+            ? await publishOpenAPISpecificationFromURL({
+                  specSlug: options.spec,
+                  organizationId: options.organization,
+                  url: filepathOrURL,
+              })
+            : await publishOpenAPISpecificationFromFilepath({
+                  specSlug: options.spec,
+                  organizationId: options.organization,
+                  filepath: path.resolve(process.cwd(), filepathOrURL),
+              });
         console.log(`OpenAPI specification "${options.spec}" published to ${spec.urls.app}`);
     });
 
