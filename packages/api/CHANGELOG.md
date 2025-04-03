@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.107.0
+
+### Minor Changes
+
+- ff77f54: Add `ai` object to site customization
+
 ## 0.106.0
 
 ### Minor Changes
