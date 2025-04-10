@@ -1,14 +1,11 @@
 ---
-description: >-
-  Learn about the different configuration options your app or integration can
-  use
+description: Learn about the gitbook-manifest.yaml file your integration uses.
+icon: gear
 ---
 
-# Configurations
+# Configuration
 
-## `gitbook-manifest.yaml`
-
-Integrations can define a schema for the configuration. You will be prompted upon setup via the CLI for some required options. See the keys below for more information.
+Integrations are defined through a file called `gitbook-manifest.yaml`. This file is automatically created through the CLI when creating a new integration.
 
 <mark style="color:red;">\*required</mark>
 
@@ -54,13 +51,9 @@ organization: gitbook
 
 ### Visibility<mark style="color:red;">\*</mark>
 
-The visibility for your integration. Defaults to `private`. When set to `private`, only members of the organization that owns the integration are able to see or install the integration into a space.&#x20;
+The visibility for your integration.
 
-Set the visibility to `unlisted` in order to share your integration install link with anyone.
-
-Setting the visibility to `public` is only available by GitBook staff, and setting it to `public` will allow your integration to be [listed on our marketplace](https://www.gitbook.com/integrations).&#x20;
-
-See the [Publishing section](../getting-started/publishing.md) to learn more.&#x20;
+<table><thead><tr><th width="243.5546875" valign="top">Visibility</th><th>Description</th></tr></thead><tbody><tr><td valign="top"><code>private</code></td><td>Default for new integrations. Only members from the organization defined in the integration's manifest will be able to install the integration.</td></tr><tr><td valign="top"><code>unlisted</code></td><td>Members from any organization can install the integration. The integration will only be available to install via it's shared install link.</td></tr><tr><td valign="top"><code>public</code></td><td>Members from any organization can install the integration. Integrations wanting to submit to the marketplace must use this visibility.</td></tr></tbody></table>
 
 **Example:**
 
@@ -83,7 +76,7 @@ The scopes your integration has permissions for.
 </code></pre>
 
 {% hint style="danger" %}
-You may see the scope `space:script:inject` throughout GitBook owned integrations—This scope is only available for internal GitBook use.
+You may see the scope `site:script:inject` throughout GitBook owned integrations—This scope is only available for internal GitBook use.
 
 
 
@@ -92,7 +85,7 @@ Building integrations that inject JavaScript into a space or page are not possib
 
 ### Script
 
-The main script to execute for your integration. Should contain the call to [`createIntegration()`](reference/createintegration.md).
+The main script to execute for your integration. Should contain the call [`createIntegration()`](runtime.md#createintegration).
 
 **Example:**
 
@@ -102,7 +95,7 @@ script: ./src/index.ts
 
 ### Blocks
 
-Component block(s) referenced by `name` to render in the ( ⌘ + / ) menu. See [`createComponent()`](reference/createcomponent.md) to learn more.
+Component block(s) referenced by `name` to render in the ( ⌘ + / ) menu. See [`createComponent()`](runtime.md#createcomponent) to learn more.
 
 **Example:**
 
@@ -121,7 +114,12 @@ A list of categories your integration falls into.
 
 ```yaml
 categories:
+    - analytics
     - collaboration
+    - content
+    - marketing
+    - visitor-auth
+    - other
 ```
 
 ### Summary
@@ -140,7 +138,7 @@ summary: |
 
 ### Icon
 
-A locally referenced icon for your integration. Asset must be located alongside the code for your integration
+A locally referenced icon for your integration. Asset must be located alongside the code for your integration.
 
 **Example:**
 
@@ -175,11 +173,11 @@ externalLinks:
 
 ### Configurations
 
-The configurations key allows you to specify specific steps and configurations for your integration through it's [`environment`](reference/environment.md).&#x20;
+The configurations key allows you to specify specific steps and configurations for your integration through it's `environment`.&#x20;
 
-You're able to set up default configurations under the `configurations.account` key, and space-specific configurations through the `configurations.space` key.
+You're able to set up default configurations under the `configurations.account` key, and site-specific configurations through the `configurations.site` key.
 
-Both of these configurations accept `properties`, which are named keys used to describe the different steps your user will go through as they install your integration. You can also name these properties in a `required` key to enforce certain configurations.
+All configurations accept `properties`, which are named keys used to describe the different steps your user will go through as they install your integration. You can also name these properties in a `required` key to enforce certain configurations.
 
 You can create as many properties as you would like, and can be of the following:
 
@@ -229,7 +227,7 @@ boolean_property:
 
 **`button`**
 
-Button configurations can be used if you need to set up an OAuth connection with a provider in order to use your integration. See [`createOAuthHandler()`](reference/createoauthhandler.md) for more information.
+Button configurations can be used if you need to set up an OAuth connection with a provider in order to use your integration. See [`createOAuthHandler()`](runtime.md#createoauthhandler) for more information.
 
 ```yaml
 button_property:
@@ -260,7 +258,7 @@ configurations:
         required:
             - oauth_credentials
             - default_channel
-    space:
+    site:
         properties:
             channel:
                 type: string
@@ -294,7 +292,7 @@ secrets:
     CLIENT_ID: ${{ env.CLIENT_ID }}
 ```
 
-## Installation & Configuration flow
+### Installation & Configuration flow
 
 During the installation flow, an event `installation_setup` is triggered as soon as the integration is installed for the first time. You can identify the configuration as being incomplete by checking `environment.installation.status != 'active'`.
 

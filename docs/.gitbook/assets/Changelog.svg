@@ -1,0 +1,28 @@
+<svg width="800" height="450" viewBox="0 0 800 450" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="800" height="450" fill="url(#paint0_linear_5680_63)"/>
+<path d="M412.5 175H407.5" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M432.5 175H427.5" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M447.5 215L472.5 215" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M452.5 255H447.5" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M472.5 255H467.5" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<circle cx="340" cy="175" r="12.5" stroke="#D33D3D" stroke-width="5"/>
+<circle cx="340" cy="215" r="12.5" stroke="#D33D3D" stroke-width="5"/>
+<circle cx="340" cy="255" r="12.5" stroke="#D33D3D" stroke-width="5"/>
+<circle cx="340" cy="255" r="12.5" stroke="#D33D3D" stroke-width="5"/>
+<path d="M452.5 175H447.5" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M472.5 175H467.5" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M412.5 215H407.5" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M432.5 215H427.5" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M407.5 255L432.5 255" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M367.5 175L392.5 175" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M372.5 215H367.5" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M392.5 215H387.5" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M372.5 255H367.5" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M392.5 255H387.5" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<defs>
+<linearGradient id="paint0_linear_5680_63" x1="377.262" y1="3.12975e-05" x2="424.55" y2="240.166" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFE4E3"/>
+<stop offset="1" stop-color="white"/>
+</linearGradient>
+</defs>
+</svg>
