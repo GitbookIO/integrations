@@ -17,4 +17,4 @@ This API is RESTful and supports standard HTTP methods like `GET`, `POST`, `PATC
 
 ### OpenAPI spec
 
-You can view GitBook’s hosted OpenAPI spec used to generate our API docs [here](https://api.gitbook.com/openapi.json). Learn more about creating your own API references in our [product docs](https://docs.gitbook.com/api-references/openapi).
+You can view GitBook’s hosted OpenAPI spec used to generate our API docs [here](https://api.gitbook.com/openapi.json). Learn more about creating your own API references in our [product docs](https://app.gitbook.com/s/NkEGS7hzeqa35sMXQZ4X/api-references/openapi).
