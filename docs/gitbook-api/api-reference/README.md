@@ -15,4 +15,6 @@ This API is RESTful and supports standard HTTP methods like `GET`, `POST`, `PATC
 * **Collaboration**: Manage users, organization, and permissions.
 * **Integration**: Integrate GitBook with external tools and services.
 
+### OpenAPI spec
+
 You can view GitBook’s hosted OpenAPI spec used to generate our API docs [here](https://api.gitbook.com/openapi.json).
