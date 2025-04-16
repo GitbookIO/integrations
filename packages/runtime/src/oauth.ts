@@ -1,6 +1,6 @@
-import { RequestUpdateIntegrationInstallation } from '@gitbook/api';
+import type { RequestUpdateIntegrationInstallation } from '@gitbook/api';
 
-import { RuntimeCallback, RuntimeContext } from './context';
+import type { RuntimeCallback, RuntimeContext } from './context';
 import { Logger } from './logger';
 
 /**
@@ -101,7 +101,7 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
         //
         if (!code) {
             if (!environment.installation) {
-                logger.error(`Cannot initiate OAuth flow without an installation`);
+                logger.error('Cannot initiate OAuth flow without an installation');
                 return new Response(
                     JSON.stringify({
                         error: 'Cannot initiate OAuth flow without an installation',
@@ -127,6 +127,9 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
                     installationId: environment.installation.id,
                     ...(environment.spaceInstallation?.space
                         ? { spaceId: environment.spaceInstallation?.space }
+                        : {}),
+                    ...(environment.siteInstallation?.site
+                        ? { siteId: environment.siteInstallation?.site }
                         : {}),
                 }),
             );
@@ -192,14 +195,21 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
 
             /**
              * Parse the JSON encoded state parameter.
+             *
              * If the state contains a spaceId, then the Oauth flow was initiated from a space installation
-             * public url and thus we need to update the space installation config otherwise fallback to
-             * updating the installation config.
+             * public url and thus we need to update the space installation config
+             *
+             * If the state contains a siteId, then the Oauth flow was initiated from a site installation
+             * public url and thus we need to update the site installation config
+             *
+             * If the state does not contain a spaceId or siteId, then the Oauth flow was initiated from
+             * a regular installation public url and thus we need to update the installation config
              */
-            const state = JSON.parse(rawState) as {
+            const state: {
                 installationId: string;
                 spaceId?: string;
-            };
+                siteId?: string;
+            } = JSON.parse(rawState);
 
             const existing = {
                 configuration: {},
@@ -225,6 +235,34 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
                     environment.integration.name,
                     state.installationId,
                     state.spaceId,
+                    {
+                        configuration: {
+                            ...existing.configuration,
+                            ...credentialsConfiguration,
+                        },
+                        ...credentialsMinusConfiguration,
+                    },
+                );
+            } else if (state.siteId) {
+                if (!replace) {
+                    const { data: siteInstallation } =
+                        await api.integrations.getIntegrationSiteInstallation(
+                            environment.integration.name,
+                            state.installationId,
+                            state.siteId,
+                        );
+                    existing.configuration = siteInstallation.configuration;
+                }
+
+                // We need to make sure that properties outside of the credentials configuration are also passed when updating the installation (such as externalIds)
+                const {
+                    configuration: credentialsConfiguration,
+                    ...credentialsMinusConfiguration
+                } = credentials;
+                await api.integrations.updateIntegrationSiteInstallation(
+                    environment.integration.name,
+                    state.installationId,
+                    state.siteId,
                     {
                         configuration: {
                             ...existing.configuration,
