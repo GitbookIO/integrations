@@ -57,6 +57,9 @@ export async function buildScriptFromManifest(
             // If importing a file as `.raw.js`, esbuild will convert to string so we can use that
             // file as a string without opening it.
             '.raw.js': 'text',
+            // If importing a file as `.raw.css`, esbuild will convert to string so we can use that
+            // file as a string without opening it.
+            '.raw.css': 'text',
         },
     });
 
