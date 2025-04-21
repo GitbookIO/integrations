@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.22.0
+
+### Minor Changes
+
+- 43cecf9: Allow .raw.css files to be imported in the integration
+
 ## 0.21.2
 
 ### Patch Changes
