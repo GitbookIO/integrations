@@ -347,7 +347,7 @@ export const configBlock = createComponent<
                                             space in your repository.{' '}
                                             <link
                                                 target={{
-                                                    url: 'https://docs.gitbook.com/getting-started/git-sync/monorepos',
+                                                    url: 'https://gitbook.com/docs/getting-started/git-sync/monorepos',
                                                 }}
                                             >
                                                 Learn More.
@@ -374,7 +374,7 @@ export const configBlock = createComponent<
                                             from GitBook by a custom template.{' '}
                                             <link
                                                 target={{
-                                                    url: 'https://docs.gitbook.com/getting-started/git-sync/commits',
+                                                    url: 'https://gitbook.com/docs/getting-started/git-sync/commits',
                                                 }}
                                             >
                                                 Learn More.
@@ -456,7 +456,7 @@ export const configBlock = createComponent<
                                             Allow Pull request previews from forked respositories.{' '}
                                             <link
                                                 target={{
-                                                    url: 'https://docs.gitbook.com/integrations/git-sync/github-pull-request-preview#security-considerations',
+                                                    url: 'https://gitbook.com/docs/integrations/git-sync/github-pull-request-preview#security-considerations',
                                                 }}
                                             >
                                                 Learn More.
