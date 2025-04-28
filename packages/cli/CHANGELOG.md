@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.23.0
+
+### Minor Changes
+
+- 2d1f642: Add site scope suggestions to gitbook new command
+
 ## 0.22.0
 
 ### Minor Changes
