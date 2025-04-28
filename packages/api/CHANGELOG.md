@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.114.0
+
+### Minor Changes
+
+- 202ff3d: Bump api to use the latest spec
+
 ## 0.113.0
 
 ### Minor Changes
