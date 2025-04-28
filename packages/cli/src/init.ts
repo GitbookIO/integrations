@@ -1,4 +1,4 @@
-import { JSONSchemaForNPMPackageJsonFiles2 as PackageJSON } from '@schemastore/package';
+import type { JSONSchemaForNPMPackageJsonFiles2 as PackageJSON } from '@schemastore/package';
 import { spawn } from 'child_process';
 import detent from 'dedent-js';
 import * as fs from 'fs';
@@ -71,6 +71,18 @@ export async function promptNewIntegration(dir?: string): Promise<void> {
                 {
                     title: IntegrationScope.SpaceGitSync,
                     value: IntegrationScope.SpaceGitSync,
+                },
+                {
+                    title: IntegrationScope.SiteMetadataRead,
+                    value: IntegrationScope.SiteMetadataRead,
+                },
+                {
+                    title: IntegrationScope.SiteAdaptiveRead,
+                    value: IntegrationScope.SiteAdaptiveRead,
+                },
+                {
+                    title: IntegrationScope.SiteAdaptiveWrite,
+                    value: IntegrationScope.SiteAdaptiveWrite,
                 },
             ],
         },
