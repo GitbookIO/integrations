@@ -9204,7 +9204,7 @@ components:
       name: hostname
       in: path
       required: true
-      description: The custom hostname, for example "docs.gitbook.com"
+      description: The custom hostname, for example "gitbook.com/docs"
       schema:
         type: string
     xGitBookPartnerKey:

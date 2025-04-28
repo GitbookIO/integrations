@@ -11,7 +11,7 @@ previewImages:
     - ./assets/slack-marketplace-3.png
 externalLinks:
     - label: Documentation
-      url: https://docs.gitbook.com/integrations/integrations-beta/slack
+      url: https://gitbook.com/docs/integrations/integrations-beta/slack
     - label: Slack App Directory
       url: https://slack.com/apps/A7DE1QCTD-gitbook?tab=more_info
 visibility: public
@@ -23,7 +23,7 @@ summary: |
     # Overview
     With the GitBook Slack integration, your teams have instant access to your documentation, and can get AI-summarized answers about your content.
 
-    [Head to our documentation to find out more](https://docs.gitbook.com/integrations/integrations-beta/slack)
+    [Head to our documentation to find out more](https://gitbook.com/docs/integrations/integrations-beta/slack)
 
     Slack's AI features require GitBook AI, exclusive to Pro/Enterprise plans. Free/Plus users will need to upgrade to Pro to use this integration. Please visit the [pricing page](https://www.gitbook.com/pricing) to learn more.
 
@@ -38,7 +38,7 @@ summary: |
     To install on a single space, click Integrations in the sub-nav within the GitBook app. Alternatively, you can install it across all your spaces in Settings.
     Once you’ve installed it, head over to Slack and authorize the connection. You can select a default channel to post notifications and other messages, but remember — you can summon GitBook in any channel or thread.
 
-    [Read our documentation to learn more](https://docs.gitbook.com/integrations/integrations-beta/slack)
+    [Read our documentation to learn more](https://gitbook.com/docs/integrations/integrations-beta/slack)
 configurations:
     account:
         properties:

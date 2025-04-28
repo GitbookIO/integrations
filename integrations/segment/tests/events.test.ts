@@ -20,7 +20,7 @@ const fakeSpaceViewEvent: api.SiteViewEvent = {
             fake_cookie: 'cookie',
         },
     },
-    url: 'https://docs.gitbook.com/integrations?utm_source=gitbook',
+    url: 'https://gitbook.com/docs/integrations?utm_source=gitbook',
     referrer: 'https://www.gitbook.com/',
 };
 
@@ -38,7 +38,7 @@ describe('events', () => {
                     referrer: 'https://www.gitbook.com/',
                     path: '/integrations',
                     search: '?utm_source=gitbook',
-                    url: 'https://docs.gitbook.com/integrations?utm_source=gitbook',
+                    url: 'https://gitbook.com/docs/integrations?utm_source=gitbook',
                 },
                 userAgent: 'fake-user-agent',
                 ip: '127.0.0.1',

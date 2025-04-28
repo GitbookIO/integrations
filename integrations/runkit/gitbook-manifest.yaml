@@ -16,7 +16,7 @@ summary: |
 
     The integration allows you to embed live examples into your GitBook, removing the friction of trying new ideas. You can bring your code to life by allowing your users to run the sample of your code within your documentation.
 
-    Adding RunKit notebooks in your documentation is simple - select the RunKit block from the [command palette](https://docs.gitbook.com/tour/editor/blocks#command-palette) and insert your code snippet.
+    Adding RunKit notebooks in your documentation is simple - select the RunKit block from the [command palette](https://gitbook.com/docs/tour/editor/blocks#command-palette) and insert your code snippet.
     Or paste the link to an existing RunKit notebook into the GitBook editor to embed it in your page.
 
     # Configure

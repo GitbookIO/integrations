@@ -27,7 +27,7 @@ We recommend adding as many relevant links, minimal reproductions of the issue, 
 If you're interested in solving an issue in our repository, start by scanning through it's exisiting issues to find one that you're interested in working on. If you find an issue to work on, you are welcome to open a PR with a fix. See the following sections below for more information on contributing for specific sections.
 
 ### Docs
-The official developer docs for GitBook, hosted on https://developer.gitbook.com/. Our documentation uses one of GitBook's most useful features-[Git Sync](https://docs.gitbook.com/product-tour/git-sync)!
+The official developer docs for GitBook, hosted on https://developer.gitbook.com/. Our documentation uses one of GitBook's most useful features-[Git Sync](https://gitbook.com/docs/product-tour/git-sync)!
 
 Git Sync allows you to keep your GitBook site up to date with a remote repository either on GitHub or GitLab. In our case we have the [/docs](../docs/) directory synced with https://developer.gitbook.com/. This means that any changes reviewed, approved, and merged into this directory will automatically be deployed!
 

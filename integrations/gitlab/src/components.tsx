@@ -334,7 +334,7 @@ export const configBlock = createComponent<
                                             space in your repository.{' '}
                                             <link
                                                 target={{
-                                                    url: 'https://docs.gitbook.com/getting-started/git-sync/monorepos',
+                                                    url: 'https://gitbook.com/docs/getting-started/git-sync/monorepos',
                                                 }}
                                             >
                                                 Learn more.
@@ -357,7 +357,7 @@ export const configBlock = createComponent<
                                             from GitBook by a custom template.{' '}
                                             <link
                                                 target={{
-                                                    url: 'https://docs.gitbook.com/getting-started/git-sync/commits',
+                                                    url: 'https://gitbook.com/docs/getting-started/git-sync/commits',
                                                 }}
                                             >
                                                 Learn more.

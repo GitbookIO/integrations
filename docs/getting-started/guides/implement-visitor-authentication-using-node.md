@@ -1,6 +1,6 @@
 # Implement Visitor Authentication using Node
 
-[Visitor Authentication](https://docs.gitbook.com/publishing/visitor-authentication) in GitBook is a powerful way to further control who has access to the information you're publishing. By setting up a custom login screen, you can customize the experience for private materials you might have on GitBook.
+[Visitor Authentication](https://gitbook.com/docs/publishing/visitor-authentication) in GitBook is a powerful way to further control who has access to the information you're publishing. By setting up a custom login screen, you can customize the experience for private materials you might have on GitBook.
 
 In order to use Visitor Authentication, you'll need to configure a few tools first—Including setting up a server to handle the sign-in flow your users will go through.
 
