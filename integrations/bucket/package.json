@@ -1,0 +1,17 @@
+{
+    "name": "@gitbook/integration-bucket",
+    "private": true,
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "publish": "gitbook publish ."
+    },
+    "dependencies": {
+        "@gitbook/runtime": "*",
+        "itty-router": "^5.0.18"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "^0.23.0",
+        "@gitbook/tsconfig": "*",
+        "@cloudflare/workers-types": "*"
+    }
+}

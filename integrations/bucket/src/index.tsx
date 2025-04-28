@@ -1,0 +1,130 @@
+import { GitBookAPI } from '@gitbook/api';
+import { Router } from 'itty-router';
+import {
+    createIntegration,
+    ExposableError,
+    Logger,
+    type FetchEventCallback,
+    type RuntimeContext,
+} from '@gitbook/runtime';
+import { arrayToHex, safeCompare } from './utils';
+import type {
+    IntegrationContext,
+    IntegrationTask,
+    IntegrationTaskSyncSiteAdaptiveSchema,
+} from './types';
+import { handleIntegrationTask } from './tasks';
+
+const logger = Logger('bucket');
+
+const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request, context) => {
+    const { environment } = context;
+
+    const router = Router({
+        base: new URL(
+            environment.spaceInstallation?.urls?.publicEndpoint ||
+                environment.installation?.urls.publicEndpoint ||
+                environment.integration.urls.publicEndpoint,
+        ).pathname,
+    });
+
+    async function verifyIntegrationSignature(
+        payload: string,
+        signature: string,
+        secret: string,
+    ): Promise<boolean> {
+        if (!signature) {
+            return false;
+        }
+
+        const algorithm = { name: 'HMAC', hash: 'SHA-256' };
+        const enc = new TextEncoder();
+        const key = await crypto.subtle.importKey('raw', enc.encode(secret), algorithm, false, [
+            'sign',
+            'verify',
+        ]);
+        const signed = await crypto.subtle.sign(algorithm.name, key, enc.encode(payload));
+        const expectedSignature = arrayToHex(signed);
+
+        return safeCompare(expectedSignature, signature);
+    }
+
+    /**
+     * Handle integration tasks
+     */
+    router.post('/tasks', async (request) => {
+        const signature = request.headers.get('x-gitbook-integration-signature') ?? '';
+        const payloadString = await request.text();
+
+        const verified = await verifyIntegrationSignature(
+            payloadString,
+            signature,
+            environment.signingSecrets.integration,
+        );
+
+        if (!verified) {
+            const message = 'Invalid signature for integration task';
+            logger.error(message);
+            throw new ExposableError(message);
+        }
+
+        const { task } = JSON.parse(payloadString) as { task: IntegrationTask };
+        logger.debug('verified & received integration task', task);
+
+        context.waitUntil(
+            (async () => {
+                await handleIntegrationTask(context, task);
+            })(),
+        );
+
+        return new Response(JSON.stringify({ acknowledged: true }), {
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+        });
+    });
+
+    const response = (await router.handle(request, context)) as Response | undefined;
+
+    if (!response) {
+        return new Response(`No route matching ${request.method} ${request.url}`, {
+            status: 404,
+        });
+    }
+
+    return response;
+};
+
+export default createIntegration({
+    fetch: handleFetchEvent,
+    components: [],
+    events: {
+        site_installation_setup: async (event, context) => {
+            const api = new GitBookAPI({
+                authToken: context.environment.apiTokens.integration,
+                endpoint: context.environment.apiEndpoint,
+                userAgent: context.api.userAgent,
+            });
+
+            const organizationId = context.environment.installation?.target.organization;
+            if (!organizationId) {
+                throw new Error(
+                    `No organization ID found in the installation ${event.installationId}`,
+                );
+            }
+
+            const task: IntegrationTaskSyncSiteAdaptiveSchema = {
+                type: 'sync-adaptive-schema',
+                payload: {
+                    siteId: event.siteId,
+                    installationId: event.installationId,
+                    organizationId,
+                },
+            };
+
+            await api.integrations.queueIntegrationTask(context.environment.integration.name, {
+                task,
+                schedule: 3600,
+            });
+        },
+    },
+});

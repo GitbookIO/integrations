@@ -1,0 +1,19 @@
+name: bucket
+title: Bucket
+script: src/index.tsx
+description: ''
+scopes:
+    - site:adaptive:read
+    - site:adaptive:write
+visibility: private
+organization: gitbook
+configurations:
+    account:
+        properties:
+            secret_key:
+                type: string
+                title: Bucket Secret Key
+                description: The secret key for your Bucket environment.
+        required:
+            - secret_key
+secrets: {}
