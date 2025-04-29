@@ -1,0 +1,35 @@
+{
+    "name": "@gitbook/adaptive",
+    "description": "Utility to use adaptive content in GitBook",
+    "type": "module",
+    "version": "0.0.1",
+    "sideEffects": false,
+    "main": "dist/index.js",
+    "module": "dist/index.esm.js",
+    "unpkg": "dist/index.umd.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "README.md",
+        "dist/**"
+    ],
+    "dependencies": {
+        "@bucketco/browser-sdk": "^3.1.2",
+        "js-cookie": "^3.0.5"
+    },
+    "devDependencies": {
+        "@gitbook/tsconfig": "*",
+        "typescript": "^5.6.2",
+        "@types/js-cookie": "^3.0.6",
+        "esbuild": "^0.25.3"
+    },
+    "scripts": {
+        "build": "bun esbuild.config.js && tsc --emitDeclarationOnly",
+        "typecheck": "tsc --noEmit"
+    },
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    }
+}
