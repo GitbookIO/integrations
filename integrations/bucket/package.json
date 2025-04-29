@@ -3,7 +3,9 @@
     "private": true,
     "scripts": {
         "typecheck": "tsc --noEmit",
-        "publish": "gitbook publish ."
+        "publish-integrations-staging": "gitbook publish .",
+        "check": "gitbook check",
+        "publish-integrations": "gitbook publish ."
     },
     "dependencies": {
         "@gitbook/runtime": "*",
