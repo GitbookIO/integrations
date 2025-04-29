@@ -13,12 +13,12 @@
         "dist/**"
     ],
     "dependencies": {
-        "@bucketco/browser-sdk": "^3.1.2",
         "js-cookie": "^3.0.5"
     },
     "devDependencies": {
         "@gitbook/tsconfig": "*",
         "typescript": "^5.6.2",
+        "@bucketco/browser-sdk": "^3.1.2",
         "@types/js-cookie": "^3.0.6",
         "esbuild": "^0.25.3"
     },

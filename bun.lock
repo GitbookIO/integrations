@@ -534,10 +534,10 @@
       "name": "@gitbook/adaptive",
       "version": "0.0.1",
       "dependencies": {
-        "@bucketco/browser-sdk": "^3.1.2",
         "js-cookie": "^3.0.5",
       },
       "devDependencies": {
+        "@bucketco/browser-sdk": "^3.1.2",
         "@gitbook/tsconfig": "*",
         "@types/js-cookie": "^3.0.6",
         "esbuild": "^0.25.3",
