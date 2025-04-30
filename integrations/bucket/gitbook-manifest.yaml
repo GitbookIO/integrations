@@ -8,11 +8,11 @@ scopes:
 visibility: private
 organization: gitbook
 configurations:
-    account:
+    site:
         properties:
             secret_key:
                 type: string
-                title: Bucket Secret Key
+                title: Secret Key
                 description: The secret key for your Bucket environment.
         required:
             - secret_key

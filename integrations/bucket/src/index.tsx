@@ -112,19 +112,22 @@ export default createIntegration({
                 );
             }
 
-            const task: IntegrationTaskSyncSiteAdaptiveSchema = {
-                type: 'sync-adaptive-schema',
-                payload: {
-                    siteId: event.siteId,
-                    installationId: event.installationId,
-                    organizationId,
+            // Sync the adaptive schema for the site and queue a task
+            // to sync it every hour
+            await handleIntegrationTask(
+                {
+                    ...context,
+                    api,
                 },
-            };
-
-            await api.integrations.queueIntegrationTask(context.environment.integration.name, {
-                task,
-                schedule: 3600,
-            });
+                {
+                    type: 'sync-adaptive-schema',
+                    payload: {
+                        siteId: event.siteId,
+                        installationId: event.installationId,
+                        organizationId,
+                    },
+                },
+            );
         },
     },
 });

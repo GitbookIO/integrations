@@ -4,7 +4,12 @@ import type {
     IntegrationTask,
     IntegrationTaskSyncSiteAdaptiveSchema,
 } from './types';
-import { GitBookAPI } from '@gitbook/api';
+import {
+    GitBookAPI,
+    GitBookAPIError,
+    type SiteAdaptiveJSONSchema,
+    type SiteAdaptiveSchema,
+} from '@gitbook/api';
 
 const logger = Logger('bucket:tasks');
 
@@ -14,7 +19,16 @@ export async function handleIntegrationTask(
 ): Promise<void> {
     switch (task.type) {
         case 'sync-adaptive-schema':
-            await handleSyncAdaptiveSchema(context, task.payload);
+            await Promise.all([
+                handleSyncAdaptiveSchema(context, task.payload),
+                context.api.integrations.queueIntegrationTask(
+                    context.environment.integration.name,
+                    {
+                        task,
+                        schedule: 3600,
+                    },
+                ),
+            ]);
             break;
         default:
             throw new Error(`Unknown integration task type: ${task}`);
@@ -52,31 +66,35 @@ async function handleSyncAdaptiveSchema(
         });
 
         const secretKey =
-            'secretKey' in siteInstallation.configuration
-                ? siteInstallation.configuration.secretKey
+            'secret_key' in siteInstallation.configuration
+                ? siteInstallation.configuration.secret_key
                 : null;
         if (typeof secretKey !== 'string' || !secretKey) {
             throw new Error(`No secret key configured in the site installation ${siteId}`);
         }
 
-        const [{ data: existing }, featureFlags] = await Promise.all([
-            api.orgs.getSiteAdaptiveSchema(organizationId, siteId),
+        const [existing, featureFlags] = await Promise.all([
+            getExistingAdaptiveSchema(api, organizationId, siteId),
             getFeatureFlags(secretKey),
         ]);
 
         await api.orgs.createOrUpdateSiteAdaptiveSchema(organizationId, siteId, {
             jsonSchema: {
-                ...existing.jsonSchema,
+                ...existing,
                 properties: {
-                    ...existing.jsonSchema.properties,
+                    ...existing.properties,
                     public: {
-                        type: 'object',
-                        description:
-                            existing.jsonSchema.properties.public.description ||
-                            'Public claims for the visitor of the site',
+                        ...(existing.properties.public?.type === 'object'
+                            ? existing.properties.public
+                            : {
+                                  type: 'object',
+                                  description: 'Public claims schema for the visitor of the site',
+                                  properties: {},
+                                  additionalProperties: false,
+                              }),
                         properties: {
-                            ...(existing.jsonSchema.properties.public.type === 'object'
-                                ? existing.jsonSchema.properties.public.properties
+                            ...(existing.properties.public?.type === 'object'
+                                ? existing.properties.public.properties
                                 : {}),
                             [context.environment.integration.name]: {
                                 type: 'object',
@@ -86,9 +104,7 @@ async function handleSyncAdaptiveSchema(
                                         (acc, feature) => {
                                             acc[feature.key] = {
                                                 type: 'boolean',
-                                                description:
-                                                    feature.description ||
-                                                    `Whether the visitor has ${feature.key} enabled`,
+                                                description: `Whether the visitor has ${feature.key} enabled`,
                                             };
                                             return acc;
                                         },
@@ -111,6 +127,28 @@ async function handleSyncAdaptiveSchema(
         });
     } catch (error) {
         logger.error(`Error while handling adaptive schema sync: ${error}`);
+        throw error;
+    }
+}
+
+async function getExistingAdaptiveSchema(
+    api: GitBookAPI,
+    organizationId: string,
+    siteId: string,
+): Promise<SiteAdaptiveJSONSchema> {
+    try {
+        const { data } = await api.orgs.getSiteAdaptiveSchema(organizationId, siteId);
+        return data.jsonSchema;
+    } catch (error: unknown) {
+        if (error instanceof GitBookAPIError && error.code === 404) {
+            return {
+                type: 'object',
+                properties: {},
+                additionalProperties: false,
+            };
+        }
+
+        logger.error(`Error while fetching existing adaptive schema for site ${siteId}: ${error}`);
         throw error;
     }
 }
