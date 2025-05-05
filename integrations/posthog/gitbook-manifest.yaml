@@ -44,6 +44,11 @@ configurations:
                 enum:
                     - EU
                     - US
+            identifyUsers:
+                type: boolean
+                title: Identify Users
+                description: Enable user identification in PostHog to track individual user behavior
+                default: false
         required:
             - projectApiKey
             - instanceAddress
