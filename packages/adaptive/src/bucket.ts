@@ -1,7 +1,5 @@
 import type { BucketClient } from '@bucketco/browser-sdk';
-import Cookies from 'js-cookie';
-
-const COOKIE_NAME = 'gitbook-visitor-public-bucket';
+import { writeGitBookVisitorCookie } from './utils';
 
 /**
  * Sets a client-side session cookie with the features enabled in the bucket client.
@@ -18,10 +16,7 @@ export function withBucket(client: BucketClient): () => void {
             features[key] = enabled;
         }
 
-        // Set a session cookie with the features
-        Cookies.set(COOKIE_NAME, JSON.stringify(features), {
-            secure: true,
-        });
+        writeGitBookVisitorCookie('bucket', features);
     };
 
     // Determine if we're in a browser environment
