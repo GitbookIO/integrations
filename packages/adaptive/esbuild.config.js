@@ -15,7 +15,7 @@ const commonSettings = {
 esbuild
     .build({
         ...commonSettings,
-        outfile: 'dist/index.esm.js',
+        outfile: 'dist/index.js',
         format: 'esm',
     })
     .catch(() => process.exit(1));
@@ -24,19 +24,7 @@ esbuild
 esbuild
     .build({
         ...commonSettings,
-        outfile: 'dist/index.js',
+        outfile: 'dist/index.cjs',
         format: 'cjs',
-    })
-    .catch(() => process.exit(1));
-
-// Build UMD/IIFE bundle for direct browser usage
-esbuild
-    .build({
-        ...commonSettings,
-        outfile: 'dist/index.umd.js',
-        format: 'iife',
-        globalName: 'MyPackage',
-        // Remove external modules handling for IIFE build
-        plugins: [],
     })
     .catch(() => process.exit(1));

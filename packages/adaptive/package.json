@@ -4,10 +4,6 @@
     "type": "module",
     "version": "0.0.1",
     "sideEffects": false,
-    "main": "dist/index.js",
-    "module": "dist/index.esm.js",
-    "unpkg": "dist/index.umd.js",
-    "types": "dist/index.d.ts",
     "files": [
         "README.md",
         "dist/**"
@@ -29,7 +25,10 @@
     "exports": {
         ".": {
             "import": "./dist/index.js",
+            "default": "./dist/index.cjs",
+            "require": "./dist/index.cjs",
             "types": "./dist/index.d.ts"
-        }
+        },
+        "./package.json": "./package.json"
     }
 }
