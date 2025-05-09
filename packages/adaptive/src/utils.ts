@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
 
-export const GITBOOK_VISITOR_PUBLIC_PREFIX = 'gitbook-visitor-public' as const;
+const GITBOOK_VISITOR_PUBLIC_PREFIX = 'gitbook-visitor-public' as const;
 
 /**
  * Write a client-side cookie for the GitBook visitor.
