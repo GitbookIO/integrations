@@ -83,7 +83,7 @@ async function handleSyncAdaptiveSchema(
                 ...existing,
                 properties: {
                     ...existing.properties,
-                    public: {
+                    unsigned: {
                         ...(existing.properties.public?.type === 'object'
                             ? existing.properties.public
                             : {
