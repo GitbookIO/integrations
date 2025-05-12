@@ -84,17 +84,17 @@ async function handleSyncAdaptiveSchema(
                 properties: {
                     ...existing.properties,
                     unsigned: {
-                        ...(existing.properties.public?.type === 'object'
-                            ? existing.properties.public
+                        ...(existing.properties.unsigned?.type === 'object'
+                            ? existing.properties.unsigned
                             : {
                                   type: 'object',
-                                  description: 'Public claims schema for the visitor of the site',
+                                  description: 'Unsigned claims of the site visitor.',
                                   properties: {},
                                   additionalProperties: false,
                               }),
                         properties: {
-                            ...(existing.properties.public?.type === 'object'
-                                ? existing.properties.public.properties
+                            ...(existing.properties.unsigned?.type === 'object'
+                                ? existing.properties.unsigned.properties
                                 : {}),
                             [context.environment.integration.name]: {
                                 type: 'object',
