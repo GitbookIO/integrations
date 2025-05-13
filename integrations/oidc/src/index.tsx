@@ -40,7 +40,7 @@ type OIDCProps = {
 export type OIDCAction = { action: 'save.config' };
 
 const getDomainWithHttps = (url: string): string => {
-    const sanitizedURL = url.trim().toLowerCase();
+    const sanitizedURL = url.trim();
     if (sanitizedURL.startsWith('https://')) {
         return sanitizedURL;
     } else if (sanitizedURL.startsWith('http://')) {
