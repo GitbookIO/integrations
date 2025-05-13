@@ -16,7 +16,7 @@ export function withBucket(client: BucketClient): () => void {
             features[key] = enabled;
         }
 
-        writeGitBookVisitorCookie('bucket', features);
+        writeGitBookVisitorCookie('bucket', { bucket: features });
     };
 
     // Determine if we're in a browser environment

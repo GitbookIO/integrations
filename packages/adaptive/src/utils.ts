@@ -18,5 +18,19 @@ export function writeGitBookVisitorCookie(name: string, value: unknown) {
 
     Cookies.set(COOKIE_NAME, COOKIE_VALUE, {
         secure: true,
+        domain: `.${getParentDomain()}`,
     });
+}
+
+function getParentDomain(): string {
+    const hostname = window.location.hostname;
+    const parts = hostname.split('.');
+    // If it's a subdomain (has at least 3 parts, like 'blog.example.com')
+    if (parts.length > 2) {
+        // Return the parent domain (last 2 parts)
+        return parts.slice(-2).join('.');
+    }
+
+    // Already a top-level domain
+    return hostname;
 }
