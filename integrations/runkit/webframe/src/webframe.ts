@@ -1,4 +1,4 @@
-const gitbookWebFrame = window.top;
+const gitbookWebFrame = window.parent;
 
 let readOnly = false;
 let runKitNotebook: NotebookEmbed | null = null;
