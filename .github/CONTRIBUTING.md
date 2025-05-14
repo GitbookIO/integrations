@@ -39,9 +39,9 @@ If you're interested in contributing to any of our already published integration
 ### Packages
 You're also welcome to contribute updates or improvements to the packages living in [/packages](../packages/). Head to each package's documentation page to learn more about what each one does.
 
-`@gitbook/cli`: https://developer.gitbook.com/cli/quickstart
-`@gitbook/api`: https://developer.gitbook.com/gitbook-api/librairies/browser-node
-`@gitbook/runtime`: https://developer.gitbook.com/integrations/reference
+`@gitbook/cli`: https://gitbook.com/docs/developers/integrations/reference
+`@gitbook/api`: https://gitbook.com/docs/developers/gitbook-api/overview
+`@gitbook/runtime`: https://gitbook.com/docs/developers/integrations/runtime
 
 ## Contributing
 
