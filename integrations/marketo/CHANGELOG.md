@@ -1,5 +1,11 @@
 # @gitbook/integration-marketo
 
+## 0.1.3
+
+### Patch Changes
+
+- 0bdb8e0: Fix an issue where certain integrations which rely on iframes could render incorrectly in the preview.
+
 ## 0.1.2
 
 ### Patch Changes

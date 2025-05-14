@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-mermaid",
-    "version": "0.3.3",
+    "version": "0.3.4",
     "private": true,
     "dependencies": {
         "@gitbook/api": "*",
