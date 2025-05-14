@@ -9204,7 +9204,7 @@ components:
       name: hostname
       in: path
       required: true
-      description: The custom hostname, for example "gitbook.com/docs"
+      description: The custom hostname, for example "docs.gitbook.com"
       schema:
         type: string
     xGitBookPartnerKey:
@@ -13406,7 +13406,7 @@ components:
           - label
     IntegrationContentSecurityPolicy:
       description: |
-        Security policy to validate the content of the integrations scripts and Contentkit. Will be sent as 
+        Security policy to validate the content of the integrations scripts and Contentkit. Will be sent as
         headers when processing the script fetch event and the blocks fetch events.
       oneOf:
         - type: string

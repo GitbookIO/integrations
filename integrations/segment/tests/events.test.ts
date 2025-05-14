@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'bun:test';
 
-import * as api from '@gitbook/api';
+import type * as api from '@gitbook/api';
 
 import packageJson from '../package.json';
 import { generateSegmentTrackEvent } from '../src/events';
@@ -36,7 +36,7 @@ describe('events', () => {
                 },
                 page: {
                     referrer: 'https://www.gitbook.com/',
-                    path: '/integrations',
+                    path: '/docs/integrations',
                     search: '?utm_source=gitbook',
                     url: 'https://gitbook.com/docs/integrations?utm_source=gitbook',
                 },
