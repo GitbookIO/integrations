@@ -1,4 +1,4 @@
-const gitbookWebFrame = window.top;
+const gitbookWebFrame = window.parent;
 const params = new URLSearchParams(window.location.search);
 const formId = params.get('formId');
 const munchkinId = params.get('munchkinId');

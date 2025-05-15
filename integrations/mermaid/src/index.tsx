@@ -126,7 +126,7 @@ export default createIntegration({
                         }
 
                         function sendAction(action) {
-                            window.top.postMessage(
+                            window.parent.postMessage(
                                 {
                                     action,
                                 },
