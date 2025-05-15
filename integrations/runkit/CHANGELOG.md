@@ -1,5 +1,11 @@
 # @gitbook/integration-runkit
 
+## 0.2.5
+
+### Patch Changes
+
+- a1c3335: Update documentation links
+
 ## 0.2.4
 
 ### Patch Changes

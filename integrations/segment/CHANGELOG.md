@@ -1,5 +1,11 @@
 # @gitbook/integration-segment
 
+## 2.1.3
+
+### Patch Changes
+
+- a1c3335: Update documentation links
+
 ## 2.1.2
 
 ### Patch Changes
