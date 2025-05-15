@@ -13406,7 +13406,7 @@ components:
           - label
     IntegrationContentSecurityPolicy:
       description: |
-        Security policy to validate the content of the integrations scripts and Contentkit. Will be sent as 
+        Security policy to validate the content of the integrations scripts and Contentkit. Will be sent as
         headers when processing the script fetch event and the blocks fetch events.
       oneOf:
         - type: string

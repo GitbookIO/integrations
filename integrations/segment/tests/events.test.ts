@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'bun:test';
 
-import * as api from '@gitbook/api';
+import type * as api from '@gitbook/api';
 
 import packageJson from '../package.json';
 import { generateSegmentTrackEvent } from '../src/events';
@@ -20,7 +20,7 @@ const fakeSpaceViewEvent: api.SiteViewEvent = {
             fake_cookie: 'cookie',
         },
     },
-    url: 'https://docs.gitbook.com/integrations?utm_source=gitbook',
+    url: 'https://gitbook.com/docs/integrations?utm_source=gitbook',
     referrer: 'https://www.gitbook.com/',
 };
 
@@ -36,9 +36,9 @@ describe('events', () => {
                 },
                 page: {
                     referrer: 'https://www.gitbook.com/',
-                    path: '/integrations',
+                    path: '/docs/integrations',
                     search: '?utm_source=gitbook',
-                    url: 'https://docs.gitbook.com/integrations?utm_source=gitbook',
+                    url: 'https://gitbook.com/docs/integrations?utm_source=gitbook',
                 },
                 userAgent: 'fake-user-agent',
                 ip: '127.0.0.1',

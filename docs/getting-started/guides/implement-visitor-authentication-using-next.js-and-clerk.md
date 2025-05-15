@@ -1,6 +1,6 @@
 # Implement Visitor Authentication using Next.js and Clerk
 
-[Visitor Authentication](https://docs.gitbook.com/publishing/visitor-authentication) in GitBook is a powerful way to further control who has access to the information you're publishing. By setting up a custom login screen, you can customize the experience for private materials you might have on GitBook.
+[Visitor Authentication](https://gitbook.com/docs/publishing/visitor-authentication) in GitBook is a powerful way to further control who has access to the information you're publishing. By setting up a custom login screen, you can customize the experience for private materials you might have on GitBook.
 
 In order to use Visitor Authentication, you'll need to configure a few tools first—Including setting up a server to handle the sign-in flow your users will go through.
 
@@ -9,7 +9,7 @@ This guide explains how you can accomplish the above using [Next.js](https://nex
 The rest of this guide follows this [GitHub repository](https://github.com/GitbookIO/va-nextjs-clerk), and will explain the setup and code through the main functionalities of the demo app.
 
 {% hint style="info" %}
-This feature is currently accessible to all **Pro and Enterprise** customers. If you are interested in the [Enterprise plan](https://docs.gitbook.com/account-management/plans), please contact [sales@gitbook.com](mailto:sales@gitbook.com) for a quote.
+This feature is currently accessible to all **Pro and Enterprise** customers. If you are interested in the [Enterprise plan](https://gitbook.com/docs/account-management/plans), please contact [sales@gitbook.com](mailto:sales@gitbook.com) for a quote.
 {% endhint %}
 
 ### Clone Example
@@ -124,7 +124,7 @@ After we sign in successfully, we'll then be able to navigate to our published s
 
 Visitor Authentication allows you to protect published GitBook sites behind a sign-in flow that you control.
 
-Not only is it customizable, but it also opens up the door for many more possibilities in the future around the way you want to work in GitBook. Make sure to head to the [Visitor Authentication](https://docs.gitbook.com/publishing/visitor-authentication) docs to learn more.
+Not only is it customizable, but it also opens up the door for many more possibilities in the future around the way you want to work in GitBook. Make sure to head to the [Visitor Authentication](https://gitbook.com/docs/publishing/visitor-authentication) docs to learn more.
 
 
 
