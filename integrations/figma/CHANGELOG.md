@@ -1,5 +1,11 @@
 # @gitbook/integration-figma
 
+## 0.2.3
+
+### Patch Changes
+
+- 02e9cbf: Fix Figma integration OAuth token endpoint
+
 ## 0.2.2
 
 ### Patch Changes
