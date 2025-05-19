@@ -2,15 +2,17 @@
     "name": "@gitbook/integration-helpscout",
     "private": true,
     "version": "1.5.0",
-    "scripts": {
-        "typecheck": "tsc --noEmit",
-        "publish": "gitbook publish ."
-    },
     "dependencies": {
         "@gitbook/runtime": "*"
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",
         "@gitbook/tsconfig": "workspace:*"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "publish-integrations-staging": "gitbook publish .",
+        "check": "gitbook check",
+        "publish": "gitbook publish ."
     }
 }
