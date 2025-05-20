@@ -37,21 +37,23 @@
 
     win[layer] = win[layer] || [];
     win.gtag = function () {
+        // eslint-disable-next-line prefer-rest-params
         win[layer].push(arguments);
     };
 
-    win.gtag('js', new Date());
-    win.gtag('config', id);
-    win.gtag('consent', 'default', {
-        ad_storage: disableCookies ? 'denied' : 'granted',
-        analytics_storage: disableCookies ? 'denied' : 'granted',
-    });
     const f = doc.getElementsByTagName(script)[0],
         j = doc.createElement(script),
         dl = layer !== 'dataLayer' ? `&l=${layer}` : '';
     j.async = true;
     j.src = `https://www.googletagmanager.com/gtag/js?id=${id}${dl}`;
     j.onload = function () {
+        win.gtag('js', new Date());
+
+        win.gtag('consent', 'default', {
+            ad_storage: disableCookies ? 'denied' : 'granted',
+            analytics_storage: disableCookies ? 'denied' : 'granted',
+        });
+
         win.gtag('config', id, {
             send_page_view: false,
             anonymize_ip: true,
