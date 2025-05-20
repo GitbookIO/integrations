@@ -37,7 +37,6 @@
 
     win[layer] = win[layer] || [];
     win.gtag = function () {
-        // eslint-disable-next-line prefer-rest-params
         win[layer].push(arguments);
     };
 
