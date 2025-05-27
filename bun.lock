@@ -77,7 +77,7 @@
     },
     "integrations/figma": {
       "name": "@gitbook/integration-figma",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "dependencies": {
         "@gitbook/runtime": "*",
       },
@@ -99,7 +99,7 @@
     },
     "integrations/github": {
       "name": "@gitbook/integration-github",
-      "version": "0.6.2",
+      "version": "0.6.3",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -119,7 +119,7 @@
     },
     "integrations/github-copilot": {
       "name": "@gitbook/integration-github-copilot",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "dependencies": {
         "@copilot-extensions/preview-sdk": "^5.0.0",
         "@gitbook/api": "*",
@@ -149,7 +149,7 @@
     },
     "integrations/gitlab": {
       "name": "@gitbook/integration-gitlab",
-      "version": "0.5.2",
+      "version": "0.5.3",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -303,7 +303,7 @@
     },
     "integrations/marketo": {
       "name": "@gitbook/integration-marketo",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -315,7 +315,7 @@
     },
     "integrations/mermaid": {
       "name": "@gitbook/integration-mermaid",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -339,7 +339,7 @@
     },
     "integrations/oidc": {
       "name": "@gitbook/integration-oidc",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -401,7 +401,7 @@
     },
     "integrations/runkit": {
       "name": "@gitbook/integration-runkit",
-      "version": "0.2.3",
+      "version": "0.2.5",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -427,7 +427,7 @@
     },
     "integrations/segment": {
       "name": "@gitbook/integration-segment",
-      "version": "2.1.2",
+      "version": "2.1.3",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -451,7 +451,7 @@
     },
     "integrations/slack": {
       "name": "@gitbook/integration-slack",
-      "version": "2.0.2",
+      "version": "2.0.3",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -532,7 +532,7 @@
     },
     "packages/adaptive": {
       "name": "@gitbook/adaptive",
-      "version": "0.0.1",
+      "version": "0.0.2",
       "dependencies": {
         "js-cookie": "^3.0.5",
       },
@@ -546,7 +546,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.114.0",
+      "version": "0.116.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -617,6 +617,9 @@
         "@cloudflare/workers-types": "^4.20240925.0",
       },
     },
+  },
+  "overrides": {
+    "@gitbook/openapi-parser": "^2.1.0",
   },
   "packages": {
     "@ampproject/remapping": ["@ampproject/remapping@2.3.0", "", { "dependencies": { "@jridgewell/gen-mapping": "^0.3.5", "@jridgewell/trace-mapping": "^0.3.24" } }, "sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw=="],
