@@ -33,7 +33,7 @@
         "pkg-pr-new": "^0.0.40"
     },
     "dependencies": {},
-    "packageManager": "bun@1.2.4",
+    "packageManager": "bun@1.2.14",
     "resolutions": {
         "@gitbook/openapi-parser": "^2.1.0"
     }
