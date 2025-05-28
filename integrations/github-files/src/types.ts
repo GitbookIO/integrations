@@ -6,10 +6,5 @@ export interface GithubInstallationConfiguration {
     };
 }
 
-export interface GithubSnippetProps {
-    url: string;
-    snippetTag?: string;
-}
-
-export type GithubRuntimeEnvironment = RuntimeEnvironment<GithubInstallationConfiguration, {}>;
+export type GithubRuntimeEnvironment = RuntimeEnvironment<GithubInstallationConfiguration>;
 export type GithubRuntimeContext = RuntimeContext<GithubRuntimeEnvironment>;

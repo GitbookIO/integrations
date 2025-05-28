@@ -12,15 +12,13 @@ externalLinks:
 summary: |
     # Overview
 
-    The GitHub Files integration allows you to take a link to a GitHub file or a permalink to lines of code and display them into code blocks in GitBook. It also supports snippet tags for extracting specific code sections.
+    The GitHub Files integration allows you to take a link to a GitHub file or a permalink to lines of code and display them into code blocks in GitBook.
 
     # How it works
 
     After installing the GitHub Files integration, you're able to insert it into a GitBook file in the (CMD + /) menu.
 
-    **GitHub Files**: Insert the integration, paste your link, and the integration will display the code in a formatted code block.
-
-    **GitHub Snippet**: Insert the snippet block, provide a GitHub URL and a snippet tag (e.g., "BaseOAuthExample"), and the integration will extract and display only the code between the `--8<-- [start:tag]` and `--8<-- [end:tag]` markers.
+    Insert the integration, paste your link, and the integration will display the code in a formatted code block.
 
     # Configure
 
@@ -33,9 +31,6 @@ blocks:
       description: Insert a GitHub file as a code block
       urlUnfurl:
           - https://github.com/**
-    - id: github-snippet-block
-      title: GitHub Snippet
-      description: Insert a GitHub file snippet using tags
 configurations:
     account:
         properties:
