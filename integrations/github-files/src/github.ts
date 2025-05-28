@@ -70,10 +70,10 @@ const extractSnippetSection = (content: string, snippetTag: string) => {
     const lines = content.split('\n');
     const startMarker = `--8<-- [start:${snippetTag}]`;
     const endMarker = `--8<-- [end:${snippetTag}]`;
-    
+
     let startIndex = -1;
     let endIndex = -1;
-    
+
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i].trim();
         if (line.includes(startMarker)) {
@@ -83,11 +83,11 @@ const extractSnippetSection = (content: string, snippetTag: string) => {
             break;
         }
     }
-    
+
     if (startIndex === -1 || endIndex === -1) {
         return null; // Snippet tag not found
     }
-    
+
     return lines.slice(startIndex, endIndex).join('\n');
 };
 
@@ -170,7 +170,11 @@ export const getGithubContent = async (url: string, context: GithubRuntimeContex
     return { content, fileName: urlObject.fileName };
 };
 
-export const getGithubSnippetContent = async (url: string, snippetTag: string, context: GithubRuntimeContext) => {
+export const getGithubSnippetContent = async (
+    url: string,
+    snippetTag: string,
+    context: GithubRuntimeContext,
+) => {
     const urlObject = splitGithubUrl(url);
     if (!urlObject) {
         return;

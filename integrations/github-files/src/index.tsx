@@ -182,7 +182,9 @@ const snippetBlock = createComponent<
                 <block>
                     <input
                         label="GitHub URL"
-                        element={<textinput placeholder="https://github.com/owner/repo/blob/main/file.js" />}
+                        element={
+                            <textinput placeholder="https://github.com/owner/repo/blob/main/file.js" />
+                        }
                         onValueChange={{
                             action: 'updateUrl',
                             url: { bind: 'value' },
