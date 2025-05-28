@@ -15,7 +15,7 @@
     "typescript.tsserver.log": "off",
     // Format using Prettier to format on save
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": false,
+    "editor.formatOnSave": true,
     "svg.preview.background": "custom",
     "prettier.documentSelectors": ["{**/*,*}.{js,ts,jsx,tsx,md,mdx,yml,yaml,json,html,css}"]
 }
