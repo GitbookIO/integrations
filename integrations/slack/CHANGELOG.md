@@ -1,5 +1,11 @@
 # @gitbook/integration-slack
 
+## 2.0.3
+
+### Patch Changes
+
+- a1c3335: Update documentation links
+
 ## 2.0.2
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @gitbook/integration-helpscout
 
+## 1.5.1
+
+### Patch Changes
+
+- bc1a847: Add missing publish integration staging script for Helpscout integration
+
 ## 1.5.0
 
 ### Minor Changes

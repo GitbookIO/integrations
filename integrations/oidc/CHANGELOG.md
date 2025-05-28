@@ -1,5 +1,11 @@
 # @gitbook/integration-oidc
 
+## 0.2.2
+
+### Patch Changes
+
+- dd283e4: Fix OIDC integration lowercasing endpoints URLs
+
 ## 0.2.1
 
 ### Patch Changes

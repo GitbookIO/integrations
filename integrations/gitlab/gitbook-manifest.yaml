@@ -9,7 +9,7 @@ previewImages:
     - ./assets/gitlab-sync.png
 externalLinks:
     - label: Documentation
-      url: https://docs.gitbook.com/integrations/git-sync
+      url: https://gitbook.com/docs/integrations/git-sync
 categories:
     - gitsync
 summary: |
