@@ -9,8 +9,8 @@ import {
     FetchEventCallback,
 } from '@gitbook/runtime';
 
-import { getGithubContent, GithubProps } from './github';
-import { GithubRuntimeContext } from './types';
+import { getGithubContent, getGithubSnippetContent, GithubProps } from './github';
+import { GithubRuntimeContext, GithubSnippetProps } from './types';
 import { getFileExtension } from './utils';
 
 const embedBlock = createComponent<
@@ -130,6 +130,158 @@ const embedBlock = createComponent<
     },
 });
 
+const snippetBlock = createComponent<
+    { url?: string; snippetTag?: string },
+    { visible: boolean },
+    {
+        action: 'show' | 'hide' | 'updateUrl' | 'updateSnippetTag';
+        url?: string;
+        snippetTag?: string;
+    },
+    GithubRuntimeContext
+>({
+    componentId: 'github-snippet-block',
+    initialState: {
+        visible: true,
+    },
+
+    async action(element, action) {
+        switch (action.action) {
+            case 'updateUrl': {
+                return {
+                    props: {
+                        ...element.props,
+                        url: action.url,
+                    },
+                };
+            }
+            case 'updateSnippetTag': {
+                return {
+                    props: {
+                        ...element.props,
+                        snippetTag: action.snippetTag,
+                    },
+                };
+            }
+            case 'show': {
+                return { state: { visible: true } };
+            }
+            case 'hide': {
+                return { state: { visible: false } };
+            }
+        }
+
+        return element;
+    },
+
+    async render(element, context) {
+        const { url, snippetTag } = element.props as GithubSnippetProps;
+
+        if (!url || !snippetTag) {
+            return (
+                <block>
+                    <input
+                        label="GitHub URL"
+                        element={<textinput placeholder="https://github.com/owner/repo/blob/main/file.js" />}
+                        onValueChange={{
+                            action: 'updateUrl',
+                            url: { bind: 'value' },
+                        }}
+                        value={url}
+                    />
+                    <input
+                        label="Snippet Tag"
+                        element={<textinput placeholder="BaseOAuthExample" />}
+                        onValueChange={{
+                            action: 'updateSnippetTag',
+                            snippetTag: { bind: 'value' },
+                        }}
+                        value={snippetTag}
+                    />
+                </block>
+            );
+        }
+
+        const found = await getGithubSnippetContent(url, snippetTag, context);
+
+        if (!found) {
+            return (
+                <block>
+                    <card
+                        title={'Not found'}
+                        onPress={{
+                            action: '@ui.url.open',
+                            url,
+                        }}
+                        icon={
+                            context.environment.integration.urls.icon ? (
+                                <image
+                                    source={{
+                                        url: context.environment.integration.urls.icon,
+                                    }}
+                                    aspectRatio={1}
+                                />
+                            ) : undefined
+                        }
+                    />
+                </block>
+            );
+        }
+
+        const { content, fileName } = found;
+        const fileExtension = await getFileExtension(fileName);
+
+        return (
+            <block
+                controls={[
+                    {
+                        label: 'Show title & link',
+                        onPress: {
+                            action: 'show',
+                        },
+                    },
+                    {
+                        label: 'Hide title & link',
+                        onPress: {
+                            action: 'hide',
+                        },
+                    },
+                ]}
+            >
+                <card
+                    title={element.state.visible ? `${url} (${snippetTag})` : ''}
+                    onPress={
+                        element.state.visible
+                            ? {
+                                  action: '@ui.url.open',
+                                  url,
+                              }
+                            : { action: 'null' }
+                    }
+                    icon={
+                        context.environment.integration.urls.icon ? (
+                            <image
+                                source={{
+                                    url: context.environment.integration.urls.icon,
+                                }}
+                                aspectRatio={1}
+                            />
+                        ) : undefined
+                    }
+                >
+                    {content ? (
+                        <codeblock
+                            content={content.toString()}
+                            lineNumbers={true}
+                            syntax={fileExtension}
+                        />
+                    ) : null}
+                </card>
+            </block>
+        );
+    },
+});
+
 const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (request, context) => {
     const { environment } = context;
 
@@ -187,5 +339,5 @@ const extractCredentials = async (
 
 export default createIntegration<GithubRuntimeContext>({
     fetch: handleFetchEvent,
-    components: [embedBlock],
+    components: [embedBlock, snippetBlock],
 });
