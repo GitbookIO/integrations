@@ -2,6 +2,7 @@ import { z } from 'zod';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import * as path from 'path';
+import * as op from "@1password/op-js";
 
 import * as api from '@gitbook/api';
 
@@ -215,7 +216,9 @@ async function validateIntegrationManifest(data: object): Promise<IntegrationMan
 function interpolateSecrets(secrets: { [key: string]: string }): { [key: string]: string } {
     return Object.keys(secrets).reduce(
         (acc, key) => {
-            acc[key] = secrets[key].replace(/\${{\s*env.([\S]+)\s*}}/g, (_, envVar) => {
+            acc[key] = secrets[key]
+                // Handle environment variables, defined as `${{ env.VAR }}`
+                .replace(/\${{\s*env.([\S]+)\s*}}/g, (_, envVar) => {
                 const secretEnvVar = process.env[envVar];
                 if (!secretEnvVar) {
                     throw new Error(
@@ -224,6 +227,12 @@ function interpolateSecrets(secrets: { [key: string]: string }): { [key: string]
                 }
 
                 return secretEnvVar;
+            })
+            
+            // Handle 1Password secrets, defined as `${{ op://<ref> }}`
+            .replace(/\${{\s*op:\/\/([\S]+)\s*}}/g, (_, ref) => {
+                const secret = op.read.parse(ref);
+                return secret;
             });
             return acc;
         },

@@ -15,7 +15,8 @@
         "prompts": "^2.4.2",
         "zod": "^3.25.42",
         "chokidar": "^4.0.1",
-        "miniflare": "^3.20240925.0"
+        "miniflare": "^3.20240925.0",
+        "@1password/op-js": "^0.1.13"
     },
     "devDependencies": {
         "@gitbook/tsconfig": "*",
