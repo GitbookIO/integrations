@@ -1,5 +1,12 @@
 # @gitbook/cli
 
+## 0.24.0
+
+### Minor Changes
+
+- e730d23: Add support for developing an integration over multiple environments using `envs` in the manifest file and the `--env` CLI arguments for all commands.
+- 507b491: Add support for referencing secrets from 1Password using ${{ op://... }}.
+
 ## 0.23.0
 
 ### Minor Changes
