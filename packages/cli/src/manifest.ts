@@ -2,7 +2,7 @@ import { z } from 'zod';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import * as path from 'path';
-import * as op from "@1password/op-js";
+import * as op from '@1password/op-js';
 
 import * as api from '@gitbook/api';
 
@@ -219,21 +219,21 @@ function interpolateSecrets(secrets: { [key: string]: string }): { [key: string]
             acc[key] = secrets[key]
                 // Handle environment variables, defined as `${{ env.VAR }}`
                 .replace(/\${{\s*env.([\S]+)\s*}}/g, (_, envVar) => {
-                const secretEnvVar = process.env[envVar];
-                if (!secretEnvVar) {
-                    throw new Error(
-                        `Missing environment variable: "${envVar}" used for secret "${key}"`,
-                    );
-                }
+                    const secretEnvVar = process.env[envVar];
+                    if (!secretEnvVar) {
+                        throw new Error(
+                            `Missing environment variable: "${envVar}" used for secret "${key}"`,
+                        );
+                    }
 
-                return secretEnvVar;
-            })
-            
-            // Handle 1Password secrets, defined as `${{ op://<ref> }}`
-            .replace(/\${{\s*op:\/\/([\S]+)\s*}}/g, (_, ref) => {
-                const secret = op.read.parse(ref);
-                return secret;
-            });
+                    return secretEnvVar;
+                })
+
+                // Handle 1Password secrets, defined as `${{ op://<ref> }}`
+                .replace(/\${{\s*op:\/\/([\S]+)\s*}}/g, (_, ref) => {
+                    const secret = op.read.parse(ref);
+                    return secret;
+                });
             return acc;
         },
         {} as { [key: string]: string },
