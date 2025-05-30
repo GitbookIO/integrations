@@ -1,0 +1,17 @@
+{
+    "name": "@gitbook/integration-zendesk-conversations",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "@gitbook/runtime": "*"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "check": "gitbook check",
+        "publish-integrations-staging": "gitbook publish ."
+    }
+}

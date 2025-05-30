@@ -203,7 +203,7 @@
     },
     "integrations/helpscout": {
       "name": "@gitbook/integration-helpscout",
-      "version": "1.5.0",
+      "version": "1.5.1",
       "dependencies": {
         "@gitbook/runtime": "*",
       },
@@ -518,6 +518,17 @@
         "@gitbook/tsconfig": "workspace:*",
       },
     },
+    "integrations/zendesk-conversations": {
+      "name": "@gitbook/integration-zendesk-conversations",
+      "version": "0.0.1",
+      "dependencies": {
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
     "integrations/zoominfo": {
       "name": "@gitbook/integration-zoominfo",
       "version": "0.0.3",
@@ -546,7 +557,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.116.0",
+      "version": "0.117.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -945,6 +956,8 @@
     "@gitbook/integration-va-azure": ["@gitbook/integration-va-azure@workspace:integrations/va-azure"],
 
     "@gitbook/integration-va-okta": ["@gitbook/integration-va-okta@workspace:integrations/va-okta"],
+
+    "@gitbook/integration-zendesk-conversations": ["@gitbook/integration-zendesk-conversations@workspace:integrations/zendesk-conversations"],
 
     "@gitbook/integration-zoominfo": ["@gitbook/integration-zoominfo@workspace:integrations/zoominfo"],
 

@@ -1,0 +1,27 @@
+name: zendesk-conversations
+title: Zendesk
+icon: ./assets/icon.png
+description: Ingest Zendesk support tickets into GitBook Docs Conversations.
+visibility: public
+script: ./src/index.tsx
+summary: |
+    # Overview
+
+    TODO
+scopes: []
+organization: gitbook
+configurations:
+    account:
+        properties:
+            oauth_credentials:
+                type: button
+                title: Connection
+                description: Authorization between Zendesk and GitBook.
+                button_text: Authorize
+                callback_url: /oauth
+        required:
+            - oauth_credentials
+secrets:
+    CLIENT_ID: ${{ env.ZENDESK_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.ZENDESK_CLIENT_SECRET }}
+target: organization
