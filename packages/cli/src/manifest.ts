@@ -85,42 +85,44 @@ export const IntegrationNameSchema = z
  * Configuration in the manifest file, specific to an environment.
  */
 const IntegrationManifestEnvironmentSchema = z.object({
-    visibility: z.nativeEnum(api.IntegrationVisibility).optional(),
     organization: z.string(),
-    secrets: z.record(z.string()),
+    visibility: z.nativeEnum(api.IntegrationVisibility).optional(),
+    secrets: z.record(z.string()).optional(),
 });
 
-const IntegrationManifestSchema = z.object({
-    name: IntegrationNameSchema,
-    title: z.string(),
-    script: z.string(),
-    icon: z.string().optional(),
-    description: z.string().optional(),
-    summary: z.string().optional(),
-    target: z.nativeEnum(api.IntegrationTarget).optional(),
-    scopes: z.array(z.nativeEnum(api.IntegrationScope)),
-    categories: z.array(z.nativeEnum(api.IntegrationCategory)).optional(),
-    blocks: z.array(IntegrationManifestBlock).optional(),
-    contentSources: z.array(IntegrationManifestContentSource).optional(),
-    configurations: z
-        .object({
-            account: IntegrationManifestConfiguration.optional(),
-            space: IntegrationManifestConfiguration.optional(),
-            site: IntegrationManifestConfiguration.optional(),
-        })
-        .optional(),
-    previewImages: z.array(z.string()).max(3).optional(),
-    externalLinks: z
-        .array(
-            z.object({
-                label: z.string(),
-                url: z.string().url(),
-            }),
-        )
-        .optional(),
-    contentSecurityPolicy: z.union([z.string(), z.record(z.string(), z.string())]).optional(),
-    envs: z.record(IntegrationManifestEnvironmentSchema).optional(),
-}).merge(IntegrationManifestEnvironmentSchema);
+const IntegrationManifestSchema = z
+    .object({
+        name: IntegrationNameSchema,
+        title: z.string(),
+        script: z.string(),
+        icon: z.string().optional(),
+        description: z.string().optional(),
+        summary: z.string().optional(),
+        target: z.nativeEnum(api.IntegrationTarget).optional(),
+        scopes: z.array(z.nativeEnum(api.IntegrationScope)),
+        categories: z.array(z.nativeEnum(api.IntegrationCategory)).optional(),
+        blocks: z.array(IntegrationManifestBlock).optional(),
+        contentSources: z.array(IntegrationManifestContentSource).optional(),
+        configurations: z
+            .object({
+                account: IntegrationManifestConfiguration.optional(),
+                space: IntegrationManifestConfiguration.optional(),
+                site: IntegrationManifestConfiguration.optional(),
+            })
+            .optional(),
+        previewImages: z.array(z.string()).max(3).optional(),
+        externalLinks: z
+            .array(
+                z.object({
+                    label: z.string(),
+                    url: z.string().url(),
+                }),
+            )
+            .optional(),
+        contentSecurityPolicy: z.union([z.string(), z.record(z.string(), z.string())]).optional(),
+        envs: z.record(IntegrationManifestEnvironmentSchema).optional(),
+    })
+    .merge(IntegrationManifestEnvironmentSchema);
 
 export type IntegrationManifest = z.infer<typeof IntegrationManifestSchema>;
 

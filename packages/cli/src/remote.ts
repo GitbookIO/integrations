@@ -9,9 +9,7 @@ const userAgent = `${name}/${version}`;
 /**
  * Get an authenticated API client.
  */
-export async function getAPIClient(
-    requireAuth: boolean = true
-): Promise<GitBookAPI> {
+export async function getAPIClient(requireAuth: boolean = true): Promise<GitBookAPI> {
     const authConfig = getAuthConfig();
     if (!authConfig.token && requireAuth) {
         throw new Error(

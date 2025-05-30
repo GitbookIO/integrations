@@ -3,7 +3,6 @@ import Conf from 'conf';
 import { GITBOOK_DEFAULT_ENDPOINT } from '@gitbook/api';
 import { DEFAULT_ENV, getEnvironment } from './environments';
 
-
 interface CliConfig {
     /**
      * Endpoint for the API.
@@ -19,16 +18,19 @@ interface CliConfig {
     /**
      * Environment configured.
      */
-    envs: Record<string, {
-        /**
-         * API endpoint to authenticate to.
-         */
-        endpoint: string;
-        /**
-         * API token to authenticate with.
-         */
-        token?: string;
-    }>;
+    envs: Record<
+        string,
+        {
+            /**
+             * API endpoint to authenticate to.
+             */
+            endpoint: string;
+            /**
+             * API token to authenticate with.
+             */
+            token?: string;
+        }
+    >;
 }
 
 /**
@@ -51,10 +53,7 @@ export const config = new Conf<CliConfig>({
 /**
  * Save the authentication to use for the given environment.
  */
-export function saveAuthConfig(authConfig: {
-    endpoint: string;
-    token?: string;
-}): void {
+export function saveAuthConfig(authConfig: { endpoint: string; token?: string }): void {
     const env = getEnvironment();
     config.set(`envs.${env}`, authConfig);
 }
@@ -69,7 +68,9 @@ export function getAuthConfig(): {
     const env = getEnvironment();
     if (process.env.GITBOOK_TOKEN) {
         if (env !== DEFAULT_ENV) {
-            throw new Error('Cannot use environment variable "GITBOOK_TOKEN" and argument "--env" at the same time');
+            throw new Error(
+                'Cannot use environment variable "GITBOOK_TOKEN" and argument "--env" at the same time',
+            );
         }
 
         return {
@@ -91,8 +92,8 @@ export function getAuthConfig(): {
     if (deprecatedEndpoint && deprecatedToken) {
         return {
             endpoint: deprecatedEndpoint,
-            token: deprecatedToken, 
-        }
+            token: deprecatedToken,
+        };
     }
 
     return {
