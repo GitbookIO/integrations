@@ -8,20 +8,19 @@ summary: |
     # Overview
 
     TODO
-scopes: []
+scopes:
+  - conversations:ingest
 organization: gitbook
 configurations:
     account:
-        properties:
-            oauth_credentials:
-                type: button
-                title: Connection
-                description: Authorization between Zendesk and GitBook.
-                button_text: Authorize
-                callback_url: /oauth
-        required:
-            - oauth_credentials
+        componentId: config
 secrets:
     CLIENT_ID: ${{ env.ZENDESK_CLIENT_ID }}
     CLIENT_SECRET: ${{ env.ZENDESK_CLIENT_SECRET }}
 target: organization
+envs:
+  dev-samy:
+    organization: 27dLEczo4lLcYIQhRuxg
+    secrets:
+       CLIENT_ID: ${{ "op://gitbook-x-dev/Zendesk-dev-samy/username" }}
+       CLIENT_SECRET: ${{ "op://gitbook-x-dev/Zendesk-dev-samy/CLIENT_SECRET" }}
