@@ -53,6 +53,7 @@ export async function parseTicketAsConversation(client: ZendeskClient, ticket: Z
         id: `${client.subdomain}/${ticket.id}`,
         subject: ticket.subject,
         metadata: {
+            url: `https://${client.subdomain}.zendesk.com/agent/tickets/${ticket.id}`,
             attributes: {
                 id: ticket.id.toString(),
                 subdomain: client.subdomain,
