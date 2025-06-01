@@ -5,18 +5,43 @@ import {
 import { ZendeskRuntimeContext } from './types';
 import { configComponent } from './config';
 import { getZendeskClient, getZendeskOAuthConfig } from './client';
-import { ingestTickets } from './conversations';
+import { ingestTickets, parseTicketAsConversation } from './conversations';
+import { ZendeskWebhookPayload } from './zendesk';
 
 export default createIntegration<ZendeskRuntimeContext>({
     fetch: async (request, context) => {
         const url = new URL(request.url);
 
+        /*
+         * Webhook to ingest tickets when they are closed or solved.
+         */
         if (url.pathname.endsWith('/webhook')) {
-            const payload = await request.json();
-            console.log(`Webhook received: ${JSON.stringify(payload)}`);
+            const payload = await request.json<ZendeskWebhookPayload>();
+
+            if (payload.type === 'zen:event-type:ticket.status_changed') {
+                if (payload.event.current === 'CLOSED' || payload.event.current === 'SOLVED') {
+                    const { installation } = context.environment;
+                    if (!installation) {
+                        throw new Error('Installation not found');
+                    }
+
+                    const client = await getZendeskClient(context);
+                    const { ticket } = await client.getTicket(payload.detail.id);
+                    console.log(`Ticket ${ticket.id} status changed to ${ticket.status}`);
+
+                    const conversation = await parseTicketAsConversation(client, ticket);
+                    await context.api.orgs.ingestConversation(installation.target.organization, [conversation]);
+                }
+            } else {
+                throw new Error(`Unknown webhook received: ${payload.type}`);
+            }
+
             return new Response('OK', { status: 200 });
         }
 
+        /*
+         * OAuth flow.
+         */
         if (url.pathname.endsWith('/oauth')) {
             const oauthHandler = createOAuthHandler(getZendeskOAuthConfig(context), { replace: false });
             return oauthHandler(request, context);

@@ -43,39 +43,15 @@ export type ZendeskWebhookVia = {
   channel: string;
 }
 
-export type ZendeskWebhookTicketDetail = {
-  actor_id: string;
-  assignee_id: string;
-  brand_id: string;
-  created_at: string;
-  custom_status: string | null;
-  description: string;
-  external_id: string | null;
-  form_id: string;
-  group_id: string;
-  id: string;
-  is_public: boolean;
-  organization_id: string | null;
-  priority: string | null;
-  requester_id: string;
-  status: string;
-  subject: string;
-  submitter_id: string;
-  tags: string[] | null;
-  type: string;
-  updated_at: string;
-  via: ZendeskWebhookVia;
-}
-
 /**
  * https://developer.zendesk.com/api-reference/webhooks/event-types/ticket-events/#status-changed
  */
 export type ZendeskWebhookTicketStatusPayload = {
   account_id: number;
-  detail: ZendeskWebhookTicketDetail;
+  detail: Pick<ZendeskTicket, 'id' | 'status'>;
   event: {
-    current: string;
-    previous: string;
+    current: 'NEW' | 'OPEN' | 'PENDING' | 'HOLD' | 'SOLVED' | 'CLOSED' | 'DELETED' | 'ARCHIVED' | 'SCRUBBED';
+    previous: 'NEW' | 'OPEN' | 'PENDING' | 'HOLD' | 'SOLVED' | 'CLOSED' | 'DELETED' | 'ARCHIVED' | 'SCRUBBED';
   };
   id: string;
   subject: string;
@@ -83,6 +59,11 @@ export type ZendeskWebhookTicketStatusPayload = {
   type: 'zen:event-type:ticket.status_changed';
   zendesk_event_version: string;
 }
+
+/**
+ * Payload of a webhook event.
+ */
+export type ZendeskWebhookPayload = ZendeskWebhookTicketStatusPayload;
 
 /**
  * https://developer.zendesk.com/api-reference/ticketing/users/users/#json-format
@@ -218,6 +199,15 @@ export class ZendeskClient {
     const endpoint = `/incremental/tickets/cursor${queryString ? `?${queryString}` : ''}`;
 
     return this.request<{ tickets: ZendeskTicket[]; count: number; after_cursor: string | null; before_cursor: string | null }>(endpoint);
+  }
+
+  /**
+   * Get a ticket.
+   * https://developer.zendesk.com/api-reference/ticketing/tickets/tickets/#show-ticket
+   */
+  async getTicket(ticketId: number) {
+    const endpoint = `/tickets/${ticketId}`;
+    return this.request<{ ticket: ZendeskTicket }>(endpoint);
   }
 
   /**
