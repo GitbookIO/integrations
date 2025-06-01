@@ -58,8 +58,9 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
     /**
      * Handle a fetch event sent by the integration dispatcher.
      */
-    async function handleWorkerDispatchEvent(ev: FetchEvent): Promise<Response> {
-        const version = new URL(ev.request.url).pathname.slice(1);
+    return {
+     fetch: async (request: Request, env: any, ctx: ExecutionContext): Promise<Response> => {
+        const version = new URL(request.url).pathname.slice(1);
 
         /**
          * Only check the version in production, as the dispatcher is not versioned
@@ -73,13 +74,13 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
         }
 
         try {
-            const formData = await ev.request.formData();
+            const formData = await request.formData();
 
             const event = JSON.parse(formData.get('event') as string) as Event;
             const fetchBody = formData.get('fetch-body');
             const context = createContext(
                 JSON.parse(formData.get('environment') as string) as IntegrationEnvironment,
-                ev.waitUntil.bind(ev), // internally, waitUntil contains a check on 'this' to ensure this === FetchEvent so we bind it here before passing it down
+                (promise) => ctx.waitUntil(promise),
             ) as Context;
 
             logger.info(`[${event.eventId}] ${event.type}`);
@@ -216,8 +217,5 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
             );
         }
     }
-
-    addEventListener('fetch', (ev: FetchEvent) => {
-        ev.respondWith(handleWorkerDispatchEvent(ev));
-    });
+    }
 }

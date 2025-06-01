@@ -1,11 +1,11 @@
 import chokidar from 'chokidar';
 import getPort from 'get-port';
-import { Log, LogLevel, Miniflare } from 'miniflare';
+import { Log, LogLevel, Miniflare, MiniflareOptions } from 'miniflare';
 import ora from 'ora';
 import * as path from 'path';
 
 import { buildScriptFromManifest } from './build';
-import { getDefaultManifestPath, resolveFile, resolveIntegrationManifestPath } from './manifest';
+import { resolveFile } from './manifest';
 import { getAPIClient } from './remote';
 import { createDevTunnel } from './tunnel';
 
@@ -49,15 +49,20 @@ export async function startIntegrationsDevServer(
      * when it detects a change with watch mode
      */
     spinner.start('Starting dev server...');
-    const mermaidOptions = {
+    console.log(scriptPath);
+    const miniflareOptions: MiniflareOptions = {
         scriptPath,
         port,
         verbose: true,
+        modules: true,
+        modulesRoot: path.dirname(scriptPath),
+        compatibilityDate: '2025-05-25',
+        compatibilityFlags: ['nodejs_compat'],
         log: new Log(LogLevel.DEBUG, {
             prefix: manifest.name,
         }),
     };
-    const mf = new Miniflare(mermaidOptions);
+    const mf = new Miniflare(miniflareOptions);
     await mf.ready;
     spinner.succeed(`Dev server started`);
 
@@ -90,7 +95,7 @@ export async function startIntegrationsDevServer(
             spinner.start('🛠  Detected changes, rebuilding...');
             try {
                 await buildScriptFromManifest(manifestSpecPath, { mode: 'development' });
-                await mf.setOptions(mermaidOptions);
+                await mf.setOptions(miniflareOptions);
                 spinner.succeed(`📦 Rebuilt in ${((performance.now() - p1) / 1000).toFixed(2)}s`);
             } catch (error) {
                 spinner.fail((error as Error).message);
