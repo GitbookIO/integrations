@@ -1,36 +1,118 @@
-interface ZendeskConfig {
-  subdomain: string;
-  oauthToken: string;
-}
-
-interface Webhook {
+export type ZendeskWebhook = {
   id: number;
   name: string;
   endpoint: string;
   status: string;
   created_at: string;
   updated_at: string;
-  subscriptions?: WebhookSubscription[];
+  subscriptions?: ZendeskWebhookSubscription[];
 }
 
-type WebhookSubscription = string;
+type ZendeskWebhookSubscription = string;
 
-interface Ticket {
+export type ZendeskPaginatedResponse<T> = T &{
+  count: number;
+  next_page: string | null;
+  previous_page: string | null;
+}
+
+export type ZendeskTicket = {
   id: number;
   subject: string;
+  raw_subject: string;
   description: string;
-  status: string;
+  status: 'new' | 'open' | 'pending' | 'hold' | 'solved' | 'closed';
   priority: string;
   created_at: string;
   updated_at: string;
 }
 
+export type ZendeskTicketComment = {
+    id: number;
+    type: 'Comment';
+    body: string;
+    html_body: string;
+    plain_body: string;
+    public: boolean;
+    author_id: number;
+    created_at: string;
+    updated_at: string;
+}
+
+export type ZendeskWebhookVia = {
+  channel: string;
+}
+
+export type ZendeskWebhookTicketDetail = {
+  actor_id: string;
+  assignee_id: string;
+  brand_id: string;
+  created_at: string;
+  custom_status: string | null;
+  description: string;
+  external_id: string | null;
+  form_id: string;
+  group_id: string;
+  id: string;
+  is_public: boolean;
+  organization_id: string | null;
+  priority: string | null;
+  requester_id: string;
+  status: string;
+  subject: string;
+  submitter_id: string;
+  tags: string[] | null;
+  type: string;
+  updated_at: string;
+  via: ZendeskWebhookVia;
+}
+
+/**
+ * https://developer.zendesk.com/api-reference/webhooks/event-types/ticket-events/#status-changed
+ */
+export type ZendeskWebhookTicketStatusPayload = {
+  account_id: number;
+  detail: ZendeskWebhookTicketDetail;
+  event: {
+    current: string;
+    previous: string;
+  };
+  id: string;
+  subject: string;
+  time: string;
+  type: 'zen:event-type:ticket.status_changed';
+  zendesk_event_version: string;
+}
+
+/**
+ * https://developer.zendesk.com/api-reference/ticketing/users/users/#json-format
+ */
+export type ZendeskUser = {
+    id: number;
+    name: string;
+    email: string;
+    created_at: string;
+    updated_at: string;
+    active: boolean;
+    verified: boolean;
+    role: 'end-user' | 'agent' | 'admin';
+}
+
+/**
+ * Zendesk API client.
+ */
 export class ZendeskClient {
-  private baseUrl: string;
+  private baseURL: string;
   private authHeader: string;
 
-  constructor(config: ZendeskConfig) {
-    this.baseUrl = `https://${config.subdomain}.zendesk.com/api/v2`;
+  public subdomain: string;
+
+  constructor(config: {
+    subdomain: string;
+    oauthToken: string;
+  }) {
+    this.subdomain = config.subdomain;
+    this.baseURL = `https://${config.subdomain}.zendesk.com/api/v2`;
     this.authHeader = `Bearer ${config.oauthToken}`;
   }
 
@@ -38,7 +120,7 @@ export class ZendeskClient {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
-    const url = `${this.baseUrl}${endpoint}`;
+    const url = `${this.baseURL}${endpoint}`;
     const headers = {
       'Authorization': this.authHeader,
       'Content-Type': 'application/json',
@@ -66,27 +148,34 @@ export class ZendeskClient {
     return response.json();
   }
 
-  // Webhook methods
+  /**
+   * List webhooks.
+   * https://developer.zendesk.com/api-reference/webhooks/webhooks-api/webhooks/#list-webhooks
+   */
   async listWebhooks(input: {
     name?: string;
-  } = {}): Promise<{ webhooks: Webhook[] }> {
+  } = {}): Promise<{ webhooks: ZendeskWebhook[] }> {
     const queryParams = new URLSearchParams();
     if (input.name) queryParams.set('filter[name_contains]', input.name);
 
     const queryString = queryParams.toString();
     const endpoint = `/webhooks${queryString ? `?${queryString}` : ''}`;
     
-    return this.request<{ webhooks: Webhook[] }>(endpoint);
+    return this.request<{ webhooks: ZendeskWebhook[] }>(endpoint);
   }
 
+  /**
+   * Create a webhook.
+   * https://developer.zendesk.com/api-reference/webhooks/webhooks-api/webhooks/#create-or-clone-webhook
+   */
   async createWebhook(
     input: {
         name: string, 
         endpoint: string, 
-        subscriptions?: WebhookSubscription[]
+        subscriptions?: ZendeskWebhookSubscription[]
     }
-  ): Promise<{ webhook: Webhook }> {
-    return this.request<{ webhook: Webhook }>('/webhooks', {
+  ): Promise<{ webhook: ZendeskWebhook }> {
+    return this.request<{ webhook: ZendeskWebhook }>('/webhooks', {
       method: 'POST',
       body: JSON.stringify({
         webhook: {
@@ -101,28 +190,51 @@ export class ZendeskClient {
     });
   }
 
+  /**
+   * Delete a webhook.
+   * https://developer.zendesk.com/api-reference/webhooks/webhooks-api/webhooks/#delete-webhook
+   */
   async deleteWebhook(id: number): Promise<void> {
     await this.request(`/webhooks/${id}`, {
       method: 'DELETE',
     });
   }
 
-  // Ticket methods
-  async listTickets(params: {
-    page?: number;
-    per_page?: number;
-    sort_by?: string;
-    sort_order?: 'asc' | 'desc';
-  } = {}): Promise<{ tickets: Ticket[]; count: number; next_page: string | null }> {
+  /**
+   * Incrementally list tickets.
+   * https://developer.zendesk.com/api-reference/ticketing/ticket-management/incremental_exports/#incremental-ticket-export-time-based
+   */
+  async listTicketsIncremental(params: {
+    startTime: Date;
+    cursor?: string | null;
+  }) {
     const queryParams = new URLSearchParams();
-    if (params.page) queryParams.set('page', params.page.toString());
-    if (params.per_page) queryParams.set('per_page', params.per_page.toString());
-    if (params.sort_by) queryParams.set('sort_by', params.sort_by);
-    if (params.sort_order) queryParams.set('sort_order', params.sort_order);
+    queryParams.set('start_time', Math.floor(params.startTime.getTime() / 1000).toString());
+    if (params.cursor) {
+        queryParams.set('cursor', params.cursor);
+    }
 
     const queryString = queryParams.toString();
-    const endpoint = `/tickets${queryString ? `?${queryString}` : ''}`;
-    
-    return this.request<{ tickets: Ticket[]; count: number; next_page: string | null }>(endpoint);
+    const endpoint = `/incremental/tickets/cursor${queryString ? `?${queryString}` : ''}`;
+
+    return this.request<{ tickets: ZendeskTicket[]; count: number; after_cursor: string | null; before_cursor: string | null }>(endpoint);
+  }
+
+  /**
+   * List the comments in a ticket.
+   * https://developer.zendesk.com/api-reference/ticketing/tickets/ticket_comments/#list-comments
+   */
+  async listTicketComments(ticketId: number) {
+    const endpoint = `/tickets/${ticketId}/comments?page[size]=100`;
+    return this.request<ZendeskPaginatedResponse<{ comments: ZendeskTicketComment[] }>>(endpoint);
+  }
+
+  /**
+   * Get a user profile.
+   * https://developer.zendesk.com/api-reference/ticketing/users/users/#show-user
+   */
+  async getUser(userId: number) {
+    const endpoint = `/users/${userId}`;
+    return this.request<{ user: ZendeskUser }>(endpoint);
   }
 }

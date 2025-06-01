@@ -11,7 +11,7 @@ export function getZendeskOAuthConfig(context: ZendeskRuntimeContext) {
         redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
         clientId: context.environment.secrets.CLIENT_ID,
         clientSecret: context.environment.secrets.CLIENT_SECRET,
-        scopes: ['tickets:read', 'webhooks:write', 'webhooks:read'],
+        scopes: ['read', 'webhooks:write'],
         authorizeURL: (installation) => {
             const subdomain = assertInstallationSubdomain(installation);
             return `https://${subdomain}.zendesk.com/oauth/authorizations/new`

@@ -4,7 +4,8 @@
     "private": true,
     "dependencies": {
         "@gitbook/runtime": "*",
-        "@gitbook/api": "*"
+        "@gitbook/api": "*",
+        "p-map": "^7.0.3"
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",
