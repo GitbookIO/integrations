@@ -34,7 +34,9 @@ export async function ingestTickets(
             concurrency: 3
         });
 
-        await onConversations(conversations);
+        if (conversations.length > 0) {
+            await onConversations(conversations);
+        }
     } while (ticketsIngested < options.maxTickets && !!cursor);
 }
 
