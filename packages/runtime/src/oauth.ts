@@ -370,7 +370,9 @@ export async function getOAuthToken(
     params.set('grant_type', 'refresh_token');
     params.set('refresh_token', credentials.refresh_token);
 
-    const response = await fetch(config.accessTokenURL, {
+    const accessTokenURL = typeof config.accessTokenURL === 'function' ? config.accessTokenURL(context.environment.installation!) : config.accessTokenURL;
+
+    const response = await fetch(accessTokenURL, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -395,7 +397,12 @@ export async function getOAuthToken(
     await context.api.integrations.updateIntegrationInstallation(
         context.environment.integration.name,
         context.environment.installation!.id,
-        creds,
+        {
+            configuration: {
+                ...context.environment.installation?.configuration,
+                ...creds.configuration,
+            }
+        },
     );
 
     return accessToken;

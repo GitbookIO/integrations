@@ -3,7 +3,9 @@
     "version": "0.0.1",
     "private": true,
     "dependencies": {
-        "@gitbook/runtime": "*"
+        "@gitbook/runtime": "*",
+        "@gitbook/api": "*",
+        "node-zendesk": "^6.0.1"
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",
