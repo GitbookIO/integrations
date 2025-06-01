@@ -1,5 +1,5 @@
-import {createClient} from 'node-zendesk';
-import { ZendeskRuntimeContext, ZendeskRuntimeEnvironment } from './types';
+import { ZendeskClient } from './zendesk';
+import { ZendeskRuntimeContext } from './types';
 import { ExposableError, getOAuthToken, OAuthConfig } from '@gitbook/runtime';
 import { IntegrationInstallation } from '@gitbook/api';
 
@@ -11,7 +11,7 @@ export function getZendeskOAuthConfig(context: ZendeskRuntimeContext) {
         redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
         clientId: context.environment.secrets.CLIENT_ID,
         clientSecret: context.environment.secrets.CLIENT_SECRET,
-        scopes: ['tickets:read'],
+        scopes: ['tickets:read', 'webhooks:write', 'webhooks:read'],
         authorizeURL: (installation) => {
             const subdomain = assertInstallationSubdomain(installation);
             return `https://${subdomain}.zendesk.com/oauth/authorizations/new`
@@ -46,12 +46,11 @@ export async function getZendeskClient(context: ZendeskRuntimeContext) {
         context,
     );
 
-    return createClient({
-        token,
+    return new ZendeskClient({
+        oauthToken: token,
         subdomain,
     })
 }
-
 
 function assertInstallationSubdomain(installation: IntegrationInstallation) {
     const subdomain = installation?.configuration?.subdomain;

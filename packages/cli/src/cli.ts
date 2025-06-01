@@ -74,14 +74,18 @@ program
 
 program
     .command('dev')
+    .argument('[file]', 'integration definition file', DEFAULT_MANIFEST_FILE)
     .description('run the integrations dev server')
     .option('-a, --all', 'Proxy all events from all installations')
     .option('--env <env>', 'environment to use')
-    .action(async (options) => {
+    .action(async (filePath, options) => {
         return withEnvironment(options.env, async () => {
-            await startIntegrationsDevServer({
-                all: options.all ?? false,
-            });
+            await startIntegrationsDevServer(
+                await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath)),
+                {
+                    all: options.all ?? false,
+                },
+            );
         });
     });
 

@@ -4,8 +4,7 @@
     "private": true,
     "dependencies": {
         "@gitbook/runtime": "*",
-        "@gitbook/api": "*",
-        "node-zendesk": "^6.0.1"
+        "@gitbook/api": "*"
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",

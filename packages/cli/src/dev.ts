@@ -14,6 +14,7 @@ import { createDevTunnel } from './tunnel';
  * The dev server will automatically reload changes to the integration script.
  */
 export async function startIntegrationsDevServer(
+    manifestSpecPath: string,
     options: {
         all?: boolean;
     } = {},
@@ -26,7 +27,6 @@ export async function startIntegrationsDevServer(
      * it can be served by the dev server.
      */
     spinner.start('Building integration script...');
-    const manifestSpecPath = await resolveIntegrationManifestPath(getDefaultManifestPath());
     const { path: scriptPath, manifest } = await buildScriptFromManifest(manifestSpecPath, {
         mode: 'development',
     });
