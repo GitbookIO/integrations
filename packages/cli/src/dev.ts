@@ -10,6 +10,19 @@ import { getAPIClient } from './remote';
 import { createDevTunnel } from './tunnel';
 
 /**
+ * Get the global miniflare options for an integration.
+ */
+export function getMiniflareOptions(scriptPath: string): MiniflareOptions {
+    return {
+        scriptPath,
+        modules: true,
+        modulesRoot: path.dirname(scriptPath),
+        compatibilityDate: '2025-05-25',
+        compatibilityFlags: ['nodejs_compat'],
+    };
+}
+
+/**
  * Start the integrations dev server on a random available port.
  * The dev server will automatically reload changes to the integration script.
  */
@@ -51,13 +64,9 @@ export async function startIntegrationsDevServer(
     spinner.start('Starting dev server...');
     console.log(scriptPath);
     const miniflareOptions: MiniflareOptions = {
-        scriptPath,
+        ...getMiniflareOptions(scriptPath),
         port,
         verbose: true,
-        modules: true,
-        modulesRoot: path.dirname(scriptPath),
-        compatibilityDate: '2025-05-25',
-        compatibilityFlags: ['nodejs_compat'],
         log: new Log(LogLevel.DEBUG, {
             prefix: manifest.name,
         }),
