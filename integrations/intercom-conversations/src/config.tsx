@@ -1,5 +1,5 @@
-import { createComponent, InstallationConfigurationProps } from "@gitbook/runtime";
-import { IntercomRuntimeContext, IntercomRuntimeEnvironment } from "./types";
+import { createComponent, InstallationConfigurationProps } from '@gitbook/runtime';
+import { IntercomRuntimeContext, IntercomRuntimeEnvironment } from './types';
 
 /**
  * Configuration component for the Intercom integration.
@@ -16,7 +16,7 @@ export const configComponent = createComponent<
         if (!installation) {
             return null;
         }
-       
+
         return (
             <configuration>
                 <input
@@ -26,7 +26,11 @@ export const configComponent = createComponent<
                         <button
                             style="secondary"
                             disabled={false}
-                            label={element.props.installation.configuration.oauth_credentials ? "Re-authorize" : "Authorize"}
+                            label={
+                                element.props.installation.configuration.oauth_credentials
+                                    ? 'Re-authorize'
+                                    : 'Authorize'
+                            }
                             onPress={{
                                 action: '@ui.url.open',
                                 url: `${installation?.urls.publicEndpoint}/oauth`,
@@ -35,6 +39,6 @@ export const configComponent = createComponent<
                     }
                 />
             </configuration>
-        )
+        );
     },
-}); 
+});

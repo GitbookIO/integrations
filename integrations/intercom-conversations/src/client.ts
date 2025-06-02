@@ -31,8 +31,8 @@ export function getIntercomOAuthConfig(context: IntercomRuntimeContext) {
                         access_token: response.access_token,
                     },
                 },
-            }
-        }
+            };
+        },
     };
 
     return config;
@@ -53,13 +53,9 @@ export async function getIntercomClient(context: IntercomRuntimeContext) {
         throw new Error('Intercom OAuth credentials not found');
     }
 
-    const token = await getOAuthToken(
-        oauth_credentials,
-        getIntercomOAuthConfig(context),
-        context,
-    );
+    const token = await getOAuthToken(oauth_credentials, getIntercomOAuthConfig(context), context);
 
     return new IntercomClient({
         token,
     });
-} 
+}

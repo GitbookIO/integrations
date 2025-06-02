@@ -9,7 +9,7 @@ summary: |
 
     TODO
 scopes:
-  - conversations:ingest
+    - conversations:ingest
 organization: gitbook
 configurations:
     account:
@@ -19,8 +19,8 @@ secrets:
     CLIENT_SECRET: ${{ env.ZENDESK_CLIENT_SECRET }}
 target: organization
 envs:
-  dev-samy:
-    organization: 27dLEczo4lLcYIQhRuxg
-    secrets:
-       CLIENT_ID: ${{ "op://gitbook-x-dev/Zendesk-dev-samy/username" }}
-       CLIENT_SECRET: ${{ "op://gitbook-x-dev/Zendesk-dev-samy/CLIENT_SECRET" }}
+    dev-samy:
+        organization: 27dLEczo4lLcYIQhRuxg
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-x-dev/Zendesk-dev-samy/username" }}
+            CLIENT_SECRET: ${{ "op://gitbook-x-dev/Zendesk-dev-samy/CLIENT_SECRET" }}

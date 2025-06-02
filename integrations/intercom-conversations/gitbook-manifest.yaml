@@ -9,7 +9,7 @@ summary: |
 
     This integration allows you to ingest closed support conversations from Intercom into GitBook Docs Conversations.
 scopes:
-  - conversations:ingest
+    - conversations:ingest
 organization: gitbook
 configurations:
     account:
@@ -17,10 +17,10 @@ configurations:
 secrets:
     CLIENT_ID: ${{ env.INTERCOM_CLIENT_ID }}
     CLIENT_SECRET: ${{ env.INTERCOM_CLIENT_SECRET }}
-target: organization 
+target: organization
 envs:
-  dev-samy:
-    organization: 27dLEczo4lLcYIQhRuxg
-    secrets:
-       CLIENT_ID: ${{ "op://gitbook-x-dev/IntercomConversations/CLIENT_ID" }}
-       CLIENT_SECRET: ${{ "op://gitbook-x-dev/IntercomConversations/CLIENT_SECRET" }}
+    dev-samy:
+        organization: 27dLEczo4lLcYIQhRuxg
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-x-dev/IntercomConversations/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-x-dev/IntercomConversations/CLIENT_SECRET" }}

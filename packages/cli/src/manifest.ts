@@ -230,11 +230,14 @@ function interpolateSecrets(secrets: { [key: string]: string }): { [key: string]
                 })
 
                 // Handle 1Password secrets, defined as `${{ op://<ref> }}` or `${{ "op://<ref>" }}`
-                .replace(/\${{\s*(?:"op:\/\/([\S]+)"|op:\/\/([\S]+))\s*}}/g, (_, quotedRef, unquotedRef) => {
-                    const ref = quotedRef || unquotedRef;
-                    const secret = op.read.parse(`op://${ref}`);
-                    return secret;
-                });
+                .replace(
+                    /\${{\s*(?:"op:\/\/([\S]+)"|op:\/\/([\S]+))\s*}}/g,
+                    (_, quotedRef, unquotedRef) => {
+                        const ref = quotedRef || unquotedRef;
+                        const secret = op.read.parse(`op://${ref}`);
+                        return secret;
+                    },
+                );
             return acc;
         },
         {} as { [key: string]: string },

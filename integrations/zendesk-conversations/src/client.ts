@@ -7,18 +7,18 @@ import { IntegrationInstallation } from '@gitbook/api';
  * Get the OAuth configuration for the Zendesk integration.
  */
 export function getZendeskOAuthConfig(context: ZendeskRuntimeContext) {
-    const config: OAuthConfig =  {
+    const config: OAuthConfig = {
         redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
         clientId: context.environment.secrets.CLIENT_ID,
         clientSecret: context.environment.secrets.CLIENT_SECRET,
         scopes: ['read', 'webhooks:write'],
         authorizeURL: (installation) => {
             const subdomain = assertInstallationSubdomain(installation);
-            return `https://${subdomain}.zendesk.com/oauth/authorizations/new`
+            return `https://${subdomain}.zendesk.com/oauth/authorizations/new`;
         },
         accessTokenURL: (installation) => {
             const subdomain = assertInstallationSubdomain(installation);
-            return `https://${subdomain}.zendesk.com/oauth/tokens`
+            return `https://${subdomain}.zendesk.com/oauth/tokens`;
         },
     };
 
@@ -40,16 +40,12 @@ export async function getZendeskClient(context: ZendeskRuntimeContext) {
         throw new Error('Zendesk subdomain or oauth credentials not found');
     }
 
-    const token = await getOAuthToken(
-        oauth_credentials,
-        getZendeskOAuthConfig(context),
-        context,
-    );
+    const token = await getOAuthToken(oauth_credentials, getZendeskOAuthConfig(context), context);
 
     return new ZendeskClient({
         oauthToken: token,
         subdomain,
-    })
+    });
 }
 
 function assertInstallationSubdomain(installation: IntegrationInstallation) {

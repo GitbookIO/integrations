@@ -1,7 +1,4 @@
-import {
-    createIntegration,
-    createOAuthHandler
-} from '@gitbook/runtime';
+import { createIntegration, createOAuthHandler } from '@gitbook/runtime';
 import { IntercomRuntimeContext } from './types';
 import { getIntercomClient, getIntercomOAuthConfig } from './client';
 import { ingestConversations, parseConversationAsGitBook } from './conversations';
@@ -13,7 +10,7 @@ type IntercomWebhookPayload = {
     data: {
         item: Intercom.Conversation;
     };
-}
+};
 
 export default createIntegration<IntercomRuntimeContext>({
     fetch: async (request, context) => {
@@ -35,8 +32,14 @@ export default createIntegration<IntercomRuntimeContext>({
                 const conversation = payload.data.item;
                 console.log(`Conversation ${conversation.id} was closed`);
 
-                const gitbookConversation = await parseConversationAsGitBook(context, client, conversation);
-                await context.api.orgs.ingestConversation(installation.target.organization, [gitbookConversation]);
+                const gitbookConversation = await parseConversationAsGitBook(
+                    context,
+                    client,
+                    conversation,
+                );
+                await context.api.orgs.ingestConversation(installation.target.organization, [
+                    gitbookConversation,
+                ]);
             } else {
                 throw new Error(`Unknown webhook received: ${payload.type}`);
             }
@@ -48,7 +51,9 @@ export default createIntegration<IntercomRuntimeContext>({
          * OAuth flow.
          */
         if (url.pathname.endsWith('/oauth')) {
-            const oauthHandler = createOAuthHandler(getIntercomOAuthConfig(context), { replace: false });
+            const oauthHandler = createOAuthHandler(getIntercomOAuthConfig(context), {
+                replace: false,
+            });
             return oauthHandler(request, context);
         }
 
@@ -65,5 +70,5 @@ export default createIntegration<IntercomRuntimeContext>({
                 await ingestConversations(context);
             }
         },
-    }
-}); 
+    },
+});

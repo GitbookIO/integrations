@@ -1,23 +1,28 @@
-import { createComponent, InstallationConfigurationProps } from "@gitbook/runtime";
-import { ZendeskRuntimeContext, ZendeskRuntimeEnvironment } from "./types";
+import { createComponent, InstallationConfigurationProps } from '@gitbook/runtime';
+import { ZendeskRuntimeContext, ZendeskRuntimeEnvironment } from './types';
 
-type State = {
-    step: 'initial';
-    subdomain?: undefined;
-} | {
-    step: 'edit.subdomain';
-    subdomain: string;
-} | {
-    step: 'authenticate';
-    subdomain?: undefined;
-}
+type State =
+    | {
+          step: 'initial';
+          subdomain?: undefined;
+      }
+    | {
+          step: 'edit.subdomain';
+          subdomain: string;
+      }
+    | {
+          step: 'authenticate';
+          subdomain?: undefined;
+      };
 
-type Action = {
-    action: 'edit.subdomain';
-} | {
-    action: 'save.subdomain';
-    subdomain: string;
-}
+type Action =
+    | {
+          action: 'edit.subdomain';
+      }
+    | {
+          action: 'save.subdomain';
+          subdomain: string;
+      };
 
 /**
  * Configuration component for the Zendesk integration.
@@ -56,7 +61,7 @@ export const configComponent = createComponent<
                     state: {
                         step: 'edit.subdomain',
                         subdomain: element.props.installation.configuration?.subdomain ?? '',
-                    }
+                    },
                 };
             }
             case 'save.subdomain': {
@@ -68,14 +73,14 @@ export const configComponent = createComponent<
                     {
                         configuration: {
                             subdomain: normalizeSubdomain(action.subdomain),
-                        }
-                    }
+                        },
+                    },
                 );
 
                 return {
                     state: {
                         step: 'authenticate',
-                    }
+                    },
                 };
             }
         }
@@ -102,7 +107,7 @@ export const configComponent = createComponent<
                                     state="subdomain"
                                     initialValue={`https://${installation.configuration.subdomain}.zendesk.com`}
                                     disabled={true}
-                                    />
+                                />
                             }
                         />
                         <box>
@@ -115,9 +120,8 @@ export const configComponent = createComponent<
                                 }}
                             />
                         </box>
-
                     </configuration>
-                )
+                );
             }
             case 'edit.subdomain': {
                 return (
@@ -126,23 +130,26 @@ export const configComponent = createComponent<
                             label="Subdomain"
                             hint={
                                 <text>
-                                    The subdomain of your Zendesk account. For example, if your Zendesk domain is <text style="code">https://my-subdomain.zendesk.com</text>, the subdomain is <text style="code">my-subdomain</text>.
+                                    The subdomain of your Zendesk account. For example, if your
+                                    Zendesk domain is{' '}
+                                    <text style="code">https://my-subdomain.zendesk.com</text>, the
+                                    subdomain is <text style="code">my-subdomain</text>.
                                 </text>
                             }
                             element={<textinput state="subdomain" placeholder="Subdomain" />}
                         />
                         <box>
-                                <button
-                                    style="primary"
-                                    label="Save subdomain"
-                                    onPress={{
-                                        action: 'save.subdomain',
-                                        subdomain: element.dynamicState('subdomain'),
-                                    }}
-                                />
+                            <button
+                                style="primary"
+                                label="Save subdomain"
+                                onPress={{
+                                    action: 'save.subdomain',
+                                    subdomain: element.dynamicState('subdomain'),
+                                }}
+                            />
                         </box>
                     </configuration>
-                )
+                );
             }
             case 'authenticate': {
                 return (
@@ -159,27 +166,27 @@ export const configComponent = createComponent<
                                     state="subdomain"
                                     initialValue={`https://${installation.configuration.subdomain}.zendesk.com`}
                                     disabled={true}
-                                    />
+                                />
                             }
                         />
                         <divider />
                         <input
-                        label="Authenticate"
-                        hint="Authorize GitBook to access your Zendesk account."
-                        element={
-                            <button
-                                style="secondary"
-                                disabled={false}
-                                label="Authorize"
-                                onPress={{
-                                    action: '@ui.url.open',
-                                    url: `${installation?.urls.publicEndpoint}/oauth`,
-                                }}
-                            />
-                        }
-                    />
+                            label="Authenticate"
+                            hint="Authorize GitBook to access your Zendesk account."
+                            element={
+                                <button
+                                    style="secondary"
+                                    disabled={false}
+                                    label="Authorize"
+                                    onPress={{
+                                        action: '@ui.url.open',
+                                        url: `${installation?.urls.publicEndpoint}/oauth`,
+                                    }}
+                                />
+                            }
+                        />
                     </configuration>
-                )
+                );
             }
             default: {
                 throw new Error(`Unknown step: ${JSON.stringify(element.state)}`);

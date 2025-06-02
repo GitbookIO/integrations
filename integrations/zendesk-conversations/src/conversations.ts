@@ -1,5 +1,5 @@
-import pMap from "p-map";
-import { ZendeskClient, ZendeskTicket } from "./zendesk";
+import pMap from 'p-map';
+import { ZendeskClient, ZendeskTicket } from './zendesk';
 import { ConversationInput, ConversationPartMessage } from '@gitbook/api';
 
 /**
@@ -13,7 +13,7 @@ export async function ingestTickets(
         startTime: Date;
         /** Maximum number of tickets to ingest. */
         maxTickets: number;
-    }
+    },
 ) {
     let cursor: string | null = null;
     let ticketsIngested = 0;
@@ -28,11 +28,15 @@ export async function ingestTickets(
         const closedTickets = tickets.filter(isTicketClosed);
         ticketsIngested += closedTickets.length;
 
-        const conversations = await pMap(closedTickets, async (ticket) => {
-            return await parseTicketAsConversation(client, ticket);
-        }, {
-            concurrency: 3
-        });
+        const conversations = await pMap(
+            closedTickets,
+            async (ticket) => {
+                return await parseTicketAsConversation(client, ticket);
+            },
+            {
+                concurrency: 3,
+            },
+        );
 
         if (conversations.length > 0) {
             await onConversations(conversations);
@@ -43,7 +47,10 @@ export async function ingestTickets(
 /**
  * Fetch the conversation from Zendesk and parse it into a GitBook conversation.
  */
-export async function parseTicketAsConversation(client: ZendeskClient, ticket: ZendeskTicket): Promise<ConversationInput> {
+export async function parseTicketAsConversation(
+    client: ZendeskClient,
+    ticket: ZendeskTicket,
+): Promise<ConversationInput> {
     if (!isTicketClosed(ticket)) {
         throw new Error(`Ticket ${ticket.id} is not closed or solved`);
     }
@@ -60,15 +67,19 @@ export async function parseTicketAsConversation(client: ZendeskClient, ticket: Z
             },
             createdAt: ticket.created_at,
         },
-        parts: await pMap(comments.comments, async (comment) => {
-            return {
-                type: 'message',
-                role: await getUserRole(client, comment.author_id),
-                body: comment.plain_body,
-            }
-        }, {
-            concurrency: 3,
-        }),
+        parts: await pMap(
+            comments.comments,
+            async (comment) => {
+                return {
+                    type: 'message',
+                    role: await getUserRole(client, comment.author_id),
+                    body: comment.plain_body,
+                };
+            },
+            {
+                concurrency: 3,
+            },
+        ),
     };
 
     return conversation;
@@ -80,7 +91,10 @@ const cachedRoles = new Map<string, ConversationPartMessage['role']>();
  * Evaluate if a user is an end-user or a team member.
  * We cache the result to avoid making too many requests to Zendesk.
  */
-async function getUserRole(client: ZendeskClient, userId: number): Promise<ConversationPartMessage['role']> {
+async function getUserRole(
+    client: ZendeskClient,
+    userId: number,
+): Promise<ConversationPartMessage['role']> {
     const cacheKey = `${client.subdomain}/${userId}`;
     const cachedRole = cachedRoles.get(cacheKey);
     if (cachedRole) return cachedRole;

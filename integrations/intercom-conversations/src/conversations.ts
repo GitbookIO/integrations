@@ -1,15 +1,13 @@
-import pMap from "p-map";
-import { IntercomClient, Intercom } from "intercom-client";
+import pMap from 'p-map';
+import { IntercomClient, Intercom } from 'intercom-client';
 import { ConversationInput } from '@gitbook/api';
-import { IntercomRuntimeContext } from "./types";
-import { getIntercomClient } from "./client";
+import { IntercomRuntimeContext } from './types';
+import { getIntercomClient } from './client';
 
 /**
  * Ingest the last closed conversations from Intercom.
  */
-export async function ingestConversations(
-    context: IntercomRuntimeContext
-) {
+export async function ingestConversations(context: IntercomRuntimeContext) {
     const { installation } = context.environment;
     if (!installation) {
         throw new Error('Installation not found');
@@ -41,26 +39,33 @@ export async function ingestConversations(
                     },
                 ],
             },
-            pagination: { per_page: perPage }
+            pagination: { per_page: perPage },
         },
         {
             // https://github.com/intercom/intercom-node/issues/460
-            headers: { Accept: "application/json" }
-        }
+            headers: { Accept: 'application/json' },
+        },
     );
 
     while (pageIndex < maxPages) {
         pageIndex += 1;
         console.log(`Found ${page.data.length} conversations`);
 
-        const gitbookConversations = await pMap(page.data, async (conversation) => {
-            return await parseConversationAsGitBook(context, intercom, conversation);
-        }, {
-            concurrency: 3
-        });
+        const gitbookConversations = await pMap(
+            page.data,
+            async (conversation) => {
+                return await parseConversationAsGitBook(context, intercom, conversation);
+            },
+            {
+                concurrency: 3,
+            },
+        );
 
         if (gitbookConversations.length > 0) {
-            await context.api.orgs.ingestConversation(installation.target.organization, gitbookConversations);
+            await context.api.orgs.ingestConversation(
+                installation.target.organization,
+                gitbookConversations,
+            );
         }
 
         if (!page.hasNextPage()) {
@@ -68,7 +73,6 @@ export async function ingestConversations(
         }
         page = await page.getNextPage();
     }
-
 }
 
 /**
@@ -77,7 +81,7 @@ export async function ingestConversations(
 export async function parseConversationAsGitBook(
     context: IntercomRuntimeContext,
     intercom: IntercomClient,
-    partialConversation: Intercom.Conversation
+    partialConversation: Intercom.Conversation,
 ): Promise<ConversationInput> {
     if (partialConversation.state !== 'closed') {
         throw new Error(`Conversation ${partialConversation.id} is not closed`);
@@ -113,8 +117,8 @@ export async function parseConversationAsGitBook(
     }
 
     const conversation = await intercom.conversations.find({
-            conversation_id: partialConversation.id,
-        });
+        conversation_id: partialConversation.id,
+    });
     for (const part of conversation.conversation_parts?.conversation_parts ?? []) {
         if (part.author.type === 'bot') {
             continue;
@@ -136,4 +140,4 @@ export async function parseConversationAsGitBook(
     }
 
     return resultConversation;
-} 
+}

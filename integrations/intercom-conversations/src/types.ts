@@ -12,7 +12,7 @@ export type IntercomInstallationConfiguration = {
     oauth_credentials?: {
         access_token: string;
     };
-}
+};
 
 export type IntercomRuntimeEnvironment = RuntimeEnvironment<IntercomInstallationConfiguration>;
-export type IntercomRuntimeContext = RuntimeContext<IntercomRuntimeEnvironment>; 
+export type IntercomRuntimeContext = RuntimeContext<IntercomRuntimeEnvironment>;

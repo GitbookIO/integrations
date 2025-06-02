@@ -115,7 +115,10 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
                 );
             }
 
-            const authorizeURL = typeof config.authorizeURL === 'function' ? config.authorizeURL(environment.installation) : config.authorizeURL;
+            const authorizeURL =
+                typeof config.authorizeURL === 'function'
+                    ? config.authorizeURL(environment.installation)
+                    : config.authorizeURL;
 
             logger.debug(`handle redirect to authorization at: ${authorizeURL}`);
 
@@ -290,11 +293,10 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
             } else {
                 if (!replace) {
                     if (!installation) {
-                        const result =
-                            await api.integrations.getIntegrationInstallationById(
-                                environment.integration.name,
-                                state.installationId,
-                            );
+                        const result = await api.integrations.getIntegrationInstallationById(
+                            environment.integration.name,
+                            state.installationId,
+                        );
                         installation = result.data;
                     }
                     existing.configuration = installation.configuration;
@@ -370,7 +372,10 @@ export async function getOAuthToken(
     params.set('grant_type', 'refresh_token');
     params.set('refresh_token', credentials.refresh_token);
 
-    const accessTokenURL = typeof config.accessTokenURL === 'function' ? config.accessTokenURL(context.environment.installation!) : config.accessTokenURL;
+    const accessTokenURL =
+        typeof config.accessTokenURL === 'function'
+            ? config.accessTokenURL(context.environment.installation!)
+            : config.accessTokenURL;
 
     const response = await fetch(accessTokenURL, {
         method: 'POST',
@@ -401,7 +406,7 @@ export async function getOAuthToken(
             configuration: {
                 ...context.environment.installation?.configuration,
                 ...creds.configuration,
-            }
+            },
         },
     );
 
