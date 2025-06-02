@@ -142,12 +142,12 @@ program
 
 program
     .command('check')
+    .argument('[file]', 'integration definition file', DEFAULT_MANIFEST_FILE)
     .description('check the integration build')
-    .option('--env <env>', 'environment to use')
-    .action(async (options) => {
-        return withEnvironment(options.env, async () => {
-            await checkIntegrationBuild();
-        });
+    .action(async (filePath) => {
+        await checkIntegrationBuild(
+            await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath)),
+        );
     });
 
 const openAPIProgram = program.command('openapi').description('manage OpenAPI specifications');

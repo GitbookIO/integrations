@@ -19,6 +19,10 @@ secrets:
     CLIENT_SECRET: ${{ env.ZENDESK_CLIENT_SECRET }}
 target: organization
 envs:
+    test:
+        secrets:
+            CLIENT_ID: '<CLIENT_ID>'
+            CLIENT_SECRET: '<CLIENT_SECRET>'
     dev-samy:
         organization: 27dLEczo4lLcYIQhRuxg
         secrets:

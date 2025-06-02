@@ -121,7 +121,7 @@ const IntegrationManifestSchema = z
             )
             .optional(),
         contentSecurityPolicy: z.union([z.string(), z.record(z.string(), z.string())]).optional(),
-        envs: z.record(IntegrationManifestEnvironmentSchema).optional(),
+        envs: z.record(z.object(IntegrationManifestEnvironmentSchema.shape).partial()).optional(),
     })
     .merge(IntegrationManifestEnvironmentSchema);
 
