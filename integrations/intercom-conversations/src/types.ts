@@ -1,6 +1,6 @@
 import { RuntimeEnvironment, RuntimeContext } from '@gitbook/runtime';
 
-export interface IntercomInstallationConfiguration {
+export type IntercomInstallationConfiguration = {
     /**
      * ID of the team to ingest conversations from.
      */

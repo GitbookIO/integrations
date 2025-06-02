@@ -1,6 +1,6 @@
 import { RuntimeEnvironment, RuntimeContext } from '@gitbook/runtime';
 
-export interface ZendeskInstallationConfiguration {
+export type ZendeskInstallationConfiguration = {
     /**
      * Zendesk subdomain.
      */

@@ -34,18 +34,18 @@ export const configComponent = createComponent<
 
         if (installation.configuration?.subdomain && installation.configuration.oauth_credentials) {
             return {
-                step: 'initial',
+                step: 'initial' as const,
             };
         }
 
         if (installation.configuration?.subdomain) {
             return {
-                step: 'authenticate',
+                step: 'authenticate' as const,
             };
         }
 
         return {
-            step: 'edit_subdomain',
+            step: 'edit.subdomain' as const,
             subdomain: '',
         };
     },

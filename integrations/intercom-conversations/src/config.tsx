@@ -16,7 +16,6 @@ export const configComponent = createComponent<
         if (!installation) {
             return null;
         }
-
        
         return (
             <configuration>
