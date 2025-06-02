@@ -101,9 +101,9 @@ const embedBlock = createComponent<
                     onPress={
                         element.state.visible
                             ? {
-                                action: '@ui.url.open',
-                                url,
-                            }
+                                  action: '@ui.url.open',
+                                  url,
+                              }
                             : { action: 'null' }
                     }
                     icon={
@@ -186,18 +186,18 @@ const snippetBlock = createComponent<
                     <card>
                         <input
                             label="GitHub URL"
-                            title="Enter the GitHub file URL"
+                            hint="Enter the GitHub file URL"
                             element={
                                 <textinput
                                     state="url"
-                                    placeholder='https://github.com/owner/repo/blob/main/file.js'
+                                    placeholder="https://github.com/owner/repo/blob/main/file.js"
                                     initialValue={url || ''}
                                 />
                             }
                         />
                         <input
                             label="Snippet Tag"
-                            title="Enter the snippet tag name"
+                            hint="Enter the snippet tag name"
                             element={
                                 <textinput
                                     state="snippetTag"
@@ -220,7 +220,7 @@ const snippetBlock = createComponent<
         }
 
         const found = await getGithubSnippetContent(url, snippetTag, context);
-        console.log("found", found)
+        console.log('found', found);
 
         if (!found) {
             return (
@@ -271,9 +271,9 @@ const snippetBlock = createComponent<
                     onPress={
                         element.state.visible
                             ? {
-                                action: '@ui.url.open',
-                                url,
-                            }
+                                  action: '@ui.url.open',
+                                  url,
+                              }
                             : { action: 'null' }
                     }
                     icon={
@@ -306,8 +306,8 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
     const router = Router({
         base: new URL(
             environment.spaceInstallation?.urls?.publicEndpoint ||
-            environment.installation?.urls.publicEndpoint ||
-            environment.integration.urls.publicEndpoint,
+                environment.installation?.urls.publicEndpoint ||
+                environment.integration.urls.publicEndpoint,
         ).pathname,
     });
 
