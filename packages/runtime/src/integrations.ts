@@ -1,5 +1,5 @@
 import { Event, IntegrationEnvironment } from '@gitbook/api';
-import type * as Cloudflare from "@cloudflare/workers-types/experimental";
+import type * as Cloudflare from '@cloudflare/workers-types/experimental';
 
 import { ComponentDefinition } from './components';
 import { createContext, RuntimeContext } from './context';
@@ -60,7 +60,11 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
      * Handle a fetch event sent by the integration dispatcher.
      */
     return {
-        fetch: async (request: Request, env: any, ctx: Cloudflare.ExecutionContext): Promise<Response> => {
+        fetch: async (
+            request: Request,
+            env: any,
+            ctx: Cloudflare.ExecutionContext,
+        ): Promise<Response> => {
             const version = new URL(request.url).pathname.slice(1);
 
             /**
