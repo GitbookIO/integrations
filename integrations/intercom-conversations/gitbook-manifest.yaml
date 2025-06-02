@@ -1,0 +1,26 @@
+name: intercom-conversations
+title: Intercom Connector
+icon: ./assets/icon.png
+description: Ingest Intercom support conversations into GitBook Docs Conversations.
+visibility: public
+script: ./src/index.ts
+summary: |
+    # Overview
+
+    This integration allows you to ingest closed support conversations from Intercom into GitBook Docs Conversations.
+scopes:
+  - conversations:ingest
+organization: gitbook
+configurations:
+    account:
+        componentId: config
+secrets:
+    CLIENT_ID: ${{ env.INTERCOM_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.INTERCOM_CLIENT_SECRET }}
+target: organization 
+envs:
+  dev-samy:
+    organization: 27dLEczo4lLcYIQhRuxg
+    secrets:
+       CLIENT_ID: ${{ "op://gitbook-x-dev/IntercomConversations/CLIENT_ID" }}
+       CLIENT_SECRET: ${{ "op://gitbook-x-dev/IntercomConversations/CLIENT_SECRET" }}
