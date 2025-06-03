@@ -107,12 +107,15 @@ export async function parseConversationAsGitBook(
         });
     }
 
-    const conversation = await intercom.conversations.find({
-        conversation_id: partialConversation.id,
-    }, {
-        // https://github.com/intercom/intercom-node/issues/460
-        headers: { Accept: 'application/json' },
-    },);
+    const conversation = await intercom.conversations.find(
+        {
+            conversation_id: partialConversation.id,
+        },
+        {
+            // https://github.com/intercom/intercom-node/issues/460
+            headers: { Accept: 'application/json' },
+        },
+    );
     for (const part of conversation.conversation_parts?.conversation_parts ?? []) {
         if (part.author.type === 'bot') {
             continue;
