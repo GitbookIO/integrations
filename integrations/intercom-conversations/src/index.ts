@@ -1,12 +1,16 @@
-import { createIntegration, createOAuthHandler } from '@gitbook/runtime';
+import { createIntegration, createOAuthHandler, ExposableError } from '@gitbook/runtime';
 import { IntercomRuntimeContext } from './types';
 import { getIntercomClient, getIntercomOAuthConfig } from './client';
 import { ingestConversations, parseConversationAsGitBook } from './conversations';
 import { configComponent } from './config';
 import { Intercom } from 'intercom-client';
 
+/**
+ * https://developers.intercom.com/docs/references/webhooks/webhook-models#webhook-notification-object
+ */
 type IntercomWebhookPayload = {
-    type: 'conversation.closed';
+    type: 'notification_event';
+    topic: 'conversation.closed';
     data: {
         item: Intercom.Conversation;
     };
@@ -22,7 +26,7 @@ export default createIntegration<IntercomRuntimeContext>({
         if (url.pathname.endsWith('/webhook')) {
             const payload = await request.json<IntercomWebhookPayload>();
 
-            if (payload.type === 'conversation.closed') {
+            if (payload.topic === 'conversation.closed') {
                 const { installation } = context.environment;
                 if (!installation) {
                     throw new Error('Installation not found');
@@ -41,7 +45,7 @@ export default createIntegration<IntercomRuntimeContext>({
                     gitbookConversation,
                 ]);
             } else {
-                throw new Error(`Unknown webhook received: ${payload.type}`);
+                throw new ExposableError(`Unknown webhook received: ${payload.topic}`);
             }
 
             return new Response('OK', { status: 200 });

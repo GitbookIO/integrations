@@ -13,26 +13,6 @@ export function getIntercomOAuthConfig(context: IntercomRuntimeContext) {
         scopes: ['conversations.read'],
         authorizeURL: () => 'https://app.intercom.com/oauth',
         accessTokenURL: () => 'https://api.intercom.io/auth/eagle/token',
-        extractCredentials: async (response) => {
-            const intercom = new IntercomClient({
-                token: response.access_token,
-            });
-
-            const teams = await intercom.teams.list();
-            const team = teams.teams[0];
-            if (!team) {
-                throw new ExposableError('No team found');
-            }
-
-            return {
-                configuration: {
-                    teamId: team.id,
-                    oauth_credentials: {
-                        access_token: response.access_token,
-                    },
-                },
-            };
-        },
     };
 
     return config;

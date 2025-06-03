@@ -13,8 +13,6 @@ export async function ingestConversations(context: IntercomRuntimeContext) {
         throw new Error('Installation not found');
     }
 
-    const { teamId } = installation.configuration;
-
     const intercom = await getIntercomClient(context);
 
     let pageIndex = 0;
@@ -26,11 +24,6 @@ export async function ingestConversations(context: IntercomRuntimeContext) {
             query: {
                 operator: 'AND',
                 value: [
-                    {
-                        field: 'team_assignee_id',
-                        operator: '=',
-                        value: teamId,
-                    },
                     {
                         field: 'open',
                         operator: '=',
@@ -92,12 +85,10 @@ export async function parseConversationAsGitBook(
         throw new Error('Installation not found');
     }
 
-    const { teamId } = installation.configuration;
-
     const resultConversation: ConversationInput = {
         id: partialConversation.id,
         metadata: {
-            url: `https://app.intercom.com/a/inbox/${teamId}/inbox/conversation/${partialConversation.id}`,
+            url: `https://app.intercom.com/a/inbox/_/inbox/conversation/${partialConversation.id}`,
             attributes: {},
             createdAt: new Date(partialConversation.created_at * 1000).toISOString(),
         },
