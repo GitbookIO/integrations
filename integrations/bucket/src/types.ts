@@ -1,6 +1,21 @@
-import type { RuntimeContext } from '@gitbook/runtime';
+import type { RuntimeContext, RuntimeEnvironment } from '@gitbook/runtime';
 
-export type IntegrationContext = {} & RuntimeContext;
+export type BucketSiteInstallationConfiguration = {
+    secret_key?: string;
+};
+
+export type BucketRuntimeEnvironment = RuntimeEnvironment<{}, BucketSiteInstallationConfiguration>;
+
+export type BucketRuntimeContext = RuntimeContext<BucketRuntimeEnvironment>;
+
+export type BucketState = BucketSiteInstallationConfiguration;
+
+export type BucketProps = {
+    siteInstallation: {
+        configuration?: BucketSiteInstallationConfiguration;
+    };
+};
+export type BucketAction = { action: 'save.config' };
 
 export type IntegrationTaskType = 'sync-adaptive-schema';
 
