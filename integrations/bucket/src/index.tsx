@@ -5,24 +5,22 @@ import {
     ExposableError,
     Logger,
     type FetchEventCallback,
-    type RuntimeContext,
 } from '@gitbook/runtime';
-import { arrayToHex, safeCompare } from './utils';
-import type {
-    IntegrationContext,
-    IntegrationTask,
-    IntegrationTaskSyncSiteAdaptiveSchema,
-} from './types';
+import { arrayToHex, assertSiteInstallation, safeCompare } from './utils';
+import { type BucketRuntimeContext, type IntegrationTask } from './types';
 import { handleIntegrationTask } from './tasks';
+import { configBlock } from './components';
 
 const logger = Logger('bucket');
 
-const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request, context) => {
+const handleFetchEvent: FetchEventCallback<BucketRuntimeContext> = async (request, context) => {
     const { environment } = context;
+
+    const siteInstallation = assertSiteInstallation(environment);
 
     const router = Router({
         base: new URL(
-            environment.spaceInstallation?.urls?.publicEndpoint ||
+            siteInstallation.urls?.publicEndpoint ||
                 environment.installation?.urls.publicEndpoint ||
                 environment.integration.urls.publicEndpoint,
         ).pathname,
@@ -96,7 +94,7 @@ const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request,
 
 export default createIntegration({
     fetch: handleFetchEvent,
-    components: [],
+    components: [configBlock],
     events: {
         site_installation_setup: async (event, context) => {
             const api = new GitBookAPI({

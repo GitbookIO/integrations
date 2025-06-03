@@ -1,20 +1,15 @@
 import { Logger } from '@gitbook/runtime';
 import type {
-    IntegrationContext,
+    BucketRuntimeContext,
     IntegrationTask,
     IntegrationTaskSyncSiteAdaptiveSchema,
 } from './types';
-import {
-    GitBookAPI,
-    GitBookAPIError,
-    type SiteAdaptiveJSONSchema,
-    type SiteAdaptiveSchema,
-} from '@gitbook/api';
+import { GitBookAPI, GitBookAPIError, type SiteAdaptiveJSONSchema } from '@gitbook/api';
 
 const logger = Logger('bucket:tasks');
 
 export async function handleIntegrationTask(
-    context: IntegrationContext,
+    context: BucketRuntimeContext,
     task: IntegrationTask,
 ): Promise<void> {
     switch (task.type) {
@@ -36,7 +31,7 @@ export async function handleIntegrationTask(
 }
 
 async function handleSyncAdaptiveSchema(
-    context: IntegrationContext,
+    context: BucketRuntimeContext,
     payload: IntegrationTaskSyncSiteAdaptiveSchema['payload'],
 ): Promise<void> {
     const { organizationId, siteId, installationId } = payload;

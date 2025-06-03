@@ -9,12 +9,6 @@ visibility: private
 organization: gitbook
 configurations:
     site:
-        properties:
-            secret_key:
-                type: string
-                title: Secret Key
-                description: The secret key for your Bucket environment.
-        required:
-            - secret_key
+        componentId: config
 secrets: {}
 target: site
