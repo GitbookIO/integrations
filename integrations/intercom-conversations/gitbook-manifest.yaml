@@ -23,6 +23,10 @@ envs:
         secrets:
             CLIENT_ID: '<CLIENT_ID>'
             CLIENT_SECRET: '<CLIENT_SECRET>'
+    staging:
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-x-staging/intercomConversationsStaging/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-x-staging/intercomConversationsStaging/CLIENT_SECRET" }}
     dev-samy:
         organization: 27dLEczo4lLcYIQhRuxg
         secrets:
