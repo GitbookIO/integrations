@@ -25,10 +25,10 @@ envs:
             CLIENT_SECRET: '<CLIENT_SECRET>'
     staging:
         secrets:
-            CLIENT_ID: ${{ "op://gitbook-x-staging/intercomConversationsStaging/CLIENT_ID" }}
-            CLIENT_SECRET: ${{ "op://gitbook-x-staging/intercomConversationsStaging/CLIENT_SECRET" }}
+            CLIENT_ID: ${{ "op://gitbook-integrations/intercomConversationsStaging/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/intercomConversationsStaging/CLIENT_SECRET" }}
     dev-samy:
         organization: 27dLEczo4lLcYIQhRuxg
         secrets:
-            CLIENT_ID: ${{ "op://gitbook-x-dev/IntercomConversations/CLIENT_ID" }}
-            CLIENT_SECRET: ${{ "op://gitbook-x-dev/IntercomConversations/CLIENT_SECRET" }}
+            CLIENT_ID: ${{ "op://gitbook-integrations/IntercomDevSamyConversations/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/IntercomDevSamyConversations/CLIENT_SECRET" }}

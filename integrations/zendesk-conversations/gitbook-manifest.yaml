@@ -26,5 +26,9 @@ envs:
     dev-samy:
         organization: 27dLEczo4lLcYIQhRuxg
         secrets:
-            CLIENT_ID: ${{ "op://gitbook-x-dev/Zendesk-dev-samy/username" }}
-            CLIENT_SECRET: ${{ "op://gitbook-x-dev/Zendesk-dev-samy/CLIENT_SECRET" }}
+            CLIENT_ID: ${{ "op://gitbook-integrations/Zendesk-dev-samy/username" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/Zendesk-dev-samy/CLIENT_SECRET" }}
+    staging:
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-integrations/Zendesk-staging/username" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/Zendesk-staging/CLIENT_SECRET" }}
