@@ -25,6 +25,8 @@ jobs:
               uses: oven-sh/setup-bun@v2
               with:
                   bun-version-file: 'package.json'
+            - name: Setup 1Password CLI
+              uses: ./.github/composite/setup-1password-op
             - name: Install dependencies
               run: bun install --frozen-lockfile
 
