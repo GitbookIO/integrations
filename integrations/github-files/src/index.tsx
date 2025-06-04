@@ -31,8 +31,9 @@ const embedBlock = createComponent<
 
                 return {
                     props: {
+                        ...element.props,
                         url,
-                        visible: true,
+                        visible: element.props.visible ?? true,
                     },
                 };
             }
@@ -163,7 +164,6 @@ const snippetBlock = createComponent<
                         ...element.props,
                         url: action.url,
                         snippetTag: action.snippetTag,
-                        visible: element.props.visible ?? true,
                     },
                 };
             }
@@ -172,7 +172,6 @@ const snippetBlock = createComponent<
                     props: {
                         ...element.props,
                         snippetTag: action.snippetTag,
-                        visible: element.props.visible ?? true,
                     },
                 };
             }
