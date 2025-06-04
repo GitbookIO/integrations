@@ -14,19 +14,18 @@ import { GithubRuntimeContext, GithubSnippetProps } from './types';
 import { getFileExtension } from './utils';
 
 const embedBlock = createComponent<
-    { url?: string },
-    { visible: boolean },
+    { url?: string; visible?: boolean },
+    {},
     {
         action: 'show' | 'hide';
     },
     GithubRuntimeContext
 >({
     componentId: 'github-code-block',
-    initialState: {
-        visible: true,
-    },
+    initialState: {},
 
     async action(element, action) {
+        console.log('embedBlock action called:', action.action, 'current state:', element.state);
         switch (action.action) {
             case '@link.unfurl': {
                 const { url } = action;
@@ -34,14 +33,27 @@ const embedBlock = createComponent<
                 return {
                     props: {
                         url,
+                        visible: true,
                     },
                 };
             }
             case 'show': {
-                return { state: { visible: true } };
+                console.log('embedBlock show action - setting visible to true');
+                return { 
+                    props: {
+                        ...element.props,
+                        visible: true,
+                    }
+                };
             }
             case 'hide': {
-                return { state: { visible: false } };
+                console.log('embedBlock hide action - setting visible to false');
+                return { 
+                    props: {
+                        ...element.props,
+                        visible: false,
+                    }
+                };
             }
         }
 
@@ -49,7 +61,8 @@ const embedBlock = createComponent<
     },
 
     async render(element, context) {
-        const { url } = element.props as GithubProps;
+        const { url, visible = true } = element.props;
+        console.log('embedBlock render - visible prop:', visible);
         const found = await getGithubContent(url, context);
 
         if (!found) {
@@ -97,9 +110,9 @@ const embedBlock = createComponent<
                 ]}
             >
                 <card
-                    title={element.state.visible ? url : ''}
+                    title={visible ? url : ''}
                     onPress={
-                        element.state.visible
+                        visible
                             ? {
                                   action: '@ui.url.open',
                                   url,
@@ -131,8 +144,8 @@ const embedBlock = createComponent<
 });
 
 const snippetBlock = createComponent<
+    { url?: string; snippetTag?: string; visible?: boolean },
     { url?: string; snippetTag?: string },
-    { visible: boolean; url?: string; snippetTag?: string },
     {
         action: 'show' | 'hide' | 'updateUrl' | 'updateSnippetTag';
         url?: string;
@@ -142,12 +155,12 @@ const snippetBlock = createComponent<
 >({
     componentId: 'github-snippet-block',
     initialState: {
-        visible: true,
         url: '',
         snippetTag: '',
     },
 
     async action(element, action) {
+        console.log('snippetBlock action called:', action.action, 'current state:', element.state);
         switch (action.action) {
             case 'updateUrl': {
                 return {
@@ -155,6 +168,7 @@ const snippetBlock = createComponent<
                         ...element.props,
                         url: action.url,
                         snippetTag: action.snippetTag,
+                        visible: element.props.visible ?? true,
                     },
                 };
             }
@@ -163,14 +177,27 @@ const snippetBlock = createComponent<
                     props: {
                         ...element.props,
                         snippetTag: action.snippetTag,
+                        visible: element.props.visible ?? true,
                     },
                 };
             }
             case 'show': {
-                return { state: { visible: true } };
+                console.log('show action - setting visible to true');
+                return { 
+                    props: {
+                        ...element.props,
+                        visible: true,
+                    }
+                };
             }
             case 'hide': {
-                return { state: { visible: false } };
+                console.log('hide action - setting visible to false');
+                return { 
+                    props: {
+                        ...element.props,
+                        visible: false,
+                    }
+                };
             }
         }
 
@@ -178,7 +205,8 @@ const snippetBlock = createComponent<
     },
 
     async render(element, context) {
-        const { url, snippetTag } = element.props as GithubSnippetProps;
+        const { url, snippetTag, visible = true } = element.props;
+        console.log('snippetBlock render - visible prop:', visible);
 
         if (!url || !snippetTag) {
             return (
@@ -267,9 +295,9 @@ const snippetBlock = createComponent<
                 ]}
             >
                 <card
-                    title={element.state.visible ? `${url} (${snippetTag})` : ''}
+                    title={visible ? `${url} (${snippetTag})` : ''}
                     onPress={
-                        element.state.visible
+                        visible
                             ? {
                                   action: '@ui.url.open',
                                   url,
