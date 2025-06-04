@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.117.1
+
+### Patch Changes
+
+- a9192a5: Bump API version for resizable columns.
+
 ## 0.117.0
 
 ### Minor Changes
