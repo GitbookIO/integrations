@@ -39,7 +39,7 @@ blocks:
       title: GitHub Snippet
       description: Insert a GitHub file snippet using tags (supports multiple snippets)
     - id: github-simple-block
-      title: SG Simple GitHub Reference
+      title: Simple GitHub Reference
       description: Reference GitHub files using owner/repo/branch/file format
 configurations:
     account:
