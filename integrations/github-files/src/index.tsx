@@ -37,19 +37,19 @@ const embedBlock = createComponent<
                 };
             }
             case 'show': {
-                return { 
+                return {
                     props: {
                         ...element.props,
                         visible: true,
-                    }
+                    },
                 };
             }
             case 'hide': {
-                return { 
+                return {
                     props: {
                         ...element.props,
                         visible: false,
-                    }
+                    },
                 };
             }
         }
@@ -177,19 +177,19 @@ const snippetBlock = createComponent<
                 };
             }
             case 'show': {
-                return { 
+                return {
                     props: {
                         ...element.props,
                         visible: true,
-                    }
+                    },
                 };
             }
             case 'hide': {
-                return { 
+                return {
                     props: {
                         ...element.props,
                         visible: false,
-                    }
+                    },
                 };
             }
         }
