@@ -1,13 +1,13 @@
 name: intercom-conversations
 title: Intercom Connector
 icon: ./assets/icon.png
-description: Ingest Intercom support conversations into GitBook Docs Conversations.
+description: Ingest Intercom support conversations into GitBook for auto-improvements.
 visibility: public
 script: ./src/index.ts
 summary: |
     # Overview
 
-    This integration allows you to ingest closed support conversations from Intercom into GitBook Docs Conversations.
+    Automatically get AI-suggested change requests for your docs based on Intercom support conversations.
 scopes:
     - conversations:ingest
 organization: gitbook

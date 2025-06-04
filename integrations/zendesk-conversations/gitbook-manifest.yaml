@@ -1,13 +1,13 @@
 name: zendesk-conversations
 title: Zendesk
 icon: ./assets/icon.png
-description: Ingest Zendesk support tickets into GitBook Docs Conversations.
+description: Ingest Zendesk support tickets into GitBook for auto-improvements.
 visibility: public
 script: ./src/index.tsx
 summary: |
     # Overview
 
-    TODO
+    Automatically get AI-suggested change requests for your docs based on Zendesk support tickets.
 scopes:
     - conversations:ingest
 organization: gitbook
