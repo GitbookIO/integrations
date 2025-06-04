@@ -25,7 +25,6 @@ const embedBlock = createComponent<
     initialState: {},
 
     async action(element, action) {
-        console.log('embedBlock action called:', action.action, 'current state:', element.state);
         switch (action.action) {
             case '@link.unfurl': {
                 const { url } = action;
@@ -38,7 +37,6 @@ const embedBlock = createComponent<
                 };
             }
             case 'show': {
-                console.log('embedBlock show action - setting visible to true');
                 return { 
                     props: {
                         ...element.props,
@@ -47,7 +45,6 @@ const embedBlock = createComponent<
                 };
             }
             case 'hide': {
-                console.log('embedBlock hide action - setting visible to false');
                 return { 
                     props: {
                         ...element.props,
@@ -62,7 +59,6 @@ const embedBlock = createComponent<
 
     async render(element, context) {
         const { url, visible = true } = element.props;
-        console.log('embedBlock render - visible prop:', visible);
         const found = await getGithubContent(url, context);
 
         if (!found) {
@@ -160,7 +156,6 @@ const snippetBlock = createComponent<
     },
 
     async action(element, action) {
-        console.log('snippetBlock action called:', action.action, 'current state:', element.state);
         switch (action.action) {
             case 'updateUrl': {
                 return {
@@ -182,7 +177,6 @@ const snippetBlock = createComponent<
                 };
             }
             case 'show': {
-                console.log('show action - setting visible to true');
                 return { 
                     props: {
                         ...element.props,
@@ -191,7 +185,6 @@ const snippetBlock = createComponent<
                 };
             }
             case 'hide': {
-                console.log('hide action - setting visible to false');
                 return { 
                     props: {
                         ...element.props,
@@ -206,7 +199,6 @@ const snippetBlock = createComponent<
 
     async render(element, context) {
         const { url, snippetTag, visible = true } = element.props;
-        console.log('snippetBlock render - visible prop:', visible);
 
         if (!url || !snippetTag) {
             return (
@@ -248,7 +240,6 @@ const snippetBlock = createComponent<
         }
 
         const found = await getGithubSnippetContent(url, snippetTag, context);
-        console.log('found', found);
 
         if (!found) {
             return (
