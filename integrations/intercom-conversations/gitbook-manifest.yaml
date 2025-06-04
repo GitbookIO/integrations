@@ -21,8 +21,8 @@ target: organization
 envs:
     test:
         secrets:
-            CLIENT_ID: '<CLIENT_ID>'
-            CLIENT_SECRET: '<CLIENT_SECRET>'
+            CLIENT_ID: ${{ "op://gitbook-integrations/intercomConversationsStaging/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/intercomConversationsStaging/CLIENT_SECRET" }}
     staging:
         secrets:
             CLIENT_ID: ${{ "op://gitbook-integrations/intercomConversationsStaging/CLIENT_ID" }}
