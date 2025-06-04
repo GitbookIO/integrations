@@ -7,8 +7,28 @@ export interface GithubInstallationConfiguration {
 }
 
 export interface GithubSnippetProps {
-    url: string;
+    url?: string;
     snippetTag?: string;
+    snippets?: Array<{
+        url: string;
+        snippetTag?: string;
+        id: string;
+    }>;
+    visible?: boolean;
+}
+
+export interface GithubSimpleProps {
+    owner?: string;
+    repo?: string;
+    branch?: string;
+    filePath?: string;
+    snippetTag?: string;
+    visible?: boolean;
+    files?: Array<{
+        filePath: string;
+        snippetTag?: string;
+        id: string;
+    }>;
 }
 
 export type GithubRuntimeEnvironment = RuntimeEnvironment<GithubInstallationConfiguration, {}>;

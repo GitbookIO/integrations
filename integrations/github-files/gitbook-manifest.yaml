@@ -20,7 +20,9 @@ summary: |
 
     **GitHub Files**: Insert the integration, paste your link, and the integration will display the code in a formatted code block.
 
-    **GitHub Snippet**: Insert the snippet block, provide a GitHub URL and a snippet tag (e.g., "BaseOAuthExample"), and the integration will extract and display only the code between the `--8<-- [start:tag]` and `--8<-- [end:tag]` markers.
+    **GitHub Snippet**: Insert the snippet block, provide a GitHub URL and a snippet tag (e.g., "BaseOAuthExample"), and the integration will extract and display only the code between the `--8<-- [start:tag]` and `--8<-- [end:tag]` markers. You can also add multiple snippets to combine them into a single code block.
+
+    **Simple GitHub Reference**: Insert the simple GitHub block and provide repository details (owner, repo, branch, file path) for an easier way to reference files without full URLs.
 
     # Configure
 
@@ -35,7 +37,10 @@ blocks:
           - https://github.com/**
     - id: github-snippet-block
       title: GitHub Snippet
-      description: Insert a GitHub file snippet using tags
+      description: Insert a GitHub file snippet using tags (supports multiple snippets)
+    - id: github-simple-block
+      title: SG Simple GitHub Reference
+      description: Reference GitHub files using owner/repo/branch/file format
 configurations:
     account:
         properties:
