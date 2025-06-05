@@ -15,6 +15,6 @@ runs:
               && rm op.zip
         - name: Setup 1Password CLI
           shell: bash
-          run: op signin
+          run: op user get --me
           env:
               OP_SERVICE_ACCOUNT_TOKEN: ${{ inputs.OP_SERVICE_ACCOUNT_TOKEN }}
