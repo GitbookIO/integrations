@@ -15,6 +15,6 @@
     "scripts": {
         "typecheck": "tsc --noEmit",
         "check": "gitbook check",
-        "publish-integrations-staging": "gitbook publish ."
+        "publish-integrations-staging": "gitbook publish .  --env staging"
     }
 }
