@@ -73,7 +73,7 @@ async function handleSyncAdaptiveSchema(
             getFeatureFlags(secretKey),
         ]);
 
-        await api.orgs.createOrUpdateSiteAdaptiveSchema(organizationId, siteId, {
+        await api.orgs.updateSiteAdaptiveSchema(organizationId, siteId, {
             jsonSchema: {
                 ...existing,
                 properties: {
