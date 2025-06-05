@@ -6,6 +6,7 @@
         "CI",
         "GITHUB_TOKEN",
         "NPM_TOKEN",
+        "OP_SERVICE_ACCOUNT_TOKEN",
         "GITBOOK_TOKEN",
         "GITBOOK_ENDPOINT",
         "GITBOOK_ORGANIZATION",
