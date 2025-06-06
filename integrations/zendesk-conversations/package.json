@@ -1,9 +1,11 @@
 {
-    "name": "@gitbook/integration-helpscout",
+    "name": "@gitbook/integration-zendesk-conversations",
+    "version": "0.0.1",
     "private": true,
-    "version": "1.5.1",
     "dependencies": {
-        "@gitbook/runtime": "*"
+        "@gitbook/runtime": "*",
+        "@gitbook/api": "*",
+        "p-map": "^7.0.3"
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",
@@ -11,8 +13,7 @@
     },
     "scripts": {
         "typecheck": "tsc --noEmit",
-        "publish-integrations-staging": "gitbook publish .",
         "check": "gitbook check",
-        "publish": "gitbook publish ."
+        "publish-integrations-staging": "gitbook publish . --env staging"
     }
 }

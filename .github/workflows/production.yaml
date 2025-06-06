@@ -25,6 +25,10 @@ jobs:
               uses: oven-sh/setup-bun@v2
               with:
                   bun-version-file: 'package.json'
+            - name: Setup 1Password CLI
+              uses: ./.github/composite/setup-1password-op
+              with:
+                  OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
             - name: Install dependencies
               run: bun install --frozen-lockfile
 
@@ -42,6 +46,7 @@ jobs:
                   GITBOOK_TOKEN: ${{ secrets.GITBOOK_PROD_API_TOKEN }}
                   GITBOOK_ENDPOINT: https://api.gitbook.com
                   GITBOOK_ORGANIZATION: gitbook
+                  OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
                   # GitHub Files
                   UNFURL_GITHUB_CLIENT_ID: ${{ secrets.UNFURL_GITHUB_CLIENT_ID }}
                   UNFURL_GITHUB_CLIENT_SECRET: ${{ secrets.UNFURL_GITHUB_CLIENT_SECRET }}
