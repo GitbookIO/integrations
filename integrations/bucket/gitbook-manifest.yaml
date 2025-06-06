@@ -1,0 +1,14 @@
+name: bucket
+title: Bucket
+script: src/index.tsx
+description: ''
+scopes:
+    - site:adaptive:read
+    - site:adaptive:write
+visibility: private
+organization: gitbook
+configurations:
+    site:
+        componentId: config
+secrets: {}
+target: site
