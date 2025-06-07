@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.118.0
+
+### Minor Changes
+
+- 9bdef53: Bump to add customization options: `depth` style and `circular` corner style option
+
 ## 0.117.1
 
 ### Patch Changes
