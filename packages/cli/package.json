@@ -1,21 +1,22 @@
 {
     "name": "@gitbook/cli",
     "description": "CLI to build and publish integrations on GitBook.com",
-    "version": "0.23.0",
+    "version": "0.24.0",
     "dependencies": {
         "@gitbook/api": "*",
         "check-node-version": "^4.2.1",
         "commander": "^9.2.0",
-        "conf": "^10.1.2",
+        "conf": "^13.1.0",
         "dedent-js": "^1.0.1",
         "esbuild": "^0.17.11",
         "get-port": "^6.1.2",
         "js-yaml": "^4.1.0",
         "ora": "^6.2.0",
         "prompts": "^2.4.2",
-        "zod": "^3.23.8",
+        "zod": "^3.25.42",
         "chokidar": "^4.0.1",
-        "miniflare": "^3.20240925.0"
+        "miniflare": "^4.20250525.0",
+        "@1password/op-js": "^0.1.13"
     },
     "devDependencies": {
         "@gitbook/tsconfig": "*",

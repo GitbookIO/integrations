@@ -1,4 +1,4 @@
-import type { RequestUpdateIntegrationInstallation } from '@gitbook/api';
+import type { IntegrationInstallation, RequestUpdateIntegrationInstallation } from '@gitbook/api';
 
 import type { RuntimeCallback, RuntimeContext } from './context';
 import { Logger } from './logger';
@@ -38,12 +38,12 @@ export interface OAuthConfig<TOAuthResponse = OAuthResponse> {
     /**
      * URL to redirect the user to, for authrorization.
      */
-    authorizeURL: string;
+    authorizeURL: string | ((installation: IntegrationInstallation) => string);
 
     /**
      * URL to exchange the OAuth code for an access token.
      */
-    accessTokenURL: string;
+    accessTokenURL: string | ((installation: IntegrationInstallation) => string);
 
     /**
      * Scopes to ask for.
@@ -115,9 +115,14 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
                 );
             }
 
-            logger.debug(`handle redirect to authorization at: ${config.authorizeURL}`);
+            const authorizeURL =
+                typeof config.authorizeURL === 'function'
+                    ? config.authorizeURL(environment.installation)
+                    : config.authorizeURL;
 
-            const redirectTo = new URL(config.authorizeURL);
+            logger.debug(`handle redirect to authorization at: ${authorizeURL}`);
+
+            const redirectTo = new URL(authorizeURL);
             redirectTo.searchParams.set('client_id', config.clientId);
             redirectTo.searchParams.set('redirect_uri', redirectUri);
             redirectTo.searchParams.set('response_type', 'code');
@@ -155,39 +160,6 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
         // Exchange the code for an access token
         //
         else {
-            logger.debug(`handle oauth access token exchange: ${config.accessTokenURL}`);
-
-            const params = new URLSearchParams();
-            params.set('client_id', config.clientId);
-            params.set('client_secret', config.clientSecret);
-            params.set('code', code);
-            params.set('redirect_uri', redirectUri);
-            params.set('grant_type', 'authorization_code');
-
-            const response = await fetch(config.accessTokenURL, {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: params.toString(),
-            });
-
-            logger.debug(`received oauth response ${response.status}: ${response.statusText}`);
-
-            if (!response.ok) {
-                throw new Error(
-                    `Failed to exchange code for access token ${await response.text()}`,
-                );
-            }
-
-            const json = (await response.json()) as TOAuthResponse;
-
-            // Store the credentials in the installation configuration
-            // @ts-ignore
-            const credentials = await extractCredentials(json);
-            logger.debug(`exchange code for credentials`, credentials);
-
             const rawState = url.searchParams.get('state');
             if (!rawState) {
                 throw new Error('Missing state parameter in OAuth callback');
@@ -210,6 +182,53 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
                 spaceId?: string;
                 siteId?: string;
             } = JSON.parse(rawState);
+
+            let installation: IntegrationInstallation | null = null;
+
+            let accessTokenURL = '';
+            if (typeof config.accessTokenURL === 'function') {
+                const result = await api.integrations.getIntegrationInstallationById(
+                    environment.integration.name,
+                    state.installationId,
+                );
+                installation = result.data;
+                accessTokenURL = config.accessTokenURL(installation);
+            } else {
+                accessTokenURL = config.accessTokenURL;
+            }
+
+            logger.debug(`handle oauth access token exchange: ${accessTokenURL}`);
+
+            const params = new URLSearchParams();
+            params.set('client_id', config.clientId);
+            params.set('client_secret', config.clientSecret);
+            params.set('code', code);
+            params.set('redirect_uri', redirectUri);
+            params.set('grant_type', 'authorization_code');
+
+            const response = await fetch(accessTokenURL, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: params.toString(),
+            });
+
+            logger.debug(`received oauth response ${response.status}: ${response.statusText}`);
+
+            if (!response.ok) {
+                throw new Error(
+                    `Failed to exchange code for access token ${await response.text()}`,
+                );
+            }
+
+            const json = (await response.json()) as TOAuthResponse;
+
+            // Store the credentials in the installation configuration
+            // @ts-ignore
+            const credentials = await extractCredentials(json);
+            logger.debug(`exchange code for credentials`, credentials);
 
             const existing = {
                 configuration: {},
@@ -273,11 +292,13 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
                 );
             } else {
                 if (!replace) {
-                    const { data: installation } =
-                        await api.integrations.getIntegrationInstallationById(
+                    if (!installation) {
+                        const result = await api.integrations.getIntegrationInstallationById(
                             environment.integration.name,
                             state.installationId,
                         );
+                        installation = result.data;
+                    }
                     existing.configuration = installation.configuration;
                 }
 
@@ -351,7 +372,12 @@ export async function getOAuthToken(
     params.set('grant_type', 'refresh_token');
     params.set('refresh_token', credentials.refresh_token);
 
-    const response = await fetch(config.accessTokenURL, {
+    const accessTokenURL =
+        typeof config.accessTokenURL === 'function'
+            ? config.accessTokenURL(context.environment.installation!)
+            : config.accessTokenURL;
+
+    const response = await fetch(accessTokenURL, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -376,7 +402,12 @@ export async function getOAuthToken(
     await context.api.integrations.updateIntegrationInstallation(
         context.environment.integration.name,
         context.environment.installation!.id,
-        creds,
+        {
+            configuration: {
+                ...context.environment.installation?.configuration,
+                ...creds.configuration,
+            },
+        },
     );
 
     return accessToken;

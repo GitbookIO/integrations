@@ -28,6 +28,7 @@ export async function publishIntegration(
 
     // Publish the integration.
     const created = await api.integrations.publishIntegration(manifest.name, {
+        runtime: 'v2',
         title: manifest.title,
         icon: manifest.icon
             ? await readImage(resolveFile(specFilePath, manifest.icon), 'icon')
