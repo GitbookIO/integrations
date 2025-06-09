@@ -34,22 +34,20 @@ export function withLaunchDarkly(client: LDClient): () => void {
 
     const cleanup: Array<() => void> = [];
 
-    // Add event listener for when the DOM is ready
-    if (document.readyState === 'interactive' || document.readyState === 'complete') {
+    const onReadyOrLoad = () => {
         client.on('initialized', handler);
         cleanup.push(() => {
             client.off('initialized', handler);
         });
+    };
+
+    // Add event listener for when the DOM is ready
+    if (document.readyState === 'interactive' || document.readyState === 'complete') {
+        onReadyOrLoad();
     } else {
-        const onLoad = () => {
-            client.on('initialized', handler);
-            cleanup.push(() => {
-                client.off('initialized', handler);
-            });
-        };
-        document.addEventListener('DOMContentLoaded', onLoad);
+        document.addEventListener('DOMContentLoaded', onReadyOrLoad);
         cleanup.push(() => {
-            document.removeEventListener('DOMContentLoaded', onLoad);
+            document.removeEventListener('DOMContentLoaded', onReadyOrLoad);
         });
     }
 
