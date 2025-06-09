@@ -9,17 +9,6 @@ visibility: private
 organization: gitbook
 configurations:
     site:
-        properties:
-            project_key:
-                type: string
-                title: Project Key
-                description: The project key for your Launchdarkly environment.
-            service_token:
-                type: string
-                title: Service Token
-                description: A service token with read access to your Launchdarkly project.
-        required:
-            - project_key
-            - service_token
+        componentId: config
 secrets: {}
 target: site

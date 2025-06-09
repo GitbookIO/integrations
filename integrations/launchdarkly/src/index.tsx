@@ -7,12 +7,16 @@ import {
     type FetchEventCallback,
 } from '@gitbook/runtime';
 import { arrayToHex, safeCompare } from './utils';
-import type { IntegrationContext, IntegrationTask } from './types';
+import type { LaunchDarklyRuntimeContext, IntegrationTask } from './types';
 import { handleIntegrationTask } from './tasks';
+import { configBlock } from './components';
 
 const logger = Logger('launchdarkly');
 
-const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request, context) => {
+const handleFetchEvent: FetchEventCallback<LaunchDarklyRuntimeContext> = async (
+    request,
+    context,
+) => {
     const { environment } = context;
 
     const router = Router({
@@ -91,7 +95,7 @@ const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request,
 
 export default createIntegration({
     fetch: handleFetchEvent,
-    components: [],
+    components: [configBlock],
     events: {
         site_installation_setup: async (event, context) => {
             const api = new GitBookAPI({

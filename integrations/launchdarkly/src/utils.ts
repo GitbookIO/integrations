@@ -1,3 +1,5 @@
+import { LaunchDarklyRuntimeEnvironment } from './types';
+
 /**
  * Convert an array buffer to a hex string
  */
@@ -22,4 +24,13 @@ export function safeCompare(expected: string, actual: string) {
     }
 
     return result === 0;
+}
+
+export function assertSiteInstallation(environment: LaunchDarklyRuntimeEnvironment) {
+    const siteInstallation = environment.siteInstallation;
+    if (!siteInstallation) {
+        throw new Error('No site installation found');
+    }
+
+    return siteInstallation;
 }
