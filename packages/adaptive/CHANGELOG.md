@@ -1,5 +1,11 @@
 # @gitbook/adaptive
 
+## 0.1.0
+
+### Minor Changes
+
+- b77aae9: Add `withLaunchDarkly` helper function
+
 ## 0.0.2
 
 ### Patch Changes
