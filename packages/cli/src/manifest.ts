@@ -2,10 +2,12 @@ import { z } from 'zod';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import * as path from 'path';
+import * as op from '@1password/op-js';
 
 import * as api from '@gitbook/api';
 
 import { fileExists, prettyPath } from './files';
+import { getEnvironment } from 'environments';
 
 export const DEFAULT_MANIFEST_FILE = 'gitbook-manifest.yaml';
 
@@ -80,39 +82,48 @@ export const IntegrationNameSchema = z
         'Name must begin with an alphanumeric character and only contain alphanumeric characters and hyphens.',
     );
 
-const IntegrationManifestSchema = z.object({
-    name: IntegrationNameSchema,
-    title: z.string(),
-    script: z.string(),
-    icon: z.string().optional(),
-    description: z.string().optional(),
-    summary: z.string().optional(),
-    target: z.nativeEnum(api.IntegrationTarget).optional(),
-    scopes: z.array(z.nativeEnum(api.IntegrationScope)),
-    categories: z.array(z.nativeEnum(api.IntegrationCategory)).optional(),
-    blocks: z.array(IntegrationManifestBlock).optional(),
-    contentSources: z.array(IntegrationManifestContentSource).optional(),
-    configurations: z
-        .object({
-            account: IntegrationManifestConfiguration.optional(),
-            space: IntegrationManifestConfiguration.optional(),
-            site: IntegrationManifestConfiguration.optional(),
-        })
-        .optional(),
-    visibility: z.nativeEnum(api.IntegrationVisibility).optional(),
-    previewImages: z.array(z.string()).max(3).optional(),
-    externalLinks: z
-        .array(
-            z.object({
-                label: z.string(),
-                url: z.string().url(),
-            }),
-        )
-        .optional(),
+/**
+ * Configuration in the manifest file, specific to an environment.
+ */
+const IntegrationManifestEnvironmentSchema = z.object({
     organization: z.string(),
+    visibility: z.nativeEnum(api.IntegrationVisibility).optional(),
     secrets: z.record(z.string()).optional(),
-    contentSecurityPolicy: z.union([z.string(), z.record(z.string(), z.string())]).optional(),
 });
+
+const IntegrationManifestSchema = z
+    .object({
+        name: IntegrationNameSchema,
+        title: z.string(),
+        script: z.string(),
+        icon: z.string().optional(),
+        description: z.string().optional(),
+        summary: z.string().optional(),
+        target: z.nativeEnum(api.IntegrationTarget).optional(),
+        scopes: z.array(z.nativeEnum(api.IntegrationScope)),
+        categories: z.array(z.nativeEnum(api.IntegrationCategory)).optional(),
+        blocks: z.array(IntegrationManifestBlock).optional(),
+        contentSources: z.array(IntegrationManifestContentSource).optional(),
+        configurations: z
+            .object({
+                account: IntegrationManifestConfiguration.optional(),
+                space: IntegrationManifestConfiguration.optional(),
+                site: IntegrationManifestConfiguration.optional(),
+            })
+            .optional(),
+        previewImages: z.array(z.string()).max(3).optional(),
+        externalLinks: z
+            .array(
+                z.object({
+                    label: z.string(),
+                    url: z.string().url(),
+                }),
+            )
+            .optional(),
+        contentSecurityPolicy: z.union([z.string(), z.record(z.string(), z.string())]).optional(),
+        envs: z.record(z.object(IntegrationManifestEnvironmentSchema.shape).partial()).optional(),
+    })
+    .merge(IntegrationManifestEnvironmentSchema);
 
 export type IntegrationManifest = z.infer<typeof IntegrationManifestSchema>;
 
@@ -155,7 +166,13 @@ export async function readIntegrationManifest(filePath: string): Promise<Integra
     try {
         const content = await fs.promises.readFile(filePath, 'utf8');
         const doc = yaml.load(content);
-        const manifest = await validateIntegrationManifest(doc as object);
+        let manifest = await validateIntegrationManifest(doc as object);
+
+        const env = getEnvironment();
+
+        if (manifest.envs?.[env]) {
+            manifest = { ...manifest, ...manifest.envs[env] };
+        }
 
         if (manifest.secrets) {
             manifest.secrets = interpolateSecrets(manifest.secrets);
@@ -199,16 +216,28 @@ async function validateIntegrationManifest(data: object): Promise<IntegrationMan
 function interpolateSecrets(secrets: { [key: string]: string }): { [key: string]: string } {
     return Object.keys(secrets).reduce(
         (acc, key) => {
-            acc[key] = secrets[key].replace(/\${{\s*env.([\S]+)\s*}}/g, (_, envVar) => {
-                const secretEnvVar = process.env[envVar];
-                if (!secretEnvVar) {
-                    throw new Error(
-                        `Missing environment variable: "${envVar}" used for secret "${key}"`,
-                    );
-                }
+            acc[key] = secrets[key]
+                // Handle environment variables, defined as `${{ env.VAR }}`
+                .replace(/\${{\s*env.([\S]+)\s*}}/g, (_, envVar) => {
+                    const secretEnvVar = process.env[envVar];
+                    if (!secretEnvVar) {
+                        throw new Error(
+                            `Missing environment variable: "${envVar}" used for secret "${key}"`,
+                        );
+                    }
 
-                return secretEnvVar;
-            });
+                    return secretEnvVar;
+                })
+
+                // Handle 1Password secrets, defined as `${{ op://<ref> }}` or `${{ "op://<ref>" }}`
+                .replace(
+                    /\${{\s*(?:"op:\/\/([\S]+)"|op:\/\/([\S]+))\s*}}/g,
+                    (_, quotedRef, unquotedRef) => {
+                        const ref = quotedRef || unquotedRef;
+                        const secret = op.read.parse(`op://${ref}`);
+                        return secret;
+                    },
+                );
             return acc;
         },
         {} as { [key: string]: string },
