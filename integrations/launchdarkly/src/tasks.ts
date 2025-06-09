@@ -4,14 +4,9 @@ import type {
     IntegrationTask,
     IntegrationTaskSyncSiteAdaptiveSchema,
 } from './types';
-import {
-    GitBookAPI,
-    GitBookAPIError,
-    type SiteAdaptiveJSONSchema,
-    type SiteAdaptiveSchema,
-} from '@gitbook/api';
+import { GitBookAPI, GitBookAPIError, type SiteAdaptiveJSONSchema } from '@gitbook/api';
 
-const logger = Logger('bucket:tasks');
+const logger = Logger('launchdarkly:tasks');
 
 export async function handleIntegrationTask(
     context: IntegrationContext,
@@ -65,17 +60,28 @@ async function handleSyncAdaptiveSchema(
             authToken: installationAPIToken.token,
         });
 
-        const secretKey =
-            'secret_key' in siteInstallation.configuration
-                ? siteInstallation.configuration.secret_key
+        const projectKey =
+            'project_key' in siteInstallation.configuration
+                ? siteInstallation.configuration.project_key
                 : null;
-        if (typeof secretKey !== 'string' || !secretKey) {
-            throw new Error(`No secret key configured in the site installation ${siteId}`);
+        if (typeof projectKey !== 'string' || !projectKey) {
+            throw new Error(`No project key configured in the site installation ${siteId}`);
+        }
+
+        const serviceToken =
+            'service_token' in siteInstallation.configuration
+                ? siteInstallation.configuration.service_token
+                : null;
+        if (typeof serviceToken !== 'string' || !serviceToken) {
+            throw new Error(`No service token configured in the site installation ${siteId}`);
         }
 
         const [existing, featureFlags] = await Promise.all([
             getExistingAdaptiveSchema(api, organizationId, siteId),
-            getFeatureFlags(secretKey),
+            getFeatureFlags({
+                projectKey,
+                token: serviceToken,
+            }),
         ]);
 
         await api.orgs.createOrUpdateSiteAdaptiveSchema(organizationId, siteId, {
@@ -153,10 +159,11 @@ async function getExistingAdaptiveSchema(
     }
 }
 
-async function getFeatureFlags(secretKey: string) {
-    const res = await fetch('https://front.bucket.co/features', {
+async function getFeatureFlags(args: { projectKey: string; token: string }) {
+    const { projectKey, token } = args;
+    const res = await fetch(`https://app.launchdarkly.com/api/v2/flags/${projectKey}`, {
         headers: {
-            Authorization: `Bearer ${secretKey}`,
+            Authorization: `Bearer ${token}`,
         },
     });
 
@@ -165,16 +172,20 @@ async function getFeatureFlags(secretKey: string) {
     }
 
     const data = await res.json<{
-        success: boolean;
-        features?: Array<{
+        items: Array<{
+            name: string;
             key: string;
-            description: string | null;
-            createdAt: string;
-            link: string | null;
-            targeting: object;
-            config?: object;
+            kind: 'boolean' | 'multivariate';
+            _version: number;
+            creationDate: number;
+            variations: Array<{
+                value: unknown;
+                description?: string;
+                name?: string;
+                _id?: string;
+            }>;
         }>;
     }>();
 
-    return data.features || [];
+    return data.items || [];
 }

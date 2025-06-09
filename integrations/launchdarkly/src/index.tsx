@@ -5,17 +5,12 @@ import {
     ExposableError,
     Logger,
     type FetchEventCallback,
-    type RuntimeContext,
 } from '@gitbook/runtime';
 import { arrayToHex, safeCompare } from './utils';
-import type {
-    IntegrationContext,
-    IntegrationTask,
-    IntegrationTaskSyncSiteAdaptiveSchema,
-} from './types';
+import type { IntegrationContext, IntegrationTask } from './types';
 import { handleIntegrationTask } from './tasks';
 
-const logger = Logger('bucket');
+const logger = Logger('launchdarkly');
 
 const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request, context) => {
     const { environment } = context;

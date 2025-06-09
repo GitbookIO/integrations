@@ -1,5 +1,5 @@
 {
-    "name": "@gitbook/integration-bucket",
+    "name": "@gitbook/integration-launchdarkly",
     "private": true,
     "scripts": {
         "typecheck": "tsc --noEmit",
