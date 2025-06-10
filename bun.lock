@@ -28,6 +28,7 @@
     },
     "integrations/bucket": {
       "name": "@gitbook/integration-bucket",
+      "version": "0.0.0",
       "dependencies": {
         "@gitbook/runtime": "*",
         "itty-router": "^5.0.18",
@@ -282,6 +283,19 @@
         "@gitbook/runtime": "*",
       },
       "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
+    "integrations/launchdarkly": {
+      "name": "@gitbook/integration-launchdarkly",
+      "version": "0.0.0",
+      "dependencies": {
+        "@gitbook/runtime": "*",
+        "itty-router": "^5.0.18",
+      },
+      "devDependencies": {
+        "@cloudflare/workers-types": "*",
         "@gitbook/cli": "workspace:*",
         "@gitbook/tsconfig": "workspace:*",
       },
@@ -571,7 +585,7 @@
     },
     "packages/adaptive": {
       "name": "@gitbook/adaptive",
-      "version": "0.0.2",
+      "version": "0.1.0",
       "dependencies": {
         "js-cookie": "^3.0.5",
       },
@@ -954,6 +968,8 @@
     "@gitbook/integration-jira": ["@gitbook/integration-jira@workspace:integrations/jira"],
 
     "@gitbook/integration-koala": ["@gitbook/integration-koala@workspace:integrations/koala"],
+
+    "@gitbook/integration-launchdarkly": ["@gitbook/integration-launchdarkly@workspace:integrations/launchdarkly"],
 
     "@gitbook/integration-linear": ["@gitbook/integration-linear@workspace:integrations/linear"],
 
