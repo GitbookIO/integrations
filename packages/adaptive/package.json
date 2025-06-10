@@ -2,7 +2,7 @@
     "name": "@gitbook/adaptive",
     "description": "Utility to use adaptive content in GitBook",
     "type": "module",
-    "version": "0.0.2",
+    "version": "0.1.0",
     "sideEffects": false,
     "files": [
         "README.md",
@@ -15,6 +15,7 @@
         "@gitbook/tsconfig": "*",
         "typescript": "^5.6.2",
         "@bucketco/browser-sdk": "^3.1.2",
+        "launchdarkly-js-client-sdk": "^3.8.1",
         "@types/js-cookie": "^3.0.6",
         "esbuild": "^0.25.3"
     },
