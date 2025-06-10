@@ -13,8 +13,8 @@
         "itty-router": "^5.0.18"
     },
     "devDependencies": {
-        "@gitbook/cli": "^0.23.0",
-        "@gitbook/tsconfig": "*",
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
         "@cloudflare/workers-types": "*"
     }
 }
