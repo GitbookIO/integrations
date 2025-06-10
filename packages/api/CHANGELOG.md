@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.120.0
+
+### Minor Changes
+
+- dfc36e3: Update API client with latest OpenAPI spec.
+
 ## 0.119.0
 
 ### Minor Changes
