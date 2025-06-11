@@ -26,6 +26,15 @@ export function safeCompare(expected: string, actual: string) {
     return result === 0;
 }
 
+export function assertInstallation(environment: LaunchDarklyRuntimeEnvironment) {
+    const installation = environment.installation;
+    if (!installation) {
+        throw new Error('No installation found');
+    }
+
+    return installation;
+}
+
 export function assertSiteInstallation(environment: LaunchDarklyRuntimeEnvironment) {
     const siteInstallation = environment.siteInstallation;
     if (!siteInstallation) {

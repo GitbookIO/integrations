@@ -8,7 +8,7 @@ import {
 } from '@gitbook/runtime';
 import { arrayToHex, assertSiteInstallation, safeCompare } from './utils';
 import { type BucketRuntimeContext, type IntegrationTask } from './types';
-import { handleIntegrationTask } from './tasks';
+import { handleIntegrationTask, SYNC_ADAPTIVE_SCHEMA_SCHEDULE_SECONDS } from './tasks';
 import { configBlock } from './components';
 
 const logger = Logger('bucket');
@@ -96,6 +96,43 @@ export default createIntegration({
     fetch: handleFetchEvent,
     components: [configBlock],
     events: {
+        site_view: async (event, context) => {
+            const siteInstallation = assertSiteInstallation(context.environment);
+            // If the last sync was more than an hour ago, we trigger a sync
+            if (
+                !siteInstallation.configuration.lastSync ||
+                siteInstallation.configuration.lastSync <
+                    Date.now() - SYNC_ADAPTIVE_SCHEMA_SCHEDULE_SECONDS * 1000
+            ) {
+                const api = new GitBookAPI({
+                    authToken: context.environment.apiTokens.integration,
+                    endpoint: context.environment.apiEndpoint,
+                    userAgent: context.api.userAgent,
+                });
+
+                const organizationId = context.environment.installation?.target.organization;
+                if (!organizationId) {
+                    throw new Error(
+                        `No organization ID found in the installation ${event.installationId}`,
+                    );
+                }
+
+                await handleIntegrationTask(
+                    {
+                        ...context,
+                        api,
+                    },
+                    {
+                        type: 'sync-adaptive-schema',
+                        payload: {
+                            siteId: event.siteId,
+                            installationId: event.installationId,
+                            organizationId,
+                        },
+                    },
+                );
+            }
+        },
         site_installation_setup: async (event, context) => {
             const api = new GitBookAPI({
                 authToken: context.environment.apiTokens.integration,

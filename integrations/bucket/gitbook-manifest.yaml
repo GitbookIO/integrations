@@ -18,6 +18,8 @@ icon: ./assets/icon.png
 previewImages:
     - ./assets/preview.png
 scopes:
+    - site:metadata:read
+    - site:views:read
     - site:adaptive:read
     - site:adaptive:write
 visibility: private

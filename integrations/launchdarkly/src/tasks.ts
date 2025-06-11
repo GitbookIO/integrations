@@ -13,6 +13,8 @@ import {
 
 const logger = Logger('launchdarkly:tasks');
 
+export const SYNC_ADAPTIVE_SCHEMA_SCHEDULE_SECONDS = 3600; // 1 hour
+
 export async function handleIntegrationTask(
     context: LaunchDarklyRuntimeContext,
     task: IntegrationTask,
@@ -25,7 +27,7 @@ export async function handleIntegrationTask(
                     context.environment.integration.name,
                     {
                         task,
-                        schedule: 3600,
+                        schedule: SYNC_ADAPTIVE_SCHEMA_SCHEDULE_SECONDS,
                     },
                 ),
             ]);
@@ -119,6 +121,19 @@ async function handleSyncAdaptiveSchema(
                 },
             },
         });
+        logger.info(`Updated adaptive schema for site ${siteId} in installation ${installationId}`);
+        // Update the site installation to mark the last sync time
+        await context.api.integrations.updateIntegrationSiteInstallation(
+            integrationName,
+            installationId,
+            siteId,
+            {
+                configuration: {
+                    ...siteInstallation.configuration,
+                    lastSync: Date.now(),
+                },
+            },
+        );
     } catch (error) {
         logger.error(`Error while handling adaptive schema sync: ${error}`);
         throw error;
