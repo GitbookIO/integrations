@@ -7,6 +7,7 @@ import {
     BucketState,
 } from './types';
 import { assertInstallation, assertSiteInstallation } from './utils';
+import { GitBookAPI } from '@gitbook/api';
 
 export const configBlock = createComponent<
     BucketProps,
@@ -56,8 +57,19 @@ export const configBlock = createComponent<
     render: async (element, context) => {
         const installation = assertInstallation(context.environment);
         const siteInstallation = assertSiteInstallation(context.environment);
+        const installationAPIToken = context.environment.apiTokens.installation;
 
-        const { data: site } = await context.api.orgs.getSiteById(
+        if (!installationAPIToken) {
+            throw new Error(`Expected installation API token to be set in the environment`);
+        }
+
+        const api = new GitBookAPI({
+            userAgent: context.api.userAgent,
+            endpoint: context.environment.apiEndpoint,
+            authToken: installationAPIToken,
+        });
+
+        const { data: site } = await api.orgs.getSiteById(
             installation.target.organization,
             siteInstallation.site,
         );
