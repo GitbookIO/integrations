@@ -1,5 +1,11 @@
 # @gitbook/integration-marketo
 
+## 0.2.1
+
+### Patch Changes
+
+- e4d501b: Fix Marketo dependencies.
+
 ## 0.2.0
 
 ### Minor Changes
