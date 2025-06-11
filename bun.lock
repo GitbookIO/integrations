@@ -28,7 +28,7 @@
     },
     "integrations/bucket": {
       "name": "@gitbook/integration-bucket",
-      "version": "0.0.0",
+      "version": "0.2.0",
       "dependencies": {
         "@gitbook/runtime": "*",
         "itty-router": "^5.0.18",
@@ -289,7 +289,7 @@
     },
     "integrations/launchdarkly": {
       "name": "@gitbook/integration-launchdarkly",
-      "version": "0.0.0",
+      "version": "0.2.0",
       "dependencies": {
         "@gitbook/runtime": "*",
         "itty-router": "^5.0.18",
@@ -343,7 +343,7 @@
     },
     "integrations/marketo": {
       "name": "@gitbook/integration-marketo",
-      "version": "0.1.3",
+      "version": "0.1.4",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -600,7 +600,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.119.0",
+      "version": "0.120.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
