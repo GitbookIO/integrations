@@ -70,6 +70,14 @@ async function handleSyncAdaptiveSchema(
             throw new Error(`No secret key configured in the site installation ${siteId}`);
         }
 
+        const { data: site } = await api.orgs.getSiteById(organizationId, siteId);
+        if (!site.adaptiveContent?.enabled) {
+            logger.info(
+                `Adaptive content is not enabled for site ${siteId}, skipping adaptive schema sync.`,
+            );
+            return;
+        }
+
         const [existing, featureFlags] = await Promise.all([
             getExistingAdaptiveSchema(api, organizationId, siteId),
             getFeatureFlags(secretKey),
