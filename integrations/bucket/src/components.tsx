@@ -78,39 +78,41 @@ export const configBlock = createComponent<
         return (
             <configuration>
                 {isAdaptiveContentEnabled ? (
-                    <block>
-                        <input
-                            label="Secret key"
-                            hint={
-                                <text>
-                                    The secret key from your Bucket{' '}
-                                    <link
-                                        target={{
-                                            url: 'https://app.bucket.co/envs/current/settings/app-environments',
+                    <box>
+                        <vstack>
+                            <input
+                                label="Secret key"
+                                hint={
+                                    <text>
+                                        The secret key from your Bucket{' '}
+                                        <link
+                                            target={{
+                                                url: 'https://app.bucket.co/envs/current/settings/app-environments',
+                                            }}
+                                        >
+                                            environment settings.
+                                        </link>
+                                    </text>
+                                }
+                                element={<textinput state="secret_key" placeholder="Secret key" />}
+                            />
+                            <input
+                                label=""
+                                hint=""
+                                element={
+                                    <button
+                                        style="primary"
+                                        disabled={false}
+                                        label="Save"
+                                        tooltip="Save configuration"
+                                        onPress={{
+                                            action: 'save.config',
                                         }}
-                                    >
-                                        environment settings.
-                                    </link>
-                                </text>
-                            }
-                            element={<textinput state="secret_key" placeholder="Secret key" />}
-                        />
-                        <input
-                            label=""
-                            hint=""
-                            element={
-                                <button
-                                    style="primary"
-                                    disabled={false}
-                                    label="Save"
-                                    tooltip="Save configuration"
-                                    onPress={{
-                                        action: 'save.config',
-                                    }}
-                                />
-                            }
-                        />
-                    </block>
+                                    />
+                                }
+                            />
+                        </vstack>
+                    </box>
                 ) : (
                     <input
                         label="Enable Adaptive Content"
