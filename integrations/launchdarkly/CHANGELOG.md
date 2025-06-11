@@ -1,5 +1,15 @@
 # @gitbook/integration-launchdarkly
 
+## 0.3.0
+
+### Minor Changes
+
+- 0fd64a7: Fix LaunchDarkly integration API call to get flags and config screen missing project key input
+
+### Patch Changes
+
+- a0ad513: Mark the integration as public
+
 ## 0.2.0
 
 ### Minor Changes

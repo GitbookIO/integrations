@@ -1,5 +1,15 @@
 # @gitbook/integration-bucket
 
+## 0.3.0
+
+### Minor Changes
+
+- 3c1983e: Use vstack/box layout for bucket integration
+
+### Patch Changes
+
+- a0ad513: Mark the integration as public
+
 ## 0.2.0
 
 ### Minor Changes
