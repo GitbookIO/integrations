@@ -1,5 +1,11 @@
 # @gitbook/integration-marketo
 
+## 0.2.0
+
+### Minor Changes
+
+- 532b7a7: Cache control and misc fixes for Marketo.
+
 ## 0.1.4
 
 ### Patch Changes
