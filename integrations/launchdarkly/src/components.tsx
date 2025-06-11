@@ -86,39 +86,65 @@ export const configBlock = createComponent<
         return (
             <configuration>
                 {isAdaptiveContentEnabled ? (
-                    <block>
-                        <input
-                            label="Secret key"
-                            hint={
-                                <text>
-                                    The secret key from your LaunchDarkly{' '}
-                                    <link
-                                        target={{
-                                            url: 'https://app.LaunchDarkly.co/envs/current/settings/app-environments',
+                    <box>
+                        <vstack>
+                            <input
+                                label="Project key"
+                                hint={
+                                    <text>
+                                        The project key of your LaunchDarkly{' '}
+                                        <link
+                                            target={{
+                                                url: 'https://app.launchdarkly.com/settings/projects',
+                                            }}
+                                        >
+                                            environment.
+                                        </link>
+                                    </text>
+                                }
+                                element={
+                                    <textinput state="project_key" placeholder="Project key" />
+                                }
+                            />
+                            <input
+                                label="Service access token"
+                                hint={
+                                    <text>
+                                        A service token with reader role created in your
+                                        LaunchDarkly{' '}
+                                        <link
+                                            target={{
+                                                url: 'https://app.launchdarkly.com/settings/authorization',
+                                            }}
+                                        >
+                                            project.
+                                        </link>
+                                    </text>
+                                }
+                                element={
+                                    <textinput
+                                        state="service_token"
+                                        placeholder="Service access token"
+                                    />
+                                }
+                            />
+                            <input
+                                label=""
+                                hint=""
+                                element={
+                                    <button
+                                        style="primary"
+                                        disabled={false}
+                                        label="Save"
+                                        tooltip="Save configuration"
+                                        onPress={{
+                                            action: 'save.config',
                                         }}
-                                    >
-                                        environment settings.
-                                    </link>
-                                </text>
-                            }
-                            element={<textinput state="secret_key" placeholder="Secret key" />}
-                        />
-                        <input
-                            label=""
-                            hint=""
-                            element={
-                                <button
-                                    style="primary"
-                                    disabled={false}
-                                    label="Save"
-                                    tooltip="Save configuration"
-                                    onPress={{
-                                        action: 'save.config',
-                                    }}
-                                />
-                            }
-                        />
-                    </block>
+                                    />
+                                }
+                            />
+                        </vstack>
+                    </box>
                 ) : (
                     <input
                         label="Enable Adaptive Content"

@@ -95,7 +95,7 @@ async function handleSyncAdaptiveSchema(
             getExistingAdaptiveSchema(api, organizationId, siteId),
             getFeatureFlags({
                 projectKey,
-                token: serviceToken,
+                serviceToken,
             }),
         ]);
 
@@ -197,11 +197,11 @@ async function getExistingAdaptiveSchema(
     }
 }
 
-async function getFeatureFlags(args: { projectKey: string; token: string }) {
-    const { projectKey, token } = args;
+async function getFeatureFlags(args: { projectKey: string; serviceToken: string }) {
+    const { projectKey, serviceToken } = args;
     const res = await fetch(`https://app.launchdarkly.com/api/v2/flags/${projectKey}`, {
         headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: serviceToken,
         },
     });
 
