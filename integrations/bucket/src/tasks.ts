@@ -8,6 +8,8 @@ import { GitBookAPI, GitBookAPIError, type SiteAdaptiveJSONSchema } from '@gitbo
 
 const logger = Logger('bucket:tasks');
 
+export const SYNC_ADAPTIVE_SCHEMA_SCHEDULE_SECONDS = 3600; // 1 hour
+
 export async function handleIntegrationTask(
     context: BucketRuntimeContext,
     task: IntegrationTask,
@@ -20,7 +22,7 @@ export async function handleIntegrationTask(
                     context.environment.integration.name,
                     {
                         task,
-                        schedule: 3600,
+                        schedule: SYNC_ADAPTIVE_SCHEMA_SCHEDULE_SECONDS,
                     },
                 ),
             ]);
@@ -66,6 +68,14 @@ async function handleSyncAdaptiveSchema(
                 : null;
         if (typeof secretKey !== 'string' || !secretKey) {
             throw new Error(`No secret key configured in the site installation ${siteId}`);
+        }
+
+        const { data: site } = await api.orgs.getSiteById(organizationId, siteId);
+        if (!site.adaptiveContent?.enabled) {
+            logger.info(
+                `Adaptive content is not enabled for site ${siteId}, skipping adaptive schema sync.`,
+            );
+            return;
         }
 
         const [existing, featureFlags] = await Promise.all([
@@ -120,6 +130,20 @@ async function handleSyncAdaptiveSchema(
                 },
             },
         });
+
+        logger.info(`Updated adaptive schema for site ${siteId} in installation ${installationId}`);
+        // Update the site installation to mark the last sync time
+        await context.api.integrations.updateIntegrationSiteInstallation(
+            integrationName,
+            installationId,
+            siteId,
+            {
+                configuration: {
+                    ...siteInstallation.configuration,
+                    lastSync: Date.now(),
+                },
+            },
+        );
     } catch (error) {
         logger.error(`Error while handling adaptive schema sync: ${error}`);
         throw error;

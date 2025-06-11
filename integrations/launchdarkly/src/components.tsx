@@ -6,7 +6,7 @@ import {
     LaunchDarklySiteInstallationConfiguration,
     LaunchDarklyState,
 } from './types';
-import { assertSiteInstallation } from './utils';
+import { assertInstallation, assertSiteInstallation } from './utils';
 
 export const configBlock = createComponent<
     LaunchDarklyProps,
@@ -62,41 +62,67 @@ export const configBlock = createComponent<
                 return { type: 'complete' };
         }
     },
-    render: async () => {
+    render: async (element, context) => {
+        const installation = assertInstallation(context.environment);
+        const siteInstallation = assertSiteInstallation(context.environment);
+
+        const { data: site } = await context.api.orgs.getSiteById(
+            installation.target.organization,
+            siteInstallation.site,
+        );
+        const isAdaptiveContentEnabled = Boolean(site.adaptiveContent?.enabled);
         return (
-            <block>
-                <input
-                    label="Secret key"
-                    hint={
-                        <text>
-                            The secret key from your LaunchDarkly{' '}
-                            <link
-                                target={{
-                                    url: 'https://app.LaunchDarkly.co/envs/current/settings/app-environments',
-                                }}
-                            >
-                                environment settings.
-                            </link>
-                        </text>
-                    }
-                    element={<textinput state="secret_key" placeholder="Secret key" />}
-                />
-                <input
-                    label=""
-                    hint=""
-                    element={
-                        <button
-                            style="primary"
-                            disabled={false}
-                            label="Save"
-                            tooltip="Save configuration"
-                            onPress={{
-                                action: 'save.config',
-                            }}
+            <configuration>
+                {isAdaptiveContentEnabled ? (
+                    <block>
+                        <input
+                            label="Secret key"
+                            hint={
+                                <text>
+                                    The secret key from your LaunchDarkly{' '}
+                                    <link
+                                        target={{
+                                            url: 'https://app.LaunchDarkly.co/envs/current/settings/app-environments',
+                                        }}
+                                    >
+                                        environment settings.
+                                    </link>
+                                </text>
+                            }
+                            element={<textinput state="secret_key" placeholder="Secret key" />}
                         />
-                    }
-                />
-            </block>
+                        <input
+                            label=""
+                            hint=""
+                            element={
+                                <button
+                                    style="primary"
+                                    disabled={false}
+                                    label="Save"
+                                    tooltip="Save configuration"
+                                    onPress={{
+                                        action: 'save.config',
+                                    }}
+                                />
+                            }
+                        />
+                    </block>
+                ) : (
+                    <input
+                        label="Enable Adaptive Content"
+                        hint="To use LaunchDarkly, you need to enable Adaptive Content in your site audience settings."
+                        element={
+                            <button
+                                label="Enable"
+                                onPress={{
+                                    action: '@ui.url.open',
+                                    url: `${site.urls.app}/settings/audience`,
+                                }}
+                            />
+                        }
+                    />
+                )}
+            </configuration>
         );
     },
 });

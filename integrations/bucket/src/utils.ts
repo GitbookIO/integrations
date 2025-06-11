@@ -34,3 +34,12 @@ export function assertSiteInstallation(environment: BucketRuntimeEnvironment) {
 
     return siteInstallation;
 }
+
+export function assertInstallation(environment: BucketRuntimeEnvironment) {
+    const installation = environment.installation;
+    if (!installation) {
+        throw new Error('No installation found');
+    }
+
+    return installation;
+}
