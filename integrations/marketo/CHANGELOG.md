@@ -1,5 +1,11 @@
 # @gitbook/integration-marketo
 
+## 0.1.4
+
+### Patch Changes
+
+- af098c3: Fix an issue where Marketo forms could show a scrollbar.
+
 ## 0.1.3
 
 ### Patch Changes
