@@ -17,17 +17,17 @@ scopes:
     - site:script:cookies
 contentSecurityPolicy:
     script-src: |
-        https://api.unify.ai
-        https://unify.ai;
+        https://cdn.unifygtm.com
+        https://unifygtm.com;
     img-src: |
         data:
         blob:
-        api.unify.ai;
+        cdn.unifygtm.com;
     font-src: |
         data:;
     connect-src: |
-        api.unify.ai
-        unify.ai
+        cdn.unifygtm.com
+        unifygtm.com
         about:;
 summary: |
     # Overview
