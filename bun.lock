@@ -343,7 +343,7 @@
     },
     "integrations/marketo": {
       "name": "@gitbook/integration-marketo",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -509,6 +509,18 @@
     "integrations/toucantoco": {
       "name": "@gitbook/integration-toucantoco",
       "version": "1.1.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
+    "integrations/unify": {
+      "name": "@gitbook/integration-unify",
+      "version": "0.1.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -1006,6 +1018,8 @@
     "@gitbook/integration-slack": ["@gitbook/integration-slack@workspace:integrations/slack"],
 
     "@gitbook/integration-toucantoco": ["@gitbook/integration-toucantoco@workspace:integrations/toucantoco"],
+
+    "@gitbook/integration-unify": ["@gitbook/integration-unify@workspace:integrations/unify"],
 
     "@gitbook/integration-va-auth0": ["@gitbook/integration-va-auth0@workspace:integrations/va-auth0"],
 
