@@ -28,7 +28,7 @@ interface IntegrationRuntimeDefinition<Context extends RuntimeContext = RuntimeC
     fetch_published_script?: FetchPublishScriptEventCallback<Context>;
 
     /**
-     * Handler for fetching the visitor auth for an integration.
+     * Handler for fetching the authenticated access for an integration.
      */
     fetch_visitor_authentication?: FetchVisitorAuthenticationEventCallback<Context>;
 

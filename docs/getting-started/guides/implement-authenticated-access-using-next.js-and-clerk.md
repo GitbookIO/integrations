@@ -6,7 +6,7 @@ In order to use authenticated access, you'll need to configure a few tools first
 
 This guide explains how you can accomplish the above using [Next.js](https://nextjs.org/) and [Clerk](https://clerk.com/). Next.js is a popular open-source JavaScript framework for building web applications, while Clerk is a developer-focused authentication and user management platform. It provides a suite of tools and services that help developers add authentication and user management functionalities to their web applications quickly and easily.
 
-The rest of this guide follows this [GitHub repository](https://github.com/GitbookIO/va-nextjs-clerk), and will explain the setup and code through the main functionalities of the demo app.
+The rest of this guide follows this [GitHub repository](https://github.com/GitbookIO/authenticated-access-with-nextjs-and-clerk), and will explain the setup and code through the main functionalities of the demo app.
 
 {% hint style="info" %}
 This feature is currently accessible to all **Pro and Enterprise** customers. If you are interested in the [Enterprise plan](https://gitbook.com/docs/account-management/plans), please contact [sales@gitbook.com](mailto:sales@gitbook.com) for a quote.
@@ -19,7 +19,7 @@ To get started, you'll need to clone the repository we're following in this guid
 To clone, you can run the following command in your terminal:
 
 ```bash
-git clone git@github.com:GitbookIO/va-nextjs-clerk.git
+git clone git@github.com:GitbookIO/authenticated-access-with-nextjs-and-clerk.git
 ```
 
 After cloning the repository, you can `cd` into the root of the project, and install it's dependencies using `npm install`.
@@ -86,7 +86,7 @@ In the Clerk dashboard, head to the **JWT Templates** section in the left side n
 1. Go to your Clerk dashboard.
 2. In your Clerk application, go to JWT templates.
 3. Create a new template using the "Blank" template.
-4. Give your template a name (this demo uses `'`**`GitBook`**`'`). If you use a different name, make sure your template name matches the one set in `pages/api/visitor-auth.ts` in your local project.
+4. Give your template a name (this demo uses `'`**`GitBook`**`'`). If you use a different name, make sure your template name matches the one set in `pages/api/authenticated-access.ts` in your local project.
 
 We'll now need the JWT key we created in [publish your GitBook Space with authenticated access](implement-authenticated-access-using-next.js-and-clerk.md#publish-gitbook-space-with-authenticated-access).
 
@@ -97,7 +97,7 @@ Lastly, we'll need to define a custom template for our sign in. Copy and paste t
 
 ```json
 {
-    "aud": "https://localhost:3000/api/visitor-auth",
+    "aud": "https://localhost:3000/api/authenticated-access",
     "user_id": "{{user.id}}",
     "last_name": "{{user.last_name}}",
     "first_name": "{{user.first_name}}"

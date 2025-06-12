@@ -13263,7 +13263,7 @@ components:
         - content
         - gitsync
         - marketing
-        - visitor-auth
+        - authenticated-access
         - other
     IntegrationCategories:
       type: array
