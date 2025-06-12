@@ -8,9 +8,9 @@ icon: bars-staggered
 
 ### :boom: Breaking Changes&#x20;
 
-With the release of Docs sites, certain API endpoints for publishing, share-links, and visitor authentication have been deprecated and may no longer function as expected. If you are affected, we recommend the following approach to make the necessary updates:
+With the release of Docs sites, certain API endpoints for publishing, share-links, and authenticated access have been deprecated and may no longer function as expected. If you are affected, we recommend the following approach to make the necessary updates:
 
-To modify  or retrieve publishing states, share links, or visitor authentication settings for a Space, locate the associated Site and copy its ID. Click the globe icon at the top of the Space's screen to open the Site, then copy the Site ID from the URL.
+To modify  or retrieve publishing states, share links, or authenticated access settings for a Space, locate the associated Site and copy its ID. Click the globe icon at the top of the Space's screen to open the Site, then copy the Site ID from the URL.
 
 #### Publishing
 
@@ -23,7 +23,7 @@ To modify  or retrieve publishing states, share links, or visitor authentication
 
 `/spaces/{spaceId}/share-links` and `/spaces/{spaceId}/share-links/{shareLinkId}` now requires you to use `/orgs/{organizationId}/sites/{siteId}/share-links` and `/orgs/{organizationId}/sites/{siteId}/share-links/{shareLinkId}`respectively.
 
-#### Visitor Authentication (publishing auth)
+#### Authenticated access (publishing auth)
 
 `/spaces/{spaceId}/publishing/auth` methods should now be used through `/orgs/{organizationId}/sites/{siteId}/publishing/auth`
 

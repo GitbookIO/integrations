@@ -1,6 +1,6 @@
-# Implement Visitor Authentication using Node and Okta
+# Implement authenticated access using Node and Okta
 
-In this guide, we will show you how to set up Visitor Authentication using Okta and Node.
+In this guide, we will show you how to set up authenticated access using Okta and Node.
 
 ## Prerequisites
 
@@ -25,7 +25,7 @@ Name it appropriately and don't edit any other setting on that page. For assignm
 Now, we will create the backend responsible for authenticating the visitors to your space.&#x20;
 
 On your computer, clone the git repository by running\
-`git clone https://github.com/GitbookIO/okta-visitor-authentication-example` \
+`git clone https://github.com/GitbookIO/okta-authenticated-access-example` \
 in the directory (folder) you want to be working from. Open the folder in your favorite code editor (say, VS Code).
 
 We will edit the `server.js` file and enter the details of our Okta application there.\
@@ -86,9 +86,9 @@ const oidc = new ExpressOIDC({
 });
 ```
 
-## Setting up Visitor Authentication
+## Setting up authenticated access
 
-Now, we need to use GitBook. Go to the space you want to publish behind visitor authentication. Open the Share modal and click "Share to an audience", and enable the "Publish with Visitor Authentication" toggle.&#x20;
+Now, we need to use GitBook. Go to the space you want to publish behind authenticated access. Open the Share modal and click “Share to an audience”, and enable the “Publish with authenticated access” toggle.&#x20;
 
 Make note of the Private key and the Space URL. We will need them.
 
@@ -122,7 +122,7 @@ Replace everything before `?` with the Space URL you copied from the GitBook Sha
 
 Save the `server.js` file.
 
-Open up the terminal and make sure you're in the `okta-visitor-authentication-example` directory.
+Open up the terminal and make sure you're in the `okta-authenticated-access-example` directory.
 
 Run `npm install` which will install the dependencies of our project, including the library needed for communicating with Auth0.
 
@@ -132,4 +132,4 @@ After the installation of dependencies is complete, run `node server.js` from th
 app started
 ```
 
-Your Visitor Authentication setup is now complete! If you visit your published space URL now, you will be prompted to sign in using Okta.&#x20;
+Your authenticated access setup is now complete! If you visit your published space URL now, you will be prompted to sign in using Okta.&#x20;

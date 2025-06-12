@@ -604,12 +604,12 @@
       },
       "ContentVisibility": {
         "type": "string",
-        "description": "* `public`: Anyone can access the content, and the content is indexed by search engines.\n* `unlisted`: Anyone can access the content, and the content is not indexed by search engines\n* `share-link`: Anyone with a secret token in the url can access the content.\n* `visitor-auth`: Anyone authenticated through a JWT token can access the content.\n* `in-collection`: Anyone who can access the parent collection can access the content.\n  Only available for spaces in a collection.\n* `private`: Authorized members can access the content.\n",
+        "description": "* `public`: Anyone can access the content, and the content is indexed by search engines.\n* `unlisted`: Anyone can access the content, and the content is not indexed by search engines\n* `share-link`: Anyone with a secret token in the url can access the content.\n* `authenticated-access`: Anyone authenticated through a JWT token can access the content.\n* `in-collection`: Anyone who can access the parent collection can access the content.\n  Only available for spaces in a collection.\n* `private`: Authorized members can access the content.\n",
         "enum": [
           "public",
           "unlisted",
           "share-link",
-          "visitor-auth",
+          "authenticated-access",
           "in-collection",
           "private"
         ]

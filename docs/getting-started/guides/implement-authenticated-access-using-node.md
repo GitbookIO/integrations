@@ -1,14 +1,14 @@
-# Implement Visitor Authentication using Node
+# Implement authenticated access using Node
 
-[Visitor Authentication](https://gitbook.com/docs/publishing/visitor-authentication) in GitBook is a powerful way to further control who has access to the information you're publishing. By setting up a custom login screen, you can customize the experience for private materials you might have on GitBook.
+[Authenticated access](https://gitbook.com/docs/publishing/authenticated-access) in GitBook is a powerful way to further control who has access to the information you're publishing. By setting up a custom login screen, you can customize the experience for private materials you might have on GitBook.
 
-In order to use Visitor Authentication, you'll need to configure a few tools first—Including setting up a server to handle the sign-in flow your users will go through.
+In order to use authenticated access, you'll need to configure a few tools first—including setting up a server to handle the sign-in flow your users will go through.
 
 This guide explains how you can accomplish the above using [Node.js](https://nodejs.org/en/).&#x20;
 
-The rest of this guide follows this [GitHub repository](https://github.com/GitbookIO/example-visitor-authentication), and will explain the setup and code through the main functionalities of the demo app.
+The rest of this guide follows this [GitHub repository](https://github.com/GitbookIO/example-authenticated-access), and will explain the setup and code through the main functionalities of the demo app.
 
-### Step 1: enable visitor authentication
+### Step 1: enable authenticated access
 
 <figure><img src="../../.gitbook/assets/image (4).png" alt=""><figcaption></figcaption></figure>
 
@@ -76,9 +76,9 @@ app.get('/', (req, res) => {
   res.redirect(redirectURL);
 ```
 
-## Multi-tenant Visitor Authentication
+## Multi-tenant Authenticated Access
 
-If you're using GitBook as a platform for providing content to your customers, you are probably looking for multi-tenant visitor authentication. Essentially, your authentication server needs to be responsible for handling authentication across multiple different spaces. This is possible in GitBook with a few small tweaks.
+If you're using GitBook as a platform for providing content to your customers, you are probably looking for multi-tenant authenticated access. Essentially, your authentication server needs to be responsible for handling authentication across multiple different spaces. This is possible in GitBook with a few small tweaks.
 
 ### Adding all tenants to your authentication server
 

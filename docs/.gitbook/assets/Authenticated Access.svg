@@ -1,0 +1,30 @@
+<svg width="800" height="450" viewBox="0 0 800 450" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="800" height="450" fill="url(#paint0_linear_5557_2633)"/>
+<path d="M372.5 155H367.5" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M392.5 155H387.5" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M412.5 155H407.5" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M432.5 155H427.5" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M330 212.5L330 217.5" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M330 192.5L330 197.5" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M345 257.5L367.5 280" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M455 257.5L432.5 280" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M470.001 177.5L470.001 160C470.001 157.239 467.762 155 465.001 155H447.501" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M329.999 177.5L329.999 160C329.999 157.239 332.238 155 334.999 155H352.499" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M470 212.5L470 217.5" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M470 192.5L470 197.5" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M382.499 295C386.946 299.538 393.144 302.5 400 302.5C406.856 302.5 413.053 299.538 417.5 295" stroke="#D33D3D" stroke-width="5" stroke-linecap="round"/>
+<path d="M400 252.5L400 257.5" stroke="#262930" stroke-width="5" stroke-linecap="round"/>
+<path d="M400 232.5L400 237.5" stroke="#262930" stroke-width="5" stroke-linecap="round"/>
+<path d="M372.5 225H367.5" stroke="#262930" stroke-width="5" stroke-linecap="round"/>
+<path d="M392.5 225H387.5" stroke="#262930" stroke-width="5" stroke-linecap="round"/>
+<path d="M412.5 225H407.5" stroke="#262930" stroke-width="5" stroke-linecap="round"/>
+<path d="M432.5 225H427.5" stroke="#262930" stroke-width="5" stroke-linecap="round"/>
+<path d="M400 212.5L400 217.5" stroke="#262930" stroke-width="5" stroke-linecap="round"/>
+<path d="M400 192.5L400 197.5" stroke="#262930" stroke-width="5" stroke-linecap="round"/>
+<defs>
+<linearGradient id="paint0_linear_5557_2633" x1="377.262" y1="3.12975e-05" x2="424.55" y2="240.166" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFE4E3"/>
+<stop offset="1" stop-color="white"/>
+</linearGradient>
+</defs>
+</svg>

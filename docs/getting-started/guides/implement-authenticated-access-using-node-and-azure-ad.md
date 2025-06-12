@@ -1,6 +1,6 @@
-# Implement Visitor Authentication using Node and Azure AD
+# Implement authenticated access using Node and Azure AD
 
-In this guide, we will show you how to set up Visitor Authentication using Node and Azure AD (**now known as Microsoft Entra ID**).
+In this guide, we will show you how to set up authenticated access using Node and Azure AD (**now known as Microsoft Entra ID**).
 
 ## Prerequisites
 
@@ -57,9 +57,9 @@ Save the file.
 
 Navigate to the `App` subfolder in your **terminal** and run `npm install jsonwebtoken` . Now run `npm install`.
 
-## Setting up Visitor Authentication
+## Setting up authenticated access
 
-Now, we need to use GitBook. Go to the space you want to publish behind visitor authentication. Open the Share modal and click "Share to an audience", and enable the "Publish with Visitor Authentication" toggle.&#x20;
+Now, we need to use GitBook. Go to the space you want to publish behind authenticated access. Open the Share modal and click "Share to an audience", and enable the "Publish with authenticated access" toggle.&#x20;
 
 Make note of the Private key and the Space URL. We will need them.
 
@@ -96,7 +96,7 @@ router.get('/', function (req, res, next) {
 });
 ```
 
-Replace `GITBOOK SIGNING KEY` with the Private Key value you copied from the GitBook Visitor Authentication Share modal.
+Replace `GITBOOK SIGNING KEY` with the Private Key value you copied from the GitBook authenticated access Share modal.
 
 In your code editor, in the following line
 
@@ -104,7 +104,7 @@ In your code editor, in the following line
 const redirectURL = `https://example-url.gitbook.io/example/?jwt_token=${token}`
 ```
 
-Replace everything before `?` with the Space URL you copied from the GitBook Visitor Authentication Share modal. Make sure there's only one `/` right before the `?`.
+Replace everything before `?` with the Space URL you copied from the GitBook authenticated access Share modal. Make sure there's only one `/` right before the `?`.
 
 Your `router.get` definition should look something like the following:
 
@@ -129,6 +129,6 @@ Save the `index.js` file.
 
 Make sure you're in the `App` subfolder in your terminal and run `npm start` .
 
-If you see `node ./bin/www` in the output, the Visitor Authentication set up is complete!
+If you see `node ./bin/www` in the output, the authenticated access set up is complete!
 
-In an incognito window, go to the GitBook space you just put behind Visitor Authentication. You will be prompted to sign in with Microsoft. If everything is set up correctly, you will be able to log in successfully and see the contents of the space.
+In an incognito window, go to the GitBook space you just put behind authenticated access. You will be prompted to sign in with Microsoft. If everything is set up correctly, you will be able to log in successfully and see the contents of the space.
