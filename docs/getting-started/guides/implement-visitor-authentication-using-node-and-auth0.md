@@ -1,6 +1,6 @@
-# Implement Visitor Authentication using Node and Auth0
+# Implement authenticated access using Node and Auth0
 
-In this guide, we will show you how to set up Visitor Authentication using Auth0 and Node.
+In this guide, we will show you how to set up authenticated access using Auth0 and Node.
 
 ## Prerequisites
 
@@ -26,7 +26,7 @@ The rest of this guide requires you to be comfortable working with common develo
 Now, we will create the backend responsible for authenticating the visitors to your space.&#x20;
 
 On your computer, clone the git repository by running\
-`git clone https://github.com/GitbookIO/auth0-visitor-authentication-example` \
+`git clone https://github.com/GitbookIO/auth0-authenticated-access-example` \
 in the directory (folder) you want to be working from. Open the folder in your favorite code editor (say, VS Code).
 
 We will edit the `server.js` file and enter the details of our Auth0 application there.
@@ -72,9 +72,9 @@ const config = {
 Note that your `secret,``clientId`, and `issuerBaseUrl` will be different from the ones shown above.
 {% endhint %}
 
-## Setting up Visitor Authentication
+## Setting up authenticated access
 
-Now, we need to use GitBook. Go to the space you want to publish behind visitor authentication. Open the Share modal and click "Share to an audience", and enable the "Publish with Visitor Authentication" toggle.&#x20;
+Now, we need to use GitBook. Go to the space you want to publish behind authenticated access. Open the Share modal and click "Share to an audience", and enable the "Publish with authenticated access" toggle.&#x20;
 
 Make note of the Private key and the Space URL. We will need them.
 
@@ -108,7 +108,7 @@ Replace everything before `?` with the Space URL you copied from the GitBook Sha
 
 Save the `server.js` file.
 
-Open up the terminal and make sure you're in the `auth0-visitor-authentication-example` directory.
+Open up the terminal and make sure you're in the `auth0-authenticated-access-example` directory.
 
 Run `npm install` which will install the dependencies of our project, including the library needed for communicating with Auth0.
 
@@ -118,7 +118,7 @@ After the installation of dependencies is complete, run `node server.js` from th
 Example app listening at http://localhost:3000
 ```
 
-Your Visitor Authentication setup is now complete! If you visit your published space URL now, you will be prompted to sign in using Auth0.&#x20;
+Your authenticated access setup is now complete! If you visit your published space URL now, you will be prompted to sign in using Auth0.&#x20;
 
 You can configure how you want users to login (say, with Google/GitHub or with email/password, or with other options like SAML) in the Auth0 Authentication dashboard.&#x20;
 

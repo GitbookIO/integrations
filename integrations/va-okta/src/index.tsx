@@ -231,7 +231,7 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
 
                     <divider size="medium" />
 
-                    <markdown content="### Visitor authentication settings" />
+                    <markdown content="### Authenticated access settings" />
                     <input
                         label="Include claims in JWT token"
                         hint="Enhance the user's site navigation experience based on user information and attributes provided by your Okta authorization backend."

@@ -1,8 +1,8 @@
-# Implement Visitor Authentication using Next.js and Clerk
+# Implement authenticated access using Next.js and Clerk
 
-[Visitor Authentication](https://gitbook.com/docs/publishing/visitor-authentication) in GitBook is a powerful way to further control who has access to the information you're publishing. By setting up a custom login screen, you can customize the experience for private materials you might have on GitBook.
+[Authenticated access](https://gitbook.com/docs/publishing/authenticated-access) in GitBook is a powerful way to further control who has access to the information you're publishing. By setting up a custom login screen, you can customize the experience for private materials you might have on GitBook.
 
-In order to use Visitor Authentication, you'll need to configure a few tools first—Including setting up a server to handle the sign-in flow your users will go through.
+In order to use authenticated access, you'll need to configure a few tools first—Including setting up a server to handle the sign-in flow your users will go through.
 
 This guide explains how you can accomplish the above using [Next.js](https://nextjs.org/) and [Clerk](https://clerk.com/). Next.js is a popular open-source JavaScript framework for building web applications, while Clerk is a developer-focused authentication and user management platform. It provides a suite of tools and services that help developers add authentication and user management functionalities to their web applications quickly and easily.
 
@@ -24,19 +24,19 @@ git clone git@github.com:GitbookIO/va-nextjs-clerk.git
 
 After cloning the repository, you can `cd` into the root of the project, and install it's dependencies using `npm install`.
 
-### Publish GitBook Space with Visitor Authentication
+### Publish GitBook Space with authenticated access
 
-In order to use a custom sign-in page for users, we'll need to publish a GitBook space with Visitor Authentication.&#x20;
+In order to use a custom sign-in page for users, we'll need to publish a GitBook space with authenticated access.
 
 Keep in mind, this feature is only available for Pro and Enterprise plans.
 
-In the space you would like to use, head to the Share Modal in the upper right corner, and choose "Publish with visitor authentication" in the Share to an audience section.
+In the space you would like to use, head to the Share Modal in the upper right corner, and choose "Publish with authenticated access" in the Share to an audience section.
 
-<figure><img src="../../.gitbook/assets/Screenshot 2023-05-15 at 14.10.09.png" alt=""><figcaption><p>Enable Visitor Authentication</p></figcaption></figure>
+<figure><img src="../../.gitbook/assets/Screenshot 2023-05-15 at 14.10.09.png" alt=""><figcaption><p>Enable Authenticated Access</p></figcaption></figure>
 
 After enabling this option, you'll see a Private Key available for you to use. We'll need this later in our configuration, so leave this page open to grab this key later.
 
-You'll also see your published space's url. This is the link users can access your published content—But since it's protected with Visitor Authentication, it'll return an error for anyone visiting this link without signing in first. We'll need this value in our configuration at a later point as well.
+You'll also see your published space's url. This is the link users can access your published content—But since it's protected with authenticated access, it'll return an error for anyone visiting this link without signing in first. We'll need this value in our configuration at a later point as well.
 
 Next, we'll need to configure our Clerk account.
 
@@ -63,12 +63,12 @@ We'll need these in order to run the project. In your local project, you'll find
 
 Rename this file to `.env`, and replace the `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` keys with the copied values from your Clerk dashboard.
 
-In the `.env` file, you'll also see another key called `NEXT_PUBLIC_GITBOOK_URL`. This is the URL that your site is published under, which can be found when you [Publish your GitBook Site with Visitor Authentication.](implement-visitor-authentication-using-next.js-and-clerk.md#publish-gitbook-space-with-visitor-authentication)
+In the `.env` file, you'll also see another key called `NEXT_PUBLIC_GITBOOK_URL`. This is the URL that your site is published under, which can be found when you [publish your GitBook site with authenticated access.](implement-authenticated-access-using-next.js-and-clerk.md#publish-gitbook-space-with-authenticated-access)
 
 At this point, your `.env` file should look like this:
 
 ```properties
-# Replace this with the public URL of the GitBook space you're protecting using Visitor Authentication.
+# Replace this with the public URL of the GitBook space you're protecting using authenticated access.
 NEXT_PUBLIC_GITBOOK_URL=https://***.gitbook.io/***/
 
 # Copy these from the API keys sections in your Clerk application dashboard, by choosing "Next.js"
@@ -88,7 +88,7 @@ In the Clerk dashboard, head to the **JWT Templates** section in the left side n
 3. Create a new template using the "Blank" template.
 4. Give your template a name (this demo uses `'`**`GitBook`**`'`). If you use a different name, make sure your template name matches the one set in `pages/api/visitor-auth.ts` in your local project.
 
-We'll now need the JWT key we created in [Publish your GitBook Space with Visitor Authentication](implement-visitor-authentication-using-next.js-and-clerk.md#publish-gitbook-space-with-visitor-authentication).
+We'll now need the JWT key we created in [publish your GitBook Space with authenticated access](implement-authenticated-access-using-next.js-and-clerk.md#publish-gitbook-space-with-authenticated-access).
 
 1. Enable the **"Custom signing key"** and **select the HS256 algorithm**.
 2. Paste your private key in Clerk's JWT template **Signing key** field.
@@ -108,25 +108,23 @@ Finally, click "Apply changes" to save your configuration.
 
 ### Run and test project
 
-Now that we have our configuration completed, we can run and test the Visitor Authentication flow. If you try to visit your published GitBook site direclty, you'll be met with a 401 screen—But if we go through the Visitor Authentication flow, we'll be able to access the site without a problem.
+Now that we have our configuration completed, we can run and test the authenticated access flow. If you try to visit your published GitBook site directly, you'll be met with a 401 screen—But if we go through the authenticated access flow, we'll be able to access the site without a problem.
 
 In the root of your project, run `npm run dev` in the terminal. Then, navigate to the url your app is running on (by default, it should be `http://localhost:3000`)
 
-<figure><img src="../../.gitbook/assets/Screenshot 2023-05-15 at 14.30.02.png" alt=""><figcaption><p>Visitor Authentication demo</p></figcaption></figure>
+<figure><img src="../../.gitbook/assets/Screenshot 2023-05-15 at 14.30.02.png" alt=""><figcaption><p>authenticated access demo</p></figcaption></figure>
 
 Here, you can sign up for an account.
 
-<figure><img src="../../.gitbook/assets/Screenshot 2023-05-15 at 14.30.09.png" alt=""><figcaption><p>Visitor Authentication demo sign in page</p></figcaption></figure>
+<figure><img src="../../.gitbook/assets/Screenshot 2023-05-15 at 14.30.09.png" alt=""><figcaption><p>authenticated access demo sign in page</p></figcaption></figure>
 
 After we sign in successfully, we'll then be able to navigate to our published site without any problems.&#x20;
 
 ### Wrapping up
 
-Visitor Authentication allows you to protect published GitBook sites behind a sign-in flow that you control.
+Authenticated access allows you to protect published GitBook sites behind a sign-in flow that you control.
 
-Not only is it customizable, but it also opens up the door for many more possibilities in the future around the way you want to work in GitBook. Make sure to head to the [Visitor Authentication](https://gitbook.com/docs/publishing/visitor-authentication) docs to learn more.
-
-
+Not only is it customizable, but it also opens up the door for many more possibilities in the future around the way you want to work in GitBook. Make sure to head to the [authenticated access](https://gitbook.com/docs/publishing/authenticated-access) docs to learn more.
 
 ### Stay up to date
 
