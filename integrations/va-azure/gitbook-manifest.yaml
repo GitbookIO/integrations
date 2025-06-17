@@ -13,17 +13,17 @@ scopes:
 organization: gitbook
 summary: |
     # Overview
-    Authenticated access allows you to publish content behind an authentication wall, so your content is only accessible to people you choose.
+    Visitor Authentication allows you to publish content behind an authentication wall, so your content is only accessible to people you choose.
 
     This integration lets you control access to your published content as determined by Azure (Entra).
 
     # Configure
     Install this integration on a space and then populate the configuration screen with the details of your Azure application and Azure subscription.
-    You can then open the Share menu, publish the space with authenticated access, choose this integration as the authentication backend, and hit Save.
+    You can then open the Share menu, publish the space with Visitor Authentication, choose this integration as the authentication backend, and hit Save.
 
-    Your space is now published with authenticated access using Azure.
+    Your space is now published with Visitor Authentication using Azure.
 categories:
-    - authenticated-access
+    - visitor-auth
 configurations:
     site:
         componentId: config

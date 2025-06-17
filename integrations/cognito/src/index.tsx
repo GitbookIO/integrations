@@ -15,7 +15,7 @@ import {
     ExposableError,
 } from '@gitbook/runtime';
 
-const logger = Logger('cognito.authenticated-access');
+const logger = Logger('cognito.visitor-auth');
 
 type CognitoRuntimeEnvironment = RuntimeEnvironment<{}, CognitoSiteInstallationConfiguration>;
 
@@ -107,7 +107,7 @@ const configBlock = createComponent<
     render: async (element, context) => {
         const siteOrSpaceInstallation =
             context.environment.siteInstallation ?? context.environment.spaceInstallation;
-        const VACallbackURL = `${siteOrSpaceInstallation?.urls?.publicEndpoint}/authenticated-access/response`;
+        const VACallbackURL = `${siteOrSpaceInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
         return (
             <block>
                 <input
@@ -222,7 +222,7 @@ const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (reque
             base: new URL(installationURL).pathname,
         });
 
-        router.get('/authenticated-access/response', async (request) => {
+        router.get('/visitor-auth/response', async (request) => {
             if (
                 ('site' in siteOrSpaceInstallation && siteOrSpaceInstallation.site) ||
                 ('space' in siteOrSpaceInstallation && siteOrSpaceInstallation.space)
@@ -247,7 +247,7 @@ const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (reque
                     client_id: clientId,
                     client_secret: clientSecret,
                     code: `${request.query.code}`,
-                    redirect_uri: `${installationURL}/authenticated-access/response`,
+                    redirect_uri: `${installationURL}/visitor-auth/response`,
                 });
                 const tokenRequestURL = `${cognitoDomain}/oauth2/token/`;
                 const cognitoTokenResp = await fetch(tokenRequestURL, {
@@ -367,7 +367,7 @@ export default createIntegration({
         const url = new URL(`${cognitoDomain}/oauth2/authorize`);
         url.searchParams.append('client_id', clientId);
         url.searchParams.append('response_type', 'code');
-        url.searchParams.append('redirect_uri', `${installationURL}/authenticated-access/response`);
+        url.searchParams.append('redirect_uri', `${installationURL}/visitor-auth/response`);
         url.searchParams.append('state', location);
 
         return Response.redirect(url.toString());

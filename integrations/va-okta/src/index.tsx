@@ -12,7 +12,7 @@ import {
     ExposableError,
 } from '@gitbook/runtime';
 
-const logger = Logger('okta.authenticated-access');
+const logger = Logger('okta.visitor-auth');
 
 type OktaRuntimeEnvironment = RuntimeEnvironment<{}, OktaSiteInstallationConfiguration>;
 
@@ -154,7 +154,7 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
     },
     render: async (element, context) => {
         const siteInstallation = context.environment.siteInstallation;
-        const VACallbackURL = `${siteInstallation?.urls?.publicEndpoint}/authenticated-access/response`;
+        const VACallbackURL = `${siteInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
         return (
             <configuration>
                 <box>
@@ -231,7 +231,7 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
 
                     <divider size="medium" />
 
-                    <markdown content="### Authenticated access settings" />
+                    <markdown content="### Visitor authentication settings" />
                     <input
                         label="Include claims in JWT token"
                         hint="Enhance the user's site navigation experience based on user information and attributes provided by your Okta authorization backend."
@@ -320,7 +320,7 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
             base: new URL(installationURL).pathname,
         });
 
-        router.get('/authenticated-access/response', async (request) => {
+        router.get('/visitor-auth/response', async (request) => {
             if ('site' in siteInstallation && siteInstallation.site) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
 
@@ -345,7 +345,7 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                     client_id: clientId,
                     client_secret: clientSecret,
                     code: `${request.query.code}`,
-                    redirect_uri: `${installationURL}/authenticated-access/response`,
+                    redirect_uri: `${installationURL}/visitor-auth/response`,
                 });
                 const accessTokenURL =
                     includeClaimsInVAToken && oktaCustomAuthServerConfig
@@ -467,7 +467,7 @@ export default createIntegration({
         );
         url.searchParams.append('client_id', clientId);
         url.searchParams.append('response_type', 'code');
-        url.searchParams.append('redirect_uri', `${installationURL}/authenticated-access/response`);
+        url.searchParams.append('redirect_uri', `${installationURL}/visitor-auth/response`);
         url.searchParams.append('response_mode', 'query');
         url.searchParams.append('scope', 'openid');
         url.searchParams.append('state', `state-${location}`);

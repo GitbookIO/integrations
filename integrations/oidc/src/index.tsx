@@ -12,7 +12,7 @@ import {
     ExposableError,
 } from '@gitbook/runtime';
 
-const logger = Logger('oidc.authenticated-access');
+const logger = Logger('oidc.visitor-auth');
 
 type OIDCRuntimeEnvironment = RuntimeEnvironment<{}, OIDCSiteInstallationConfiguration>;
 
@@ -97,7 +97,7 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
     },
     render: async (element, context) => {
         const siteInstallation = context.environment.siteInstallation;
-        const VACallbackURL = `${siteInstallation?.urls?.publicEndpoint}/authenticated-access/response`;
+        const VACallbackURL = `${siteInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
         return (
             <block>
                 <input
@@ -268,7 +268,7 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
             base: new URL(installationURL).pathname,
         });
 
-        router.get('/authenticated-access/response', async (request) => {
+        router.get('/visitor-auth/response', async (request) => {
             if ('site' in siteInstallation && siteInstallation.site) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
                 const privateKey = context.environment.signingSecrets.siteInstallation!;
@@ -293,7 +293,7 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                         client_id: clientId,
                         client_secret: clientSecret,
                         code: `${request.query.code}`,
-                        redirect_uri: `${installationURL}/authenticated-access/response`,
+                        redirect_uri: `${installationURL}/visitor-auth/response`,
                     });
 
                     const resp: any = await fetch(accessTokenEndpoint, {
@@ -399,7 +399,7 @@ export default createIntegration({
         const url = new URL(authorizationEndpoint);
         url.searchParams.append('client_id', clientId);
         url.searchParams.append('response_type', 'code');
-        url.searchParams.append('redirect_uri', `${installationURL}/authenticated-access/response`);
+        url.searchParams.append('redirect_uri', `${installationURL}/visitor-auth/response`);
         url.searchParams.append('scope', scope.toLowerCase());
         url.searchParams.append('state', `oidcstate-${location}`);
 

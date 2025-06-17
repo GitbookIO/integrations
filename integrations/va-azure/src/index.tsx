@@ -12,7 +12,7 @@ import {
     ExposableError,
 } from '@gitbook/runtime';
 
-const logger = Logger('azure.authenticated-access');
+const logger = Logger('azure.visitor-auth');
 
 type AzureRuntimeEnvironment = RuntimeEnvironment<{}, AzureSiteInstallationConfiguration>;
 
@@ -93,7 +93,7 @@ const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRu
     },
     render: async (element, context) => {
         const siteInstallation = context.environment.siteInstallation;
-        const VACallbackURL = `${siteInstallation?.urls?.publicEndpoint}/authenticated-access/response`;
+        const VACallbackURL = `${siteInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
         return (
             <block>
                 <input
@@ -218,7 +218,7 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
             base: new URL(installationURL).pathname,
         });
 
-        router.get('/authenticated-access/response', async (request) => {
+        router.get('/visitor-auth/response', async (request) => {
             if ('site' in siteInstallation && siteInstallation.site) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
 
@@ -240,7 +240,7 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                     client_id: clientId,
                     client_secret: clientSecret,
                     code: `${request.query.code}`,
-                    redirect_uri: `${installationURL}/authenticated-access/response`,
+                    redirect_uri: `${installationURL}/visitor-auth/response`,
                 });
                 const tokenURL = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token/`;
                 const azureTokenResp = await fetch(tokenURL, {
@@ -352,7 +352,7 @@ export default createIntegration({
         const url = new URL(`https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize`);
         url.searchParams.append('client_id', clientId);
         url.searchParams.append('response_type', 'code');
-        url.searchParams.append('redirect_uri', `${installationURL}/authenticated-access/response`);
+        url.searchParams.append('redirect_uri', `${installationURL}/visitor-auth/response`);
         url.searchParams.append('response_mode', 'query');
         url.searchParams.append('scope', 'openid');
         url.searchParams.append('state', location);

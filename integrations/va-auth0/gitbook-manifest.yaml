@@ -12,18 +12,18 @@ scopes:
 organization: gitbook
 summary: |
     # Overview
-    Authenticated access allows you to publish content behind an authentication wall, so your content is only accessible to people you choose.
+    Visitor Authentication allows you to publish content behind an authentication wall, so your content is only accessible to people you choose.
 
     This integration lets you control access to your published content as determined by Auth0.
 
     # Configure
     Install this integration on a space and then populate the configuration screen with the details of your Auth0 application and Auth0 instance.
-    You can then open the Share menu, publish the space with authenticated access, choose this integration as the authentication backend, and hit Save.
+    You can then open the Share menu, publish the space with Visitor Authentication, choose this integration as the authentication backend, and hit Save.
 
-    Your space is now published with authenticated access using Auth0.
+    Your space is now published with Visitor Authentication using Auth0.
 
 categories:
-    - authenticated-access
+    - visitor-auth
 configurations:
     site:
         componentId: config
