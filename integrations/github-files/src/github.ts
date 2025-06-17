@@ -7,8 +7,8 @@ export interface GithubProps {
 
 const splitGithubUrl = (url: string) => {
     const permalinkRegex =
-        /^https?:\/\/github\.com\/([\w-]+)\/([\w-]+)\/blob\/([a-f0-9]+)\/(.+?)#(.+)$/;
-    const wholeFileRegex = /^https?:\/\/github\.com\/([\w-]+)\/([\w-]+)\/blob\/([\w.-]+)\/(.+)$/;
+        /^https?:\/\/github\.com\/([\w-]+)\/([\w.-]+)\/blob\/([a-f0-9]+)\/(.+?)#(.+)$/;
+    const wholeFileRegex = /^https?:\/\/github\.com\/([\w-]+)\/([\w.-]+)\/blob\/([\w.-]+)\/(.+)$/;
     const multipleLineRegex = /^L\d+-L\d+$/;
 
     let orgName = '';
