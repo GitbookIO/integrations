@@ -67,12 +67,6 @@ export function getAuthConfig(): {
 } {
     const env = getEnvironment();
     if (process.env.GITBOOK_TOKEN) {
-        if (env !== DEFAULT_ENV) {
-            throw new Error(
-                'Cannot use environment variable "GITBOOK_TOKEN" and argument "--env" at the same time',
-            );
-        }
-
         return {
             endpoint: process.env.GITBOOK_ENDPOINT || GITBOOK_DEFAULT_ENDPOINT,
             token: process.env.GITBOOK_TOKEN,
