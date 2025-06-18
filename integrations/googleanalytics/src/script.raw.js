@@ -27,12 +27,13 @@
         return '';
     }
 
-    let disableCookies = false;
-    const cookie = getCookie(GRANTED_COOKIE);
-    if (cookie === 'yes') {
-        disableCookies = false;
-    } else if (cookie === 'no') {
-        disableCookies = true;
+    // Skip setting up GA if user has not granted consent
+    if (getCookie(GRANTED_COOKIE) !== 'yes') {
+        win[layer] = win[layer] || [];
+        win.gtag = function () {
+            // Do nothing - no tracking without consent
+        };
+        return;
     }
 
     win[layer] = win[layer] || [];
@@ -49,19 +50,14 @@
         win.gtag('js', new Date());
 
         win.gtag('consent', 'default', {
-            ad_storage: disableCookies ? 'denied' : 'granted',
-            analytics_storage: disableCookies ? 'denied' : 'granted',
+            ad_storage: 'granted',
+            analytics_storage: 'granted',
         });
 
         win.gtag('config', id, {
             send_page_view: false,
             anonymize_ip: true,
             groups: 'tracking_views',
-            ...(disableCookies
-                ? {
-                      client_storage: 'none',
-                  }
-                : {}),
         });
         triggerView(win);
 
