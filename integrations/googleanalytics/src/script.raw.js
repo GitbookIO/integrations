@@ -53,6 +53,8 @@
             ...(disableCookies ? { client_storage: 'none' } : {}),
         });
 
+        // Prevent pageview when consent is not granted. Necessary because the page_view
+        // event will set the _ga_<container-id> cookie, even with storage disabled
         if (!disableCookies) {
             triggerView(win);
         }
