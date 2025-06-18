@@ -1,5 +1,23 @@
 # @gitbook/integration-marketo
 
+## 0.2.1
+
+### Patch Changes
+
+- e4d501b: Fix Marketo dependencies.
+
+## 0.2.0
+
+### Minor Changes
+
+- 532b7a7: Cache control and misc fixes for Marketo.
+
+## 0.1.4
+
+### Patch Changes
+
+- af098c3: Fix an issue where Marketo forms could show a scrollbar.
+
 ## 0.1.3
 
 ### Patch Changes

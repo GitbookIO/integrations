@@ -32,7 +32,12 @@ function recalculateSize() {
         throw new Error("missing element with id '" + elId + "'");
     }
 
-    const size = { height: el.offsetHeight };
+    const offsetHeight = el.offsetHeight;
+
+    // Add a 2px buffer to the height to account for iframe chrome.
+    const size = {
+        height: typeof el.offsetHeight === 'number' ? el.offsetHeight + 2 : el.offsetHeight,
+    };
 
     if (cachedSize && cachedSize.height === size.height) {
         // Don't send a resize if no change.

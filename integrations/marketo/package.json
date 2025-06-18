@@ -1,14 +1,16 @@
 {
     "name": "@gitbook/integration-marketo",
-    "version": "0.1.3",
+    "version": "0.2.1",
     "private": true,
     "dependencies": {
         "@gitbook/api": "*",
-        "@gitbook/runtime": "*"
+        "@gitbook/runtime": "*",
+        "itty-router": "^2.6.1"
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",
-        "@gitbook/tsconfig": "workspace:*"
+        "@gitbook/tsconfig": "workspace:*",
+        "esbuild": "^0.15.7"
     },
     "scripts": {
         "build": "bun run ./webframe/scripts/build.ts",

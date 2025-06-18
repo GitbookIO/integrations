@@ -1,5 +1,29 @@
 # @gitbook/api
 
+## 0.121.0
+
+### Minor Changes
+
+- 40bf04e: Update API client with latest OpenAPI spec.
+
+## 0.120.0
+
+### Minor Changes
+
+- dfc36e3: Update API client with latest OpenAPI spec.
+
+## 0.119.0
+
+### Minor Changes
+
+- 7fa5586: Update API client with latest OpenAPI specification.
+
+## 0.118.0
+
+### Minor Changes
+
+- 9bdef53: Bump to add customization options: `depth` style and `circular` corner style option
+
 ## 0.117.1
 
 ### Patch Changes

@@ -1,0 +1,31 @@
+name: launchdarkly
+title: Launchdarkly
+script: src/index.tsx
+description: Sync your GitBook site’s schema with LaunchDarkly to deliver adaptive experiences to users.
+summary: |
+    # Overview
+
+    This integration allows you to sync your GitBook site’s schema with feature flags from LaunchDarkly in order to bring user data into content allowing you to create adaptive content experiences.
+
+    # How it works
+
+    The integration automatically synchronizes your GitBook site schema with the feature flags defined in LaunchDarkly. Any changes made in LaunchDarkly will be reflected in your site's schema.
+
+    # Configure
+
+    To configure the integration, you need to connect your GitBook site to your LaunchDarkly account by providing your LaunchDarkly secret key. Once connected, you can manage your feature flags in LaunchDarkly, and they will be automatically reflected in your GitBook site schema.
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/preview.png
+scopes:
+    - site:metadata:read
+    - site:views:read
+    - site:adaptive:read
+    - site:adaptive:write
+visibility: public
+organization: gitbook
+configurations:
+    site:
+        componentId: config
+secrets: {}
+target: site
