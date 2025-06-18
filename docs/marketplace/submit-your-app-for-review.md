@@ -48,7 +48,7 @@ Some considerations and areas to keep in mind when testing:
 
 Once you're happy with your integration, you'll need to provide some assets with your submission before it's accepted. All assets can be specified and added in your integration's [`gitbook-manifest.yaml`](../integrations/configurations.md) file, which will be displayed in the integration's listing page after it's published.
 
-To make things easier, we've prepared a [Figma template](https://www.figma.com/file/9FCuynZip3iJnlu0zB80ve/GitBook---Integrations-Template/duplicate) you can use to create assets for your integration that meet our design requirements.
+To make things easier, we've [created a website](https://integrate-vs.lovable.app/) you can use to create assets for your integration that meet our design requirements.
 
 #### **Name**
 
