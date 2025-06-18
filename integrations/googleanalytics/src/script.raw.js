@@ -27,39 +27,36 @@
         return '';
     }
 
-    // Skip setting up GA if user has not granted consent
-    if (getCookie(GRANTED_COOKIE) !== 'yes') {
-        win[layer] = win[layer] || [];
-        win.gtag = function () {
-            // Do nothing - no tracking without consent
-        };
-        return;
-    }
+    const disableCookies = getCookie(GRANTED_COOKIE) !== 'yes';
 
     win[layer] = win[layer] || [];
     win.gtag = function () {
         win[layer].push(arguments);
     };
 
-    const f = doc.getElementsByTagName(script)[0],
-        j = doc.createElement(script),
-        dl = layer !== 'dataLayer' ? `&l=${layer}` : '';
+    // Consent must be configured before gtag is loaded, else it will be ignored
+    win.gtag('consent', 'default', {
+        ad_storage: disableCookies ? 'denied' : 'granted',
+        analytics_storage: disableCookies ? 'denied' : 'granted',
+    });
+
+    const f = doc.getElementsByTagName(script)[0];
+    const j = doc.createElement(script);
+    const dl = layer !== 'dataLayer' ? `&l=${layer}` : '';
     j.async = true;
     j.src = `https://www.googletagmanager.com/gtag/js?id=${id}${dl}`;
     j.onload = function () {
         win.gtag('js', new Date());
-
-        win.gtag('consent', 'default', {
-            ad_storage: 'granted',
-            analytics_storage: 'granted',
-        });
-
         win.gtag('config', id, {
             send_page_view: false,
             anonymize_ip: true,
             groups: 'tracking_views',
+            ...(disableCookies ? { client_storage: 'none' } : {}),
         });
-        triggerView(win);
+
+        if (!disableCookies) {
+            triggerView(win);
+        }
 
         win.history.pushState = new Proxy(win.history.pushState, {
             apply: (target, thisArg, argArray) => {
