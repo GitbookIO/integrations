@@ -39,7 +39,6 @@
         ad_storage: disableCookies ? 'denied' : 'granted',
         analytics_storage: disableCookies ? 'denied' : 'granted',
     });
-
     const f = doc.getElementsByTagName(script)[0],
         j = doc.createElement(script),
         dl = layer !== 'dataLayer' ? `&l=${layer}` : '';
