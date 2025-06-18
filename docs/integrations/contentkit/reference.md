@@ -84,11 +84,10 @@ A visual delimiter between 2 elements of a containing stack layout.
 </box>
 ```
 
-| Props        | Type                                 | Description                                            |
-| ------------ | ------------------------------------ | ------------------------------------------------------ |
-| `children`\* | `Array<Block> \| Array<Inline>`      | Content to display in the box.                         |
-| `style`      | `'card' \| 'secondary' \| 'default'` | Visual style for the box.                              |
-| `grow`       | `number`                             | Portion of remaining space the element should take up. |
+| Props        | Type                            | Description                                            |
+| ------------ | ------------------------------- | ------------------------------------------------------ |
+| `children`\* | `Array<Block> \| Array<Inline>` | Content to display in the box.                         |
+| `grow`       | `number`                        | Portion of remaining space the element should take up. |
 
 #### `card`
 
