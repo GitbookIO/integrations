@@ -40,9 +40,9 @@
         analytics_storage: disableCookies ? 'denied' : 'granted',
     });
 
-    const f = doc.getElementsByTagName(script)[0];
-    const j = doc.createElement(script);
-    const dl = layer !== 'dataLayer' ? `&l=${layer}` : '';
+    const f = doc.getElementsByTagName(script)[0],
+        j = doc.createElement(script),
+        dl = layer !== 'dataLayer' ? `&l=${layer}` : '';
     j.async = true;
     j.src = `https://www.googletagmanager.com/gtag/js?id=${id}${dl}`;
     j.onload = function () {
