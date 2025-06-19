@@ -57,14 +57,14 @@
         // event will set the _ga_<container-id> cookie, even with storage disabled
         if (!disableCookies) {
             triggerView(win);
-        }
 
-        win.history.pushState = new Proxy(win.history.pushState, {
-            apply: (target, thisArg, argArray) => {
-                triggerView(win);
-                return target.apply(thisArg, argArray);
-            },
-        });
+            win.history.pushState = new Proxy(win.history.pushState, {
+                apply: (target, thisArg, argArray) => {
+                    triggerView(win);
+                    return target.apply(thisArg, argArray);
+                },
+            });
+        }
     };
     f.parentNode.insertBefore(j, f);
 })(window, document, 'script', 'dataLayer');
