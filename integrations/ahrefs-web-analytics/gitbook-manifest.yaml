@@ -1,0 +1,43 @@
+name: ahrefs-web-analytics
+title: Ahrefs Web Analytics
+icon: ./assets/icon.png
+description: Receive GitBook traffic insights directly in your Ahrefs Web Analytics dashboard.
+previewImages:
+    - ./assets/ahrefs-web-analytics-preview.png
+externalLinks:
+    - label: Documentation
+      url: https://www.gitbook.com/integrations/ahrefs-web-analytics
+visibility: public
+organization: gitbook
+script: ./src/index.ts
+scopes:
+    - site:script:inject
+contentSecurityPolicy:
+    script-src: |
+        https://analytics.ahrefs.com;
+    connect-src: |
+        analytics.ahrefs.com;
+summary: |
+    # Overview
+
+    Ahrefs Web Analytics is a privacy-friendly analytics service with no cookies required.
+
+    # How it works
+
+    The GitBook Ahrefs Web Analytics integration injects the Ahrefs tracking script into your published sites.
+
+    # Configure
+
+    Enable the integration on any published site and provide your tracking ID from Ahrefs.
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            tracking_id:
+                type: string
+                title: Tracking ID
+                description: Look for this in your Ahrefs Web Analytics account.
+        required:
+            - tracking_id
+target: site

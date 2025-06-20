@@ -25,6 +25,7 @@ Packages are the core of our integration platform, containing the code for the f
 It also hosts the default integrations provided by the GitBook team:
 
 - [`arcade`](./integrations/arcade/)
+- [`ahrefs-web-analytics`](./integrations/ahrefs-web-analytics/)
 - [`fathom`](./integrations/fathom/)
 - [`figma`](./integrations/figma/)
 - [`formspree`](./integrations/formspree/)
