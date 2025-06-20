@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.25.0
+
+### Minor Changes
+
+- 81ffafe: Bump @gitbook/cli with runtime support in the manifest
+
 ## 0.24.0
 
 ### Minor Changes

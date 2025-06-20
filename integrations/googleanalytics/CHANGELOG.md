@@ -1,5 +1,11 @@
 # @gitbook/integration-googleanalytics
 
+## 0.7.0
+
+### Minor Changes
+
+- 8a714f4: Initialize GA after script load
+
 ## 0.6.2
 
 ### Patch Changes
