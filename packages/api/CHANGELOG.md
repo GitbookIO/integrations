@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.122.0
+
+### Minor Changes
+
+- 59a8ccc: Update API with latest OpenAPI spec.
+
 ## 0.121.0
 
 ### Minor Changes
