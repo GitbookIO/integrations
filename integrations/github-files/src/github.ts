@@ -1,14 +1,17 @@
 import { ExposableError } from '@gitbook/runtime';
-import { GithubInstallationConfiguration, GithubRuntimeContext } from './types';
+import { GithubInstallationConfiguration, GithubRuntimeContext, GithubSnippetProps } from './types';
 
 export interface GithubProps {
     url: string;
 }
 
+const constructGithubUrl = (owner: string, repo: string, branch: string, filePath: string) => {
+    return `https://github.com/${owner}/${repo}/blob/${branch}/${filePath}`;
+};
+
 const splitGithubUrl = (url: string) => {
-    const permalinkRegex =
-        /^https?:\/\/github\.com\/([\w-]+)\/([\w-]+)\/blob\/([a-f0-9]+)\/(.+?)#(.+)$/;
-    const wholeFileRegex = /^https?:\/\/github\.com\/([\w-]+)\/([\w-]+)\/blob\/([\w.-]+)\/(.+)$/;
+    // Enhanced patterns to handle more GitHub URL formats including branches, tags, and commits
+    const generalBlobRegex = /^https?:\/\/github\.com\/([\w-]+)\/([\w-]+)\/blob\/([^\/]+)\/(.+?)(?:#(.+))?$/;
     const multipleLineRegex = /^L\d+-L\d+$/;
 
     let orgName = '';
@@ -17,41 +20,27 @@ const splitGithubUrl = (url: string) => {
     let fileName = '';
     let lines: number[] = [];
 
-    if (url.match(permalinkRegex)) {
-        const match = url.match(permalinkRegex);
-        if (!match) {
-            return;
-        }
+    // Try to match general blob pattern (handles branches, tags, commits)
+    const generalMatch = url.match(generalBlobRegex);
+    if (generalMatch) {
+        orgName = generalMatch[1];
+        repoName = generalMatch[2];
+        ref = generalMatch[3];
+        fileName = generalMatch[4];
+        const hash = generalMatch[5];
 
-        orgName = match[1];
-        repoName = match[2];
-        ref = match[3];
-        fileName = match[4];
-        const hash = match[5];
-
-        if (hash !== '') {
-            if (url.match(permalinkRegex)) {
-                if (hash.match(multipleLineRegex)) {
-                    lines = hash.replace(/L/g, '').split('-').map(Number);
-                } else {
-                    const singleLineNumberArray: number[] = [];
-                    const parsedInt = parseInt(hash.replace(/L/g, ''), 10);
-                    singleLineNumberArray.push(parsedInt);
-                    singleLineNumberArray.push(parsedInt);
-                    lines = singleLineNumberArray;
-                }
+        // Handle line numbers if present
+        if (hash && hash !== '') {
+            if (hash.match(multipleLineRegex)) {
+                lines = hash.replace(/L/g, '').split('-').map(Number);
+            } else if (hash.startsWith('L')) {
+                const singleLineNumberArray: number[] = [];
+                const parsedInt = parseInt(hash.replace(/L/g, ''), 10);
+                singleLineNumberArray.push(parsedInt);
+                singleLineNumberArray.push(parsedInt);
+                lines = singleLineNumberArray;
             }
         }
-    } else if (url.match(wholeFileRegex)) {
-        const match = url.match(wholeFileRegex);
-        if (!match) {
-            return;
-        }
-
-        orgName = match[1];
-        repoName = match[2];
-        ref = match[3];
-        fileName = match[4];
     }
     return {
         orgName,
@@ -64,6 +53,31 @@ const splitGithubUrl = (url: string) => {
 
 const getLinesFromGithubFile = (content: string[], lines: number[]) => {
     return content.slice(lines[0] - 1, lines[1]);
+};
+
+const extractSnippetSection = (content: string, snippetTag: string) => {
+    const lines = content.split('\n');
+    const startMarker = `--8<-- [start:${snippetTag}]`;
+    const endMarker = `--8<-- [end:${snippetTag}]`;
+
+    let startIndex = -1;
+    let endIndex = -1;
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line.includes(startMarker)) {
+            startIndex = i + 1; // Start from the line after the marker
+        } else if (line.includes(endMarker) && startIndex !== -1) {
+            endIndex = i; // End at the line before the marker
+            break;
+        }
+    }
+
+    if (startIndex === -1 || endIndex === -1) {
+        return null; // Snippet tag not found
+    }
+
+    return lines.slice(startIndex, endIndex).join('\n');
 };
 
 const getHeaders = (authorise: boolean, accessToken = '') => {
@@ -143,4 +157,64 @@ export const getGithubContent = async (url: string, context: GithubRuntimeContex
     }
 
     return { content, fileName: urlObject.fileName };
+};
+
+export const getGithubSnippetContent = async (
+    url: string,
+    snippetTag: string,
+    context: GithubRuntimeContext,
+) => {
+    const urlObject = splitGithubUrl(url);
+    if (!urlObject) {
+        return;
+    }
+
+    let content: string | boolean = '';
+    const configuration = context.environment.installation
+        ?.configuration as GithubInstallationConfiguration;
+    const accessToken = configuration.oauth_credentials?.access_token;
+    if (!accessToken) {
+        throw new ExposableError('Integration is not authenticated with GitHub');
+    }
+
+    content = await fetchGithubFile(
+        urlObject.orgName,
+        urlObject.repoName,
+        urlObject.fileName,
+        urlObject.ref,
+        accessToken,
+    );
+
+    if (content && snippetTag) {
+        const snippetContent = extractSnippetSection(content, snippetTag);
+        if (snippetContent === null) {
+            throw new ExposableError(`Snippet tag '${snippetTag}' not found in file`);
+        }
+        content = snippetContent;
+    }
+
+    return { content, fileName: urlObject.fileName };
+};
+
+export const getGithubContentByParams = async (
+    owner: string,
+    repo: string,
+    branch: string,
+    filePath: string,
+    context: GithubRuntimeContext,
+) => {
+    const url = constructGithubUrl(owner, repo, branch, filePath);
+    return await getGithubContent(url, context);
+};
+
+export const getGithubSnippetContentByParams = async (
+    owner: string,
+    repo: string,
+    branch: string,
+    filePath: string,
+    snippetTag: string,
+    context: GithubRuntimeContext,
+) => {
+    const url = constructGithubUrl(owner, repo, branch, filePath);
+    return await getGithubSnippetContent(url, snippetTag, context);
 };
