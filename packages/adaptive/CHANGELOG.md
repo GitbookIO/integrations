@@ -1,5 +1,11 @@
 # @gitbook/adaptive
 
+## 0.1.1
+
+### Patch Changes
+
+- 4672958: Fix warning during build
+
 ## 0.1.0
 
 ### Minor Changes

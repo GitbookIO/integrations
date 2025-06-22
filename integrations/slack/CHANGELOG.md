@@ -1,5 +1,13 @@
 # @gitbook/integration-slack
 
+## 2.0.4
+
+### Patch Changes
+
+- 6bdd531: Add section to slack notifications when revision was merged from change request
+- Updated dependencies [b67367a]
+    - @gitbook/api@0.123.0
+
 ## 2.0.3
 
 ### Patch Changes
