@@ -3,9 +3,10 @@ import { createIntegration, createComponent, createOAuthHandler } from '@gitbook
 import { getGitlabContent, GitlabProps } from './gitlab';
 import { GitlabRuntimeContext } from './types';
 import { getFileExtension } from './utils';
+import { ContentKitIcon } from '@gitbook/api';
 
 const gitlabCodeBlock = createComponent<
-    { url?: string },
+    { url?: string; visible?: boolean },
     { visible: boolean },
     {
         action: 'show' | 'hide';
@@ -13,8 +14,10 @@ const gitlabCodeBlock = createComponent<
     GitlabRuntimeContext
 >({
     componentId: 'gitlab-code-block',
-    initialState: {
-        visible: true,
+    initialState: (props) => {
+        return {
+            visible: props.visible ?? true,
+        };
     },
     async action(element, action) {
         switch (action.action) {
@@ -28,10 +31,18 @@ const gitlabCodeBlock = createComponent<
                 };
             }
             case 'show': {
-                return { state: { visible: true } };
+                return {
+                    ...element,
+                    state: { visible: true },
+                    props: { ...element.props, visible: true },
+                };
             }
             case 'hide': {
-                return { state: { visible: false } };
+                return {
+                    ...element,
+                    state: { visible: false },
+                    props: { ...element.props, visible: false },
+                };
             }
         }
 
@@ -71,18 +82,21 @@ const gitlabCodeBlock = createComponent<
         return (
             <block
                 controls={[
-                    {
-                        label: 'Show title & link',
-                        onPress: {
-                            action: 'show',
-                        },
-                    },
-                    {
-                        label: 'Hide title & link',
-                        onPress: {
-                            action: 'hide',
-                        },
-                    },
+                    element.state.visible
+                        ? {
+                              label: 'Hide title & link',
+                              icon: ContentKitIcon.EyeOff,
+                              onPress: {
+                                  action: 'hide',
+                              },
+                          }
+                        : {
+                              label: 'Show title & link',
+                              icon: ContentKitIcon.Eye,
+                              onPress: {
+                                  action: 'show',
+                              },
+                          },
                 ]}
             >
                 <card
