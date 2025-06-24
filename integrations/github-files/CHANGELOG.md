@@ -1,5 +1,11 @@
 # @gitbook/integration-github
 
+## 0.2.3
+
+### Patch Changes
+
+- 8ac0f8d: Fix GitHub & GitLab files embed hide/show action
+
 ## 0.2.2
 
 ### Patch Changes

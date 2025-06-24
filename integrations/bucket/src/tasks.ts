@@ -16,16 +16,7 @@ export async function handleIntegrationTask(
 ): Promise<void> {
     switch (task.type) {
         case 'sync-adaptive-schema':
-            await Promise.all([
-                handleSyncAdaptiveSchema(context, task.payload),
-                context.api.integrations.queueIntegrationTask(
-                    context.environment.integration.name,
-                    {
-                        task,
-                        schedule: SYNC_ADAPTIVE_SCHEMA_SCHEDULE_SECONDS,
-                    },
-                ),
-            ]);
+            await handleSyncAdaptiveSchema(context, task.payload);
             break;
         default:
             throw new Error(`Unknown integration task type: ${task}`);
@@ -42,6 +33,11 @@ async function handleSyncAdaptiveSchema(
     logger.debug(
         `handling sync adaptive schema for site ${siteId} in installation ${installationId} of ${integrationName}`,
     );
+
+    const task: IntegrationTaskSyncSiteAdaptiveSchema = {
+        type: 'sync-adaptive-schema',
+        payload,
+    };
 
     try {
         const [{ data: siteInstallation }, { data: installationAPIToken }] = await Promise.all([
@@ -74,6 +70,18 @@ async function handleSyncAdaptiveSchema(
         if (!site.adaptiveContent?.enabled) {
             logger.info(
                 `Adaptive content is not enabled for site ${siteId}, skipping adaptive schema sync.`,
+            );
+            // Update the site installation to mark the last sync attempt time
+            await context.api.integrations.updateIntegrationSiteInstallation(
+                integrationName,
+                installationId,
+                siteId,
+                {
+                    configuration: {
+                        ...siteInstallation.configuration,
+                        lastSyncAttemptAt: Date.now(),
+                    },
+                },
             );
             return;
         }
@@ -132,18 +140,26 @@ async function handleSyncAdaptiveSchema(
         });
 
         logger.info(`Updated adaptive schema for site ${siteId} in installation ${installationId}`);
-        // Update the site installation to mark the last sync time
-        await context.api.integrations.updateIntegrationSiteInstallation(
-            integrationName,
-            installationId,
-            siteId,
-            {
-                configuration: {
-                    ...siteInstallation.configuration,
-                    lastSync: Date.now(),
+
+        await Promise.all([
+            // Queue a task to sync the adaptive schema again
+            context.api.integrations.queueIntegrationTask(context.environment.integration.name, {
+                task,
+                schedule: SYNC_ADAPTIVE_SCHEMA_SCHEDULE_SECONDS,
+            }),
+            // Update the site installation to mark the last sync time
+            await context.api.integrations.updateIntegrationSiteInstallation(
+                integrationName,
+                installationId,
+                siteId,
+                {
+                    configuration: {
+                        ...siteInstallation.configuration,
+                        lastSyncAttemptAt: Date.now(),
+                    },
                 },
-            },
-        );
+            ),
+        ]);
     } catch (error) {
         logger.error(`Error while handling adaptive schema sync: ${error}`);
         throw error;

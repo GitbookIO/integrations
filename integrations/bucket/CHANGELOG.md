@@ -1,5 +1,11 @@
 # @gitbook/integration-bucket
 
+## 0.3.1
+
+### Patch Changes
+
+- a43880e: Fix integration tasks for adaptive schema sync
+
 ## 0.3.0
 
 ### Minor Changes

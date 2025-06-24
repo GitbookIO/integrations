@@ -100,8 +100,8 @@ export default createIntegration({
             const siteInstallation = assertSiteInstallation(context.environment);
             // If the last sync was more than an hour ago, we trigger a sync
             if (
-                !siteInstallation.configuration.lastSync ||
-                siteInstallation.configuration.lastSync <
+                siteInstallation.configuration.lastSyncAttemptAt &&
+                siteInstallation.configuration.lastSyncAttemptAt <
                     Date.now() - SYNC_ADAPTIVE_SCHEMA_SCHEDULE_SECONDS * 1000
             ) {
                 const api = new GitBookAPI({
