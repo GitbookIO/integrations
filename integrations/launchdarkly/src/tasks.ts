@@ -84,12 +84,16 @@ async function handleSyncAdaptiveSchema(
             logger.info(
                 `Adaptive content is not enabled for site ${siteId}, skipping adaptive schema sync.`,
             );
-            // Queue a task to sync the adaptive schema again after a delay
-            await context.api.integrations.queueIntegrationTask(
-                context.environment.integration.name,
+            // Update the site installation to mark the last sync attempt time
+            await context.api.integrations.updateIntegrationSiteInstallation(
+                integrationName,
+                installationId,
+                siteId,
                 {
-                    task,
-                    schedule: SYNC_ADAPTIVE_SCHEMA_SCHEDULE_SECONDS,
+                    configuration: {
+                        ...siteInstallation.configuration,
+                        lastSyncAttemptAt: Date.now(),
+                    },
                 },
             );
             return;
@@ -149,7 +153,7 @@ async function handleSyncAdaptiveSchema(
                 {
                     configuration: {
                         ...siteInstallation.configuration,
-                        lastSync: Date.now(),
+                        lastSyncAttemptAt: Date.now(),
                     },
                 },
             ),
