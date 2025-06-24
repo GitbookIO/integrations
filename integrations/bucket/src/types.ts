@@ -2,7 +2,7 @@ import type { RuntimeContext, RuntimeEnvironment } from '@gitbook/runtime';
 
 export type BucketSiteInstallationConfiguration = {
     secret_key?: string;
-    lastSync?: number;
+    lastSyncAttemptAt?: number;
 };
 
 export type BucketRuntimeEnvironment = RuntimeEnvironment<{}, BucketSiteInstallationConfiguration>;

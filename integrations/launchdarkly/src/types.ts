@@ -3,7 +3,7 @@ import type { RuntimeContext, RuntimeEnvironment } from '@gitbook/runtime';
 export type LaunchDarklySiteInstallationConfiguration = {
     project_key?: string;
     service_token?: string;
-    lastSync?: number;
+    lastSyncAttemptAt?: number;
 };
 
 export type LaunchDarklyRuntimeEnvironment = RuntimeEnvironment<
