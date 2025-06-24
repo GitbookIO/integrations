@@ -1,8 +1,8 @@
 # `@gitbook/adaptive`
 
-GitBook supports integrations with popular feature flag providers like [LaunchDarkly](https://launchdarkly.com) and [Bucket](https://bucket.co), making it easy to personalize your documentation based on active feature flags.
+GitBook's [adaptive content](https://docs.gitbook.com/help/adaptive-content) feature allows you to personalize your documentation based on visitor data. The `@gitbook/adaptive` SDK provides utilities to help facilitate passing data to GitBook for adapting your content.
 
-This guide walks through how to install and configure each integration using the `@gitbook/adaptive` helper package.
+This SDK includes both feature flag helpers for popular providers like [LaunchDarkly](https://launchdarkly.com) and [Bucket](https://bucket.co), as well as generic utilities for writing custom visitor data.
 
 ---
 
@@ -16,26 +16,30 @@ Make sure you have:
 
 ---
 
-## LaunchDarkly Integration
+## Feature Flag Helpers
 
-### 1. Install the GitBook + LaunchDarkly Integration
+The SDK provides convenient helpers for popular feature flag providers to automatically sync flag values with GitBook's adaptive content system.
+
+### LaunchDarkly Integration
+
+#### 1. Install the GitBook + LaunchDarkly Integration
 
 In GitBook, install the [**LaunchDarkly**](https://app.gitbook.com/integrations/launchdarkly) integration for your site.
 
-### 2. Add Your Access Credentials
+#### 2. Add Your Access Credentials
 
 In the GitBook integration settings, provide:
 
 * Your **project key**
 * A **service access token** from your LaunchDarkly account
 
-### 3. Install the GitBook Helper
+#### 3. Install the GitBook Helper
 
 ```bash
 npm install @gitbook/adaptive
 ```
 
-### 4. Configure the Client
+#### 4. Configure the Client
 
 ```tsx
 import { render } from 'react-dom';
@@ -76,7 +80,7 @@ function PassFeatureFlagsToGitBookSite() {
 })();
 ```
 
-### Visitor Schema Output
+#### Visitor Schema Output
 
 Once connected, feature flag values will be available in GitBook under:
 
@@ -84,25 +88,23 @@ Once connected, feature flag values will be available in GitBook under:
 unsigned.launchdarkly.flags
 ```
 
----
+### Bucket Integration
 
-## Bucket Integration
-
-### 1. Install the GitBook + Bucket Integration
+#### 1. Install the GitBook + Bucket Integration
 
 In GitBook, enable the [**Bucket**](https://app.gitbook.com/integrations/bucket) integration for your site.
 
-### 2. Add Your Secret Key
+#### 2. Add Your Secret Key
 
 In the GitBook integration settings, provide your **Bucket secret key**.
 
-### 3. Install the GitBook Helper
+#### 3. Install the GitBook Helper
 
 ```bash
 npm install @gitbook/adaptive
 ```
 
-### 4. Configure the Client
+#### 4. Configure the Client
 
 ```tsx
 import { withBucket } from '@gitbook/adaptive';
@@ -143,7 +145,7 @@ export function Application() {
 }
 ```
 
-### Visitor Schema Output
+#### Visitor Schema Output
 
 Once connected, feature flag values will be available in GitBook under:
 
@@ -153,6 +155,39 @@ unsigned.bucket.flags
 
 ---
 
+## Generic Utilities
+
+If you don't use LaunchDarkly or Bucket, or need to pass custom data beyond feature flags, the SDK provides generic utilities for writing visitor data.
+
+### writeGitBookVisitorCookie
+
+The `writeGitBookVisitorCookie` function allows you to write custom visitor data that will be available in GitBook's adaptive content system.
+
+```tsx
+import { writeGitBookVisitorCookie } from '@gitbook/adaptive';
+
+// Write custom visitor data
+writeGitBookVisitorCookie('userPlan', 'premium');
+writeGitBookVisitorCookie('userRole', 'admin');
+writeGitBookVisitorCookie('preferences', {
+    theme: 'dark',
+    language: 'en'
+});
+```
+
+The data will be available in GitBook under:
+
+```
+unsigned.{cookieName}
+```
+
+For example, the above code would create:
+- `unsigned.userPlan` with value `"premium"`
+- `unsigned.userRole` with value `"admin"`
+- `unsigned.preferences` with value `{ theme: "dark", language: "en" }`
+
+---
+
 ## Important Note
 
-All feature flags are evaluated on the client side. Do not pass sensitive or security-critical data through this method.
+All visitor data is evaluated on the client side and stored in cookies. Do not pass sensitive or security-critical data through this method.
