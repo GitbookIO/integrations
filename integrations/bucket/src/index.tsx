@@ -16,11 +16,9 @@ const logger = Logger('bucket');
 const handleFetchEvent: FetchEventCallback<BucketRuntimeContext> = async (request, context) => {
     const { environment } = context;
 
-    const siteInstallation = assertSiteInstallation(environment);
-
     const router = Router({
         base: new URL(
-            siteInstallation.urls?.publicEndpoint ||
+            environment.siteInstallation?.urls?.publicEndpoint ||
                 environment.installation?.urls.publicEndpoint ||
                 environment.integration.urls.publicEndpoint,
         ).pathname,
