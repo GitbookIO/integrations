@@ -21,7 +21,7 @@ const handleFetchEvent: FetchEventCallback<LaunchDarklyRuntimeContext> = async (
 
     const router = Router({
         base: new URL(
-            environment.spaceInstallation?.urls?.publicEndpoint ||
+            environment.siteInstallation?.urls?.publicEndpoint ||
                 environment.installation?.urls.publicEndpoint ||
                 environment.integration.urls.publicEndpoint,
         ).pathname,
