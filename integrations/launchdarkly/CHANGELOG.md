@@ -1,5 +1,11 @@
 # @gitbook/integration-launchdarkly
 
+## 0.3.3
+
+### Patch Changes
+
+- f791b5b: Simplify syncing schema for Bucket & LaunchDarkly
+
 ## 0.3.2
 
 ### Patch Changes
