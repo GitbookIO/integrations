@@ -1,0 +1,34 @@
+name: zendesk-conversations
+title: Zendesk
+icon: ./assets/icon.png
+description: Ingest Zendesk support tickets into GitBook for auto-improvements.
+visibility: public
+script: ./src/index.tsx
+summary: |
+    # Overview
+
+    Automatically get AI-suggested change requests for your docs based on Zendesk support tickets.
+scopes:
+    - conversations:ingest
+organization: gitbook
+configurations:
+    account:
+        componentId: config
+secrets:
+    CLIENT_ID: ${{ env.ZENDESK_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.ZENDESK_CLIENT_SECRET }}
+target: organization
+envs:
+    test:
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-integrations/Zendesk-dev-samy/username" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/Zendesk-dev-samy/CLIENT_SECRET" }}
+    dev-samy:
+        organization: 27dLEczo4lLcYIQhRuxg
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-integrations/Zendesk-dev-samy/username" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/Zendesk-dev-samy/CLIENT_SECRET" }}
+    staging:
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-integrations/Zendesk-staging/username" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/Zendesk-staging/CLIENT_SECRET" }}

@@ -46,14 +46,20 @@ const handleSpaceContentUpdated: EventCallback<
      *
      *    Content of *Space* has been updated.
      *
-     *    Summary of changes:
-     *    • New pages: Page1, Page2
-     *    • Modified pages: Page3
-     *    • Deleted pages: Page4, Page5
-     *    • Moved pages: Page6
-     *    • New files: File1, File2
-     *    • Modified files: File3
-     *    • Deleted files: File4
+     *    [Changes were merged from change request: #123 - My Change Request]
+     *
+     *    *New pages:*
+     *    • Page 7
+     *    • Page 8
+     *    • Page 9
+     *
+     *    *Modified pages:*
+     *    • Page 1
+     *    • Page 2
+     *
+     *    *New files:*
+     *    • File 1
+     *    • File 2
      *
      *    And another X changes not listed here.
      */
@@ -96,7 +102,12 @@ const handleSpaceContentUpdated: EventCallback<
 
     let notificationText = `Content of *<${space.urls.app}|${
         space.title || 'Space'
-    }>* has been updated.`;
+    }>* has been updated.\n\n`;
+
+    if (semanticChanges.mergedFrom) {
+        const changeRequest = semanticChanges.mergedFrom;
+        notificationText += `_Changes were merged from change request: <${changeRequest.urls.app}|#${changeRequest.number} - ${changeRequest.subject}>_\n\n`;
+    }
 
     const renderList = (list: string[]) => {
         return list.map((item) => `• ${item}\n`).join('');

@@ -11527,7 +11527,7 @@ components:
         * `public`: Anyone can access the content, and the content is indexed by search engines.
         * `unlisted`: Anyone can access the content, and the content is not indexed by search engines
         * `share-link`: Anyone with a secret token in the url can access the content.
-        * `visitor-auth`: Anyone authenticated through a JWT token can access the content.
+        * `authenticated-access`: Anyone authenticated through a JWT token can access the content.
         * `in-collection`: Anyone who can access the parent collection can access the content.
           Only available for spaces in a collection.
         * `private`: Authorized members can access the content.
@@ -11535,7 +11535,7 @@ components:
         - public
         - unlisted
         - share-link
-        - visitor-auth
+        - authenticated-access
         - in-collection
         - private
     SpaceEditMode:
@@ -11573,22 +11573,22 @@ components:
           $ref: "#/components/schemas/Timestamp"
     VisitorAuthCustomBackend:
       type: object
-      title: Custom backend for Visitor Authentication
+      title: Custom backend for authenticated access
       properties:
         backend:
           type: string
-          description: Custom backend for Visitor Authentication
+          description: Custom backend for authenticated access
           enum:
             - custom
       required:
         - backend
     VisitorAuthIntegrationBackend:
       type: object
-      title: Integration backend for Visitor Authentication
+      title: Integration backend for authenticated access
       properties:
         backend:
           type: string
-          description: Integration as backend for Visitor Authentication
+          description: Integration as backend for authenticated access
           enum:
             - integration
       required:
@@ -11602,7 +11602,7 @@ components:
               properties:
                 integration:
                   type: string
-                  description: Name of integration being used as the backend for Visitor Authentication
+                  description: Name of integration being used as the backend for authenticated access
               required:
                 - integration
     MemberRole:
@@ -13263,7 +13263,7 @@ components:
         - content
         - gitsync
         - marketing
-        - visitor-auth
+        - authenticated-access
         - other
     IntegrationCategories:
       type: array
@@ -13406,7 +13406,7 @@ components:
           - label
     IntegrationContentSecurityPolicy:
       description: |
-        Security policy to validate the content of the integrations scripts and Contentkit. Will be sent as 
+        Security policy to validate the content of the integrations scripts and Contentkit. Will be sent as
         headers when processing the script fetch event and the blocks fetch events.
       oneOf:
         - type: string
@@ -15811,18 +15811,18 @@ components:
                 - fetch_published_script
           required:
             - type
-    FetchVisitorAuthenticationEvent:
+    FetchAuthenticatedAccessEvent:
       allOf:
         - oneOf:
             - $ref: "#/components/schemas/SpaceEvent"
             - $ref: "#/components/schemas/SiteEvent"
         - type: object
-          description: Common properties for all events related to visitor authentication from an installation
+          description: Common properties for all events related to authenticated access from an installation
           properties:
             type:
               type: string
               enum:
-                - fetch_visitor_authentication
+                - fetch_authenticated_access
             location:
               type: string
           required:
@@ -16028,7 +16028,7 @@ components:
         - $ref: "#/components/schemas/SpaceVisibilityUpdatedEvent"
         - $ref: "#/components/schemas/FetchEvent"
         - $ref: "#/components/schemas/FetchPublishedScriptEvent"
-        - $ref: "#/components/schemas/FetchVisitorAuthenticationEvent"
+        - $ref: "#/components/schemas/FetchAuthenticatedAccessEvent"
         - $ref: "#/components/schemas/UIRenderEvent"
         - $ref: "#/components/schemas/ContentComputeDocumentEvent"
         - $ref: "#/components/schemas/ContentComputeRevisionEvent"
@@ -17029,12 +17029,12 @@ components:
         * `public`: Anyone can access the site, and the site is indexed by search engines.
         * `unlisted`: Anyone can access the site, and the site is not indexed by search engines
         * `share-link`: Anyone with a secret token in the url can access the site.
-        * `visitor-auth`: Anyone authenticated through a JWT token can access the site.
+        * `authenticated-access`: Anyone authenticated through a JWT token can access the site.
       enum:
         - public
         - unlisted
         - share-link
-        - visitor-auth
+        - authenticated-access
     SiteAdaptiveContent:
       type: object
       properties:
@@ -18669,7 +18669,7 @@ components:
             integration:
               type: string
               description: |
-                Name of the Visitor Authentication integration installed on the site (if any).
+                Name of the authenticated access integration installed on the site (if any).
                 It is also the one being used as VA backend when the published auth settings are configured to use "integration" as backend.
           required:
             - object
@@ -20576,7 +20576,7 @@ components:
           description: Whether the resolved site URL is complete and at it's terminal point, meaning no more site path segments can be further expected before any page path segments.
         contextId:
           type: string
-          description: Context returned only for a visitor authentication session to track changes in the visitor session context that affect content rendering (used for cache invalidation).
+          description: Context returned only for an authenticated access session to track changes in the authenticated session context that affect content rendering (used for cache invalidation).
       required:
         - site
         - siteSpace

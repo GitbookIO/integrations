@@ -118,7 +118,7 @@ categories:
     - collaboration
     - content
     - marketing
-    - visitor-auth
+    - authenticated-access
     - other
 ```
 

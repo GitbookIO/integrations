@@ -1,5 +1,77 @@
 # @gitbook/api
 
+## 0.124.0
+
+### Minor Changes
+
+- c33c32e: Bump API to use the latest spec
+
+## 0.123.0
+
+### Minor Changes
+
+- b67367a: Update API client with latest OpenAPI spec.
+
+## 0.122.0
+
+### Minor Changes
+
+- 59a8ccc: Update API with latest OpenAPI spec.
+
+## 0.121.0
+
+### Minor Changes
+
+- 40bf04e: Update API client with latest OpenAPI spec.
+
+## 0.120.0
+
+### Minor Changes
+
+- dfc36e3: Update API client with latest OpenAPI spec.
+
+## 0.119.0
+
+### Minor Changes
+
+- 7fa5586: Update API client with latest OpenAPI specification.
+
+## 0.118.0
+
+### Minor Changes
+
+- 9bdef53: Bump to add customization options: `depth` style and `circular` corner style option
+
+## 0.117.1
+
+### Patch Changes
+
+- a9192a5: Bump API version for resizable columns.
+
+## 0.117.0
+
+### Minor Changes
+
+- 3225e22: Update API with latest OpenAPI spec version.
+
+## 0.116.0
+
+### Minor Changes
+
+- 464a113: Increment API minor version
+
+## 0.115.0
+
+### Minor Changes
+
+- 6d36fa0: Bump API client to latest spec version
+
+## 0.114.0
+
+### Minor Changes
+
+- 202ff3d: Bump api to use the latest spec
+
 ## 0.113.0
 
 ### Minor Changes

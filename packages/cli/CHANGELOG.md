@@ -1,5 +1,29 @@
 # @gitbook/cli
 
+## 0.25.0
+
+### Minor Changes
+
+- 81ffafe: Bump @gitbook/cli with runtime support in the manifest
+
+## 0.24.0
+
+### Minor Changes
+
+- e730d23: Add support for developing an integration over multiple environments using `envs` in the manifest file and the `--env` CLI arguments for all commands.
+- 507b491: Add support for referencing secrets from 1Password using ${{ op://... }}.
+
+### Patch Changes
+
+- Updated dependencies [a9192a5]
+    - @gitbook/api@0.117.1
+
+## 0.23.0
+
+### Minor Changes
+
+- 2d1f642: Add site scope suggestions to gitbook new command
+
 ## 0.22.0
 
 ### Minor Changes
