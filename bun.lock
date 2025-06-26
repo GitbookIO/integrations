@@ -40,7 +40,7 @@
     },
     "integrations/bucket": {
       "name": "@gitbook/integration-bucket",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "dependencies": {
         "@gitbook/runtime": "*",
         "itty-router": "^5.0.18",
@@ -301,7 +301,7 @@
     },
     "integrations/launchdarkly": {
       "name": "@gitbook/integration-launchdarkly",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "dependencies": {
         "@gitbook/runtime": "*",
         "itty-router": "^5.0.18",
