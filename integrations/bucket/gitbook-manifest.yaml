@@ -1,6 +1,6 @@
 name: bucket
 title: Bucket
-script: src/index.tsx
+script: src/index.ts
 description: Sync your GitBook site’s schema with Bucket to deliver adaptive experiences to users.
 summary: |
     # Overview

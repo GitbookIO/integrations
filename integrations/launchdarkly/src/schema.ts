@@ -1,12 +1,10 @@
 import { Logger } from '@gitbook/runtime';
-import type {
-    LaunchDarklyRuntimeContext,
-    IntegrationTask,
-    IntegrationTaskSyncSiteAdaptiveSchema,
-} from './types';
+import type { LaunchDarklyRuntimeContext } from './types';
 import {
     GitBookAPI,
     GitBookAPIError,
+    IntegrationEnvironmentSiteInstallation,
+    IntegrationInstallation,
     SiteAdaptiveJSONSchemaClaimsProperties,
     type SiteAdaptiveJSONSchema,
 } from '@gitbook/api';
@@ -15,52 +13,34 @@ const logger = Logger('launchdarkly:tasks');
 
 export const SYNC_ADAPTIVE_SCHEMA_SCHEDULE_SECONDS = 3600; // 1 hour
 
-export async function handleIntegrationTask(
+export async function handleSyncAdaptiveSchema(
     context: LaunchDarklyRuntimeContext,
-    task: IntegrationTask,
+    installation: IntegrationInstallation,
+    siteInstallation: IntegrationEnvironmentSiteInstallation,
 ): Promise<void> {
-    switch (task.type) {
-        case 'sync-adaptive-schema':
-            await handleSyncAdaptiveSchema(context, task.payload);
-            break;
-        default:
-            throw new Error(`Unknown integration task type: ${task}`);
-    }
-}
-
-async function handleSyncAdaptiveSchema(
-    context: LaunchDarklyRuntimeContext,
-    payload: IntegrationTaskSyncSiteAdaptiveSchema['payload'],
-): Promise<void> {
-    const { organizationId, siteId, installationId } = payload;
-    const integrationName = context.environment.integration.name;
+    const {
+        target: { organization: organizationId },
+    } = installation;
+    const {
+        integration: integrationId,
+        installation: installationId,
+        site: siteId,
+    } = siteInstallation;
 
     logger.debug(
-        `handling sync adaptive schema for site ${siteId} in installation ${installationId} of ${integrationName}`,
+        `handling sync adaptive schema for site ${siteId} in installation ${installationId} of ${integrationId}`,
     );
 
-    const task: IntegrationTaskSyncSiteAdaptiveSchema = {
-        type: 'sync-adaptive-schema',
-        payload,
-    };
-
     try {
-        const [{ data: siteInstallation }, { data: installationAPIToken }] = await Promise.all([
-            context.api.integrations.getIntegrationSiteInstallation(
-                integrationName,
-                installationId,
-                siteId,
-            ),
-            context.api.integrations.createIntegrationInstallationToken(
-                integrationName,
-                installationId,
-            ),
-        ]);
+        const installationAPIToken = context.environment.apiTokens.installation;
+        if (!installationAPIToken) {
+            throw new Error(`Expected installation API token`);
+        }
 
         const api = new GitBookAPI({
             userAgent: context.api.userAgent,
             endpoint: context.environment.apiEndpoint,
-            authToken: installationAPIToken.token,
+            authToken: installationAPIToken,
         });
 
         const projectKey =
@@ -81,21 +61,7 @@ async function handleSyncAdaptiveSchema(
 
         const { data: site } = await api.orgs.getSiteById(organizationId, siteId);
         if (!site.adaptiveContent?.enabled) {
-            logger.info(
-                `Adaptive content is not enabled for site ${siteId}, skipping adaptive schema sync.`,
-            );
-            // Update the site installation to mark the last sync attempt time
-            await context.api.integrations.updateIntegrationSiteInstallation(
-                integrationName,
-                installationId,
-                siteId,
-                {
-                    configuration: {
-                        ...siteInstallation.configuration,
-                        lastSyncAttemptAt: Date.now(),
-                    },
-                },
-            );
+            logger.info(`Adaptive content is not enabled for site ${siteId}, skipping!`);
             return;
         }
 
@@ -127,7 +93,7 @@ async function handleSyncAdaptiveSchema(
                                 : {}),
                             [context.environment.integration.name]: {
                                 type: 'object',
-                                description: `Feature flags from the ${integrationName} integration`,
+                                description: `Feature flags from the ${integrationId} integration`,
                                 properties: parseFeatureFlagsForSchema(featureFlags),
                                 additionalProperties: false,
                             },
@@ -137,30 +103,26 @@ async function handleSyncAdaptiveSchema(
                 },
             },
         });
-        logger.info(`Updated adaptive schema for site ${siteId} in installation ${installationId}`);
 
-        await Promise.all([
-            // Queue a task to sync the adaptive schema again
-            context.api.integrations.queueIntegrationTask(context.environment.integration.name, {
-                task,
-                schedule: SYNC_ADAPTIVE_SCHEMA_SCHEDULE_SECONDS,
-            }),
-            // Update the site installation to mark the last sync time
-            await context.api.integrations.updateIntegrationSiteInstallation(
-                integrationName,
-                installationId,
-                siteId,
-                {
-                    configuration: {
-                        ...siteInstallation.configuration,
-                        lastSyncAttemptAt: Date.now(),
-                    },
-                },
-            ),
-        ]);
+        logger.info(`Updated adaptive schema for site ${siteId} in installation ${installationId}`);
     } catch (error) {
         logger.error(`Error while handling adaptive schema sync: ${error}`);
         throw error;
+    } finally {
+        const now = Date.now();
+        logger.debug(`Marking last sync attempt time as ${now}`);
+        // Update the site installation to mark the last sync time
+        await context.api.integrations.updateIntegrationSiteInstallation(
+            integrationId,
+            installationId,
+            siteId,
+            {
+                configuration: {
+                    ...siteInstallation.configuration,
+                    lastSyncAttemptAt: now,
+                },
+            },
+        );
     }
 }
 
