@@ -24,7 +24,11 @@ export default createIntegration({
         site_installation_setup: async (event, context) => {
             const installation = assertInstallation(context.environment);
             const siteInstallation = assertSiteInstallation(context.environment);
-            await handleSyncAdaptiveSchema(context, installation, siteInstallation);
+
+            if (!siteInstallation.configuration.lastSyncAttemptAt) {
+                // If this is the first setup, we sync the adaptive schema immediately
+                await handleSyncAdaptiveSchema(context, installation, siteInstallation);
+            }
         },
     },
 });
