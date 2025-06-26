@@ -1,5 +1,11 @@
 # @gitbook/integration-launchdarkly
 
+## 0.3.2
+
+### Patch Changes
+
+- 673b740: Fix crashing of sync tasks
+
 ## 0.3.1
 
 ### Patch Changes
