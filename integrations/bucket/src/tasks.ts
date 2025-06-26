@@ -4,58 +4,47 @@ import type {
     IntegrationTask,
     IntegrationTaskSyncSiteAdaptiveSchema,
 } from './types';
-import { GitBookAPI, GitBookAPIError, type SiteAdaptiveJSONSchema } from '@gitbook/api';
+import {
+    GitBookAPI,
+    GitBookAPIError,
+    IntegrationEnvironmentSiteInstallation,
+    IntegrationInstallation,
+    IntegrationSiteInstallation,
+    type SiteAdaptiveJSONSchema,
+} from '@gitbook/api';
 
 const logger = Logger('bucket:tasks');
 
 export const SYNC_ADAPTIVE_SCHEMA_SCHEDULE_SECONDS = 3600; // 1 hour
 
-export async function handleIntegrationTask(
+export async function handleSyncAdaptiveSchema(
     context: BucketRuntimeContext,
-    task: IntegrationTask,
+    installation: IntegrationInstallation,
+    siteInstallation: IntegrationEnvironmentSiteInstallation,
 ): Promise<void> {
-    switch (task.type) {
-        case 'sync-adaptive-schema':
-            await handleSyncAdaptiveSchema(context, task.payload);
-            break;
-        default:
-            throw new Error(`Unknown integration task type: ${task}`);
-    }
-}
-
-async function handleSyncAdaptiveSchema(
-    context: BucketRuntimeContext,
-    payload: IntegrationTaskSyncSiteAdaptiveSchema['payload'],
-): Promise<void> {
-    const { organizationId, siteId, installationId } = payload;
-    const integrationName = context.environment.integration.name;
+    const {
+        target: { organization: organizationId },
+    } = installation;
+    const {
+        integration: integrationId,
+        installation: installationId,
+        site: siteId,
+    } = siteInstallation;
 
     logger.debug(
-        `handling sync adaptive schema for site ${siteId} in installation ${installationId} of ${integrationName}`,
+        `handling sync adaptive schema for site ${siteId} in installation ${installationId} of ${integrationId}`,
     );
 
-    const task: IntegrationTaskSyncSiteAdaptiveSchema = {
-        type: 'sync-adaptive-schema',
-        payload,
-    };
-
     try {
-        const [{ data: siteInstallation }, { data: installationAPIToken }] = await Promise.all([
-            context.api.integrations.getIntegrationSiteInstallation(
-                integrationName,
-                installationId,
-                siteId,
-            ),
-            context.api.integrations.createIntegrationInstallationToken(
-                integrationName,
-                installationId,
-            ),
-        ]);
+        const installationAPIToken = context.environment.apiTokens.installation;
+        if (!installationAPIToken) {
+            throw new Error(`Expected installation API token`);
+        }
 
         const api = new GitBookAPI({
             userAgent: context.api.userAgent,
             endpoint: context.environment.apiEndpoint,
-            authToken: installationAPIToken.token,
+            authToken: installationAPIToken,
         });
 
         const secretKey =
@@ -68,12 +57,10 @@ async function handleSyncAdaptiveSchema(
 
         const { data: site } = await api.orgs.getSiteById(organizationId, siteId);
         if (!site.adaptiveContent?.enabled) {
-            logger.info(
-                `Adaptive content is not enabled for site ${siteId}, skipping adaptive schema sync.`,
-            );
+            logger.info(`Adaptive content is not enabled for site ${siteId}, skipping!`);
             // Update the site installation to mark the last sync attempt time
             await context.api.integrations.updateIntegrationSiteInstallation(
-                integrationName,
+                integrationId,
                 installationId,
                 siteId,
                 {
@@ -111,7 +98,7 @@ async function handleSyncAdaptiveSchema(
                                 : {}),
                             [context.environment.integration.name]: {
                                 type: 'object',
-                                description: `Feature flags from the ${integrationName} integration`,
+                                description: `Feature flags from the ${integrationId} integration`,
                                 properties: {
                                     ...featureFlags.reduce(
                                         (acc, feature) => {
@@ -141,25 +128,18 @@ async function handleSyncAdaptiveSchema(
 
         logger.info(`Updated adaptive schema for site ${siteId} in installation ${installationId}`);
 
-        await Promise.all([
-            // Queue a task to sync the adaptive schema again
-            context.api.integrations.queueIntegrationTask(context.environment.integration.name, {
-                task,
-                schedule: SYNC_ADAPTIVE_SCHEMA_SCHEDULE_SECONDS,
-            }),
-            // Update the site installation to mark the last sync time
-            await context.api.integrations.updateIntegrationSiteInstallation(
-                integrationName,
-                installationId,
-                siteId,
-                {
-                    configuration: {
-                        ...siteInstallation.configuration,
-                        lastSyncAttemptAt: Date.now(),
-                    },
+        // Update the site installation to mark the last sync attempt time
+        await context.api.integrations.updateIntegrationSiteInstallation(
+            integrationId,
+            installationId,
+            siteId,
+            {
+                configuration: {
+                    ...siteInstallation.configuration,
+                    lastSyncAttemptAt: Date.now(),
                 },
-            ),
-        ]);
+            },
+        );
     } catch (error) {
         logger.error(`Error while handling adaptive schema sync: ${error}`);
         throw error;
