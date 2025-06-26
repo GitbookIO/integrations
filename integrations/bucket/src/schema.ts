@@ -1,20 +1,20 @@
 import { Logger } from '@gitbook/runtime';
-import type { LaunchDarklyRuntimeContext } from './types';
+import type { BucketRuntimeContext } from './types';
 import {
     GitBookAPI,
     GitBookAPIError,
     IntegrationEnvironmentSiteInstallation,
     IntegrationInstallation,
-    SiteAdaptiveJSONSchemaClaimsProperties,
+    IntegrationSiteInstallation,
     type SiteAdaptiveJSONSchema,
 } from '@gitbook/api';
 
-const logger = Logger('launchdarkly:tasks');
+const logger = Logger('bucket:tasks');
 
 export const SYNC_ADAPTIVE_SCHEMA_SCHEDULE_SECONDS = 3600; // 1 hour
 
 export async function handleSyncAdaptiveSchema(
-    context: LaunchDarklyRuntimeContext,
+    context: BucketRuntimeContext,
     installation: IntegrationInstallation,
     siteInstallation: IntegrationEnvironmentSiteInstallation,
 ): Promise<void> {
@@ -43,46 +43,23 @@ export async function handleSyncAdaptiveSchema(
             authToken: installationAPIToken,
         });
 
-        const projectKey =
-            'project_key' in siteInstallation.configuration
-                ? siteInstallation.configuration.project_key
+        const secretKey =
+            'secret_key' in siteInstallation.configuration
+                ? siteInstallation.configuration.secret_key
                 : null;
-        if (typeof projectKey !== 'string' || !projectKey) {
-            throw new Error(`No project key configured in the site installation ${siteId}`);
-        }
-
-        const serviceToken =
-            'service_token' in siteInstallation.configuration
-                ? siteInstallation.configuration.service_token
-                : null;
-        if (typeof serviceToken !== 'string' || !serviceToken) {
-            throw new Error(`No service token configured in the site installation ${siteId}`);
+        if (typeof secretKey !== 'string' || !secretKey) {
+            throw new Error(`No secret key configured in the site installation ${siteId}`);
         }
 
         const { data: site } = await api.orgs.getSiteById(organizationId, siteId);
         if (!site.adaptiveContent?.enabled) {
             logger.info(`Adaptive content is not enabled for site ${siteId}, skipping!`);
-            // Update the site installation to mark the last sync attempt time
-            await context.api.integrations.updateIntegrationSiteInstallation(
-                integrationId,
-                installationId,
-                siteId,
-                {
-                    configuration: {
-                        ...siteInstallation.configuration,
-                        lastSyncAttemptAt: Date.now(),
-                    },
-                },
-            );
             return;
         }
 
         const [existing, featureFlags] = await Promise.all([
             getExistingAdaptiveSchema(api, organizationId, siteId),
-            getFeatureFlags({
-                projectKey,
-                serviceToken,
-            }),
+            getFeatureFlags(secretKey),
         ]);
 
         await api.orgs.updateSiteAdaptiveSchema(organizationId, siteId, {
@@ -106,7 +83,24 @@ export async function handleSyncAdaptiveSchema(
                             [context.environment.integration.name]: {
                                 type: 'object',
                                 description: `Feature flags from the ${integrationId} integration`,
-                                properties: parseFeatureFlagsForSchema(featureFlags),
+                                properties: {
+                                    ...featureFlags.reduce(
+                                        (acc, feature) => {
+                                            acc[feature.key] = {
+                                                type: 'boolean',
+                                                description: `Whether the visitor has ${feature.key} enabled`,
+                                            };
+                                            return acc;
+                                        },
+                                        {} as Record<
+                                            string,
+                                            {
+                                                type: 'boolean';
+                                                description: string;
+                                            }
+                                        >,
+                                    ),
+                                },
                                 additionalProperties: false,
                             },
                         },
@@ -117,7 +111,12 @@ export async function handleSyncAdaptiveSchema(
         });
 
         logger.info(`Updated adaptive schema for site ${siteId} in installation ${installationId}`);
-
+    } catch (error) {
+        logger.error(`Error while handling adaptive schema sync: ${error}`);
+        throw error;
+    } finally {
+        const now = Date.now();
+        logger.debug(`Marking last sync attempt time as ${now}`);
         // Update the site installation to mark the last sync time
         await context.api.integrations.updateIntegrationSiteInstallation(
             integrationId,
@@ -126,41 +125,11 @@ export async function handleSyncAdaptiveSchema(
             {
                 configuration: {
                     ...siteInstallation.configuration,
-                    lastSyncAttemptAt: Date.now(),
+                    lastSyncAttemptAt: now,
                 },
             },
         );
-    } catch (error) {
-        logger.error(`Error while handling adaptive schema sync: ${error}`);
-        throw error;
     }
-}
-
-function parseFeatureFlagsForSchema(featureFlags: Awaited<ReturnType<typeof getFeatureFlags>>) {
-    return featureFlags.reduce(
-        (acc, feature) => {
-            if (feature.kind === 'boolean') {
-                acc[feature.key] = {
-                    type: 'boolean',
-                    description: `Whether the visitor has ${feature.key} enabled`,
-                };
-            } else if (feature.kind === 'multivariate') {
-                const type = typeof feature.variations[0].value;
-                if (type === 'string') {
-                    acc[feature.key] = {
-                        type: 'string',
-                        description: `Whether the visitor has ${feature.key} enabled`,
-                        enum: feature.variations.map((v) => v.value as string),
-                    };
-                } else {
-                    // for now, if the type is not string or boolean, we ignore it
-                }
-            }
-
-            return acc;
-        },
-        {} as Record<string, SiteAdaptiveJSONSchemaClaimsProperties>,
-    );
 }
 
 async function getExistingAdaptiveSchema(
@@ -185,11 +154,10 @@ async function getExistingAdaptiveSchema(
     }
 }
 
-async function getFeatureFlags(args: { projectKey: string; serviceToken: string }) {
-    const { projectKey, serviceToken } = args;
-    const res = await fetch(`https://app.launchdarkly.com/api/v2/flags/${projectKey}`, {
+async function getFeatureFlags(secretKey: string) {
+    const res = await fetch('https://front.bucket.co/features', {
         headers: {
-            Authorization: serviceToken,
+            Authorization: `Bearer ${secretKey}`,
         },
     });
 
@@ -198,20 +166,16 @@ async function getFeatureFlags(args: { projectKey: string; serviceToken: string 
     }
 
     const data = await res.json<{
-        items: Array<{
-            name: string;
+        success: boolean;
+        features?: Array<{
             key: string;
-            kind: 'boolean' | 'multivariate';
-            _version: number;
-            creationDate: number;
-            variations: Array<{
-                value: unknown;
-                description?: string;
-                name?: string;
-                _id?: string;
-            }>;
+            description: string | null;
+            createdAt: string;
+            link: string | null;
+            targeting: object;
+            config?: object;
         }>;
     }>();
 
-    return data.items || [];
+    return data.features || [];
 }

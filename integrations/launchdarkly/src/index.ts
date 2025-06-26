@@ -1,7 +1,7 @@
 import { createIntegration } from '@gitbook/runtime';
 import { assertInstallation, assertSiteInstallation } from './utils';
 
-import { handleSyncAdaptiveSchema, SYNC_ADAPTIVE_SCHEMA_SCHEDULE_SECONDS } from './tasks';
+import { handleSyncAdaptiveSchema, SYNC_ADAPTIVE_SCHEMA_SCHEDULE_SECONDS } from './schema';
 import { configBlock } from './components';
 
 export default createIntegration({
