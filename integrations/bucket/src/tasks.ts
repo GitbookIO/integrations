@@ -1,9 +1,5 @@
 import { Logger } from '@gitbook/runtime';
-import type {
-    BucketRuntimeContext,
-    IntegrationTask,
-    IntegrationTaskSyncSiteAdaptiveSchema,
-} from './types';
+import type { BucketRuntimeContext } from './types';
 import {
     GitBookAPI,
     GitBookAPIError,

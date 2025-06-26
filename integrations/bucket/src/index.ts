@@ -1,5 +1,3 @@
-import { GitBookAPI } from '@gitbook/api';
-
 import { createIntegration } from '@gitbook/runtime';
 import { assertInstallation, assertSiteInstallation } from './utils';
 
