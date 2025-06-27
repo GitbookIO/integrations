@@ -19,15 +19,15 @@ contentSecurityPolicy:
     connect-src: analytics.ahrefs.com
 summary: |
     # Overview
-    [Ahrefs Web Analytics](https://ahrefs.com/web-analytics) is a privacy-friendly analytics platform that provides you with a simple and free solution to track and report your published spaces' traffic.  No cookies by default.  Just the metrics you need.
+    [Ahrefs Web Analytics](https://ahrefs.com/web-analytics) is a privacy-friendly analytics platform that provides you with a simple and free solution to track and report your published sites' traffic. No cookies by default. Just the metrics you need.
 
     # How it works
-    The Ahrefs integration allows you to track traffic in your published spaces from your Ahrefs dashboard.
+    The Ahrefs integration allows you to track traffic in your published sites from your Ahrefs dashboard.
 
-    Automatic tracking in your documentation: Each of your connected GitBook spaces will fetch the Ahrefs Web Analytics tracking script and inject it in your public content.
+    Automatic tracking in your documentation: Each of your connected GitBook sites will fetch the Ahrefs Web Analytics tracking script and inject it in your published content.
 
     # Configure
-    Enable the Ahrefs integration by navigating to organization settings.  The integration can be enabled on single or multiple spaces available publicly.
+    Enable the Ahrefs integration by navigating to organization settings. The integration can be enabled on single or multiple sites.
 categories:
     - analytics
 configurations:
