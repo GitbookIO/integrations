@@ -18,7 +18,7 @@ type KoalaRuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: KoalaRuntimeContext
+    { environment }: KoalaRuntimeContext,
 ) => {
     const koalaId = environment.siteInstallation?.configuration?.koala_key;
 
@@ -26,7 +26,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
         return;
     }
 
-    return new Response(script.replace('<TO_REPLACE>', koalaId), {
+    return new Response((script as string).replace('<TO_REPLACE>', koalaId), {
         headers: {
             'Content-Type': 'application/javascript',
             'Cache-Control': 'max-age=604800',

@@ -1,0 +1,55 @@
+name: unify
+title: Unify
+icon: ./assets/icon.png
+organization: gitbook
+description: Receive GitBook traffic insights directly in your Unify dashboard.
+previewImages:
+    - ./assets/unify-preview.png
+externalLinks:
+    - label: Documentation
+      url: https://www.gitbook.com/integrations/unify
+visibility: public
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+    - site:script:cookies
+contentSecurityPolicy:
+    script-src: |
+        https://cdn.unifygtm.com
+        https://unifygtm.com;
+    img-src: |
+        data:
+        blob:
+        cdn.unifygtm.com;
+    font-src: |
+        data:;
+    connect-src: |
+        cdn.unifygtm.com
+        unifygtm.com
+        about:;
+summary: |
+    # Overview
+
+    Unify allows you to get a comprehensive understanding of your customers across devices and platforms. The Unify integration for GitBook allows you to track traffic in your docs sites from your Unify dashboard, giving you a fuller picture of how your customer interacts across your sites and apps throughout their lifecycle.
+
+    # How it works
+
+    Automatic tracking in your docs: each of your published GitBook sites will fetch the Unify tracking script and inject it into the page.
+
+    # Configure
+
+    GitBook admins can enable the Unify integration by navigating to organization settings. The integration can be enabled on sites.
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            api_key:
+                type: string
+                title: API Key
+                description: Look for this in your Unify account.
+        required:
+            - api_key
+target: site

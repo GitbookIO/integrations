@@ -1,7 +1,10 @@
-import { sign } from '@tsndr/cloudflare-worker-jwt';
+import * as jwt from '@tsndr/cloudflare-worker-jwt';
 import { Router } from 'itty-router';
 
-import { IntegrationInstallationConfiguration } from '@gitbook/api';
+import {
+    FetchVisitorAuthenticationEvent,
+    IntegrationInstallationConfiguration,
+} from '@gitbook/api';
 import {
     createIntegration,
     FetchEventCallback,
@@ -9,35 +12,43 @@ import {
     RuntimeContext,
     RuntimeEnvironment,
     createComponent,
+    ExposableError,
 } from '@gitbook/runtime';
 
 const logger = Logger('cognito.visitor-auth');
 
-type CognitoRuntimeEnvironment = RuntimeEnvironment<
-    {},
-    CognitoSiteOrSpaceInstallationConfiguration
->;
+type CognitoRuntimeEnvironment = RuntimeEnvironment<{}, CognitoSiteInstallationConfiguration>;
 
 type CognitoRuntimeContext = RuntimeContext<CognitoRuntimeEnvironment>;
 
-type CognitoSiteOrSpaceInstallationConfiguration = {
+type CognitoSiteInstallationConfiguration = {
     client_id?: string;
     cognito_domain?: string;
     client_secret?: string;
 };
 
-type CognitoState = CognitoSiteOrSpaceInstallationConfiguration;
+type CognitoState = CognitoSiteInstallationConfiguration;
 
 type CognitoProps = {
     installation: {
         configuration?: IntegrationInstallationConfiguration;
     };
-    spaceInstallation: {
-        configuration?: CognitoSiteOrSpaceInstallationConfiguration;
-    };
     siteInstallation: {
-        configuration?: CognitoSiteOrSpaceInstallationConfiguration;
+        configuration?: CognitoSiteInstallationConfiguration;
     };
+};
+
+type CognitoTokenErrorResponseData = {
+    error: string;
+    error_description: string;
+};
+
+type CognitoTokenResponseData = {
+    access_token?: string;
+    id_token?: string;
+    refresh_token?: string;
+    token_type: 'Bearer';
+    expires_in: number;
 };
 
 export type CognitoAction = { action: 'save.config' };
@@ -60,50 +71,37 @@ const configBlock = createComponent<
 >({
     componentId: 'config',
     initialState: (props) => {
-        const siteOrSpaceInstallation = props.siteInstallation ?? props.spaceInstallation;
+        const siteInstallation = props.siteInstallation;
         return {
-            client_id: siteOrSpaceInstallation.configuration?.client_id?.toString() || '',
-            cognito_domain: siteOrSpaceInstallation.configuration?.cognito_domain?.toString() || '',
-            client_secret: siteOrSpaceInstallation.configuration?.client_secret?.toString() || '',
+            client_id: siteInstallation.configuration?.client_id?.toString() || '',
+            cognito_domain: siteInstallation.configuration?.cognito_domain?.toString() || '',
+            client_secret: siteInstallation.configuration?.client_secret?.toString() || '',
         };
     },
     action: async (element, action, context) => {
         switch (action.action) {
             case 'save.config':
                 const { api, environment } = context;
-                const siteOrSpaceInstallation =
-                    environment.siteInstallation ?? environment.spaceInstallation;
+                const siteOrSpaceInstallation = assertInstallation(environment);
 
                 const configurationBody = {
                     ...siteOrSpaceInstallation.configuration,
                     client_id: element.state.client_id,
                     client_secret: element.state.client_secret,
-                    cognito_domain: getDomainWithHttps(element.state.cognito_domain),
+                    cognito_domain: getDomainWithHttps(element.state.cognito_domain ?? ''),
                 };
-                if ('site' in siteOrSpaceInstallation) {
-                    await api.integrations.updateIntegrationSiteInstallation(
-                        siteOrSpaceInstallation.integration,
-                        siteOrSpaceInstallation.installation,
-                        siteOrSpaceInstallation.site,
-                        {
-                            configuration: {
-                                ...configurationBody,
-                            },
-                        }
-                    );
-                } else {
-                    await api.integrations.updateIntegrationSpaceInstallation(
-                        siteOrSpaceInstallation.integration,
-                        siteOrSpaceInstallation.installation,
-                        siteOrSpaceInstallation.space,
-                        {
-                            configuration: {
-                                ...configurationBody,
-                            },
-                        }
-                    );
-                }
-                return element;
+                await api.integrations.updateIntegrationSiteInstallation(
+                    siteOrSpaceInstallation.integration,
+                    siteOrSpaceInstallation.installation,
+                    siteOrSpaceInstallation.site,
+                    {
+                        configuration: {
+                            ...configurationBody,
+                        },
+                    },
+                );
+
+                return { type: 'complete' };
         }
     },
     render: async (element, context) => {
@@ -196,15 +194,23 @@ const configBlock = createComponent<
  * Get the published content (site or space) related urls.
  */
 async function getPublishedContentUrls(context: CognitoRuntimeContext) {
-    const organizationId = context.environment.installation?.target?.organization;
-    const siteOrSpaceInstallation =
-        context.environment.siteInstallation ?? context.environment.spaceInstallation;
-    const publishedContentData =
-        'site' in siteOrSpaceInstallation
-            ? await context.api.orgs.getSiteById(organizationId, siteOrSpaceInstallation.site)
-            : await context.api.spaces.getSpaceById(siteOrSpaceInstallation.space);
+    const organizationId = context.environment.installation?.target?.organization!;
+    const siteInstallation = assertInstallation(context.environment);
+    const publishedContentData = await context.api.orgs.getSiteById(
+        organizationId,
+        siteInstallation.site,
+    );
 
     return publishedContentData.data.urls;
+}
+
+function assertInstallation(environment: RuntimeEnvironment) {
+    const siteInstallation = environment.siteInstallation;
+    if (!siteInstallation) {
+        throw new Error('No site installation found');
+    }
+
+    return siteInstallation;
 }
 
 const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (request, context) => {
@@ -222,86 +228,94 @@ const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (reque
                 ('space' in siteOrSpaceInstallation && siteOrSpaceInstallation.space)
             ) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
-                const privateKey =
-                    context.environment.signingSecrets.siteInstallation ??
-                    context.environment.signingSecrets.spaceInstallation;
-                let token;
-                try {
-                    token = await sign(
-                        { exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60) },
-                        privateKey
-                    );
-                } catch (e) {
-                    return new Response('Error: Could not sign JWT token', {
-                        status: 500,
-                    });
-                }
 
                 const cognitoDomain = siteOrSpaceInstallation.configuration.cognito_domain;
                 const clientId = siteOrSpaceInstallation.configuration.client_id;
                 const clientSecret = siteOrSpaceInstallation.configuration.client_secret;
-                if (clientId && clientSecret) {
-                    const searchParams = new URLSearchParams({
-                        grant_type: 'authorization_code',
-                        client_id: clientId,
-                        client_secret: clientSecret,
-                        code: `${request.query.code}`,
-                        redirect_uri: `${installationURL}/visitor-auth/response`,
-                    });
-                    const accessTokenURL = `${cognitoDomain}/oauth2/token/`;
-                    const resp: any = await fetch(accessTokenURL, {
-                        method: 'POST',
-                        headers: { 'content-type': 'application/x-www-form-urlencoded' },
-                        body: searchParams,
-                    })
-                        .then((response) => response.json())
-                        .catch((err) => {
-                            return new Response(
-                                'Error: Could not fetch access token from Cognito',
-                                {
-                                    status: 401,
-                                }
-                            );
-                        });
 
-                    if ('access_token' in resp) {
-                        let url;
-                        if (request.query.state) {
-                            url = new URL(
-                                `${publishedContentUrls?.published}${request.query.state}`
-                            );
-                            url.searchParams.append('jwt_token', token);
-                        } else {
-                            url = new URL(publishedContentUrls?.published);
-                            url.searchParams.append('jwt_token', token);
-                        }
-                        if (publishedContentUrls?.published && token) {
-                            return Response.redirect(url.toString());
-                        } else {
-                            return new Response(
-                                "Error: Either JWT token or space's published URL is missing",
-                                {
-                                    status: 500,
-                                }
-                            );
-                        }
-                    } else {
-                        logger.debug(JSON.stringify(resp, null, 2));
+                if (!clientId || !clientSecret || !clientId) {
+                    return new Response(
+                        'Error: Either client id, client secret or cognito domain is missing',
+                        {
+                            status: 400,
+                        },
+                    );
+                }
+
+                const searchParams = new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    client_id: clientId,
+                    client_secret: clientSecret,
+                    code: `${request.query.code}`,
+                    redirect_uri: `${installationURL}/visitor-auth/response`,
+                });
+                const tokenRequestURL = `${cognitoDomain}/oauth2/token/`;
+                const cognitoTokenResp = await fetch(tokenRequestURL, {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+                    body: searchParams,
+                });
+
+                if (!cognitoTokenResp.ok) {
+                    if (
+                        cognitoTokenResp.headers.get('content-type')?.includes('application/json')
+                    ) {
+                        const errorResponse =
+                            await cognitoTokenResp.json<CognitoTokenErrorResponseData>();
+                        logger.debug(JSON.stringify(errorResponse, null, 2));
                         logger.debug(
-                            `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
-                                (resp && resp.error_description) || ''
-                            }`
-                        );
-                        return new Response(
-                            'Error: No Access Token found in response from Cognito',
-                            {
-                                status: 401,
-                            }
+                            `Did not receive access token. Error: ${
+                                (errorResponse && errorResponse.error) || ''
+                            } ${(errorResponse && errorResponse.error_description) || ''}`,
                         );
                     }
-                } else {
-                    return new Response('Error: Either ClientId or Client Secret is missing', {
-                        status: 400,
+                    return new Response('Error: Could not fetch token from Cognito', {
+                        status: 401,
+                    });
+                }
+
+                const cognitoTokenData = await cognitoTokenResp.json<CognitoTokenResponseData>();
+                if (!cognitoTokenData.access_token) {
+                    return new Response('Error: No access token found in response from Cognito', {
+                        status: 401,
+                    });
+                }
+
+                // Cognito already include user/custom claims in the access token so we can just decode it
+                // TODO: verify token using JWKS and check audience (aud) claims
+                const decodedCognitoToken = await jwt.decode(cognitoTokenData.access_token);
+                try {
+                    const privateKey = context.environment.signingSecrets.siteInstallation;
+                    if (!privateKey) {
+                        return new Response('Error: Missing private key from site installation', {
+                            status: 400,
+                        });
+                    }
+                    const jwtToken = await jwt.sign(
+                        {
+                            ...(decodedCognitoToken.payload ?? {}),
+                            exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60),
+                        },
+                        privateKey,
+                    );
+
+                    const publishedContentUrl = publishedContentUrls?.published;
+                    if (!publishedContentUrl || !jwtToken) {
+                        return new Response(
+                            "Error: Either JWT token or site's published URL is missing",
+                            {
+                                status: 500,
+                            },
+                        );
+                    }
+
+                    const url = new URL(`${publishedContentUrl}${request.query.state || ''}`);
+                    url.searchParams.append('jwt_token', jwtToken);
+
+                    return Response.redirect(url.toString());
+                } catch (e) {
+                    return new Response('Error: Could not sign JWT token', {
+                        status: 500,
                     });
                 }
             }
@@ -330,15 +344,23 @@ const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (reque
 export default createIntegration({
     fetch: handleFetchEvent,
     components: [configBlock],
-    fetch_visitor_authentication: async (event, context) => {
+    fetch_visitor_authentication: async (
+        event: FetchVisitorAuthenticationEvent,
+        context: CognitoRuntimeContext,
+    ) => {
         const { environment } = context;
-        const siteOrSpaceInstallation =
-            environment.siteInstallation ?? environment.spaceInstallation;
+        const siteInstallation = assertInstallation(environment);
 
-        const installationURL = siteOrSpaceInstallation?.urls?.publicEndpoint;
+        const installationURL = siteInstallation.urls.publicEndpoint;
 
-        const cognitoDomain = siteOrSpaceInstallation?.configuration.cognito_domain;
-        const clientId = siteOrSpaceInstallation?.configuration.client_id;
+        const configuration =
+            siteInstallation.configuration as CognitoSiteInstallationConfiguration;
+        const cognitoDomain = configuration.cognito_domain;
+        const clientId = configuration.client_id;
+
+        if (!clientId || !cognitoDomain) {
+            throw new ExposableError('Cognito configuration is missing');
+        }
 
         const location = event.location ? event.location : '';
 
@@ -348,12 +370,6 @@ export default createIntegration({
         url.searchParams.append('redirect_uri', `${installationURL}/visitor-auth/response`);
         url.searchParams.append('state', location);
 
-        try {
-            return Response.redirect(url.toString());
-        } catch (e) {
-            return new Response(e.message, {
-                status: e.status || 500,
-            });
-        }
+        return Response.redirect(url.toString());
     },
 });

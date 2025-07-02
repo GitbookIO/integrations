@@ -3,6 +3,7 @@
 import checkNodeVersion from 'check-node-version';
 import { program } from 'commander';
 import * as path from 'path';
+import { URL } from 'url';
 import prompts from 'prompts';
 
 import { GITBOOK_DEFAULT_ENDPOINT } from '@gitbook/api';
@@ -13,6 +14,14 @@ import { promptNewIntegration } from './init';
 import { DEFAULT_MANIFEST_FILE, resolveIntegrationManifestPath } from './manifest';
 import { publishIntegration, unpublishIntegration } from './publish';
 import { authenticate, whoami } from './remote';
+import { tailLogs } from './tail';
+import { checkIntegrationBuild } from './check';
+import {
+    publishOpenAPISpecificationFromFilepath,
+    publishOpenAPISpecificationFromURL,
+} from 'openapi/publish';
+import { checkIsHTTPURL } from './util';
+import { withEnvironment } from './environments';
 
 program
     .name(Object.keys(packageJSON.bin)[0])
@@ -23,27 +32,36 @@ program
     .command('auth')
     .option('-t, --token <token>')
     .option('-e, --endpoint <endpoint>', GITBOOK_DEFAULT_ENDPOINT)
+    .option('--env <env>', 'environment to authenticate to')
     .description('authenticate with gitbook.com')
     .action(async (options) => {
-        let token = options.token;
-        if (!token) {
-            const response = await prompts({
-                type: 'password',
-                name: 'token',
-                message:
-                    'Enter your API token (create one at https://app.gitbook.com/account/developer):',
-            });
-            token = response.token;
-        }
+        return withEnvironment(options.env, async () => {
+            let token = options.token;
+            if (!token) {
+                const response = await prompts({
+                    type: 'password',
+                    name: 'token',
+                    message:
+                        'Enter your API token (create one at https://app.gitbook.com/account/developer):',
+                });
+                token = response.token;
+            }
 
-        await authenticate(options.endpoint || GITBOOK_DEFAULT_ENDPOINT, token);
+            await authenticate({
+                endpoint: options.endpoint || GITBOOK_DEFAULT_ENDPOINT,
+                authToken: token,
+            });
+        });
     });
 
 program
     .command('whoami')
+    .option('--env <env>', 'environment to authenticate to')
     .description('print info about the current user configuration')
-    .action(async () => {
-        await whoami();
+    .action(async (options) => {
+        return withEnvironment(options.env, async () => {
+            await whoami();
+        });
     });
 
 program
@@ -56,33 +74,46 @@ program
 
 program
     .command('dev')
+    .argument('[file]', 'integration definition file', DEFAULT_MANIFEST_FILE)
     .description('run the integrations dev server')
-    .argument('[space]', 'ID of the development space', undefined)
-    .action(async (space?: string) => {
-        await startIntegrationsDevServer(space);
+    .option('-a, --all', 'Proxy all events from all installations')
+    .option('--env <env>', 'environment to use')
+    .action(async (filePath, options) => {
+        return withEnvironment(options.env, async () => {
+            await startIntegrationsDevServer(
+                await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath)),
+                {
+                    all: options.all ?? false,
+                },
+            );
+        });
     });
 
 program
     .command('publish')
     .argument('[file]', 'integration definition file', DEFAULT_MANIFEST_FILE)
+    .option('--env <env>', 'environment to use')
     .option(
         '-o, --organization <organization>',
         'organization to publish to',
-        process.env.GITBOOK_ORGANIZATION
+        process.env.GITBOOK_ORGANIZATION,
     )
     .description('publish a new version of the integration')
     .action(async (filePath, options) => {
-        await publishIntegration(
-            await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath)),
-            {
-                ...(options.organization ? { organization: options.organization } : {}),
-            }
-        );
+        return withEnvironment(options.env, async () => {
+            await publishIntegration(
+                await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath)),
+                {
+                    ...(options.organization ? { organization: options.organization } : {}),
+                },
+            );
+        });
     });
 
 program
     .command('unpublish')
     .argument('[integration]', 'Name of the integration to unpublish')
+    .option('--env <env>', 'environment to use')
     .description('unpublish an integration')
     .action(async (name, options) => {
         const response = await prompts({
@@ -93,8 +124,55 @@ program
         });
 
         if (response.confirm) {
-            await unpublishIntegration(name);
+            return withEnvironment(options.env, async () => {
+                await unpublishIntegration(name);
+            });
         }
+    });
+
+program
+    .command('tail')
+    .description('fetch and print the execution logs of the integration')
+    .option('--env <env>', 'environment to use')
+    .action(async (options) => {
+        return withEnvironment(options.env, async () => {
+            await tailLogs();
+        });
+    });
+
+program
+    .command('check')
+    .argument('[file]', 'integration definition file', DEFAULT_MANIFEST_FILE)
+    .description('check the integration build')
+    .action(async (filePath) => {
+        // We use a special env "test" to make it easy to configure the integration for testing.
+        return withEnvironment('test', async () => {
+            await checkIntegrationBuild(
+                await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath)),
+            );
+        });
+    });
+
+const openAPIProgram = program.command('openapi').description('manage OpenAPI specifications');
+openAPIProgram
+    .command('publish')
+    .description('publish an OpenAPI specification from a file or URL')
+    .argument('<file-or-url>', 'OpenAPI specification file path or URL')
+    .requiredOption('-s, --spec <spec>', 'name of the OpenAPI specification')
+    .requiredOption('-o, --organization <organization>', 'organization to publish to')
+    .action(async (filepathOrURL, options) => {
+        const spec = checkIsHTTPURL(filepathOrURL)
+            ? await publishOpenAPISpecificationFromURL({
+                  specSlug: options.spec,
+                  organizationId: options.organization,
+                  url: filepathOrURL,
+              })
+            : await publishOpenAPISpecificationFromFilepath({
+                  specSlug: options.spec,
+                  organizationId: options.organization,
+                  filepath: path.resolve(process.cwd(), filepathOrURL),
+              });
+        console.log(`OpenAPI specification "${options.spec}" published to ${spec.urls.app}`);
     });
 
 checkNodeVersion({ node: '>= 18' }, (error, result) => {
@@ -123,6 +201,6 @@ checkNodeVersion({ node: '>= 18' }, (error, result) => {
         (error) => {
             console.error(error.message);
             process.exit(1);
-        }
+        },
     );
 });

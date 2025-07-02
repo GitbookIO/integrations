@@ -21,7 +21,7 @@ export async function buildScriptFromManifest(
     manifestSpecPath: string,
     options: {
         mode?: 'development' | 'production';
-    } = { mode: 'production' }
+    } = { mode: 'production' },
 ): Promise<BuildOutput> {
     const manifest = await readIntegrationManifest(manifestSpecPath);
     /**
@@ -35,9 +35,10 @@ export async function buildScriptFromManifest(
         entryPoints: [inputFilePath],
         outfile: outputFilePath,
         bundle: true,
+        format: 'esm',
+        target: 'es2020',
         minify: options.mode === 'production',
         sourcemap: options.mode === 'development',
-        target: ['es2020'],
         write: true,
         mainFields: ['worker', 'browser', 'module', 'jsnext', 'main'],
         conditions: ['worker', 'browser', 'import', 'production'],
@@ -45,18 +46,18 @@ export async function buildScriptFromManifest(
             'process.env.NODE_ENV': JSON.stringify(options.mode),
             MODE: JSON.stringify(options.mode),
         },
+        external: ['node:*', 'cloudflare:*'],
         // Automatically handle JSX using the ContentKit runtime
         jsx: 'automatic',
         jsxImportSource: '@gitbook/runtime',
-        // TODO: change format when we switch to Cloudflare Workers
-        // but until them, we need to use "iife" to be able to use
-        // the export syntax while running like an entry point.
-        format: 'iife',
         globalName: '__gitbook_integration',
         loader: {
-            // If importing a file as `.raw.js`, eslint will convert to string so we can use that
+            // If importing a file as `.raw.js`, esbuild will convert to string so we can use that
             // file as a string without opening it.
             '.raw.js': 'text',
+            // If importing a file as `.raw.css`, esbuild will convert to string so we can use that
+            // file as a string without opening it.
+            '.raw.css': 'text',
         },
     });
 

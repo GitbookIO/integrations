@@ -1,12 +1,15 @@
-import { StatusError } from 'itty-router';
-
 import { IntegrationSpaceInstallation } from '@gitbook/api';
-import { Logger } from '@gitbook/runtime';
+import { Logger, ExposableError } from '@gitbook/runtime';
 
 import { fetchRepository } from './api';
 import { triggerExport, triggerImport } from './sync';
 import { GithubConfigureState, GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
-import { assertIsDefined, BRANCH_REF_PREFIX, computeConfigQueryKey } from './utils';
+import {
+    assertIsDefined,
+    BRANCH_REF_PREFIX,
+    computeConfigQueryKey,
+    normalizeProjectDirectory,
+} from './utils';
 
 const logger = Logger('github:installation');
 
@@ -15,7 +18,7 @@ const logger = Logger('github:installation');
  */
 export async function saveSpaceConfiguration(
     context: GithubRuntimeContext,
-    state: GithubConfigureState
+    state: GithubConfigureState,
 ) {
     const { api, environment } = context;
     const spaceInstallation = environment.spaceInstallation;
@@ -23,9 +26,8 @@ export async function saveSpaceConfiguration(
     assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
     if (!state.installation || !state.repository || !state.branch) {
-        throw new StatusError(
-            400,
-            'Incomplete configuration: missing installation, repository or branch'
+        throw new ExposableError(
+            'Incomplete configuration: missing installation, repository or branch',
         );
     }
 
@@ -56,12 +58,12 @@ export async function saveSpaceConfiguration(
         branch: state.branch,
         commitMessageTemplate: state.commitMessageTemplate,
         previewExternalBranches: state.previewExternalBranches,
-        projectDirectory: state.projectDirectory,
+        projectDirectory: normalizeProjectDirectory(state.projectDirectory),
         priority: state.priority,
     };
 
     logger.debug(
-        `Saving config for space ${spaceInstallation.space} of integration-installation ${spaceInstallation.installation}`
+        `Saving config for space ${spaceInstallation.space} of integration-installation ${spaceInstallation.installation}`,
     );
 
     const githubRepo = await fetchRepository(context, repoID);
@@ -79,7 +81,7 @@ export async function saveSpaceConfiguration(
                     accountName: githubRepo.owner.login,
                     repoName: githubRepo.name,
                 },
-            }
+            },
         );
 
     logger.info(`Saved config for space ${spaceInstallation.space}`);
@@ -109,13 +111,13 @@ export async function querySpaceInstallations(
     options: {
         page?: string;
         limit?: number;
-    } = {}
+    } = {},
 ): Promise<{ data: Array<IntegrationSpaceInstallation>; nextPage?: string; total?: number }> {
     const { api, environment } = context;
     const { page, limit = 100 } = options;
 
     logger.debug(
-        `Querying space installations for external ID ${externalId} (${JSON.stringify(options)})`
+        `Querying space installations for external ID ${externalId} (${JSON.stringify(options)})`,
     );
 
     const { data } = await api.integrations.listIntegrationSpaceInstallations(
@@ -124,7 +126,7 @@ export async function querySpaceInstallations(
             limit,
             externalId,
             page,
-        }
+        },
     );
 
     return {

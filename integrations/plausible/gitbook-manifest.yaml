@@ -8,11 +8,11 @@ externalLinks:
     - label: Documentation
       url: https://www.gitbook.com/integrations/plausible
 visibility: public
+organization: gitbook
 script: ./src/index.ts
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
-    - space:script:inject
     - site:script:inject
 contentSecurityPolicy:
     script-src: |
@@ -47,3 +47,4 @@ configurations:
                 description: When self-hosting, configure the url of the instance API (empty when using plausible.io).
         required:
             - domain
+target: site

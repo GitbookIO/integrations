@@ -1,25 +1,19 @@
 import { createIntegration, createComponent } from '@gitbook/runtime';
 
 import { handleSubmit } from './utils';
+import type {
+    FormspreeActionResponse,
+    FormspreeConfiguration,
+    FormspreeAction,
+    FormspreeContext,
+} from './types';
 
-type FormspreeContext = {
-    environment: {
-        spaceInstallation: {
-            configuration: {
-                formspree_id: string;
-                email: string;
-                name: string;
-                message: string;
-            };
-        };
-    };
-};
-
-type FormspreeAction = {
-    action: any;
-};
-
-const formspreeBlock = createComponent({
+const formspreeBlock = createComponent<
+    Record<string, string>,
+    FormspreeActionResponse,
+    FormspreeAction,
+    FormspreeContext
+>({
     componentId: 'formspree',
     initialState: {
         email: '',
@@ -27,37 +21,60 @@ const formspreeBlock = createComponent({
         message: '',
         formSubmitted: false,
     },
-    action: async (element, action: FormspreeAction, context: FormspreeContext) => {
+    action: async (element, action, context) => {
         switch (action.action) {
-            case 'submit':
-                handleSubmit(context.environment.spaceInstallation?.configuration.formspree_id, {
-                    email: element.state.email,
-                    name: element.state.name,
-                    message: element.state.message,
-                });
+            case 'submit': {
+                if (element.state.formSubmitted) {
+                    return element;
+                }
+
+                const success = await handleSubmit(
+                    (context.environment.spaceInstallation?.configuration as FormspreeConfiguration)
+                        .formspree_id,
+                    {
+                        email: element.state.email,
+                        name: element.state.name,
+                        message: element.state.message,
+                    },
+                );
+
+                if (!success) {
+                    return element;
+                }
+
                 return {
                     state: {
                         formSubmitted: true,
                     },
                 };
+            }
         }
     },
     render: async (element, context: FormspreeContext) => {
+        const configuration = context.environment.spaceInstallation
+            ?.configuration as FormspreeConfiguration;
+
         return (
             <block>
                 <hstack>
                     {/* Email */}
-                    {context.environment.spaceInstallation?.configuration.email ? (
+                    {configuration.email ? (
                         <box grow={1}>
                             <input
                                 label="Email"
-                                element={<textinput state="email" placeholder="Your email" />}
+                                element={
+                                    <textinput
+                                        inputType="email"
+                                        state="email"
+                                        placeholder="Your email"
+                                    />
+                                }
                             />
                         </box>
                     ) : null}
 
                     {/* Name */}
-                    {context.environment.spaceInstallation?.configuration.name ? (
+                    {configuration.name ? (
                         <box grow={1}>
                             <input
                                 label="Name"
@@ -69,7 +86,7 @@ const formspreeBlock = createComponent({
 
                 <vstack>
                     {/* Message */}
-                    {context.environment.spaceInstallation?.configuration.message ? (
+                    {configuration.message ? (
                         <box grow={2}>
                             <input
                                 label="Message"
@@ -89,6 +106,7 @@ const formspreeBlock = createComponent({
                     label={element.state.formSubmitted ? 'Submitted' : 'Submit'}
                     onPress={{ action: 'submit' }}
                     disabled={element.state.formSubmitted}
+                    style="primary"
                 />
             </block>
         );

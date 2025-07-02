@@ -1,6 +1,6 @@
 {
     "extends": "@gitbook/tsconfig/integration.json",
     "compilerOptions": {
-        "lib": ["ES6", "DOM"],
+        "lib": ["ES6", "DOM"]
     }
 }

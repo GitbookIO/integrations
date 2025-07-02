@@ -8,8 +8,10 @@
     ],
     "scripts": {
         "build": "turbo run build",
+        "check": "turbo run check",
         "test": "turbo run test",
-        "lint": "turbo run lint",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
         "publish": "turbo run publish",
         "typecheck": "turbo run typecheck",
         "publish-integrations": "turbo run publish-integrations",
@@ -17,22 +19,22 @@
         "version-packages": "changeset version",
         "changeset": "changeset",
         "release": "turbo run build && changeset publish",
-        "build-assets": "ts-node ./scripts/build-assets.ts",
+        "build-assets": "bun run ./scripts/build-assets.ts",
         "publish-assets": "./scripts/publish-assets.sh"
     },
     "devDependencies": {
-        "@changesets/cli": "^2.27.0",
+        "@changesets/cli": "^2.27.8",
         "assert": "^2.0.0",
-        "esbuild-register": "^3.3.3",
         "test": "^3.2.1",
-        "ts-node": "^10.9.1",
-        "turbo": "latest",
-        "wrangler": "^2.1.12"
-    },
-    "engines": {
-        "npm": ">=7.0.0",
-        "node": ">=14.0.0"
+        "turbo": "^2.4.2",
+        "wrangler": "^2.1.12",
+        "prettier": "^3.3.3",
+        "@types/bun": "^1.1.10",
+        "pkg-pr-new": "^0.0.40"
     },
     "dependencies": {},
-    "packageManager": "npm@8.4.1"
+    "packageManager": "bun@1.2.14",
+    "resolutions": {
+        "@gitbook/openapi-parser": "^2.1.0"
+    }
 }

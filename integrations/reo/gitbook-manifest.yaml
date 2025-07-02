@@ -2,7 +2,7 @@ name: reodotdev
 title: Reo.dev
 icon: ./assets/icon.png
 previewImages:
-    - ./assets/preview.png
+    - ./assets/reo-preview.png
 description: Plug your GitBook site to your Reo.dev installation.
 externalLinks:
     - label: Website
@@ -12,9 +12,8 @@ script: ./src/index.ts
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
-    - space:script:inject
     - site:script:inject
-organization: d8f63b60-89ae-11e7-8574-5927d48c4877
+organization: gitbook
 contentSecurityPolicy:
     script-src: static.reo.dev www.ipapi.co;
 summary: |
@@ -41,3 +40,4 @@ configurations:
                 description: Available in Reo.dev's Integration -> Documentation section
         required:
             - tracking_id
+target: site

@@ -39,8 +39,8 @@ export async function getGitHubAppJWT(context: GithubRuntimeContext): Promise<st
  * Returns the URL of the Git repository.
  */
 export function getRepositoryUrl(config: GitHubSpaceConfiguration, withExtension = false): string {
-    assertIsDefined(config.accountName, { label: 'config.accountName' });
-    assertIsDefined(config.repoName, { label: 'config.repoName' });
+    assertIsDefined(config.accountName, { label: 'config.accountName', statusCode: 400 });
+    assertIsDefined(config.repoName, { label: 'config.repoName', statusCode: 400 });
 
     return `https://github.com/${config.accountName}/${config.repoName}${
         withExtension ? '.git' : ''
@@ -52,15 +52,15 @@ export function getRepositoryUrl(config: GitHubSpaceConfiguration, withExtension
  */
 export async function getRepositoryAuth(
     context: GithubRuntimeContext,
-    config: GitHubSpaceConfiguration
+    config: GitHubSpaceConfiguration,
 ) {
-    assertIsDefined(config.installation, { label: 'config.installation' });
+    assertIsDefined(config.installation, { label: 'config.installation', statusCode: 400 });
 
     const appJWT = await getGitHubAppJWT(context);
     const installationAccessToken = await createAppInstallationAccessToken(
         context,
         appJWT,
-        config.installation
+        config.installation,
     );
 
     return {
@@ -82,17 +82,17 @@ export async function updateCommitStatus(
         state: GitSyncOperationState;
         url: string;
         description: string;
-    }
+    },
 ) {
-    assertIsDefined(config.accountName, { label: 'config.accountName' });
-    assertIsDefined(config.repoName, { label: 'config.repoName' });
-    assertIsDefined(config.installation, { label: 'config.installation' });
+    assertIsDefined(config.accountName, { label: 'config.accountName', statusCode: 400 });
+    assertIsDefined(config.repoName, { label: 'config.repoName', statusCode: 400 });
+    assertIsDefined(config.installation, { label: 'config.installation', statusCode: 400 });
 
     const appJWT = await getGitHubAppJWT(context);
     const installationAccessToken = await createAppInstallationAccessToken(
         context,
         appJWT,
-        config.installation
+        config.installation,
     );
 
     await createCommitStatus(
@@ -106,11 +106,11 @@ export async function updateCommitStatus(
             target_url: update.url,
             description: update.description,
             context: update.context || 'GitBook',
-        }
+        },
     );
 
     logger.info(
-        `Commit status updated for ${commitSha} on GitHub repo (${config.accountName}/${config.repoName})`
+        `Commit status updated for ${commitSha} on GitHub repo (${config.accountName}/${config.repoName})`,
     );
 }
 

@@ -3,16 +3,21 @@ import { createIntegration, createComponent, createOAuthHandler } from '@gitbook
 import { getGitlabContent, GitlabProps } from './gitlab';
 import { GitlabRuntimeContext } from './types';
 import { getFileExtension } from './utils';
+import { ContentKitIcon } from '@gitbook/api';
 
 const gitlabCodeBlock = createComponent<
-    { url?: string },
+    { url?: string; visible?: boolean },
     { visible: boolean },
-    {},
+    {
+        action: 'show' | 'hide';
+    },
     GitlabRuntimeContext
 >({
     componentId: 'gitlab-code-block',
-    initialState: {
-        visible: true,
+    initialState: (props) => {
+        return {
+            visible: props.visible ?? true,
+        };
     },
     async action(element, action) {
         switch (action.action) {
@@ -26,10 +31,18 @@ const gitlabCodeBlock = createComponent<
                 };
             }
             case 'show': {
-                return { state: { visible: true } };
+                return {
+                    ...element,
+                    state: { visible: true },
+                    props: { ...element.props, visible: true },
+                };
             }
             case 'hide': {
-                return { state: { visible: false } };
+                return {
+                    ...element,
+                    state: { visible: false },
+                    props: { ...element.props, visible: false },
+                };
             }
         }
 
@@ -37,10 +50,9 @@ const gitlabCodeBlock = createComponent<
     },
     async render(element, context) {
         const { url } = element.props as GitlabProps;
-        const [content, filePath] = await getGitlabContent(url, context);
-        const fileExtension = await getFileExtension(filePath);
+        const found = await getGitlabContent(url, context);
 
-        if (!content) {
+        if (!found) {
             return (
                 <block>
                     <card
@@ -50,33 +62,41 @@ const gitlabCodeBlock = createComponent<
                             url,
                         }}
                         icon={
-                            <image
-                                source={{
-                                    url: context.environment.integration.urls.icon,
-                                }}
-                                aspectRatio={1}
-                            />
+                            context.environment.integration.urls.icon ? (
+                                <image
+                                    source={{
+                                        url: context.environment.integration.urls.icon,
+                                    }}
+                                    aspectRatio={1}
+                                />
+                            ) : undefined
                         }
                     />
                 </block>
             );
         }
 
+        const { content, filePath } = found;
+        const fileExtension = await getFileExtension(filePath);
+
         return (
             <block
                 controls={[
-                    {
-                        label: 'Show title & link',
-                        onPress: {
-                            action: 'show',
-                        },
-                    },
-                    {
-                        label: 'Hide title & link',
-                        onPress: {
-                            action: 'hide',
-                        },
-                    },
+                    element.state.visible
+                        ? {
+                              label: 'Hide title & link',
+                              icon: ContentKitIcon.EyeOff,
+                              onPress: {
+                                  action: 'hide',
+                              },
+                          }
+                        : {
+                              label: 'Show title & link',
+                              icon: ContentKitIcon.Eye,
+                              onPress: {
+                                  action: 'show',
+                              },
+                          },
                 ]}
             >
                 <card
@@ -90,26 +110,15 @@ const gitlabCodeBlock = createComponent<
                             : { action: 'null' }
                     }
                     icon={
-                        <image
-                            source={{
-                                url: context.environment.integration.urls.icon,
-                            }}
-                            aspectRatio={1}
-                        />
+                        context.environment.integration.urls.icon ? (
+                            <image
+                                source={{
+                                    url: context.environment.integration.urls.icon,
+                                }}
+                                aspectRatio={1}
+                            />
+                        ) : undefined
                     }
-                    buttons={[
-                        <button
-                            icon="maximize"
-                            tooltip="Open preview"
-                            onPress={{
-                                action: '@ui.modal.open',
-                                componentId: 'previewModal',
-                                props: {
-                                    url,
-                                },
-                            }}
-                        />,
-                    ]}
                 >
                     {content ? (
                         <codeblock

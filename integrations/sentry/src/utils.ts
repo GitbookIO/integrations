@@ -11,6 +11,6 @@ export function extractIssueIdFromURL(input: string): string | undefined {
     return parts[4];
 }
 
-export function capitalizeFirstLetter(string) {
+export function capitalizeFirstLetter(string: string): string {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }

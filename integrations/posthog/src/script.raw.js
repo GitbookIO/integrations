@@ -31,7 +31,7 @@ const instanceAddress = '<ph_instance_address>';
                     },
                     o =
                         'capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys'.split(
-                            ' '
+                            ' ',
                         ),
                     n = 0;
                 n < o.length;

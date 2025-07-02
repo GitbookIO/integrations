@@ -2,9 +2,7 @@ import removeMarkdown from 'remove-markdown';
 
 import { GitBookAPI } from '@gitbook/api';
 
-import { SlackInstallationConfiguration } from './configuration';
-
-const SAVE_THREAD_MESSAGE = 'save';
+import { SlackInstallationConfiguration, SlackRuntimeContext } from './configuration';
 
 export function stripMarkdown(text: string) {
     return removeMarkdown(text);
@@ -36,7 +34,7 @@ export async function getInstallationApiClient(api: GitBookAPI, externalId: stri
     return { client: installationApiClient, installation };
 }
 
-export async function getInstallationConfig(context, externalId) {
+export async function getInstallationConfig(context: SlackRuntimeContext, externalId: string) {
     const { api, environment } = context;
 
     // Lookup the concerned installations
@@ -104,23 +102,6 @@ export function getActionNameAndType(actionId: string) {
     const [actionName, actionPostType = 'ephemeral'] = actionId.split(':');
 
     return { actionName, actionPostType };
-}
-
-export function isSaveThreadMessage(message: string) {
-    const tokens = message.split(' ');
-
-    if (tokens.length > 3) {
-        return false;
-    }
-
-    const [first, second] = tokens;
-
-    // `save` or `save this` or `please save`
-    if (first === SAVE_THREAD_MESSAGE || second === SAVE_THREAD_MESSAGE) {
-        return true;
-    }
-
-    return false;
 }
 
 // Checks whether we should respond to a slack event

@@ -9,15 +9,16 @@ import {
     RuntimeContext,
     RuntimeEnvironment,
     createComponent,
+    ExposableError,
 } from '@gitbook/runtime';
 
 const logger = Logger('oidc.visitor-auth');
 
-type OIDCRuntimeEnvironment = RuntimeEnvironment<{}, OIDCSiteOrSpaceInstallationConfiguration>;
+type OIDCRuntimeEnvironment = RuntimeEnvironment<{}, OIDCSiteInstallationConfiguration>;
 
 type OIDCRuntimeContext = RuntimeContext<OIDCRuntimeEnvironment>;
 
-type OIDCSiteOrSpaceInstallationConfiguration = {
+type OIDCSiteInstallationConfiguration = {
     client_id?: string;
     authorization_endpoint?: string;
     access_token_endpoint?: string;
@@ -25,24 +26,21 @@ type OIDCSiteOrSpaceInstallationConfiguration = {
     scope?: string;
 };
 
-type OIDCState = OIDCSiteOrSpaceInstallationConfiguration;
+type OIDCState = OIDCSiteInstallationConfiguration;
 
 type OIDCProps = {
     installation: {
         configuration?: IntegrationInstallationConfiguration;
     };
-    spaceInstallation: {
-        configuration?: OIDCSiteOrSpaceInstallationConfiguration;
-    };
     siteInstallation: {
-        configuration?: OIDCSiteOrSpaceInstallationConfiguration;
+        configuration?: OIDCSiteInstallationConfiguration;
     };
 };
 
 export type OIDCAction = { action: 'save.config' };
 
 const getDomainWithHttps = (url: string): string => {
-    const sanitizedURL = url.trim().toLowerCase();
+    const sanitizedURL = url.trim();
     if (sanitizedURL.startsWith('https://')) {
         return sanitizedURL;
     } else if (sanitizedURL.startsWith('http://')) {
@@ -55,64 +53,51 @@ const getDomainWithHttps = (url: string): string => {
 const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntimeContext>({
     componentId: 'config',
     initialState: (props) => {
-        const siteOrSpaceInstallation = props.siteInstallation ?? props.spaceInstallation;
+        const siteInstallation = props.siteInstallation;
         return {
-            client_id: siteOrSpaceInstallation.configuration?.client_id?.toString() || '',
-            authorization_endpoint:
-                siteOrSpaceInstallation.configuration?.authorization_endpoint?.toString() || '',
-            access_token_endpoint:
-                siteOrSpaceInstallation.configuration?.access_token_endpoint?.toString() || '',
-            client_secret: siteOrSpaceInstallation.configuration?.client_secret?.toString() || '',
-            scope: siteOrSpaceInstallation.configuration?.scope?.toString() || '',
+            client_id: siteInstallation.configuration?.client_id || '',
+            authorization_endpoint: siteInstallation.configuration?.authorization_endpoint || '',
+            access_token_endpoint: siteInstallation.configuration?.access_token_endpoint || '',
+            client_secret: siteInstallation.configuration?.client_secret || '',
+            scope: siteInstallation.configuration?.scope || '',
         };
     },
     action: async (element, action, context) => {
         switch (action.action) {
             case 'save.config':
                 const { api, environment } = context;
-                const siteOrSpaceInstallation =
-                    environment.siteInstallation ?? environment.spaceInstallation;
+
+                const siteInstallation = assertSiteInstallation(environment);
 
                 const configurationBody = {
-                    ...siteOrSpaceInstallation.configuration,
+                    ...siteInstallation.configuration,
                     client_id: element.state.client_id,
                     client_secret: element.state.client_secret,
                     authorization_endpoint: getDomainWithHttps(
-                        element.state.authorization_endpoint
+                        element.state.authorization_endpoint ?? '',
                     ),
-                    access_token_endpoint: getDomainWithHttps(element.state.access_token_endpoint),
+                    access_token_endpoint: getDomainWithHttps(
+                        element.state.access_token_endpoint ?? '',
+                    ),
                     scope: element.state.scope,
                 };
-                if ('site' in siteOrSpaceInstallation) {
-                    await api.integrations.updateIntegrationSiteInstallation(
-                        siteOrSpaceInstallation.integration,
-                        siteOrSpaceInstallation.installation,
-                        siteOrSpaceInstallation.site,
-                        {
-                            configuration: {
-                                ...configurationBody,
-                            },
-                        }
-                    );
-                } else {
-                    await api.integrations.updateIntegrationSpaceInstallation(
-                        siteOrSpaceInstallation.integration,
-                        siteOrSpaceInstallation.installation,
-                        siteOrSpaceInstallation.space,
-                        {
-                            configuration: {
-                                ...configurationBody,
-                            },
-                        }
-                    );
-                }
-                return element;
+                await api.integrations.updateIntegrationSiteInstallation(
+                    siteInstallation.integration,
+                    siteInstallation.installation,
+                    siteInstallation.site,
+                    {
+                        configuration: {
+                            ...configurationBody,
+                        },
+                    },
+                );
+
+                return { type: 'complete' };
         }
     },
     render: async (element, context) => {
-        const siteOrSpaceInstallation =
-            context.environment.siteInstallation ?? context.environment.spaceInstallation;
-        const VACallbackURL = `${siteOrSpaceInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
+        const siteInstallation = context.environment.siteInstallation;
+        const VACallbackURL = `${siteInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
         return (
             <block>
                 <input
@@ -243,43 +228,55 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
 });
 
 /**
- * Get the published content (site or space) related urls.
+ * Get the published content related urls.
  */
 async function getPublishedContentUrls(context: OIDCRuntimeContext) {
-    const organizationId = context.environment.installation?.target?.organization;
-    const siteOrSpaceInstallation =
-        context.environment.siteInstallation ?? context.environment.spaceInstallation;
-    const publishedContentData =
-        'site' in siteOrSpaceInstallation
-            ? await context.api.orgs.getSiteById(organizationId, siteOrSpaceInstallation.site)
-            : await context.api.spaces.getSpaceById(siteOrSpaceInstallation.space);
+    const organizationId = assertOrgId(context.environment);
+    const siteInstallation = assertSiteInstallation(context.environment);
+    const publishedContentData = await context.api.orgs.getSiteById(
+        organizationId,
+        siteInstallation.site,
+    );
 
     return publishedContentData.data.urls;
 }
 
+function assertSiteInstallation(environment: OIDCRuntimeEnvironment) {
+    const siteInstallation = environment.siteInstallation;
+    if (!siteInstallation) {
+        throw new Error('No site installation found');
+    }
+
+    return siteInstallation;
+}
+
+function assertOrgId(environment: OIDCRuntimeEnvironment) {
+    const orgId = environment.installation?.target?.organization!;
+    if (!orgId) {
+        throw new Error('No org ID found');
+    }
+
+    return orgId;
+}
+
 const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request, context) => {
     const { environment } = context;
-    const siteOrSpaceInstallation = environment.siteInstallation ?? environment.spaceInstallation;
-    const installationURL = siteOrSpaceInstallation?.urls?.publicEndpoint;
+    const siteInstallation = assertSiteInstallation(environment);
+    const installationURL = siteInstallation.urls?.publicEndpoint;
     if (installationURL) {
         const router = Router({
             base: new URL(installationURL).pathname,
         });
 
         router.get('/visitor-auth/response', async (request) => {
-            if (
-                ('site' in siteOrSpaceInstallation && siteOrSpaceInstallation.site) ||
-                ('space' in siteOrSpaceInstallation && siteOrSpaceInstallation.space)
-            ) {
+            if ('site' in siteInstallation && siteInstallation.site) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
-                const privateKey =
-                    context.environment.signingSecrets.siteInstallation ??
-                    context.environment.signingSecrets.spaceInstallation;
+                const privateKey = context.environment.signingSecrets.siteInstallation!;
                 let token;
                 try {
                     token = await sign(
                         { exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60) },
-                        privateKey
+                        privateKey,
                     );
                 } catch (e) {
                     return new Response('Error: Could not sign JWT token', {
@@ -287,11 +284,10 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                     });
                 }
 
-                const accessTokenEndpoint =
-                    siteOrSpaceInstallation.configuration.access_token_endpoint;
-                const clientId = siteOrSpaceInstallation.configuration.client_id;
-                const clientSecret = siteOrSpaceInstallation.configuration.client_secret;
-                if (clientId && clientSecret) {
+                const accessTokenEndpoint = siteInstallation.configuration.access_token_endpoint;
+                const clientId = siteInstallation.configuration.client_id;
+                const clientSecret = siteInstallation.configuration.client_secret;
+                if (clientId && clientSecret && accessTokenEndpoint) {
                     const searchParams = new URLSearchParams({
                         grant_type: 'authorization_code',
                         client_id: clientId,
@@ -311,19 +307,19 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                                 'Error: Could not fetch access token from your authentication provider',
                                 {
                                     status: 401,
-                                }
+                                },
                             );
                         });
 
                     if ('access_token' in resp) {
                         let url;
-                        const state = request.query.state.toString();
+                        const state = request.query.state!.toString();
                         const location = state.substring(state.indexOf('-') + 1);
                         if (location) {
                             url = new URL(`${publishedContentUrls?.published}${location}`);
                             url.searchParams.append('jwt_token', token);
                         } else {
-                            url = new URL(publishedContentUrls?.published);
+                            url = new URL(publishedContentUrls?.published!);
                             url.searchParams.append('jwt_token', token);
                         }
                         if (publishedContentUrls?.published && token) {
@@ -333,7 +329,7 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                                 "Error: Either JWT token or space's published URL is missing",
                                 {
                                     status: 500,
-                                }
+                                },
                             );
                         }
                     } else {
@@ -341,19 +337,22 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                         logger.debug(
                             `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
                                 (resp && resp.error_description) || ''
-                            }`
+                            }`,
                         );
                         return new Response(
                             'Error: No Access Token found in response from your OIDC provider',
                             {
                                 status: 401,
-                            }
+                            },
                         );
                     }
                 } else {
-                    return new Response('Error: Either ClientId or Client Secret is missing', {
-                        status: 400,
-                    });
+                    return new Response(
+                        'Error: Either ClientId or Client Secret or Access Token Endpoint is missing',
+                        {
+                            status: 400,
+                        },
+                    );
                 }
             }
         });
@@ -383,14 +382,17 @@ export default createIntegration({
     components: [configBlock],
     fetch_visitor_authentication: async (event, context) => {
         const { environment } = context;
-        const siteOrSpaceInstallation =
-            environment.siteInstallation ?? environment.spaceInstallation;
+        const siteInstallation = assertSiteInstallation(environment);
 
-        const installationURL = siteOrSpaceInstallation?.urls?.publicEndpoint;
+        const installationURL = siteInstallation.urls.publicEndpoint;
+        const configuration = siteInstallation.configuration;
 
-        const authorizationEndpoint = siteOrSpaceInstallation?.configuration.authorization_endpoint;
-        const clientId = siteOrSpaceInstallation?.configuration.client_id;
-        const scope = siteOrSpaceInstallation?.configuration.scope;
+        const authorizationEndpoint = configuration.authorization_endpoint;
+        const clientId = configuration.client_id;
+        const scope = configuration.scope;
+        if (!clientId || !authorizationEndpoint || !scope) {
+            throw new ExposableError('OIDC configuration is missing');
+        }
 
         const location = event.location ? event.location : '';
 
@@ -399,14 +401,8 @@ export default createIntegration({
         url.searchParams.append('response_type', 'code');
         url.searchParams.append('redirect_uri', `${installationURL}/visitor-auth/response`);
         url.searchParams.append('scope', scope.toLowerCase());
-        url.searchParams.append('state', `state-${location}`);
+        url.searchParams.append('state', `oidcstate-${location}`);
 
-        try {
-            return Response.redirect(url.toString());
-        } catch (e) {
-            return new Response(e.message, {
-                status: e.status || 500,
-            });
-        }
+        return Response.redirect(url.toString());
     },
 });

@@ -34,7 +34,7 @@ export const configBlock = createComponent<
                 props.spaceInstallation.configuration?.commitMessageTemplate &&
                     props.spaceInstallation.configuration?.commitMessageTemplate.length > 0 &&
                     props.spaceInstallation.configuration?.commitMessageTemplate !==
-                        GITSYNC_DEFAULT_COMMIT_MESSAGE
+                        GITSYNC_DEFAULT_COMMIT_MESSAGE,
             ),
             commitMessageTemplate:
                 props.spaceInstallation.configuration?.commitMessageTemplate ||
@@ -95,13 +95,14 @@ export const configBlock = createComponent<
                             {
                                 change_request_number: 123,
                                 change_request_subject: 'Fix documentation for /user/me',
-                            }
+                            },
                         ),
                     },
                 };
-            case 'save.config':
+            case 'save.config': {
                 await saveSpaceConfiguration(context, element.state);
-                return element;
+                return { type: 'complete' };
+            }
         }
     },
     render: async (element, context) => {
@@ -119,7 +120,7 @@ export const configBlock = createComponent<
         }
 
         const isSpaceConfigured = Boolean(
-            spaceInstallation.configuration?.key && spaceInstallation.configuration?.configuredAt
+            spaceInstallation.configuration?.key && spaceInstallation.configuration?.configuredAt,
         );
         // Show input elements in disabled state if the space is configured and the access token is missing
         const disableInputElements = isSpaceConfigured && !accessToken;
@@ -131,7 +132,7 @@ export const configBlock = createComponent<
         const versionHash = hash(element.props);
 
         return (
-            <block>
+            <configuration>
                 <input
                     label="Authenticate"
                     hint="Authenticate using your GitHub account"
@@ -200,11 +201,11 @@ export const configBlock = createComponent<
                                                 : {
                                                       url: {
                                                           host: new URL(
-                                                              spaceInstallationPublicEndpoint
+                                                              spaceInstallationPublicEndpoint,
                                                           ).host,
                                                           pathname: `${
                                                               new URL(
-                                                                  spaceInstallationPublicEndpoint
+                                                                  spaceInstallationPublicEndpoint,
                                                               ).pathname
                                                           }/installations`,
                                                           query: {
@@ -253,21 +254,21 @@ export const configBlock = createComponent<
                                                         : {
                                                               url: {
                                                                   host: new URL(
-                                                                      spaceInstallationPublicEndpoint
+                                                                      spaceInstallationPublicEndpoint,
                                                                   ).host,
                                                                   pathname: `${
                                                                       new URL(
-                                                                          spaceInstallationPublicEndpoint
+                                                                          spaceInstallationPublicEndpoint,
                                                                       ).pathname
                                                                   }/repos`,
                                                                   query: {
                                                                       installation:
                                                                           element.dynamicState(
-                                                                              'installation'
+                                                                              'installation',
                                                                           ),
                                                                       selectedRepo:
                                                                           element.dynamicState(
-                                                                              'repository'
+                                                                              'repository',
                                                                           ),
                                                                       v: versionHash,
                                                                   },
@@ -299,28 +300,28 @@ export const configBlock = createComponent<
                                                               {
                                                                   id: `${spaceInstallation.configuration.branch}`,
                                                                   label: getPrettyGitRef(
-                                                                      `${spaceInstallation.configuration.branch}`
+                                                                      `${spaceInstallation.configuration.branch}`,
                                                                   ),
                                                               },
                                                           ]
                                                         : {
                                                               url: {
                                                                   host: new URL(
-                                                                      spaceInstallationPublicEndpoint
+                                                                      spaceInstallationPublicEndpoint,
                                                                   ).host,
                                                                   pathname: `${
                                                                       new URL(
-                                                                          spaceInstallationPublicEndpoint
+                                                                          spaceInstallationPublicEndpoint,
                                                                       ).pathname
                                                                   }/branches`,
                                                                   query: {
                                                                       repository:
                                                                           element.dynamicState(
-                                                                              'repository'
+                                                                              'repository',
                                                                           ),
                                                                       selectedBranch:
                                                                           element.dynamicState(
-                                                                              'branch'
+                                                                              'branch',
                                                                           ),
                                                                       v: versionHash,
                                                                   },
@@ -346,7 +347,7 @@ export const configBlock = createComponent<
                                             space in your repository.{' '}
                                             <link
                                                 target={{
-                                                    url: 'https://docs.gitbook.com/getting-started/git-sync/monorepos',
+                                                    url: 'https://gitbook.com/docs/getting-started/git-sync/monorepos',
                                                 }}
                                             >
                                                 Learn More.
@@ -373,7 +374,7 @@ export const configBlock = createComponent<
                                             from GitBook by a custom template.{' '}
                                             <link
                                                 target={{
-                                                    url: 'https://docs.gitbook.com/getting-started/git-sync/commits',
+                                                    url: 'https://gitbook.com/docs/getting-started/git-sync/commits',
                                                 }}
                                             >
                                                 Learn More.
@@ -455,7 +456,7 @@ export const configBlock = createComponent<
                                             Allow Pull request previews from forked respositories.{' '}
                                             <link
                                                 target={{
-                                                    url: 'https://docs.gitbook.com/integrations/git-sync/github-pull-request-preview#security-considerations',
+                                                    url: 'https://gitbook.com/docs/integrations/git-sync/github-pull-request-preview#security-considerations',
                                                 }}
                                             >
                                                 Learn More.
@@ -531,7 +532,7 @@ export const configBlock = createComponent<
                         ) : null}
                     </box>
                 )}
-            </block>
+            </configuration>
         );
     },
 });

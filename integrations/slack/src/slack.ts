@@ -4,6 +4,16 @@ import { SlackRuntimeContext } from './configuration';
 
 const logger = Logger('slack:api');
 
+type SlackResponse<Result> = {
+    ok: boolean;
+    error?: string;
+} & Result;
+
+type SlackChannel = {
+    id: string;
+    name: string;
+};
+
 /**
  * Cloudflare workers have a maximum number of subrequests we can call (20 according to my
  * tests) https://developers.cloudflare.com/workers/platform/limits/#how-many-subrequests-can-i-make
@@ -16,9 +26,14 @@ const maximumSubrequests = 20;
  * results.
  */
 export async function getChannelsPaginated(context: SlackRuntimeContext) {
-    const channels = [];
+    const channels: SlackChannel[] = [];
 
-    let response = await slackAPI(context, {
+    let response = await slackAPI<{
+        channels: SlackChannel[];
+        response_metadata: {
+            next_cursor?: string;
+        };
+    }>(context, {
         method: 'GET',
         path: 'conversations.list',
         payload: {
@@ -52,15 +67,14 @@ export async function getChannelsPaginated(context: SlackRuntimeContext) {
 
     // Remove any duplicate as the pagination API could return duplicated channels
     return channels.filter(
-        (value, index, self) =>
-            index === self.findIndex((t) => t.place === value.place && t.id === value.id)
+        (value, index, self) => index === self.findIndex((t) => t.id === value.id),
     );
 }
 
 /**
  * Execute a Slack API request and return the result.
  */
-export async function slackAPI(
+export async function slackAPI<Result>(
     context: SlackRuntimeContext,
     request: {
         method: string;
@@ -71,8 +85,8 @@ export async function slackAPI(
     options: {
         accessToken?: string;
     } = {},
-    retriesLeft = 1
-) {
+    retriesLeft = 1,
+): Promise<SlackResponse<Result>> {
     const { environment } = context;
 
     const accessToken =
@@ -117,7 +131,7 @@ export async function slackAPI(
         throw new Error(`${response.status} ${response.statusText}`);
     }
 
-    const result = await response.json<SlackResponse>();
+    const result = await response.json<SlackResponse<Result>>();
 
     if (!result.ok) {
         if (retriesLeft > 0) {
@@ -135,11 +149,12 @@ export async function slackAPI(
                             method: 'POST',
                             path: 'conversations.join',
                             payload: {
+                                // @ts-ignore
                                 channel: request.payload.channel,
                             },
                         },
                         options,
-                        0
+                        0,
                     );
 
                     return slackAPI(context, request, options, retriesLeft - 1);
@@ -150,9 +165,4 @@ export async function slackAPI(
     }
 
     return result;
-}
-
-interface SlackResponse {
-    ok: boolean;
-    error?: string;
 }

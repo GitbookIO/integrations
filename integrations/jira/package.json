@@ -1,18 +1,20 @@
 {
     "name": "@gitbook/integration-jira",
+    "version": "0.2.2",
     "private": true,
     "scripts": {
-        "lint": "eslint ./**/*.ts*",
         "typecheck": "tsc --noEmit",
         "publish-integrations-staging": "gitbook publish .",
+        "check": "gitbook check",
         "publish-integrations": "gitbook publish ."
     },
     "dependencies": {
-        "itty-router": "^2.6.1"
+        "itty-router": "^2.6.1",
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*"
     },
     "devDependencies": {
-        "@gitbook/api": "*",
-        "@gitbook/cli": "*",
-        "@gitbook/runtime": "*"
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
     }
 }

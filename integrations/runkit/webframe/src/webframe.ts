@@ -1,8 +1,7 @@
-/* eslint-disable no-console */
-const gitbookWebFrame = window.top;
+const gitbookWebFrame = window.parent;
 
 let readOnly = false;
-let runKitNotebook: NotebookEmbed = null;
+let runKitNotebook: NotebookEmbed | null = null;
 let curProps: {
     content?: string;
     nodeVersion?: string;
@@ -14,7 +13,7 @@ console.info('runkit-embed: webframe initialize');
  * Send an action message back to the GitBook ContentKit component.
  */
 function sendAction(payload: ContentKitWebFrameActionPayload) {
-    gitbookWebFrame.postMessage({ action: payload }, '*');
+    gitbookWebFrame?.postMessage({ action: payload }, '*');
 }
 
 /**
@@ -81,7 +80,7 @@ function updateWebFrameSize(notebook: NotebookEmbed, { height }) {
     const notebookContainer = document.getElementById('notebook');
     const size = {
         aspectRatio: notebookContainer.offsetWidth / height,
-        maxHeight: height,
+        height,
     };
     sendAction({
         action: '@webframe.resize',

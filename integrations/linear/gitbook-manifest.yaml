@@ -19,6 +19,7 @@ summary: |
 
     Once the Linear integration has been installed, you will have to authorize the connection between GitBook and Linear. You can select specific spaces you which you would like the integration to run on, or select all spaces.
 visibility: public
+organization: gitbook
 script: ./src/index.tsx
 scopes: []
 blocks:
@@ -41,3 +42,4 @@ configurations:
 secrets:
     CLIENT_ID: ${{ env.LINEAR_CLIENT_ID }}
     CLIENT_SECRET: ${{ env.LINEAR_CLIENT_SECRET }}
+target: space

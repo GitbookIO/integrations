@@ -43,22 +43,28 @@ const embedBlock = createComponent<{
         const { environment } = context;
         const { toucanId, url } = element.props;
 
-        if (!toucanId) {
+        if (!toucanId || !url) {
             return (
                 <block>
                     <card
                         title={'Toucan Toco'}
-                        onPress={{
-                            action: '@ui.url.open',
-                            url,
-                        }}
+                        onPress={
+                            url
+                                ? {
+                                      action: '@ui.url.open',
+                                      url,
+                                  }
+                                : undefined
+                        }
                         icon={
-                            <image
-                                source={{
-                                    url: environment.integration.urls.icon,
-                                }}
-                                aspectRatio={1}
-                            />
+                            environment.integration.urls.icon ? (
+                                <image
+                                    source={{
+                                        url: environment.integration.urls.icon,
+                                    }}
+                                    aspectRatio={1}
+                                />
+                            ) : undefined
                         }
                     />
                 </block>

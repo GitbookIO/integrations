@@ -1,6 +1,11 @@
 import { Router } from 'itty-router';
 
-import { createIntegration, createComponent, FetchEventCallback } from '@gitbook/runtime';
+import {
+    createIntegration,
+    createComponent,
+    FetchEventCallback,
+    ExposableError,
+} from '@gitbook/runtime';
 
 const defaultContent = '';
 
@@ -34,10 +39,14 @@ const LucidComponent = createComponent<{
 
     async render(element, context) {
         const { url } = element.props;
+        if (!url) {
+            throw new ExposableError('Missing URL');
+        }
+
         const urlObject = new URL(url);
         const documentId = urlObject.pathname.split('/')[2];
 
-        const frameUrl = new URL(context.environment.spaceInstallation?.urls?.publicEndpoint);
+        const frameUrl = new URL(context.environment.spaceInstallation?.urls?.publicEndpoint!);
         frameUrl.searchParams.set('document', documentId);
 
         const output = (
@@ -60,7 +69,7 @@ const handleFetchEvent: FetchEventCallback = async (request, context) => {
         base: new URL(
             environment.spaceInstallation?.urls?.publicEndpoint ||
                 environment.installation?.urls.publicEndpoint ||
-                environment.integration.urls.publicEndpoint
+                environment.integration.urls.publicEndpoint,
         ).pathname,
     });
 
@@ -69,10 +78,10 @@ const handleFetchEvent: FetchEventCallback = async (request, context) => {
             `<html>
                 <body>
                     <iframe id="lucid-embed" src="https://lucid.app/embeds/link?document=${new URL(
-                        request.url
+                        request.url,
                     ).searchParams.get('document')}&clientId=${
-                context.environment.secrets.CLIENT_ID
-            }" style="height:100%; width: 100%;" frameborder="0" border="0"></iframe>
+                        context.environment.secrets.CLIENT_ID
+                    }" style="height:100%; width: 100%;" frameborder="0" border="0"></iframe>
                 </body>
             </html>`,
             {
@@ -80,7 +89,7 @@ const handleFetchEvent: FetchEventCallback = async (request, context) => {
                     'Content-Type': 'text/html',
                     'Cache-Control': 'public, max-age=86400',
                 },
-            }
+            },
         );
     });
 

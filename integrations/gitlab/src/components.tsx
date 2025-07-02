@@ -34,7 +34,7 @@ export const configBlock = createComponent<
             accessToken: props.spaceInstallation.configuration?.accessToken,
             withCustomInstanceUrl: Boolean(
                 props.spaceInstallation.configuration?.customInstanceUrl &&
-                    props.spaceInstallation.configuration?.customInstanceUrl.length > 0
+                    props.spaceInstallation.configuration?.customInstanceUrl.length > 0,
             ),
             customInstanceUrl: props.spaceInstallation.configuration?.customInstanceUrl,
             project: props.spaceInstallation.configuration?.project?.toString(),
@@ -44,7 +44,7 @@ export const configBlock = createComponent<
                 props.spaceInstallation.configuration?.commitMessageTemplate &&
                     props.spaceInstallation.configuration?.commitMessageTemplate.length > 0 &&
                     props.spaceInstallation.configuration?.commitMessageTemplate !==
-                        GITSYNC_DEFAULT_COMMIT_MESSAGE
+                        GITSYNC_DEFAULT_COMMIT_MESSAGE,
             ),
             commitMessageTemplate:
                 props.spaceInstallation.configuration?.commitMessageTemplate ||
@@ -79,7 +79,7 @@ export const configBlock = createComponent<
                             ...config,
                             userId: glUser.id,
                         },
-                    }
+                    },
                 );
                 return element;
             }
@@ -141,15 +141,16 @@ export const configBlock = createComponent<
                             {
                                 change_request_number: 123,
                                 change_request_subject: 'Fix documentation for /user/me',
-                            }
+                            },
                         ),
                     },
                 };
             }
 
-            case 'save.configuration':
+            case 'save.configuration': {
                 await saveSpaceConfiguration(context, element.state);
-                return element;
+                return { type: 'complete' };
+            }
         }
     },
     render: async (element, context) => {
@@ -173,7 +174,7 @@ export const configBlock = createComponent<
         const versionHash = hash(element.props);
 
         return (
-            <block>
+            <configuration>
                 <card>
                     <vstack>
                         <box grow={1}>
@@ -298,7 +299,7 @@ export const configBlock = createComponent<
                                                 options={{
                                                     url: {
                                                         host: new URL(
-                                                            spaceInstallationPublicEndpoint
+                                                            spaceInstallationPublicEndpoint,
                                                         ).host,
                                                         pathname: `${
                                                             new URL(spaceInstallationPublicEndpoint)
@@ -333,7 +334,7 @@ export const configBlock = createComponent<
                                             space in your repository.{' '}
                                             <link
                                                 target={{
-                                                    url: 'https://docs.gitbook.com/getting-started/git-sync/monorepos',
+                                                    url: 'https://gitbook.com/docs/getting-started/git-sync/monorepos',
                                                 }}
                                             >
                                                 Learn more.
@@ -356,7 +357,7 @@ export const configBlock = createComponent<
                                             from GitBook by a custom template.{' '}
                                             <link
                                                 target={{
-                                                    url: 'https://docs.gitbook.com/getting-started/git-sync/commits',
+                                                    url: 'https://gitbook.com/docs/getting-started/git-sync/commits',
                                                 }}
                                             >
                                                 Learn more.
@@ -470,7 +471,7 @@ export const configBlock = createComponent<
                         ) : null}
                     </>
                 ) : null}
-            </block>
+            </configuration>
         );
     },
 });

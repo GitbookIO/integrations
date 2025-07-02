@@ -1,3 +1,5 @@
+import { ExposableError } from '@gitbook/runtime';
+
 export interface ArcadeOEmbed {
     type: 'rich';
     title: string;
@@ -15,6 +17,10 @@ export async function fetchArcadeOEmbedData(flowId: string): Promise<ArcadeOEmbe
     const response = await fetch(url.toString());
 
     if (!response.ok) {
+        if (response.status < 500) {
+            throw new ExposableError(response.statusText, response.status);
+        }
+
         throw new Error(`${response.status} ${response.statusText}`);
     }
 
@@ -31,12 +37,12 @@ export function extractArcadeFlowFromURL(input: string): {
 } {
     const url = new URL(input);
     if (!['app.arcade.software', 'demo.arcade.software'].includes(url.hostname)) {
-        return;
+        return {};
     }
 
     const parts = url.pathname.split('/');
     if (!['flows', 'share'].includes(parts[1])) {
-        return;
+        return {};
     }
 
     return { flowId: parts[2] };

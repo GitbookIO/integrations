@@ -1,10 +1,8 @@
 {
     "name": "@gitbook/integration-runllm-widget",
     "private": true,
-    "version": "0.1.0",
+    "version": "0.3.0",
     "scripts": {
-        "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-        "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx .",
         "typecheck": "tsc --noEmit",
         "publish": "gitbook publish ."
     },
@@ -13,8 +11,7 @@
         "@gitbook/runtime": "*"
     },
     "devDependencies": {
-        "@gitbook/cli": "^0.17.0",
-        "@gitbook/eslint-config": "*",
-        "@gitbook/tsconfig": "*"
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
     }
 }

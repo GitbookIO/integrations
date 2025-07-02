@@ -1,13 +1,17 @@
-import { StatusError } from 'itty-router';
-
 import { IntegrationSpaceInstallation } from '@gitbook/api';
-import { Logger } from '@gitbook/runtime';
+import { Logger, ExposableError } from '@gitbook/runtime';
 
 import { fetchProject } from './api';
 import { createGitLabWebhookURL, installWebhook } from './provider';
 import { triggerExport, triggerImport } from './sync';
 import { GitlabConfigureState, GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { assertIsDefined, BRANCH_REF_PREFIX, computeConfigQueryKey, signResponse } from './utils';
+import {
+    assertIsDefined,
+    BRANCH_REF_PREFIX,
+    computeConfigQueryKey,
+    signResponse,
+    normalizeProjectDirectory,
+} from './utils';
 
 const logger = Logger('gitlab:installation');
 
@@ -16,7 +20,7 @@ const logger = Logger('gitlab:installation');
  */
 export async function saveSpaceConfiguration(
     context: GitLabRuntimeContext,
-    state: GitlabConfigureState
+    state: GitlabConfigureState,
 ) {
     const { api, environment } = context;
     const spaceInstallation = environment.spaceInstallation;
@@ -24,7 +28,7 @@ export async function saveSpaceConfiguration(
     assertIsDefined(spaceInstallation, { label: 'spaceInstallation' });
 
     if (!state.project || !state.branch) {
-        throw new StatusError(400, 'Incomplete configuration: missing project or branch');
+        throw new ExposableError('Incomplete configuration: missing project or branch');
     }
 
     const projectId = parseInt(state.project, 10);
@@ -50,14 +54,14 @@ export async function saveSpaceConfiguration(
         project: projectId,
         projectName: glProject.path_with_namespace,
         branch: state.branch,
-        projectDirectory: state.projectDirectory,
+        projectDirectory: normalizeProjectDirectory(state.projectDirectory),
         commitMessageTemplate: state.commitMessageTemplate,
         priority: state.priority,
         customInstanceUrl: state.customInstanceUrl,
     };
 
     logger.debug(
-        `Saving config for space ${spaceInstallation.space} of integration-installation ${spaceInstallation.installation}`
+        `Saving config for space ${spaceInstallation.space} of integration-installation ${spaceInstallation.installation}`,
     );
 
     // Save the space installation configuration
@@ -69,7 +73,7 @@ export async function saveSpaceConfiguration(
             {
                 externalIds,
                 configuration: configurationBody,
-            }
+            },
         );
 
     logger.info(`Saved config for space ${spaceInstallation.space}`);
@@ -93,12 +97,12 @@ export async function saveSpaceConfiguration(
     if (!configurationBody.webhookId) {
         const webhookToken = await signResponse(
             environment.integration.name,
-            environment.signingSecrets.integration
+            environment.signingSecrets.integration,
         );
         await installWebhook(
             updatedSpaceInstallation,
             createGitLabWebhookURL(context),
-            webhookToken
+            webhookToken,
         ).then(async (id) => {
             return api.integrations.updateIntegrationSpaceInstallation(
                 spaceInstallation.integration,
@@ -109,7 +113,7 @@ export async function saveSpaceConfiguration(
                         ...configurationBody,
                         webhookId: id,
                     },
-                }
+                },
             );
         });
     }
@@ -124,13 +128,13 @@ export async function querySpaceInstallations(
     options: {
         page?: string;
         limit?: number;
-    } = {}
+    } = {},
 ): Promise<{ data: Array<IntegrationSpaceInstallation>; nextPage?: string; total?: number }> {
     const { api, environment } = context;
     const { page, limit = 100 } = options;
 
     logger.debug(
-        `Querying space installations for external ID ${externalId} (${JSON.stringify(options)})`
+        `Querying space installations for external ID ${externalId} (${JSON.stringify(options)})`,
     );
 
     const { data } = await api.integrations.listIntegrationSpaceInstallations(
@@ -139,7 +143,7 @@ export async function querySpaceInstallations(
             limit,
             externalId,
             page,
-        }
+        },
     );
 
     return {

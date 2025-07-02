@@ -2,7 +2,7 @@ import { GitBookAPI, IntegrationEnvironment } from '@gitbook/api';
 
 export interface RuntimeEnvironment<
     InstallationConfiguration = {},
-    SpaceOrSiteInstallationConfiguration = {}
+    SpaceOrSiteInstallationConfiguration = {},
 > extends IntegrationEnvironment {
     installation?: IntegrationEnvironment['installation'] & {
         configuration: InstallationConfiguration;
@@ -40,7 +40,7 @@ export interface RuntimeContext<Environment extends RuntimeEnvironment = Integra
 export type RuntimeCallback<
     Input extends Array<any>,
     Result,
-    Context extends RuntimeContext = RuntimeContext
+    Context extends RuntimeContext = RuntimeContext,
 > = (...args: [...Input, Context]) => Result;
 
 /**
@@ -48,7 +48,7 @@ export type RuntimeCallback<
  */
 export function createContext(
     environment: IntegrationEnvironment,
-    waitUntil: FetchEvent['waitUntil']
+    waitUntil: FetchEvent['waitUntil'],
 ): RuntimeContext {
     return {
         environment,

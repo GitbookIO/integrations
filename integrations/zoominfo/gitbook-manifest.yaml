@@ -1,0 +1,43 @@
+name: zoominfo
+title: ZoomInfo
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/preview.png
+description: Plug your GitBook site to your ZoomInfo instance.
+externalLinks:
+    - label: Documentation
+      url: https://www.gitbook.com/integrations/zoominfo
+visibility: public
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+organization: gitbook
+contentSecurityPolicy:
+    script-src: https://js.zi-scripts.com 'unsafe-inline';
+summary: |
+    # Overview
+    This integration allows to add the ZoomInfo Analytics tracker on your published GitBook site.
+
+    # How it works
+    The integration injects the ZoomInfo script on your page, using the script you provide during configuration, 
+    so that you can get analytics information from your GitBook site directly inside of ZoomInfo.
+
+    # Configure
+    Install the integration on the GitBook site of your choice.
+    Locate the ZoomInfo script you want to use, which is available in WebSights management:
+     * copy the script and paste it in the GitBook integration's configuration screen
+
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            script:
+                type: string
+                title: Script
+                description: Available in your ZoomInfo account
+        required:
+            - script
+target: site

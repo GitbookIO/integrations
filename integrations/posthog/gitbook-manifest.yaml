@@ -2,8 +2,7 @@ name: posthog
 title: PostHog
 icon: ./assets/icon.png
 previewImages:
-    - ./assets/posthog-image-1.png
-    - ./assets/posthog-image-2.png
+    - ./assets/posthog-preview.png
 description: Plug your GitBook site to your PostHog installation.
 externalLinks:
     - label: Documentation
@@ -13,9 +12,8 @@ script: ./src/index.ts
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
-    - space:script:inject
     - site:script:inject
-organization: d8f63b60-89ae-11e7-8574-5927d48c4877
+organization: gitbook
 contentSecurityPolicy:
     script-src: https://eu.posthog.com https://app.posthog.com;
 summary: |
@@ -49,3 +47,4 @@ configurations:
         required:
             - projectApiKey
             - instanceAddress
+target: site

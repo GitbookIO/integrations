@@ -1,6 +1,7 @@
 import type { GitSyncOperationState, IntegrationSpaceInstallation } from '@gitbook/api';
 
 import type { GitLabSpaceConfiguration } from './types';
+import { ExposableError } from '@gitbook/runtime';
 
 export const BRANCH_REF_PREFIX = 'refs/heads/';
 
@@ -19,7 +20,7 @@ export function getGitSyncCommitMessage(
     context: {
         change_request_number: number;
         change_request_subject: string;
-    }
+    },
 ): string {
     const usingCustomTemplate = !!templateInput;
     const template = usingCustomTemplate ? templateInput : GITSYNC_DEFAULT_COMMIT_MESSAGE;
@@ -51,7 +52,7 @@ export function getGitSyncStateDescription(state: GitSyncOperationState): string
  * This will throw an error if the space installation configuration is not defined.
  */
 export function getSpaceConfigOrThrow(
-    spaceInstallation: IntegrationSpaceInstallation
+    spaceInstallation: IntegrationSpaceInstallation,
 ): GitLabSpaceConfiguration {
     const config = spaceInstallation.configuration as GitLabSpaceConfiguration | undefined;
     assertIsDefined(config, { label: 'spaceInstallationConfiguration' });
@@ -91,7 +92,7 @@ export async function signResponse(message: string, secret: string): Promise<str
 export async function verifySignature(
     message: string,
     signature: string,
-    secret: string
+    secret: string,
 ): Promise<boolean> {
     const key = await importKey(secret);
     const sigBuf = hexToArray(signature);
@@ -100,10 +101,17 @@ export async function verifySignature(
 
 export function assertIsDefined<T>(
     value: T,
-    options: { label: string }
+    options: { label: string; statusCode?: number },
 ): asserts value is NonNullable<T> {
+    const { label, statusCode = 500 } = options;
+
     if (value === undefined || value === null) {
-        throw new Error(`Expected value (${options.label}) to be defined, but received ${value}`);
+        const errorMsg = `Expected value (${label}) to be defined, but received ${value}`;
+        if (statusCode >= 400 && statusCode < 500) {
+            throw new ExposableError(errorMsg, statusCode);
+        }
+
+        throw new Error(errorMsg);
     }
 }
 
@@ -156,6 +164,30 @@ async function importKey(secret: string): Promise<CryptoKey> {
         new TextEncoder().encode(secret),
         { name: 'HMAC', hash: 'SHA-256' },
         false,
-        ['sign', 'verify']
+        ['sign', 'verify'],
     );
+}
+
+/**
+ * Project directory should be a relative path and not end with a slash.
+ * We make sure that the value is normalized.
+ */
+export function normalizeProjectDirectory(
+    projectDirectory: string | undefined,
+): string | undefined {
+    if (typeof projectDirectory === 'undefined') {
+        return projectDirectory;
+    }
+
+    let relativeDirectory = projectDirectory.trim();
+
+    while (relativeDirectory.startsWith('/')) {
+        relativeDirectory = relativeDirectory.slice(1);
+    }
+
+    while (relativeDirectory.endsWith('/')) {
+        relativeDirectory = relativeDirectory.slice(0, -1);
+    }
+
+    return relativeDirectory;
 }

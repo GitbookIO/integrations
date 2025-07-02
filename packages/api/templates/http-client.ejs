@@ -2,7 +2,7 @@
 const { apiConfig, generateResponses, config } = it;
 %>
 import { EventIterator } from 'event-iterator';
-import { createParser, type ParsedEvent, type ReconnectInterval } from 'eventsource-parser';
+import { createParser, type EventSourceMessage } from 'eventsource-parser';
 
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
@@ -227,31 +227,47 @@ export class HttpClient<SecurityDataType = unknown> {
         });
     };
 
-    public streamRequest = function<T, E>({
+    public streamRequest = <
+        T,
+        // @ts-ignore - unused error type
+        E = any
+    >({
+        body,
         path,
+        type,
         baseUrl,
         cancelToken,
         secure,
         ...params,
-    }: FullRequestParams) {
+    }: FullRequestParams) => {
         return new EventIterator<T>(
             (queue) => {
                 (async () => {
                     const secureParams = ((typeof secure === 'boolean' ? secure : this.baseApiParams.secure) && this.securityWorker && await this.securityWorker(this.securityData)) || {};
-                    const { query: requestQuery, ...requestParams } = this.mergeRequestParams(params, secureParams);
+                    const requestQuery = params.query;
+                    const requestParams = this.mergeRequestParams(params, secureParams);
                     const queryString = requestQuery ? this.toQueryString(requestQuery) : undefined;
+                    const payloadFormatter = this.contentFormatters[type || ContentType.Json];
 
                     const response = await this.customFetch(
                         `${baseUrl || this.baseUrl || ""}${path}${queryString ? `?${queryString}` : ""}`,
                         {
                             ...requestParams,
+                            headers: {
+                                ...(requestParams.headers || {}),
+                                ...(type && type !== ContentType.FormData ? { "Content-Type": type } : {}),
+                            },
                             signal: cancelToken ? this.createAbortSignal(cancelToken) : requestParams.signal,
+                            body: typeof body === "undefined" || body === null ? null : payloadFormatter(body)
                         }
                     )
 
                     if (!response.ok) {
                         throw new Error(`${response.status} ${response.statusText}`);
-                        return;
+                    }
+
+                    if (!response.body) {
+                        throw new Error('Response body is empty');
                     }
 
                     const reader = response.body.getReader();
@@ -261,15 +277,23 @@ export class HttpClient<SecurityDataType = unknown> {
                         queue.stop();
                     }
 
-                    const parser = createParser((event: ParsedEvent | ReconnectInterval) => {
-                        if (event.type === 'event') {
-                            if (event.data === 'done') {
+                    const parser = createParser({
+                        onEvent: (event: EventSourceMessage) => {
+                            if (event.event === 'done') {
                                 stop();
+                            } else if (event.event === 'error') {
+                                const data = JSON.parse(event.data);
+                                reader.cancel();
+                                queue.fail(new Error(data.error.message));
                             } else {
                                 const data = JSON.parse(event.data);
                                 queue.push(data);
                             }
-                        }
+                        },
+                        onError: (error) => {
+                            reader.cancel();
+                            queue.fail(error);
+                        },
                     })
 
                     const decoder = new TextDecoder();

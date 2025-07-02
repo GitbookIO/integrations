@@ -9,7 +9,7 @@ previewImages:
     - ./assets/github-sync.png
 externalLinks:
     - label: Documentation
-      url: https://docs.gitbook.com/integrations/git-sync
+      url: https://gitbook.com/docs/integrations/git-sync
 categories:
     - gitsync
 summary: |
@@ -48,3 +48,4 @@ secrets:
     CLIENT_ID: ${{ env.GITHUB_CLIENT_ID }}
     CLIENT_SECRET: ${{ env.GITHUB_CLIENT_SECRET }}
     WEBHOOK_SECRET: ${{ env.GITHUB_WEBHOOK_SECRET }}
+target: space

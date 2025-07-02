@@ -10,7 +10,7 @@ summary: |
     You can install the integration on a single space by clicking the integrations button in sub-navigation panel. If you prefer to install the Formspree integration on multiple on all spaces you can enable this through organization settings. From here you can specify different Formspree IDs for different spaces.
 icon: ./assets/formspree-icon.png
 previewImages:
-    - ./assets/formspree-banner.png
+    - ./assets/formspree-preview.png
 externalLinks:
     - label: Formspree
       url: https://formspree.io/
@@ -46,3 +46,4 @@ configurations:
                 description: A message field for your form
                 default: false
 secrets: {}
+target: space

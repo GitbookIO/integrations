@@ -1,3 +1,7 @@
+---
+icon: list-tree
+---
+
 # Pagination
 
 Some methods return paginated results. The formatting of a paginated result is always:
@@ -20,7 +24,7 @@ The objects `previous` and `next` will be omitted if there are no previous or ne
 
 The `next.page` and `previous.page` values can be added to the query parameters of the original query under the `page` key in order to get the next or previous page.
 
-## Example
+### Example
 
 You make a GET request to a paginated endpoint `https://api.example.com/foo/bar`, and receive the following response:
 

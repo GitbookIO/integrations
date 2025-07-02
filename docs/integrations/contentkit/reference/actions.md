@@ -66,8 +66,7 @@ Action to send as a message from a webframe to resize the container.
 {
     "action": "@webframe.resize",
     "aspectRatio": 1.7,
-    "maxHeight": 400,
-    "maxWidth": 300
+    "height": 400
 }
 ```
 

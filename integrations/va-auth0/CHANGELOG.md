@@ -1,5 +1,34 @@
 # @gitbook/integration-va-auth0
 
+## 0.3.0
+
+### Minor Changes
+
+-   db68a17: Add support to VA Auth0 integration to include claims from backend in token
+
+### Patch Changes
+
+-   Updated dependencies [9dd3c5f]
+    -   @gitbook/api@0.79.0
+
+## 0.2.0
+
+### Minor Changes
+
+-   65e6924: Update the completion action for integrations controlling their own configuration
+
+## 0.1.1
+
+### Patch Changes
+
+-   e0efa2c: Remove space code from VA integrations
+
+## 0.1.0
+
+### Minor Changes
+
+-   ee488d1: Bump integrations' target
+
 ## 0.0.9
 
 ### Patch Changes

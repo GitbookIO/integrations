@@ -1,0 +1,20 @@
+{
+    "name": "@gitbook/integration-intercom-conversations",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "@gitbook/runtime": "*",
+        "@gitbook/api": "*",
+        "p-map": "^7.0.3",
+        "intercom-client": "^6.3.0"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "check": "gitbook check",
+        "publish-integrations-staging": "gitbook publish .  --env staging"
+    }
+}

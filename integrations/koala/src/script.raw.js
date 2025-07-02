@@ -7,7 +7,7 @@
                     var n = [].slice.call(arguments);
                     return n.unshift(t), ko.push(n), ko;
                 };
-            }
+            },
         );
     var n = document.createElement('script');
     (n.async = !0),

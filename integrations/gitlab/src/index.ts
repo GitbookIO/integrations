@@ -1,8 +1,13 @@
-import { StatusError, error } from 'itty-router';
-import { Router } from 'itty-router';
+import { Router, error } from 'itty-router';
 
 import { ContentKitIcon, ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
-import { createIntegration, FetchEventCallback, Logger, EventCallback } from '@gitbook/runtime';
+import {
+    createIntegration,
+    FetchEventCallback,
+    Logger,
+    EventCallback,
+    ExposableError,
+} from '@gitbook/runtime';
 
 import { fetchProject, fetchProjectBranches, fetchProjects, searchUserProjects } from './api';
 import { configBlock } from './components';
@@ -29,14 +34,14 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
         base: new URL(
             environment.spaceInstallation?.urls?.publicEndpoint ||
                 environment.installation?.urls.publicEndpoint ||
-                environment.integration.urls.publicEndpoint
+                environment.integration.urls.publicEndpoint,
         ).pathname,
     });
 
     async function verifyIntegrationSignature(
         payload: string,
         signature: string,
-        secret: string
+        secret: string,
     ): Promise<boolean> {
         if (!signature) {
             return false;
@@ -64,13 +69,13 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
         const verified = await verifyIntegrationSignature(
             payloadString,
             signature,
-            environment.signingSecrets.integration
+            environment.signingSecrets.integration,
         );
 
         if (!verified) {
             const message = `Invalid signature for integration task`;
             logger.error(message);
-            throw new StatusError(400, message);
+            throw new ExposableError(message);
         }
 
         const { task } = JSON.parse(payloadString) as { task: IntegrationTask };
@@ -79,7 +84,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
         context.waitUntil(
             (async () => {
                 await handleIntegrationTask(context, task);
-            })()
+            })(),
         );
 
         return new Response(JSON.stringify({ acknowledged: true }), {
@@ -105,16 +110,16 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
                 const valid = await verifySignature(
                     environment.integration.name,
                     signature,
-                    environment.signingSecrets.integration
+                    environment.signingSecrets.integration,
                 );
                 if (!valid) {
                     const message = `Invalid signature for webhook event ${eventUuid}`;
                     logger.error(message);
-                    throw new StatusError(400, message);
+                    throw new ExposableError(message);
                 }
             } catch (error: any) {
                 logger.error(`Error verifying signature ${error}`);
-                throw new StatusError(400, error.message);
+                throw new ExposableError(error.message);
             }
         }
 
@@ -129,7 +134,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
                 } else {
                     logger.debug('ignoring task for webhook event', { eventUuid, event });
                 }
-            })()
+            })(),
         );
 
         // Acknowledge the webhook event: https://docs.gitlab.com/ee/user/gitlab_com/index.html#other-limits
@@ -160,7 +165,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
             try {
                 const selectedProject = await fetchProject(
                     spaceConfig,
-                    parseInt(querySelectedProject, 10)
+                    parseInt(querySelectedProject, 10),
                 );
 
                 selected.push({
@@ -186,7 +191,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
                     id: `${project.id}`,
                     label: project.path_with_namespace,
                     icon: project.visibility === 'public' ? undefined : ContentKitIcon.Lock,
-                })
+                }),
             );
 
             return new Response(JSON.stringify({ items, selected }), {
@@ -207,7 +212,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
                     id: `${project.id}`,
                     label: project.path_with_namespace,
                     icon: project.visibility === 'public' ? undefined : ContentKitIcon.Lock,
-                })
+                }),
             );
 
             const nextPage = new URL(req.url);
@@ -223,7 +228,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                }
+                },
             );
         }
     });
@@ -253,7 +258,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
                 id: `refs/heads/${branch.name}`,
                 label: branch.name,
                 icon: branch.protected ? ContentKitIcon.Lock : undefined,
-            })
+            }),
         );
 
         /**
@@ -278,10 +283,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
         });
     });
 
-    const response = (await router.handle(request, context).catch((err) => {
-        logger.error(`error handling request ${err.message} ${err.stack}`);
-        return error(err);
-    })) as Response | undefined;
+    const response = (await router.handle(request, context)) as Response | undefined;
 
     if (!response) {
         return new Response(`No route matching ${request.method} ${request.url}`, {
@@ -300,17 +302,17 @@ const handleSpaceContentUpdated: EventCallback<
     GitLabRuntimeContext
 > = async (event, context) => {
     logger.info(
-        `Handling space_content_updated event for space ${event.spaceId} revision ${event.revisionId}`
+        `Handling space_content_updated event for space ${event.spaceId} revision ${event.revisionId}`,
     );
 
     const { data: revision } = await context.api.spaces.getRevisionById(
         event.spaceId,
-        event.revisionId
+        event.revisionId,
     );
     if (revision.git?.oid) {
         const revisionStatus = revision.git.createdByGitBook ? 'exported' : 'imported';
         logger.info(
-            `skipping Git Sync for space ${event.spaceId} revision ${revision.id} as it was already ${revisionStatus}`
+            `skipping Git Sync for space ${event.spaceId} revision ${revision.id} as it was already ${revisionStatus}`,
         );
         return;
     }
@@ -336,10 +338,10 @@ const handleSpaceContentUpdated: EventCallback<
  */
 const handleGitSyncStarted: EventCallback<'space_gitsync_started', GitLabRuntimeContext> = async (
     event,
-    context
+    context,
 ) => {
     logger.info(
-        `Git Sync started for space ${event.spaceId} revision ${event.revisionId}, updating commit status`
+        `Git Sync started for space ${event.spaceId} revision ${event.revisionId}, updating commit status`,
     );
 
     const spaceInstallation = context.environment.spaceInstallation;
@@ -353,7 +355,7 @@ const handleGitSyncStarted: EventCallback<'space_gitsync_started', GitLabRuntime
         spaceInstallation,
         event.revisionId,
         event.commitId,
-        GitSyncOperationState.Running
+        GitSyncOperationState.Running,
     );
 };
 
@@ -365,7 +367,7 @@ const handleGitSyncCompleted: EventCallback<
     GitLabRuntimeContext
 > = async (event, context) => {
     logger.info(
-        `Git Sync completed (${event.state}) for space ${event.spaceId} revision ${event.revisionId}, updating commit status`
+        `Git Sync completed (${event.state}) for space ${event.spaceId} revision ${event.revisionId}, updating commit status`,
     );
 
     const spaceInstallation = context.environment.spaceInstallation;
@@ -379,7 +381,7 @@ const handleGitSyncCompleted: EventCallback<
         spaceInstallation,
         event.revisionId,
         event.commitId,
-        event.state as GitSyncOperationState
+        event.state as GitSyncOperationState,
     );
 };
 

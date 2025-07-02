@@ -2,6 +2,7 @@ name: runllm
 title: RunLLM
 visibility: public
 icon: ./assets/icon.png
+organization: gitbook
 description: Add RunLLM chat widget to your doc site.
 summary: |
     # Overview
@@ -17,8 +18,6 @@ summary: |
     Once installed, you can configure the integration for your sites and spaces. You can point the integration to your RunLLM assistant by providing the assistant ID. You can also configure other feature parameters including position, keyboard shortcut, logo, color, and many more.
 
 scopes:
-    - space:script:inject
-    - space:script:cookies
     - site:script:inject
     - site:script:cookies
 script: ./src/index.tsx
@@ -45,68 +44,6 @@ contentSecurityPolicy:
     media-src: |
         *.runllm.com;
 configurations:
-    space:
-        properties:
-            assistant_id:
-                type: string
-                title: Assistant ID
-                description: Your RunLLM assistant ID.
-            name:
-                type: string
-                title: Name
-                default: RunLLM Assistant
-                description: Sets the name of the assistant. i.e. Chat with "RunLLM Assistant"
-            server_address:
-                type: string
-                title: Server Address
-                default: "https://api.runllm.com"
-                description: Your RunLLM server address. If you are unsure, please contact RunLLM.
-            position:
-                type: string
-                title: Position
-                description: Select a position for your RunLLM widget.
-                default: BOTTOM_RIGHT
-                enum:
-                    - BOTTOM_LEFT
-                    - BOTTOM_RIGHT
-                    - TOP_LEFT
-                    - TOP_RIGHT
-            logo:
-                type: string
-                title: Logo
-                description: Specify the URL for your brand logo to show in the widget.
-            theme_color:
-                type: string
-                title: Theme Color
-                description: Specify your brand color to theme the widget.
-            keyboard_shortcut:
-                type: string
-                title: Keyboard Shortcut
-                description: Sets the keyboard shortcut for activating the widget.
-                default: Mod+j
-            community_type:
-                type: string
-                title: Community Type
-                description: Specify a community type. The chat widget renders a button for your user to join.
-                default: ""
-
-                enum:
-                    - ""
-                    - "slack"
-                    - "discord"
-                    - "discourse"
-                    - "brand"
-            community_url:
-                type: string
-                title: Community Url
-                description: Specify a community url. The chat widget renders a button for your user to join.
-            disable_ask_a_person:
-                type: boolean
-                title: Disable Ask-A-Person-Button
-                description: Disable ask-a-person button when you have support email configured.
-
-        required:
-            - assistant_id
     site:
         properties:
             assistant_id:
@@ -121,7 +58,7 @@ configurations:
             server_address:
                 type: string
                 title: Server Address
-                default: "https://api.runllm.com"
+                default: 'https://api.runllm.com'
                 description: Your RunLLM server address. If you are unsure, please contact RunLLM.
             position:
                 type: string
@@ -150,14 +87,14 @@ configurations:
                 type: string
                 title: Community Type
                 description: Specify a community type. The chat widget renders a button for your user to join.
-                default: ""
+                default: ''
 
                 enum:
-                    - ""
-                    - "slack"
-                    - "discord"
-                    - "discourse"
-                    - "brand"
+                    - ''
+                    - 'slack'
+                    - 'discord'
+                    - 'discourse'
+                    - 'brand'
             community_url:
                 type: string
                 title: Community Url
@@ -176,3 +113,4 @@ previewImages:
     - ./assets/modal.png
     - ./assets/widget.png
     - ./assets/session.png
+target: site

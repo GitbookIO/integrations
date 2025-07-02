@@ -12,15 +12,17 @@ script: ./src/index.ts
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
-    - space:script:inject
     - site:script:inject
 organization: gitbook
 contentSecurityPolicy:
+    font-src: |
+        client.crisp.chat
+        https://client.crisp.chat;
     script-src: |
         client.crisp.chat;
     style-src: |
-        client.crisp.chat;
-        https://client.crisp.chat
+        client.crisp.chat
+        https://client.crisp.chat;
 summary: |
     # Overview
 
@@ -45,3 +47,4 @@ configurations:
                 description: Available in the URL from your Crisp dashboard
         required:
             - tracking_id
+target: site

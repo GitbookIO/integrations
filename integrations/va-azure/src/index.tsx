@@ -1,4 +1,4 @@
-import { sign } from '@tsndr/cloudflare-worker-jwt';
+import * as jwt from '@tsndr/cloudflare-worker-jwt';
 import { Router } from 'itty-router';
 
 import { IntegrationInstallationConfiguration } from '@gitbook/api';
@@ -9,32 +9,47 @@ import {
     RuntimeContext,
     RuntimeEnvironment,
     createComponent,
+    ExposableError,
 } from '@gitbook/runtime';
 
 const logger = Logger('azure.visitor-auth');
 
-type AzureRuntimeEnvironment = RuntimeEnvironment<{}, AzureSiteOrSpaceInstallationConfiguration>;
+type AzureRuntimeEnvironment = RuntimeEnvironment<{}, AzureSiteInstallationConfiguration>;
 
 type AzureRuntimeContext = RuntimeContext<AzureRuntimeEnvironment>;
 
-type AzureSiteOrSpaceInstallationConfiguration = {
+type AzureSiteInstallationConfiguration = {
     client_id?: string;
     tenant_id?: string;
     client_secret?: string;
 };
 
-type AzureState = AzureSiteOrSpaceInstallationConfiguration;
+type AzureState = AzureSiteInstallationConfiguration;
 
 type AzureProps = {
     installation: {
         configuration?: IntegrationInstallationConfiguration;
     };
-    spaceInstallation?: {
-        configuration?: AzureSiteOrSpaceInstallationConfiguration;
-    };
     siteInstallation?: {
-        configuration?: AzureSiteOrSpaceInstallationConfiguration;
+        configuration?: AzureSiteInstallationConfiguration;
     };
+};
+
+type AzureTokenErrorResponseData = {
+    error: string;
+    error_description: string;
+    error_codes: Array<number>;
+    timestamp: string;
+    trace_id: string;
+    correlation_id: string;
+};
+
+type AzureTokenResponseData = {
+    access_token?: string;
+    id_token?: string;
+    refresh_token?: string;
+    token_type: 'Bearer';
+    expires_in: number;
 };
 
 export type AzureAction = { action: 'save.config' };
@@ -42,57 +57,43 @@ export type AzureAction = { action: 'save.config' };
 const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRuntimeContext>({
     componentId: 'config',
     initialState: (props) => {
-        const siteOrSpaceInstallation = props.siteInstallation ?? props.spaceInstallation;
+        const siteInstallation = props.siteInstallation;
         return {
-            client_id: siteOrSpaceInstallation?.configuration?.client_id?.toString() || '',
-            tenant_id: siteOrSpaceInstallation?.configuration?.tenant_id?.toString() || '',
-            client_secret: siteOrSpaceInstallation?.configuration?.client_secret?.toString() || '',
+            client_id: siteInstallation?.configuration?.client_id || '',
+            tenant_id: siteInstallation?.configuration?.tenant_id || '',
+            client_secret: siteInstallation?.configuration?.client_secret || '',
         };
     },
     action: async (element, action, context) => {
         switch (action.action) {
             case 'save.config':
                 const { api, environment } = context;
-                const siteOrSpaceInstallation =
-                    environment.siteInstallation ?? environment.spaceInstallation;
+                const siteInstallation = assertSiteInstallation(environment);
 
                 const configurationBody = {
-                    ...siteOrSpaceInstallation.configuration,
+                    ...siteInstallation.configuration,
                     client_id: element.state.client_id,
                     client_secret: element.state.client_secret,
                     tenant_id: element.state.tenant_id,
                 };
 
-                if ('site' in siteOrSpaceInstallation) {
-                    await api.integrations.updateIntegrationSiteInstallation(
-                        siteOrSpaceInstallation.integration,
-                        siteOrSpaceInstallation.installation,
-                        siteOrSpaceInstallation.site,
-                        {
-                            configuration: {
-                                ...configurationBody,
-                            },
-                        }
-                    );
-                } else {
-                    await api.integrations.updateIntegrationSpaceInstallation(
-                        siteOrSpaceInstallation.integration,
-                        siteOrSpaceInstallation.installation,
-                        siteOrSpaceInstallation.space,
-                        {
-                            configuration: {
-                                ...configurationBody,
-                            },
-                        }
-                    );
-                }
-                return element;
+                await api.integrations.updateIntegrationSiteInstallation(
+                    siteInstallation.integration,
+                    siteInstallation.installation,
+                    siteInstallation.site,
+                    {
+                        configuration: {
+                            ...configurationBody,
+                        },
+                    },
+                );
+
+                return { type: 'complete' };
         }
     },
     render: async (element, context) => {
-        const siteOrSpaceInstallation =
-            context.environment.siteInstallation ?? context.environment.spaceInstallation;
-        const VACallbackURL = `${siteOrSpaceInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
+        const siteInstallation = context.environment.siteInstallation;
+        const VACallbackURL = `${siteInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
         return (
             <block>
                 <input
@@ -177,110 +178,135 @@ const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRu
 });
 
 /**
- * Get the published content (site or space) related urls.
+ * Get the published content related urls.
  */
 async function getPublishedContentUrls(context: AzureRuntimeContext) {
-    const organizationId = context.environment.installation?.target?.organization;
-    const siteOrSpaceInstallation =
-        context.environment.siteInstallation ?? context.environment.spaceInstallation;
-    const publishedContentData =
-        'site' in siteOrSpaceInstallation
-            ? await context.api.orgs.getSiteById(organizationId, siteOrSpaceInstallation.site)
-            : await context.api.spaces.getSpaceById(siteOrSpaceInstallation.space);
+    const organizationId = assertOrgId(context.environment);
+    const siteInstallation = assertSiteInstallation(context.environment);
+    const publishedContentData = await context.api.orgs.getSiteById(
+        organizationId,
+        siteInstallation.site,
+    );
 
     return publishedContentData.data.urls;
 }
 
+function assertSiteInstallation(environment: AzureRuntimeEnvironment) {
+    const siteInstallation = environment.siteInstallation;
+    if (!siteInstallation) {
+        throw new Error('No site installation found');
+    }
+
+    return siteInstallation;
+}
+
+function assertOrgId(environment: AzureRuntimeEnvironment) {
+    const orgId = environment.installation?.target?.organization!;
+    if (!orgId) {
+        throw new Error('No org ID found');
+    }
+
+    return orgId;
+}
+
 const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request, context) => {
     const { environment } = context;
-    const siteOrSpaceInstallation = environment.siteInstallation ?? environment.spaceInstallation;
-    const installationURL = siteOrSpaceInstallation?.urls?.publicEndpoint;
+    const siteInstallation = assertSiteInstallation(environment);
+    const installationURL = siteInstallation.urls?.publicEndpoint;
     if (installationURL) {
         const router = Router({
             base: new URL(installationURL).pathname,
         });
 
         router.get('/visitor-auth/response', async (request) => {
-            if (
-                ('site' in siteOrSpaceInstallation && siteOrSpaceInstallation.site) ||
-                ('space' in siteOrSpaceInstallation && siteOrSpaceInstallation.space)
-            ) {
+            if ('site' in siteInstallation && siteInstallation.site) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
-                const privateKey =
-                    context.environment.signingSecrets.siteInstallation ??
-                    context.environment.signingSecrets.spaceInstallation;
-                let token;
-                try {
-                    token = await sign(
-                        { exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60) },
-                        privateKey
+
+                const tenantId = siteInstallation?.configuration.tenant_id;
+                const clientId = siteInstallation?.configuration.client_id;
+                const clientSecret = siteInstallation?.configuration.client_secret;
+
+                if (!clientId || !clientSecret || !tenantId) {
+                    return new Response(
+                        'Error: Either client id, client secret or tenant id is missing',
+                        {
+                            status: 400,
+                        },
                     );
-                } catch (e) {
-                    return new Response('Error: Could not sign JWT token', {
-                        status: 500,
+                }
+
+                const searchParams = new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    client_id: clientId,
+                    client_secret: clientSecret,
+                    code: `${request.query.code}`,
+                    redirect_uri: `${installationURL}/visitor-auth/response`,
+                });
+                const tokenURL = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token/`;
+                const azureTokenResp = await fetch(tokenURL, {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+                    body: searchParams,
+                });
+
+                if (!azureTokenResp.ok) {
+                    if (azureTokenResp.headers.get('content-type')?.includes('application/json')) {
+                        const errorResponse =
+                            await azureTokenResp.json<AzureTokenErrorResponseData>();
+                        logger.debug(JSON.stringify(errorResponse, null, 2));
+                        logger.debug(
+                            `Did not receive access token. Error: ${
+                                (errorResponse && errorResponse.error) || ''
+                            } ${(errorResponse && errorResponse.error_description) || ''}`,
+                        );
+                    }
+                    return new Response('Error: Could not fetch token from Azure', {
+                        status: 401,
                     });
                 }
 
-                const tenantId = siteOrSpaceInstallation?.configuration.tenant_id;
-                const clientId = siteOrSpaceInstallation?.configuration.client_id;
-                const clientSecret = siteOrSpaceInstallation?.configuration.client_secret;
-                if (clientId && clientSecret) {
-                    const searchParams = new URLSearchParams({
-                        grant_type: 'authorization_code',
-                        client_id: clientId,
-                        client_secret: clientSecret,
-                        code: `${request.query.code}`,
-                        scope: 'openid',
-                        redirect_uri: `${installationURL}/visitor-auth/response`,
+                const azureTokenData = await azureTokenResp.json<AzureTokenResponseData>();
+                if (!azureTokenData.id_token) {
+                    return new Response('Error: No ID Token found in response from Azure', {
+                        status: 401,
                     });
-                    const accessTokenURL = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token/`;
-                    const resp: any = await fetch(accessTokenURL, {
-                        method: 'POST',
-                        headers: { 'content-type': 'application/x-www-form-urlencoded' },
-                        body: searchParams,
-                    })
-                        .then((response) => response.json())
-                        .catch((err) => {
-                            return new Response('Error: Could not fetch access token from Azure', {
-                                status: 401,
-                            });
-                        });
+                }
 
-                    if ('access_token' in resp) {
-                        let url;
-                        if (request.query.state) {
-                            url = new URL(
-                                `${publishedContentUrls?.published}${request.query.state}`
-                            );
-                            url.searchParams.append('jwt_token', token);
-                        } else {
-                            url = new URL(publishedContentUrls?.published);
-                            url.searchParams.append('jwt_token', token);
-                        }
-                        if (publishedContentUrls?.published && token) {
-                            return Response.redirect(url.toString());
-                        } else {
-                            return new Response(
-                                "Error: Either JWT token or space's published URL is missing",
-                                {
-                                    status: 500,
-                                }
-                            );
-                        }
-                    } else {
-                        logger.debug(JSON.stringify(resp, null, 2));
-                        logger.debug(
-                            `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
-                                (resp && resp.error_description) || ''
-                            }`
-                        );
-                        return new Response('Error: No Access Token found in response from Azure', {
-                            status: 401,
+                // Azure already include user/custom claims in the ID token so we can just decode it
+                // TODO: verify token using JWKS and check audience (aud) claims
+                const decodedAzureToken = await jwt.decode(azureTokenData.id_token);
+                try {
+                    const privateKey = context.environment.signingSecrets.siteInstallation;
+                    if (!privateKey) {
+                        return new Response('Error: Missing private key from site installation', {
+                            status: 400,
                         });
                     }
-                } else {
-                    return new Response('Error: Either ClientId or Client Secret is missing', {
-                        status: 400,
+                    const jwtToken = await jwt.sign(
+                        {
+                            ...(decodedAzureToken.payload ?? {}),
+                            exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60),
+                        },
+                        privateKey,
+                    );
+
+                    const publishedContentUrl = publishedContentUrls?.published;
+                    if (!publishedContentUrl || !jwtToken) {
+                        return new Response(
+                            "Error: Either JWT token or site's published URL is missing",
+                            {
+                                status: 500,
+                            },
+                        );
+                    }
+
+                    const url = new URL(`${publishedContentUrl}${request.query.state || ''}`);
+                    url.searchParams.append('jwt_token', jwtToken);
+
+                    return Response.redirect(url.toString());
+                } catch (e) {
+                    return new Response('Error: Could not sign JWT token', {
+                        status: 500,
                     });
                 }
             }
@@ -311,12 +337,17 @@ export default createIntegration({
     components: [configBlock],
     fetch_visitor_authentication: async (event, context) => {
         const { environment } = context;
-        const siteOrSpaceInstallation =
-            environment.siteInstallation ?? environment.spaceInstallation;
-        const installationURL = siteOrSpaceInstallation?.urls?.publicEndpoint;
-        const tenantId = siteOrSpaceInstallation?.configuration.tenant_id;
-        const clientId = siteOrSpaceInstallation?.configuration.client_id;
+        const siteInstallation = assertSiteInstallation(environment);
+
+        const installationURL = siteInstallation.urls.publicEndpoint;
+        const configuration = siteInstallation.configuration;
+
+        const tenantId = configuration.tenant_id;
+        const clientId = configuration.client_id;
         const location = event.location ? event.location : '';
+        if (!clientId || !tenantId) {
+            throw new ExposableError('Azure configuration is missing');
+        }
 
         const url = new URL(`https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize`);
         url.searchParams.append('client_id', clientId);
@@ -326,12 +357,6 @@ export default createIntegration({
         url.searchParams.append('scope', 'openid');
         url.searchParams.append('state', location);
 
-        try {
-            return Response.redirect(url.toString());
-        } catch (e) {
-            return new Response(e.message, {
-                status: e.status || 500,
-            });
-        }
+        return Response.redirect(url.toString());
     },
 });

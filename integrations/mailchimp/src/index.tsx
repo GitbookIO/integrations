@@ -4,10 +4,12 @@ import {
     createComponent,
     createIntegration,
     createOAuthHandler,
+    ExposableError,
     Logger,
     RuntimeContext,
     RuntimeEnvironment,
 } from '@gitbook/runtime';
+import { ContentKitIcon } from '@gitbook/api';
 
 import { getMailingLists, getUserMetadata, subscribeUserToList } from './sdk';
 
@@ -59,12 +61,19 @@ const mailchimpSubscribe = createComponent<
             case 'subscribe': {
                 const { environment } = context;
                 const configuration = environment.installation?.configuration;
+                const accessToken = configuration?.oauth_credentials?.access_token;
+                if (!accessToken) {
+                    throw new ExposableError('Mailchimp integration not configured');
+                }
+                if (!element.props.listId) {
+                    throw new ExposableError('No list ID provided');
+                }
 
                 try {
                     const listId = await resolveMailingListId(
                         element.props.listId,
                         configuration.api_endpoint,
-                        configuration.oauth_credentials?.access_token
+                        accessToken,
                     );
 
                     if (!listId) {
@@ -73,7 +82,7 @@ const mailchimpSubscribe = createComponent<
 
                     await subscribeUserToList(listId, action.email, {
                         apiEndpoint: configuration.api_endpoint,
-                        accessToken: configuration.oauth_credentials?.access_token,
+                        accessToken,
                     });
 
                     return {
@@ -83,7 +92,7 @@ const mailchimpSubscribe = createComponent<
                         },
                     };
                 } catch (err) {
-                    logger.error(err.stack);
+                    logger.error('Error while subscribing', (err as Error).stack);
 
                     return {
                         state: {
@@ -96,8 +105,8 @@ const mailchimpSubscribe = createComponent<
             case '@ui.modal.close': {
                 return {
                     props: {
-                        listId: action.listId || element.props.listId,
-                        cta: action.cta || element.props.cta,
+                        listId: ('listId' in action ? action.listId : null) || element.props.listId,
+                        cta: ('cta' in action ? action.cta : null) || element.props.cta,
                     },
                 };
             }
@@ -115,7 +124,7 @@ const mailchimpSubscribe = createComponent<
                 controls={[
                     {
                         label: 'Edit',
-                        icon: 'edit',
+                        icon: ContentKitIcon.Edit,
                         onPress: {
                             action: '@ui.modal.open',
                             componentId: 'settingsModal',
@@ -159,7 +168,7 @@ const mailchimpSubscribe = createComponent<
 async function resolveMailingListId(
     propListId: string,
     apiEndpoint: string,
-    accessToken: string
+    accessToken: string,
 ): Promise<string | undefined> {
     if (propListId) {
         return propListId;
@@ -193,18 +202,13 @@ const settingsModal = createComponent<
 
         const { environment } = context;
         const configuration = environment.installation?.configuration;
+        const accessToken = configuration?.oauth_credentials?.access_token;
 
-        if (!configuration) {
-            // This would essentially mean that the integration is only partially installed.
-            // We should have an easy way, from the contentkit, to let GitBook know that the
-            // integration is not installed properly.
-            throw new Error();
+        if (!accessToken) {
+            throw new ExposableError('Mailchimp integration not configured');
         }
 
-        const lists = await getMailingLists(
-            configuration.api_endpoint,
-            configuration.oauth_credentials?.access_token
-        );
+        const lists = await getMailingLists(configuration.api_endpoint, accessToken);
 
         return (
             <modal
@@ -267,7 +271,7 @@ export default createIntegration<MailchimpRuntimeContext>({
             base: new URL(
                 environment.spaceInstallation?.urls?.publicEndpoint ||
                     environment.installation?.urls.publicEndpoint ||
-                    environment.integration.urls.publicEndpoint
+                    environment.integration.urls.publicEndpoint,
             ).pathname,
         });
 
@@ -286,8 +290,8 @@ export default createIntegration<MailchimpRuntimeContext>({
                     if (!response.access_token) {
                         throw new Error(
                             `Could not extract access_token from response ${JSON.stringify(
-                                response
-                            )}`
+                                response,
+                            )}`,
                         );
                     }
 
@@ -302,7 +306,7 @@ export default createIntegration<MailchimpRuntimeContext>({
                         },
                     };
                 },
-            })
+            }),
         );
 
         const response = await router.handle(request, context);

@@ -1,6 +1,7 @@
 name: toucantoco
 title: Toucan Toco
 icon: ./assets/icon.png
+organization: gitbook
 previewImages:
     - ./assets/toucan-toco-1.png
     - ./assets/toucan-toco-2.png
@@ -27,3 +28,4 @@ blocks:
       description: Embedded Analytics, powered by Toucan Toco
       urlUnfurl:
           - https://*.toucantoco.com/embed.html*
+target: space
