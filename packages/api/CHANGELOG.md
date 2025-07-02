@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.126.0
+
+### Minor Changes
+
+- ada360e: Update API client with latest OpenAPI spec.
+
 ## 0.125.0
 
 ### Minor Changes
