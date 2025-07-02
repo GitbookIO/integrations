@@ -1,0 +1,44 @@
+name: salesviewer
+title: Salesviewer
+icon: ./assets/icon.png
+description: Track and identify GitBook page visitors with Salesviewer analytics.
+previewImages:
+  - ./assets/salesviewer-preview.png
+externalLinks:
+  - label: Documentation
+    url: https://www.gitbook.com/integrations/salesviewer
+visibility: public
+script: ./src/index.ts
+scopes:
+  - space:script:inject
+  - site:script:inject
+contentSecurityPolicy:
+  script-src: |
+    https://slsnlytcs.com;
+  connect-src: |
+    slsnlytcs.com;
+summary: |
+  # Overview
+
+  Salesviewer is a powerful analytics and visitor identification platform that helps you understand who visits your pages and track their behavior.
+
+  # How it works
+
+  The GitBook Salesviewer integration allows you to track traffic in your published pages from your Salesviewer dashboard.
+
+  Each of your connected GitBook sites will fetch the Salesviewer tracking script and inject it in your public content, enabling visitor tracking and identification.
+
+  # Configure
+  Install the integration on the GitBook space of your choice.
+  Locate the Account ID you want to use, which is available in SalesViewer dashboard under "Profile > Project & Tracking code":
+categories:
+  - analytics
+configurations:
+  site:
+    properties:
+      tracking_id:
+        type: string
+        title: Tracking ID
+        description: Your Salesviewer Account ID
+    required:
+      - tracking_id
