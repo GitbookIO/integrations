@@ -1,7 +1,7 @@
 # @gitbook/integration-ahrefs
 
-## 0.0.1
+## 0.1.0
 
-### Patch Changes
+### Minor Changes
 
 Added Ahrefs Web Analytics integration.

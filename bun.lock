@@ -14,6 +14,18 @@
         "wrangler": "^2.1.12",
       },
     },
+    "integrations/ahrefs": {
+      "name": "@gitbook/integration-ahrefs",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
     "integrations/arcade": {
       "name": "@gitbook/integration-arcade",
       "version": "0.2.2",
@@ -940,6 +952,8 @@
     "@gitbook/cli": ["@gitbook/cli@workspace:packages/cli"],
 
     "@gitbook/document": ["@gitbook/document@workspace:packages/document"],
+
+    "@gitbook/integration-ahrefs": ["@gitbook/integration-ahrefs@workspace:integrations/ahrefs"],
 
     "@gitbook/integration-arcade": ["@gitbook/integration-arcade@workspace:integrations/arcade"],
 
