@@ -5,6 +5,9 @@ export interface GithubProps {
     url: string;
 }
 
+/**
+ * Extract the parts from a github URL
+ */
 const splitGithubUrl = (url: string) => {
     const urlWithoutQuery = url.split('?')[0];
     const baseRegex = /^https?:\/\/github\.com\/([\w-]+)\/([a-zA-Z0-9._-]+)\/blob\/(.+)$/;
@@ -21,7 +24,7 @@ const splitGithubUrl = (url: string) => {
     let lines: number[] = [];
     let pathWithoutLines = restOfPath;
 
-    // Check for line number pattern #L\d+(-L\d+)?
+    // Get the lines from the URL
     const lineNumberRegex = /#L(\d+)(?:-L(\d+))?$/;
     const lineMatch = restOfPath.match(lineNumberRegex);
 
