@@ -10,7 +10,6 @@ externalLinks:
 visibility: public
 script: ./src/index.ts
 scopes:
-  - space:script:inject
   - site:script:inject
 contentSecurityPolicy:
   script-src: |
@@ -24,12 +23,12 @@ summary: |
 
   # How it works
 
-  The GitBook Salesviewer integration allows you to track traffic in your published pages from your Salesviewer dashboard.
+  The GitBook Salesviewer integration allows you to track traffic in your published sites from your Salesviewer dashboard.
 
   Each of your connected GitBook sites will fetch the Salesviewer tracking script and inject it in your public content, enabling visitor tracking and identification.
 
   # Configure
-  Install the integration on the GitBook space of your choice.
+  Install the integration on the GitBook site of your choice.
   Locate the Account ID you want to use, which is available in SalesViewer dashboard under "Profile > Project & Tracking code":
 categories:
   - analytics
