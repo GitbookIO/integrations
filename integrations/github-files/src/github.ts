@@ -1,58 +1,46 @@
 import { ExposableError } from '@gitbook/runtime';
-import { GithubInstallationConfiguration, GithubRuntimeContext } from './types';
+import type { GithubInstallationConfiguration, GithubRuntimeContext } from './types';
 
 export interface GithubProps {
     url: string;
 }
 
 const splitGithubUrl = (url: string) => {
-    const permalinkRegex =
-        /^https?:\/\/github\.com\/([\w-]+)\/([\w-]+)\/blob\/([a-f0-9]+)\/(.+?)#(.+)$/;
-    const wholeFileRegex = /^https?:\/\/github\.com\/([\w-]+)\/([\w-]+)\/blob\/([\w.-]+)\/(.+)$/;
-    const multipleLineRegex = /^L\d+-L\d+$/;
+    const urlWithoutQuery = url.split('?')[0];
+    const baseRegex = /^https?:\/\/github\.com\/([\w-]+)\/([a-zA-Z0-9._-]+)\/blob\/(.+)$/;
+    const baseMatch = urlWithoutQuery.match(baseRegex);
 
-    let orgName = '';
-    let repoName = '';
-    let ref = '';
-    let fileName = '';
-    let lines: number[] = [];
-
-    if (url.match(permalinkRegex)) {
-        const match = url.match(permalinkRegex);
-        if (!match) {
-            return;
-        }
-
-        orgName = match[1];
-        repoName = match[2];
-        ref = match[3];
-        fileName = match[4];
-        const hash = match[5];
-
-        if (hash !== '') {
-            if (url.match(permalinkRegex)) {
-                if (hash.match(multipleLineRegex)) {
-                    lines = hash.replace(/L/g, '').split('-').map(Number);
-                } else {
-                    const singleLineNumberArray: number[] = [];
-                    const parsedInt = parseInt(hash.replace(/L/g, ''), 10);
-                    singleLineNumberArray.push(parsedInt);
-                    singleLineNumberArray.push(parsedInt);
-                    lines = singleLineNumberArray;
-                }
-            }
-        }
-    } else if (url.match(wholeFileRegex)) {
-        const match = url.match(wholeFileRegex);
-        if (!match) {
-            return;
-        }
-
-        orgName = match[1];
-        repoName = match[2];
-        ref = match[3];
-        fileName = match[4];
+    if (!baseMatch) {
+        return undefined;
     }
+
+    const orgName = baseMatch[1];
+    const repoName = baseMatch[2];
+    const restOfPath = baseMatch[3];
+
+    let lines: number[] = [];
+    let pathWithoutLines = restOfPath;
+
+    // Check for line number pattern #L\d+(-L\d+)?
+    const lineNumberRegex = /#L(\d+)(?:-L(\d+))?$/;
+    const lineMatch = restOfPath.match(lineNumberRegex);
+
+    if (lineMatch) {
+        const startLine = Number.parseInt(lineMatch[1], 10);
+        const endLine = lineMatch[2] ? Number.parseInt(lineMatch[2], 10) : startLine;
+        lines = [startLine, endLine];
+        pathWithoutLines = restOfPath.replace(lineNumberRegex, '');
+    }
+
+    // Split the remaining path to separate ref from file path
+    const pathParts = pathWithoutLines.split('/');
+
+    // The first part is always the ref (branch/tag)
+    const ref = pathParts[0];
+
+    // Everything after the first part is the file path
+    const fileName = pathParts.slice(1).join('/');
+
     return {
         orgName,
         repoName,
@@ -89,9 +77,8 @@ const getGithubApiResponse = async (
     if (!res.ok) {
         if (res.status === 403 || res.status === 404) {
             return false;
-        } else {
-            throw new Error(`Response status from ${baseURL}: ${res.status}`);
         }
+        throw new Error(`Response status from ${baseURL}: ${res.status}`);
     }
 
     const body = await res.text();
