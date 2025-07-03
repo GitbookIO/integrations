@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.127.0
+
+### Minor Changes
+
+- 4db20d3: Bump API to use the latest OpenAPI spec
+
 ## 0.126.0
 
 ### Minor Changes
