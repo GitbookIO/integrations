@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.128.0
+
+### Minor Changes
+
+- 8edbe3b: Bump to include AI assistant in API schema
+
 ## 0.127.0
 
 ### Minor Changes
