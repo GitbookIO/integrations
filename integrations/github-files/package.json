@@ -16,6 +16,7 @@
         "typecheck": "tsc --noEmit",
         "check": "gitbook check",
         "publish-integrations": "dotenv gitbook publish .",
-        "publish-integrations-staging": "gitbook publish ."
+        "publish-integrations-staging": "gitbook publish .",
+        "test": "bun test"
     }
 }
