@@ -8,10 +8,27 @@ export interface GithubProps {
 /**
  * Extract the parts from a github URL
  */
-const splitGithubUrl = (url: string) => {
-    const urlWithoutQuery = url.split('?')[0];
-    const baseRegex = /^https?:\/\/github\.com\/([\w-]+)\/([a-zA-Z0-9._-]+)\/blob\/(.+)$/;
-    const baseMatch = urlWithoutQuery.match(baseRegex);
+export const splitGithubUrl = (url: string) => {
+    if (!url) {
+        return undefined;
+    }
+
+    let urlObject: URL;
+    try {
+        urlObject = new URL(url);
+    } catch {
+        return undefined;
+    }
+
+    // Check if the URL is a valid GitHub URL
+    if (urlObject.hostname !== 'github.com') {
+        return undefined;
+    }
+
+    const baseRegex = /([\w-]+)\/([a-zA-Z0-9._-]+)\/blob\/(.+)$/;
+    // Keep the hash part of the URL for lines detection
+    const path = `${urlObject.pathname}${urlObject.hash}`;
+    const baseMatch = path.match(baseRegex);
 
     if (!baseMatch) {
         return undefined;
