@@ -40,7 +40,7 @@
     },
     "integrations/bucket": {
       "name": "@gitbook/integration-bucket",
-      "version": "0.3.0",
+      "version": "0.3.3",
       "dependencies": {
         "@gitbook/runtime": "*",
         "itty-router": "^5.0.18",
@@ -160,7 +160,7 @@
     },
     "integrations/github-files": {
       "name": "@gitbook/integration-github-files",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -192,7 +192,7 @@
     },
     "integrations/gitlab-files": {
       "name": "@gitbook/integration-gitlab-files",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "dependencies": {
         "@gitbook/runtime": "*",
         "dotenv": "^16.1.1",
@@ -301,7 +301,7 @@
     },
     "integrations/launchdarkly": {
       "name": "@gitbook/integration-launchdarkly",
-      "version": "0.3.0",
+      "version": "0.3.3",
       "dependencies": {
         "@gitbook/runtime": "*",
         "itty-router": "^5.0.18",
@@ -626,7 +626,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.124.0",
+      "version": "0.127.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
