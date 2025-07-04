@@ -148,7 +148,7 @@
     },
     "integrations/github-files": {
       "name": "@gitbook/integration-github-files",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -614,7 +614,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.127.0",
+      "version": "0.128.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
