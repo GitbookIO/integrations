@@ -1,5 +1,11 @@
 # @gitbook/integration-posthog
 
+## 1.0.0
+
+### Major Changes
+
+- a3b4646: Update Posthog endpoints with the recommended ones
+
 ## 0.4.2
 
 ### Patch Changes
