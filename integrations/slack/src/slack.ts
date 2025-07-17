@@ -73,8 +73,10 @@ async function fetchChannelsByType(context: SlackRuntimeContext, types: string) 
 export async function getChannelsPaginated(context: SlackRuntimeContext) {
     // Make separate calls for public and private channels due to inconsistent Slack API filtering
     // when requesting multiple types together - some channels are missing from the response
-    const publicChannels = await fetchChannelsByType(context, 'public_channel');
-    const privateChannels = await fetchChannelsByType(context, 'private_channel');
+    const [publicChannels, privateChannels] = await Promise.all([
+        fetchChannelsByType(context, 'public_channel'),
+        fetchChannelsByType(context, 'private_channel'),
+    ]);
 
     // Combine results
     const allChannels = [...publicChannels, ...privateChannels];
