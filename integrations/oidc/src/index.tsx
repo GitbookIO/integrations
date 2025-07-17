@@ -367,8 +367,8 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                     );
                 }
 
-                const state = request.query.state!.toString();
-                const location = state.substring(state.indexOf('-') + 1);
+                const state = request.query.state?.toString();
+                const location = state ? state.substring(state.indexOf('-') + 1) : '';
 
                 const url = new URL(`${publishedContentUrl}${location || ''}`);
                 url.searchParams.append('jwt_token', jwtToken);
