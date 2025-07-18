@@ -15,17 +15,15 @@ type SlackChannel = {
 };
 
 /**
- * Cloudflare workers have a maximum number of subrequests we can call (20 according to my
- * tests) https://developers.cloudflare.com/workers/platform/limits/#how-many-subrequests-can-i-make
- * TODO: Test with 50
+ * Cloudflare workers have a maximum number of subrequests we can call (50 on a free account)
+ * https://developers.cloudflare.com/workers/platform/limits/#how-many-subrequests-can-i-make
  */
-const maximumSubrequests = 20;
+const maximumSubrequests = 50;
 
 /**
- * Executes a Slack API request to fetch channels, handles pagination, then returns the merged
- * results.
+ * Helper function to fetch channels by type with pagination
  */
-export async function getChannelsPaginated(context: SlackRuntimeContext) {
+async function fetchChannelsByType(context: SlackRuntimeContext, types: string) {
     const channels: SlackChannel[] = [];
 
     let response = await slackAPI<{
@@ -39,7 +37,7 @@ export async function getChannelsPaginated(context: SlackRuntimeContext) {
         payload: {
             limit: 1000,
             exclude_archived: true,
-            types: 'public_channel,private_channel',
+            types,
         },
     });
     channels.push(...response?.channels);
@@ -57,7 +55,7 @@ export async function getChannelsPaginated(context: SlackRuntimeContext) {
             payload: {
                 limit: 1000,
                 exclude_archived: true,
-                types: 'public_channel,private_channel',
+                types,
                 cursor: response.response_metadata.next_cursor,
             },
         });
@@ -65,8 +63,26 @@ export async function getChannelsPaginated(context: SlackRuntimeContext) {
         numberOfCalls++;
     }
 
+    return channels;
+}
+
+/**
+ * Executes a Slack API request to fetch channels, handles pagination, then returns the merged
+ * results.
+ */
+export async function getChannelsPaginated(context: SlackRuntimeContext) {
+    // Make separate calls for public and private channels due to inconsistent Slack API filtering
+    // when requesting multiple types together - some channels are missing from the response
+    const [publicChannels, privateChannels] = await Promise.all([
+        fetchChannelsByType(context, 'public_channel'),
+        fetchChannelsByType(context, 'private_channel'),
+    ]);
+
+    // Combine results
+    const allChannels = [...publicChannels, ...privateChannels];
+
     // Remove any duplicate as the pagination API could return duplicated channels
-    return channels.filter(
+    return allChannels.filter(
         (value, index, self) => index === self.findIndex((t) => t.id === value.id),
     );
 }
