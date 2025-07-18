@@ -380,13 +380,19 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
         let response;
         try {
             response = await router.handle(request, context);
-        } catch (error: any) {
-            logger.error('error handling request', error);
-            if ('stack' in error && error.stack) {
-                logger.error('error stacktrace:', error.stack);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                logger.error(
+                    'error handling request:',
+                    `${error}${error.stack ? `\n${error.stack}` : ''}`,
+                );
+                return new Response(error.message, {
+                    status: 500,
+                });
             }
-            return new Response(error.message, {
-                status: error.status || 500,
+
+            return new Response('Unexpected error when handling request', {
+                status: 500,
             });
         }
 
