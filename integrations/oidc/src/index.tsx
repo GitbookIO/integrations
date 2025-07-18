@@ -382,6 +382,9 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
             response = await router.handle(request, context);
         } catch (error: any) {
             logger.error('error handling request', error);
+            if ('stack' in error && error.stack) {
+                logger.error('error stacktrace:', error.stack);
+            }
             return new Response(error.message, {
                 status: error.status || 500,
             });
