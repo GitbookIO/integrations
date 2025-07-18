@@ -1,5 +1,11 @@
 # @gitbook/integration-oidc
 
+## 0.2.5
+
+### Patch Changes
+
+- 11f118b: Fix OIDC integration failing for some auth providers
+
 ## 0.2.4
 
 ### Patch Changes
