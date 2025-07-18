@@ -300,28 +300,28 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                     redirect_uri: `${installationURL}/visitor-auth/response`,
                 });
 
-                const accessTokenResp = await fetch(accessTokenEndpoint, {
+                const tokenResp = await fetch(accessTokenEndpoint, {
                     method: 'POST',
                     headers: { 'content-type': 'application/x-www-form-urlencoded' },
                     body: searchParams,
                 });
 
-                if (!accessTokenResp.ok) {
+                if (!tokenResp.ok) {
                     return new Response(
-                        'Error: Could not fetch access token from your authentication provider',
+                        'Error: Could not fetch ID token from your authentication provider',
                         {
                             status: 401,
                         },
                     );
                 }
 
-                const accessTokenData = await accessTokenResp.json<OIDCTokenResponseData>();
-                if (!accessTokenData.access_token) {
-                    logger.debug(JSON.stringify(accessTokenResp, null, 2));
+                const tokenRespData = await tokenResp.json<OIDCTokenResponseData>();
+                if (!tokenRespData.id_token) {
+                    logger.debug(JSON.stringify(tokenResp, null, 2));
                     logger.debug(
-                        `Did not receive access token. Error: ${accessTokenResp && 'error' in accessTokenResp ? accessTokenResp.error : ''} ${
-                            accessTokenResp && 'error_description' in accessTokenResp
-                                ? accessTokenResp.error_description
+                        `Did not receive access token. Error: ${tokenResp && 'error' in tokenResp ? tokenResp.error : ''} ${
+                            tokenResp && 'error_description' in tokenResp
+                                ? tokenResp.error_description
                                 : ''
                         }`,
                     );
@@ -334,7 +334,7 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                 }
 
                 // TODO: verify token using JWKS and check audience (aud) claims
-                const decodedAccessToken = await jwt.decode(accessTokenData.access_token);
+                const decodedIdToken = await jwt.decode(tokenRespData.id_token);
                 const privateKey = context.environment.signingSecrets.siteInstallation;
                 if (!privateKey) {
                     return new Response('Error: Missing private key from site installation', {
@@ -346,7 +346,7 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                 try {
                     jwtToken = await jwt.sign(
                         {
-                            ...(decodedAccessToken.payload ?? {}),
+                            ...(decodedIdToken.payload ?? {}),
                             exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60),
                         },
                         privateKey,
