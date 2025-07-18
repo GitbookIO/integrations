@@ -1,5 +1,11 @@
 # @gitbook/integration-oidc
 
+## 0.2.3
+
+### Patch Changes
+
+- a295590: Add support to OIDC integration to pull user/custom claims from auth token
+
 ## 0.2.2
 
 ### Patch Changes

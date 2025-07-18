@@ -1,5 +1,11 @@
 # @gitbook/integration-slack
 
+## 2.1.0
+
+### Minor Changes
+
+- 8876593: Try to fix missing channels in Slack's configuration
+
 ## 2.0.4
 
 ### Patch Changes
