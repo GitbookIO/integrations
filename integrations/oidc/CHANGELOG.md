@@ -1,5 +1,11 @@
 # @gitbook/integration-oidc
 
+## 0.2.4
+
+### Patch Changes
+
+- a3daa1f: Log error stacktrace when getting route handling uncaught errors #909
+
 ## 0.2.3
 
 ### Patch Changes
