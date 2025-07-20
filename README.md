@@ -24,6 +24,7 @@ Packages are the core of our integration platform, containing the code for the f
 
 It also hosts the default integrations provided by the GitBook team:
 
+- [`ahrefs`](./integrations/ahrefs/)
 - [`arcade`](./integrations/arcade/)
 - [`fathom`](./integrations/fathom/)
 - [`figma`](./integrations/figma/)
