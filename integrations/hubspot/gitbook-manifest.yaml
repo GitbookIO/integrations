@@ -1,0 +1,48 @@
+name: hubspot
+title: HubSpot
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/hubspot-preview.png
+organization: d8f63b60-89ae-11e7-8574-5927d48c4877
+description: Plug your GitBook site to your HubSpot installation.
+visibility: public
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - space:script:inject
+    - site:script:inject
+contentSecurityPolicy:
+    script-src: hsadspixel.net hs-banner.com hs-analytics.net hs-scripts.com;
+summary: |
+    # Overview
+    This integration allows to add the HubSpot tracking code on your published GitBook site.
+
+    # How it works
+    The integration injects the HubSpot script on your page, using the configured environment ID, 
+    so that you can get analytics information from your GitBook site directly inside of Heap.
+
+    # Configure
+    Install the integration on the GitBook space of your choice.
+    Locate the HubSpot Script Loader ID you want to use, which is available in HubSpot's Reports & Analytics Tracking section.
+
+    The ID should be just the id - "//js.hs-scripts.com/{hubspot_id}.js". (i.e. only paste what you see in hubspot_id)
+categories:
+    - analytics
+configurations:
+    space:
+        properties:
+            script_loader_url:
+                type: string
+                title: HubSpot Script Loader URL
+                description: The URL to load the script from. Copied form HubSpot's script tracking code script tag src attribute
+        required:
+            - script_loader_url
+    site:
+        properties:
+            script_loader_url:
+                type: string
+                title: HubSpot Script Loader URL
+                description: The URL to load the script from. Copied form HubSpot's script tracking code script tag src attribute
+        required:
+            - script_loader_url
