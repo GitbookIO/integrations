@@ -1,4 +1,4 @@
-import { sign } from '@tsndr/cloudflare-worker-jwt';
+import * as jwt from '@tsndr/cloudflare-worker-jwt';
 import { Router } from 'itty-router';
 
 import { IntegrationInstallationConfiguration } from '@gitbook/api';
@@ -38,6 +38,14 @@ type OIDCProps = {
 };
 
 export type OIDCAction = { action: 'save.config' };
+
+type OIDCTokenResponseData = {
+    access_token?: string;
+    id_token?: string;
+    refresh_token?: string;
+    token_type: 'Bearer';
+    expires_in: number;
+};
 
 const getDomainWithHttps = (url: string): string => {
     const sanitizedURL = url.trim();
@@ -271,11 +279,76 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
         router.get('/visitor-auth/response', async (request) => {
             if ('site' in siteInstallation && siteInstallation.site) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
-                const privateKey = context.environment.signingSecrets.siteInstallation!;
-                let token;
+
+                const accessTokenEndpoint = siteInstallation.configuration.access_token_endpoint;
+                const clientId = siteInstallation.configuration.client_id;
+                const clientSecret = siteInstallation.configuration.client_secret;
+
+                if (!clientId || !clientSecret || !accessTokenEndpoint) {
+                    return new Response(
+                        'Error: Either client id, client secret or access token endpoint is missing in configuration',
+                        {
+                            status: 400,
+                        },
+                    );
+                }
+                const searchParams = new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    client_id: clientId,
+                    client_secret: clientSecret,
+                    code: `${request.query.code}`,
+                    redirect_uri: `${installationURL}/visitor-auth/response`,
+                });
+
+                const tokenResp = await fetch(accessTokenEndpoint, {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+                    body: searchParams,
+                });
+
+                if (!tokenResp.ok) {
+                    return new Response(
+                        'Error: Could not fetch ID token from your authentication provider',
+                        {
+                            status: 401,
+                        },
+                    );
+                }
+
+                const tokenRespData = await tokenResp.json<OIDCTokenResponseData>();
+                if (!tokenRespData.id_token) {
+                    logger.debug(JSON.stringify(tokenResp, null, 2));
+                    logger.debug(
+                        `Did not receive access token. Error: ${tokenResp && 'error' in tokenResp ? tokenResp.error : ''} ${
+                            tokenResp && 'error_description' in tokenResp
+                                ? tokenResp.error_description
+                                : ''
+                        }`,
+                    );
+                    return new Response(
+                        'Error: No access token found in response from your authentication provider',
+                        {
+                            status: 401,
+                        },
+                    );
+                }
+
+                // TODO: verify token using JWKS and check audience (aud) claims
+                const decodedIdToken = await jwt.decode(tokenRespData.id_token);
+                const privateKey = context.environment.signingSecrets.siteInstallation;
+                if (!privateKey) {
+                    return new Response('Error: Missing private key from site installation', {
+                        status: 400,
+                    });
+                }
+
+                let jwtToken: string | undefined;
                 try {
-                    token = await sign(
-                        { exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60) },
+                    jwtToken = await jwt.sign(
+                        {
+                            ...(decodedIdToken.payload ?? {}),
+                            exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60),
+                        },
                         privateKey,
                     );
                 } catch (e) {
@@ -284,86 +357,48 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                     });
                 }
 
-                const accessTokenEndpoint = siteInstallation.configuration.access_token_endpoint;
-                const clientId = siteInstallation.configuration.client_id;
-                const clientSecret = siteInstallation.configuration.client_secret;
-                if (clientId && clientSecret && accessTokenEndpoint) {
-                    const searchParams = new URLSearchParams({
-                        grant_type: 'authorization_code',
-                        client_id: clientId,
-                        client_secret: clientSecret,
-                        code: `${request.query.code}`,
-                        redirect_uri: `${installationURL}/visitor-auth/response`,
-                    });
-
-                    const resp: any = await fetch(accessTokenEndpoint, {
-                        method: 'POST',
-                        headers: { 'content-type': 'application/x-www-form-urlencoded' },
-                        body: searchParams,
-                    })
-                        .then((response) => response.json())
-                        .catch((err) => {
-                            return new Response(
-                                'Error: Could not fetch access token from your authentication provider',
-                                {
-                                    status: 401,
-                                },
-                            );
-                        });
-
-                    if ('access_token' in resp) {
-                        let url;
-                        const state = request.query.state!.toString();
-                        const location = state.substring(state.indexOf('-') + 1);
-                        if (location) {
-                            url = new URL(`${publishedContentUrls?.published}${location}`);
-                            url.searchParams.append('jwt_token', token);
-                        } else {
-                            url = new URL(publishedContentUrls?.published!);
-                            url.searchParams.append('jwt_token', token);
-                        }
-                        if (publishedContentUrls?.published && token) {
-                            return Response.redirect(url.toString());
-                        } else {
-                            return new Response(
-                                "Error: Either JWT token or space's published URL is missing",
-                                {
-                                    status: 500,
-                                },
-                            );
-                        }
-                    } else {
-                        logger.debug(JSON.stringify(resp, null, 2));
-                        logger.debug(
-                            `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
-                                (resp && resp.error_description) || ''
-                            }`,
-                        );
-                        return new Response(
-                            'Error: No Access Token found in response from your OIDC provider',
-                            {
-                                status: 401,
-                            },
-                        );
-                    }
-                } else {
+                const publishedContentUrl = publishedContentUrls?.published;
+                if (!publishedContentUrl || !jwtToken) {
                     return new Response(
-                        'Error: Either ClientId or Client Secret or Access Token Endpoint is missing',
+                        "Error: Either JWT token or site's published URL is missing",
                         {
-                            status: 400,
+                            status: 500,
                         },
                     );
                 }
+
+                const state = request.query.state?.toString();
+                let location = state ? state.substring(state.indexOf('-') + 1) : '';
+                location = location.startsWith('/') ? location.slice(1) : location;
+                const url = new URL(
+                    `${
+                        publishedContentUrl.endsWith('/')
+                            ? publishedContentUrl
+                            : `${publishedContentUrl}/`
+                    }${location || ''}`,
+                );
+                url.searchParams.append('jwt_token', jwtToken);
+
+                return Response.redirect(url.toString());
             }
         });
 
         let response;
         try {
             response = await router.handle(request, context);
-        } catch (error: any) {
-            logger.error('error handling request', error);
-            return new Response(error.message, {
-                status: error.status || 500,
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                logger.error(
+                    'error handling request:',
+                    `${error}${error.stack ? `\n${error.stack}` : ''}`,
+                );
+                return new Response(error.message, {
+                    status: 500,
+                });
+            }
+
+            return new Response('Unexpected error when handling request', {
+                status: 500,
             });
         }
 
