@@ -17,9 +17,9 @@ function getCookie(cname) {
     return '';
 }
 
-(function (r, e, o) {
-    const disableCookies = getCookie(GRANTED_COOKIE) !== 'yes';
+const disableCookies = getCookie(GRANTED_COOKIE) !== 'yes';
 
+(function (r, e, o) {
     if (disableCookies) {
         return;
     }

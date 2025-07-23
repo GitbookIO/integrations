@@ -1,6 +1,5 @@
 (function (h, o, t, j, a, r) {
     const trackingID = '<TO_REPLACE>';
-
     const GRANTED_COOKIE = '__gitbook_cookie_granted';
 
     function getCookie(cname) {

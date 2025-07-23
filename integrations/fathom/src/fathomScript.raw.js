@@ -22,10 +22,13 @@
         }
         return '';
     }
+    const disableCookies = getCookie(GRANTED_COOKIE) !== 'yes';
 
     // Function to track external links
     function trackExternalLink(event) {
-        const disableCookies = getCookie(GRANTED_COOKIE) !== 'yes';
+        if (disableCookies) {
+            return;
+        }
 
         var item = event.target.closest('a');
         if (!item) return;
@@ -40,10 +43,6 @@
     }
 
     element.onload = function () {
-        if (disableCookies) {
-            return;
-        }
-
         if (trackExternalLinks === true || trackExternalLinks === 'true') {
             // Use event delegation to capture clicks on all current and later loaded links
             doc.addEventListener('click', trackExternalLink);

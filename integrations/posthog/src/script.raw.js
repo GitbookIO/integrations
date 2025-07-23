@@ -17,10 +17,9 @@ function getCookie(cname) {
     }
     return '';
 }
+const disableCookies = getCookie(GRANTED_COOKIE) !== 'yes';
 
 !(function (t, e) {
-    const disableCookies = getCookie(GRANTED_COOKIE) !== 'yes';
-
     if (disableCookies) {
         return;
     }
