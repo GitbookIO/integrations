@@ -1,5 +1,13 @@
 # @gitbook/integration-github
 
+## 0.2.4
+
+### Patch Changes
+
+- 0bf599e: Fix Github files URL parsing
+- Updated dependencies [8edbe3b]
+    - @gitbook/api@0.128.0
+
 ## 0.2.3
 
 ### Patch Changes

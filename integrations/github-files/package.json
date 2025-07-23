@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-github-files",
-    "version": "0.2.3",
+    "version": "0.2.4",
     "private": true,
     "dependencies": {
         "dotenv": "^16.0.3",
@@ -16,6 +16,7 @@
         "typecheck": "tsc --noEmit",
         "check": "gitbook check",
         "publish-integrations": "dotenv gitbook publish .",
-        "publish-integrations-staging": "gitbook publish ."
+        "publish-integrations-staging": "gitbook publish .",
+        "test": "bun test"
     }
 }
