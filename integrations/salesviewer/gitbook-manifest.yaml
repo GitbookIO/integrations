@@ -6,7 +6,7 @@ previewImages:
   - ./assets/salesviewer-preview.png
 externalLinks:
   - label: Documentation
-    url: https://www.gitbook.com/integrations/salesviewer
+    url: https://www.salesviewer.com/en/help/
 visibility: public
 script: ./src/index.ts
 scopes:
@@ -41,3 +41,4 @@ configurations:
         description: Your SalesViewer® Account ID
     required:
       - tracking_id
+target: site
