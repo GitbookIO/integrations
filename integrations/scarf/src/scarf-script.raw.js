@@ -20,14 +20,14 @@
         }
 
         let lastHref = null;
-        
+
         const cookieGranted = getCookie(GRANTED_COOKIE);
 
         function sendScarfPing() {
-            if(cookieGranted !== 'yes'){
+            if (cookieGranted !== 'yes') {
                 return;
             }
-        
+
             const currentHref = window.location.href;
             if (currentHref === lastHref) return;
             lastHref = currentHref;
@@ -50,10 +50,7 @@
         window.addEventListener('popstate', sendScarfPing);
         window.addEventListener('scarf:locationchange', sendScarfPing);
 
-        const cookieGranted = getCookie(GRANTED_COOKIE);
-        if (cookieGranted == 'yes') {
-            sendScarfPing();
-        }
+        sendScarfPing();
     } catch (err) {
         console.error(err);
     }
