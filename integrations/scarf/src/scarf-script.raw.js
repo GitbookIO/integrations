@@ -20,8 +20,14 @@
         }
 
         let lastHref = null;
+        
+        const cookieGranted = getCookie(GRANTED_COOKIE);
 
         function sendScarfPing() {
+            if(cookieGranted !== 'yes'){
+                return;
+            }
+        
             const currentHref = window.location.href;
             if (currentHref === lastHref) return;
             lastHref = currentHref;
