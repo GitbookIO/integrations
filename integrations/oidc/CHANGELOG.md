@@ -1,5 +1,11 @@
 # @gitbook/integration-oidc
 
+## 0.2.6
+
+### Patch Changes
+
+- 993d1ab: Fix case where oidc integration can redirect to a url ending with double triailling slash
+
 ## 0.2.5
 
 ### Patch Changes
