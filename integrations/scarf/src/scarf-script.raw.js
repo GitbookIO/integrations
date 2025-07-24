@@ -21,10 +21,8 @@
 
         let lastHref = null;
 
-        const cookieGranted = getCookie(GRANTED_COOKIE);
-
         function sendScarfPing() {
-            if (cookieGranted !== 'yes') {
+            if (getCookie(GRANTED_COOKIE) !== 'yes') {
                 return;
             }
 
