@@ -381,7 +381,7 @@
     },
     "integrations/oidc": {
       "name": "@gitbook/integration-oidc",
-      "version": "0.2.2",
+      "version": "0.2.6",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -467,6 +467,18 @@
         "@gitbook/tsconfig": "workspace:*",
       },
     },
+    "integrations/salesviewer": {
+      "name": "@gitbook/integration-salesviewer",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
     "integrations/segment": {
       "name": "@gitbook/integration-segment",
       "version": "2.1.3",
@@ -493,7 +505,7 @@
     },
     "integrations/slack": {
       "name": "@gitbook/integration-slack",
-      "version": "2.0.4",
+      "version": "2.1.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -614,7 +626,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.128.0",
+      "version": "0.129.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -1010,6 +1022,8 @@
     "@gitbook/integration-runkit": ["@gitbook/integration-runkit@workspace:integrations/runkit"],
 
     "@gitbook/integration-runllm-widget": ["@gitbook/integration-runllm-widget@workspace:integrations/runllm-widget"],
+
+    "@gitbook/integration-salesviewer": ["@gitbook/integration-salesviewer@workspace:integrations/salesviewer"],
 
     "@gitbook/integration-segment": ["@gitbook/integration-segment@workspace:integrations/segment"],
 

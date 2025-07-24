@@ -8,6 +8,7 @@ externalLinks:
   - label: Documentation
     url: https://www.salesviewer.com/en/help/
 visibility: public
+organization: ebg2KXDsLAQnw4pxgpm6
 script: ./src/index.ts
 scopes:
   - site:script:inject
