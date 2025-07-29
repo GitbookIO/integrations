@@ -5,9 +5,31 @@
     element.setAttribute('data-site', siteId);
     element.setAttribute('data-spa', 'auto');
     element.src = 'https://cdn.usefathom.com/script.js';
+    const GRANTED_COOKIE = '__gitbook_cookie_granted';
+
+    function getCookie(cname) {
+        const name = `${cname}=`;
+        const decodedCookie = decodeURIComponent(document.cookie);
+        const ca = decodedCookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) === 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return '';
+    }
+    const disableCookies = getCookie(GRANTED_COOKIE) !== 'yes';
 
     // Function to track external links
     function trackExternalLink(event) {
+        if (disableCookies) {
+            return;
+        }
+
         var item = event.target.closest('a');
         if (!item) return;
 
