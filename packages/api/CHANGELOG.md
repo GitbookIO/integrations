@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.130.0
+
+### Minor Changes
+
+- 4d07deb: Bump @gitbook/api to use the latest spec
+
 ## 0.129.0
 
 ### Minor Changes
