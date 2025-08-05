@@ -1,5 +1,11 @@
 # @gitbook/integration-figma
 
+## 0.3.0
+
+### Minor Changes
+
+- 1d4e22b: Figma and slack exposable error
+
 ## 0.2.3
 
 ### Patch Changes

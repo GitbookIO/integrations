@@ -1,5 +1,12 @@
 # @gitbook/integration-slack
 
+## 2.2.0
+
+### Minor Changes
+
+- 1d4e22b: Figma and slack exposable error
+- 1d4e22b: Throw exposable error when slack is not configured
+
 ## 2.1.0
 
 ### Minor Changes
