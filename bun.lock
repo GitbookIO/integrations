@@ -381,7 +381,7 @@
     },
     "integrations/oidc": {
       "name": "@gitbook/integration-oidc",
-      "version": "0.2.2",
+      "version": "0.2.6",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -493,7 +493,7 @@
     },
     "integrations/slack": {
       "name": "@gitbook/integration-slack",
-      "version": "2.0.4",
+      "version": "2.1.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -614,7 +614,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.128.0",
+      "version": "0.129.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
