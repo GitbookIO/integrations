@@ -110,7 +110,7 @@ export async function slackAPI<Result>(
         environment.installation?.configuration.oauth_credentials?.access_token;
 
     if (!accessToken) {
-        throw new ExposableError('No authentication token provided');
+        throw new ExposableError('Integration is not authenticated');
     }
 
     const url = request.responseUrl
