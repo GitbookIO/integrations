@@ -22,11 +22,10 @@
         }
         return '';
     }
-    const disableCookies = getCookie(GRANTED_COOKIE) !== 'yes';
 
     // Function to track external links
     function trackExternalLink(event) {
-        if (disableCookies) {
+        if (getCookie(GRANTED_COOKIE) !== 'yes') {
             return;
         }
 

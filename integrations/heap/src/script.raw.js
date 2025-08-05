@@ -18,9 +18,7 @@
         return '';
     }
 
-    const disableCookies = getCookie(GRANTED_COOKIE) !== 'yes';
-
-    if (disableCookies) {
+    if (getCookie(GRANTED_COOKIE) !== 'yes') {
         return;
     }
 

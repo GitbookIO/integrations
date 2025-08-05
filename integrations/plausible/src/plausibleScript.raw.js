@@ -7,7 +7,6 @@
     const domain = '<domain>';
 
     const GRANTED_COOKIE = '__gitbook_cookie_granted';
-    const disableCookies = getCookie(GRANTED_COOKIE) !== 'yes';
 
     function getCookie(cname) {
         const name = `${cname}=`;
@@ -30,7 +29,7 @@
     }
 
     function trackEvent(eventName, options) {
-        if (disableCookies) {
+        if (getCookie(GRANTED_COOKIE) !== 'yes') {
             return;
         }
 
