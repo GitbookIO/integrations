@@ -1,4 +1,4 @@
-import { Logger } from '@gitbook/runtime';
+import { ExposableError, Logger } from '@gitbook/runtime';
 
 import { SlackRuntimeContext } from './configuration';
 
@@ -110,7 +110,7 @@ export async function slackAPI<Result>(
         environment.installation?.configuration.oauth_credentials?.access_token;
 
     if (!accessToken) {
-        throw new Error('No authentication token provided');
+        throw new ExposableError('No authentication token provided');
     }
 
     const url = request.responseUrl
