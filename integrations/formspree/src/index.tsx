@@ -78,7 +78,13 @@ const formspreeBlock = createComponent<
                         <box grow={1}>
                             <input
                                 label="Name"
-                                element={<textinput state="name" placeholder="Your name" />}
+                                element={
+                                    <textinput
+                                        state="name"
+                                        placeholder="Your name"
+                                        inputType="text"
+                                    />
+                                }
                             />
                         </box>
                     ) : null}
@@ -93,6 +99,7 @@ const formspreeBlock = createComponent<
                                 element={
                                     <textinput
                                         state="message"
+                                        inputType="text"
                                         placeholder="Your message"
                                         multiline={true}
                                     />
