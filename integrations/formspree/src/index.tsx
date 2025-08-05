@@ -64,7 +64,7 @@ const formspreeBlock = createComponent<
                                 label="Email"
                                 element={
                                     <textinput
-                                        inputType="email"
+                                        inputType="text"
                                         state="email"
                                         placeholder="Your email"
                                     />
