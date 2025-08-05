@@ -1,5 +1,11 @@
 # @gitbook/integration-formspree
 
+## 0.2.11
+
+### Patch Changes
+
+- 04be551: Update types in formspree integration to render email field correctly
+
 ## 0.2.10
 
 ### Patch Changes
