@@ -29,6 +29,8 @@ summary: |
 
     # Configure
 
+    In Segment, you can set up a source to receive the GitBook events. After adding an HTTP API source in Segment, you will see a Write Key. This key is used to identify the data source in GitBook.
+
     To install the Segment integration on a single space click on the Integrations button in sub-navigation. Alternatively, you can install it on multiple or all spaces by going into your organization settings. You will need the Segment Write Key to help you identify the data source.
 categories:
     - analytics
