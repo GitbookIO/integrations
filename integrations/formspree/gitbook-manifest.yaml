@@ -28,8 +28,8 @@ configurations:
         properties:
             formspree_id:
                 type: string
-                title: Formspree endpoint
-                description: The endpoint your formspree lives at.
+                title: Formspree ID
+                description: The ID of your formspree form. Copy this from the settings page of your formspree form.
             email:
                 type: boolean
                 title: Email
