@@ -1,0 +1,40 @@
+name: scarf-gitbook
+title: Scarf
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/scarf-preview.png
+description: Connect your GitBook site to Scarf
+externalLinks:
+    - label: Website
+      url: https://about.scarf.sh/
+visibility: public
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+organization: gitbook
+contentSecurityPolicy:
+    script-src: static.scarf.sh
+summary: |
+    # Overview
+    Scarf helps you understand how your documentation is being used, and by which companies. Scarf is privacy conscious, and approved in most major OSS foundations.
+
+    # How it works
+    This integration will automatically add your Scarf pixel to the page.
+
+    # Configure
+    Find your tracking pixel's pixel ID from inside the pixel snippet url. Find the query param: `pxid`
+
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            pixel_id:
+                type: string
+                title: Pixel ID
+                description: The id of your tracking pixel.
+        required:
+            - pixel_id
+target: site
