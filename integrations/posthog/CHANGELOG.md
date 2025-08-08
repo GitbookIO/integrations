@@ -1,5 +1,22 @@
 # @gitbook/integration-posthog
 
+## 1.1.0
+
+### Minor Changes
+
+- aac3f54: Add check to see if cookies should be disabled or not
+
+### Patch Changes
+
+- Updated dependencies [b72b44b]
+    - @gitbook/api@0.131.0
+
+## 1.0.0
+
+### Major Changes
+
+- a3b4646: Update Posthog endpoints with the recommended ones
+
 ## 0.4.2
 
 ### Patch Changes

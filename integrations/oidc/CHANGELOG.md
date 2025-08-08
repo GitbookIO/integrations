@@ -1,5 +1,29 @@
 # @gitbook/integration-oidc
 
+## 0.2.6
+
+### Patch Changes
+
+- 993d1ab: Fix case where oidc integration can redirect to a url ending with double triailling slash
+
+## 0.2.5
+
+### Patch Changes
+
+- 11f118b: Fix OIDC integration failing for some auth providers
+
+## 0.2.4
+
+### Patch Changes
+
+- a3daa1f: Log error stacktrace when getting route handling uncaught errors #909
+
+## 0.2.3
+
+### Patch Changes
+
+- a295590: Add support to OIDC integration to pull user/custom claims from auth token
+
 ## 0.2.2
 
 ### Patch Changes

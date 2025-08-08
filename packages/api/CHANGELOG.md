@@ -1,5 +1,35 @@
 # @gitbook/api
 
+## 0.132.0
+
+### Minor Changes
+
+- 41e242f: Update API client with latest OpenAPI spec.
+
+## 0.131.0
+
+### Minor Changes
+
+- b72b44b: Bump @gitbook/api to use latest spec
+
+## 0.130.0
+
+### Minor Changes
+
+- 4d07deb: Bump @gitbook/api to use the latest spec
+
+## 0.129.0
+
+### Minor Changes
+
+- 4b359c7: Update API client with latest OpenAPI spec.
+
+## 0.128.0
+
+### Minor Changes
+
+- 8edbe3b: Bump to include AI assistant in API schema
+
 ## 0.127.0
 
 ### Minor Changes

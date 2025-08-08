@@ -1,5 +1,16 @@
 # @gitbook/integration-mixpanel
 
+## 0.5.0
+
+### Minor Changes
+
+- aac3f54: Add check to see if cookies should be disabled or not
+
+### Patch Changes
+
+- Updated dependencies [b72b44b]
+    - @gitbook/api@0.131.0
+
 ## 0.4.2
 
 ### Patch Changes

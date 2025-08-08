@@ -1,5 +1,11 @@
 # @gitbook/integration-mermaid
 
+## 0.4.0
+
+### Minor Changes
+
+- bddebd8: Support ZenUML diagrams in Mermaid
+
 ## 0.3.4
 
 ### Patch Changes

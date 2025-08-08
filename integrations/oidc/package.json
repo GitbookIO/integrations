@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-oidc",
-    "version": "0.2.2",
+    "version": "0.2.6",
     "private": true,
     "dependencies": {
         "@gitbook/api": "*",
