@@ -1,0 +1,49 @@
+name: matomo
+title: Matomo
+icon: ./assets/icon.png
+organization: gitbook
+description: Receive GitBook traffic insights directly in your Matomo dashboard.
+visibility: public
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+categories:
+    - analytics
+contentSecurityPolicy:
+    # We send pageview beacons via an Image to the user-provided Matomo server URL
+    img-src: |
+        *;
+summary: |
+    # Overview
+
+    Matomo (formerly Piwik) is a powerful open‑source web analytics platform. This integration lets you track visits to your published GitBook spaces directly in your Matomo instance (cloud or self‑hosted).
+
+    # How it works
+
+    The integration injects a lightweight tracking script that respects GitBook's cookie consent. When consent is granted, it sends pageview events to your configured Matomo server using the Matomo Tracking API. Single‑page navigation within GitBook is tracked automatically.
+
+    # Configure
+
+    Install the integration on the GitBook space(s) you want to track, then provide your Matomo server URL and Site ID.
+externalLinks:
+    - label: Matomo developer docs
+      url: https://developer.matomo.org/integration
+configurations:
+    site:
+        properties:
+            server_url:
+                type: string
+                title: Matomo Server URL
+                description: Your Matomo server base URL. Examples: https://your-site.matomo.cloud or https://matomo.example.com
+            site_id:
+                type: string
+                title: Site ID
+                description: The numeric site ID configured in your Matomo instance
+        required:
+            - server_url
+            - site_id
+target: site
+
+
