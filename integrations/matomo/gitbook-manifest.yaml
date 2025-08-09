@@ -9,11 +9,16 @@ script: ./src/index.ts
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
     - site:script:inject
+    - site:script:cookies
 categories:
     - analytics
 contentSecurityPolicy:
-    # We send pageview beacons via an Image to the user-provided Matomo server URL
+    # Allow loading Matomo JS tracker and sending beacons to user-provided hosts
+    script-src: |
+        *;
     img-src: |
+        *;
+    connect-src: |
         *;
 summary: |
     # Overview
@@ -41,6 +46,36 @@ configurations:
                 type: string
                 title: Site ID
                 description: The numeric site ID configured in your Matomo instance
+            load_js_tracker:
+                type: boolean
+                title: Load Matomo JS tracker
+                description: When enabled, loads matomo.js for first‑party cookies, richer tracking and automatic link tracking. When disabled, falls back to lightweight beacons.
+                default: true
+            track_referrer:
+                type: boolean
+                title: Track Referrer
+                description: Include document.referrer for pageviews/events (recommended)
+                default: true
+            track_outbound_clicks:
+                type: boolean
+                title: Track outbound link clicks
+                description: Record clicks on links pointing to external domains
+                default: true
+            click_selectors:
+                type: string
+                title: CSS selectors to track as events
+                description: Comma‑separated CSS selectors to track clicks as events. Example: a[href*="try"],button.book-demo
+                default: ''
+            goal_mappings_json:
+                type: string
+                title: Goal mappings (JSON)
+                description: Optional JSON object mapping CSS selectors to Matomo Goal IDs. Example: {"a.try-it": 1, "a.book-demo": 2}
+                default: ''
+            user_id_cookie:
+                type: string
+                title: User ID cookie name
+                description: Optional cookie name to read and set as Matomo user ID (for retention/cohort analysis)
+                default: ''
         required:
             - server_url
             - site_id
