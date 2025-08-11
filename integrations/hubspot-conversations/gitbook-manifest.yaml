@@ -19,6 +19,10 @@ secrets:
     CLIENT_SECRET: ${{ env.HUBSPOT_CLIENT_SECRET }}
 target: organization
 envs:
+    test:
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-integrations/hubspotConversationsStaging/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/hubspotConversationsStaging/CLIENT_SECRET" }}
     staging:
         secrets:
             CLIENT_ID: ${{ "op://gitbook-integrations/hubspotConversationsStaging/CLIENT_ID" }}
