@@ -1,5 +1,11 @@
 # @gitbook/integration-mailchimp
 
+## 1.2.0
+
+### Minor Changes
+
+- 7688fa2: Updates check to look for listID as function returns out before it can find a list to subscribe to
+
 ## 1.1.2
 
 ### Patch Changes

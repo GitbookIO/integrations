@@ -78,7 +78,7 @@
     },
     "integrations/fathom": {
       "name": "@gitbook/integration-fathom",
-      "version": "0.5.2",
+      "version": "0.6.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -101,7 +101,7 @@
     },
     "integrations/formspree": {
       "name": "@gitbook/integration-formspree",
-      "version": "0.2.9",
+      "version": "0.2.11",
       "dependencies": {
         "@gitbook/runtime": "workspace:*",
       },
@@ -204,7 +204,7 @@
     },
     "integrations/heap": {
       "name": "@gitbook/integration-heap",
-      "version": "0.5.2",
+      "version": "0.6.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -227,7 +227,7 @@
     },
     "integrations/hotjar": {
       "name": "@gitbook/integration-hotjar",
-      "version": "0.5.2",
+      "version": "0.6.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -331,7 +331,7 @@
     },
     "integrations/mailchimp": {
       "name": "@gitbook/integration-mailchimp",
-      "version": "1.1.2",
+      "version": "1.2.0",
       "dependencies": {
         "@gitbook/runtime": "*",
         "itty-router": "^2.6.1",
@@ -369,7 +369,7 @@
     },
     "integrations/mixpanel": {
       "name": "@gitbook/integration-mixpanel",
-      "version": "0.4.2",
+      "version": "0.5.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -407,7 +407,7 @@
     },
     "integrations/plausible": {
       "name": "@gitbook/integration-plausible",
-      "version": "0.5.2",
+      "version": "0.6.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -419,7 +419,7 @@
     },
     "integrations/posthog": {
       "name": "@gitbook/integration-posthog",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -431,7 +431,7 @@
     },
     "integrations/reo": {
       "name": "@gitbook/integration-reo.dev",
-      "version": "0.3.2",
+      "version": "0.4.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -626,7 +626,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.129.0",
+      "version": "0.131.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -681,7 +681,7 @@
     },
     "packages/runtime": {
       "name": "@gitbook/runtime",
-      "version": "0.20.0",
+      "version": "0.21.0",
       "dependencies": {
         "@gitbook/api": "*",
       },

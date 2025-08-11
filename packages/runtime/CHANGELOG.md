@@ -1,5 +1,11 @@
 # @gitbook/runtime
 
+## 0.21.0
+
+### Minor Changes
+
+- 5b37e83: New way to export fetch functions as esm
+
 ## 0.20.0
 
 ### Minor Changes
