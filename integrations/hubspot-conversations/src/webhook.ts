@@ -7,6 +7,47 @@ import { parseConversationAsGitBook } from './conversations';
 const logger = Logger('hubspot-conversations');
 
 /**
+ * Verify HubSpot webhook signature using SHA256 HMAC
+ * https://developers.hubspot.com/docs/api/webhooks/validating-requests
+ */
+async function verifyHubSpotSignature(
+    signature: string | null,
+    body: string,
+    clientSecret: string,
+): Promise<boolean> {
+    if (!signature) {
+        return false;
+    }
+
+    try {
+        // HubSpot sends signature in format: sha256=<hash>
+        const expectedSignature = signature.replace('sha256=', '');
+        
+        // Create HMAC SHA256 hash of the request body
+        const encoder = new TextEncoder();
+        const key = await crypto.subtle.importKey(
+            'raw',
+            encoder.encode(clientSecret),
+            { name: 'HMAC', hash: 'SHA-256' },
+            false,
+            ['sign']
+        );
+        
+        const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(body));
+        const computedSignature = Array.from(new Uint8Array(signatureBuffer))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+
+        return computedSignature === expectedSignature;
+    } catch (error) {
+        logger.error('Failed to verify webhook signature', {
+            error: error instanceof Error ? error.message : String(error),
+        });
+        return false;
+    }
+}
+
+/**
  * HubSpot webhook payload for conversation events
  * https://developers.hubspot.com/docs/guides/api/app-management/webhooks
  */
@@ -32,7 +73,20 @@ export type HubSpotWebhookPayload = {
 export async function handleWebhook(
     context: HubSpotRuntimeContext,
     payloads: HubSpotWebhookPayload[],
+    request?: Request,
 ): Promise<Response> {
+    // Verify webhook signature for security
+    if (request) {
+        const signature = request.headers.get('x-hubspot-signature-v3');
+        const body = JSON.stringify(Array.isArray(payloads) ? payloads : [payloads]);
+        const clientSecret = context.environment.secrets.CLIENT_SECRET;
+        
+        const isValidSignature = await verifyHubSpotSignature(signature, body, clientSecret);
+        if (!isValidSignature) {
+            logger.error('Invalid webhook signature received');
+            return new Response('Unauthorized', { status: 401 });
+        }
+    }
     for (const payload of payloads) {
         logger.info('Processing HubSpot webhook', {
             subscriptionType: payload.subscriptionType,

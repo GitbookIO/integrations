@@ -23,3 +23,7 @@ envs:
         secrets:
             CLIENT_ID: ${{ "op://gitbook-integrations/hubspotConversationsStaging/CLIENT_ID" }}
             CLIENT_SECRET: ${{ "op://gitbook-integrations/hubspotConversationsStaging/CLIENT_SECRET" }}
+    production:
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-integrations/hubspotConversationsProduction/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/hubspotConversationsProduction/CLIENT_SECRET" }}
