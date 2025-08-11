@@ -126,16 +126,8 @@ export async function parseConversationAsGitBook(
             conversationId: hubspotConversation.id,
             messageCount: messagesResponse.results?.length || 0,
         });
-        
+
         const messages = messagesResponse.results || [];
-        if (messages.length === 0) {
-            logger.info('No messages found for conversation, skipping', {
-                conversationId: hubspotConversation.id,
-            });
-            // Return conversation with empty parts rather than throwing error
-            // This allows conversations without messages to be tracked
-        }
-        
         for (const message of messages) {
             if (message.text || message.richText) {
                 const messageBody = message.richText || message.text;
@@ -154,12 +146,10 @@ export async function parseConversationAsGitBook(
             }
         }
     } catch (error) {
-        logger.error('Failed to fetch messages for conversation, including conversation without messages', {
+        logger.error('Failed to fetch messages for conversation', {
             conversationId: hubspotConversation.id,
             error: error instanceof Error ? error.message : String(error),
         });
-        // Continue with empty parts rather than failing the entire conversation
-        // This ensures we don't lose conversation metadata even if messages fail to fetch
     }
 
     return resultConversation;

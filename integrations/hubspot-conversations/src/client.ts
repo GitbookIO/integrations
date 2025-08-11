@@ -89,14 +89,7 @@ export async function getHubSpotAccessToken(context: HubSpotRuntimeContext) {
 }
 
 /**
- * Sleep for a given number of milliseconds
- */
-function sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-/**
- * Make a request to the HubSpot API with retry logic and rate limiting.
+ * Make a request to the HubSpot API.
  */
 export async function hubspotApiRequest<T = unknown>(
     context: HubSpotRuntimeContext,
@@ -105,11 +98,10 @@ export async function hubspotApiRequest<T = unknown>(
         method?: string;
         body?: unknown;
         params?: Record<string, string>;
-        maxRetries?: number;
     } = {},
 ): Promise<T> {
     const token = await getHubSpotAccessToken(context);
-    const { method = 'GET', body, params, maxRetries = 3 } = options;
+    const { method = 'GET', body, params } = options;
 
     const url = new URL(`https://api.hubapi.com${path}`);
     if (params) {
@@ -118,65 +110,18 @@ export async function hubspotApiRequest<T = unknown>(
         });
     }
 
-    let lastError: Error | null = null;
-    
-    for (let attempt = 0; attempt <= maxRetries; attempt++) {
-        try {
-            const response = await fetch(url.toString(), {
-                method,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: body ? JSON.stringify(body) : undefined,
-            });
+    const response = await fetch(url.toString(), {
+        method,
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: body ? JSON.stringify(body) : undefined,
+    });
 
-            // Handle rate limiting (429) and server errors (5xx) with exponential backoff
-            if (response.status === 429 || response.status >= 500) {
-                if (attempt === maxRetries) {
-                    throw new Error(`HubSpot API request failed after ${maxRetries + 1} attempts: ${response.status} ${response.statusText}`);
-                }
-                
-                // Exponential backoff: 1s, 2s, 4s, 8s...
-                const backoffMs = Math.pow(2, attempt) * 1000;
-                logger.info('Rate limited or server error, retrying', {
-                    attempt: attempt + 1,
-                    maxRetries: maxRetries + 1,
-                    backoffMs,
-                    status: response.status,
-                    path,
-                });
-                
-                await sleep(backoffMs);
-                continue;
-            }
-
-            if (!response.ok) {
-                throw new Error(`HubSpot API request failed: ${response.status} ${response.statusText}`);
-            }
-
-            return (await response.json()) as T;
-        } catch (error) {
-            lastError = error instanceof Error ? error : new Error(String(error));
-            
-            // Don't retry on non-network errors
-            if (attempt === maxRetries || !error || typeof error !== 'object' || !('cause' in error)) {
-                break;
-            }
-            
-            // Exponential backoff for network errors
-            const backoffMs = Math.pow(2, attempt) * 1000;
-            logger.info('Network error, retrying', {
-                attempt: attempt + 1,
-                maxRetries: maxRetries + 1,
-                backoffMs,
-                error: lastError.message,
-                path,
-            });
-            
-            await sleep(backoffMs);
-        }
+    if (!response.ok) {
+        throw new Error(`HubSpot API request failed: ${response.status} ${response.statusText}`);
     }
 
-    throw lastError || new Error('Unknown error occurred');
+    return (await response.json()) as T;
 }
