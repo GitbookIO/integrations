@@ -7,23 +7,31 @@ import { parseConversationAsGitBook } from './conversations';
 const logger = Logger('hubspot-conversations');
 
 /**
- * Verify HubSpot webhook signature using SHA256 HMAC
+ * Verify HubSpot webhook signature using v3 format
  * https://developers.hubspot.com/docs/api/webhooks/validating-requests
  */
 async function verifyHubSpotSignature(
-    signature: string | null,
+    signature: string,
+    method: string,
+    url: string,
     body: string,
     clientSecret: string,
+    timestamp: string,
 ): Promise<boolean> {
-    if (!signature) {
-        return false;
-    }
-
     try {
-        // HubSpot sends signature in format: sha256=<hash>
-        const expectedSignature = signature.replace('sha256=', '');
+        // Validate timestamp (reject if older than 5 minutes)
+        const MAX_ALLOWED_TIMESTAMP = 300000; // 5 minutes in milliseconds
+        const currentTime = Date.now();
+        const timestampMs = parseInt(timestamp);
         
-        // Create HMAC SHA256 hash of the request body
+        if (currentTime - timestampMs > MAX_ALLOWED_TIMESTAMP) {
+            return false;
+        }
+        
+        // Create concatenated string: method + uri + body + timestamp
+        const rawString = method + url + body + timestamp;
+        
+        // Create HMAC SHA-256 hash using client secret as key
         const encoder = new TextEncoder();
         const key = await crypto.subtle.importKey(
             'raw',
@@ -33,12 +41,11 @@ async function verifyHubSpotSignature(
             ['sign']
         );
         
-        const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(body));
-        const computedSignature = Array.from(new Uint8Array(signatureBuffer))
-            .map(b => b.toString(16).padStart(2, '0'))
-            .join('');
-
-        return computedSignature === expectedSignature;
+        const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(rawString));
+        const hashArray = Array.from(new Uint8Array(signatureBuffer));
+        const computedBase64 = btoa(String.fromCharCode.apply(null, hashArray));
+        
+        return computedBase64 === signature;
     } catch (error) {
         logger.error('Failed to verify webhook signature', {
             error: error instanceof Error ? error.message : String(error),
@@ -74,14 +81,22 @@ export async function handleWebhook(
     context: HubSpotRuntimeContext,
     payloads: HubSpotWebhookPayload[],
     request?: Request,
+    rawBody?: string,
 ): Promise<Response> {
     // Verify webhook signature for security
-    if (request) {
+    if (request && rawBody) {
         const signature = request.headers.get('x-hubspot-signature-v3');
-        const body = JSON.stringify(Array.isArray(payloads) ? payloads : [payloads]);
+        const timestamp = request.headers.get('x-hubspot-request-timestamp');
+        const method = request.method;
+        const url = request.url;
         const clientSecret = context.environment.secrets.CLIENT_SECRET;
         
-        const isValidSignature = await verifyHubSpotSignature(signature, body, clientSecret);
+        if (!signature || !timestamp) {
+            logger.error('Missing required signature headers');
+            return new Response('Unauthorized', { status: 401 });
+        }
+        
+        const isValidSignature = await verifyHubSpotSignature(signature, method, url, rawBody, clientSecret, timestamp);
         if (!isValidSignature) {
             logger.error('Invalid webhook signature received');
             return new Response('Unauthorized', { status: 401 });

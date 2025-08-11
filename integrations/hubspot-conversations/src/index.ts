@@ -22,12 +22,13 @@ export default createIntegration<HubSpotRuntimeContext>({
          * Webhook to ingest conversations when they are closed.
          */
         router.post('/webhook', async (request) => {
-            const rawPayload = await request.json?.();
+            const rawBody = await request.text?.();
+            const rawPayload = rawBody ? JSON.parse(rawBody) : {};
             const payloads = Array.isArray(rawPayload) ? rawPayload : [rawPayload];
 
             logger.info('Received HubSpot webhook', { payloadCount: payloads.length });
 
-            return handleWebhook(context, payloads as HubSpotWebhookPayload[], request as Request);
+            return handleWebhook(context, payloads as HubSpotWebhookPayload[], request as Request, rawBody || '');
         });
 
         /*
