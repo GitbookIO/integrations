@@ -28,7 +28,12 @@ export default createIntegration<HubSpotRuntimeContext>({
 
             logger.info('Received HubSpot webhook', { payloadCount: payloads.length });
 
-            return handleWebhook(context, payloads as HubSpotWebhookPayload[], request as Request, rawBody || '');
+            return handleWebhook(
+                context,
+                payloads as HubSpotWebhookPayload[],
+                request as Request,
+                rawBody || '',
+            );
         });
 
         /*

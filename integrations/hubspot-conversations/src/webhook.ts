@@ -23,14 +23,14 @@ async function verifyHubSpotSignature(
         const MAX_ALLOWED_TIMESTAMP = 300000; // 5 minutes in milliseconds
         const currentTime = Date.now();
         const timestampMs = parseInt(timestamp);
-        
+
         if (currentTime - timestampMs > MAX_ALLOWED_TIMESTAMP) {
             return false;
         }
-        
+
         // Create concatenated string: method + uri + body + timestamp
         const rawString = method + url + body + timestamp;
-        
+
         // Create HMAC SHA-256 hash using client secret as key
         const encoder = new TextEncoder();
         const key = await crypto.subtle.importKey(
@@ -38,13 +38,13 @@ async function verifyHubSpotSignature(
             encoder.encode(clientSecret),
             { name: 'HMAC', hash: 'SHA-256' },
             false,
-            ['sign']
+            ['sign'],
         );
-        
+
         const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(rawString));
         const hashArray = Array.from(new Uint8Array(signatureBuffer));
         const computedBase64 = btoa(String.fromCharCode.apply(null, hashArray));
-        
+
         return computedBase64 === signature;
     } catch (error) {
         logger.error('Failed to verify webhook signature', {
@@ -90,13 +90,20 @@ export async function handleWebhook(
         const method = request.method;
         const url = request.url;
         const clientSecret = context.environment.secrets.CLIENT_SECRET;
-        
+
         if (!signature || !timestamp) {
             logger.error('Missing required signature headers');
             return new Response('Unauthorized', { status: 401 });
         }
-        
-        const isValidSignature = await verifyHubSpotSignature(signature, method, url, rawBody, clientSecret, timestamp);
+
+        const isValidSignature = await verifyHubSpotSignature(
+            signature,
+            method,
+            url,
+            rawBody,
+            clientSecret,
+            timestamp,
+        );
         if (!isValidSignature) {
             logger.error('Invalid webhook signature received');
             return new Response('Unauthorized', { status: 401 });
