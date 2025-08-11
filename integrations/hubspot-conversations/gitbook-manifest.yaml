@@ -1,6 +1,6 @@
 name: hubspot-conversations
 title: HubSpot Connector
-icon: ./assets/icon.svg
+icon: ./assets/icon.png
 description: Ingest HubSpot support conversations into GitBook for auto-improvements.
 visibility: public
 script: ./src/index.ts
