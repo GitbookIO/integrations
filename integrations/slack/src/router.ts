@@ -129,6 +129,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         return new Response(JSON.stringify(completions), {
             headers: {
                 'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache',
             },
         });
     });

@@ -90,7 +90,7 @@
     },
     "integrations/figma": {
       "name": "@gitbook/integration-figma",
-      "version": "0.2.3",
+      "version": "0.3.0",
       "dependencies": {
         "@gitbook/runtime": "*",
       },
@@ -493,7 +493,7 @@
     },
     "integrations/slack": {
       "name": "@gitbook/integration-slack",
-      "version": "2.1.0",
+      "version": "2.2.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -614,7 +614,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.131.0",
+      "version": "0.133.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
