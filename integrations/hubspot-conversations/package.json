@@ -3,10 +3,10 @@
     "version": "0.0.1",
     "private": true,
     "dependencies": {
-        "@gitbook/runtime": "*",
         "@gitbook/api": "*",
-        "p-map": "^7.0.3",
-        "itty-router": "^2.6.1"
+        "@gitbook/runtime": "*",
+        "itty-router": "^2.6.1",
+        "p-map": "^7.0.3"
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",

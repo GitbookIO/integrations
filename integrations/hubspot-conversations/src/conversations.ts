@@ -24,6 +24,11 @@ export async function ingestConversations(context: HubSpotRuntimeContext) {
     const limit = 100;
     const maxPages = 10;
     let pageIndex = 0;
+    let totalIngestedConversations = 0;
+
+    logger.info(
+        `Starting ingestion of closed conversations from HubSpot for organization: ${installation.target.organization}`,
+    );
 
     while (pageIndex < maxPages) {
         pageIndex += 1;
@@ -35,6 +40,7 @@ export async function ingestConversations(context: HubSpotRuntimeContext) {
             {
                 method: 'GET',
                 params: {
+                    threadStatus: 'CLOSED',
                     limit: limit.toString(),
                     ...(after && { after }),
                     archived: 'false',
@@ -42,19 +48,11 @@ export async function ingestConversations(context: HubSpotRuntimeContext) {
             },
         );
 
-        const conversations = response.results || [];
-        logger.info('Found conversations', { count: conversations.length, page: pageIndex });
+        const closedConversations = response.results || [];
 
-        if (conversations.length === 0) {
+        if (closedConversations.length === 0) {
             break;
         }
-
-        // Filter for closed conversations only
-        const closedConversations = conversations.filter(
-            (conv) => conv.latestMessageTimestamp && conv.status === 'CLOSED',
-        );
-
-        logger.info('Found closed conversations', { count: closedConversations.length });
 
         if (closedConversations.length > 0) {
             const gitbookConversations = await pMap(
@@ -68,18 +66,14 @@ export async function ingestConversations(context: HubSpotRuntimeContext) {
             );
 
             if (gitbookConversations.length > 0) {
-                logger.info('Ingesting closed conversations into GitBook', {
-                    count: gitbookConversations.length,
-                });
                 await context.api.orgs.ingestConversation(
                     installation.target.organization,
                     gitbookConversations,
                 );
-                logger.info('Successfully ingested conversations', {
-                    count: gitbookConversations.length,
-                });
             }
         }
+
+        totalIngestedConversations += closedConversations.length;
 
         // Check if there are more pages
         if (!response.paging?.next?.after) {
@@ -87,6 +81,8 @@ export async function ingestConversations(context: HubSpotRuntimeContext) {
         }
         after = response.paging.next.after;
     }
+
+    logger.info(`Ingested ${totalIngestedConversations} closed conversations from HubSpot`);
 }
 
 /**
@@ -129,20 +125,18 @@ export async function parseConversationAsGitBook(
 
         const messages = messagesResponse.results || [];
         for (const message of messages) {
-            if (message.text || message.richText) {
-                const messageBody = message.richText || message.text;
-                if (messageBody) {
-                    logger.debug('Processing message', {
-                        conversationId: hubspotConversation.id,
-                        senderType: message.senderActorType,
-                    });
+            const messageBody = message.richText || message.text;
+            if (messageBody) {
+                logger.debug('Processing message', {
+                    conversationId: hubspotConversation.id,
+                    senderType: message.senderActorType,
+                });
 
-                    resultConversation.parts.push({
-                        type: 'message',
-                        role: message.senderActorType === 'VISITOR' ? 'user' : 'team-member',
-                        body: messageBody,
-                    });
-                }
+                resultConversation.parts.push({
+                    type: 'message',
+                    role: message.senderActorType === 'VISITOR' ? 'user' : 'team-member',
+                    body: messageBody,
+                });
             }
         }
     } catch (error) {

@@ -21,7 +21,7 @@ export const configComponent = createComponent<
             <configuration>
                 <input
                     label="Authenticate"
-                    hint="Authorize GitBook to access your HubSpot account."
+                    hint={'Authorize GitBook to access your HubSpot account.'}
                     element={
                         <button
                             style="secondary"
@@ -38,6 +38,14 @@ export const configComponent = createComponent<
                         />
                     }
                 />
+
+                {element.props.installation.configuration.oauth_credentials ? (
+                    <hint>
+                        <text>
+                            The integration is configured and conversations are being ingested.
+                        </text>
+                    </hint>
+                ) : null}
             </configuration>
         );
     },
