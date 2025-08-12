@@ -1,5 +1,11 @@
 # @gitbook/integration-slack
 
+## 2.4.0
+
+### Minor Changes
+
+- 650e909: Update slack cache header
+
 ## 2.3.0
 
 ### Minor Changes
