@@ -21,7 +21,7 @@ By default (defined in the CLI-generated `gitbook-manifest.yaml`), your integrat
 
 After publishing your integration, the CLI will give you a link to install your integration into the organization you’ve set.
 
-You need to install your app into at least 1 space or organization in order to develop it locally. Make sure to note the `spaceId` of the space you're installing it into for step 2.
+You need to install your app into at least 1 space or organization in order to develop it locally.&#x20;
 {% endstep %}
 
 {% step %}
@@ -30,17 +30,15 @@ You need to install your app into at least 1 space or organization in order to d
 While inside the root directory of your app, run:
 
 ```
-gitbook dev <spaceId>
+gitbook dev
 ```
 
-This will start a development server tied to the space specified in the command.
-
-After running the command, the CLI will generate a `gitbook-dev.yaml` file that contains the `spaceId` needed to establish the connection while you continue to develop your app. You can change this at any time in by re-running `gitbook dev <spaceId>`.
+This will start a development server tied to your organization.
 
 {% hint style="info" %}
 Running this command will start a development server for use by the integration only. **You do not need to navigate to the port the server is running on.** \
 \
-All integration traffic to the specified space will automatically be served from your local server instead of the published version.
+All integration traffic will automatically be served from your local server instead of the published version.
 {% endhint %}
 {% endstep %}
 
