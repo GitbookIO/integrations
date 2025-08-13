@@ -90,7 +90,7 @@
     },
     "integrations/figma": {
       "name": "@gitbook/integration-figma",
-      "version": "0.2.3",
+      "version": "0.3.0",
       "dependencies": {
         "@gitbook/runtime": "*",
       },
@@ -231,6 +231,20 @@
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
+    "integrations/hubspot-conversations": {
+      "name": "@gitbook/integration-hubspot-conversations",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+        "itty-router": "^2.6.1",
+        "p-map": "^7.0.3",
       },
       "devDependencies": {
         "@gitbook/cli": "workspace:*",
@@ -505,7 +519,7 @@
     },
     "integrations/slack": {
       "name": "@gitbook/integration-slack",
-      "version": "2.1.0",
+      "version": "2.3.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -626,7 +640,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.131.0",
+      "version": "0.133.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -986,6 +1000,8 @@
     "@gitbook/integration-helpscout": ["@gitbook/integration-helpscout@workspace:integrations/helpscout"],
 
     "@gitbook/integration-hotjar": ["@gitbook/integration-hotjar@workspace:integrations/hotjar"],
+
+    "@gitbook/integration-hubspot-conversations": ["@gitbook/integration-hubspot-conversations@workspace:integrations/hubspot-conversations"],
 
     "@gitbook/integration-intercom": ["@gitbook/integration-intercom@workspace:integrations/intercom"],
 
@@ -2526,6 +2542,8 @@
     "@gitbook/integration-github-files/itty-router": ["itty-router@3.0.12", "", {}, "sha512-s98XTPhle6GGbaFf0kYrOD3Q8gyhnqvOqkwYijC3AmkceNKqWUp13YHg6dWmqmVv4pP7l7c94XI92I0EXVGO0w=="],
 
     "@gitbook/integration-gitlab/itty-router": ["itty-router@4.2.2", "", {}, "sha512-KegPW0l9SNPadProoFT07AB84uOqLUwzlXQ7HsqkS31WUrxkjdhcemRpTDUuetbMJ89uBtWeQSVoiEmUAu31uw=="],
+
+    "@gitbook/integration-hubspot-conversations/itty-router": ["itty-router@2.6.6", "", {}, "sha512-hIPHtXGymCX7Lzb2I4G6JgZFE4QEEQwst9GORK7sMYUpJvLfy4yZJr95r04e8DzoAnj6HcxM2m4TbK+juu+18g=="],
 
     "@gitbook/integration-jira/itty-router": ["itty-router@2.6.6", "", {}, "sha512-hIPHtXGymCX7Lzb2I4G6JgZFE4QEEQwst9GORK7sMYUpJvLfy4yZJr95r04e8DzoAnj6HcxM2m4TbK+juu+18g=="],
 

@@ -1,13 +1,12 @@
 {
-    "name": "@gitbook/integration-slack",
-    "version": "2.4.0",
+    "name": "@gitbook/integration-hubspot-conversations",
+    "version": "0.1.0",
     "private": true,
     "dependencies": {
-        "@gitbook/runtime": "*",
         "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
         "itty-router": "^2.6.1",
-        "js-sha256": "^0.9.0",
-        "remove-markdown": "^0.5.0"
+        "p-map": "^7.0.3"
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",
@@ -16,7 +15,6 @@
     "scripts": {
         "typecheck": "tsc --noEmit",
         "check": "gitbook check",
-        "publish-integrations": "gitbook publish .",
-        "publish-integrations-staging": "gitbook publish ."
+        "publish-integrations-staging": "gitbook publish .  --env staging"
     }
 }

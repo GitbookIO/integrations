@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.134.0
+
+### Minor Changes
+
+- 9f92c1f: Bump @gitbook/api to use the latest API spec
+
 ## 0.133.0
 
 ### Minor Changes
