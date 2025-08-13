@@ -1,16 +1,18 @@
-import { createIntegration, createOAuthHandler, ExposableError } from '@gitbook/runtime';
-import { IntercomRuntimeContext } from './types';
-import { getIntercomClient, getIntercomOAuthConfig } from './client';
-import { ingestConversations, parseConversationAsGitBook } from './conversations';
-import { configComponent } from './config';
+import { createIntegration, createOAuthHandler, ExposableError, Logger } from '@gitbook/runtime';
 import { Intercom } from 'intercom-client';
+import { getIntercomClient, getIntercomOAuthConfig } from './client';
+import { configComponent } from './config';
+import { ingestConversations, parseConversationAsGitBook } from './conversations';
+import { IntercomRuntimeContext } from './types';
+
+const logger = Logger('intercom-conversations');
 
 /**
  * https://developers.intercom.com/docs/references/webhooks/webhook-models#webhook-notification-object
  */
 type IntercomWebhookPayload = {
     type: 'notification_event';
-    topic: 'conversation.closed';
+    topic: 'conversation.admin.closed';
     data: {
         item: Intercom.Conversation;
     };
@@ -26,21 +28,23 @@ export default createIntegration<IntercomRuntimeContext>({
         if (url.pathname.endsWith('/webhook')) {
             const payload = await request.json<IntercomWebhookPayload>();
 
-            if (payload.topic === 'conversation.closed') {
+            if (payload.topic === 'conversation.admin.closed') {
                 const { installation } = context.environment;
                 if (!installation) {
-                    throw new Error('Installation not found');
+                    throw new ExposableError('Installation not found');
                 }
 
-                const client = await getIntercomClient(context);
+                const intercomClient = await getIntercomClient(context);
                 const conversation = payload.data.item;
-                console.log(`Conversation ${conversation.id} was closed`);
+                logger.info(
+                    `Webhook received with topic '${payload.topic}' for conversation id ${conversation.id} `,
+                );
 
                 const gitbookConversation = await parseConversationAsGitBook(
-                    context,
-                    client,
+                    intercomClient,
                     conversation,
                 );
+
                 await context.api.orgs.ingestConversation(installation.target.organization, [
                     gitbookConversation,
                 ]);
@@ -68,7 +72,7 @@ export default createIntegration<IntercomRuntimeContext>({
         /**
          * When the integration is installed, we fetch all recent conversations and ingest them
          */
-        installation_setup: async (event, context) => {
+        installation_setup: async (_, context) => {
             const { installation } = context.environment;
             if (installation?.configuration.oauth_credentials) {
                 await ingestConversations(context);

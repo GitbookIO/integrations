@@ -25,12 +25,12 @@ export async function getIntercomClient(context: IntercomRuntimeContext) {
     const { installation } = context.environment;
 
     if (!installation) {
-        throw new Error('Installation not found');
+        throw new ExposableError('Installation not found');
     }
 
     const { oauth_credentials } = installation.configuration;
     if (!oauth_credentials) {
-        throw new Error('Intercom OAuth credentials not found');
+        throw new ExposableError('Intercom OAuth credentials not found');
     }
 
     const token = await getOAuthToken(oauth_credentials, getIntercomOAuthConfig(context), context);
