@@ -20,7 +20,7 @@ export async function ingestConversations(context: IntercomRuntimeContext) {
 
     let pageIndex = 0;
     const perPage = 100;
-    const maxPages = 8; // Reduce to stay under ~1000 subrequest limit (8 pages = ~800 conversations + ~810 total calls)
+    const maxPages = 7; // Keep under ~1000 subrequest limit. Calc: 7 pages * 100 items ≈ 700 detail calls + 7 search page calls ≈ ~707 Intercom calls (+7 GitBook ingests ≈ ~714 total).
     let totalProcessed = 0;
 
     let page = await intercomClient.conversations.search(
@@ -43,7 +43,9 @@ export async function ingestConversations(context: IntercomRuntimeContext) {
         },
     );
 
-    logger.info(`Conversation ingestion started`);
+    logger.info(
+        `Conversation ingestion started. A maximum of ${maxPages * perPage} conversations will be processed.`,
+    );
 
     while (pageIndex < maxPages) {
         pageIndex += 1;
