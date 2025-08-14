@@ -1,0 +1,20 @@
+{
+    "name": "@gitbook/integration-github-conversations",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "@gitbook/runtime": "*",
+        "@gitbook/api": "*",
+        "p-map": "^7.0.3",
+        "itty-router": "^2.6.1"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "check": "gitbook check",
+        "publish-integrations-staging": "gitbook publish .  --env staging"
+    }
+}
