@@ -10,6 +10,7 @@ script: ./src/index.ts
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
     - site:script:inject
+    - site:script:cookies
 organization: gitbook
 contentSecurityPolicy:
     script-src: cdn.mxpnl.com;

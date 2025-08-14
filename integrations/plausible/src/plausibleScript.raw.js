@@ -29,6 +29,10 @@
     }
 
     function trackEvent(eventName, options) {
+        if (getCookie(GRANTED_COOKIE) !== 'yes') {
+            return;
+        }
+
         if (
             /^localhost$|^127(\.[0-9]+){0,2}\.[0-9]+$|^\[::1?\]$/.test(currentUrl.hostname) ||
             'file:' === currentUrl.protocol
@@ -80,10 +84,6 @@
 
     let currentPagePath;
     function trackPageView() {
-        if (getCookie(GRANTED_COOKIE) !== 'yes') {
-            return;
-        }
-
         if (currentPagePath !== currentUrl.pathname) {
             currentPagePath = currentUrl.pathname;
             trackEvent('pageview');
