@@ -1,0 +1,37 @@
+name: github-conversations
+title: GitHub Conversations
+icon: ./assets/icon.png
+description: Ingest GitHub Discussions into GitBook for auto-improvements.
+visibility: public
+script: ./src/index.ts
+summary: |
+    # Overview
+
+    Automatically get AI-suggested change requests for your docs based on GitHub Discussions.
+scopes:
+    - conversations:ingest
+organization: gitbook
+configurations:
+    account:
+        componentId: config
+secrets:
+    CLIENT_ID: ${{ env.GITHUB_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.GITHUB_CLIENT_SECRET }}
+    WEBHOOK_SECRET: ${{ env.GITHUB_WEBHOOK_SECRET }}
+target: organization
+envs:
+    test:
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-integrations/githubConversationsStaging/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/githubConversationsStaging/CLIENT_SECRET" }}
+            WEBHOOK_SECRET: ${{ "op://gitbook-integrations/githubConversationsStaging/WEBHOOK_SECRET" }}
+    staging:
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-integrations/githubConversationsStaging/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/githubConversationsStaging/CLIENT_SECRET" }}
+            WEBHOOK_SECRET: ${{ "op://gitbook-integrations/githubConversationsStaging/WEBHOOK_SECRET" }}
+    production:
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-integrations/githubConversationsProduction/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/githubConversationsProduction/CLIENT_SECRET" }}
+            WEBHOOK_SECRET: ${{ "op://gitbook-integrations/githubConversationsProduction/WEBHOOK_SECRET" }}

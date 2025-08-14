@@ -78,7 +78,7 @@
     },
     "integrations/fathom": {
       "name": "@gitbook/integration-fathom",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -128,6 +128,20 @@
         "@octokit/webhooks-types": "^7.2.0",
         "@types/hash-sum": "^1.0.0",
         "@types/http-link-header": "^1.0.3",
+      },
+    },
+    "integrations/github-conversations": {
+      "name": "@gitbook/integration-github-conversations",
+      "version": "0.0.1",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+        "itty-router": "^2.6.1",
+        "p-map": "^7.0.3",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
       },
     },
     "integrations/github-copilot": {
@@ -204,7 +218,7 @@
     },
     "integrations/heap": {
       "name": "@gitbook/integration-heap",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -227,7 +241,7 @@
     },
     "integrations/hotjar": {
       "name": "@gitbook/integration-hotjar",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -383,7 +397,7 @@
     },
     "integrations/mixpanel": {
       "name": "@gitbook/integration-mixpanel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -421,7 +435,7 @@
     },
     "integrations/plausible": {
       "name": "@gitbook/integration-plausible",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -433,7 +447,7 @@
     },
     "integrations/posthog": {
       "name": "@gitbook/integration-posthog",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -445,7 +459,7 @@
     },
     "integrations/reo": {
       "name": "@gitbook/integration-reo.dev",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -483,7 +497,7 @@
     },
     "integrations/salesviewer": {
       "name": "@gitbook/integration-salesviewer",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -640,7 +654,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.133.0",
+      "version": "0.134.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -984,6 +998,8 @@
     "@gitbook/integration-formspree": ["@gitbook/integration-formspree@workspace:integrations/formspree"],
 
     "@gitbook/integration-github": ["@gitbook/integration-github@workspace:integrations/github"],
+
+    "@gitbook/integration-github-conversations": ["@gitbook/integration-github-conversations@workspace:integrations/github-conversations"],
 
     "@gitbook/integration-github-copilot": ["@gitbook/integration-github-copilot@workspace:integrations/github-copilot"],
 
@@ -2534,6 +2550,8 @@
     "@gitbook/integration-discord/itty-router": ["itty-router@4.2.2", "", {}, "sha512-KegPW0l9SNPadProoFT07AB84uOqLUwzlXQ7HsqkS31WUrxkjdhcemRpTDUuetbMJ89uBtWeQSVoiEmUAu31uw=="],
 
     "@gitbook/integration-github/itty-router": ["itty-router@4.2.2", "", {}, "sha512-KegPW0l9SNPadProoFT07AB84uOqLUwzlXQ7HsqkS31WUrxkjdhcemRpTDUuetbMJ89uBtWeQSVoiEmUAu31uw=="],
+
+    "@gitbook/integration-github-conversations/itty-router": ["itty-router@2.6.6", "", {}, "sha512-hIPHtXGymCX7Lzb2I4G6JgZFE4QEEQwst9GORK7sMYUpJvLfy4yZJr95r04e8DzoAnj6HcxM2m4TbK+juu+18g=="],
 
     "@gitbook/integration-github-copilot/@tsndr/cloudflare-worker-jwt": ["@tsndr/cloudflare-worker-jwt@2.3.2", "", {}, "sha512-g1jSm5olPqKh15kadnj0666YPudibHYGyFyM0URLXSeY5MzNIGkfhFedLgKHq8NCDBMzLUMX7Oz8d+jmQXqBuw=="],
 
