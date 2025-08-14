@@ -68,9 +68,6 @@ export function getIntercomOAuthConfig(context: IntercomRuntimeContext) {
             } catch (error) {
                 logger.error('Failed to fetch Intercom workspace info', {
                     error: error instanceof Error ? error.message : String(error),
-                    tokenPrefix: response.access_token
-                        ? response.access_token.substring(0, 10) + '...'
-                        : 'undefined',
                 });
                 throw new ExposableError(`Failed to get Intercom workspace ID: ${error}`);
             }
