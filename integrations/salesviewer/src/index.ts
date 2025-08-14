@@ -18,7 +18,7 @@ type SalesviewerRuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: SalesviewerRuntimeContext
+    { environment }: SalesviewerRuntimeContext,
 ) => {
     const trackingId = environment.siteInstallation?.configuration?.tracking_id;
 
