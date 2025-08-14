@@ -1,5 +1,11 @@
 # @gitbook/integration-plausible
 
+## 0.7.0
+
+### Minor Changes
+
+- 125bcb2: Move check for cookies into the tracking function
+
 ## 0.6.0
 
 ### Minor Changes

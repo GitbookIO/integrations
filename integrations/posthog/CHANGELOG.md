@@ -1,5 +1,11 @@
 # @gitbook/integration-posthog
 
+## 1.2.0
+
+### Minor Changes
+
+- 125bcb2: Add cookie banner to tracking integrations
+
 ## 1.1.0
 
 ### Minor Changes
