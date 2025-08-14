@@ -31,7 +31,7 @@ export function getIntercomOAuthConfig(context: IntercomRuntimeContext) {
             });
 
             // Get workspace information using the access token
-            // We use fetch here instead of IntercomClient because this is during OAuth setup
+            // We use fetch here instead of IntercomClient because the /me endpoint is not supported yet in the client.
             try {
                 const meResponse = await fetch('https://api.intercom.io/me', {
                     headers: {
@@ -84,7 +84,7 @@ export async function getIntercomClient(context: IntercomRuntimeContext) {
     const { installation } = context.environment;
 
     if (!installation) {
-        throw new ExposableError('Installation not found');
+        throw new Error('Installation not found');
     }
 
     const { oauth_credentials } = installation.configuration;

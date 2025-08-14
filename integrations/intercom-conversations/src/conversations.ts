@@ -1,5 +1,5 @@
 import { ConversationInput } from '@gitbook/api';
-import { ExposableError, Logger } from '@gitbook/runtime';
+import { Logger } from '@gitbook/runtime';
 import { Intercom, IntercomClient } from 'intercom-client';
 import pMap from 'p-map';
 import { getIntercomClient } from './client';
@@ -13,7 +13,7 @@ const logger = Logger('intercom-conversations');
 export async function ingestConversations(context: IntercomRuntimeContext) {
     const { installation } = context.environment;
     if (!installation) {
-        throw new ExposableError('Installation not found');
+        throw new Error('Installation not found');
     }
 
     const intercomClient = await getIntercomClient(context);
