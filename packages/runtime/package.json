@@ -17,6 +17,7 @@
     },
     "exports": {
         ".": "./src/index.ts",
+        "./browser": "./src/browser.ts",
         "./jsx-runtime": "./src/contentkit-jsx.ts",
         "./jsx-dev-runtime": "./src/contentkit-jsx.ts"
     }
