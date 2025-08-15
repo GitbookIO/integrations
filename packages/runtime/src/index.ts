@@ -8,4 +8,3 @@ export * from './logger';
 export * from './errors';
 export type * from './jsx-runtime';
 export type * from './global';
-export type * from './gitbook';
