@@ -78,7 +78,7 @@
     },
     "integrations/fathom": {
       "name": "@gitbook/integration-fathom",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -204,7 +204,7 @@
     },
     "integrations/heap": {
       "name": "@gitbook/integration-heap",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -227,7 +227,7 @@
     },
     "integrations/hotjar": {
       "name": "@gitbook/integration-hotjar",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -383,7 +383,7 @@
     },
     "integrations/mixpanel": {
       "name": "@gitbook/integration-mixpanel",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -421,7 +421,7 @@
     },
     "integrations/plausible": {
       "name": "@gitbook/integration-plausible",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -433,7 +433,7 @@
     },
     "integrations/posthog": {
       "name": "@gitbook/integration-posthog",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -445,7 +445,7 @@
     },
     "integrations/reo": {
       "name": "@gitbook/integration-reo.dev",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -483,7 +483,7 @@
     },
     "integrations/salesviewer": {
       "name": "@gitbook/integration-salesviewer",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -640,7 +640,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.133.0",
+      "version": "0.134.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",

@@ -1,6 +1,11 @@
 import { Router } from 'itty-router';
 
-import { createOAuthHandler, FetchEventCallback, OAuthResponse } from '@gitbook/runtime';
+import {
+    createOAuthHandler,
+    ExposableError,
+    FetchEventCallback,
+    OAuthResponse,
+} from '@gitbook/runtime';
 
 import {
     createSlackEventsHandler,
@@ -119,19 +124,34 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
      * List the channels the user can select in the configuration flow.
      */
     router.get('/channels', async () => {
-        const channels = await getChannelsPaginated(context);
+        try {
+            const channels = await getChannelsPaginated(context);
 
-        const completions = channels.map((channel) => ({
-            label: channel.name,
-            value: channel.id,
-        }));
+            const completions = channels.map((channel) => ({
+                label: channel.name,
+                value: channel.id,
+            }));
 
-        return new Response(JSON.stringify(completions), {
-            headers: {
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-cache, no-store',
-            },
-        });
+            return new Response(JSON.stringify(completions), {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        } catch (error) {
+            return new Response(
+                JSON.stringify({
+                    error:
+                        error instanceof ExposableError ? error.message : 'Internal server error',
+                }),
+                {
+                    status: error instanceof ExposableError ? error.code : 500,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache, no-store',
+                    },
+                },
+            );
+        }
     });
 
     const response = await router.handle(request, context);
