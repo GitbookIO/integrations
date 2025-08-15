@@ -12,7 +12,7 @@ export interface GitBook {
          * Icon for the custom assistant.
          * @example robot
          *
-         * Refer `@gitbook/icons` for a complete list of icons.
+         * Refer to `@gitbook/icons` for a complete list of icons.
          */
         icon: string;
         /**
