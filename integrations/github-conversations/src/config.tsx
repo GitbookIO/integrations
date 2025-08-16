@@ -13,9 +13,15 @@ export const configComponent = createComponent<
     componentId: 'config',
     render: async (element, context) => {
         const { installation } = context.environment;
+
         if (!installation) {
             return null;
         }
+
+        console.log('Rendering GitHub configuration component', {
+            installationId: installation.id,
+            configuration: installation.configuration,
+        });
 
         return (
             <configuration>
@@ -27,13 +33,13 @@ export const configComponent = createComponent<
                             style="secondary"
                             disabled={false}
                             label={
-                                element.props.installation.configuration.oauth_credentials
+                                element.props.installation.configuration.installation_id
                                     ? 'Re-authorize'
                                     : 'Authorize'
                             }
                             onPress={{
                                 action: '@ui.url.open',
-                                url: `${installation?.urls.publicEndpoint}/oauth`,
+                                url: `${installation?.urls.publicEndpoint}/install`,
                             }}
                         />
                     }

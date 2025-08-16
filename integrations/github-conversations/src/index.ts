@@ -1,46 +1,284 @@
-import { createIntegration, createOAuthHandler, Logger } from '@gitbook/runtime';
+import { createIntegration, ExposableError, Logger } from '@gitbook/runtime';
 import { Router } from 'itty-router';
 import { GitHubRuntimeContext } from './types';
-import { getGitHubOAuthConfig } from './client';
-import { ingestConversations } from './conversations';
 import { configComponent } from './config';
 import { handleWebhook } from './webhook';
+import { ingestConversations } from './conversations';
 
 const logger = Logger('github-conversations');
+
+/**
+ * Handle fresh GitHub App installation
+ */
+async function handleInstallSetup(
+    context: GitHubRuntimeContext,
+    githubInstallationId: string,
+    gitbookInstallationId: string | null,
+): Promise<Response> {
+    if (!gitbookInstallationId) {
+        logger.error('No state (GitBook installation ID) provided for install setup');
+        return new Response('Missing GitBook installation ID', { status: 400 });
+    }
+
+    try {
+        // Store the GitHub installation_id in the specific GitBook installation
+        await context.api.integrations.updateIntegrationInstallation(
+            context.environment.integration.name,
+            gitbookInstallationId,
+            {
+                configuration: {
+                    installation_id: githubInstallationId,
+                },
+            },
+        );
+
+        logger.info('GitHub App installation_id stored in GitBook installation', {
+            githubInstallationId,
+            gitbookInstallationId,
+        });
+
+        return new Response(
+            `<html><body>
+                <h1>GitHub App Connected!</h1>
+                <p>Your GitHub App has been successfully connected to GitBook.</p>
+                <p>We'll start ingesting your discussions shortly.</p>
+                <script>window.close();</script>
+            </body></html>`,
+            {
+                headers: {
+                    'Content-Type': 'text/html',
+                },
+            },
+        );
+    } catch (error) {
+        logger.error('Failed to store GitHub installation_id', {
+            error: error instanceof Error ? error.message : String(error),
+            githubInstallationId,
+            gitbookInstallationId,
+        });
+
+        return new Response(
+            `<html><body>
+                <h1>Setup Failed</h1>
+                <p>There was an error connecting your GitHub App to GitBook.</p>
+                <p>Please try again or contact support.</p>
+                <p>Error: ${error instanceof Error ? error.message : String(error)}</p>
+            </body></html>`,
+            {
+                status: 500,
+                headers: { 'Content-Type': 'text/html' },
+            },
+        );
+    }
+}
+
+/**
+ * Handle GitHub App permission/repository update
+ */
+async function handleUpdateSetup(
+    context: GitHubRuntimeContext,
+    githubInstallationId: string,
+    gitbookInstallationId: string | null,
+): Promise<Response> {
+    logger.info('Handling permission/repository update', {
+        githubInstallationId,
+        gitbookInstallationId,
+    });
+
+    try {
+        // Trigger re-ingestion of conversations with updated permissions
+        await ingestConversations(context);
+
+        return new Response(
+            `<html><body>
+                <h1>GitHub App Updated!</h1>
+                <p>Your GitHub App permissions have been updated.</p>
+                <p>We'll re-sync your discussions with the new settings.</p>
+                <script>window.close();</script>
+            </body></html>`,
+            {
+                headers: {
+                    'Content-Type': 'text/html',
+                },
+            },
+        );
+    } catch (error) {
+        logger.error('Failed to handle permission update', {
+            error: error instanceof Error ? error.message : String(error),
+            githubInstallationId,
+        });
+
+        return new Response(
+            `<html><body>
+                <h1>Update Failed</h1>
+                <p>There was an error updating your GitHub App permissions.</p>
+                <p>Please try again or contact support.</p>
+                <p>Error: ${error instanceof Error ? error.message : String(error)}</p>
+            </body></html>`,
+            {
+                status: 500,
+                headers: { 'Content-Type': 'text/html' },
+            },
+        );
+    }
+}
+
+/**
+ * Handle GitHub App access request
+ */
+async function handleRequestSetup(
+    _context: GitHubRuntimeContext,
+    githubInstallationId: string,
+    gitbookInstallationId: string | null,
+): Promise<Response> {
+    logger.info('Handling access request', {
+        githubInstallationId,
+        gitbookInstallationId,
+    });
+
+    // For now, treat request setup the same as install setup
+    // In the future, we might want to handle this differently
+    // (e.g., show a message that request is pending approval)
+
+    return new Response(
+        `<html><body>
+            <h1>Access Request Received</h1>
+            <p>Your request for additional GitHub App access has been received.</p>
+            <p>If approved, we'll automatically sync your discussions.</p>
+            <script>window.close();</script>
+        </body></html>`,
+        {
+            headers: {
+                'Content-Type': 'text/html',
+            },
+        },
+    );
+}
 
 export default createIntegration<GitHubRuntimeContext>({
     fetch: async (request, context) => {
         const router = Router({
             base: new URL(
-                context.environment.spaceInstallation?.urls?.publicEndpoint ||
-                    context.environment.installation?.urls.publicEndpoint ||
+                // TODO: we're not using the installation
+                context.environment.installation?.urls.publicEndpoint ||
                     context.environment.integration.urls.publicEndpoint,
             ).pathname,
         });
 
         /*
-         * Webhook to ingest discussions when they are closed.
+         * Webhook to handle GitHub events (discussions, installations, etc.)
          */
         router.post('/webhook', async (request) => {
             const rawBody = await request.text?.();
             const payload = rawBody ? JSON.parse(rawBody) : {};
+            const githubEvent = (request as Request).headers.get('x-github-event');
 
             logger.info('Received GitHub webhook', {
-                event: request.headers.get('x-github-event'),
+                event: githubEvent,
                 action: payload.action,
             });
 
+            // Handle installation events
+            if (githubEvent === 'installation' && payload.action === 'created') {
+                logger.info('GitHub App installation created', {
+                    installationId: payload.installation.id,
+                    account: payload.installation.account.login,
+                });
+
+                // TODO: Optionally store installation info or trigger setup
+                // For now, just log it
+                return new Response('Installation webhook received', { status: 200 });
+            }
+
+            // Handle discussion events
             return handleWebhook(context, payload, request as Request, rawBody || '');
         });
 
         /*
-         * OAuth flow.
+         * GitHub App installation flow.
+         * This redirects users to install the GitHub App with GitBook installation ID as state.
          */
-        router.get('/oauth', async (request) => {
-            const oauthHandler = createOAuthHandler(getGitHubOAuthConfig(context), {
-                replace: false,
+        router.get('/install', async () => {
+            const installation = context.environment.installation;
+            if (!installation) {
+                return new Response('GitBook installation context not found', { status: 400 });
+            }
+
+            // Redirect to GitHub App installation page with state parameter
+            const appName = 'gitbook-ingest-discussions';
+            const gitbookInstallationId = installation.id; // Pass GitBook installation ID as state
+            const installationUrl = `https://github.com/apps/${appName}/installations/new?state=${encodeURIComponent(gitbookInstallationId)}`;
+
+            logger.info('Redirecting to GitHub App installation page', {
+                installationUrl,
+                gitbookInstallationId,
             });
-            return oauthHandler(request as Request, context);
+
+            return Response.redirect(installationUrl, 302);
+        });
+
+        /*
+         * GitHub App post-installation setup.
+         * This handles the setup after the app is installed on GitHub.
+         */
+        router.get('/setup', async (request) => {
+            const url = new URL(request.url);
+            const githubInstallationId = url.searchParams.get('installation_id');
+            const setupAction = url.searchParams.get('setup_action');
+            const gitbookInstallationId = url.searchParams.get('state'); // GitBook installation ID
+
+            logger.info('GitHub App setup callback received', {
+                githubInstallationId,
+                setupAction,
+                gitbookInstallationId,
+                url: request.url,
+            });
+
+            if (!githubInstallationId) {
+                logger.error('No installation_id provided in setup callback');
+                return new ExposableError('Missing installation_id');
+            }
+
+            // Handle different setup actions
+            switch (setupAction) {
+                case 'install':
+                    // Fresh installation - need to store installation_id and trigger ingestion
+                    logger.info('Handling fresh GitHub App installation');
+                    return await handleInstallSetup(
+                        context,
+                        githubInstallationId,
+                        gitbookInstallationId,
+                    );
+
+                case 'update':
+                    // App permissions or repository access updated - re-trigger ingestion
+                    logger.info('Handling GitHub App permission/repository update');
+                    return await handleUpdateSetup(
+                        context,
+                        githubInstallationId,
+                        gitbookInstallationId,
+                    );
+
+                case 'request':
+                    // User is requesting access to additional repositories or permissions
+                    logger.info('Handling GitHub App access request');
+                    return await handleRequestSetup(
+                        context,
+                        githubInstallationId,
+                        gitbookInstallationId,
+                    );
+
+                default:
+                    // Fallback to install flow for backward compatibility
+                    logger.info('Unknown setup_action, falling back to install flow', {
+                        setupAction,
+                    });
+                    return await handleInstallSetup(
+                        context,
+                        githubInstallationId,
+                        gitbookInstallationId,
+                    );
+            }
         });
 
         const response = await router.handle(request, context);
@@ -56,29 +294,31 @@ export default createIntegration<GitHubRuntimeContext>({
     events: {
         /**
          * When the integration is installed, we fetch all closed discussions and ingest them.
-         * We also set up webhooks for real-time updates (if possible).
          */
         installation_setup: async (_, context) => {
             const { installation } = context.environment;
-            if (installation?.configuration.oauth_credentials) {
+            if (installation?.configuration.installation_id) {
                 try {
-                    // First, ingest existing closed discussions
+                    logger.info('Setting up GitHub App installation', {
+                        installationId: installation.configuration.installation_id,
+                    });
+
+                    // Ingest existing closed discussions from repositories with discussions enabled
                     await ingestConversations(context);
 
-                    // TODO: Set up webhooks for selected repositories
-                    // This would require additional implementation to:
-                    // 1. Get list of repositories with discussions enabled
-                    // 2. Create webhooks for each repository
-                    // 3. Store webhook IDs for later cleanup
-                    // 4. Handle webhook authentication with secrets
+                    // TODO: Next steps:
+                    // 1. Set up webhooks for each repository with discussions
+                    // 2. Store webhook IDs for later cleanup
 
-                    logger.info('Installation setup completed');
+                    logger.info('GitHub App installation setup completed');
                 } catch (error) {
-                    logger.error('Installation setup failed', {
+                    logger.error('GitHub App installation setup failed', {
                         error: error instanceof Error ? error.message : String(error),
                     });
                     // Don't throw - we want the installation to succeed even if ingestion fails
                 }
+            } else {
+                logger.info('No GitHub App installation ID found, skipping setup');
             }
         },
     },
