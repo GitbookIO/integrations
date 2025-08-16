@@ -1,9 +1,10 @@
-import { ExposableError, getOAuthToken, Logger, OAuthConfig } from '@gitbook/runtime';
+import { ExposableError, Logger } from '@gitbook/runtime';
+import jwt from '@tsndr/cloudflare-worker-jwt';
+import { Octokit } from 'octokit';
 import {
     GitHubRuntimeContext,
     GitHubRepository,
     GitHubOrganization,
-    GitHubUser,
     GitHubWebhook,
     GitHubDiscussionsResponse,
     GitHubGraphQLResponse,
@@ -12,66 +13,65 @@ import {
 const logger = Logger('github-conversations:client');
 
 /**
- * Get the OAuth configuration for the GitHub integration.
+ * Generate a JWT token for GitHub App authentication.
  */
-export function getGitHubOAuthConfig(context: GitHubRuntimeContext): OAuthConfig {
+async function generateJWT(appId: string, privateKey: string): Promise<string> {
+    const now = Math.floor(Date.now() / 1000);
+
+    const payload = {
+        iat: now - 60, // Issued 60 seconds ago (for clock drift)
+        exp: now + 600, // Expires in 10 minutes
+        iss: appId,
+    };
+
+    // Sign with RS256 algorithm using the private key
+    return await jwt.sign(payload, privateKey, { algorithm: 'RS256' });
+}
+
+/**
+ * Get an installation access token for GitHub App.
+ */
+export async function getInstallationAccessToken(
+    installationId: string,
+    appId: string,
+    privateKey: string,
+): Promise<string> {
+    const jwtToken = await generateJWT(appId, privateKey);
+
+    logger.debug('Requesting installation access token', { installationId });
+
+    const octokit = new Octokit({
+        auth: jwtToken,
+        userAgent: 'GitBook-GitHub-Conversations',
+    });
+
+    try {
+        const response = await octokit.request(
+            'POST /app/installations/{installation_id}/access_tokens',
+            {
+                installation_id: parseInt(installationId),
+                headers: {
+                    'X-GitHub-Api-Version': '2022-11-28',
+                },
+            },
+        );
+
+        logger.debug('Installation access token obtained successfully');
+        return response.data.token;
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        throw new Error(`Failed to get installation access token: ${errorMessage}`);
+    }
+}
+
+/**
+ * Get GitHub App configuration for installation-based authentication.
+ */
+export function getGitHubAppConfig(context: GitHubRuntimeContext) {
     return {
-        redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
-        clientId: context.environment.secrets.CLIENT_ID,
-        clientSecret: context.environment.secrets.CLIENT_SECRET,
-        scopes: ['repo', 'read:discussion', 'read:org', 'write:repo_hook'],
-        authorizeURL: () => 'https://github.com/login/oauth/authorize',
-        accessTokenURL: () => 'https://github.com/login/oauth/access_token',
-        extractCredentials: async (response) => {
-            if (!response.access_token) {
-                logger.error('OAuth response missing access_token', {
-                    responseKeys: Object.keys(response),
-                });
-                throw new Error(
-                    `Failed to exchange code for access token: ${JSON.stringify(response)}`,
-                );
-            }
-
-            logger.debug('GitHub OAuth response received', {
-                hasAccessToken: !!response.access_token,
-                tokenLength: response.access_token?.length,
-            });
-
-            try {
-                // Get user information using the access token
-                const userResponse = await fetch('https://api.github.com/user', {
-                    headers: {
-                        Authorization: `Bearer ${response.access_token}`,
-                        Accept: 'application/vnd.github.v3+json',
-                        'User-Agent': 'GitBook-GitHub-Conversations',
-                    },
-                });
-
-                if (!userResponse.ok) {
-                    const errorText = await userResponse.text();
-                    throw new Error(
-                        `Failed to fetch user info: ${userResponse.status} ${userResponse.statusText} - ${errorText}`,
-                    );
-                }
-
-                const userData = (await userResponse.json()) as GitHubUser;
-
-                return {
-                    externalIds: [userData.login],
-                    configuration: {
-                        oauth_credentials: {
-                            access_token: response.access_token,
-                            refresh_token: response.refresh_token,
-                        },
-                    },
-                };
-            } catch (error) {
-                logger.error('Failed to fetch GitHub user info', {
-                    error: error instanceof Error ? error.message : String(error),
-                });
-                throw new ExposableError(`Failed to get GitHub user info: ${error}`);
-            }
-        },
+        appId: context.environment.secrets.GITHUB_APP_ID,
+        privateKey: context.environment.secrets.GITHUB_PRIVATE_KEY,
+        installationId: context.environment.installation?.configuration?.installation_id,
     };
 }
 
@@ -79,86 +79,78 @@ export function getGitHubOAuthConfig(context: GitHubRuntimeContext): OAuthConfig
  * Initialize a GitHub API client for a given installation.
  */
 export class GitHubClient {
-    private accessToken: string;
-    private baseUrl = 'https://api.github.com';
-    private graphqlUrl = 'https://api.github.com/graphql';
+    private octokit: Octokit;
 
     constructor(accessToken: string) {
-        this.accessToken = accessToken;
-    }
-
-    private async makeRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-        const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`;
-        const response = await fetch(url, {
-            ...options,
-            headers: {
-                Authorization: `Bearer ${this.accessToken}`,
-                Accept: 'application/vnd.github.v3+json',
-                'User-Agent': 'GitBook-GitHub-Conversations',
-                ...options.headers,
-            },
+        this.octokit = new Octokit({
+            auth: accessToken,
+            userAgent: 'GitBook-GitHub-Conversations',
         });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(
-                `GitHub API error: ${response.status} ${response.statusText} - ${errorText}`,
-            );
-        }
-
-        return response.json();
     }
 
     private async makeGraphQLRequest<T>(
         query: string,
         variables: Record<string, any> = {},
     ): Promise<GitHubGraphQLResponse<T>> {
-        const response = await fetch(this.graphqlUrl, {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${this.accessToken}`,
-                Accept: 'application/vnd.github.v3+json',
-                'Content-Type': 'application/json',
-                'User-Agent': 'GitBook-GitHub-Conversations',
-            },
-            body: JSON.stringify({ query, variables }),
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(
-                `GitHub GraphQL API error: ${response.status} ${response.statusText} - ${errorText}`,
-            );
+        try {
+            const response = await this.octokit.graphql<T>(query, variables);
+            return { data: response } as GitHubGraphQLResponse<T>;
+        } catch (error) {
+            // Octokit throws errors for GraphQL errors, wrap them in our expected format
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Error(`GitHub GraphQL API error: ${errorMessage}`);
         }
-
-        return response.json();
     }
 
     /**
      * Get user organizations
      */
     async getUserOrganizations(): Promise<GitHubOrganization[]> {
-        return this.makeRequest<GitHubOrganization[]>('/user/orgs');
+        const response = await this.octokit.request('GET /user/orgs', {
+            headers: {
+                'X-GitHub-Api-Version': '2022-11-28',
+            },
+        });
+        return response.data as GitHubOrganization[];
     }
 
     /**
      * Get repositories for a user or organization
      */
     async getRepositories(owner?: string): Promise<GitHubRepository[]> {
-        const endpoint = owner ? `/orgs/${owner}/repos` : '/user/repos';
-        const repos = await this.makeRequest<GitHubRepository[]>(
-            `${endpoint}?per_page=100&sort=updated`,
-        );
+        const response = owner
+            ? await this.octokit.request('GET /orgs/{org}/repos', {
+                  org: owner,
+                  per_page: 100,
+                  sort: 'updated',
+                  headers: {
+                      'X-GitHub-Api-Version': '2022-11-28',
+                  },
+              })
+            : await this.octokit.request('GET /user/repos', {
+                  per_page: 100,
+                  sort: 'updated',
+                  headers: {
+                      'X-GitHub-Api-Version': '2022-11-28',
+                  },
+              });
 
         // Filter repositories that have discussions enabled
-        return repos.filter((repo) => repo.has_discussions);
+        return response.data.filter((repo: any) => repo.has_discussions) as GitHubRepository[];
     }
 
     /**
      * Get a specific repository
      */
     async getRepository(owner: string, repo: string): Promise<GitHubRepository> {
-        return this.makeRequest<GitHubRepository>(`/repos/${owner}/${repo}`);
+        const response = await this.octokit.request('GET /repos/{owner}/{repo}', {
+            owner,
+            repo,
+            headers: {
+                'X-GitHub-Api-Version': '2022-11-28',
+            },
+        });
+        return response.data as GitHubRepository;
     }
 
     /**
@@ -168,7 +160,7 @@ export class GitHubClient {
         owner: string,
         repo: string,
         after?: string,
-        first: number = 100,
+        first: number = 10,
         states: string[] = ['CLOSED'], // Only get closed discussions by default
     ): Promise<GitHubDiscussionsResponse> {
         const query = `
@@ -217,7 +209,7 @@ export class GitHubClient {
                                 }
                             }
                             isAnswered
-                            comments(first: 100) {
+                            comments(first: 20) {
                                 totalCount
                                 nodes {
                                     id
@@ -233,7 +225,7 @@ export class GitHubClient {
                                         }
                                     }
                                     isAnswer
-                                    replies(first: 50) {
+                                    replies(first: 3) {
                                         totalCount
                                         nodes {
                                             id
@@ -292,41 +284,65 @@ export class GitHubClient {
         webhookUrl: string,
         secret?: string,
     ): Promise<GitHubWebhook> {
-        const payload = {
-            name: 'web' as const,
+        const response = await this.octokit.request('POST /repos/{owner}/{repo}/hooks', {
+            owner,
+            repo,
+            name: 'web',
             active: true,
             events: ['discussion', 'discussion_comment'],
             config: {
                 url: webhookUrl,
-                content_type: 'json' as const,
-                insecure_ssl: '0' as const,
+                content_type: 'json',
+                insecure_ssl: '0',
                 ...(secret && { secret }),
             },
-        };
-
-        return this.makeRequest<GitHubWebhook>(`/repos/${owner}/${repo}/hooks`, {
-            method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'X-GitHub-Api-Version': '2022-11-28',
             },
-            body: JSON.stringify(payload),
         });
+        return response.data as GitHubWebhook;
     }
 
     /**
      * List webhooks for a repository
      */
     async listWebhooks(owner: string, repo: string): Promise<GitHubWebhook[]> {
-        return this.makeRequest<GitHubWebhook[]>(`/repos/${owner}/${repo}/hooks`);
+        const response = await this.octokit.request('GET /repos/{owner}/{repo}/hooks', {
+            owner,
+            repo,
+            headers: {
+                'X-GitHub-Api-Version': '2022-11-28',
+            },
+        });
+        return response.data as GitHubWebhook[];
     }
 
     /**
      * Delete a webhook
      */
     async deleteWebhook(owner: string, repo: string, hookId: number): Promise<void> {
-        await this.makeRequest(`/repos/${owner}/${repo}/hooks/${hookId}`, {
-            method: 'DELETE',
+        await this.octokit.request('DELETE /repos/{owner}/{repo}/hooks/{hook_id}', {
+            owner,
+            repo,
+            hook_id: hookId,
+            headers: {
+                'X-GitHub-Api-Version': '2022-11-28',
+            },
         });
+    }
+
+    /**
+     * Get repositories accessible to the installation
+     */
+    async getInstallationRepositories(): Promise<GitHubRepository[]> {
+        const response = await this.octokit.request('GET /installation/repositories', {
+            per_page: 100,
+            headers: {
+                'X-GitHub-Api-Version': '2022-11-28',
+            },
+        });
+
+        return response.data.repositories as GitHubRepository[];
     }
 }
 
@@ -340,11 +356,66 @@ export async function getGitHubClient(context: GitHubRuntimeContext): Promise<Gi
         throw new ExposableError('Installation not found');
     }
 
-    const { oauth_credentials } = installation.configuration;
-    if (!oauth_credentials) {
-        throw new ExposableError('GitHub OAuth credentials not found');
+    const { installation_id } = installation.configuration;
+    if (!installation_id) {
+        throw new ExposableError('GitHub App installation ID not found');
     }
 
-    const token = await getOAuthToken(oauth_credentials, getGitHubOAuthConfig(context), context);
+    const config = getGitHubAppConfig(context);
+    if (!config.appId || !config.privateKey) {
+        throw new ExposableError('GitHub App credentials not configured');
+    }
+
+    const token = await getInstallationAccessToken(
+        installation_id,
+        config.appId,
+        config.privateKey,
+    );
     return new GitHubClient(token);
+}
+
+/**
+ * Fetch all repositories that the GitHub App installation has access to.
+ */
+export async function fetchRepositoriesWithDiscussions(
+    context: GitHubRuntimeContext,
+): Promise<GitHubRepository[]> {
+    const { installation } = context.environment;
+
+    if (!installation) {
+        throw new ExposableError('Installation not found');
+    }
+
+    const { installation_id } = installation.configuration;
+    if (!installation_id) {
+        throw new ExposableError('GitHub App installation ID not found');
+    }
+
+    logger.info('Fetching enabled repositories for GitHub App installation', {
+        installationId: installation_id,
+    });
+
+    try {
+        const client = await getGitHubClient(context);
+        const repositories = await client.getInstallationRepositories();
+
+        logger.info('Successfully fetched enabled repositories', {
+            installationId: installation_id,
+            repositoryCount: repositories.length,
+            repositories: repositories.map((repo) => ({
+                name: repo.name,
+                fullName: repo.full_name,
+                hasDiscussions: repo.has_discussions,
+                private: repo.private,
+            })),
+        });
+
+        return repositories.filter((repo) => repo.has_discussions);
+    } catch (error) {
+        logger.error('Failed to fetch enabled repositories', {
+            installationId: installation_id,
+            error: error instanceof Error ? error.message : String(error),
+        });
+        throw error;
+    }
 }

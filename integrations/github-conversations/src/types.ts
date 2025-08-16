@@ -2,7 +2,12 @@ import { RuntimeEnvironment, RuntimeContext } from '@gitbook/runtime';
 
 export type GitHubInstallationConfiguration = {
     /**
-     * OAuth credentials.
+     * GitHub App installation ID.
+     */
+    installation_id?: string;
+
+    /**
+     * OAuth credentials (legacy, deprecated).
      */
     oauth_credentials?: {
         access_token: string;
