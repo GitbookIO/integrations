@@ -206,11 +206,6 @@ export default createIntegration<GitHubRuntimeContext>({
             const gitbookInstallationId = installation.id; // Pass GitBook installation ID as state
             const installationUrl = `https://github.com/apps/${appName}/installations/new?state=${encodeURIComponent(gitbookInstallationId)}`;
 
-            logger.info('Redirecting to GitHub App installation page', {
-                installationUrl,
-                gitbookInstallationId,
-            });
-
             return Response.redirect(installationUrl, 302);
         });
 
@@ -223,13 +218,6 @@ export default createIntegration<GitHubRuntimeContext>({
             const githubInstallationId = url.searchParams.get('installation_id');
             const setupAction = url.searchParams.get('setup_action');
             const gitbookInstallationId = url.searchParams.get('state'); // GitBook installation ID
-
-            logger.info('GitHub App setup callback received', {
-                githubInstallationId,
-                setupAction,
-                gitbookInstallationId,
-                url: request.url,
-            });
 
             if (!githubInstallationId) {
                 logger.error('No installation_id provided in setup callback');
@@ -245,7 +233,6 @@ export default createIntegration<GitHubRuntimeContext>({
             switch (setupAction) {
                 case 'install':
                     // Fresh installation - need to store installation_id and trigger ingestion
-                    logger.info('Handling fresh GitHub App installation');
                     return await handleInstallSetup(
                         context,
                         githubInstallationId,
@@ -254,7 +241,6 @@ export default createIntegration<GitHubRuntimeContext>({
 
                 case 'update':
                     // App permissions or repository access updated - re-trigger ingestion
-                    logger.info('Handling GitHub App permission/repository update');
                     return await handleUpdateSetup(
                         context,
                         githubInstallationId,
@@ -263,7 +249,6 @@ export default createIntegration<GitHubRuntimeContext>({
 
                 case 'request':
                     // User is requesting access to additional repositories or permissions
-                    logger.info('Handling GitHub App access request');
                     return await handleRequestSetup(
                         context,
                         githubInstallationId,
@@ -271,15 +256,7 @@ export default createIntegration<GitHubRuntimeContext>({
                     );
 
                 default:
-                    // Fallback to install flow for backward compatibility
-                    logger.info('Unknown setup_action, falling back to install flow', {
-                        setupAction,
-                    });
-                    return await handleInstallSetup(
-                        context,
-                        githubInstallationId,
-                        gitbookInstallationId,
-                    );
+                    throw new Error(`Unknown setup action: ${setupAction}`);
             }
         });
 
@@ -301,19 +278,12 @@ export default createIntegration<GitHubRuntimeContext>({
             const { installation } = context.environment;
             if (installation?.configuration.installation_id) {
                 try {
-                    logger.info('Setting up GitHub App installation', {
-                        installationId: installation.configuration.installation_id,
-                    });
-
                     // Ingest existing closed discussions from repositories with discussions enabled
                     await ingestConversations(context);
-
-                    logger.info('GitHub App installation setup completed');
                 } catch (error) {
                     logger.error('GitHub App installation setup failed', {
                         error: error instanceof Error ? error.message : String(error),
                     });
-                    // Don't throw - we want the installation to succeed even if ingestion fails
                 }
             }
         },

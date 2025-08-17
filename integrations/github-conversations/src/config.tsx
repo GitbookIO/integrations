@@ -18,11 +18,6 @@ export const configComponent = createComponent<
             return null;
         }
 
-        console.log('Rendering GitHub configuration component', {
-            installationId: installation.id,
-            configuration: installation.configuration,
-        });
-
         return (
             <configuration>
                 <input
