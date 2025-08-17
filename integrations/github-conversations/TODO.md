@@ -1,0 +1,3 @@
+ - [ ] When user uninstalls the app, update the gitbook installation.
+ - [x] Use octokit
+ - [ ] setup_action request

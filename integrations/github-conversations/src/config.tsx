@@ -44,14 +44,6 @@ export const configComponent = createComponent<
                         />
                     }
                 />
-
-                {element.props.installation.configuration.oauth_credentials ? (
-                    <hint>
-                        <text>
-                            The integration is configured and discussions are being ingested.
-                        </text>
-                    </hint>
-                ) : null}
             </configuration>
         );
     },

@@ -1,14 +1,14 @@
 import { ConversationInput } from '@gitbook/api';
 import { ExposableError, Logger } from '@gitbook/runtime';
 import { Octokit } from 'octokit';
-import { getOctokitClient, getInstallationAccessToken, getGitHubAppConfig } from './client';
+import { getOctokitClient } from './client';
 import {
     GitHubRuntimeContext,
+    GitHubRepository,
+    GitHubWebhookDiscussion,
     GitHubDiscussion,
     GitHubDiscussionComment,
-    GitHubRepository,
     GitHubDiscussionsResponse,
-    GitHubWebhookDiscussion,
 } from './types';
 
 const logger = Logger('github-conversations');
