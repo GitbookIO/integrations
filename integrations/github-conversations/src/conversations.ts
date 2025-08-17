@@ -1,7 +1,15 @@
 import { ConversationInput } from '@gitbook/api';
 import { ExposableError, Logger } from '@gitbook/runtime';
-import { getGitHubClient, fetchRepositoriesWithDiscussions } from './client';
-import { GitHubRuntimeContext, GitHubDiscussion, GitHubDiscussionComment } from './types';
+import { Octokit } from 'octokit';
+import { getOctokitClient, getInstallationAccessToken, getGitHubAppConfig } from './client';
+import {
+    GitHubRuntimeContext,
+    GitHubDiscussion,
+    GitHubDiscussionComment,
+    GitHubRepository,
+    GitHubDiscussionsResponse,
+    GitHubWebhookDiscussion,
+} from './types';
 
 const logger = Logger('github-conversations');
 
@@ -14,7 +22,7 @@ export async function ingestConversations(context: GitHubRuntimeContext) {
         throw new ExposableError('Installation not found');
     }
 
-    const gitHubClient = await getGitHubClient(context);
+    const octokit = await getOctokitClient(context);
 
     // Get repositories with discussions enabled that the GitHub App installation has access to
     const repositories = await fetchRepositoriesWithDiscussions(context);
@@ -26,7 +34,7 @@ export async function ingestConversations(context: GitHubRuntimeContext) {
 
     let totalProcessed = 0;
     let totalApiCalls = 0;
-    const MAX_API_CALLS = 950; // Leave buffer for other calls
+    const MAX_API_CALLS = 950; // CF worker subrequest limit + some buffer
 
     logger.info(`Discussion ingestion started for ${repositories.length} repositories`);
 
@@ -43,11 +51,12 @@ export async function ingestConversations(context: GitHubRuntimeContext) {
             let repoProcessed = 0;
 
             while (hasNextPage && totalApiCalls < MAX_API_CALLS) {
-                const discussionsResponse = await gitHubClient.getDiscussions(
+                const discussionsResponse = await getDiscussions(
+                    octokit,
                     repo.owner.login,
                     repo.name,
                     cursor,
-                    10, // Reduced to avoid GitHub node limits
+                    10,
                 );
 
                 totalApiCalls++;
@@ -102,6 +111,174 @@ export async function ingestConversations(context: GitHubRuntimeContext) {
     logger.info(
         `Discussion ingestion completed. Processed ${totalProcessed} discussions total using ${totalApiCalls} API calls`,
     );
+}
+
+/**
+ * Fetch repositories with discussions that the GitHub App installation has access to
+ */
+async function fetchRepositoriesWithDiscussions(
+    context: GitHubRuntimeContext,
+): Promise<GitHubRepository[]> {
+    const { installation } = context.environment;
+    if (!installation) {
+        throw new ExposableError('Installation not found');
+    }
+
+    const { installation_id } = installation.configuration;
+    if (!installation_id) {
+        throw new ExposableError('GitHub App installation ID not found');
+    }
+
+    logger.info('Fetching enabled repositories for GitHub App installation', {
+        installationId: installation_id,
+    });
+
+    try {
+        const octokit = await getOctokitClient(context);
+        const response = await octokit.request('GET /installation/repositories', {
+            per_page: 100,
+            headers: {
+                'X-GitHub-Api-Version': '2022-11-28',
+            },
+        });
+
+        const repositories = response.data.repositories as GitHubRepository[];
+
+        logger.info('Successfully fetched enabled repositories', {
+            installationId: installation_id,
+            repositoryCount: repositories.length,
+        });
+
+        return repositories.filter((repo) => repo.has_discussions);
+    } catch (error) {
+        logger.error('Failed to fetch enabled repositories', {
+            installationId: installation_id,
+            error: error instanceof Error ? error.message : String(error),
+        });
+        throw error;
+    }
+}
+
+/**
+ * Get discussions for a repository using GraphQL
+ */
+async function getDiscussions(
+    octokit: Octokit,
+    owner: string,
+    repo: string,
+    after?: string,
+    first: number = 10,
+    states: string[] = ['CLOSED'],
+): Promise<GitHubDiscussionsResponse> {
+    const query = `
+        query getDiscussions($owner: String!, $name: String!, $first: Int!, $after: String, $states: [DiscussionState!]) {
+            repository(owner: $owner, name: $name) {
+                discussions(first: $first, after: $after, states: $states, orderBy: {field: UPDATED_AT, direction: DESC}) {
+                    totalCount
+                    pageInfo {
+                        hasNextPage
+                        endCursor
+                    }
+                    nodes {
+                        id
+                        number
+                        title
+                        body
+                        bodyHTML
+                        bodyText
+                        url
+                        createdAt
+                        updatedAt
+                        author {
+                            login
+                            ... on User {
+                                avatarUrl
+                            }
+                        }
+                        category {
+                            id
+                            name
+                            description
+                            emoji
+                            isAnswerable
+                        }
+                        answer {
+                            id
+                            body
+                            bodyHTML
+                            bodyText
+                            createdAt
+                            author {
+                                login
+                                ... on User {
+                                    avatarUrl
+                                }
+                            }
+                        }
+                        isAnswered
+                        comments(first: 20) {
+                            totalCount
+                            nodes {
+                                id
+                                body
+                                bodyHTML
+                                bodyText
+                                createdAt
+                                updatedAt
+                                author {
+                                    login
+                                    ... on User {
+                                        avatarUrl
+                                    }
+                                }
+                                isAnswer
+                                replies(first: 3) {
+                                    totalCount
+                                    nodes {
+                                        id
+                                        body
+                                        bodyHTML
+                                        bodyText
+                                        createdAt
+                                        updatedAt
+                                        author {
+                                            login
+                                            ... on User {
+                                                avatarUrl
+                                            }
+                                        }
+                                        isAnswer
+                                    }
+                                }
+                            }
+                        }
+                        repository {
+                            name
+                            owner {
+                                login
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    `;
+
+    const variables = {
+        owner,
+        name: repo,
+        first,
+        after,
+        states,
+    };
+
+    try {
+        const response = await octokit.graphql<GitHubDiscussionsResponse>(query, variables);
+        return response;
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        throw new Error(`GitHub GraphQL API error: ${errorMessage}`);
+    }
 }
 
 /**
@@ -225,4 +402,63 @@ function determineCommentRole(
 
     // Default to user for shorter comments or follow-up questions
     return 'user';
+}
+
+/**
+ * Parse a GitHub webhook discussion into GitBook conversation format.
+ * This handles the webhook payload structure which is different from GraphQL.
+ */
+export function parseWebhookDiscussionAsGitBook(
+    discussion: GitHubWebhookDiscussion,
+    repositoryFullName: string,
+): ConversationInput | null {
+    try {
+        const conversation: ConversationInput = {
+            id: `github-${repositoryFullName.replace('/', '-')}-${discussion.number}`,
+            subject: discussion.title || 'Untitled Discussion',
+            metadata: {
+                url: discussion.html_url,
+                attributes: {
+                    source: 'github',
+                    repository: repositoryFullName,
+                    discussion_number: discussion.number.toString(),
+                    category: discussion.category?.name || '',
+                    category_emoji: discussion.category?.emoji || '',
+                    is_answered: discussion.answer_chosen_at ? 'true' : 'false',
+                    answer_chosen_at: discussion.answer_chosen_at || '',
+                },
+                createdAt: discussion.created_at,
+            },
+            parts: [],
+        };
+
+        // Add the main discussion post
+        if (discussion.body?.trim()) {
+            conversation.parts.push({
+                type: 'message',
+                role: 'user',
+                body: discussion.body.trim(),
+            });
+        }
+
+        // For webhook discussions, we don't have the full comment data
+        // We'll need to fetch comments separately if needed, or just work with the main discussion
+        // Since this is triggered on "closed", we'll just convert the main discussion for now
+
+        // Filter out conversations with no meaningful content
+        if (conversation.parts.length === 0) {
+            return null;
+        }
+
+        return conversation;
+    } catch (error) {
+        logger.error(`Failed to parse webhook discussion ${discussion?.number || 'unknown'}`, {
+            error: error instanceof Error ? error.message : String(error),
+            discussionTitle: discussion?.title,
+            discussionNumber: discussion?.number,
+            isAnswered: discussion?.answer_chosen_at ? 'true' : 'false',
+            repositoryFullName,
+        });
+        return null;
+    }
 }

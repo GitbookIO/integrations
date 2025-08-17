@@ -171,11 +171,54 @@ export interface GitHubDiscussionComment {
 }
 
 /**
+ * GitHub Webhook Discussion object (different from GraphQL structure)
+ */
+export interface GitHubWebhookDiscussion {
+    id: number;
+    node_id: string;
+    number: number;
+    title: string;
+    user: GitHubUser;
+    state: 'open' | 'closed';
+    state_reason?: string;
+    locked: boolean;
+    comments: number;
+    created_at: string;
+    updated_at: string;
+    author_association: string;
+    active_lock_reason?: string;
+    body: string;
+    reactions: {
+        url: string;
+        total_count: number;
+        [key: string]: any;
+    };
+    html_url: string;
+    timeline_url: string;
+    repository_url: string;
+    category: {
+        id: number;
+        node_id: string;
+        repository_id: number;
+        emoji: string;
+        name: string;
+        description: string;
+        created_at: string;
+        updated_at: string;
+        slug: string;
+        is_answerable: boolean;
+    };
+    answer_html_url?: string;
+    answer_chosen_at?: string;
+    answer_chosen_by?: GitHubUser;
+}
+
+/**
  * GitHub Webhook payload types
  */
 export interface GitHubWebhookPayload {
     action: string;
-    discussion?: GitHubDiscussion;
+    discussion?: GitHubWebhookDiscussion;
     comment?: GitHubDiscussionComment;
     repository: GitHubRepository;
     sender: GitHubUser;

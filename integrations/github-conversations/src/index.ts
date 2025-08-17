@@ -13,13 +13,8 @@ const logger = Logger('github-conversations');
 async function handleInstallSetup(
     context: GitHubRuntimeContext,
     githubInstallationId: string,
-    gitbookInstallationId: string | null,
+    gitbookInstallationId: string,
 ): Promise<Response> {
-    if (!gitbookInstallationId) {
-        logger.error('No state (GitBook installation ID) provided for install setup');
-        return new Response('Missing GitBook installation ID', { status: 400 });
-    }
-
     try {
         // Store the GitHub installation_id in the specific GitBook installation
         await context.api.integrations.updateIntegrationInstallation(
@@ -29,6 +24,7 @@ async function handleInstallSetup(
                 configuration: {
                     installation_id: githubInstallationId,
                 },
+                externalIds: [githubInstallationId],
             },
         );
 
@@ -78,7 +74,7 @@ async function handleInstallSetup(
 async function handleUpdateSetup(
     context: GitHubRuntimeContext,
     githubInstallationId: string,
-    gitbookInstallationId: string | null,
+    gitbookInstallationId: string,
 ): Promise<Response> {
     logger.info('Handling permission/repository update', {
         githubInstallationId,
@@ -129,7 +125,7 @@ async function handleUpdateSetup(
 async function handleRequestSetup(
     _context: GitHubRuntimeContext,
     githubInstallationId: string,
-    gitbookInstallationId: string | null,
+    gitbookInstallationId: string,
 ): Promise<Response> {
     logger.info('Handling access request', {
         githubInstallationId,
@@ -179,6 +175,7 @@ export default createIntegration<GitHubRuntimeContext>({
             });
 
             // Handle installation events
+            // TODO: remove this?
             if (githubEvent === 'installation' && payload.action === 'created') {
                 logger.info('GitHub App installation created', {
                     installationId: payload.installation.id,
@@ -205,7 +202,7 @@ export default createIntegration<GitHubRuntimeContext>({
             }
 
             // Redirect to GitHub App installation page with state parameter
-            const appName = 'gitbook-ingest-discussions';
+            const appName = 'ingest-discussions-dev-valentino';
             const gitbookInstallationId = installation.id; // Pass GitBook installation ID as state
             const installationUrl = `https://github.com/apps/${appName}/installations/new?state=${encodeURIComponent(gitbookInstallationId)}`;
 
@@ -237,6 +234,11 @@ export default createIntegration<GitHubRuntimeContext>({
             if (!githubInstallationId) {
                 logger.error('No installation_id provided in setup callback');
                 return new ExposableError('Missing installation_id');
+            }
+
+            if (!gitbookInstallationId) {
+                logger.error('No state (GitBook installation ID) provided in setup callback');
+                return new ExposableError('Missing GitBook installation ID');
             }
 
             // Handle different setup actions
@@ -306,10 +308,6 @@ export default createIntegration<GitHubRuntimeContext>({
                     // Ingest existing closed discussions from repositories with discussions enabled
                     await ingestConversations(context);
 
-                    // TODO: Next steps:
-                    // 1. Set up webhooks for each repository with discussions
-                    // 2. Store webhook IDs for later cleanup
-
                     logger.info('GitHub App installation setup completed');
                 } catch (error) {
                     logger.error('GitHub App installation setup failed', {
@@ -317,8 +315,6 @@ export default createIntegration<GitHubRuntimeContext>({
                     });
                     // Don't throw - we want the installation to succeed even if ingestion fails
                 }
-            } else {
-                logger.info('No GitHub App installation ID found, skipping setup');
             }
         },
     },

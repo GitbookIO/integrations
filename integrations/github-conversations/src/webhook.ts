@@ -1,7 +1,7 @@
 import pMap from 'p-map';
 import { Logger } from '@gitbook/runtime';
 import { GitHubRuntimeContext, GitHubWebhookPayload } from './types';
-import { parseDiscussionAsGitBook } from './conversations';
+import { parseWebhookDiscussionAsGitBook } from './conversations';
 
 const logger = Logger('github-conversations');
 
@@ -74,27 +74,32 @@ export async function handleWebhook(
     // Only process closed discussions
     if (payload.action === 'closed' && payload.discussion) {
         const repositoryFullName = payload.repository.full_name;
+        const githubInstallationId = payload.installation?.id?.toString();
 
-        // Find all installations that have this repository configured
+        if (!githubInstallationId) {
+            logger.error('No GitHub installation ID in webhook payload');
+            return new Response('Missing installation ID', { status: 400 });
+        }
+
+        // Find all GitBook installations matching this GitHub installation ID
         const {
             data: { items: installations },
         } = await context.api.integrations.listIntegrationInstallations(
             context.environment.integration.name,
+            {
+                externalId: githubInstallationId,
+            },
         );
 
-        // Filter installations that have this repository configured
-        const matchingInstallations = installations.filter((installation) => {
-            const selectedRepos = installation.configuration?.selected_repositories || [];
-            return selectedRepos.some((repo: any) => repo.full_name === repositoryFullName);
-        });
-
         logger.info('Found matching installations', {
-            count: matchingInstallations.length,
+            count: installations.length,
+            githubInstallationId,
             repository: repositoryFullName,
         });
 
-        if (matchingInstallations.length === 0) {
-            logger.info('No installations configured for this repository', {
+        if (installations.length === 0) {
+            logger.info('No installations found for GitHub installation', {
+                githubInstallationId,
                 repository: repositoryFullName,
             });
             return new Response('OK', { status: 200 });
@@ -102,11 +107,14 @@ export async function handleWebhook(
 
         // Process the webhook for each matching installation
         await pMap(
-            matchingInstallations,
+            installations,
             async (installation) => {
                 try {
                     // Convert GitHub discussion to GitBook conversation
-                    const gitbookConversation = parseDiscussionAsGitBook(payload.discussion!);
+                    const gitbookConversation = parseWebhookDiscussionAsGitBook(
+                        payload.discussion!,
+                        repositoryFullName,
+                    );
 
                     if (!gitbookConversation) {
                         logger.info('Skipping discussion with no meaningful content', {

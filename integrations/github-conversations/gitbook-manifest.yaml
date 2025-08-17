@@ -19,6 +19,7 @@ secrets:
     GITHUB_PRIVATE_KEY: ${{ env.GITHUB_PRIVATE_KEY }}
     CLIENT_ID: ${{ env.GITHUB_CLIENT_ID }}
     CLIENT_SECRET: ${{ env.GITHUB_CLIENT_SECRET }}
+    WEBHOOK_SECRET: ${{ env.GITHUB_WEBHOOK_SECRET }}
 target: organization
 envs:
     test:
@@ -27,6 +28,7 @@ envs:
             GITHUB_PRIVATE_KEY: ${{ "op://gitbook-integrations/githubConversationsStaging/GITHUB_PRIVATE_KEY" }}
             CLIENT_ID: ${{ "op://gitbook-integrations/githubConversationsStaging/CLIENT_ID" }}
             CLIENT_SECRET: ${{ "op://gitbook-integrations/githubConversationsStaging/CLIENT_SECRET" }}
+            WEBHOOK_SECRET: ${{ "op://gitbook-integrations/githubConversationsStaging/WEBHOOK_SECRET" }}
     staging:
         secrets:
             GITHUB_APP_ID: ${{ "op://gitbook-integrations/githubConversationsStaging/GITHUB_APP_ID" }}
