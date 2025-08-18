@@ -4,9 +4,9 @@ import type { components as WebhookComponents } from '@octokit/openapi-webhooks-
 
 export type GitHubInstallationConfiguration = {
     /**
-     * GitHub App installation ID.
+     * GitHub App installation IDs.
      */
-    installation_id?: string;
+    installation_ids?: string[];
 };
 
 export type GitHubRuntimeEnvironment = RuntimeEnvironment<GitHubInstallationConfiguration>;

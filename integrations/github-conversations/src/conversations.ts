@@ -22,119 +22,143 @@ export async function ingestConversations(context: GitHubRuntimeContext) {
         throw new ExposableError('Installation not found');
     }
 
-    const octokit = await getOctokitClient(context);
-
-    // Get repositories with discussions enabled that the GitHub App installation has access to
-    const repositories = await fetchRepositoriesWithDiscussions(context);
-
-    if (repositories.length === 0) {
-        logger.info('No repositories with discussions found for this GitHub App installation');
-        return;
+    const installationIds = getInstallationIds(context);
+    if (installationIds.length === 0) {
+        throw new ExposableError('No GitHub App installation IDs found');
     }
 
     let totalProcessed = 0;
     let totalApiCalls = 0;
     const MAX_API_CALLS = 950; // CF worker subrequest limit + some buffer
 
-    logger.info(`Discussion ingestion started for ${repositories.length} repositories`);
+    logger.info(`Discussion ingestion started for ${installationIds.length} GitHub installations`);
 
-    // Process repositories sequentially to better control API usage
-    for (const repo of repositories) {
+    // Process each GitHub installation separately
+    for (const installationId of installationIds) {
         if (totalApiCalls >= MAX_API_CALLS) {
             logger.error(`Reached API call limit (${MAX_API_CALLS}), stopping ingestion`);
             break;
         }
 
+        logger.info(`Processing GitHub installation: ${installationId}`);
+
         try {
-            let hasNextPage = true;
-            let cursor: string | undefined;
-            let repoProcessed = 0;
+            // Get Octokit client for this specific installation
+            const octokit = await getOctokitClient(context, installationId);
 
-            while (hasNextPage && totalApiCalls < MAX_API_CALLS) {
-                const discussionsResponse = await getDiscussions(
-                    octokit,
-                    repo.owner.login,
-                    repo.name,
-                    cursor,
-                    10,
+            // Get repositories with discussions enabled for this installation
+            const repositories = await fetchRepositoriesForInstallation(context, installationId);
+
+            if (repositories.length === 0) {
+                logger.info(
+                    `No repositories with discussions found for installation ${installationId}`,
                 );
+                continue;
+            }
 
-                totalApiCalls++;
-                logger.debug(`API call ${totalApiCalls}/${MAX_API_CALLS} for ${repo.full_name}`);
+            logger.info(
+                `Found ${repositories.length} repositories with discussions for installation ${installationId}`,
+            );
 
-                const discussions = discussionsResponse.repository.discussions.nodes;
-                hasNextPage = discussionsResponse.repository.discussions.pageInfo.hasNextPage;
-                cursor = discussionsResponse.repository.discussions.pageInfo.endCursor;
-
-                if (discussions.length === 0) {
+            // Process repositories for this installation
+            for (const repo of repositories) {
+                if (totalApiCalls >= MAX_API_CALLS) {
+                    logger.error(`Reached API call limit (${MAX_API_CALLS}), stopping ingestion`);
                     break;
                 }
 
-                // Convert GitHub discussions to GitBook conversations
-                const gitbookConversations = discussions
-                    .map((discussion) => parseDiscussionAsGitBook(discussion))
-                    .filter(
-                        (conversation): conversation is ConversationInput => conversation !== null,
-                    );
+                try {
+                    let hasNextPage = true;
+                    let cursor: string | undefined;
+                    let repoProcessed = 0;
 
-                // Ingest conversations to GitBook
-                if (gitbookConversations.length > 0) {
-                    try {
-                        await context.api.orgs.ingestConversation(
-                            installation.target.organization,
-                            gitbookConversations,
+                    while (hasNextPage && totalApiCalls < MAX_API_CALLS) {
+                        const discussionsResponse = await getDiscussions(
+                            octokit,
+                            repo.owner.login,
+                            repo.name,
+                            cursor,
+                            10,
                         );
-                        repoProcessed += gitbookConversations.length;
-                        logger.info(
-                            `Successfully ingested ${gitbookConversations.length} discussions from ${repo.full_name}`,
-                        );
-                    } catch (error) {
-                        logger.error(
-                            `Failed to ingest ${gitbookConversations.length} discussions from ${repo.full_name}: ${error}`,
-                        );
+
+                        totalApiCalls++;
+
+                        const discussions = discussionsResponse.repository.discussions.nodes;
+                        hasNextPage =
+                            discussionsResponse.repository.discussions.pageInfo.hasNextPage;
+                        cursor = discussionsResponse.repository.discussions.pageInfo.endCursor;
+
+                        if (discussions.length === 0) {
+                            break;
+                        }
+
+                        // Convert GitHub discussions to GitBook conversations
+                        const gitbookConversations = discussions
+                            .map((discussion) => parseDiscussionAsGitBook(discussion))
+                            .filter(
+                                (conversation): conversation is ConversationInput =>
+                                    conversation !== null,
+                            );
+
+                        // Ingest conversations to GitBook
+                        if (gitbookConversations.length > 0) {
+                            try {
+                                await context.api.orgs.ingestConversation(
+                                    installation.target.organization,
+                                    gitbookConversations,
+                                );
+                                repoProcessed += gitbookConversations.length;
+                            } catch (error) {
+                                logger.error(
+                                    `Failed to ingest ${gitbookConversations.length} discussions from ${repo.full_name}: ${error}`,
+                                );
+                            }
+                        }
+
+                        // Rate limiting: small delay between pages
+                        if (hasNextPage && totalApiCalls < MAX_API_CALLS) {
+                            await new Promise((resolve) => setTimeout(resolve, 50));
+                        }
                     }
-                }
 
-                // Rate limiting: small delay between pages
-                if (hasNextPage && totalApiCalls < MAX_API_CALLS) {
-                    await new Promise((resolve) => setTimeout(resolve, 50)); // Reduced delay
+                    totalProcessed += repoProcessed;
+                    logger.info(`Processed ${repoProcessed} discussions from ${repo.full_name}`);
+                } catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : String(error);
+                    logger.error(`Failed to process repository ${repo.full_name}: ${errorMessage}`);
                 }
             }
-
-            totalProcessed += repoProcessed;
-            logger.info(`Processed ${repoProcessed} discussions from ${repo.full_name}`);
         } catch (error) {
-            logger.error(`Failed to process repository ${repo.full_name}: ${error}`);
+            logger.error(`Failed to process installation ${installationId}: ${error}`);
         }
     }
 
     logger.info(
-        `Discussion ingestion completed. Processed ${totalProcessed} discussions total using ${totalApiCalls} API calls`,
+        `Discussion ingestion completed. Processed ${totalProcessed} discussions total using ${totalApiCalls} API calls from ${installationIds.length} installations`,
     );
 }
 
 /**
- * Fetch repositories with discussions that the GitHub App installation has access to
+ * Get all GitHub installation IDs from configuration
  */
-async function fetchRepositoriesWithDiscussions(
-    context: GitHubRuntimeContext,
-): Promise<GitHubRepository[]> {
+function getInstallationIds(context: GitHubRuntimeContext): string[] {
     const { installation } = context.environment;
     if (!installation) {
-        throw new ExposableError('Installation not found');
+        return [];
     }
 
-    const { installation_id } = installation.configuration;
-    if (!installation_id) {
-        throw new ExposableError('GitHub App installation ID not found');
-    }
+    return installation.configuration.installation_ids || [];
+}
 
-    logger.info('Fetching enabled repositories for GitHub App installation', {
-        installationId: installation_id,
-    });
-
+/**
+ * Fetch repositories with discussions from a specific GitHub App installation
+ */
+async function fetchRepositoriesForInstallation(
+    context: GitHubRuntimeContext,
+    installationId: string,
+): Promise<GitHubRepository[]> {
     try {
-        const octokit = await getOctokitClient(context);
+        const octokit = await getOctokitClient(context, installationId);
         const response = await octokit.request('GET /installation/repositories', {
             per_page: 100,
             headers: {
@@ -144,20 +168,63 @@ async function fetchRepositoriesWithDiscussions(
 
         const repositories = response.data.repositories as GitHubRepository[];
 
-        logger.info('Successfully fetched enabled repositories', {
-            installationId: installation_id,
-            repositoryCount: repositories.length,
-        });
-
         return repositories.filter((repo) => repo.has_discussions);
     } catch (error) {
         logger.error('Failed to fetch enabled repositories', {
-            installationId: installation_id,
+            installationId,
             error: error instanceof Error ? error.message : String(error),
         });
-        throw error;
+        return []; // Return empty array instead of throwing to allow other installations to work
     }
 }
+
+const DISCUSSION_FRAGMENT = `
+    fragment DiscussionFields on Discussion {
+        number
+        title
+        body
+        bodyText
+        url
+        createdAt
+        author {
+            login
+        }
+        authorAssociation
+        isAnswered
+        answer {
+            body
+            bodyText
+            authorAssociation
+        }
+        comments(first: 50) {
+            nodes {
+                body
+                bodyText
+                author {
+                    login
+                }
+                authorAssociation
+                isAnswer
+                replies(first: 10) {
+                    nodes {
+                        body
+                        bodyText
+                        author {
+                            login
+                        }
+                        authorAssociation
+                    }
+                }
+            }
+        }
+        repository {
+            name
+            owner {
+                login
+            }
+        }
+    }
+`;
 
 /**
  * Get discussions for a repository using GraphQL
@@ -171,6 +238,7 @@ async function getDiscussions(
     states: string[] = ['CLOSED'],
 ): Promise<GitHubDiscussionsResponse> {
     const query = `
+        ${DISCUSSION_FRAGMENT}
         query getDiscussions($owner: String!, $name: String!, $first: Int!, $after: String, $states: [DiscussionState!]) {
             repository(owner: $owner, name: $name) {
                 discussions(first: $first, after: $after, states: $states, orderBy: {field: UPDATED_AT, direction: DESC}) {
@@ -180,49 +248,7 @@ async function getDiscussions(
                         endCursor
                     }
                     nodes {
-                        number
-                        title
-                        body
-                        bodyText
-                        url
-                        createdAt
-                        author {
-                            login
-                        }
-                        authorAssociation
-                        isAnswered
-                        answer {
-                            body
-                            bodyText
-                            authorAssociation
-                        }
-                        comments(first: 50) {
-                            nodes {
-                                body
-                                bodyText
-                                author {
-                                    login
-                                }
-                                authorAssociation
-                                isAnswer
-                                replies(first: 10) {
-                                    nodes {
-                                        body
-                                        bodyText
-                                        author {
-                                            login
-                                        }
-                                        authorAssociation
-                                    }
-                                }
-                            }
-                        }
-                        repository {
-                            name
-                            owner {
-                                login
-                            }
-                        }
+                        ...DiscussionFields
                     }
                 }
             }
@@ -256,52 +282,11 @@ export async function getSingleDiscussion(
     number: number,
 ): Promise<GitHubSingleDiscussionResponse> {
     const query = `
+        ${DISCUSSION_FRAGMENT}
         query getSingleDiscussion($owner: String!, $name: String!, $number: Int!) {
             repository(owner: $owner, name: $name) {
                 discussion(number: $number) {
-                    number
-                    title
-                    body
-                    bodyText
-                    url
-                    createdAt
-                    author {
-                        login
-                    }
-                    authorAssociation
-                    isAnswered
-                    answer {
-                        body
-                        bodyText
-                        authorAssociation
-                    }
-                    comments(first: 50) {
-                        nodes {
-                            body
-                            bodyText
-                            author {
-                                login
-                            }
-                            authorAssociation
-                            isAnswer
-                            replies(first: 10) {
-                                nodes {
-                                    body
-                                    bodyText
-                                    author {
-                                        login
-                                    }
-                                    authorAssociation
-                                }
-                            }
-                        }
-                    }
-                    repository {
-                        name
-                        owner {
-                            login
-                        }
-                    }
+                    ...DiscussionFields
                 }
             }
         }
@@ -335,8 +320,8 @@ export function parseDiscussionAsGitBook(discussion: GitHubDiscussion): Conversa
                 attributes: {
                     source: 'discussions',
                     repository: `${discussion.repository.owner.login}/${discussion.repository.name}`,
-                    discussion_number: discussion.number.toString(),
-                    is_answered: discussion.isAnswered.toString(),
+                    discussion_number: String(discussion.number),
+                    is_answered: String(discussion.isAnswered ?? false),
                 },
                 createdAt: discussion.createdAt,
             },

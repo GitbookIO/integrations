@@ -8,15 +8,23 @@ const logger = Logger('github-conversations:client');
 /**
  * Get an authenticated Octokit instance for the installation
  */
-export async function getOctokitClient(context: GitHubRuntimeContext): Promise<Octokit> {
+export async function getOctokitClient(
+    context: GitHubRuntimeContext,
+    installationId?: string,
+): Promise<Octokit> {
     const { installation } = context.environment;
     if (!installation) {
         throw new ExposableError('Installation not found');
     }
 
-    const { installation_id } = installation.configuration;
-    if (!installation_id) {
-        throw new ExposableError('GitHub App installation ID not found');
+    // Use provided installationId or fall back to first available
+    let targetInstallationId = installationId;
+    if (!targetInstallationId) {
+        const installationIds = installation.configuration.installation_ids || [];
+        if (installationIds.length === 0) {
+            throw new ExposableError('No GitHub App installation IDs found');
+        }
+        targetInstallationId = installationIds[0];
     }
 
     const config = getGitHubAppConfig(context);
@@ -25,7 +33,7 @@ export async function getOctokitClient(context: GitHubRuntimeContext): Promise<O
     }
 
     const token = await getInstallationAccessToken(
-        installation_id,
+        targetInstallationId,
         config.appId,
         config.privateKey,
     );
@@ -61,8 +69,6 @@ export async function getInstallationAccessToken(
 ): Promise<string> {
     const jwtToken = await generateJWT(appId, privateKey);
 
-    logger.debug('Requesting installation access token', { installationId });
-
     const octokit = new Octokit({
         auth: jwtToken,
         userAgent: 'GitBook-GitHub-Conversations',
@@ -79,7 +85,6 @@ export async function getInstallationAccessToken(
             },
         );
 
-        logger.debug('Installation access token obtained successfully');
         return response.data.token;
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -94,6 +99,6 @@ export function getGitHubAppConfig(context: GitHubRuntimeContext) {
     return {
         appId: context.environment.secrets.GITHUB_APP_ID,
         privateKey: context.environment.secrets.GITHUB_PRIVATE_KEY,
-        installationId: context.environment.installation?.configuration?.installation_id,
+        installationIds: context.environment.installation?.configuration?.installation_ids,
     };
 }

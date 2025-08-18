@@ -16,21 +16,66 @@ async function handleInstallSetup(
     gitbookInstallationId: string,
 ): Promise<Response> {
     try {
-        // Store the GitHub installation_id in the specific GitBook installation
+        // Fetch the latest installation data to ensure we don't overwrite existing installations
+        let existingConfig: any = {};
+        let existingInstallationIds: string[] = [];
+
+        try {
+            const { data: installation } =
+                await context.api.integrations.getIntegrationInstallationById(
+                    context.environment.integration.name,
+                    gitbookInstallationId,
+                );
+            existingConfig = installation?.configuration || {};
+            existingInstallationIds = existingConfig.installation_ids || [];
+
+            logger.info('Fetched existing installation data', {
+                existingInstallationIds,
+                gitbookInstallationId,
+            });
+        } catch (error) {
+            logger.info('No existing installation found or error fetching it', {
+                error: error instanceof Error ? error.message : String(error),
+                gitbookInstallationId,
+            });
+            // Use context as fallback if API call fails
+            existingConfig = context.environment.installation?.configuration || {};
+            existingInstallationIds = existingConfig.installation_ids || [];
+        }
+
+        // Add the new GitHub installation to the list
+        const updatedInstallationIds = Array.from(
+            new Set([...existingInstallationIds, githubInstallationId]),
+        );
+
+        logger.info('Adding GitHub installation', {
+            githubInstallationId,
+            existingInstallationIds,
+            updatedInstallationIds,
+            gitbookInstallationId,
+        });
+
         await context.api.integrations.updateIntegrationInstallation(
             context.environment.integration.name,
             gitbookInstallationId,
             {
                 configuration: {
-                    installation_id: githubInstallationId,
+                    ...existingConfig,
+                    installation_ids: updatedInstallationIds,
                 },
-                externalIds: [githubInstallationId],
+                externalIds: Array.from(
+                    new Set([
+                        ...(context.environment.installation?.externalIds || []),
+                        githubInstallationId,
+                    ]),
+                ),
             },
         );
 
-        logger.info('GitHub App installation_id stored in GitBook installation', {
+        logger.info('GitHub App installation stored in GitBook installation', {
             githubInstallationId,
             gitbookInstallationId,
+            totalInstallations: updatedInstallationIds.length,
         });
 
         return new Response(
@@ -276,7 +321,11 @@ export default createIntegration<GitHubRuntimeContext>({
          */
         installation_setup: async (_, context) => {
             const { installation } = context.environment;
-            if (installation?.configuration.installation_id) {
+            const hasInstallations =
+                installation?.configuration.installation_ids &&
+                installation.configuration.installation_ids.length > 0;
+
+            if (hasInstallations) {
                 try {
                     // Ingest existing closed discussions from repositories with discussions enabled
                     await ingestConversations(context);
