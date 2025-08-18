@@ -23,40 +23,21 @@ export type GitHubWebhookPayload = WebhookComponents['schemas']['webhook-discuss
  * GitHub GraphQL types - these match our GraphQL query structure
  */
 export interface GitHubDiscussion {
-    id: string;
     number: number;
     title: string;
     body: string;
-    bodyHTML: string;
     bodyText: string;
     url: string;
     createdAt: string;
-    updatedAt: string;
     author?: {
         login: string;
-        avatarUrl?: string;
     } | null;
-    category: {
-        id: string;
-        name: string;
-        description?: string;
-        emoji: string;
-        isAnswerable: boolean;
-    };
     answer?: {
-        id: string;
         body: string;
-        bodyHTML: string;
         bodyText: string;
-        createdAt: string;
-        author?: {
-            login: string;
-            avatarUrl?: string;
-        } | null;
     } | null;
     isAnswered: boolean;
     comments: {
-        totalCount: number;
         nodes: GitHubDiscussionComment[];
     };
     repository: {
@@ -68,19 +49,13 @@ export interface GitHubDiscussion {
 }
 
 export interface GitHubDiscussionComment {
-    id: string;
     body: string;
-    bodyHTML: string;
     bodyText: string;
-    createdAt: string;
-    updatedAt: string;
     author?: {
         login: string;
-        avatarUrl?: string;
     } | null;
     isAnswer: boolean;
     replies: {
-        totalCount: number;
         nodes: GitHubDiscussionComment[];
     };
 }

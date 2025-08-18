@@ -180,74 +180,32 @@ async function getDiscussions(
                         endCursor
                     }
                     nodes {
-                        id
                         number
                         title
                         body
-                        bodyHTML
                         bodyText
                         url
                         createdAt
-                        updatedAt
                         author {
                             login
-                            ... on User {
-                                avatarUrl
-                            }
-                        }
-                        category {
-                            id
-                            name
-                            description
-                            emoji
-                            isAnswerable
                         }
                         answer {
-                            id
                             body
-                            bodyHTML
                             bodyText
-                            createdAt
-                            author {
-                                login
-                                ... on User {
-                                    avatarUrl
-                                }
-                            }
                         }
                         isAnswered
                         comments(first: 20) {
-                            totalCount
                             nodes {
-                                id
                                 body
-                                bodyHTML
                                 bodyText
-                                createdAt
-                                updatedAt
                                 author {
                                     login
-                                    ... on User {
-                                        avatarUrl
-                                    }
                                 }
                                 isAnswer
                                 replies(first: 3) {
-                                    totalCount
                                     nodes {
-                                        id
                                         body
-                                        bodyHTML
                                         bodyText
-                                        createdAt
-                                        updatedAt
-                                        author {
-                                            login
-                                            ... on User {
-                                                avatarUrl
-                                            }
-                                        }
-                                        isAnswer
                                     }
                                 }
                             }
@@ -296,10 +254,7 @@ export function parseDiscussionAsGitBook(discussion: GitHubDiscussion): Conversa
                     repository:
                         discussion.repository?.owner?.login + '/' + discussion.repository?.name,
                     discussion_number: discussion.number?.toString() || '',
-                    category: discussion.category?.name || '',
-                    category_emoji: discussion.category?.emoji || '',
                     is_answered: discussion.isAnswered?.toString() || 'false',
-                    answer_chosen_at: discussion.answer?.createdAt || '',
                 },
                 createdAt: discussion.createdAt,
             },
@@ -357,12 +312,11 @@ export function parseDiscussionAsGitBook(discussion: GitHubDiscussion): Conversa
 
         return conversation;
     } catch (error) {
-        logger.error(`Failed to parse discussion ${discussion?.id || 'unknown'}`, {
+        logger.error(`Failed to parse discussion ${discussion?.number || 'unknown'}`, {
             error: error instanceof Error ? error.message : String(error),
             discussionTitle: discussion?.title,
             discussionNumber: discussion?.number,
             hasRepository: !!discussion?.repository,
-            hasCategory: !!discussion?.category,
             isAnswered: discussion?.isAnswered,
         });
         return null;
