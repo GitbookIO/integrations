@@ -196,3 +196,79 @@ export async function handleWebhook(
 
     return new Response('OK', { status: 200 });
 }
+
+/**
+ * Handle GitHub App installation deletion
+ * Removes the GitHub installation ID from all GitBook installations that reference it
+ */
+export async function handleInstallationDeleted(
+    context: GitHubRuntimeContext,
+    payload: any,
+): Promise<Response> {
+    const githubInstallationId = String(payload.installation.id);
+
+    logger.info('GitHub App installation deleted', {
+        installationId: githubInstallationId,
+        account: payload.installation.account.login,
+    });
+
+    // Fetch all GitBook installations that have this GitHub installation ID
+    const {
+        data: { items: installations },
+    } = await context.api.integrations.listIntegrationInstallations(
+        context.environment.integration.name,
+        {
+            externalId: githubInstallationId,
+        },
+    );
+
+    if (installations.length === 0) {
+        logger.info('No installations found for GitHub installation deletion', {
+            githubInstallationId,
+        });
+        return new Response('Installation webhook received', { status: 200 });
+    }
+
+    // Process each installation and remove the GitHub installation ID
+    await pMap(
+        installations,
+        async (installation) => {
+            try {
+                const existingConfig = installation.configuration || {};
+                const existingInstallationIds = existingConfig.installation_ids || [];
+
+                // Remove the GitHub installation from the list
+                const updatedInstallationIds = existingInstallationIds.filter(
+                    (id: string) => id !== githubInstallationId,
+                );
+
+                await context.api.integrations.updateIntegrationInstallation(
+                    context.environment.integration.name,
+                    installation.id,
+                    {
+                        configuration: {
+                            ...existingConfig,
+                            installation_ids: updatedInstallationIds,
+                        },
+                        externalIds: updatedInstallationIds,
+                    },
+                );
+
+                logger.info('GitHub App installation removed from GitBook installation', {
+                    removedInstallationId: githubInstallationId,
+                    gitbookInstallationId: installation.id,
+                    remainingInstallationIds: updatedInstallationIds,
+                });
+            } catch (error) {
+                logger.error('Error removing installation from GitBook installation', {
+                    error: error instanceof Error ? error.message : String(error),
+                    githubInstallationId,
+                    gitbookInstallationId: installation.id,
+                });
+            }
+        },
+        { concurrency: 5 },
+    );
+
+    return new Response('Installation webhook received', { status: 200 });
+}
