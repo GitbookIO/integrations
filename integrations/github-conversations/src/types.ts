@@ -32,52 +32,46 @@ export type CommentAuthorAssociation =
     | 'NONE'
     | 'MANNEQUIN';
 
-export interface GitHubDiscussion {
-    number: number;
-    title: string;
-    body: string;
-    bodyText: string;
-    url: string;
-    createdAt: string;
-    author?: {
+export interface GitHubAuthor {
+    login: string;
+}
+
+export interface GitHubRepositoryOwner {
+    name: string;
+    owner: {
         login: string;
-    };
-    authorAssociation: CommentAuthorAssociation;
-    isAnswered: boolean;
-    answer?: {
-        body: string;
-        bodyText: string;
-        authorAssociation: CommentAuthorAssociation;
-    };
-    comments: {
-        nodes: GitHubDiscussionComment[];
-    };
-    repository: {
-        name: string;
-        owner: {
-            login: string;
-        };
     };
 }
 
-export interface GitHubDiscussionComment {
+export interface GitHubBaseContent {
     body: string;
     bodyText: string;
-    author?: {
-        login: string;
-    };
+    author?: GitHubAuthor;
     authorAssociation: CommentAuthorAssociation;
+}
+
+export interface GitHubDiscussionReply extends GitHubBaseContent {}
+
+export interface GitHubDiscussionComment extends GitHubBaseContent {
     isAnswer: boolean;
     replies: {
-        nodes: {
-            body: string;
-            bodyText: string;
-            author?: {
-                login: string;
-            };
-            authorAssociation: CommentAuthorAssociation;
-        }[];
+        nodes: GitHubDiscussionReply[];
     };
+}
+
+export interface GitHubDiscussionAnswer extends GitHubBaseContent {}
+
+export interface GitHubDiscussion extends GitHubBaseContent {
+    number: number;
+    title: string;
+    url: string;
+    createdAt: string;
+    isAnswered: boolean;
+    answer?: GitHubDiscussionAnswer;
+    comments: {
+        nodes: GitHubDiscussionComment[];
+    };
+    repository: GitHubRepositoryOwner;
 }
 
 export interface GitHubDiscussionsResponse {
@@ -90,5 +84,11 @@ export interface GitHubDiscussionsResponse {
             };
             nodes: GitHubDiscussion[];
         };
+    };
+}
+
+export interface GitHubSingleDiscussionResponse {
+    repository: {
+        discussion: GitHubDiscussion | null;
     };
 }

@@ -1,7 +1,8 @@
 import pMap from 'p-map';
 import { Logger } from '@gitbook/runtime';
 import { GitHubRuntimeContext, GitHubWebhookPayload } from './types';
-import { parseWebhookDiscussionAsGitBook } from './conversations';
+import { parseDiscussionAsGitBook, getSingleDiscussion } from './conversations';
+import { getOctokitClient } from './client';
 
 const logger = Logger('github-conversations');
 
@@ -110,10 +111,38 @@ export async function handleWebhook(
             installations,
             async (installation) => {
                 try {
-                    // Convert GitHub discussion to GitBook conversation
-                    const gitbookConversation = parseWebhookDiscussionAsGitBook(
-                        payload.discussion!,
-                        repositoryFullName,
+                    // Create installation-specific context to get the Octokit client
+                    const installationContext = {
+                        ...context,
+                        environment: {
+                            ...context.environment,
+                            installation,
+                        },
+                    };
+
+                    const octokit = await getOctokitClient(installationContext);
+                    const [owner, repo] = repositoryFullName.split('/');
+
+                    // Fetch the full discussion data using GraphQL
+                    const discussionResponse = await getSingleDiscussion(
+                        octokit,
+                        owner,
+                        repo,
+                        payload.discussion!.number,
+                    );
+
+                    if (!discussionResponse.repository.discussion) {
+                        logger.info('Discussion not found', {
+                            discussionNumber: payload.discussion!.number,
+                            repository: repositoryFullName,
+                            installationId: installation.id,
+                        });
+                        return;
+                    }
+
+                    // Convert GitHub discussion to GitBook conversation using the unified parser
+                    const gitbookConversation = parseDiscussionAsGitBook(
+                        discussionResponse.repository.discussion,
                     );
 
                     if (!gitbookConversation) {

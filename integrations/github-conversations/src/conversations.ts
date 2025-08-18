@@ -5,10 +5,9 @@ import { getOctokitClient } from './client';
 import {
     GitHubRuntimeContext,
     GitHubDiscussion,
-    GitHubDiscussionComment,
     GitHubRepository,
     GitHubDiscussionsResponse,
-    GitHubWebhookDiscussion,
+    GitHubSingleDiscussionResponse,
     CommentAuthorAssociation,
 } from './types';
 
@@ -180,68 +179,40 @@ async function getDiscussions(
                         hasNextPage
                         endCursor
                     }
-          nodes {
-            number
-            title
-            body
-            bodyText
-            url
-            createdAt
-            author {
-              login
-            }
-            authorAssociation
-            isAnswered
-            answer {
-              body
-              bodyText
-              authorAssociation
-            }
-            comments(first: 50) {
-              nodes {
-                body
-                bodyText
-                author {
-                  login
-                }
-                authorAssociation
-                isAnswer
-                replies(first: 10) {
-                  nodes {
-                    body
-                    bodyText
-                    author {
-                      login
-                    }
-                    authorAssociation
-                  }
-                }
-              }
-            }
-            repository {
-              name
-              owner {
-                login
-              }
-            }
-          }
+                    nodes {
+                        number
+                        title
+                        body
+                        bodyText
+                        url
+                        createdAt
+                        author {
+                            login
+                        }
+                        authorAssociation
+                        isAnswered
                         answer {
                             body
                             bodyText
+                            authorAssociation
                         }
-                        isAnswered
-                        comments(first: 20) {
+                        comments(first: 50) {
                             nodes {
                                 body
                                 bodyText
                                 author {
                                     login
                                 }
+                                authorAssociation
                                 isAnswer
-                                replies(first: 3) {
+                                replies(first: 10) {
                                     nodes {
                                         body
                                         bodyText
+                                        author {
+                                            login
+                                        }
+                                        authorAssociation
                                     }
                                 }
                             }
@@ -268,6 +239,82 @@ async function getDiscussions(
 
     try {
         const response = await octokit.graphql<GitHubDiscussionsResponse>(query, variables);
+        return response;
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        throw new Error(`GitHub GraphQL API error: ${errorMessage}`);
+    }
+}
+
+/**
+ * Get a single discussion by number using GraphQL
+ */
+export async function getSingleDiscussion(
+    octokit: Octokit,
+    owner: string,
+    repo: string,
+    number: number,
+): Promise<GitHubSingleDiscussionResponse> {
+    const query = `
+        query getSingleDiscussion($owner: String!, $name: String!, $number: Int!) {
+            repository(owner: $owner, name: $name) {
+                discussion(number: $number) {
+                    number
+                    title
+                    body
+                    bodyText
+                    url
+                    createdAt
+                    author {
+                        login
+                    }
+                    authorAssociation
+                    isAnswered
+                    answer {
+                        body
+                        bodyText
+                        authorAssociation
+                    }
+                    comments(first: 50) {
+                        nodes {
+                            body
+                            bodyText
+                            author {
+                                login
+                            }
+                            authorAssociation
+                            isAnswer
+                            replies(first: 10) {
+                                nodes {
+                                    body
+                                    bodyText
+                                    author {
+                                        login
+                                    }
+                                    authorAssociation
+                                }
+                            }
+                        }
+                    }
+                    repository {
+                        name
+                        owner {
+                            login
+                        }
+                    }
+                }
+            }
+        }
+    `;
+
+    const variables = {
+        owner,
+        name: repo,
+        number,
+    };
+
+    try {
+        const response = await octokit.graphql<GitHubSingleDiscussionResponse>(query, variables);
         return response;
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -367,64 +414,5 @@ function determineMessageRole(
 
         default:
             return 'user';
-    }
-}
-
-/**
- * Parse a GitHub webhook discussion into GitBook conversation format.
- * This handles the webhook payload structure which is different from GraphQL.
- */
-export function parseWebhookDiscussionAsGitBook(
-    discussion: GitHubWebhookDiscussion,
-    repositoryFullName: string,
-): ConversationInput | null {
-    try {
-        const conversation: ConversationInput = {
-            id: `github-${repositoryFullName.replace('/', '-')}-${discussion.number}`,
-            subject: discussion.title || 'Untitled Discussion',
-            metadata: {
-                url: discussion.html_url,
-                attributes: {
-                    source: 'github',
-                    repository: repositoryFullName,
-                    discussion_number: discussion.number.toString(),
-                    category: discussion.category?.name || '',
-                    category_emoji: discussion.category?.emoji || '',
-                    is_answered: discussion.answer_chosen_at ? 'true' : 'false',
-                    answer_chosen_at: discussion.answer_chosen_at || '',
-                },
-                createdAt: discussion.created_at,
-            },
-            parts: [],
-        };
-
-        // Add the main discussion post
-        if (discussion.body?.trim()) {
-            conversation.parts.push({
-                type: 'message',
-                role: 'user',
-                body: discussion.body.trim(),
-            });
-        }
-
-        // For webhook discussions, we don't have the full comment data
-        // We'll need to fetch comments separately if needed, or just work with the main discussion
-        // Since this is triggered on "closed", we'll just convert the main discussion for now
-
-        // Filter out conversations with no meaningful content
-        if (conversation.parts.length === 0) {
-            return null;
-        }
-
-        return conversation;
-    } catch (error) {
-        logger.error(`Failed to parse webhook discussion ${discussion?.number || 'unknown'}`, {
-            error: error instanceof Error ? error.message : String(error),
-            discussionTitle: discussion?.title,
-            discussionNumber: discussion?.number,
-            isAnswered: discussion?.answer_chosen_at ? 'true' : 'false',
-            repositoryFullName,
-        });
-        return null;
     }
 }
