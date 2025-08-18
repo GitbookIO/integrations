@@ -62,6 +62,7 @@ export interface GitHubDiscussionComment extends GitHubBaseContent {
 export interface GitHubDiscussionAnswer extends GitHubBaseContent {}
 
 export interface GitHubDiscussion extends GitHubBaseContent {
+    id: string;
     number: number;
     title: string;
     url: string;

@@ -40,159 +40,148 @@ async function verifyGitHubSignature(
 }
 
 /**
- * Handle incoming GitHub webhooks for discussion events
+ * Verify webhook signature and return error Response if verification fails
+ * Returns null if verification succeeds
  */
-export async function handleWebhook(
+export async function verifyWebhookSignature(
+    request: Request,
+    rawBody: string,
     context: GitHubRuntimeContext,
-    payload: GitHubWebhookPayload,
-    request?: Request,
-    rawBody?: string,
-): Promise<Response> {
-    // Verify webhook signature for security
-    if (request && rawBody) {
-        const signature = request.headers.get('x-hub-signature-256');
-        const webhookSecret = context.environment.secrets.WEBHOOK_SECRET;
+): Promise<Response | null> {
+    const signature = request.headers.get('x-hub-signature-256');
+    const webhookSecret = context.environment.secrets.WEBHOOK_SECRET;
 
-        if (!signature || !webhookSecret) {
-            logger.error('Missing required signature or webhook secret');
-            return new Response('Unauthorized', { status: 401 });
-        }
-
-        const isValidSignature = await verifyGitHubSignature(signature, rawBody, webhookSecret);
-        if (!isValidSignature) {
-            logger.error('Invalid webhook signature received');
-            return new Response('Unauthorized', { status: 401 });
-        }
+    if (!signature || !webhookSecret) {
+        logger.error('Missing required signature or webhook secret');
+        return new Response('Unauthorized', { status: 401 });
     }
 
-    logger.info('Processing GitHub webhook', {
+    const isValidSignature = await verifyGitHubSignature(signature, rawBody, webhookSecret);
+    if (!isValidSignature) {
+        logger.error('Invalid webhook signature received');
+        return new Response('Unauthorized', { status: 401 });
+    }
+
+    return null; // Verification succeeded
+}
+
+/**
+ * Handle GitHub discussion closed events
+ */
+export async function handleDiscussionClosed(
+    context: GitHubRuntimeContext,
+    payload: GitHubWebhookPayload,
+): Promise<Response> {
+    logger.info('Processing GitHub discussion closed event', {
         action: payload.action,
-        event: request?.headers.get('x-github-event'),
         repository: payload.repository?.full_name,
         discussionNumber: payload.discussion?.number,
     });
 
-    // Only process closed discussions
-    if (payload.action === 'closed' && payload.discussion) {
-        const repositoryFullName = payload.repository.full_name;
-        const githubInstallationId = payload.installation?.id.toString();
+    const repositoryFullName = payload.repository.full_name;
+    const githubInstallationId = payload.installation?.id.toString();
 
-        if (!githubInstallationId) {
-            logger.error('No GitHub installation ID in webhook payload');
-            return new Response('Missing installation ID', { status: 400 });
-        }
+    if (!githubInstallationId) {
+        logger.error('No GitHub installation ID in webhook payload');
+        return new Response('Missing installation ID', { status: 400 });
+    }
 
-        // Find all GitBook installations matching this GitHub installation ID
-        const {
-            data: { items: installations },
-        } = await context.api.integrations.listIntegrationInstallations(
-            context.environment.integration.name,
-            {
-                externalId: githubInstallationId,
-            },
-        );
+    // Find all GitBook installations matching this GitHub installation ID
+    const {
+        data: { items: installations },
+    } = await context.api.integrations.listIntegrationInstallations(
+        context.environment.integration.name,
+        {
+            externalId: githubInstallationId,
+        },
+    );
 
-        logger.info('Found matching installations', {
-            count: installations.length,
+    if (installations.length === 0) {
+        logger.info('No installations found for GitHub installation', {
             githubInstallationId,
             repository: repositoryFullName,
         });
+        return new Response('OK', { status: 200 });
+    }
 
-        if (installations.length === 0) {
-            logger.info('No installations found for GitHub installation', {
-                githubInstallationId,
-                repository: repositoryFullName,
-            });
-            return new Response('OK', { status: 200 });
-        }
+    // Process the webhook for each matching installation
+    await pMap(
+        installations,
+        async (installation) => {
+            try {
+                // Create installation-specific context to get the Octokit client
+                const installationContext = {
+                    ...context,
+                    environment: {
+                        ...context.environment,
+                        installation,
+                    },
+                };
 
-        // Process the webhook for each matching installation
-        await pMap(
-            installations,
-            async (installation) => {
-                try {
-                    // Create installation-specific context to get the Octokit client
-                    const installationContext = {
-                        ...context,
-                        environment: {
-                            ...context.environment,
-                            installation,
-                        },
-                    };
+                const octokit = await getOctokitClient(installationContext, githubInstallationId);
+                const [owner, repo] = repositoryFullName.split('/');
 
-                    const octokit = await getOctokitClient(
-                        installationContext,
-                        githubInstallationId,
-                    );
-                    const [owner, repo] = repositoryFullName.split('/');
+                // Fetch the full discussion data using GraphQL
+                const discussionResponse = await getSingleDiscussion(
+                    octokit,
+                    owner,
+                    repo,
+                    payload.discussion!.number,
+                );
 
-                    // Fetch the full discussion data using GraphQL
-                    const discussionResponse = await getSingleDiscussion(
-                        octokit,
-                        owner,
-                        repo,
-                        payload.discussion!.number,
-                    );
-
-                    if (!discussionResponse.repository.discussion) {
-                        logger.info('Discussion not found', {
-                            discussionNumber: payload.discussion!.number,
-                            repository: repositoryFullName,
-                            installationId: installation.id,
-                        });
-                        return;
-                    }
-
-                    // Convert GitHub discussion to GitBook conversation using the unified parser
-                    const gitbookConversation = parseDiscussionAsGitBook(
-                        discussionResponse.repository.discussion,
-                    );
-
-                    if (!gitbookConversation) {
-                        logger.info('Skipping discussion with no meaningful content', {
-                            discussionId: payload.discussion!.id,
-                            installationId: installation.id,
-                        });
-                        return;
-                    }
-
-                    // Create installation-specific API client for proper authentication
-                    const installationApiClient = await context.api.createInstallationClient(
-                        context.environment.integration.name,
-                        installation.id,
-                    );
-
-                    await installationApiClient.orgs.ingestConversation(
-                        installation.target.organization,
-                        [gitbookConversation],
-                    );
-
-                    logger.info('Successfully processed closed discussion', {
-                        discussionId: payload.discussion!.id,
+                if (!discussionResponse.repository.discussion) {
+                    logger.info('Discussion not found', {
                         discussionNumber: payload.discussion!.number,
                         repository: repositoryFullName,
                         installationId: installation.id,
                     });
-                } catch (error) {
-                    logger.error('Failed to process closed discussion', {
-                        discussionId: payload.discussion?.id,
-                        repository: repositoryFullName,
-                        installationId: installation.id,
-                        error: error instanceof Error ? error.message : String(error),
-                    });
+                    return;
                 }
-            },
-            {
-                concurrency: 2,
-                stopOnError: false,
-            },
-        );
-    } else {
-        logger.debug('Ignoring webhook', {
-            action: payload.action,
-            hasDiscussion: !!payload.discussion,
-        });
-    }
+
+                // Convert GitHub discussion to GitBook conversation using the unified parser
+                const gitbookConversation = parseDiscussionAsGitBook(
+                    discussionResponse.repository.discussion,
+                );
+
+                if (!gitbookConversation) {
+                    logger.info('Skipping discussion with no meaningful content', {
+                        discussionId: payload.discussion!.id,
+                        installationId: installation.id,
+                    });
+                    return;
+                }
+
+                // Create installation-specific API client for proper authentication
+                const installationApiClient = await context.api.createInstallationClient(
+                    context.environment.integration.name,
+                    installation.id,
+                );
+
+                await installationApiClient.orgs.ingestConversation(
+                    installation.target.organization,
+                    [gitbookConversation],
+                );
+
+                logger.info('Successfully processed closed discussion', {
+                    discussionId: payload.discussion!.id,
+                    discussionNumber: payload.discussion!.number,
+                    repository: repositoryFullName,
+                    installationId: installation.id,
+                });
+            } catch (error) {
+                logger.error('Failed to process closed discussion', {
+                    discussionId: payload.discussion?.id,
+                    repository: repositoryFullName,
+                    installationId: installation.id,
+                    error: error instanceof Error ? error.message : String(error),
+                });
+            }
+        },
+        {
+            concurrency: 2,
+            stopOnError: false,
+        },
+    );
 
     return new Response('OK', { status: 200 });
 }

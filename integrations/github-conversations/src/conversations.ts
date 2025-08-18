@@ -78,7 +78,7 @@ export async function ingestConversations(context: GitHubRuntimeContext) {
                             repo.owner.login,
                             repo.name,
                             cursor,
-                            10,
+                            20,
                         );
 
                         totalApiCalls++;
@@ -180,6 +180,7 @@ async function fetchRepositoriesForInstallation(
 
 const DISCUSSION_FRAGMENT = `
     fragment DiscussionFields on Discussion {
+        id
         number
         title
         body
@@ -234,7 +235,7 @@ async function getDiscussions(
     owner: string,
     repo: string,
     after?: string,
-    first: number = 10,
+    first: number = 20,
     states: string[] = ['CLOSED'],
 ): Promise<GitHubDiscussionsResponse> {
     const query = `
@@ -311,77 +312,52 @@ export async function getSingleDiscussion(
  * Parse a GitHub discussion into GitBook conversation format.
  */
 export function parseDiscussionAsGitBook(discussion: GitHubDiscussion): ConversationInput | null {
-    try {
-        const conversation: ConversationInput = {
-            id: `${discussion.repository.owner.login}:${discussion.number}`,
-            subject: discussion.title,
-            metadata: {
-                url: discussion.url,
-                attributes: {
-                    source: 'discussions',
-                    repository: `${discussion.repository.owner.login}/${discussion.repository.name}`,
-                    discussion_number: String(discussion.number),
-                    is_answered: String(discussion.isAnswered ?? false),
-                },
-                createdAt: discussion.createdAt,
+    const conversation: ConversationInput = {
+        id: discussion.id,
+        subject: discussion.title,
+        metadata: {
+            url: discussion.url,
+            attributes: {
+                source: 'discussions',
+                repository: `${discussion.repository.owner.login}/${discussion.repository.name}`,
+                discussion_number: String(discussion.number),
+                is_answered: String(discussion.isAnswered ?? false),
             },
-            parts: [],
-        };
+            createdAt: discussion.createdAt,
+        },
+        parts: [
+            {
+                type: 'message',
+                role: determineMessageRole(discussion.authorAssociation),
+                body: discussion.bodyText,
+            },
+        ],
+    };
 
-        // Add the main discussion post
+    // Add other comments (excluding the answer which we already added)
+    for (const comment of discussion.comments.nodes) {
         conversation.parts.push({
             type: 'message',
-            role: determineMessageRole(discussion.authorAssociation),
-            body: discussion.bodyText,
+            role: determineMessageRole(comment.authorAssociation),
+            body: comment.bodyText,
         });
 
-        // Add the chosen answer first (if available)
-        if (discussion.answer) {
+        // Add replies to this comment
+        for (const reply of comment.replies.nodes) {
             conversation.parts.push({
                 type: 'message',
-                role: determineMessageRole(discussion.answer.authorAssociation),
-                body: discussion.answer.bodyText,
+                role: determineMessageRole(reply.authorAssociation),
+                body: reply.bodyText,
             });
         }
+    }
 
-        // Add other comments (excluding the answer which we already added)
-        for (const comment of discussion.comments.nodes) {
-            if (comment.isAnswer) {
-                continue; // Skip the answer, we already added it above
-            }
-
-            conversation.parts.push({
-                type: 'message',
-                role: determineMessageRole(comment.authorAssociation),
-                body: comment.bodyText,
-            });
-
-            // Add replies to this comment
-            for (const reply of comment.replies.nodes) {
-                conversation.parts.push({
-                    type: 'message',
-                    role: determineMessageRole(reply.authorAssociation),
-                    body: reply.bodyText,
-                });
-            }
-        }
-
-        // Filter out conversations with no meaningful content
-        if (conversation.parts.length === 0) {
-            return null;
-        }
-
-        return conversation;
-    } catch (error) {
-        logger.error(`Failed to parse discussion ${discussion.number}`, {
-            error: error instanceof Error ? error.message : String(error),
-            discussionTitle: discussion.title,
-            discussionNumber: discussion.number,
-            repository: `${discussion.repository.owner.login}/${discussion.repository.name}`,
-            isAnswered: discussion.isAnswered,
-        });
+    // Filter out conversations with no meaningful content
+    if (conversation.parts.length === 0) {
         return null;
     }
+
+    return conversation;
 }
 
 /**

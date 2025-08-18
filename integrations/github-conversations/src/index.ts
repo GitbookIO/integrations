@@ -2,7 +2,11 @@ import { createIntegration, ExposableError, Logger } from '@gitbook/runtime';
 import { Router } from 'itty-router';
 import { GitHubRuntimeContext } from './types';
 import { configComponent } from './config';
-import { handleWebhook, handleInstallationDeleted } from './webhook';
+import {
+    handleDiscussionClosed,
+    handleInstallationDeleted,
+    verifyWebhookSignature,
+} from './webhook';
 import { ingestConversations } from './conversations';
 
 const logger = Logger('github-conversations');
@@ -216,13 +220,35 @@ export default createIntegration<GitHubRuntimeContext>({
                 action: payload.action,
             });
 
+            // Verify webhook signature for security
+            const signatureError = await verifyWebhookSignature(
+                request as Request,
+                rawBody || '',
+                context,
+            );
+
+            if (signatureError) {
+                return signatureError;
+            }
+
             // Handle installation deletion
             if (githubEvent === 'installation' && payload.action === 'deleted') {
                 return handleInstallationDeleted(context, payload);
             }
 
-            // Handle discussion events
-            return handleWebhook(context, payload, request as Request, rawBody || '');
+            // Handle discussion closed events
+            if (githubEvent === 'discussion' && payload.action === 'closed' && payload.discussion) {
+                return handleDiscussionClosed(context, payload);
+            }
+
+            // Ignore other webhook events
+            logger.debug('Ignoring webhook event', {
+                event: githubEvent,
+                action: payload.action,
+                hasDiscussion: !!payload.discussion,
+            });
+
+            return new Response('OK', { status: 200 });
         });
 
         /*
