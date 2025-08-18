@@ -60,7 +60,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
             .replace('<BRAND_LOGO>', logo)
             .replace('<COMMUNITY_URL>', communityUrl)
             .replace('<COMMUNITY_TYPE>', communityType)
-            .replace('<DISABLE_ASK_A_PERSON>', disableAskAPerson)
+            .replace('<DISABLE_ASK_A_PERSON>', disableAskAPerson),
         {
             headers: {
                 'Content-Type': 'application/javascript',
