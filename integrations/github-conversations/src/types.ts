@@ -22,6 +22,16 @@ export type GitHubWebhookPayload = WebhookComponents['schemas']['webhook-discuss
 /**
  * GitHub GraphQL types - these match our GraphQL query structure
  */
+export type CommentAuthorAssociation =
+    | 'OWNER'
+    | 'MEMBER'
+    | 'COLLABORATOR'
+    | 'CONTRIBUTOR'
+    | 'FIRST_TIME_CONTRIBUTOR'
+    | 'FIRST_TIMER'
+    | 'NONE'
+    | 'MANNEQUIN';
+
 export interface GitHubDiscussion {
     number: number;
     title: string;
@@ -31,12 +41,14 @@ export interface GitHubDiscussion {
     createdAt: string;
     author?: {
         login: string;
-    } | null;
+    };
+    authorAssociation: CommentAuthorAssociation;
+    isAnswered: boolean;
     answer?: {
         body: string;
         bodyText: string;
-    } | null;
-    isAnswered: boolean;
+        authorAssociation: CommentAuthorAssociation;
+    };
     comments: {
         nodes: GitHubDiscussionComment[];
     };
@@ -53,10 +65,18 @@ export interface GitHubDiscussionComment {
     bodyText: string;
     author?: {
         login: string;
-    } | null;
+    };
+    authorAssociation: CommentAuthorAssociation;
     isAnswer: boolean;
     replies: {
-        nodes: GitHubDiscussionComment[];
+        nodes: {
+            body: string;
+            bodyText: string;
+            author?: {
+                login: string;
+            };
+            authorAssociation: CommentAuthorAssociation;
+        }[];
     };
 }
 

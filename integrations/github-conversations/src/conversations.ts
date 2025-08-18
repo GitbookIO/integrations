@@ -1,14 +1,15 @@
-import { ConversationInput } from '@gitbook/api';
+import { ConversationInput, ConversationPartMessage } from '@gitbook/api';
 import { ExposableError, Logger } from '@gitbook/runtime';
 import { Octokit } from 'octokit';
 import { getOctokitClient } from './client';
 import {
     GitHubRuntimeContext,
-    GitHubRepository,
-    GitHubWebhookDiscussion,
     GitHubDiscussion,
     GitHubDiscussionComment,
+    GitHubRepository,
     GitHubDiscussionsResponse,
+    GitHubWebhookDiscussion,
+    CommentAuthorAssociation,
 } from './types';
 
 const logger = Logger('github-conversations');
@@ -179,16 +180,51 @@ async function getDiscussions(
                         hasNextPage
                         endCursor
                     }
-                    nodes {
-                        number
-                        title
-                        body
-                        bodyText
-                        url
-                        createdAt
-                        author {
-                            login
-                        }
+          nodes {
+            number
+            title
+            body
+            bodyText
+            url
+            createdAt
+            author {
+              login
+            }
+            authorAssociation
+            isAnswered
+            answer {
+              body
+              bodyText
+              authorAssociation
+            }
+            comments(first: 50) {
+              nodes {
+                body
+                bodyText
+                author {
+                  login
+                }
+                authorAssociation
+                isAnswer
+                replies(first: 10) {
+                  nodes {
+                    body
+                    bodyText
+                    author {
+                      login
+                    }
+                    authorAssociation
+                  }
+                }
+              }
+            }
+            repository {
+              name
+              owner {
+                login
+              }
+            }
+          }
                         answer {
                             body
                             bodyText
@@ -245,16 +281,15 @@ async function getDiscussions(
 export function parseDiscussionAsGitBook(discussion: GitHubDiscussion): ConversationInput | null {
     try {
         const conversation: ConversationInput = {
-            id: `github-${discussion.repository?.owner?.login || 'unknown'}-${discussion.repository?.name || 'unknown'}-${discussion.number || 'unknown'}`,
-            subject: discussion.title || 'Untitled Discussion',
+            id: `${discussion.repository.owner.login}:${discussion.number}`,
+            subject: discussion.title,
             metadata: {
                 url: discussion.url,
                 attributes: {
-                    source: 'github',
-                    repository:
-                        discussion.repository?.owner?.login + '/' + discussion.repository?.name,
-                    discussion_number: discussion.number?.toString() || '',
-                    is_answered: discussion.isAnswered?.toString() || 'false',
+                    source: 'discussions',
+                    repository: `${discussion.repository.owner.login}/${discussion.repository.name}`,
+                    discussion_number: discussion.number.toString(),
+                    is_answered: discussion.isAnswered.toString(),
                 },
                 createdAt: discussion.createdAt,
             },
@@ -262,20 +297,18 @@ export function parseDiscussionAsGitBook(discussion: GitHubDiscussion): Conversa
         };
 
         // Add the main discussion post
-        if (discussion.body?.trim()) {
-            conversation.parts.push({
-                type: 'message',
-                role: 'user',
-                body: discussion.bodyText || discussion.body,
-            });
-        }
+        conversation.parts.push({
+            type: 'message',
+            role: determineMessageRole(discussion.authorAssociation),
+            body: discussion.bodyText,
+        });
 
         // Add the chosen answer first (if available)
         if (discussion.answer) {
             conversation.parts.push({
                 type: 'message',
-                role: 'assistant',
-                body: discussion.answer.bodyText || discussion.answer.body,
+                role: determineMessageRole(discussion.answer.authorAssociation),
+                body: discussion.answer.bodyText,
             });
         }
 
@@ -285,23 +318,19 @@ export function parseDiscussionAsGitBook(discussion: GitHubDiscussion): Conversa
                 continue; // Skip the answer, we already added it above
             }
 
-            if (comment.body?.trim()) {
-                conversation.parts.push({
-                    type: 'message',
-                    role: determineCommentRole(comment, discussion),
-                    body: comment.bodyText || comment.body,
-                });
-            }
+            conversation.parts.push({
+                type: 'message',
+                role: determineMessageRole(comment.authorAssociation),
+                body: comment.bodyText,
+            });
 
             // Add replies to this comment
             for (const reply of comment.replies.nodes) {
-                if (reply.body?.trim()) {
-                    conversation.parts.push({
-                        type: 'message',
-                        role: determineCommentRole(reply, discussion),
-                        body: reply.bodyText || reply.body,
-                    });
-                }
+                conversation.parts.push({
+                    type: 'message',
+                    role: determineMessageRole(reply.authorAssociation),
+                    body: reply.bodyText,
+                });
             }
         }
 
@@ -312,12 +341,12 @@ export function parseDiscussionAsGitBook(discussion: GitHubDiscussion): Conversa
 
         return conversation;
     } catch (error) {
-        logger.error(`Failed to parse discussion ${discussion?.number || 'unknown'}`, {
+        logger.error(`Failed to parse discussion ${discussion.number}`, {
             error: error instanceof Error ? error.message : String(error),
-            discussionTitle: discussion?.title,
-            discussionNumber: discussion?.number,
-            hasRepository: !!discussion?.repository,
-            isAnswered: discussion?.isAnswered,
+            discussionTitle: discussion.title,
+            discussionNumber: discussion.number,
+            repository: `${discussion.repository.owner.login}/${discussion.repository.name}`,
+            isAnswered: discussion.isAnswered,
         });
         return null;
     }
@@ -325,37 +354,20 @@ export function parseDiscussionAsGitBook(discussion: GitHubDiscussion): Conversa
 
 /**
  * Determine the role of a comment author in the conversation.
- * This is a heuristic to classify comments as user questions or assistant responses.
+ * Uses GitHub's authorAssociation to classify comments as user or team-member.
  */
-function determineCommentRole(
-    comment: GitHubDiscussionComment,
-    discussion: GitHubDiscussion,
-): 'user' | 'assistant' {
-    // If it's marked as an answer, treat as assistant
-    if (comment.isAnswer) {
-        return 'assistant';
+function determineMessageRole(
+    authorAssociation: CommentAuthorAssociation,
+): ConversationPartMessage['role'] {
+    switch (authorAssociation) {
+        case 'OWNER':
+        case 'MEMBER':
+        case 'COLLABORATOR':
+            return 'team-member';
+
+        default:
+            return 'user';
     }
-
-    // If the comment author is the same as the discussion author, treat as user
-    if (comment.author?.login === discussion.author?.login) {
-        return 'user';
-    }
-
-    // If the comment author is a maintainer/collaborator (we can't easily detect this from the API),
-    // we could treat it as assistant, but for now we'll use a simple heuristic:
-    // Comments that are longer or contain certain patterns might be more likely to be helpful responses
-    const commentLength = comment.bodyText?.length || comment.body?.length || 0;
-    const hasCodeBlocks = /```/.test(comment.body || '');
-    const hasLinks = /https?:\/\//.test(comment.body || '');
-    const hasAtMentions = /@\w+/.test(comment.body || '');
-
-    // Heuristic: longer comments with code/links/mentions are more likely to be helpful responses
-    if (commentLength > 200 && (hasCodeBlocks || hasLinks || hasAtMentions)) {
-        return 'assistant';
-    }
-
-    // Default to user for shorter comments or follow-up questions
-    return 'user';
 }
 
 /**
