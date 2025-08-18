@@ -46,6 +46,11 @@ contentSecurityPolicy:
 configurations:
     site:
         properties:
+            native_ai_experience:
+                type: boolean
+                title: Native AI experience
+                description: Set to "true" to enable the built-in AI experience. Default is "false".
+                default: false
             assistant_id:
                 type: string
                 title: Assistant ID

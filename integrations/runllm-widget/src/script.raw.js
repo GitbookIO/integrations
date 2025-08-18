@@ -9,6 +9,7 @@
     const communityUrl = '<COMMUNITY_URL>';
     const communityType = '<COMMUNITY_TYPE>';
     const disableAskAPerson = '<DISABLE_ASK_A_PERSON>';
+    const nativeAiExperience = '<NATIVE_AI_EXPERIENCE>';
 
     n = document.createElement('script');
     n.id = 'runllm-widget-script';
@@ -45,4 +46,18 @@
     }
 
     document.head.appendChild(n);
+
+    if (nativeAiExperience === 'true') {
+        // Disable floating window
+        // document.querySelector('.runllm-widget-container').style.display = 'none';
+
+        // Register and open RunLLM Window from GitBook UI
+        window.GitBook.registerCustomAssistant({
+            label: 'Ask RunLLM AI',
+            icon: '...',
+            onOpen: (query) => {
+                // Open RunLLM window with query
+            },
+        });
+    }
 })();
