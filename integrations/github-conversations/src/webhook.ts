@@ -75,7 +75,7 @@ export async function handleWebhook(
     // Only process closed discussions
     if (payload.action === 'closed' && payload.discussion) {
         const repositoryFullName = payload.repository.full_name;
-        const githubInstallationId = payload.installation?.id?.toString();
+        const githubInstallationId = payload.installation?.id.toString();
 
         if (!githubInstallationId) {
             logger.error('No GitHub installation ID in webhook payload');
@@ -120,7 +120,10 @@ export async function handleWebhook(
                         },
                     };
 
-                    const octokit = await getOctokitClient(installationContext);
+                    const octokit = await getOctokitClient(
+                        installationContext,
+                        githubInstallationId,
+                    );
                     const [owner, repo] = repositoryFullName.split('/');
 
                     // Fetch the full discussion data using GraphQL

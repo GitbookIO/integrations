@@ -10,21 +10,11 @@ const logger = Logger('github-conversations:client');
  */
 export async function getOctokitClient(
     context: GitHubRuntimeContext,
-    installationId?: string,
+    githubInstallationId: string,
 ): Promise<Octokit> {
     const { installation } = context.environment;
     if (!installation) {
         throw new ExposableError('Installation not found');
-    }
-
-    // Use provided installationId or fall back to first available
-    let targetInstallationId = installationId;
-    if (!targetInstallationId) {
-        const installationIds = installation.configuration.installation_ids || [];
-        if (installationIds.length === 0) {
-            throw new ExposableError('No GitHub App installation IDs found');
-        }
-        targetInstallationId = installationIds[0];
     }
 
     const config = getGitHubAppConfig(context);
@@ -33,7 +23,7 @@ export async function getOctokitClient(
     }
 
     const token = await getInstallationAccessToken(
-        targetInstallationId,
+        githubInstallationId,
         config.appId,
         config.privateKey,
     );
@@ -63,7 +53,7 @@ async function generateJWT(appId: string, privateKey: string): Promise<string> {
  * Get an installation access token for GitHub App.
  */
 export async function getInstallationAccessToken(
-    installationId: string,
+    githuInstallationId: string,
     appId: string,
     privateKey: string,
 ): Promise<string> {
@@ -78,7 +68,7 @@ export async function getInstallationAccessToken(
         const response = await octokit.request(
             'POST /app/installations/{installation_id}/access_tokens',
             {
-                installation_id: parseInt(installationId),
+                installation_id: parseInt(githuInstallationId),
                 headers: {
                     'X-GitHub-Api-Version': '2022-11-28',
                 },

@@ -63,12 +63,7 @@ async function handleInstallSetup(
                     ...existingConfig,
                     installation_ids: updatedInstallationIds,
                 },
-                externalIds: Array.from(
-                    new Set([
-                        ...(context.environment.installation?.externalIds || []),
-                        githubInstallationId,
-                    ]),
-                ),
+                externalIds: updatedInstallationIds,
             },
         );
 
