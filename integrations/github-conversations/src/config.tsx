@@ -20,18 +20,17 @@ export const configComponent = createComponent<
 
         const config = element.props.installation.configuration;
         const hasInstallations = config.installation_ids && config.installation_ids.length > 0;
-        const isConnected = hasInstallations;
 
         return (
             <configuration>
                 <input
-                    label="Authenticate"
+                    label="GitHub App Installation"
                     hint="Authorize GitBook to access your GitHub account and repositories."
                     element={
                         <button
                             style="secondary"
                             disabled={false}
-                            label={isConnected ? 'Add more repositories' : 'Authorize'}
+                            label={hasInstallations ? 'Manage repositories' : 'Install GitHub App'}
                             onPress={{
                                 action: '@ui.url.open',
                                 url: `${installation?.urls.publicEndpoint}/install`,
