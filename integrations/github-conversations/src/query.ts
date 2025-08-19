@@ -2,17 +2,27 @@ import { Octokit } from 'octokit';
 import type { AuthorAssociation } from '@octokit/webhooks-types';
 import { ConversationInput, ConversationPartMessage } from '@gitbook/api';
 
+type RepoDiscussionParams = {
+    octokit: Octokit;
+    owner: string;
+    repo: string;
+};
+
 /**
  * Get discussions for a repository using GraphQL
  */
-export async function getRepoDiscussions(
-    octokit: Octokit,
-    owner: string,
-    repo: string,
-    after?: string,
-    first: number = 20,
-    states: string[] = ['CLOSED'],
-): Promise<GitHubDiscussionsResponse> {
+export async function getRepoDiscussions({
+    octokit,
+    owner,
+    repo,
+    after,
+    first = 20,
+    states = ['CLOSED'],
+}: RepoDiscussionParams & {
+    after?: string;
+    first?: number;
+    states?: string[];
+}): Promise<GitHubDiscussionsResponse> {
     const query = `
         ${DISCUSSION_FRAGMENT}
         query getDiscussions($owner: String!, $name: String!, $first: Int!, $after: String, $states: [DiscussionState!]) {
@@ -31,16 +41,14 @@ export async function getRepoDiscussions(
         }
     `;
 
-    const variables = {
-        owner,
-        name: repo,
-        first,
-        after,
-        states,
-    };
-
     try {
-        const response = await octokit.graphql<GitHubDiscussionsResponse>(query, variables);
+        const response = await octokit.graphql<GitHubDiscussionsResponse>(query, {
+            owner,
+            name: repo,
+            first,
+            after,
+            states,
+        });
         return response;
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -51,12 +59,14 @@ export async function getRepoDiscussions(
 /**
  * Get a single discussion by number using GraphQL
  */
-export async function getRepoDiscussion(
-    octokit: Octokit,
-    owner: string,
-    repo: string,
-    number: number,
-): Promise<GitHubSingleDiscussionResponse> {
+export async function getRepoDiscussion({
+    octokit,
+    owner,
+    repo,
+    number,
+}: RepoDiscussionParams & {
+    number: number;
+}): Promise<GitHubSingleDiscussionResponse> {
     const query = `
         ${DISCUSSION_FRAGMENT}
         query getSingleDiscussion($owner: String!, $name: String!, $number: Int!) {
@@ -68,14 +78,12 @@ export async function getRepoDiscussion(
         }
     `;
 
-    const variables = {
-        owner,
-        name: repo,
-        number,
-    };
-
     try {
-        const response = await octokit.graphql<GitHubSingleDiscussionResponse>(query, variables);
+        const response = await octokit.graphql<GitHubSingleDiscussionResponse>(query, {
+            owner,
+            name: repo,
+            number,
+        });
         return response;
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -153,6 +161,52 @@ function determineMessageRole(
 }
 
 /**
+ * GraphQL fragment for discussion fields
+ */
+const DISCUSSION_FRAGMENT = `
+    fragment DiscussionFields on Discussion {
+        id
+        number
+        title
+        body
+        bodyText
+        url
+        createdAt
+        author {
+            login
+        }
+        authorAssociation
+        comments(first: 50) {
+            nodes {
+                body
+                bodyText
+                author {
+                    login
+                }
+                authorAssociation
+                isAnswer
+                replies(first: 10) {
+                    nodes {
+                        body
+                        bodyText
+                        author {
+                            login
+                        }
+                        authorAssociation
+                    }
+                }
+            }
+        }
+        repository {
+            name
+            owner {
+                login
+            }
+        }
+    }
+`;
+
+/**
  * Types matching the GraphQL query structure
  * These correspond exactly to the DISCUSSION_FRAGMENT fields
  */
@@ -222,46 +276,3 @@ interface GitHubSingleDiscussionResponse {
         discussion: GraphQLDiscussion | null;
     };
 }
-
-const DISCUSSION_FRAGMENT = `
-    fragment DiscussionFields on Discussion {
-        id
-        number
-        title
-        body
-        bodyText
-        url
-        createdAt
-        author {
-            login
-        }
-        authorAssociation
-        comments(first: 50) {
-            nodes {
-                body
-                bodyText
-                author {
-                    login
-                }
-                authorAssociation
-                isAnswer
-                replies(first: 10) {
-                    nodes {
-                        body
-                        bodyText
-                        author {
-                            login
-                        }
-                        authorAssociation
-                    }
-                }
-            }
-        }
-        repository {
-            name
-            owner {
-                login
-            }
-        }
-    }
-`;

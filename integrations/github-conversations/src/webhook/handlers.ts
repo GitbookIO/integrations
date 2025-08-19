@@ -63,12 +63,12 @@ export async function handleDiscussionClosed(
                 const [owner, repo] = repositoryFullName.split('/');
 
                 // Fetch the full discussion data using GraphQL
-                const discussionResponse = await getRepoDiscussion(
+                const discussionResponse = await getRepoDiscussion({
                     octokit,
                     owner,
                     repo,
-                    payload.discussion!.number,
-                );
+                    number: payload.discussion!.number,
+                });
 
                 if (!discussionResponse.repository.discussion) {
                     logger.debug('Discussion not found', {

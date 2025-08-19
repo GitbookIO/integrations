@@ -63,13 +63,12 @@ export async function ingestConversations(context: GitHubRuntimeContext) {
                     let repoProcessed = 0;
 
                     while (hasNextPage && totalApiCalls < MAX_API_CALLS) {
-                        const discussionsResponse = await getRepoDiscussions(
+                        const discussionsResponse = await getRepoDiscussions({
                             octokit,
-                            repo.owner.login,
-                            repo.name,
-                            cursor,
-                            20,
-                        );
+                            owner: repo.owner.login,
+                            repo: repo.name,
+                            after: cursor,
+                        });
 
                         totalApiCalls++;
 
