@@ -1,8 +1,8 @@
-import pMap from 'p-map';
 import { Logger } from '@gitbook/runtime';
-import { GitHubRuntimeContext, GitHubWebhookPayload } from '../types';
+import pMap from 'p-map';
 import { getOctokitClient } from '../client';
 import { getRepoDiscussion, parseDiscussionAsGitBook } from '../query';
+import { GitHubRuntimeContext, GitHubWebhookPayload } from '../types';
 
 const logger = Logger('github-conversations');
 
@@ -133,6 +133,7 @@ export async function handleDiscussionClosed(
  */
 export async function handleInstallationDeleted(
     context: GitHubRuntimeContext,
+    // TODO:
     payload: any,
 ): Promise<Response> {
     const githubInstallationId = String(payload.installation.id);

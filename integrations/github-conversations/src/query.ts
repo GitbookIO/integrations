@@ -1,54 +1,6 @@
 import { Octokit } from 'octokit';
-import {
-    GitHubDiscussion,
-    GitHubDiscussionResponse,
-    GitHubDiscussionsResponse,
-    GitHubSingleDiscussionResponse,
-} from './types';
+import type { AuthorAssociation } from '@octokit/webhooks-types';
 import { ConversationInput, ConversationPartMessage } from '@gitbook/api';
-
-const DISCUSSION_FRAGMENT = `
-    fragment DiscussionFields on Discussion {
-        id
-        number
-        title
-        body
-        bodyText
-        url
-        createdAt
-        author {
-            login
-        }
-        authorAssociation
-        comments(first: 50) {
-            nodes {
-                body
-                bodyText
-                author {
-                    login
-                }
-                authorAssociation
-                isAnswer
-                replies(first: 10) {
-                    nodes {
-                        body
-                        bodyText
-                        author {
-                            login
-                        }
-                        authorAssociation
-                    }
-                }
-            }
-        }
-        repository {
-            name
-            owner {
-                login
-            }
-        }
-    }
-`;
 
 /**
  * Get discussions for a repository using GraphQL
@@ -134,9 +86,7 @@ export async function getRepoDiscussion(
 /**
  * Parse a GitHub discussion into GitBook conversation format.
  */
-export function parseDiscussionAsGitBook(
-    discussion: GitHubDiscussionResponse,
-): ConversationInput | null {
+export function parseDiscussionAsGitBook(discussion: GraphQLDiscussion): ConversationInput | null {
     const conversation: ConversationInput = {
         id: discussion.id,
         subject: discussion.title,
@@ -189,7 +139,7 @@ export function parseDiscussionAsGitBook(
  * Uses GitHub's authorAssociation to classify comments as user or team-member.
  */
 function determineMessageRole(
-    authorAssociation: GitHubDiscussion['author_association'],
+    authorAssociation: AuthorAssociation,
 ): ConversationPartMessage['role'] {
     switch (authorAssociation) {
         case 'OWNER':
@@ -201,3 +151,117 @@ function determineMessageRole(
             return 'user';
     }
 }
+
+/**
+ * Types matching the GraphQL query structure
+ * These correspond exactly to the DISCUSSION_FRAGMENT fields
+ */
+interface GraphQLDiscussion {
+    id: string;
+    number: number;
+    title: string;
+    body: string;
+    bodyText: string;
+    url: string;
+    createdAt: string;
+    author: {
+        login: string;
+    } | null;
+    authorAssociation: AuthorAssociation;
+    comments: {
+        nodes: GraphQLDiscussionComment[];
+    };
+    repository: {
+        name: string;
+        owner: {
+            login: string;
+        };
+    };
+}
+
+interface GraphQLDiscussionComment {
+    body: string;
+    bodyText: string;
+    author: {
+        login: string;
+    } | null;
+    authorAssociation: AuthorAssociation;
+    isAnswer: boolean;
+    replies: {
+        nodes: GraphQLDiscussionReply[];
+    };
+}
+
+interface GraphQLDiscussionReply {
+    body: string;
+    bodyText: string;
+    author: {
+        login: string;
+    } | null;
+    authorAssociation: AuthorAssociation;
+}
+
+/**
+ * GraphQL API response types
+ */
+interface GitHubDiscussionsResponse {
+    repository: {
+        discussions: {
+            totalCount: number;
+            pageInfo: {
+                hasNextPage: boolean;
+                endCursor?: string;
+            };
+            nodes: GraphQLDiscussion[];
+        };
+    };
+}
+
+interface GitHubSingleDiscussionResponse {
+    repository: {
+        discussion: GraphQLDiscussion | null;
+    };
+}
+
+const DISCUSSION_FRAGMENT = `
+    fragment DiscussionFields on Discussion {
+        id
+        number
+        title
+        body
+        bodyText
+        url
+        createdAt
+        author {
+            login
+        }
+        authorAssociation
+        comments(first: 50) {
+            nodes {
+                body
+                bodyText
+                author {
+                    login
+                }
+                authorAssociation
+                isAnswer
+                replies(first: 10) {
+                    nodes {
+                        body
+                        bodyText
+                        author {
+                            login
+                        }
+                        authorAssociation
+                    }
+                }
+            }
+        }
+        repository {
+            name
+            owner {
+                login
+            }
+        }
+    }
+`;
