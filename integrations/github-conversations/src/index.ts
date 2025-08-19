@@ -30,7 +30,6 @@ export default createIntegration<GitHubRuntimeContext>({
             const githubEvent = (request as Request).headers.get('x-github-event');
 
             logger.info('Received GitHub webhook', {
-                payload,
                 event: githubEvent,
                 action: payload.action,
             });

@@ -120,9 +120,10 @@ export async function ingestConversations(context: GitHubRuntimeContext) {
         }
     }
 
-    logger.info(
-        `Discussion ingestion completed. Processed ${totalProcessed} discussions total using ${totalApiCalls} API calls from ${installationIds.length} installations`,
-    );
+    logger.info(`Discussion ingestion completed`, {
+        totalProcessed,
+        totalInstallations: installationIds.length,
+    });
 }
 
 /**
