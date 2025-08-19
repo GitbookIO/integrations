@@ -70,7 +70,7 @@ export default createIntegration<GitHubRuntimeContext>({
             }
 
             // Redirect to GitHub App installation page with state parameter
-            const appName = 'ingest-discussions-dev-valentino';
+            const appName = context.environment.secrets.GITHUB_APP_NAME;
             const gitbookInstallationId = installation.id; // Pass GitBook installation ID as state
             const installationUrl = `https://github.com/apps/${appName}/installations/new?state=${encodeURIComponent(gitbookInstallationId)}`;
 

@@ -16,6 +16,7 @@ configurations:
         componentId: config
 secrets:
     GITHUB_APP_ID: ${{ env.GITHUB_APP_ID }}
+    GITHUB_APP_NAME: ${{ env.GITHUB_APP_NAME }}
     GITHUB_PRIVATE_KEY: ${{ env.GITHUB_PRIVATE_KEY }}
     CLIENT_ID: ${{ env.GITHUB_CLIENT_ID }}
     CLIENT_SECRET: ${{ env.GITHUB_CLIENT_SECRET }}
@@ -25,6 +26,7 @@ envs:
     test:
         secrets:
             GITHUB_APP_ID: ${{ "op://gitbook-integrations/githubConversationsStaging/GITHUB_APP_ID" }}
+            GITHUB_APP_NAME: ${{ "op://gitbook-integrations/githubConversationsStaging/GITHUB_APP_NAME" }}
             GITHUB_PRIVATE_KEY: ${{ "op://gitbook-integrations/githubConversationsStaging/GITHUB_PRIVATE_KEY" }}
             CLIENT_ID: ${{ "op://gitbook-integrations/githubConversationsStaging/CLIENT_ID" }}
             CLIENT_SECRET: ${{ "op://gitbook-integrations/githubConversationsStaging/CLIENT_SECRET" }}
@@ -32,6 +34,7 @@ envs:
     staging:
         secrets:
             GITHUB_APP_ID: ${{ "op://gitbook-integrations/githubConversationsStaging/GITHUB_APP_ID" }}
+            GITHUB_APP_NAME: ${{ "op://gitbook-integrations/githubConversationsStaging/GITHUB_APP_NAME" }}
             GITHUB_PRIVATE_KEY: ${{ "op://gitbook-integrations/githubConversationsStaging/GITHUB_PRIVATE_KEY" }}
             CLIENT_ID: ${{ "op://gitbook-integrations/githubConversationsStaging/CLIENT_ID" }}
             CLIENT_SECRET: ${{ "op://gitbook-integrations/githubConversationsStaging/CLIENT_SECRET" }}
@@ -39,6 +42,7 @@ envs:
     production:
         secrets:
             GITHUB_APP_ID: ${{ "op://gitbook-integrations/githubConversationsProduction/GITHUB_APP_ID" }}
+            GITHUB_APP_NAME: ${{ "op://gitbook-integrations/githubConversationsProduction/GITHUB_APP_NAME" }}
             GITHUB_PRIVATE_KEY: ${{ "op://gitbook-integrations/githubConversationsProduction/GITHUB_PRIVATE_KEY" }}
             CLIENT_ID: ${{ "op://gitbook-integrations/githubConversationsProduction/CLIENT_ID" }}
             CLIENT_SECRET: ${{ "op://gitbook-integrations/githubConversationsProduction/CLIENT_SECRET" }}
