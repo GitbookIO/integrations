@@ -53,7 +53,7 @@
 
         // Register and open RunLLM Window from GitBook UI
         window.GitBook.registerCustomAssistant({
-            label: 'Ask RunLLM AI',
+            label: 'RunLLM',
             icon: 'sparkle',
             onOpen: (query) => {
                 // Open RunLLM window with query
