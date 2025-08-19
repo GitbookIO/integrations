@@ -4,11 +4,11 @@ import { Octokit } from 'octokit';
 import { getOctokitClient } from './client';
 import {
     GitHubRuntimeContext,
-    GitHubDiscussion,
+    GitHubDiscussionResponse,
     GitHubRepository,
     GitHubDiscussionsResponse,
     GitHubSingleDiscussionResponse,
-    CommentAuthorAssociation,
+    GitHubDiscussion,
 } from './types';
 
 const logger = Logger('github-conversations');
@@ -191,12 +191,6 @@ const DISCUSSION_FRAGMENT = `
             login
         }
         authorAssociation
-        isAnswered
-        answer {
-            body
-            bodyText
-            authorAssociation
-        }
         comments(first: 50) {
             nodes {
                 body
@@ -311,7 +305,9 @@ export async function getSingleDiscussion(
 /**
  * Parse a GitHub discussion into GitBook conversation format.
  */
-export function parseDiscussionAsGitBook(discussion: GitHubDiscussion): ConversationInput | null {
+export function parseDiscussionAsGitBook(
+    discussion: GitHubDiscussionResponse,
+): ConversationInput | null {
     const conversation: ConversationInput = {
         id: discussion.id,
         subject: discussion.title,
@@ -321,7 +317,6 @@ export function parseDiscussionAsGitBook(discussion: GitHubDiscussion): Conversa
                 source: 'discussions',
                 repository: `${discussion.repository.owner.login}/${discussion.repository.name}`,
                 discussion_number: String(discussion.number),
-                is_answered: String(discussion.isAnswered ?? false),
             },
             createdAt: discussion.createdAt,
         },
@@ -365,7 +360,7 @@ export function parseDiscussionAsGitBook(discussion: GitHubDiscussion): Conversa
  * Uses GitHub's authorAssociation to classify comments as user or team-member.
  */
 function determineMessageRole(
-    authorAssociation: CommentAuthorAssociation,
+    authorAssociation: GitHubDiscussion['author_association'],
 ): ConversationPartMessage['role'] {
     switch (authorAssociation) {
         case 'OWNER':

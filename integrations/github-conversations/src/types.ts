@@ -1,6 +1,5 @@
 import { RuntimeEnvironment, RuntimeContext } from '@gitbook/runtime';
 import type { components } from '@octokit/openapi-types';
-import type { components as WebhookComponents } from '@octokit/openapi-webhooks-types';
 
 export type GitHubInstallationConfiguration = {
     /**
@@ -16,59 +15,25 @@ export type GitHubRuntimeContext = RuntimeContext<GitHubRuntimeEnvironment>;
  * Use Octokit types for all GitHub API objects
  */
 export type GitHubRepository = components['schemas']['repository'];
-export type GitHubWebhookDiscussion = WebhookComponents['schemas']['discussion'];
-export type GitHubWebhookPayload = WebhookComponents['schemas']['webhook-discussion-closed'];
+export type GitHubDiscussion = components['schemas']['discussion'];
+export type GitHubWebhookPayload = components['schemas']['webhook-discussion-closed'];
 
-/**
- * GitHub GraphQL types - these match our GraphQL query structure
- */
-export type CommentAuthorAssociation =
-    | 'OWNER'
-    | 'MEMBER'
-    | 'COLLABORATOR'
-    | 'CONTRIBUTOR'
-    | 'FIRST_TIME_CONTRIBUTOR'
-    | 'FIRST_TIMER'
-    | 'NONE'
-    | 'MANNEQUIN';
-
-export interface GitHubAuthor {
-    login: string;
-}
-
-export interface GitHubRepositoryOwner {
-    name: string;
-    owner: {
-        login: string;
-    };
-}
-
-export interface GitHubBaseContent {
-    body: string;
-    bodyText: string;
-    author?: GitHubAuthor;
-    authorAssociation: CommentAuthorAssociation;
-}
-
-export interface GitHubDiscussionReply extends GitHubBaseContent {}
-
-export interface GitHubDiscussionComment extends GitHubBaseContent {
-    isAnswer: boolean;
-    replies: {
-        nodes: GitHubDiscussionReply[];
-    };
-}
-
-export interface GitHubDiscussionAnswer extends GitHubBaseContent {}
-
-export interface GitHubDiscussion extends GitHubBaseContent {
+interface GitHubDiscussionBaseResponse extends GitHubBaseContentResponse {
     id: string;
-    number: number;
-    title: string;
-    url: string;
-    createdAt: string;
+    number: GitHubDiscussion['number'];
+    title: GitHubDiscussion['title'];
+    url: GitHubDiscussion['html_url'];
     isAnswered: boolean;
-    answer?: GitHubDiscussionAnswer;
+    createdAt: GitHubDiscussion['created_at'];
+}
+
+export interface GitHubDiscussionResponse extends GitHubDiscussionBaseResponse {
+    id: string;
+    number: GitHubDiscussion['number'];
+    title: GitHubDiscussion['title'];
+    url: GitHubDiscussion['html_url'];
+    isAnswered: boolean;
+    createdAt: GitHubDiscussion['created_at'];
     comments: {
         nodes: GitHubDiscussionComment[];
     };
@@ -83,13 +48,38 @@ export interface GitHubDiscussionsResponse {
                 hasNextPage: boolean;
                 endCursor?: string;
             };
-            nodes: GitHubDiscussion[];
+            nodes: GitHubDiscussionResponse[];
         };
     };
 }
 
 export interface GitHubSingleDiscussionResponse {
     repository: {
-        discussion: GitHubDiscussion | null;
+        discussion: GitHubDiscussionResponse | null;
+    };
+}
+
+interface GitHubAuthor {
+    login: string;
+}
+
+interface GitHubRepositoryOwner {
+    name: string;
+    owner: {
+        login: string;
+    };
+}
+
+interface GitHubBaseContentResponse {
+    body: GitHubDiscussion['body'];
+    bodyText: string;
+    author?: GitHubAuthor;
+    authorAssociation: GitHubDiscussion['author_association'];
+}
+
+interface GitHubDiscussionComment extends GitHubBaseContentResponse {
+    isAnswer: boolean;
+    replies: {
+        nodes: GitHubBaseContentResponse[];
     };
 }
