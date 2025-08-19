@@ -65,15 +65,12 @@ const mailchimpSubscribe = createComponent<
                 if (!accessToken) {
                     throw new ExposableError('Mailchimp integration not configured');
                 }
-                if (!element.props.listId) {
-                    throw new ExposableError('No list ID provided');
-                }
 
                 try {
                     const listId = await resolveMailingListId(
-                        element.props.listId,
                         configuration.api_endpoint,
                         accessToken,
+                        element.props.listId,
                     );
 
                     if (!listId) {
@@ -166,9 +163,9 @@ const mailchimpSubscribe = createComponent<
 });
 
 async function resolveMailingListId(
-    propListId: string,
     apiEndpoint: string,
     accessToken: string,
+    propListId?: string,
 ): Promise<string | undefined> {
     if (propListId) {
         return propListId;

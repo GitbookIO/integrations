@@ -76,6 +76,8 @@ export default createIntegration({
                 <body>
                     <script type="module">
                         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+                        import zenuml from 'https://cdn.jsdelivr.net/npm/@mermaid-js/mermaid-zenuml@0.2.0/dist/mermaid-zenuml.esm.min.mjs';
+                        await mermaid.registerExternalDiagrams([zenuml]);
                         mermaid.initialize({ startOnLoad: false });
 
                         const queue = [];
@@ -113,7 +115,9 @@ export default createIntegration({
 
                             document.getElementById('content').innerHTML = svgGraph;
                             const svg = document.getElementById('content').querySelector('svg');
-                            const size = { width: svg.viewBox.baseVal.width, height: svg.viewBox.baseVal.height };
+                            const size = svg.viewBox.baseVal.width && svg.viewBox.baseVal.height
+                                ? { width: svg.viewBox.baseVal.width, height: svg.viewBox.baseVal.height }
+                                : { width: parseInt(svg.style.width, 10), height: parseInt(svg.style.height, 10) };
 
                             console.log('mermaid: resize', size);
                             sendAction({
@@ -134,6 +138,13 @@ export default createIntegration({
                             );
                         }
 
+                        function onLoaded(e) {
+                            console.log("mermaid: ready");
+                            sendAction({
+                                action: '@webframe.ready'
+                            });
+                        }
+
                         window.addEventListener("message", (event) => {
                             if (
                                 event.data &&
@@ -147,12 +158,12 @@ export default createIntegration({
                             }
                         });
 
-                        document.addEventListener("DOMContentLoaded", function(e) {
-                            console.log("mermaid: ready");
-                            sendAction({
-                                action: '@webframe.ready'
-                            });
-                        });
+
+                        if (document.readyState !== 'loading') {
+                            onLoaded();
+                        } else {
+                            document.addEventListener('DOMContentLoaded', onLoaded);
+                        }
                     </script>
                     <div id="content"></div>
                 </body>

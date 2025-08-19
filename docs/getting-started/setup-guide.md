@@ -62,17 +62,13 @@ In order to develop your integration on your local machine, you’ll first need 
 gitbook publish
 ```
 
-This will publish your app to GitBook, and return a link with which you can install your integration. Install your integration into a space, and note the `spaceId` in the URL.
+This will publish your app to GitBook, and return a link with which you can install your integration. After installing your integration into your organization, space, or site, you can then run the development command to work on your integration locally.
 
 Return to your integration on your local machine, and in the root of the integration, run the following development command:
 
 ```bash
-gitbook dev spaceId
+gitbook dev
 ```
-
-{% hint style="info" %}
-Example: If your integration is installed in a space [`https://app.gitbook.com/o/1234/s/5678/`](https://app.gitbook.com/s/yPzlUas0Q5RLUIZ0s3Cl/integrations/development-environment), your `spaceId` would be `5678`.
-{% endhint %}
 
 After running the development script, you’re ready to start building your integration! Any changes made in your local version of the integration will be sent to the space you have your integration installed in. You’ll also be able to see logs in your console where applicable.
 

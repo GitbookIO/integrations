@@ -1,3 +1,4 @@
+import { ExposableError } from '@gitbook/runtime';
 import { FigmaRuntimeContext } from './types';
 
 export interface FileNodeId {
@@ -135,7 +136,7 @@ export async function fetchFigmaAPI<T>(
 ): Promise<T> {
     const accessToken = environment.installation?.configuration.oauth_credentials?.access_token;
     if (!accessToken) {
-        throw new Error('Missing authentication');
+        throw new ExposableError('Integration is not authenticated');
     }
 
     const url = new URL(`https://api.figma.com/v1/${path}`);

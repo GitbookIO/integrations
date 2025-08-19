@@ -6,11 +6,33 @@
     const apiUrl = '<api>' || 'https://plausible.io/api/event';
     const domain = '<domain>';
 
+    const GRANTED_COOKIE = '__gitbook_cookie_granted';
+
+    function getCookie(cname) {
+        const name = `${cname}=`;
+        const decodedCookie = decodeURIComponent(document.cookie);
+        const ca = decodedCookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) === 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return '';
+    }
+
     function logIgnoredEvent(event) {
         console.warn('Ignoring Event: ' + event);
     }
 
     function trackEvent(eventName, options) {
+        if (getCookie(GRANTED_COOKIE) !== 'yes') {
+            return;
+        }
+
         if (
             /^localhost$|^127(\.[0-9]+){0,2}\.[0-9]+$|^\[::1?\]$/.test(currentUrl.hostname) ||
             'file:' === currentUrl.protocol

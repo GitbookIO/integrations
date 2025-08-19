@@ -22,8 +22,8 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     { environment }: PostHogRuntimeContext,
 ) => {
     const instancesURLs = {
-        EU: 'https://eu.posthog.com',
-        US: 'https://app.posthog.com',
+        EU: 'https://eu.i.posthog.com',
+        US: 'https://us.i.posthog.com',
     };
     const projectApiKey = environment.siteInstallation?.configuration?.projectApiKey;
     const instanceAddress = environment.siteInstallation?.configuration?.instanceAddress;
