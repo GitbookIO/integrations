@@ -1,9 +1,11 @@
 name: matomo
 title: Matomo
 icon: ./assets/icon.png
-organization: gitbook
+previewImages:
+    - ./assets/preview.png
+organization: 2zoWGxtV7bjhbwBdjGPS
 description: Receive GitBook traffic insights directly in your Matomo dashboard.
-visibility: public
+visibility: private
 script: ./src/index.ts
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
@@ -41,7 +43,8 @@ configurations:
             server_url:
                 type: string
                 title: Matomo Server URL
-                description: Your Matomo server base URL. Examples: https://your-site.matomo.cloud or https://matomo.example.com
+                description: |
+                    Your Matomo server base URL. Examples: https://your-site.matomo.cloud or https://matomo.example.com
             site_id:
                 type: string
                 title: Site ID
@@ -49,32 +52,38 @@ configurations:
             load_js_tracker:
                 type: boolean
                 title: Load Matomo JS tracker
-                description: When enabled, loads matomo.js for first‑party cookies, richer tracking and automatic link tracking. When disabled, falls back to lightweight beacons.
+                description: |
+                    When enabled, loads matomo.js for first‑party cookies and richer tracking.
                 default: true
             track_referrer:
                 type: boolean
                 title: Track Referrer
-                description: Include document.referrer for pageviews/events (recommended)
+                description: |
+                    Include document.referrer for pageviews/events (recommended)
                 default: true
             track_outbound_clicks:
                 type: boolean
                 title: Track outbound link clicks
-                description: Record clicks on links pointing to external domains
+                description: |
+                    Record clicks on links pointing to external domains
                 default: true
             click_selectors:
                 type: string
-                title: CSS selectors to track as events
-                description: Comma‑separated CSS selectors to track clicks as events. Example: a[href*="try"],button.book-demo
+                title: CSS selectors to track
+                description: |
+                    Comma‑separated CSS selectors to track clicks as events. Example: a[href*="try"],button.book-demo
                 default: ''
             goal_mappings_json:
                 type: string
                 title: Goal mappings (JSON)
-                description: Optional JSON object mapping CSS selectors to Matomo Goal IDs. Example: {"a.try-it": 1, "a.book-demo": 2}
+                description: |
+                    Optional JSON object mapping CSS selectors to Matomo Goal IDs.
                 default: ''
             user_id_cookie:
                 type: string
                 title: User ID cookie name
-                description: Optional cookie name to read and set as Matomo user ID (for retention/cohort analysis)
+                description: |
+                    Optional cookie name to read and set as Matomo user ID (for retention/cohort analysis)
                 default: ''
         required:
             - server_url
