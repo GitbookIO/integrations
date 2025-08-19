@@ -35,7 +35,6 @@ export default createIntegration<GitHubRuntimeContext>({
                 action: payload.action,
             });
 
-            // Verify webhook signature for security
             const signatureError = await verifyWebhookSignature(
                 request as Request,
                 rawBody || '',
@@ -46,12 +45,10 @@ export default createIntegration<GitHubRuntimeContext>({
                 return signatureError;
             }
 
-            // Handle installation deletion
             if (githubEvent === 'installation' && payload.action === 'deleted') {
                 return handleInstallationDeleted(context, payload);
             }
 
-            // Handle discussion closed events
             if (githubEvent === 'discussion' && payload.action === 'closed' && payload.discussion) {
                 return handleDiscussionClosed(context, payload);
             }
@@ -70,9 +67,8 @@ export default createIntegration<GitHubRuntimeContext>({
             }
 
             // Redirect to GitHub App installation page with state parameter
-            const appName = context.environment.secrets.GITHUB_APP_NAME;
             const gitbookInstallationId = installation.id; // Pass GitBook installation ID as state
-            const installationUrl = `https://github.com/apps/${appName}/installations/new?state=${encodeURIComponent(gitbookInstallationId)}`;
+            const installationUrl = `https://github.com/apps/${context.environment.secrets.GITHUB_APP_NAME}/installations/new?state=${encodeURIComponent(gitbookInstallationId)}`;
 
             return Response.redirect(installationUrl, 302);
         });
@@ -88,19 +84,15 @@ export default createIntegration<GitHubRuntimeContext>({
             const gitbookInstallationId = url.searchParams.get('state'); // GitBook installation ID
 
             if (!githubInstallationId) {
-                logger.error('No installation_id provided in setup callback');
                 return new ExposableError('Missing installation_id');
             }
 
             if (!gitbookInstallationId) {
-                logger.error('No state (GitBook installation ID) provided in setup callback');
                 return new ExposableError('Missing GitBook installation ID');
             }
 
-            // Handle different setup actions
             switch (setupAction) {
                 case 'install':
-                    // Fresh installation - need to store installation_id and trigger ingestion
                     return await handleInstallationSetup(
                         context,
                         githubInstallationId,
@@ -110,12 +102,12 @@ export default createIntegration<GitHubRuntimeContext>({
                 case 'update':
                     // TODO:
                     // App permissions or repository access updated - re-trigger ingestion
-                    break;
+                    return new Response('Update not implemented yet', { status: 501 });
 
                 case 'request':
                     // TODO:
                     // User is requesting access to additional repositories or permissions
-                    break;
+                    return new Response('Request not implemented yet', { status: 501 });
 
                 default:
                     throw new Error(`Unknown setup action: ${setupAction}`);
@@ -144,7 +136,6 @@ export default createIntegration<GitHubRuntimeContext>({
 
             if (hasInstallations) {
                 try {
-                    // Ingest existing closed discussions from repositories with discussions enabled
                     await ingestConversations(context);
                 } catch (error) {
                     logger.error('GitHub App installation setup failed', {

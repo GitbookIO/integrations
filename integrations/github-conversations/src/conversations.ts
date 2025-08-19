@@ -1,4 +1,4 @@
-import { ConversationInput, ConversationPartMessage } from '@gitbook/api';
+import { ConversationInput } from '@gitbook/api';
 import { ExposableError, Logger } from '@gitbook/runtime';
 import { getOctokitClient } from './client';
 import { GitHubRuntimeContext, GitHubRepository } from './types';
@@ -26,14 +26,18 @@ export async function ingestConversations(context: GitHubRuntimeContext) {
 
     logger.info(`Discussion ingestion started for ${installationIds.length} GitHub installations`);
 
-    // Process each GitHub installation separately
+    /**
+     * Strategy:
+     * 1. Fetch all installations from the GitHub App configuration.
+     * 2. For each installation, get the repositories with discussions enabled.
+     * 3. For each repository, fetch discussions in pages of 20.
+     * 4. Convert discussions to GitBook conversations and ingest them.
+     */
     for (const installationId of installationIds) {
         if (totalApiCalls >= MAX_API_CALLS) {
             logger.error(`Reached API call limit (${MAX_API_CALLS}), stopping ingestion`);
             break;
         }
-
-        logger.info(`Processing GitHub installation: ${installationId}`);
 
         try {
             // Get Octokit client for this specific installation
@@ -43,15 +47,8 @@ export async function ingestConversations(context: GitHubRuntimeContext) {
             const repositories = await fetchRepositoriesForInstallation(context, installationId);
 
             if (repositories.length === 0) {
-                logger.info(
-                    `No repositories with discussions found for installation ${installationId}`,
-                );
                 continue;
             }
-
-            logger.info(
-                `Found ${repositories.length} repositories with discussions for installation ${installationId}`,
-            );
 
             // Process repositories for this installation
             for (const repo of repositories) {
@@ -108,14 +105,12 @@ export async function ingestConversations(context: GitHubRuntimeContext) {
                             }
                         }
 
-                        // Rate limiting: small delay between pages
                         if (hasNextPage && totalApiCalls < MAX_API_CALLS) {
                             await new Promise((resolve) => setTimeout(resolve, 50));
                         }
                     }
 
                     totalProcessed += repoProcessed;
-                    logger.info(`Processed ${repoProcessed} discussions from ${repo.full_name}`);
                 } catch (error) {
                     const errorMessage = error instanceof Error ? error.message : String(error);
                     logger.error(`Failed to process repository ${repo.full_name}: ${errorMessage}`);
@@ -159,7 +154,7 @@ async function fetchRepositoriesForInstallation(
             },
         });
 
-        const repositories = response.data.repositories as GitHubRepository[];
+        const repositories = response.data.repositories;
 
         return repositories.filter((repo) => repo.has_discussions);
     } catch (error) {
@@ -167,6 +162,6 @@ async function fetchRepositoriesForInstallation(
             installationId,
             error: error instanceof Error ? error.message : String(error),
         });
-        return []; // Return empty array instead of throwing to allow other installations to work
+        return [];
     }
 }

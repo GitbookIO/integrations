@@ -16,13 +16,11 @@ export async function verifyWebhookSignature(
     const webhookSecret = context.environment.secrets.WEBHOOK_SECRET;
 
     if (!signature || !webhookSecret) {
-        logger.error('Missing required signature or webhook secret');
         return new Response('Unauthorized', { status: 401 });
     }
 
     const isValidSignature = await verifyGitHubSignature(signature, rawBody, webhookSecret);
     if (!isValidSignature) {
-        logger.error('Invalid webhook signature received');
         return new Response('Unauthorized', { status: 401 });
     }
 

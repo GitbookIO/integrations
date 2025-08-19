@@ -38,7 +38,7 @@ export async function handleDiscussionClosed(
     );
 
     if (installations.length === 0) {
-        logger.info('No installations found for GitHub installation', {
+        logger.info('No installations found for GitHub installation. Proper clean up failed', {
             githubInstallationId,
             repository: repositoryFullName,
         });
@@ -71,7 +71,7 @@ export async function handleDiscussionClosed(
                 );
 
                 if (!discussionResponse.repository.discussion) {
-                    logger.info('Discussion not found', {
+                    logger.debug('Discussion not found', {
                         discussionNumber: payload.discussion!.number,
                         repository: repositoryFullName,
                         installationId: installation.id,
@@ -85,7 +85,7 @@ export async function handleDiscussionClosed(
                 );
 
                 if (!gitbookConversation) {
-                    logger.info('Skipping discussion with no meaningful content', {
+                    logger.debug('Skipping discussion with no meaningful content', {
                         discussionId: payload.discussion!.id,
                         installationId: installation.id,
                     });
@@ -102,13 +102,6 @@ export async function handleDiscussionClosed(
                     installation.target.organization,
                     [gitbookConversation],
                 );
-
-                logger.info('Successfully processed closed discussion', {
-                    discussionId: payload.discussion!.id,
-                    discussionNumber: payload.discussion!.number,
-                    repository: repositoryFullName,
-                    installationId: installation.id,
-                });
             } catch (error) {
                 logger.error('Failed to process closed discussion', {
                     discussionId: payload.discussion?.id,

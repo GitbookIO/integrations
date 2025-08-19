@@ -24,17 +24,7 @@ export async function handleInstallationSetup(
                 );
             existingConfig = installation?.configuration || {};
             existingInstallationIds = existingConfig.installation_ids || [];
-
-            logger.info('Fetched existing installation data', {
-                existingInstallationIds,
-                gitbookInstallationId,
-            });
         } catch (error) {
-            logger.info('No existing installation found or error fetching it', {
-                error: error instanceof Error ? error.message : String(error),
-                gitbookInstallationId,
-            });
-            // Use context as fallback if API call fails
             existingConfig = context.environment.installation?.configuration || {};
             existingInstallationIds = existingConfig.installation_ids || [];
         }
@@ -43,13 +33,6 @@ export async function handleInstallationSetup(
         const updatedInstallationIds = Array.from(
             new Set([...existingInstallationIds, githubInstallationId]),
         );
-
-        logger.info('Adding GitHub installation', {
-            githubInstallationId,
-            existingInstallationIds,
-            updatedInstallationIds,
-            gitbookInstallationId,
-        });
 
         await context.api.integrations.updateIntegrationInstallation(
             context.environment.integration.name,
@@ -62,12 +45,6 @@ export async function handleInstallationSetup(
                 externalIds: updatedInstallationIds,
             },
         );
-
-        logger.info('GitHub App installation stored in GitBook installation', {
-            githubInstallationId,
-            gitbookInstallationId,
-            totalInstallations: updatedInstallationIds.length,
-        });
 
         return new Response(
             `<html><body>

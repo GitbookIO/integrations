@@ -21,8 +21,35 @@ This integration connects GitHub Discussions to GitBook, allowing you to automat
 
 The integration uses GitHub's GraphQL API to query discussions and REST API webhooks to receive real-time updates when discussions are closed. It converts GitHub discussions into GitBook conversation format for AI analysis.
 
-## Permissions Required
+## Creating a GitHub App
 
-- **Discussions**: Read access to repository discussions
-- **Webhooks**: Write access to create and manage webhooks
-- **Metadata**: Read access to repository information
+To set up this integration, you need to create a GitHub App with the following configuration:
+
+### App Settings
+- **GitHub App name**: `gitbook-github-conversations` (or your preferred name)
+- **Homepage URL**: `https://www.gitbook.com`
+- **User authorization callback URL**: `https://api.gitbook.com/v1/integrations/github-conversations/oauth`
+- **Setup URL**: `https://api.gitbook.com/v1/integrations/github-conversations/setup`
+- **Webhook URL**: `https://api.gitbook.com/v1/integrations/github-conversations/webhook`
+
+### Permissions Required
+- **Repository permissions**:
+  - **Discussions**: Read access to repository discussions
+  - **Webhooks**: Write access to create and manage webhooks
+  - **Metadata**: Read access to repository information
+
+### Webhook Events
+Subscribe to these webhook events:
+- **Discussion** events (for real-time ingestion when discussions are closed)
+- **Installation** events (to handle app installation and removal)
+
+### After Creating the App
+1. Note down the **App ID** and generate a **Private Key**
+2. Generate a **Client Secret**
+3. Set a **Webhook Secret** for security
+4. Configure these secrets in your GitBook integration environment variables:
+   - `GITHUB_APP_ID`
+   - `GITHUB_PRIVATE_KEY`
+   - `CLIENT_ID`
+   - `CLIENT_SECRET`
+   - `WEBHOOK_SECRET`
