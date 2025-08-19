@@ -1,6 +1,0 @@
-- [x] **Remove hardcoded app name** - Line 73 in `src/index.ts` has hardcoded `appName = 'ingest-discussions-dev-valentino'`. This should use environment-specific configuration
-- [ ] When user uninstalls the app, update the gitbook installation (depends on gitbook API changes)
-- [x] Use octokit
-- [ ] setup_action request
-- [ ] Update manifest
-- [ ] Update integration icon
