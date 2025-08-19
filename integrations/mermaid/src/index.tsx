@@ -138,6 +138,13 @@ export default createIntegration({
                             );
                         }
 
+                        function onLoaded(e) {
+                            console.log("mermaid: ready");
+                            sendAction({
+                                action: '@webframe.ready'
+                            });
+                        }
+
                         window.addEventListener("message", (event) => {
                             if (
                                 event.data &&
@@ -151,12 +158,12 @@ export default createIntegration({
                             }
                         });
 
-                        document.addEventListener("DOMContentLoaded", function(e) {
-                            console.log("mermaid: ready");
-                            sendAction({
-                                action: '@webframe.ready'
-                            });
-                        });
+
+                        if (document.readyState !== 'loading') {
+                            onLoaded();
+                        } else {
+                            document.addEventListener('DOMContentLoaded', onLoaded);
+                        }
                     </script>
                     <div id="content"></div>
                 </body>
