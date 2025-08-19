@@ -112,95 +112,10 @@ async function handleInstallSetup(
     }
 }
 
-/**
- * Handle GitHub App permission/repository update
- */
-async function handleUpdateSetup(
-    context: GitHubRuntimeContext,
-    githubInstallationId: string,
-    gitbookInstallationId: string,
-): Promise<Response> {
-    logger.info('Handling permission/repository update', {
-        githubInstallationId,
-        gitbookInstallationId,
-    });
-
-    try {
-        // TODO: ingest with updated installations
-        // Trigger re-ingestion of conversations with updated permissions
-        // await ingestConversations(context);
-
-        return new Response(
-            `<html><body>
-                <h1>GitHub App Updated!</h1>
-                <p>Your GitHub App permissions have been updated.</p>
-                <p>We'll re-sync your discussions with the new settings.</p>
-                <script>window.close();</script>
-            </body></html>`,
-            {
-                headers: {
-                    'Content-Type': 'text/html',
-                },
-            },
-        );
-    } catch (error) {
-        logger.error('Failed to handle permission update', {
-            error: error instanceof Error ? error.message : String(error),
-            githubInstallationId,
-        });
-
-        return new Response(
-            `<html><body>
-                <h1>Update Failed</h1>
-                <p>There was an error updating your GitHub App permissions.</p>
-                <p>Please try again or contact support.</p>
-                <p>Error: ${error instanceof Error ? error.message : String(error)}</p>
-            </body></html>`,
-            {
-                status: 500,
-                headers: { 'Content-Type': 'text/html' },
-            },
-        );
-    }
-}
-
-/**
- * Handle GitHub App access request
- */
-async function handleRequestSetup(
-    _context: GitHubRuntimeContext,
-    githubInstallationId: string,
-    gitbookInstallationId: string,
-): Promise<Response> {
-    logger.info('Handling access request', {
-        githubInstallationId,
-        gitbookInstallationId,
-    });
-
-    // For now, treat request setup the same as install setup
-    // In the future, we might want to handle this differently
-    // (e.g., show a message that request is pending approval)
-
-    return new Response(
-        `<html><body>
-            <h1>Access Request Received</h1>
-            <p>Your request for additional GitHub App access has been received.</p>
-            <p>If approved, we'll automatically sync your discussions.</p>
-            <script>window.close();</script>
-        </body></html>`,
-        {
-            headers: {
-                'Content-Type': 'text/html',
-            },
-        },
-    );
-}
-
 export default createIntegration<GitHubRuntimeContext>({
     fetch: async (request, context) => {
         const router = Router({
             base: new URL(
-                // TODO: we're not using the installation
                 context.environment.installation?.urls.publicEndpoint ||
                     context.environment.integration.urls.publicEndpoint,
             ).pathname,
@@ -240,13 +155,6 @@ export default createIntegration<GitHubRuntimeContext>({
             if (githubEvent === 'discussion' && payload.action === 'closed' && payload.discussion) {
                 return handleDiscussionClosed(context, payload);
             }
-
-            // Ignore other webhook events
-            logger.debug('Ignoring webhook event', {
-                event: githubEvent,
-                action: payload.action,
-                hasDiscussion: !!payload.discussion,
-            });
 
             return new Response('OK', { status: 200 });
         });
@@ -300,20 +208,14 @@ export default createIntegration<GitHubRuntimeContext>({
                     );
 
                 case 'update':
+                    // TODO:
                     // App permissions or repository access updated - re-trigger ingestion
-                    return await handleUpdateSetup(
-                        context,
-                        githubInstallationId,
-                        gitbookInstallationId,
-                    );
+                    break;
 
                 case 'request':
+                    // TODO:
                     // User is requesting access to additional repositories or permissions
-                    return await handleRequestSetup(
-                        context,
-                        githubInstallationId,
-                        gitbookInstallationId,
-                    );
+                    break;
 
                 default:
                     throw new Error(`Unknown setup action: ${setupAction}`);
