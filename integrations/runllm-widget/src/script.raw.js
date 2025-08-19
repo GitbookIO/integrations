@@ -52,7 +52,7 @@
         // document.querySelector('.runllm-widget-container').style.display = 'none';
 
         // Register and open RunLLM Window from GitBook UI
-        window.GitBook.registerCustomAssistant({
+        window.GitBook.registerAssistant({
             label: 'RunLLM',
             icon: 'sparkle',
             ui: false,
@@ -61,7 +61,7 @@
             },
         });
     } else {
-        window.GitBook.registerCustomAssistant({
+        window.GitBook.registerAssistant({
             label: 'RunLLM',
             icon: 'sparkle',
             ui: true,
