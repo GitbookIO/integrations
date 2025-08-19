@@ -1,5 +1,12 @@
 # @gitbook/integration-segment
 
+## 2.2.0
+
+### Minor Changes
+
+- 772a6b3: Only use site_view tracking
+- 772a6b3: Add cookies to plausible
+
 ## 2.1.3
 
 ### Patch Changes
