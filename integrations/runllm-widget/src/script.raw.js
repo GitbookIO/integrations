@@ -55,7 +55,17 @@
         window.GitBook.registerCustomAssistant({
             label: 'RunLLM',
             icon: 'sparkle',
-            onOpen: (query) => {
+            ui: false,
+            open: (query) => {
+                // Open RunLLM window with query
+            },
+        });
+    } else {
+        window.GitBook.registerCustomAssistant({
+            label: 'RunLLM',
+            icon: 'sparkle',
+            ui: true,
+            open: (query) => {
                 // Open RunLLM window with query
             },
         });
