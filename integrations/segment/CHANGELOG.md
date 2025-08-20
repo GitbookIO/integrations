@@ -1,5 +1,16 @@
 # @gitbook/integration-segment
 
+## 2.3.0
+
+### Minor Changes
+
+- 35be82b: Add optional configuration to fix tracking data in EU
+
+### Patch Changes
+
+- 35be82b: Fix description length
+- 35be82b: Update description
+
 ## 2.2.0
 
 ### Minor Changes
