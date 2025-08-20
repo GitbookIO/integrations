@@ -55,7 +55,7 @@
         window.GitBook.registerAssistant({
             label: 'RunLLM',
             icon: 'sparkle',
-            ui: false,
+            ui: true,
             open: (query) => {
                 // Open RunLLM window with query
             },
@@ -64,7 +64,7 @@
         window.GitBook.registerAssistant({
             label: 'RunLLM',
             icon: 'sparkle',
-            ui: true,
+            ui: false,
             open: (query) => {
                 // Open RunLLM window with query
             },
