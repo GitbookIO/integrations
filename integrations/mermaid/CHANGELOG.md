@@ -1,5 +1,11 @@
 # @gitbook/integration-mermaid
 
+## 0.4.1
+
+### Patch Changes
+
+- 5cdad57: Fix mermaid diagram not rendering in Safari
+
 ## 0.4.0
 
 ### Minor Changes

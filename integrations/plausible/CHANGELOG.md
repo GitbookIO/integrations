@@ -1,5 +1,11 @@
 # @gitbook/integration-plausible
 
+## 0.8.0
+
+### Minor Changes
+
+- 772a6b3: Add cookies to plausible
+
 ## 0.7.0
 
 ### Minor Changes
