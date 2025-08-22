@@ -44,13 +44,13 @@
     if (brandLogo) {
         n.setAttribute('runllm-brand-logo', brandLogo);
     }
+    if (nativeAiExperience === 'true') {
+        // Disable floating window
+        n.setAttribute('runllm-hide-trigger-button', true);
+    }
 
     document.head.appendChild(n);
 
-    if (nativeAiExperience === 'true') {
-        // Disable floating window
-        // document.querySelector('.runllm-widget-container').style.display = 'none';
-    }
     // Register and open RunLLM Window from GitBook UI
     window.GitBook.registerAssistant({
         label: 'RunLLM',
@@ -58,6 +58,8 @@
         ui: nativeAiExperience === 'true' ? true : false,
         open: (query) => {
             // Open RunLLM window with query
+            window.runllm.open();
+            window.runllm.sendMessage(query);
         },
     });
 })();
