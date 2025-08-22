@@ -49,7 +49,7 @@ configurations:
             native_ai_experience:
                 type: boolean
                 title: Native AI experience
-                description: Set to "true" to enable the built-in AI experience. Default is "false".
+                description: Set to "true" to enable RunLLM from gitbook's AI experience. Hides the trigger button. Default is "false".
                 default: false
             assistant_id:
                 type: string
