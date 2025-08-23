@@ -70,6 +70,9 @@ export default createIntegration({
     fetch: async () => {
         return new Response(
             `<html>
+                <head>
+                    <meta name="color-scheme" content="light dark">
+                </head>
                 <style>
                 * { margin: 0; padding: 0; }
                 </style>
@@ -78,8 +81,11 @@ export default createIntegration({
                         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
                         import zenuml from 'https://cdn.jsdelivr.net/npm/@mermaid-js/mermaid-zenuml@0.2.0/dist/mermaid-zenuml.esm.min.mjs';
                         await mermaid.registerExternalDiagrams([zenuml]);
-                        mermaid.initialize({ startOnLoad: false });
 
+                        const theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+                        mermaid.initialize({ startOnLoad: false, theme });
+
+                        let lastContent;
                         const queue = [];
 
                         function pushRenderDiagram(content) {
@@ -97,6 +103,7 @@ export default createIntegration({
                                 const content = queue[0];
                                 try {
                                     await renderDiagram(content);
+                                    lastContent = content;
                                 } catch (error) {
                                     console.error('mermaid: render error', error);
                                 }
@@ -164,6 +171,17 @@ export default createIntegration({
                         } else {
                             document.addEventListener('DOMContentLoaded', onLoaded);
                         }
+
+                        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+                            const theme = event.matches ? 'dark' : 'default';
+                            mermaid.initialize({
+                                startOnLoad: false,
+                                theme,
+                            });
+                            if (lastContent) {
+                                pushRenderDiagram(lastContent);
+                            }
+                        });
                     </script>
                     <div id="content"></div>
                 </body>
