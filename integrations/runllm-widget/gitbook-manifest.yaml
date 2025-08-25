@@ -46,6 +46,11 @@ contentSecurityPolicy:
 configurations:
     site:
         properties:
+            native_ai_experience:
+                type: boolean
+                title: Native AI experience
+                description: Toggle RunLLM to launch from GitBook's AI experience. Hides the trigger button.
+                default: false
             assistant_id:
                 type: string
                 title: Assistant ID
