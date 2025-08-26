@@ -1,5 +1,11 @@
 # @gitbook/integration-mermaid
 
+## 0.4.2
+
+### Patch Changes
+
+- ffd19de: Fix mermaid integration not following dark/light mode
+
 ## 0.4.1
 
 ### Patch Changes
