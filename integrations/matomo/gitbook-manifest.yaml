@@ -5,7 +5,7 @@ previewImages:
     - ./assets/preview.png
 organization: 2zoWGxtV7bjhbwBdjGPS
 description: Receive GitBook traffic insights directly in your Matomo dashboard.
-visibility: private
+visibility: public
 script: ./src/index.ts
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
