@@ -89,5 +89,3 @@ configurations:
             - server_url
             - site_id
 target: site
-
-

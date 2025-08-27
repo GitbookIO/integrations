@@ -56,5 +56,3 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 export default createIntegration<MatomoRuntimeContext>({
     fetch_published_script: handleFetchEvent,
 });
-
-

@@ -10,5 +10,3 @@ declare module '@gitbook/runtime' {
     export type RuntimeEnvironment<A, B> = any;
     export function createIntegration<T>(...args: any[]): any;
 }
-
-

@@ -159,7 +159,12 @@
                     if (LOAD_JS_TRACKER && window._paq) {
                         window._paq.push(['trackGoal', Number(goalId)]);
                     } else {
-                        sendBeacon({ idsite: SITE_ID, rec: 1, idgoal: Number(goalId), rand: String(Math.random()).slice(2) });
+                        sendBeacon({
+                            idsite: SITE_ID,
+                            rec: 1,
+                            idgoal: Number(goalId),
+                            rand: String(Math.random()).slice(2),
+                        });
                     }
                     break;
                 }
@@ -216,5 +221,3 @@
     }
     window.addEventListener('popstate', trackIfPathChanged);
 })();
-
-
