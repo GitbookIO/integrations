@@ -1,5 +1,11 @@
 # @gitbook/integration-heap
 
+## 0.7.0
+
+### Minor Changes
+
+- 125bcb2: Add cookie banner to tracking integrations
+
 ## 0.6.0
 
 ### Minor Changes

@@ -1,5 +1,17 @@
 # @gitbook/integration-plausible
 
+## 0.8.0
+
+### Minor Changes
+
+- 772a6b3: Add cookies to plausible
+
+## 0.7.0
+
+### Minor Changes
+
+- 125bcb2: Move check for cookies into the tracking function
+
 ## 0.6.0
 
 ### Minor Changes

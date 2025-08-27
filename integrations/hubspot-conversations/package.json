@@ -1,0 +1,20 @@
+{
+    "name": "@gitbook/integration-hubspot-conversations",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+        "itty-router": "^2.6.1",
+        "p-map": "^7.0.3"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "check": "gitbook check",
+        "publish-integrations-staging": "gitbook publish .  --env staging"
+    }
+}

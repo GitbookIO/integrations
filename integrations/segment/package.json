@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-segment",
-    "version": "2.1.3",
+    "version": "2.3.0",
     "private": true,
     "dependencies": {
         "@gitbook/api": "*",

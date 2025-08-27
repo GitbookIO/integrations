@@ -9,8 +9,6 @@ const fakeSpaceViewEvent: api.SiteViewEvent = {
     eventId: 'fake-event-id',
     type: 'site_view',
     siteId: 'fake-site-id',
-    spaceId: 'fake-space-id',
-    pageId: 'fake-page-id',
     installationId: 'fake-installation-id',
     visitor: {
         anonymousId: 'gitbookAnonymousId',
@@ -27,7 +25,7 @@ const fakeSpaceViewEvent: api.SiteViewEvent = {
 describe('events', () => {
     it('should generate the Segment Track Event with expected properties', () => {
         const expectedSegmentEvent = {
-            event: '[GitBook] space_view',
+            event: '[GitBook] site_view',
             anonymousId: 'gitbookAnonymousId',
             context: {
                 library: {
@@ -45,8 +43,6 @@ describe('events', () => {
             },
             properties: {
                 siteId: 'fake-site-id',
-                spaceId: 'fake-space-id',
-                pageId: 'fake-page-id',
             },
         };
         const actualSegmentEvent = generateSegmentTrackEvent(fakeSpaceViewEvent);
