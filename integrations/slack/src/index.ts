@@ -79,7 +79,11 @@ const handleSpaceContentUpdated: EventCallback<
 
     const MAX_ITEMS_TO_SHOW = 5;
 
-    const createChangeSection = (title: string, items: string[], emoji: string): TBlock[] => {
+    const createChangeSection = (
+        title: string,
+        items: string[] | ChangedRevisionPage[],
+        emoji: string,
+    ): TBlock[] => {
         if (items.length === 0) return [];
 
         const displayItems = items.slice(0, MAX_ITEMS_TO_SHOW);
@@ -87,7 +91,13 @@ const handleSpaceContentUpdated: EventCallback<
 
         let text = `${emoji} *${title}*\n`;
         displayItems.forEach((item) => {
-            text += `• ${item}\n`;
+            if (typeof item === 'string') {
+                text += `• ${item}\n`;
+            } else {
+                // Page object with URL
+                const pageUrl = `${space.urls.published || space.urls.app}${item.path || ''}`;
+                text += `• <${pageUrl}|${item.title}>\n`;
+            }
         });
 
         if (remainingCount > 0) {
@@ -151,15 +161,10 @@ const handleSpaceContentUpdated: EventCallback<
         },
     });
 
-    const pageItems = createdPages.map((page) => page.title);
-    const editedPageItems = editedPages.map((page) => page.title);
-    const deletedPageItems = deletedPages.map((page) => page.title);
-    const movedPageItems = movedPages.map((page) => page.title);
-
-    blocks.push(...createChangeSection('New pages', pageItems, '🆕'));
-    blocks.push(...createChangeSection('Modified pages', editedPageItems, '📝'));
-    blocks.push(...createChangeSection('Deleted pages', deletedPageItems, '🗑️'));
-    blocks.push(...createChangeSection('Moved pages', movedPageItems, '📁'));
+    blocks.push(...createChangeSection('New pages', createdPages, '🆕'));
+    blocks.push(...createChangeSection('Modified pages', editedPages, '📝'));
+    blocks.push(...createChangeSection('Deleted pages', deletedPages, '🗑️'));
+    blocks.push(...createChangeSection('Moved pages', movedPages, '📁'));
     blocks.push(...createChangeSection('New files', createdFiles, '📄'));
     blocks.push(...createChangeSection('Modified files', editedFiles, '📝'));
     blocks.push(...createChangeSection('Deleted files', deletedFiles, '🗂️'));
