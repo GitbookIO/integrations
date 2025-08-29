@@ -4,15 +4,7 @@ import { createIntegration, EventCallback } from '@gitbook/runtime';
 import { SlackRuntimeContext } from './configuration';
 import { handleFetchEvent } from './router';
 import { slackAPI } from './slack';
-import {
-    TBlock,
-    TSectionBlock,
-    THeaderBlock,
-    TContextBlock,
-    TDividerBlock,
-    TActionsBlock,
-    TButtonElement,
-} from './types';
+import { TBlock, TButtonElement } from './types';
 
 /*
  * Handle content being updated: send a notification on Slack.
@@ -109,7 +101,7 @@ const handleSpaceContentUpdated: EventCallback<
                     type: 'mrkdwn',
                     text: text.trim(),
                 },
-            } as TSectionBlock,
+            },
         ];
     };
 
@@ -134,7 +126,7 @@ const handleSpaceContentUpdated: EventCallback<
                 text: `${spaceEmoji} ${space.title || 'Space'} Updated`,
                 emoji: true,
             },
-        } as THeaderBlock,
+        },
     ];
 
     let changeRequest;
@@ -148,7 +140,7 @@ const handleSpaceContentUpdated: EventCallback<
                     text: `🔀 Changes were merged from change request: <${changeRequest.urls.app}|#${changeRequest.number}${changeRequest.subject ? ` - ${changeRequest.subject}` : ''}>`,
                 },
             ],
-        } as TContextBlock);
+        });
     }
 
     blocks.push({
@@ -157,7 +149,7 @@ const handleSpaceContentUpdated: EventCallback<
             type: 'mrkdwn',
             text: '*Summary of Changes:*',
         },
-    } as TSectionBlock);
+    });
 
     const pageItems = createdPages.map((page) => page.title);
     const editedPageItems = editedPages.map((page) => page.title);
@@ -181,7 +173,7 @@ const handleSpaceContentUpdated: EventCallback<
                     text: `➕ _And ${semanticChanges.more} additional changes not listed here_`,
                 },
             ],
-        } as TContextBlock);
+        });
     }
 
     const actionButtons: TButtonElement[] = [
@@ -211,7 +203,7 @@ const handleSpaceContentUpdated: EventCallback<
         });
     }
 
-    blocks.push({ type: 'divider' } as TDividerBlock);
+    blocks.push({ type: 'divider' });
 
     // Add a nice footer section
     const totalChanges =
@@ -232,12 +224,12 @@ const handleSpaceContentUpdated: EventCallback<
                 text: `📊 *${totalChanges} total changes* • Updated just now`,
             },
         ],
-    } as TContextBlock);
+    });
 
     blocks.push({
         type: 'actions',
         elements: actionButtons,
-    } as TActionsBlock);
+    });
 
     await slackAPI(context, {
         method: 'POST',
