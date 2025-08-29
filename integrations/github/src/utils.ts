@@ -1,6 +1,7 @@
 import { GitSyncOperationState, IntegrationSpaceInstallation } from '@gitbook/api';
 
 import type { GitHubSpaceConfiguration } from './types';
+import { ExposableError } from '@gitbook/runtime';
 
 export const BRANCH_REF_PREFIX = 'refs/heads/';
 
@@ -19,7 +20,7 @@ export function getGitSyncCommitMessage(
     context: {
         change_request_number: number;
         change_request_subject: string;
-    }
+    },
 ): string {
     const usingCustomTemplate = !!templateInput;
     const template = usingCustomTemplate ? templateInput : GITSYNC_DEFAULT_COMMIT_MESSAGE;
@@ -51,7 +52,7 @@ export function getGitSyncStateDescription(state: GitSyncOperationState): string
  * This will throw an error if the space installation configuration is not defined.
  */
 export function getSpaceConfigOrThrow(
-    spaceInstallation: IntegrationSpaceInstallation
+    spaceInstallation: IntegrationSpaceInstallation,
 ): GitHubSpaceConfiguration {
     const config = spaceInstallation.configuration as GitHubSpaceConfiguration | undefined;
     assertIsDefined(config, { label: 'spaceInstallationConfiguration' });
@@ -67,7 +68,7 @@ export function computeConfigQueryKey(
     installationId: number,
     repoID: number,
     ref: string,
-    previewExternalBranches?: boolean
+    previewExternalBranches?: boolean,
 ): string {
     const base = `ins:${installationId}:rep:${repoID}:br:${ref}`;
     return previewExternalBranches ? `${base}:prv:${previewExternalBranches}` : base;
@@ -75,12 +76,17 @@ export function computeConfigQueryKey(
 
 export function assertIsDefined<T>(
     value: T,
-    options: {
-        label: string;
-    }
+    options: { label: string; statusCode?: number },
 ): asserts value is NonNullable<T> {
+    const { label, statusCode = 500 } = options;
+
     if (value === undefined || value === null) {
-        throw new Error(`Expected value (${options.label}) to be defined, but received ${value}`);
+        const errorMsg = `Expected value (${label}) to be defined, but received ${value}`;
+        if (statusCode >= 400 && statusCode < 500) {
+            throw new ExposableError(errorMsg, statusCode);
+        }
+
+        throw new Error(errorMsg);
     }
 }
 
@@ -108,4 +114,28 @@ export function safeCompare(expected: string, actual: string) {
     }
 
     return result === 0;
+}
+
+/**
+ * Project directory should be a relative path and not end with a slash.
+ * We make sure that the value is normalized.
+ */
+export function normalizeProjectDirectory(
+    projectDirectory: string | undefined,
+): string | undefined {
+    if (typeof projectDirectory === 'undefined') {
+        return projectDirectory;
+    }
+
+    let relativeDirectory = projectDirectory.trim();
+
+    while (relativeDirectory.startsWith('/')) {
+        relativeDirectory = relativeDirectory.slice(1);
+    }
+
+    while (relativeDirectory.endsWith('/')) {
+        relativeDirectory = relativeDirectory.slice(0, -1);
+    }
+
+    return relativeDirectory;
 }

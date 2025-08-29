@@ -1,4 +1,4 @@
-import { JSONSchemaForNPMPackageJsonFiles2 as PackageJSON } from '@schemastore/package';
+import type { JSONSchemaForNPMPackageJsonFiles2 as PackageJSON } from '@schemastore/package';
 import { spawn } from 'child_process';
 import detent from 'dedent-js';
 import * as fs from 'fs';
@@ -9,7 +9,7 @@ import { IntegrationScope, IntegrationVisibility } from '@gitbook/api';
 
 import packageJSON from '../package.json';
 import { fileExists } from './files';
-import { DEFAULT_MANIFEST_FILE, writeIntegrationManifest } from './manifest';
+import { DEFAULT_MANIFEST_FILE, writeIntegrationManifest, IntegrationNameSchema } from './manifest';
 
 /**
  * Interactive prompt to create a new integration.
@@ -22,6 +22,14 @@ export async function promptNewIntegration(dir?: string): Promise<void> {
             name: 'name',
             message: 'Name of the integration:',
             initial: path.basename(dir || process.cwd()),
+            validate: (value: string) => {
+                const result = IntegrationNameSchema.safeParse(value);
+                if (result.success) {
+                    return true;
+                } else {
+                    return `Invalid integration name: ${value}, it must begin with an alphanumeric character and only contain alphanumeric characters and hyphens.`;
+                }
+            },
         },
         {
             type: 'text',
@@ -65,8 +73,16 @@ export async function promptNewIntegration(dir?: string): Promise<void> {
                     value: IntegrationScope.SpaceGitSync,
                 },
                 {
-                    title: IntegrationScope.EntitiesWrite,
-                    value: IntegrationScope.EntitiesWrite,
+                    title: IntegrationScope.SiteMetadataRead,
+                    value: IntegrationScope.SiteMetadataRead,
+                },
+                {
+                    title: IntegrationScope.SiteAdaptiveRead,
+                    value: IntegrationScope.SiteAdaptiveRead,
+                },
+                {
+                    title: IntegrationScope.SiteAdaptiveWrite,
+                    value: IntegrationScope.SiteAdaptiveWrite,
                 },
             ],
         },
@@ -81,7 +97,7 @@ export async function promptNewIntegration(dir?: string): Promise<void> {
 
     if (await fileExists(path.join(dirPath, DEFAULT_MANIFEST_FILE))) {
         throw new Error(
-            `\n❌ The path ${dirPath} already contains a ${DEFAULT_MANIFEST_FILE} file.`
+            `\n❌ The path ${dirPath} already contains a ${DEFAULT_MANIFEST_FILE} file.`,
         );
     }
 
@@ -102,7 +118,7 @@ export async function initializeProject(
         title: string;
         organization: string;
         scopes: IntegrationScope[];
-    }
+    },
 ) {
     const srcPath = path.join(dirPath, 'src');
     const scriptPath = path.join(srcPath, 'index.tsx');
@@ -132,7 +148,6 @@ export async function initializeProject(
 
     await fs.promises.writeFile(scriptPath, generateScript(project));
     await fs.promises.writeFile(path.join(dirPath, 'tsconfig.json'), generateTSConfig());
-    await fs.promises.writeFile(path.join(dirPath, '.eslintrc.json'), generateESLint());
 
     await extendPackageJson(dirPath, project.name);
     console.log(`\n⬇️  Installing dependencies...\n`);
@@ -149,7 +164,6 @@ export async function extendPackageJson(dirPath: string, projectName: string): P
         name: projectName,
         private: true,
         scripts: {
-            lint: 'eslint --ext .js,.jsx,.ts,.tsx .',
             typecheck: 'tsc --noEmit',
             publish: 'gitbook publish .',
         },
@@ -158,8 +172,8 @@ export async function extendPackageJson(dirPath: string, projectName: string): P
         },
         devDependencies: {
             [packageJSON.name]: `^${packageJSON.version}`,
-            '@gitbook/eslint-config': '*',
             '@gitbook/tsconfig': '*',
+            '@cloudflare/workers-types': '*',
         },
     };
 
@@ -206,7 +220,6 @@ export function generateScript(project: { name: string }): string {
         request,
         context
       ) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { api } = context;
         const user = api.user.getAuthenticatedUser();
 
@@ -256,16 +269,11 @@ export function generateTSConfig(): string {
         {
             "extends": "@gitbook/tsconfig/integration.json",
             "compilerOptions": {
-                "lib": ["ES6", "DOM"],
+                "lib": ["ESNext", "DOM"],
+                "moduleResolution": "bundler",
+                "module": "ESNext",
+                "strict": true
             }
-        }
-    `).trim();
-}
-
-export function generateESLint(): string {
-    return detent(`
-        {
-            "extends": ["@gitbook/eslint-config/integration"]
         }
     `).trim();
 }

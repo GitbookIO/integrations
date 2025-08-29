@@ -12,7 +12,7 @@ set -u
 ASSETS_DIST_PATH='./dist'
 
 # Build the integrations assets dist folder
-npm run build-assets
+bun run build-assets
 
 # Publish the assets to Cloudflare pages' project
 wrangler pages publish $ASSETS_DIST_PATH --project-name=$CLOUDFLARE_PAGES_PROJECT

@@ -19,15 +19,15 @@ type PlausibleRuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: PlausibleRuntimeContext
+    { environment }: PlausibleRuntimeContext,
 ) => {
-    const domain = environment.spaceInstallation.configuration.domain;
-    const api = environment.spaceInstallation.configuration.api || '';
+    const domain = environment.siteInstallation?.configuration?.domain;
+    const api = environment.siteInstallation?.configuration?.api || '';
     if (!domain) {
         return;
     }
 
-    return new Response(script.replace('<domain>', domain).replace('<api>', api), {
+    return new Response((script as string).replace('<domain>', domain).replace('<api>', api), {
         headers: {
             'Content-Type': 'application/javascript',
             'Cache-Control': 'max-age=604800',

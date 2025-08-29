@@ -1,0 +1,40 @@
+name: helpscout
+title: HelpScout
+organization: gitbook
+visibility: public
+description: Add the HelpScout chat widget to your published GitBook content
+summary: |
+    # Overview
+
+    The HelpScout integration for GitBook allows you to display the HelpScout chat widget on your public documentation to connect and interact with your readers.
+
+    # How it works
+
+    Automatic chat widget on your documentation: Each of your connected GitBook spaces will fetch the HelpScout chat widget script and add it to your published content.
+
+    # Configure
+
+    You can configure the integration on single or multiple public spaces by navigating to the integrations in sub-navigation or org settings. You will then have to provide HelpScout ID to finish the configuration.
+categories:
+    - analytics
+script: src/index.tsx
+icon: ./assets/icon.png
+previewImages:
+    - assets/helpscout-preview.png
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+secrets: {}
+contentSecurityPolicy:
+    script-src: https://beacon-v2.helpscout.net;
+configurations:
+    site:
+        properties:
+            helpscout_id:
+                type: string
+                title: HelpScout ID
+                description: Your HelpScout integration ID.
+        required:
+            - helpscout_id
+target: site

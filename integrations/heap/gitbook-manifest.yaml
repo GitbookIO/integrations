@@ -2,8 +2,7 @@ name: heap
 title: Heap
 icon: ./assets/icon.png
 previewImages:
-    - ./assets/heap-preview-1.png
-    - ./assets/heap-preview-2.png
+    - ./assets/heap-preview.png
 description: Plug your GitBook site to your Heap Analytics instance.
 externalLinks:
     - label: Documentation
@@ -13,8 +12,9 @@ script: ./src/index.ts
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
-    - space:script:inject
-organization: d8f63b60-89ae-11e7-8574-5927d48c4877
+    - site:script:inject
+    - site:script:cookies
+organization: gitbook
 contentSecurityPolicy:
     script-src: https://heapanalytics.com https://cdn.heapanalytics.com 'unsafe-inline';
     img-src: cdn.heapanalytics.com heapanalytics.com;
@@ -39,7 +39,7 @@ summary: |
 categories:
     - analytics
 configurations:
-    space:
+    site:
         properties:
             tracking_id:
                 type: string
@@ -47,3 +47,4 @@ configurations:
                 description: Available in Heap's Web installation flow `heap.load("YOUR_ID_IS_HERE")`
         required:
             - tracking_id
+target: site

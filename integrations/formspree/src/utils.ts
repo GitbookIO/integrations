@@ -1,36 +1,19 @@
-// Handle errors better
+import type { FormspreeBodyData } from './types';
 
-export async function handleSubmit(formspree_id, body) {
-    const cleanedFormBody = await removeEmptyValues(body);
+// Submit form data to Formspree
+export async function handleSubmit(formspreeId: string, body: FormspreeBodyData) {
+    const cleanedFormBody = removeEmptyValues(body);
 
-    fetch(formspree_id, {
+    return fetch(formspreeId, {
         method: 'POST',
-        body: JSON.stringify({ data: cleanedFormBody, form: 'GitBook Integration' }),
+        body: JSON.stringify(cleanedFormBody),
         headers: {
             Accept: 'application/json',
         },
-    })
-        .then((response) => {
-            if (response.ok) {
-                return true;
-            } else {
-                return false;
-            }
-        })
-        .catch((error) => {
-            console.error(error);
-        });
+    });
 }
 
 // Clean data object being submitted
-export async function removeEmptyValues(object) {
-    for (const key in object) {
-        if (object.hasOwnProperty(key)) {
-            const value = object[key];
-            if (value === null || value === undefined || value === '') {
-                delete object[key];
-            }
-        }
-    }
-    return object;
+export function removeEmptyValues(object: FormspreeBodyData) {
+    return Object.fromEntries(Object.entries(object).filter(([, value]) => !!value));
 }

@@ -15,9 +15,6 @@ dist/
 # Editors & IDEs
 .idea/
 
-# ESlint
-.eslintcache
-
 # Don't prettify docs
 CHANGELOG.md
 docs

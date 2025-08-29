@@ -1,32 +1,28 @@
 {
     "name": "@gitbook/cli",
     "description": "CLI to build and publish integrations on GitBook.com",
-    "version": "0.15.1",
+    "version": "0.25.0",
     "dependencies": {
         "@gitbook/api": "*",
-        "@openapi-contrib/openapi-schema-to-json-schema": "^3.1.2",
-        "@stoplight/json-ref-resolver": "^3.1.3",
-        "ajv": "^8.11.0",
-        "ajv-formats": "^2.1.1",
         "check-node-version": "^4.2.1",
         "commander": "^9.2.0",
-        "conf": "^10.1.2",
+        "conf": "^13.1.0",
         "dedent-js": "^1.0.1",
         "esbuild": "^0.17.11",
         "get-port": "^6.1.2",
         "js-yaml": "^4.1.0",
         "ora": "^6.2.0",
-        "prompts": "^2.4.2"
+        "prompts": "^2.4.2",
+        "zod": "^3.25.42",
+        "chokidar": "^4.0.1",
+        "miniflare": "^4.20250525.0",
+        "@1password/op-js": "^0.1.13"
     },
     "devDependencies": {
-        "@gitbook/eslint-config": "*",
+        "@gitbook/tsconfig": "*",
         "@schemastore/package": "^0.0.10",
-        "@types/node": "^17.0.33",
         "@types/prompts": "^2.0.14",
-        "chokidar": "^3.5.3",
-        "eslint": "^8.16.0",
-        "miniflare": "^2.12.1",
-        "typescript": "^4.6.3"
+        "typescript": "^5.6.2"
     },
     "files": [
         "dist/**",
@@ -34,7 +30,6 @@
     ],
     "scripts": {
         "build": "./build.sh",
-        "lint": "eslint ./src/**/*.ts",
         "postinstall": "node postinstall.js",
         "typecheck": "tsc --noEmit"
     },
@@ -42,6 +37,6 @@
         "node": ">=18.0.0"
     },
     "bin": {
-        "gitbook": "./dist/cli.js"
+        "gitbook": "./cli.js"
     }
 }

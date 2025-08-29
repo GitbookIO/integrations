@@ -1,7 +1,28 @@
 const projectApiKey = '<ph_project_api_key>';
 const instanceAddress = '<ph_instance_address>';
+const GRANTED_COOKIE = '__gitbook_cookie_granted';
+
+function getCookie(cname) {
+    const name = `${cname}=`;
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const ca = decodedCookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) === 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return '';
+}
 
 !(function (t, e) {
+    if (getCookie(GRANTED_COOKIE) !== 'yes') {
+        return;
+    }
+
     var o, n, p, r;
     e.__SV ||
         ((window.posthog = e),
@@ -16,7 +37,9 @@ const instanceAddress = '<ph_instance_address>';
             }
             ((p = t.createElement('script')).type = 'text/javascript'),
                 (p.async = !0),
-                (p.src = s.api_host + '/static/array.js'),
+                (p.src =
+                    s.api_host.replace('.i.posthog.com', '-assets.i.posthog.com') +
+                    '/static/array.js'),
                 (r = t.getElementsByTagName('script')[0]).parentNode.insertBefore(p, r);
             var u = e;
             for (
@@ -31,7 +54,7 @@ const instanceAddress = '<ph_instance_address>';
                     },
                     o =
                         'capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys'.split(
-                            ' '
+                            ' ',
                         ),
                     n = 0;
                 n < o.length;

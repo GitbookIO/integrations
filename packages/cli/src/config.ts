@@ -1,45 +1,97 @@
 import Conf from 'conf';
 
 import { GITBOOK_DEFAULT_ENDPOINT } from '@gitbook/api';
+import { DEFAULT_ENV, getEnvironment } from './environments';
 
 interface CliConfig {
     /**
      * Endpoint for the API.
+     * @deprecated Use `envs.default.endpoint` instead.
      */
     endpoint: string;
     /**
      * Token to use for authentication.
+     * @deprecated Use `envs.default.token` instead.
      */
     token?: string;
+
+    /**
+     * Environment configured.
+     */
+    envs: Record<
+        string,
+        {
+            /**
+             * API endpoint to authenticate to.
+             */
+            endpoint: string;
+            /**
+             * API token to authenticate with.
+             */
+            token?: string;
+        }
+    >;
 }
 
 /**
  * Config preserved in the user's home directory.
  */
-const config = new Conf<CliConfig>({
+export const config = new Conf<CliConfig>({
     projectName: 'gitbook',
     defaults: {
         endpoint: GITBOOK_DEFAULT_ENDPOINT,
         token: undefined,
+        envs: {
+            default: {
+                endpoint: GITBOOK_DEFAULT_ENDPOINT,
+                token: undefined,
+            },
+        },
     },
 });
 
 /**
- * Get a value from the config file, but prioritize the environment variable.
+ * Save the authentication to use for the given environment.
  */
-export function getConfigValue(key: keyof CliConfig): string | undefined {
-    const envName = `GITBOOK_${key.toUpperCase()}`;
-    const envValue = process.env[envName];
-    if (envValue !== undefined) {
-        return envValue;
-    }
-
-    return config.get(key);
+export function saveAuthConfig(authConfig: { endpoint: string; token?: string }): void {
+    const env = getEnvironment();
+    config.set(`envs.${env}`, authConfig);
 }
 
 /**
- * Set a value in the config file.
+ * Get the authentication to use for the given environment.
  */
-export function setConfigValue<Key extends keyof CliConfig>(key: Key, value: CliConfig[Key]): void {
-    config.set(key, value);
+export function getAuthConfig(): {
+    endpoint: string;
+    token?: string;
+} {
+    const env = getEnvironment();
+    if (process.env.GITBOOK_TOKEN) {
+        return {
+            endpoint: process.env.GITBOOK_ENDPOINT || GITBOOK_DEFAULT_ENDPOINT,
+            token: process.env.GITBOOK_TOKEN,
+        };
+    }
+
+    const envConfig = config.get('envs')[env];
+    if (envConfig) {
+        return envConfig;
+    }
+    if (!envConfig && env !== DEFAULT_ENV) {
+        throw new Error(`Environment "${env}" not found`);
+    }
+
+    const deprecatedEndpoint = config.get('endpoint');
+    const deprecatedToken = config.get('token');
+    if (deprecatedEndpoint && deprecatedToken) {
+        return {
+            endpoint: deprecatedEndpoint,
+            token: deprecatedToken,
+        };
+    }
+
+    return {
+        endpoint: GITBOOK_DEFAULT_ENDPOINT,
+        token: undefined,
+    };
 }

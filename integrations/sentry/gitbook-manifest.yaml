@@ -4,6 +4,7 @@ icon: ./assets/icon.png
 description: Embed Sentry issues in your GitBook documentation.
 visibility: public
 script: ./src/index.tsx
+organization: gitbook
 previewImages:
     - ./assets/sentry-preview.png
 summary: |
@@ -39,3 +40,4 @@ configurations:
                 description: Authentication token that allows you to use the Sentry API on behalf of your account.
         required:
             - auth_token
+target: space

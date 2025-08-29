@@ -5,6 +5,7 @@ description: Grow your Mailchimp audiences, directly from your GitBook content.
 categories:
     - marketing
 visibility: public
+organization: gitbook
 script: ./src/index.tsx
 previewImages:
     - ./assets/mailchimp-preview.png
@@ -42,3 +43,4 @@ configurations:
 secrets:
     CLIENT_ID: ${{ env.MAILCHIMP_CLIENT_ID }}
     CLIENT_SECRET: ${{ env.MAILCHIMP_CLIENT_SECRET }}
+target: space

@@ -18,14 +18,14 @@ type GARuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: GARuntimeContext
+    { environment }: GARuntimeContext,
 ) => {
-    const trackingId = environment.spaceInstallation.configuration.tracking_id;
+    const trackingId = environment.siteInstallation?.configuration?.tracking_id;
     if (!trackingId) {
         return;
     }
 
-    return new Response(script.replace('<TO_REPLACE>', trackingId), {
+    return new Response((script as string).replace('<TO_REPLACE>', trackingId), {
         headers: {
             'Content-Type': 'application/javascript',
             'Cache-Control': 'max-age=604800',

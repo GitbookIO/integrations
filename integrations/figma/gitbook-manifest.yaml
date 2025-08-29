@@ -21,6 +21,7 @@ summary: |
 
     GitBook admins can go to the integrations settings to connect your organization's Figma account to GitBook. Once enabled, the integration will work for all spaces where it's enabled in your organization.
 scopes: []
+organization: gitbook
 blocks:
     - id: embed
       title: Figma
@@ -41,3 +42,4 @@ configurations:
 secrets:
     CLIENT_ID: ${{ env.FIGMA_CLIENT_ID }}
     CLIENT_SECRET: ${{ env.FIGMA_CLIENT_SECRET }}
+target: space

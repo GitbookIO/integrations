@@ -8,10 +8,9 @@ description: Control who has access to your published documentation with Azure
 visibility: public
 script: ./src/index.tsx
 scopes:
-    - space:metadata:read
-    - space:visitor:auth
-    - space:content:read
-organization: d8f63b60-89ae-11e7-8574-5927d48c4877
+    - site:metadata:read
+    - site:visitor:auth
+organization: gitbook
 summary: |
     # Overview
     Visitor Authentication allows you to publish content behind an authentication wall, so your content is only accessible to people you choose.
@@ -24,7 +23,8 @@ summary: |
 
     Your space is now published with Visitor Authentication using Azure.
 categories:
-    - other
+    - visitor-auth
 configurations:
-    space:
+    site:
         componentId: config
+target: site

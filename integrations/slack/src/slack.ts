@@ -1,30 +1,43 @@
-import { Logger } from '@gitbook/runtime';
+import { ExposableError, Logger } from '@gitbook/runtime';
 
 import { SlackRuntimeContext } from './configuration';
 
 const logger = Logger('slack:api');
 
-/**
- * Cloudflare workers have a maximum number of subrequests we can call (20 according to my
- * tests) https://developers.cloudflare.com/workers/platform/limits/#how-many-subrequests-can-i-make
- * TODO: Test with 50
- */
-const maximumSubrequests = 20;
+type SlackResponse<Result> = {
+    ok: boolean;
+    error?: string;
+} & Result;
+
+type SlackChannel = {
+    id: string;
+    name: string;
+};
 
 /**
- * Executes a Slack API request to fetch channels, handles pagination, then returns the merged
- * results.
+ * Cloudflare workers have a maximum number of subrequests we can call (50 on a free account)
+ * https://developers.cloudflare.com/workers/platform/limits/#how-many-subrequests-can-i-make
  */
-export async function getChannelsPaginated(context: SlackRuntimeContext) {
-    const channels = [];
+const maximumSubrequests = 50;
 
-    let response = await slackAPI(context, {
+/**
+ * Helper function to fetch channels by type with pagination
+ */
+async function fetchChannelsByType(context: SlackRuntimeContext, types: string) {
+    const channels: SlackChannel[] = [];
+
+    let response = await slackAPI<{
+        channels: SlackChannel[];
+        response_metadata: {
+            next_cursor?: string;
+        };
+    }>(context, {
         method: 'GET',
         path: 'conversations.list',
         payload: {
             limit: 1000,
             exclude_archived: true,
-            types: 'public_channel,private_channel',
+            types,
         },
     });
     channels.push(...response?.channels);
@@ -42,7 +55,7 @@ export async function getChannelsPaginated(context: SlackRuntimeContext) {
             payload: {
                 limit: 1000,
                 exclude_archived: true,
-                types: 'public_channel,private_channel',
+                types,
                 cursor: response.response_metadata.next_cursor,
             },
         });
@@ -50,17 +63,34 @@ export async function getChannelsPaginated(context: SlackRuntimeContext) {
         numberOfCalls++;
     }
 
+    return channels;
+}
+
+/**
+ * Executes a Slack API request to fetch channels, handles pagination, then returns the merged
+ * results.
+ */
+export async function getChannelsPaginated(context: SlackRuntimeContext) {
+    // Make separate calls for public and private channels due to inconsistent Slack API filtering
+    // when requesting multiple types together - some channels are missing from the response
+    const [publicChannels, privateChannels] = await Promise.all([
+        fetchChannelsByType(context, 'public_channel'),
+        fetchChannelsByType(context, 'private_channel'),
+    ]);
+
+    // Combine results
+    const allChannels = [...publicChannels, ...privateChannels];
+
     // Remove any duplicate as the pagination API could return duplicated channels
-    return channels.filter(
-        (value, index, self) =>
-            index === self.findIndex((t) => t.place === value.place && t.id === value.id)
+    return allChannels.filter(
+        (value, index, self) => index === self.findIndex((t) => t.id === value.id),
     );
 }
 
 /**
  * Execute a Slack API request and return the result.
  */
-export async function slackAPI(
+export async function slackAPI<Result>(
     context: SlackRuntimeContext,
     request: {
         method: string;
@@ -71,8 +101,8 @@ export async function slackAPI(
     options: {
         accessToken?: string;
     } = {},
-    retriesLeft = 1
-) {
+    retriesLeft = 1,
+): Promise<SlackResponse<Result>> {
     const { environment } = context;
 
     const accessToken =
@@ -80,7 +110,7 @@ export async function slackAPI(
         environment.installation?.configuration.oauth_credentials?.access_token;
 
     if (!accessToken) {
-        throw new Error('No authentication token provided');
+        throw new ExposableError('Integration is not authenticated');
     }
 
     const url = request.responseUrl
@@ -117,7 +147,7 @@ export async function slackAPI(
         throw new Error(`${response.status} ${response.statusText}`);
     }
 
-    const result = await response.json<SlackResponse>();
+    const result = await response.json<SlackResponse<Result>>();
 
     if (!result.ok) {
         if (retriesLeft > 0) {
@@ -135,11 +165,12 @@ export async function slackAPI(
                             method: 'POST',
                             path: 'conversations.join',
                             payload: {
+                                // @ts-ignore
                                 channel: request.payload.channel,
                             },
                         },
                         options,
-                        0
+                        0,
                     );
 
                     return slackAPI(context, request, options, retriesLeft - 1);
@@ -150,9 +181,4 @@ export async function slackAPI(
     }
 
     return result;
-}
-
-interface SlackResponse {
-    ok: boolean;
-    error?: string;
 }

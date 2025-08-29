@@ -6,7 +6,7 @@ import {
     createIntegration,
     createOAuthHandler,
     FetchEventCallback,
-    getToken,
+    getOAuthToken,
     OAuthConfiguration,
     OAuthResponse,
     RuntimeContext,
@@ -22,10 +22,12 @@ interface Site {
     avatarUrl: string;
 }
 
-type IntegrationEnvironment = RuntimeEnvironment<{
-    sites: Site[];
-    oauth_credentials: OAuthConfiguration;
-}>;
+type JiraConfiguration = {
+    sites?: Site[];
+    oauth_credentials?: OAuthConfiguration;
+};
+
+type IntegrationEnvironment = RuntimeEnvironment<JiraConfiguration>;
 
 type IntegrationContext = RuntimeContext<IntegrationEnvironment>;
 
@@ -33,7 +35,7 @@ type Props = {
     url?: string;
 };
 
-const embedBlock = createComponent<Props, {}, {}, IntegrationContext>({
+const embedBlock = createComponent<Props, {}, void, IntegrationContext>({
     componentId: 'embed',
 
     async action(element, action) {
@@ -55,25 +57,34 @@ const embedBlock = createComponent<Props, {}, {}, IntegrationContext>({
     async render(element, context) {
         element.setCache({ maxAge: 0 });
 
-        const { url: urlStr } = element.props;
-        const url = new URL(urlStr);
-        const parts = url.pathname.split('/');
-        const key = parts[parts.length - 1];
-
-        if (!urlStr || !key) {
+        const { url: rawUrl } = element.props;
+        const { environment } = context;
+        const configuration = environment.installation?.configuration as JiraConfiguration;
+        if (!configuration.oauth_credentials || !configuration.sites) {
             return (
                 <block>
-                    <card title="Not Found">
-                        <text>{urlStr}</text>
+                    <card title="Integration misconfigured">
+                        <text>{rawUrl ?? ''}</text>
                     </card>
                 </block>
             );
         }
 
-        const { environment, api } = context;
-        const configuration = environment.installation?.configuration;
-        const site = configuration.sites.find((site) => url.toString().startsWith(site.url));
+        const url = rawUrl ? new URL(rawUrl) : null;
+        const parts = url?.pathname.split('/');
+        const key = parts ? parts[parts.length - 1] : null;
 
+        if (!url || !key) {
+            return (
+                <block>
+                    <card title="Not Found">
+                        <text>{rawUrl ?? ''}</text>
+                    </card>
+                </block>
+            );
+        }
+
+        const site = configuration.sites.find((site) => url.toString().startsWith(site.url));
         if (!site) {
             // JIRA site not part of this installation
             return (
@@ -85,15 +96,16 @@ const embedBlock = createComponent<Props, {}, {}, IntegrationContext>({
             );
         }
 
-        const accessToken = await getToken(configuration.oauth_credentials, {
-            clientId: environment.secrets.CLIENT_ID,
-            clientSecret: environment.secrets.CLIENT_SECRET,
-            accessTokenURL: 'https://auth.atlassian.com/oauth/token',
-            api,
-            installationId: environment.installation?.id,
-            installationName: environment.integration.name,
-            extractCredentials,
-        });
+        const accessToken = await getOAuthToken(
+            configuration.oauth_credentials,
+            {
+                clientId: environment.secrets.CLIENT_ID,
+                clientSecret: environment.secrets.CLIENT_SECRET,
+                accessTokenURL: 'https://auth.atlassian.com/oauth/token',
+                extractCredentials,
+            },
+            context,
+        );
 
         const issue = await getJIRAIssue(key, {
             site: site.id,
@@ -105,7 +117,7 @@ const embedBlock = createComponent<Props, {}, {}, IntegrationContext>({
             return (
                 <block>
                     <card title="Not Found">
-                        <text>{urlStr}</text>
+                        <text>{url.toString()}</text>
                     </card>
                 </block>
             );
@@ -154,7 +166,7 @@ const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request,
         base: new URL(
             environment.spaceInstallation?.urls?.publicEndpoint ||
                 environment.installation?.urls.publicEndpoint ||
-                environment.integration.urls.publicEndpoint
+                environment.integration.urls.publicEndpoint,
         ).pathname,
     });
 
@@ -173,7 +185,7 @@ const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request,
             scopes: ['read:jira-work', 'read:jira-user', 'offline_access'],
             prompt: 'consent',
             extractCredentials,
-        })
+        }),
     );
 
     const response = await router.handle(request, context);
@@ -187,7 +199,7 @@ const handleFetchEvent: FetchEventCallback<IntegrationContext> = async (request,
 };
 
 const extractCredentials = async (
-    response: OAuthResponse
+    response: OAuthResponse,
 ): Promise<RequestUpdateIntegrationInstallation> => {
     const { access_token } = response;
     const sites = await getJIRASites(access_token);

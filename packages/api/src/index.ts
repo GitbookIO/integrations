@@ -13,6 +13,10 @@ interface GitBookAPIErrorResponse {
     error: { code: number; message: string };
 }
 
+export interface GitBookAPIServiceBinding {
+    fetch: typeof fetch;
+}
+
 /*
  * Export the auto-generated API client under the name 'GitBookAPI'
  * and export all API types.
@@ -35,6 +39,11 @@ export class GitBookAPI extends Api<{
      */
     public readonly userAgent: string;
 
+    /**
+     * Service binding used to request the API.
+     */
+    public readonly serviceBinding: GitBookAPIServiceBinding | undefined;
+
     constructor(
         options: {
             /**
@@ -45,7 +54,7 @@ export class GitBookAPI extends Api<{
 
             /**
              * User agent to use.
-             * It'll default to the package name and version.
+             * It defaults to the package name and version.
              */
             userAgent?: string;
 
@@ -53,18 +62,27 @@ export class GitBookAPI extends Api<{
              * Authentication token to use.
              */
             authToken?: string;
-        } = {}
+
+            /**
+             * Service binding used to request the API.
+             * It defaults to the HTTP fetch.
+             */
+            serviceBinding?: GitBookAPIServiceBinding;
+        } = {},
     ) {
         const {
             endpoint = GITBOOK_DEFAULT_ENDPOINT,
             authToken,
             userAgent = `${name}/${version}`,
+            serviceBinding,
         } = options;
 
+        const normalizedEndpoint = endpoint.endsWith('/') ? endpoint.slice(0, -1) : endpoint;
+
         super({
-            baseUrl: `${endpoint}/v1`,
+            baseUrl: `${normalizedEndpoint}/v1`,
             securityWorker: (securityData) => {
-                if (securityData.authToken) {
+                if (securityData && securityData.authToken) {
                     return {
                         headers: {
                             Authorization: `Bearer ${securityData.authToken}`,
@@ -80,15 +98,19 @@ export class GitBookAPI extends Api<{
                 // properties which are not supported by the version of fetch supported by CloudFlare.
                 // Remove those properties here, but a future version of the GitBook API should make
                 // this easier to configure.
-                if ('credentials' in init) {
+                if (init && 'credentials' in init) {
                     delete init.credentials;
                 }
 
-                if ('referrerPolicy' in init) {
+                if (init && 'referrerPolicy' in init) {
                     delete init.referrerPolicy;
                 }
 
-                const response = await fetch(input, init);
+                // To avoid errors "TypeError: Illegal invocation: function called with incorrect this reference" on Cloudflare
+                // we always call `fetch` without passing it in an object.
+                const response = await (this.serviceBinding
+                    ? this.serviceBinding.fetch(input, init)
+                    : fetch(input, init));
 
                 if (!response.ok) {
                     let error: string = response.statusText;
@@ -106,9 +128,10 @@ export class GitBookAPI extends Api<{
             },
         });
 
-        this.endpoint = endpoint;
+        this.endpoint = normalizedEndpoint;
         this.userAgent = userAgent;
         this.authToken = authToken;
+        this.serviceBinding = serviceBinding;
         this.setSecurityData({ authToken });
     }
 
@@ -117,18 +140,19 @@ export class GitBookAPI extends Api<{
      */
     public async createInstallationClient(
         integrationName: string,
-        installationId: string
+        installationId: string,
     ): Promise<GitBookAPI> {
         const { data: installationToken } =
             await this.integrations.createIntegrationInstallationToken(
                 integrationName,
-                installationId
+                installationId,
             );
 
         return new GitBookAPI({
             endpoint: this.endpoint,
             userAgent: this.userAgent,
             authToken: installationToken.token,
+            serviceBinding: this.serviceBinding,
         });
     }
 }

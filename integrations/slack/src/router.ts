@@ -1,13 +1,12 @@
 import { Router } from 'itty-router';
 
-import { createOAuthHandler, FetchEventCallback } from '@gitbook/runtime';
+import { createOAuthHandler, FetchEventCallback, OAuthResponse } from '@gitbook/runtime';
 
-import { queryLens } from './actions';
 import {
     createSlackEventsHandler,
     createSlackCommandsHandler,
-    createSlackActionsHandler,
-    queryLensSlashHandler,
+    slackActionsHandler,
+    queryAskAISlashHandler,
     messageEventHandler,
     appMentionEventHandler,
 } from './handlers';
@@ -27,7 +26,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         base: new URL(
             environment.spaceInstallation?.urls?.publicEndpoint ||
                 environment.installation?.urls.publicEndpoint ||
-                environment.integration.urls.publicEndpoint
+                environment.integration.urls.publicEndpoint,
         ).pathname,
     });
 
@@ -43,7 +42,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             'commands',
             'channels:history',
             'im:history',
-        ].join(' ')
+        ].join(' '),
     );
 
     /*
@@ -51,7 +50,13 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
      */
     router.get(
         '/oauth',
-        createOAuthHandler({
+        createOAuthHandler<
+            OAuthResponse & {
+                team: {
+                    id: string;
+                };
+            }
+        >({
             clientId: environment.secrets.CLIENT_ID,
             clientSecret: environment.secrets.CLIENT_SECRET,
             // TODO: use the yaml as SoT for scopes
@@ -60,7 +65,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             extractCredentials: (response) => {
                 if (!response.ok) {
                     throw new Error(
-                        `Failed to exchange code for access token ${JSON.stringify(response)}`
+                        `Failed to exchange code for access token ${JSON.stringify(response)}`,
                     );
                 }
 
@@ -71,7 +76,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
                     },
                 };
             },
-        })
+        }),
     );
 
     /*
@@ -89,20 +94,13 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             app_mention: appMentionEventHandler,
             link_shared: unfurlLink,
         }),
-        acknowledgeSlackRequest
+        acknowledgeSlackRequest,
     );
 
     /* Handle shortcuts and interactivity via Slack UI blocks
      * shortcuts & interactivity
      */
-    router.post(
-        '/actions',
-        verifySlackRequest,
-        createSlackActionsHandler({
-            queryLens,
-        }),
-        acknowledgeSlackRequest
-    );
+    router.post('/actions', verifySlackRequest, slackActionsHandler, acknowledgeSlackRequest);
 
     /* Handle slash commands
      * eg. /gitbook [command]
@@ -111,10 +109,10 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         '/commands',
         verifySlackRequest,
         createSlackCommandsHandler({
-            '/gitbook': queryLensSlashHandler,
-            '/gitbookstaging': queryLensSlashHandler, // needed to allow our staging app to co-exist with the prod app
+            '/gitbook': queryAskAISlashHandler,
+            '/gitbookstaging': queryAskAISlashHandler, // needed to allow our staging app to co-exist with the prod app
         }),
-        acknowledgeSlackRequest
+        acknowledgeSlackRequest,
     );
 
     /*
@@ -131,6 +129,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         return new Response(JSON.stringify(completions), {
             headers: {
                 'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache, no-store',
             },
         });
     });

@@ -1,5 +1,5 @@
 import { ContentKitBlock } from '@gitbook/api';
-import { createComponent, Logger } from '@gitbook/runtime';
+import { createComponent, ExposableError, Logger } from '@gitbook/runtime';
 
 import * as sentry from './sentry';
 import { SentryIssue, SentryRuntimeContext } from './types';
@@ -10,23 +10,29 @@ export const logger = Logger('integration:sentry');
 /**
  * A generic block with a text and a link to the URL provided
  */
-function defaultBlock(url: string, context: SentryRuntimeContext): ContentKitBlock {
+function defaultBlock(url: string | undefined, context: SentryRuntimeContext): ContentKitBlock {
     return (
         <block>
             <card
                 title={'Sentry'}
                 hint={url}
-                onPress={{
-                    action: '@ui.url.open',
-                    url,
-                }}
+                onPress={
+                    url
+                        ? {
+                              action: '@ui.url.open',
+                              url,
+                          }
+                        : undefined
+                }
                 icon={
-                    <image
-                        source={{
-                            url: context.environment.integration.urls.icon,
-                        }}
-                        aspectRatio={1}
-                    />
+                    context.environment.integration.urls.icon ? (
+                        <image
+                            source={{
+                                url: context.environment.integration.urls.icon,
+                            }}
+                            aspectRatio={1}
+                        />
+                    ) : undefined
                 }
             />
         </block>
@@ -61,12 +67,15 @@ export const embedBlock = createComponent<{
     async render(element, context) {
         const { issueId, url } = element.props;
 
+        if (!issueId) {
+            return defaultBlock(url, context);
+        }
+
         let issueData: SentryIssue;
         try {
             issueData = await sentry.getIssue(issueId, context);
         } catch (err) {
-            logger.error('Error while fetching Sentry issue', err.message);
-            return defaultBlock(url, context);
+            throw new ExposableError('Failed to fetch Sentry issue data');
         }
 
         const { title, shortId, level, metadata, status } = issueData;
@@ -78,7 +87,7 @@ export const embedBlock = createComponent<{
             <text> • </text>,
             <text>{capitalizeFirstLetter(status)}</text>,
             <text> • </text>,
-            <text>{metadata.function ?? metadata.type ?? metadata.value}</text>,
+            <text>{metadata.function ?? metadata.type ?? metadata.value ?? ''}</text>,
         ];
 
         return (
@@ -91,12 +100,14 @@ export const embedBlock = createComponent<{
                         url,
                     }}
                     icon={
-                        <image
-                            source={{
-                                url: context.environment.integration.urls.icon,
-                            }}
-                            aspectRatio={1}
-                        />
+                        context.environment.integration.urls.icon ? (
+                            <image
+                                source={{
+                                    url: context.environment.integration.urls.icon,
+                                }}
+                                aspectRatio={1}
+                            />
+                        ) : undefined
                     }
                 />
             </block>

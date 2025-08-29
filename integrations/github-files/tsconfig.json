@@ -1,3 +1,6 @@
 {
     "extends": "@gitbook/tsconfig/integration.json",
+    "compilerOptions": {
+        "types": ["bun"]
+    }
 }

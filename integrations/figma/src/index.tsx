@@ -5,6 +5,7 @@ import {
     RuntimeEnvironment,
     RuntimeContext,
 } from '@gitbook/runtime';
+import { ContentKitIcon } from '@gitbook/api';
 
 import { extractNodeFromURL, fetchFigmaFile, fetchFigmaNode } from './figma';
 
@@ -58,23 +59,24 @@ const embedBlock = createComponent<{
                             url,
                         }}
                         icon={
-                            <image
-                                source={{
-                                    url: context.environment.integration.urls.icon,
-                                }}
-                                aspectRatio={1}
-                            />
+                            context.environment.integration.urls.icon ? (
+                                <image
+                                    source={{
+                                        url: context.environment.integration.urls.icon,
+                                    }}
+                                    aspectRatio={1}
+                                />
+                            ) : undefined
                         }
                     />
                 </block>
             );
         }
 
-        const file = nodeId
-            ? await fetchFigmaNode(fileId, nodeId, context)
-            : await fetchFigmaFile(fileId, context);
+        const file = nodeId ? undefined : await fetchFigmaFile(fileId, context);
+        const node = nodeId ? await fetchFigmaNode(fileId, nodeId, context) : undefined;
 
-        if (!file) {
+        if (!file && !node) {
             return (
                 <block>
                     <card
@@ -84,12 +86,14 @@ const embedBlock = createComponent<{
                             url,
                         }}
                         icon={
-                            <image
-                                source={{
-                                    url: context.environment.integration.urls.icon,
-                                }}
-                                aspectRatio={1}
-                            />
+                            context.environment.integration.urls.icon ? (
+                                <image
+                                    source={{
+                                        url: context.environment.integration.urls.icon,
+                                    }}
+                                    aspectRatio={1}
+                                />
+                            ) : undefined
                         }
                     />
                 </block>
@@ -100,22 +104,26 @@ const embedBlock = createComponent<{
         return (
             <block>
                 <card
-                    title={file.name + (file.nodeName ? ` - ${file.nodeName}` : '')}
+                    title={
+                        (node?.name ?? file?.name) + (node?.nodeName ? ` - ${node.nodeName}` : '')
+                    }
                     onPress={{
                         action: '@ui.url.open',
                         url,
                     }}
                     icon={
-                        <image
-                            source={{
-                                url: context.environment.integration.urls.icon,
-                            }}
-                            aspectRatio={1}
-                        />
+                        context.environment.integration.urls.icon ? (
+                            <image
+                                source={{
+                                    url: context.environment.integration.urls.icon,
+                                }}
+                                aspectRatio={1}
+                            />
+                        ) : undefined
                     }
                     buttons={[
                         <button
-                            icon="maximize"
+                            icon={ContentKitIcon.Maximize}
                             tooltip="Open preview"
                             onPress={{
                                 action: '@ui.modal.open',
@@ -127,12 +135,12 @@ const embedBlock = createComponent<{
                         />,
                     ]}
                 >
-                    {file.nodeImage ? (
+                    {node?.nodeImage ? (
                         <image
                             source={{
-                                url: file.nodeImage.url,
+                                url: node.nodeImage.url,
                             }}
-                            aspectRatio={file.nodeImage.width / file.nodeImage.height}
+                            aspectRatio={node.nodeImage.width / node.nodeImage.height}
                         />
                     ) : null}
                 </card>
@@ -173,7 +181,7 @@ export default createIntegration<FigmaRuntimeContext>({
             clientId: context.environment.secrets.CLIENT_ID,
             clientSecret: context.environment.secrets.CLIENT_SECRET,
             authorizeURL: 'https://www.figma.com/oauth?scope=file_read',
-            accessTokenURL: 'https://www.figma.com/api/oauth/token',
+            accessTokenURL: 'https://api.figma.com/v1/oauth/token',
         });
 
         return oauthHandler(request, context);

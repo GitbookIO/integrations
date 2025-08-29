@@ -1,7 +1,6 @@
 import LinkHeader from 'http-link-header';
-import { StatusError } from 'itty-router';
 
-import { Logger } from '@gitbook/runtime';
+import { Logger, ExposableError } from '@gitbook/runtime';
 
 import type { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
 import { assertIsDefined, getSpaceConfigOrThrow } from './utils';
@@ -70,7 +69,7 @@ export async function fetchInstallations(context: GithubRuntimeContext) {
 export async function fetchInstallationRepositories(
     context: GithubRuntimeContext,
     installationId: number,
-    options: GHFetchOptions = {}
+    options: GHFetchOptions = {},
 ) {
     const repositories = await githubAPI<Array<GHRepository>>(context, null, {
         path: `/user/installations/${installationId}/repositories`,
@@ -91,7 +90,7 @@ export async function fetchInstallationRepositories(
 export async function searchRepositories(
     context: GithubRuntimeContext,
     query: string,
-    options: GHFetchOptions = {}
+    options: GHFetchOptions = {},
 ) {
     const repository = await githubAPI<Array<GHRepository>>(
         context,
@@ -105,7 +104,7 @@ export async function searchRepositories(
             },
             walkPagination: options.walkPagination,
             listProperty: 'items',
-        }
+        },
     );
 
     return repository;
@@ -144,7 +143,7 @@ export async function fetchRepositoryBranches(context: GithubRuntimeContext, rep
 export async function getAppInstallation(
     context: GithubRuntimeContext,
     appJWT: string,
-    installationId: number
+    installationId: number,
 ): Promise<GHInstallation> {
     const installation = await githubAPI<GHInstallation>(
         context,
@@ -152,7 +151,7 @@ export async function getAppInstallation(
         {
             method: 'GET',
             path: `/app/installations/${installationId}`,
-        }
+        },
     );
 
     return installation;
@@ -165,7 +164,7 @@ export async function getAppInstallation(
 export async function createAppInstallationAccessToken(
     context: GithubRuntimeContext,
     appJWT: string,
-    installationId: number
+    installationId: number,
 ): Promise<string> {
     const { token } = await githubAPI<{ token: string; expires_at: string }>(
         context,
@@ -173,7 +172,7 @@ export async function createAppInstallationAccessToken(
         {
             method: 'POST',
             path: `/app/installations/${installationId}/access_tokens`,
-        }
+        },
     );
 
     return token;
@@ -189,7 +188,7 @@ export async function createCommitStatus(
     owner: string,
     repo: string,
     sha: string,
-    status: object
+    status: object,
 ): Promise<void> {
     await githubAPI(
         context,
@@ -198,7 +197,7 @@ export async function createCommitStatus(
             method: 'POST',
             path: `/repos/${owner}/${repo}/statuses/${sha}`,
             body: status,
-        }
+        },
     );
 }
 
@@ -221,7 +220,7 @@ async function githubAPI<T>(
          * @default true
          */
         walkPagination?: boolean;
-    }
+    },
 ): Promise<T> {
     const {
         method = 'GET',
@@ -291,7 +290,7 @@ async function requestGitHubAPI(
     credentials: OAuthTokenCredentials,
     url: URL,
     options: RequestInit = {},
-    retriesLeft = 1
+    retriesLeft = 1,
 ): Promise<Response> {
     const { access_token } = credentials;
     logger.debug(`GitHub API -> [${options.method}] ${url.toString()}`);
@@ -317,7 +316,7 @@ async function requestGitHubAPI(
             const refreshed = await refreshCredentials(
                 context.environment.secrets.CLIENT_ID,
                 context.environment.secrets.CLIENT_SECRET,
-                credentials.refresh_token
+                credentials.refresh_token,
             );
 
             await context.api.integrations.updateIntegrationSpaceInstallation(
@@ -329,7 +328,7 @@ async function requestGitHubAPI(
                         ...spaceInstallation.configuration,
                         oauth_credentials: refreshed,
                     },
-                }
+                },
             );
 
             logger.info(`refreshed OAuth credentials for space ${spaceInstallation.space}`);
@@ -343,7 +342,7 @@ async function requestGitHubAPI(
         logger.error(`[${options.method}] (${response.status}) GitHub API error: ${text}`);
 
         // Otherwise, we throw an error
-        throw new StatusError(response.status, `GitHub API error: ${response.statusText}`);
+        throw new ExposableError(`GitHub API error: ${response.statusText}`, response.status);
     }
 
     return response;
@@ -352,7 +351,7 @@ async function requestGitHubAPI(
 async function refreshCredentials(
     clientId: string,
     clientSecret: string,
-    refreshToken: string
+    refreshToken: string,
 ): Promise<OAuthTokenCredentials> {
     const url = new URL('https://github.com/login/oauth/access_token');
 
@@ -370,7 +369,7 @@ async function refreshCredentials(
 
     if (!resp.ok) {
         // If refresh fails for whatever reason, we ask the user to re-authenticate
-        throw new StatusError(401, `Unauthorized: kindly re-authenticate!`);
+        throw new ExposableError(`Unauthorized: kindly re-authenticate!`, 401);
     }
 
     const data = await resp.formData();
@@ -387,7 +386,7 @@ async function refreshCredentials(
  * This will throw an error if the access token is not defined.
  */
 export function extractTokenCredentialsOrThrow(
-    context: GithubRuntimeContext
+    context: GithubRuntimeContext,
 ): OAuthTokenCredentials {
     const spaceInstallation = context.environment.spaceInstallation;
     assertIsDefined(spaceInstallation, {
@@ -398,7 +397,7 @@ export function extractTokenCredentialsOrThrow(
 
     const oAuthCredentials = config?.oauth_credentials;
     if (!oAuthCredentials?.access_token) {
-        throw new StatusError(401, 'Unauthorized: kindly re-authenticate!');
+        throw new ExposableError('Unauthorized: kindly re-authenticate!', 401);
     }
 
     return oAuthCredentials;

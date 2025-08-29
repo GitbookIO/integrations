@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 export const Logger = (namespace: string) => {
     return {
         info: (message: string, ...args: any) => {

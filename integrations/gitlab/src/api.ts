@@ -1,7 +1,6 @@
 import LinkHeader from 'http-link-header';
-import { StatusError } from 'itty-router';
 
-import { Logger } from '@gitbook/runtime';
+import { Logger, ExposableError } from '@gitbook/runtime';
 
 import type { GitLabSpaceConfiguration } from './types';
 
@@ -53,7 +52,7 @@ export async function getCurrentUser(config: GitLabSpaceConfiguration) {
  */
 export async function fetchProjects(
     config: GitLabSpaceConfiguration,
-    options: GLFetchOptions = {}
+    options: GLFetchOptions = {},
 ) {
     const projects = await gitlabAPI<Array<GLProject>>(config, {
         path: '/projects',
@@ -74,7 +73,7 @@ export async function fetchProjects(
 export async function searchUserProjects(
     config: GitLabSpaceConfiguration,
     search: string,
-    options: GLFetchOptions = {}
+    options: GLFetchOptions = {},
 ) {
     const projects = await gitlabAPI<Array<GLProject>>(config, {
         path: `/users/${config.userId}/projects`,
@@ -122,7 +121,7 @@ export async function addProjectWebhook(
     config: GitLabSpaceConfiguration,
     projectId: number,
     webhookUrl: string,
-    webhookToken: string
+    webhookToken: string,
 ) {
     const { id } = await gitlabAPI<{ id: number }>(config, {
         method: 'POST',
@@ -144,7 +143,7 @@ export async function addProjectWebhook(
 export async function deleteProjectWebhook(
     config: GitLabSpaceConfiguration,
     projectId: number,
-    webhookId: number
+    webhookId: number,
 ) {
     await gitlabAPI(config, {
         method: 'DELETE',
@@ -159,7 +158,7 @@ export async function editCommitStatus(
     config: GitLabSpaceConfiguration,
     projectId: number,
     sha: string,
-    status: object
+    status: object,
 ): Promise<void> {
     await gitlabAPI(config, {
         method: 'POST',
@@ -185,7 +184,7 @@ export async function gitlabAPI<T>(
          * @default true
          */
         walkPagination?: boolean;
-    }
+    },
 ): Promise<T> {
     const {
         method = 'GET',
@@ -256,7 +255,7 @@ export async function gitlabAPI<T>(
 async function requestGitLab(
     token: string,
     url: URL,
-    options: RequestInit = {}
+    options: RequestInit = {},
 ): Promise<Response> {
     logger.debug(`GitLab API -> [${options.method}] ${url.toString()}`);
     const response = await fetch(url.toString(), {
@@ -275,7 +274,7 @@ async function requestGitLab(
 
         logger.error(`[${options.method}] (${response.status}) GitLab API error: ${text}`);
 
-        throw new StatusError(response.status, `GitLab API error: ${response.statusText}`);
+        throw new ExposableError(`GitLab API error: ${response.statusText}`, response.status);
     }
 
     return response;
@@ -296,7 +295,10 @@ function getEndpoint(config: GitLabSpaceConfiguration): string {
 export function getAccessTokenOrThrow(config: GitLabSpaceConfiguration): string {
     const { accessToken } = config;
     if (!accessToken) {
-        throw new StatusError(401, 'Unauthorized: kindly re-authenticate with a new access token.');
+        throw new ExposableError(
+            'Unauthorized: kindly re-authenticate with a new access token.',
+            401,
+        );
     }
 
     return accessToken;

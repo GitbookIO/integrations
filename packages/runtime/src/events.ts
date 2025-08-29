@@ -18,11 +18,16 @@ export type EventType = Event['type'];
 type EventTypeMap = { [T in Event as T['type']]: T };
 
 /**
+ * Get the type of an event by its name.
+ */
+export type EventByType<T extends EventType> = EventTypeMap[T];
+
+/**
  * Callback for a specific event type.
  */
 export type EventCallback<
     T extends NonFetchEvent,
-    Context extends RuntimeContext = RuntimeContext
+    Context extends RuntimeContext = RuntimeContext,
 > = RuntimeCallback<[EventTypeMap[T]], void | Promise<void>, Context>;
 
 /**
@@ -63,5 +68,5 @@ export type FetchPublishScriptEventCallback<Context extends RuntimeContext = Run
  * Callback to handle visitor authentication fetch event.
  */
 export type FetchVisitorAuthenticationEventCallback<
-    Context extends RuntimeContext = RuntimeContext
+    Context extends RuntimeContext = RuntimeContext,
 > = RuntimeCallback<[FetchVisitorAuthenticationEvent], Response | Promise<Response>, Context>;

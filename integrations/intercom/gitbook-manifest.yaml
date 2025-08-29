@@ -1,6 +1,7 @@
 name: intercom
 title: Intercom
 icon: ./assets/icon.png
+organization: gitbook
 description: Add the Intercom chat widget to your published GitBook content
 previewImages:
     - ./assets/intercom-preview.png
@@ -12,8 +13,8 @@ script: ./src/index.ts
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
-    - space:script:inject
-    - space:script:cookies
+    - site:script:inject
+    - site:script:cookies
 contentSecurityPolicy:
     script-src: |
         https://js.intercomcdn.com
@@ -72,7 +73,7 @@ summary: |
 categories:
     - analytics
 configurations:
-    space:
+    site:
         properties:
             app_id:
                 type: string
@@ -80,3 +81,4 @@ configurations:
                 description: You can find it in your Intercom account, under the "Installation" section of the "Settings" page.
         required:
             - app_id
+target: site

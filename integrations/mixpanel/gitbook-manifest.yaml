@@ -1,0 +1,40 @@
+name: mixpanel
+title: Mixpanel
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/mixpanel-preview.png
+description: Plug your GitBook site to your Mixpanel account.
+visibility: public
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+    - site:script:cookies
+organization: gitbook
+contentSecurityPolicy:
+    script-src: cdn.mxpnl.com;
+summary: |
+    # Overview
+    This integration allows to add the Mixpanel tracker on your published GitBook site.
+
+    # How it works
+    The integration injects the Mixpanel script on your page, using the configured project token, 
+    so that you can get analytics information from your GitBook site directly inside of Mixpanel.
+
+    # Configure
+    Install the integration on the GitBook space of your choice.
+    Locate the Mixpanel Project Token you want to use, which is available in Mixpanel's Project Settings section
+
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            project_token:
+                type: string
+                title: Project Token
+                description: Available in Mixpanel's Project Settings section
+        required:
+            - project_token
+target: site

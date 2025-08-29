@@ -1,0 +1,34 @@
+name: intercom-conversations
+title: Intercom Connector
+icon: ./assets/icon.png
+description: Ingest Intercom support conversations into GitBook for auto-improvements.
+visibility: public
+script: ./src/index.ts
+summary: |
+    # Overview
+
+    Automatically get AI-suggested change requests for your docs based on Intercom support conversations.
+scopes:
+    - conversations:ingest
+organization: gitbook
+configurations:
+    account:
+        componentId: config
+secrets:
+    CLIENT_ID: ${{ env.INTERCOM_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.INTERCOM_CLIENT_SECRET }}
+target: organization
+envs:
+    test:
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-integrations/intercomConversationsStaging/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/intercomConversationsStaging/CLIENT_SECRET" }}
+    staging:
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-integrations/intercomConversationsStaging/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/intercomConversationsStaging/CLIENT_SECRET" }}
+    dev-samy:
+        organization: 27dLEczo4lLcYIQhRuxg
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-integrations/IntercomDevSamyConversations/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/IntercomDevSamyConversations/CLIENT_SECRET" }}

@@ -18,6 +18,9 @@ const diagramBlock = createComponent<
         };
     },
     async render(element, { environment }) {
+        if (element.context.type !== 'document') {
+            throw new Error('Invalid context');
+        }
         const { editable } = element.context;
         const { content } = element.state;
 
@@ -25,10 +28,13 @@ const diagramBlock = createComponent<
             maxAge: 86400,
         });
 
+        const url = new URL(environment.integration.urls.publicEndpoint);
+        url.searchParams.set('v', String(environment.integration.version));
+
         const output = (
             <webframe
                 source={{
-                    url: environment.integration.urls.publicEndpoint,
+                    url: url.toString(),
                 }}
                 aspectRatio={16 / 9}
                 data={{
@@ -64,33 +70,74 @@ export default createIntegration({
     fetch: async () => {
         return new Response(
             `<html>
+                <head>
+                    <meta name="color-scheme" content="light dark">
+                </head>
                 <style>
                 * { margin: 0; padding: 0; }
                 </style>
                 <body>
                     <script type="module">
-                        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-                        mermaid.initialize({ startOnLoad: false });
+                        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+                        import zenuml from 'https://cdn.jsdelivr.net/npm/@mermaid-js/mermaid-zenuml@0.2.0/dist/mermaid-zenuml.esm.min.mjs';
+                        await mermaid.registerExternalDiagrams([zenuml]);
 
-                        function renderDiagram(content) {
-                            mermaid.render('output', content).then(({ svg: svgGraph }) => {
-                                document.getElementById('content').innerHTML = svgGraph;
-                                const svg = document.getElementById('content').querySelector('svg');
-                                const size = { width: svg.viewBox.baseVal.width, height: svg.viewBox.baseVal.height };
+                        const theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+                        mermaid.initialize({ startOnLoad: false, theme });
 
-                                sendAction({
-                                    action: '@webframe.resize',
-                                    size: {
-                                        aspectRatio: size.width / size.height,
-                                        maxHeight: size.height,
-                                        maxWidth: size.width,
-                                    }
-                                })
+                        let lastContent;
+                        const queue = [];
+
+                        function pushRenderDiagram(content) {
+                            console.log('mermaid: queue diagram', { content });
+                            queue.push(content);
+
+                            if (queue.length === 1) {
+                                processQueue();
+                            }
+                        }
+
+                        async function processQueue() {
+                            console.log('mermaid: process queue', queue.length);
+                            if (queue.length > 0) {
+                                const content = queue[0];
+                                try {
+                                    await renderDiagram(content);
+                                    lastContent = content;
+                                } catch (error) {
+                                    console.error('mermaid: render error', error);
+                                }
+
+                                queue.shift();
+                            }
+
+                            if (queue.length > 0) {
+                                await processQueue();
+                            }
+                        }
+
+                        async function renderDiagram(content) {
+                            console.log('mermaid: render diagram', { content });
+                            const { svg: svgGraph } = await mermaid.render('output', content);
+
+                            document.getElementById('content').innerHTML = svgGraph;
+                            const svg = document.getElementById('content').querySelector('svg');
+                            const size = svg.viewBox.baseVal.width && svg.viewBox.baseVal.height
+                                ? { width: svg.viewBox.baseVal.width, height: svg.viewBox.baseVal.height }
+                                : { width: parseInt(svg.style.width, 10), height: parseInt(svg.style.height, 10) };
+
+                            console.log('mermaid: resize', size);
+                            sendAction({
+                                action: '@webframe.resize',
+                                size: {
+                                    aspectRatio: size.width / size.height,
+                                    height: size.height,
+                                }
                             });
                         }
 
                         function sendAction(action) {
-                            window.top.postMessage(
+                            window.parent.postMessage(
                                 {
                                     action,
                                 },
@@ -98,15 +145,42 @@ export default createIntegration({
                             );
                         }
 
+                        function onLoaded(e) {
+                            console.log("mermaid: ready");
+                            sendAction({
+                                action: '@webframe.ready'
+                            });
+                        }
+
                         window.addEventListener("message", (event) => {
-                            if (event.data) {
+                            if (
+                                event.data &&
+                                typeof event.data.state === 'object' &&
+                                typeof event.data.state.content === 'string'
+                            ) {
                                 const content = event.data.state.content;
-                                renderDiagram(content)
+                                pushRenderDiagram(content)
+                            } else {
+                             console.log('mermaid: invalid message', event.data);
                             }
                         });
 
-                        sendAction({
-                            action: '@webframe.ready'
+
+                        if (document.readyState !== 'loading') {
+                            onLoaded();
+                        } else {
+                            document.addEventListener('DOMContentLoaded', onLoaded);
+                        }
+
+                        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+                            const theme = event.matches ? 'dark' : 'default';
+                            mermaid.initialize({
+                                startOnLoad: false,
+                                theme,
+                            });
+                            if (lastContent) {
+                                pushRenderDiagram(lastContent);
+                            }
                         });
                     </script>
                     <div id="content"></div>
@@ -117,7 +191,7 @@ export default createIntegration({
                     'Content-Type': 'text/html',
                     'Cache-Control': 'public, max-age=86400',
                 },
-            }
+            },
         );
     },
     components: [diagramBlock],

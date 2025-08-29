@@ -1,0 +1,21 @@
+{
+    "name": "@gitbook/integration-oidc",
+    "version": "0.2.6",
+    "private": true,
+    "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+        "itty-router": "^4.0.14",
+        "@tsndr/cloudflare-worker-jwt": "2.3.2"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "publish-integrations-staging": "gitbook publish .",
+        "check": "gitbook check",
+        "publish-integrations": "gitbook publish ."
+    }
+}

@@ -3,9 +3,8 @@ import type {
     PullRequestOpenedEvent,
     PullRequestSynchronizeEvent,
 } from '@octokit/webhooks-types';
-import { StatusError } from 'itty-router';
 
-import { Logger } from '@gitbook/runtime';
+import { Logger, ExposableError } from '@gitbook/runtime';
 
 import { handleImportDispatchForSpaces } from './tasks';
 import { GithubRuntimeContext } from './types';
@@ -21,12 +20,12 @@ const logger = Logger('github:webhooks');
 export async function verifyGitHubWebhookSignature(
     payload: string,
     signature: string,
-    secret: string
+    secret: string,
 ) {
     if (!signature) {
-        throw new StatusError(400, 'No signature found on request');
+        throw new ExposableError('No signature found on request');
     } else if (!signature.startsWith('sha256=')) {
-        throw new StatusError(400, 'Invalid format: signature is not using sha256');
+        throw new ExposableError('Invalid format: signature is not using sha256');
     }
 
     const algorithm = { name: 'HMAC', hash: 'SHA-256' };
@@ -39,7 +38,7 @@ export async function verifyGitHubWebhookSignature(
     const signed = await crypto.subtle.sign(algorithm.name, key, enc.encode(payload));
     const expectedSignature = `sha256=${arrayToHex(signed)}`;
     if (!safeCompare(expectedSignature, signature)) {
-        throw new StatusError(400, 'Signature does not match event payload and secret');
+        throw new ExposableError('Signature does not match event payload and secret');
     }
 
     // All good!
@@ -50,7 +49,7 @@ export async function verifyGitHubWebhookSignature(
  */
 export async function handlePushEvent(
     context: GithubRuntimeContext,
-    payload: EventPayloadMap['push']
+    payload: EventPayloadMap['push'],
 ) {
     if (payload.installation) {
         const githubInstallationId = payload.installation.id;
@@ -58,7 +57,7 @@ export async function handlePushEvent(
         const githubRef = payload.ref;
 
         logger.info(
-            `handling push event on ref "${payload.ref}" of "${payload.repository.id}" (installation "${payload.installation.id}")`
+            `handling push event on ref "${payload.ref}" of "${payload.repository.id}" (installation "${payload.installation.id}")`,
         );
 
         const queryKey = computeConfigQueryKey(githubInstallationId, githubRepositoryId, githubRef);
@@ -79,7 +78,7 @@ export async function handlePushEvent(
  */
 export async function handlePullRequestEvents(
     context: GithubRuntimeContext,
-    payload: PullRequestOpenedEvent | PullRequestSynchronizeEvent
+    payload: PullRequestOpenedEvent | PullRequestSynchronizeEvent,
 ) {
     const eventType = `pull_request.${payload.action}`;
     const isPRFromFork = payload.pull_request.head.repo?.id !== payload.repository.id;
@@ -92,14 +91,14 @@ export async function handlePullRequestEvents(
         const githubRepositoryId = payload.repository.id;
 
         logger.info(
-            `handling ${eventType} event on ref "${headRef}" of "${payload.repository.id}" (installation "${payload.installation.id}")`
+            `handling ${eventType} event on ref "${headRef}" of "${payload.repository.id}" (installation "${payload.installation.id}")`,
         );
 
         const queryKey = computeConfigQueryKey(
             githubInstallationId,
             githubRepositoryId,
             baseRef,
-            isPRFromFork ? true : undefined
+            isPRFromFork ? true : undefined,
         );
 
         const total = await handleImportDispatchForSpaces(context, {

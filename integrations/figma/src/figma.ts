@@ -1,3 +1,4 @@
+import { ExposableError } from '@gitbook/runtime';
 import { FigmaRuntimeContext } from './types';
 
 export interface FileNodeId {
@@ -45,10 +46,11 @@ export function extractNodeFromURL(input: string): FileNodeId | undefined {
     }
 
     let nodeId: string | undefined;
-    if (url.searchParams.has('node-id')) {
+    const rawNodeId = url.searchParams.get('node-id');
+    if (rawNodeId) {
         // some times the node-id in the URL has a dash instead of a colon but the figma API returns response
         // of nodes-id(s) with a colon so we're adopting that format
-        nodeId = url.searchParams.get('node-id').replaceAll('-', ':');
+        nodeId = rawNodeId.replaceAll('-', ':');
     }
 
     return { fileId: parts[2], nodeId };
@@ -63,7 +65,7 @@ export async function fetchFigmaNode(fileId: string, nodeId: string, context: Fi
             fetchFigmaAPI<FigmaAPINodes>(
                 `files/${fileId}/nodes`,
                 { ids: nodeId, depth: 1 },
-                context
+                context,
             ),
             fetchFigmaImage(fileId, nodeId, context),
         ]);
@@ -84,13 +86,13 @@ export async function fetchFigmaNode(fileId: string, nodeId: string, context: Fi
 export async function fetchFigmaImage(
     fileId: string,
     nodeId: string,
-    context: FigmaRuntimeContext
+    context: FigmaRuntimeContext,
 ) {
     try {
         const image = await fetchFigmaAPI<FigmaAPIImages>(
             `images/${fileId}`,
             { ids: nodeId, format: 'svg' },
-            context
+            context,
         );
         const imageUrl = image.images?.[nodeId];
         if (!imageUrl) {
@@ -130,11 +132,11 @@ export async function fetchFigmaFile(fileId: string, context: FigmaRuntimeContex
 export async function fetchFigmaAPI<T>(
     path: string,
     params: object,
-    { environment }: FigmaRuntimeContext
+    { environment }: FigmaRuntimeContext,
 ): Promise<T> {
-    const accessToken = environment.installation.configuration.oauth_credentials?.access_token;
+    const accessToken = environment.installation?.configuration.oauth_credentials?.access_token;
     if (!accessToken) {
-        throw new Error('Missing authentication');
+        throw new ExposableError('Integration is not authenticated');
     }
 
     const url = new URL(`https://api.figma.com/v1/${path}`);

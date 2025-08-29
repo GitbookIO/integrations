@@ -98,7 +98,7 @@ export async function handlePushEvent(context: GitLabRuntimeContext, payload: Gi
     const gitlabRef = payload.ref;
 
     logger.info(
-        `handling push event on ref "${payload.ref}" of "${payload.repository.id}" (project "${payload.project.id}")`
+        `handling push event on ref "${payload.ref}" of "${payload.repository.id}" (project "${payload.project.id}")`,
     );
 
     const queryKey = computeConfigQueryKey(gitlabProjectId, gitlabRef);
@@ -122,14 +122,14 @@ export async function handlePushEvent(context: GitLabRuntimeContext, payload: Gi
  */
 export async function handleMergeRequestEvent(
     context: GitLabRuntimeContext,
-    payload: GitLabMergeRequestEvent
+    payload: GitLabMergeRequestEvent,
 ) {
     const gitlabProjectId = payload.project.id;
     const targetRef = `refs/heads/${payload.object_attributes.target_branch}`;
     const sourceRef = `refs/heads/${payload.object_attributes.source_branch}`;
 
     logger.info(
-        `handling merge request event "${payload.object_attributes.action}" on ref "${targetRef}" of "${payload.project.id}"`
+        `handling merge request event "${payload.object_attributes.action}" on ref "${targetRef}" of "${payload.project.id}"`,
     );
 
     if (

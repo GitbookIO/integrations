@@ -49,18 +49,6 @@ export function SourcesBlock(params: { title?: string; items: Array<RelatedSourc
     ];
 }
 
-export function ConversationSavedBlock(snippetsUrl: string) {
-    return [
-        {
-            type: 'section',
-            text: {
-                type: 'mrkdwn',
-                text: `:white_check_mark: Conversation saved in <${snippetsUrl}|GitBook>`,
-            },
-        },
-    ];
-}
-
 export function QueryDisplayBlock(params: { queries: Array<string>; heading?: string }) {
     const { queries, heading } = params;
 
@@ -100,7 +88,7 @@ export function FollowUpQueryList(props: { queries: Array<string> }) {
                 emoji: true,
             },
             value: query,
-            action_id: 'queryLens:ephemeral',
+            action_id: 'queryAskAI:ephemeral',
         },
     }));
 }
@@ -118,7 +106,7 @@ export function ShareTools(text: string) {
                         emoji: true,
                     },
                     value: text,
-                    action_id: 'queryLens:permanent', // sharing requeries for the same question verbatim which will then be pulled from cache
+                    action_id: 'queryAskAI:permanent', // sharing requeries for the same question verbatim which will then be pulled from cache
                     style: 'primary',
                 },
             ],

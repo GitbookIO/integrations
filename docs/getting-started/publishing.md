@@ -1,72 +1,42 @@
 ---
-description: Learn how to Publish your apps and integrations publicly and privately
+description: Publish your apps and integrations publicly or privately.
+icon: up-from-line
 ---
 
 # Publishing
 
 When you're ready to publish your integration, you're able to publish it for use within GitBook.
 
-## Publishing to your organization
+### Publishing to your organization
 
-To publish your integration, you will need to use the [GitBook CLI](broken-reference). By running the `publish` command, it will publish your integration to GitBook using the options defined in your `gitbook-manifest.yaml` file.&#x20;
+Publishing your integration will publish it to GitBook using the options defined in your integration’s  `gitbook-manifest.yaml` file.&#x20;
 
-It's required to have a `name`, `title`, `description`, `scopes`, and `organization` in your `gitbook-manifest.yaml` file to publish an integration.
+In order to publish, it's required to have:
 
-By default, it will publish your integration to the organization specified in your integration's `gitbook-manifest.yaml` file. Keep in mind, that only users within this organization will be able to install it.
-
-See the [Configurations section](../integrations/configurations.md) to learn more about the `gitbook-manifest.yaml` file.
-
-#### `name`
-
-A unique name for your integration. (e.g. slack)
-
-**`title`**
-
-The title of your integration. (e.g. Slack)
-
-**`description`**
-
-The description for your integration.
-
-**`organization`**
-
-The [`organizationId`](concepts.md) or [subdomain](https://docs.gitbook.com/publishing/custom-domain/choose) of the organization that owns the integration you're publishing.
-
-**`visibility`**
-
-The visibility for your integration. Defaults to `private`. When set to `private`, only members of the organization that owns the integration are able to see or install the integration into a space.&#x20;
-
-Set the visibility to `unlisted` in order to share your integration install link with anyone.
-
-Setting the visibility to `public` is only available by GitBook staff, and setting it to `public` will allow your integration to be [listed on our marketplace](https://www.gitbook.com/integrations). See [Submitting to GitBook's Integration Marketplace](publishing.md#submitting-to-gitbooks-integration-marketplace) below for more info.
-
-**`scopes`**
-
-A list of scopes your integration allows. The following scopes are accepted:
-
-```yaml
-  - space:content:read
-  - space:content:write
-  - space:metadata:read
-  - space:metadata:write
-  - space:views:read
-```
+* `name`
+* `title`
+* `description`
+* `visibility`
+* `script`
+* `scopes`
+* and `organization`
 
 ### Installing your integration
 
 After successfully publishing your integration, you will be able to find and install your integration via the link returned in your console.&#x20;
 
-Keep in mind, that only users within your organization will be able to find or install your integration in their spaces.
+### Updating your integration
+
+At any point you can update your integration by running `gitbook publish` in your integration’s directory.
 
 ### Sharing your integration with others
 
-If you're interested in sharing or testing your integration with users outside, you'll need to update the `visibility` key in your integration's `gitbook-manifest.yaml` file.&#x20;
+If you're interested in sharing or testing your integration with others, you'll need to update the `visibility` key in your integration's `gitbook-manifest.yaml` file.&#x20;
 
-Setting `visibility: unlisted` will allow your integration to be installed in organizations outside of the one that has published it. Make sure you republish your integration using `gitbook publish` after updating this key locally.
+<table><thead><tr><th width="243.5546875" valign="top">Visibility</th><th>Description</th></tr></thead><tbody><tr><td valign="top"><code>private</code></td><td>Default for new integrations. Only members from the organization defined in the integration's manifest will be able to install the integration.</td></tr><tr><td valign="top"><code>unlisted</code></td><td>Members from any organization can install the integration. The integration will only be available to install via it's shared install link.</td></tr><tr><td valign="top"><code>public</code></td><td>Members from any organization can install the integration. Integrations wanting to submit to the marketplace must use this visibility.</td></tr></tbody></table>
 
-## Submitting to GitBook's Integration Marketplace
+### Submitting to GitBook's Integration Marketplace
 
 In order for your integration to be listed on our Marketplace, you will need to go through our submission process.&#x20;
 
 See [submitting your app for review](../marketplace/submit-your-app-for-review.md) for more info.
-

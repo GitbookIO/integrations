@@ -1,4 +1,4 @@
-import { sign } from '@tsndr/cloudflare-worker-jwt';
+import * as jwt from '@tsndr/cloudflare-worker-jwt';
 import { Router } from 'itty-router';
 
 import { IntegrationInstallationConfiguration } from '@gitbook/api';
@@ -9,234 +9,358 @@ import {
     RuntimeContext,
     RuntimeEnvironment,
     createComponent,
+    ExposableError,
 } from '@gitbook/runtime';
 
 const logger = Logger('auth0.visitor-auth');
 
-type Auth0RuntimeEnvironment = RuntimeEnvironment<{}, Auth0SpaceInstallationConfiguration>;
+type Auth0RuntimeEnvironment = RuntimeEnvironment<{}, Auth0SiteInstallationConfiguration>;
 
 type Auth0RuntimeContext = RuntimeContext<Auth0RuntimeEnvironment>;
 
-type Auth0SpaceInstallationConfiguration = {
+type Auth0SiteInstallationConfiguration = {
     client_id?: string;
     issuer_base_url?: string;
     client_secret?: string;
+    enrich_session?: boolean;
 };
 
-type Auth0State = Auth0SpaceInstallationConfiguration;
+type Auth0State = Auth0SiteInstallationConfiguration;
 
 type Auth0Props = {
     installation: {
         configuration?: IntegrationInstallationConfiguration;
     };
-    spaceInstallation: {
-        configuration?: Auth0SpaceInstallationConfiguration;
+    siteInstallation?: {
+        configuration?: Auth0SiteInstallationConfiguration;
     };
+};
+
+type Auth0TokenResponseData = {
+    access_token?: string;
+    refresh_token?: string;
+    token_type: 'Bearer';
+    expires_in: number;
+};
+
+type Auth0TokenResponseError = {
+    error: string;
+    error_description: string;
 };
 
 export type Auth0Action = { action: 'save.config' };
 
+const getDomainWithHttps = (url: string): string => {
+    if (url.startsWith('https://')) {
+        return url;
+    } else if (url.startsWith('http://')) {
+        return url.replace('http', 'https');
+    } else {
+        return `https://${url}`;
+    }
+};
+
 const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0RuntimeContext>({
     componentId: 'config',
     initialState: (props) => {
+        const siteInstallation = props.siteInstallation;
         return {
-            client_id: props.spaceInstallation.configuration?.client_id?.toString() || '',
-            issuer_base_url:
-                props.spaceInstallation.configuration?.issuer_base_url?.toString() || '',
-            client_secret: props.spaceInstallation.configuration?.client_secret?.toString() || '',
+            client_id: siteInstallation?.configuration?.client_id || '',
+            issuer_base_url: siteInstallation?.configuration?.issuer_base_url || '',
+            client_secret: siteInstallation?.configuration?.client_secret || '',
+            enrich_session: siteInstallation?.configuration?.enrich_session || false,
         };
     },
     action: async (element, action, context) => {
         switch (action.action) {
             case 'save.config':
                 const { api, environment } = context;
-                const spaceInstallation = environment.spaceInstallation;
+                const siteInstallation = assertSiteInstallation(environment);
 
                 const configurationBody = {
-                    ...spaceInstallation.configuration,
+                    ...siteInstallation.configuration,
                     client_id: element.state.client_id,
                     client_secret: element.state.client_secret,
-                    issuer_base_url: element.state.issuer_base_url,
+                    issuer_base_url: getDomainWithHttps(element.state.issuer_base_url ?? ''),
+                    enrich_session: element.state.enrich_session,
                 };
-                await api.integrations.updateIntegrationSpaceInstallation(
-                    spaceInstallation.integration,
-                    spaceInstallation.installation,
-                    spaceInstallation.space,
+
+                await api.integrations.updateIntegrationSiteInstallation(
+                    siteInstallation.integration,
+                    siteInstallation.installation,
+                    siteInstallation.site,
                     {
                         configuration: {
                             ...configurationBody,
                         },
-                    }
+                    },
                 );
-                return element;
+
+                return { type: 'complete' };
         }
     },
     render: async (element, context) => {
-        const VACallbackURL = `${context.environment.spaceInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
+        const siteInstallation = context.environment.siteInstallation;
+
+        const VACallbackURL = `${siteInstallation?.urls?.publicEndpoint}/visitor-auth/response`;
         return (
-            <block>
-                <input
-                    label="Client ID"
-                    hint={
-                        <text>
-                            The unique identifier of your Auth0 application.
-                            <link
-                                target={{
-                                    url: 'https://auth0.com/docs/get-started/applications/application-settings',
-                                }}
-                            >
-                                {' '}
-                                More Details
-                            </link>
-                        </text>
-                    }
-                    element={<textinput state="client_id" placeholder="Client ID" />}
-                />
-
-                <input
-                    label="Auth0 Domain"
-                    hint={
-                        <text>
-                            The Auth0 domain (also known as tenant).
-                            <link
-                                target={{
-                                    url: 'https://auth0.com/docs/get-started/applications/application-settings',
-                                }}
-                            >
-                                {' '}
-                                More Details
-                            </link>
-                        </text>
-                    }
-                    element={<textinput state="issuer_base_url" placeholder="Domain" />}
-                />
-
-                <input
-                    label="Client Secret"
-                    hint={
-                        <text>
-                            The secret used for signing and validating tokens.
-                            <link
-                                target={{
-                                    url: 'https://auth0.com/docs/get-started/applications/application-settings',
-                                }}
-                            >
-                                {' '}
-                                More Details
-                            </link>
-                        </text>
-                    }
-                    element={<textinput state="client_secret" placeholder="Client Secret" />}
-                />
-
-                <input
-                    label=""
-                    hint=""
-                    element={
-                        <button
-                            style="primary"
-                            disabled={false}
-                            label="Save"
-                            tooltip="Save configuration"
-                            onPress={{
-                                action: 'save.config',
-                            }}
+            <configuration>
+                <box>
+                    <markdown content="### Auth0 application" />
+                    <vstack>
+                        <input
+                            label="Auth0 Domain"
+                            hint={
+                                <text>
+                                    The Auth0 domain (also known as tenant).
+                                    <link
+                                        target={{
+                                            url: 'https://auth0.com/docs/get-started/applications/application-settings',
+                                        }}
+                                    >
+                                        {' '}
+                                        More Details
+                                    </link>
+                                </text>
+                            }
+                            element={<textinput state="issuer_base_url" placeholder="Domain" />}
                         />
-                    }
-                />
-                <divider size="medium" />
-                <text>
-                    The following URL needs to be saved as an allowed callback URL in Auth0:
-                </text>
-                <codeblock content={VACallbackURL} />
-            </block>
+
+                        <input
+                            label="Client ID"
+                            hint={
+                                <text>
+                                    The unique identifier of your Auth0 application.
+                                    <link
+                                        target={{
+                                            url: 'https://auth0.com/docs/get-started/applications/application-settings',
+                                        }}
+                                    >
+                                        {' '}
+                                        More Details
+                                    </link>
+                                </text>
+                            }
+                            element={<textinput state="client_id" placeholder="Client ID" />}
+                        />
+
+                        <input
+                            label="Client Secret"
+                            hint={
+                                <text>
+                                    The secret used for signing and validating tokens.
+                                    <link
+                                        target={{
+                                            url: 'https://auth0.com/docs/get-started/applications/application-settings',
+                                        }}
+                                    >
+                                        {' '}
+                                        More Details
+                                    </link>
+                                </text>
+                            }
+                            element={
+                                <textinput state="client_secret" placeholder="Client Secret" />
+                            }
+                        />
+
+                        <input
+                            label="Add Callback URL"
+                            hint={
+                                <text>
+                                    Add this URL to the{' '}
+                                    <text style="bold">Allowed Callback URLs</text> section in your
+                                    application's settings in Auth0.
+                                </text>
+                            }
+                            element={<codeblock content={VACallbackURL} />}
+                        />
+                    </vstack>
+                    <divider size="medium" />
+
+                    <markdown content="### Visitor authentication settings" />
+                    <input
+                        label="Include claims in JWT token"
+                        hint="Enhance the user's site navigation experience based on user information and attributes provided by your Auth0 authorization backend."
+                        element={<switch state="enrich_session" />}
+                    />
+
+                    <input
+                        label=""
+                        hint=""
+                        element={
+                            <button
+                                style="primary"
+                                disabled={false}
+                                label="Save"
+                                tooltip="Save configuration"
+                                onPress={{
+                                    action: 'save.config',
+                                }}
+                            />
+                        }
+                    />
+                </box>
+            </configuration>
         );
     },
 });
 
+/**
+ * Get the published content related urls.
+ */
+async function getPublishedContentUrls(context: Auth0RuntimeContext) {
+    const organizationId = assertOrgId(context.environment);
+    const siteInstallation = assertSiteInstallation(context.environment);
+    const publishedContentData = await context.api.orgs.getSiteById(
+        organizationId,
+        siteInstallation.site,
+    );
+
+    return publishedContentData.data.urls;
+}
+
+function assertOrgId(environment: Auth0RuntimeEnvironment) {
+    const orgId = environment.installation?.target?.organization!;
+    if (!orgId) {
+        throw new Error('No org ID found');
+    }
+
+    return orgId;
+}
+function assertSiteInstallation(environment: Auth0RuntimeEnvironment) {
+    const siteInstallation = environment.siteInstallation;
+    if (!siteInstallation) {
+        throw new Error('No site installation found');
+    }
+
+    return siteInstallation;
+}
+
 const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request, context) => {
     const { environment } = context;
-    const installationURL = environment.spaceInstallation?.urls?.publicEndpoint;
+    const siteInstallation = assertSiteInstallation(environment);
+    const installationURL = siteInstallation.urls?.publicEndpoint;
     if (installationURL) {
         const router = Router({
             base: new URL(installationURL).pathname,
         });
 
         router.get('/visitor-auth/response', async (request) => {
-            if (context.environment.spaceInstallation?.space) {
-                const space = await context.api.spaces.getSpaceById(
-                    context.environment.spaceInstallation?.space
-                );
-                const spaceData = space.data;
-                const privateKey = context.environment.signingSecrets.spaceInstallation;
-                let token;
-                try {
-                    token = await sign(
-                        { exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60) },
-                        privateKey
+            if ('site' in siteInstallation && siteInstallation.site) {
+                const publishedContentUrls = await getPublishedContentUrls(context);
+
+                const includeClaimsInToken = siteInstallation?.configuration.enrich_session;
+                const issuerBaseUrl = siteInstallation?.configuration.issuer_base_url;
+                const clientId = siteInstallation?.configuration.client_id;
+                const clientSecret = siteInstallation?.configuration.client_secret;
+
+                if (!clientId || !clientSecret || !issuerBaseUrl) {
+                    return new Response(
+                        'Error: Either client id, client secret or issuer base url is missing',
+                        {
+                            status: 400,
+                        },
                     );
-                } catch (e) {
-                    return new Response('Error: Could not sign JWT token', {
-                        status: 500,
+                }
+
+                const searchParams = new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    client_id: clientId,
+                    client_secret: clientSecret,
+                    code: `${request.query.code}`,
+                    redirect_uri: `${installationURL}/visitor-auth/response`,
+                });
+                const accessTokenURL = `${issuerBaseUrl}/oauth/token/`;
+                const auth0TokenResp = await fetch(accessTokenURL, {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+                    body: searchParams,
+                });
+
+                if (!auth0TokenResp.ok) {
+                    if (auth0TokenResp.headers.get('content-type')?.includes('application/json')) {
+                        const errorResponse = await auth0TokenResp.json<Auth0TokenResponseError>();
+                        logger.debug(JSON.stringify(errorResponse, null, 2));
+                        logger.debug(
+                            `Did not receive access token. Error: ${
+                                (errorResponse && errorResponse.error) || ''
+                            } ${(errorResponse && errorResponse.error_description) || ''}`,
+                        );
+                    }
+                    return new Response('Error: Could not fetch token from Auth0', {
+                        status: 401,
                     });
                 }
 
-                const issuerBaseUrl = environment.spaceInstallation?.configuration.issuer_base_url;
-                const clientId = environment.spaceInstallation?.configuration.client_id;
-                const clientSecret = environment.spaceInstallation?.configuration.client_secret;
-                if (clientId && clientSecret) {
-                    const searchParams = new URLSearchParams({
-                        grant_type: 'authorization_code',
-                        client_id: clientId,
-                        client_secret: clientSecret,
-                        code: `${request.query.code}`,
-                        redirect_uri: `${installationURL}/visitor-auth/response`,
-                    });
-                    const accessTokenURL = `${issuerBaseUrl}/oauth/token/`;
-                    const resp: any = await fetch(accessTokenURL, {
-                        method: 'POST',
-                        headers: { 'content-type': 'application/x-www-form-urlencoded' },
-                        body: searchParams,
-                    })
-                        .then((response) => response.json())
-                        .catch((err) => {
-                            return new Response('Error: Could not fetch access token from Auth0', {
-                                status: 401,
-                            });
-                        });
-
-                    if ('access_token' in resp) {
-                        let url;
-                        if (request.query.state) {
-                            url = new URL(`${spaceData.urls?.published}${request.query.state}`);
-                            url.searchParams.append('jwt_token', token);
-                        } else {
-                            url = new URL(spaceData.urls?.published);
-                            url.searchParams.append('jwt_token', token);
-                        }
-                        if (spaceData.urls?.published && token) {
-                            return Response.redirect(url.toString());
-                        } else {
-                            return new Response(
-                                "Error: Either JWT token or space's published URL is missing",
-                                {
-                                    status: 500,
-                                }
-                            );
-                        }
-                    } else {
-                        logger.debug(
-                            `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
-                                (resp && resp.error_description) || ''
-                            }`
-                        );
+                let userInfo;
+                if (includeClaimsInToken) {
+                    // Auth0 returns an opaque access token (i.e., one that doesn't include user or custom claims) when
+                    // exchanging an authorization code for a token—unless an audience (aud parameter) is set to a valid
+                    // Auth0 API application during the authorization request.
+                    // In this case, since we only request a token to verify authentication and generate the VA,
+                    // there is no valid API target to specify as audience.
+                    // As a result, we must call the /userinfo endpoint (an OIDC-compliant endpoint) to retrieve user claims.
+                    //
+                    // An alternative approach would be to request an ID Token using the Implicit Grant flow (with form post).
+                    // However, many authentication providers discourage this method in favor of the Authorization Code flow.
+                    // Additionally, some customers may disable the Implicit Grant flow in their Auth0 application.
+                    // Therefore, retrieving user data via the /userinfo endpoint is a more robust solution.
+                    const auth0TokenData = await auth0TokenResp.json<Auth0TokenResponseData>();
+                    if (!auth0TokenData.access_token) {
                         return new Response('Error: No Access Token found in response from Auth0', {
                             status: 401,
                         });
                     }
-                } else {
-                    return new Response('Error: Either ClientId or Client Secret is missing', {
+
+                    const userInfoURL = `${issuerBaseUrl}/userinfo/`;
+                    const userInfoResp = await fetch(userInfoURL, {
+                        method: 'GET',
+                        headers: { Authorization: `Bearer ${auth0TokenData.access_token}` },
+                    });
+
+                    if (!userInfoResp.ok) {
+                        return new Response('Error: Unable to fetch user info from Auth0', {
+                            status: 401,
+                        });
+                    }
+
+                    userInfo = await userInfoResp.json<Record<string, any>>();
+                }
+
+                const privateKey = context.environment.signingSecrets.siteInstallation;
+                if (!privateKey) {
+                    return new Response('Error: Missing private key from site installation', {
                         status: 400,
+                    });
+                }
+
+                try {
+                    const jwtToken = await jwt.sign(
+                        {
+                            ...(userInfo ?? {}),
+                            exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60),
+                        },
+                        privateKey,
+                    );
+
+                    const publishedContentUrl = publishedContentUrls?.published;
+                    if (!publishedContentUrl || !jwtToken) {
+                        return new Response(
+                            "Error: Either JWT token or site's published URL is missing",
+                            {
+                                status: 500,
+                            },
+                        );
+                    }
+
+                    const url = new URL(`${publishedContentUrl}${request.query.state || ''}`);
+                    url.searchParams.append('jwt_token', jwtToken);
+
+                    return Response.redirect(url.toString());
+                } catch (e) {
+                    return new Response('Error: Could not sign JWT token', {
+                        status: 500,
                     });
                 }
             }
@@ -267,23 +391,27 @@ export default createIntegration({
     components: [configBlock],
     fetch_visitor_authentication: async (event, context) => {
         const { environment } = context;
-        const installationURL = environment.spaceInstallation?.urls?.publicEndpoint;
-        const issuerBaseUrl = environment.spaceInstallation?.configuration.issuer_base_url;
-        const clientId = environment.spaceInstallation?.configuration.client_id;
+        const siteInstallation = assertSiteInstallation(environment);
+
+        const installationURL = siteInstallation.urls.publicEndpoint;
+        const configuration = siteInstallation.configuration;
+
+        const issuerBaseUrl = configuration.issuer_base_url;
+        const clientId = configuration.client_id;
         const location = event.location ? event.location : '';
+        if (!clientId || !issuerBaseUrl) {
+            throw new ExposableError('OIDC configuration is missing');
+        }
 
         const url = new URL(`${issuerBaseUrl}/authorize`);
         url.searchParams.append('client_id', clientId);
         url.searchParams.append('response_type', 'code');
+        if (configuration.enrich_session) {
+            url.searchParams.append('scope', 'openid');
+        }
         url.searchParams.append('redirect_uri', `${installationURL}/visitor-auth/response`);
         url.searchParams.append('state', location);
 
-        try {
-            return Response.redirect(url.toString());
-        } catch (e) {
-            return new Response(e.message, {
-                status: e.status || 500,
-            });
-        }
+        return Response.redirect(url.toString());
     },
 });

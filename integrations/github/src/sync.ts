@@ -51,40 +51,45 @@ export async function triggerImport(
          * in the same order on GitBook and on the remote repository.
          */
         eventTimestamp?: Date;
-    } = {}
+    } = {},
 ) {
     const { api } = context;
     const { force = false, updateGitInfo = false, standalone, eventTimestamp } = options;
 
+    const spaceId =
+        typeof spaceInstallation.space === 'string'
+            ? spaceInstallation.space
+            : spaceInstallation.space.id;
+
     const config = getSpaceConfigOrThrow(spaceInstallation);
 
     if (!config.key) {
-        logger.info(`No configuration found for space ${spaceInstallation.space}, skipping import`);
+        logger.info(`No configuration found for space ${spaceId}, skipping import`);
         return;
     }
 
-    assertIsDefined(config.branch, { label: 'config.branch' });
+    assertIsDefined(config.branch, { label: 'config.branch', statusCode: 400 });
 
-    logger.info(`Initiating an import from GitHub to GitBook space ${spaceInstallation.space}`);
+    logger.info(`Initiating an import from GitHub to GitBook space ${spaceId}`);
 
-    const repoURL = getRepositoryUrl(config, true);
     const auth = await getRepositoryAuth(context, config);
+    const repoTreeURL = getGitTreeURL(config);
 
-    const urlWithAuth = new URL(repoURL);
+    const urlWithAuth = new URL(getRepositoryUrl(config, true));
     urlWithAuth.username = auth.username;
     urlWithAuth.password = auth.password;
 
-    await api.spaces.importGitRepository(spaceInstallation.space, {
+    await api.spaces.importGitRepository(spaceId, {
         url: urlWithAuth.toString(),
         ref: standalone?.ref || config.branch,
-        repoTreeURL: getGitTreeURL(config),
+        repoTreeURL,
         repoCommitURL: getGitCommitURL(config),
         repoProjectDirectory: config.projectDirectory,
         repoCacheID: config.key,
         force,
         timestamp: eventTimestamp && !force ? eventTimestamp.toISOString() : undefined,
         standalone: !!standalone,
-        ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoURL } } : {}),
+        ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoTreeURL } } : {}),
     });
 }
 
@@ -108,42 +113,47 @@ export async function triggerExport(
          * in the same order on GitBook and on the remote repository.
          */
         eventTimestamp?: Date;
-    } = {}
+    } = {},
 ) {
     const { api } = context;
     const { force = false, updateGitInfo = false, eventTimestamp } = options;
 
+    const spaceId =
+        typeof spaceInstallation.space === 'string'
+            ? spaceInstallation.space
+            : spaceInstallation.space.id;
+
     const config = getSpaceConfigOrThrow(spaceInstallation);
 
     if (!config.key) {
-        logger.info(`No configuration found for space ${spaceInstallation.space}, skipping export`);
+        logger.info(`No configuration found for space ${spaceId}, skipping export`);
         return;
     }
 
-    assertIsDefined(config.branch, { label: 'config.branch' });
+    assertIsDefined(config.branch, { label: 'config.branch', statusCode: 400 });
 
-    logger.info(`Initiating an export from space ${spaceInstallation.space} to GitHub`);
+    logger.info(`Initiating an export from space ${spaceId} to GitHub`);
 
-    const { data: revision } = await api.spaces.getCurrentRevision(spaceInstallation.space);
+    const { data: revision } = await api.spaces.getCurrentRevision(spaceId);
 
-    const repoURL = getRepositoryUrl(config, true);
     const auth = await getRepositoryAuth(context, config);
+    const repoTreeURL = getGitTreeURL(config);
 
-    const urlWithAuth = new URL(repoURL);
+    const urlWithAuth = new URL(getRepositoryUrl(config, true));
     urlWithAuth.username = auth.username;
     urlWithAuth.password = auth.password;
 
-    await api.spaces.exportToGitRepository(spaceInstallation.space, {
+    await api.spaces.exportToGitRepository(spaceId, {
         url: urlWithAuth.toString(),
         ref: config.branch,
-        repoTreeURL: getGitTreeURL(config),
+        repoTreeURL,
         repoCommitURL: getGitCommitURL(config),
         repoProjectDirectory: config.projectDirectory,
         repoCacheID: config.key,
         force,
         timestamp: eventTimestamp && !force ? eventTimestamp.toISOString() : undefined,
         commitMessage: getCommitMessageForRevision(config, revision),
-        ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoURL } } : {}),
+        ...(updateGitInfo ? { gitInfo: { provider: 'github', url: repoTreeURL } } : {}),
     });
 }
 
@@ -156,11 +166,16 @@ export async function updateCommitWithPreviewLinks(
     spaceInstallation: IntegrationSpaceInstallation,
     revisionId: string,
     commitSha: string,
-    state: GitSyncOperationState
+    state: GitSyncOperationState,
 ) {
     const config = getSpaceConfigOrThrow(spaceInstallation);
 
-    const { data: space } = await runtime.api.spaces.getSpaceById(spaceInstallation.space);
+    const spaceId =
+        typeof spaceInstallation.space === 'string'
+            ? spaceInstallation.space
+            : spaceInstallation.space.id;
+
+    const { data: space } = await runtime.api.spaces.getSpaceById(spaceId);
 
     const context = `GitBook${config.projectDirectory ? ` (${config.projectDirectory})` : ''}`;
 

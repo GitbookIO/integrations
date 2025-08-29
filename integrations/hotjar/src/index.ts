@@ -18,16 +18,18 @@ type HotjarRuntimeContext = RuntimeContext<
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: HotjarRuntimeContext
+    { environment }: HotjarRuntimeContext,
 ) => {
-    const trackingId = environment.spaceInstallation.configuration.tracking_id;
+    const trackingId = environment.siteInstallation?.configuration?.tracking_id;
     if (!trackingId) {
         throw new Error(
-            `The Hotjar Site ID is missing from the configuration (ID: ${event.spaceId}).`
+            `The Hotjar Site ID is missing from the configuration (ID: ${
+                'spaceId' in event ? event.spaceId : event.siteId
+            }).`,
         );
     }
 
-    return new Response(script.replace('<TO_REPLACE>', trackingId), {
+    return new Response((script as string).replace('<TO_REPLACE>', trackingId), {
         headers: {
             'Content-Type': 'application/javascript',
             'Cache-Control': 'max-age=604800',

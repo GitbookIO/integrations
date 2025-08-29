@@ -1,5 +1,3 @@
-import { FetchEventCallback } from '@gitbook/runtime';
-
 import { SlackRuntimeContext } from '../configuration';
 
 export interface SlashEvent {
@@ -33,12 +31,13 @@ export interface SlashEvent {
 
 export function createSlackCommandsHandler(handlers: {
     [type: string]: (slashEvent: SlashEvent, context: SlackRuntimeContext) => Promise<any>;
-}): FetchEventCallback {
-    return async (request, context) => {
+}) {
+    return async (request: Request, context: SlackRuntimeContext) => {
         const requestText = await request.text();
 
+        // @ts-ignore
         const slashEvent: SlashEvent = Object.fromEntries(
-            new URLSearchParams(requestText).entries()
+            new URLSearchParams(requestText).entries(),
         );
 
         const { command } = slashEvent;

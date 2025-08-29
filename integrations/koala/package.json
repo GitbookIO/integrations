@@ -1,0 +1,16 @@
+{
+    "name": "@gitbook/integration-koala",
+    "version": "1.5.0",
+    "private": true,
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "publish": "gitbook publish ."
+    },
+    "dependencies": {
+        "@gitbook/runtime": "*"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
+    }
+}

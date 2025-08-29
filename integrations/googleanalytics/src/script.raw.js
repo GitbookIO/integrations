@@ -27,22 +27,14 @@
         return '';
     }
 
-    let disableCookies = false;
-    const cookie = getCookie(GRANTED_COOKIE);
-    if (cookie === 'yes') {
-        disableCookies = false;
-    } else if (cookie === 'no') {
-        disableCookies = true;
-    }
+    const disableCookies = getCookie(GRANTED_COOKIE) !== 'yes';
 
     win[layer] = win[layer] || [];
     win.gtag = function () {
-        // eslint-disable-next-line prefer-rest-params
         win[layer].push(arguments);
     };
 
-    win.gtag('js', new Date());
-    win.gtag('config', id);
+    // Consent must be configured before gtag is loaded, else it will be ignored
     win.gtag('consent', 'default', {
         ad_storage: disableCookies ? 'denied' : 'granted',
         analytics_storage: disableCookies ? 'denied' : 'granted',
@@ -53,19 +45,26 @@
     j.async = true;
     j.src = `https://www.googletagmanager.com/gtag/js?id=${id}${dl}`;
     j.onload = function () {
+        win.gtag('js', new Date());
         win.gtag('config', id, {
             send_page_view: false,
             anonymize_ip: true,
             groups: 'tracking_views',
+            ...(disableCookies ? { client_storage: 'none' } : {}),
         });
-        triggerView(win);
 
-        win.history.pushState = new Proxy(win.history.pushState, {
-            apply: (target, thisArg, argArray) => {
-                triggerView(win);
-                return target.apply(thisArg, argArray);
-            },
-        });
+        // Prevent pageview when consent is not granted. Necessary because the page_view
+        // event will set the _ga_<container-id> cookie, even with storage disabled
+        if (!disableCookies) {
+            triggerView(win);
+
+            win.history.pushState = new Proxy(win.history.pushState, {
+                apply: (target, thisArg, argArray) => {
+                    triggerView(win);
+                    return target.apply(thisArg, argArray);
+                },
+            });
+        }
     };
     f.parentNode.insertBefore(j, f);
 })(window, document, 'script', 'dataLayer');

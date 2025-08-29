@@ -1,22 +1,22 @@
 {
     "name": "@gitbook/integration-github-files",
-    "version": "0.1.4",
+    "version": "0.2.4",
     "private": true,
     "dependencies": {
         "dotenv": "^16.0.3",
-        "itty-router": "^3.0.12"
+        "itty-router": "^3.0.12",
+        "@gitbook/runtime": "*",
+        "@gitbook/api": "*"
     },
     "devDependencies": {
-        "@gitbook/api": "*",
-        "@gitbook/cli": "^0.15.1",
-        "@gitbook/eslint-config": "*",
-        "@gitbook/runtime": "*",
-        "@gitbook/tsconfig": "*"
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
     },
     "scripts": {
-        "lint": "eslint ./**/*.ts*",
         "typecheck": "tsc --noEmit",
+        "check": "gitbook check",
         "publish-integrations": "dotenv gitbook publish .",
-        "publish-integrations-staging": "gitbook publish ."
+        "publish-integrations-staging": "gitbook publish .",
+        "test": "bun test"
     }
 }

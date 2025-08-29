@@ -9,23 +9,32 @@ const logger = Logger('linear');
 /**
  * Render a generic Linear issue card linking to the URL provided.
  */
-function renderGenericCard(url: string, context: LinearRuntimeContext): ContentKitBlock {
+function renderGenericCard(
+    url: string | undefined,
+    context: LinearRuntimeContext,
+): ContentKitBlock {
     return (
         <block>
             <card
                 title="Linear"
                 hint={url}
-                onPress={{
-                    action: '@ui.url.open',
-                    url,
-                }}
+                onPress={
+                    url
+                        ? {
+                              action: '@ui.url.open',
+                              url,
+                          }
+                        : undefined
+                }
                 icon={
-                    <image
-                        source={{
-                            url: context.environment.integration.urls.icon,
-                        }}
-                        aspectRatio={1}
-                    />
+                    context.environment.integration.urls.icon ? (
+                        <image
+                            source={{
+                                url: context.environment.integration.urls.icon,
+                            }}
+                            aspectRatio={1}
+                        />
+                    ) : undefined
                 }
             />
         </block>
@@ -38,7 +47,7 @@ function renderGenericCard(url: string, context: LinearRuntimeContext): ContentK
 function getIssueIconsURLs(
     context: LinearRuntimeContext,
     issueQueryResponse: IssueQuery,
-    theme: string
+    theme: string,
 ) {
     const { issue } = issueQueryResponse;
     const { state, priorityLabel: priority } = issue;
@@ -97,12 +106,12 @@ const embedBlock = createComponent<{
     async render(element, context) {
         const { environment } = context;
         const configuration = environment.installation?.configuration;
+        const { issueId, url } = element.props;
 
-        if (!configuration || !('oauth_credentials' in configuration)) {
-            return renderGenericCard(element.props.url, context);
+        if (!configuration || !('oauth_credentials' in configuration) || !url || !issueId) {
+            return renderGenericCard(url, context);
         }
 
-        const { issueId, url } = element.props;
         const linearClient = await getLinearAPIClient(configuration);
 
         let response: IssueQuery;
@@ -111,7 +120,7 @@ const embedBlock = createComponent<{
         } catch (error) {
             logger.info(
                 `API Error when fetching the issue (ID: ${issueId})`,
-                JSON.stringify(error)
+                JSON.stringify(error),
             );
             // Fallback to displaying a generic card on error
             return renderGenericCard(element.props.url, context);
@@ -138,12 +147,14 @@ const embedBlock = createComponent<{
                         url,
                     }}
                     icon={
-                        <image
-                            source={{
-                                url: context.environment.integration.urls.icon,
-                            }}
-                            aspectRatio={1}
-                        />
+                        context.environment.integration.urls.icon ? (
+                            <image
+                                source={{
+                                    url: context.environment.integration.urls.icon,
+                                }}
+                                aspectRatio={1}
+                            />
+                        ) : undefined
                     }
                     buttons={
                         issue.description
@@ -219,7 +230,7 @@ const previewModal = createComponent<{
         } catch (error) {
             logger.info(
                 `API Error when fetching the issue (ID: ${issueId})`,
-                JSON.stringify(error)
+                JSON.stringify(error),
             );
             return renderGenericModal(element.props.url, context);
         }
