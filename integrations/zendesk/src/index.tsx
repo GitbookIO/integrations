@@ -11,7 +11,7 @@ type ZendeskRuntimeContext = RuntimeContext<
     RuntimeEnvironment<
         {},
         {
-            site_tag: string;
+            site_tag?: string;
         }
     >
 >;
@@ -26,7 +26,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
         return
     }
 
-    return new Response(script.replace('<TO_REPLACE>', trackingId), {
+    return new Response((script as string).replace('<TO_REPLACE>', trackingId), {
         headers: {
             'Content-Type': 'application/javascript',
             'Cache-Control': 'max-age=604800',

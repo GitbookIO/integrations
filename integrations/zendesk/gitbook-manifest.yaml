@@ -1,6 +1,6 @@
 name: zendesk
 title: Zendesk
-organization: d8f63b60-89ae-11e7-8574-5927d48c4877
+organization: gitbook
 visibility: public
 description: ''
 summary: |
@@ -10,22 +10,10 @@ categories:
     - analytics
 script: src/index.tsx
 scopes:
-    - space:script:inject
     - site:script:inject
-blocks:
-    - id: zendesk
-      title: Zendesk
-      description: My GitBook Integration
+    - site:script:cookies
 secrets: {}
 configurations:
-    space:
-        properties:
-            site_tag:
-                type: string
-                title: Zendesk Site ID
-                description: Site Tag from Zendesk
-        required:
-            - site_tag
     site:
         properties:
             site_tag:
@@ -34,3 +22,4 @@ configurations:
                 description: Site Tag from Zendesk
         required:
             - site_tag
+target: site
