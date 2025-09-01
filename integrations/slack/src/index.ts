@@ -4,7 +4,7 @@ import { createIntegration, EventCallback } from '@gitbook/runtime';
 import { SlackRuntimeContext } from './configuration';
 import { handleFetchEvent } from './router';
 import { slackAPI } from './slack';
-import { TBlock, TButtonElement } from './types';
+import { SlackBlock, SlackButtonElement } from './types';
 
 /*
  * Handle content being updated: send a notification on Slack.
@@ -83,7 +83,7 @@ const handleSpaceContentUpdated: EventCallback<
         title: string,
         items: string[] | ChangedRevisionPage[],
         emoji: string,
-    ): TBlock[] => {
+    ): SlackBlock[] => {
         if (items.length === 0) return [];
 
         const displayItems = items.slice(0, MAX_ITEMS_TO_SHOW);
@@ -128,7 +128,7 @@ const handleSpaceContentUpdated: EventCallback<
 
     const spaceEmoji = space.emoji ? getEmojiFromUnicode(space.emoji) : '✨';
 
-    const blocks: TBlock[] = [
+    const blocks: SlackBlock[] = [
         {
             type: 'header',
             text: {
@@ -181,7 +181,7 @@ const handleSpaceContentUpdated: EventCallback<
         });
     }
 
-    const actionButtons: TButtonElement[] = [
+    const actionButtons: SlackButtonElement[] = [
         {
             type: 'button',
             text: {

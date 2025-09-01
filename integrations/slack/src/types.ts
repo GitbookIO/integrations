@@ -1,23 +1,23 @@
 // Slack Block Kit Types
-export type TTextType = 'plain_text' | 'mrkdwn';
+export type SlackTextType = 'plain_text' | 'mrkdwn';
 
-export type TTextField = {
-    type: TTextType;
+export type SlackTextField = {
+    type: SlackTextType;
     text: string;
     emoji?: boolean;
 };
 
-export type TButtonElement = {
+export type SlackButtonElement = {
     type: 'button';
-    text: TTextField;
+    text: SlackTextField;
     url?: string;
     action_id: string;
     style?: 'primary' | 'danger';
 };
 
-export type TBlock =
-    | { type: 'section'; text?: TTextField; fields?: TTextField[]; accessory?: unknown }
-    | { type: 'header'; text: TTextField }
-    | { type: 'context'; elements: TTextField[] }
+export type SlackBlock =
+    | { type: 'section'; text?: SlackTextField; fields?: SlackTextField[]; accessory?: unknown }
+    | { type: 'header'; text: SlackTextField }
+    | { type: 'context'; elements: SlackTextField[] }
     | { type: 'divider' }
-    | { type: 'actions'; elements: TButtonElement[] };
+    | { type: 'actions'; elements: SlackButtonElement[] };
