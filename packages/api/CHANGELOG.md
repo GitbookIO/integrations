@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.139.0
+
+### Minor Changes
+
+- d80f7f3: Support setting objectFit on cards cover images
+
 ## 0.138.0
 
 ### Minor Changes
