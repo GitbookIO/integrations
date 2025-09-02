@@ -122,6 +122,18 @@
         "@gitbook/tsconfig": "workspace:*",
       },
     },
+    "integrations/fullstory": {
+      "name": "@gitbook/integration-fullstory",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
     "integrations/github": {
       "name": "@gitbook/integration-github",
       "version": "0.6.3",
@@ -531,7 +543,7 @@
     },
     "integrations/slack": {
       "name": "@gitbook/integration-slack",
-      "version": "2.4.0",
+      "version": "2.5.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -652,7 +664,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.137.0",
+      "version": "0.138.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -996,6 +1008,8 @@
     "@gitbook/integration-figma": ["@gitbook/integration-figma@workspace:integrations/figma"],
 
     "@gitbook/integration-formspree": ["@gitbook/integration-formspree@workspace:integrations/formspree"],
+
+    "@gitbook/integration-fullstory": ["@gitbook/integration-fullstory@workspace:integrations/fullstory"],
 
     "@gitbook/integration-github": ["@gitbook/integration-github@workspace:integrations/github"],
 
