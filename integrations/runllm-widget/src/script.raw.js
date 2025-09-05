@@ -1,21 +1,6 @@
 (function () {
     var w = window;
 
-    // Queue-style stub
-    let r = w.runllm;
-    if (!r) {
-        let i = function () {
-            i.c(arguments);
-        };
-        i.q = [];
-        i.c = function (args) {
-            i.q.push(args);
-        };
-        w.runllm = i;
-    }
-
-    if (w.__RUNLLM_WIDGET_LOADED__) return;
-
     const NAME = '<NAME>';
     const SERVER_ADDRESS = '<SERVER_ADDRESS>';
     const ASSISTANT_ID = '<ASSISTANT_ID>';
@@ -36,7 +21,36 @@
         el.setAttribute(name, value);
     }
 
+    // Register GitBook assistant immediately
+    if (w.GitBook && w.GitBook.registerAssistant) {
+        w.GitBook.registerAssistant({
+            label: 'RunLLM',
+            icon: 'sparkle',
+            ui: NATIVE_AI_EXPERIENCE === 'true',
+            open: function (query) {
+                const queryRunllm = () => {
+                    w.runllm.open();
+                    if (query) w.runllm.sendMessage(query);
+                };
+
+                if (w.runllm && typeof w.runllm.open === 'function') {
+                    queryRunllm();
+                } else {
+                    const id = setInterval(() => {
+                        if (w.runllm && typeof w.runllm.open === 'function') {
+                            clearInterval(id);
+                            queryRunllm();
+                        }
+                    }, 100);
+                }
+            },
+        });
+    }
+
     var l = function () {
+        // Prevent duplicate script injection
+        if (document.getElementById('runllm-widget-script')) return;
+
         var s = document.createElement('script');
         s.id = 'runllm-widget-script';
         s.src = 'https://widget.runllm.com';
@@ -62,35 +76,9 @@
             s.setAttribute('runllm-hide-trigger-button', 'true');
         }
 
-        // Wait for the widget script to finish loading before registering assistant.
+        // Wait for the widget script to finish loading
         s.addEventListener('load', function () {
-            w.__RUNLLM_WIDGET_LOADED__ = true;
-
-            // Register and open RunLLM from GitBook UI
-            if (w.GitBook && w.GitBook.registerAssistant) {
-                w.GitBook.registerAssistant({
-                    label: 'RunLLM',
-                    icon: 'sparkle',
-                    ui: NATIVE_AI_EXPERIENCE === 'true',
-                    open: function (query) {
-                        const queryRunllm = () => {
-                            w.runllm.open();
-                            if (query) w.runllm.sendMessage(query);
-                        };
-
-                        if (w.runllm && typeof w.runllm.open === 'function') {
-                            queryRunllm();
-                        } else {
-                            const id = setInterval(() => {
-                                if (w.runllm && typeof w.runllm.open === 'function') {
-                                    clearInterval(id);
-                                    queryRunllm();
-                                }
-                            }, 100);
-                        }
-                    },
-                });
-            }
+            // Widget script loaded successfully
         });
 
         document.head.appendChild(s);
