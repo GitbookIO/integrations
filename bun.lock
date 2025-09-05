@@ -124,7 +124,7 @@
     },
     "integrations/fullstory": {
       "name": "@gitbook/integration-fullstory",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -656,6 +656,7 @@
       "devDependencies": {
         "@bucketco/browser-sdk": "^3.1.2",
         "@gitbook/tsconfig": "*",
+        "@reflag/browser-sdk": "^1.1.0",
         "@types/js-cookie": "^3.0.6",
         "esbuild": "^0.25.3",
         "launchdarkly-js-client-sdk": "^3.8.1",
@@ -664,7 +665,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.138.0",
+      "version": "0.139.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -1324,6 +1325,8 @@
     "@octokit/webhooks-methods": ["@octokit/webhooks-methods@5.1.1", "", {}, "sha512-NGlEHZDseJTCj8TMMFehzwa9g7On4KJMPVHDSrHxCQumL6uSQR8wIkP/qesv52fXqV1BPf4pTxwtS31ldAt9Xg=="],
 
     "@octokit/webhooks-types": ["@octokit/webhooks-types@7.6.1", "", {}, "sha512-S8u2cJzklBC0FgTwWVLaM8tMrDuDMVE4xiTK4EYXM9GntyvrdbSoxqDQa+Fh57CCNApyIpyeqPhhFEmHPfrXgw=="],
+
+    "@reflag/browser-sdk": ["@reflag/browser-sdk@1.1.0", "", { "dependencies": { "@floating-ui/dom": "^1.6.8", "canonical-json": "^0.0.4", "js-cookie": "^3.0.5", "preact": "^10.22.1" } }, "sha512-SJyE/TnEU+F1UTLO4rPH6y24CCCCmnsJJ0iSmUO6Gg1UgdANZUUv5yp94fML3O3aZ8pFY5o1kmUxqNjA011G8w=="],
 
     "@repeaterjs/repeater": ["@repeaterjs/repeater@3.0.6", "", {}, "sha512-Javneu5lsuhwNCryN+pXH93VPQ8g0dBX7wItHFgYiwQmzE1sVdg5tWHiOgHywzL2W21XQopa7IwIEnNbmeUJYA=="],
 
