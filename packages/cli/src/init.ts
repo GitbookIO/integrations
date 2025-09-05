@@ -65,10 +65,6 @@ export async function promptNewIntegration(dir?: string): Promise<void> {
                     value: IntegrationScope.SpaceMetadataWrite,
                 },
                 {
-                    title: IntegrationScope.SpaceViewsRead,
-                    value: IntegrationScope.SpaceViewsRead,
-                },
-                {
                     title: IntegrationScope.SpaceGitSync,
                     value: IntegrationScope.SpaceGitSync,
                 },
