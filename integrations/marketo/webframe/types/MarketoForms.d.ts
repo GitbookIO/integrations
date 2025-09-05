@@ -2,7 +2,10 @@ export {};
 
 // https://experienceleague.adobe.com/en/docs/marketo-developer/marketo/javascriptapi/forms-api-reference?lang=en
 declare global {
-    interface MarketoForm {}
+    interface MarketoForm {
+        onSubmit: (callback: () => void) => void;
+        onSuccess: (callback: () => boolean) => void;
+    }
 
     interface GlobalMarketo {
         loadForm: (
