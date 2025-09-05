@@ -11,6 +11,7 @@ type Action = { action: '@ui.modal.close'; returnValue: { formId?: string } };
 export const marketoFormBlock = createComponent<
     {
         formId?: string | undefined;
+        message?: string | undefined;
     },
     {},
     Action,
@@ -24,6 +25,7 @@ export const marketoFormBlock = createComponent<
                 return {
                     props: {
                         formId: action.returnValue.formId || undefined,
+                        message: action.returnValue.message || undefined,
                     },
                 };
             }
@@ -33,15 +35,22 @@ export const marketoFormBlock = createComponent<
     },
 
     async render(element, { environment }) {
+        console.log('Rendering Marketo form block');
         element.setCache({ maxAge: 0 });
         const formId = element.props.formId;
+        const message = element.props.message;
         const accountId = environment.installation?.configuration?.account;
 
-        const cacheKey = getWebframeCacheKey();
+        const cacheKey = getWebframeCacheKey() + `${Math.random()}`;
         const webframeURL = new URL(`${environment.integration.urls.publicEndpoint}/webframe`);
         webframeURL.searchParams.set('formId', formId || '');
         webframeURL.searchParams.set('munchkinId', accountId || '');
         webframeURL.searchParams.set('v', cacheKey);
+        element.props.message &&
+            webframeURL.searchParams.set(
+                'message',
+                encodeURIComponent(element.props.message) || '',
+            );
 
         return (
             <block
@@ -54,6 +63,7 @@ export const marketoFormBlock = createComponent<
                             componentId: 'settingsModal',
                             props: {
                                 currentFormId: formId,
+                                currentMessage: message,
                             },
                         },
                     },
@@ -88,8 +98,8 @@ export const marketoFormBlock = createComponent<
  * A modal to configure the Mailchimp block.
  */
 export const settingsModal = createComponent<
-    { currentFormId?: string },
-    { formId?: string },
+    { currentFormId?: string; currentMessage?: string },
+    { formId?: string; message?: string },
     {},
     MarketoRuntimeContext
 >({
@@ -97,6 +107,7 @@ export const settingsModal = createComponent<
 
     initialState: (props) => ({
         formId: props.currentFormId || '',
+        message: props.currentMessage || '',
     }),
 
     async render(element, context) {
@@ -111,6 +122,7 @@ export const settingsModal = createComponent<
                             action: '@ui.modal.close',
                             returnValue: {
                                 formId: element.dynamicState('formId'),
+                                message: element.dynamicState('message'),
                             },
                         }}
                     />
@@ -120,6 +132,10 @@ export const settingsModal = createComponent<
                     <box>
                         <text>Marketo Form ID</text>
                         <textinput state="formId" />
+                    </box>
+                    <box>
+                        <text>Optional Post-Submit Message</text>
+                        <textinput state="message" />
                     </box>
                 </vstack>
             </modal>
