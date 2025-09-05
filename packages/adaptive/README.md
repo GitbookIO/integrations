@@ -2,7 +2,7 @@
 
 GitBook's [adaptive content](https://docs.gitbook.com/help/adaptive-content) feature allows you to personalize your documentation based on visitor data. The `@gitbook/adaptive` SDK provides utilities to help facilitate passing data to GitBook for adapting your content.
 
-This SDK includes both feature flag helpers for popular providers like [LaunchDarkly](https://launchdarkly.com) and [Bucket](https://bucket.co), as well as generic utilities for writing custom visitor data.
+This SDK includes both feature flag helpers for popular providers like [LaunchDarkly](https://launchdarkly.com) and [Reflag](https://reflag.com/), as well as generic utilities for writing custom visitor data.
 
 ---
 
@@ -11,7 +11,7 @@ This SDK includes both feature flag helpers for popular providers like [LaunchDa
 Make sure you have:
 
 * A GitBook site with adaptive content enabled
-* An active project on LaunchDarkly or Bucket
+* An active project on LaunchDarkly or Reflag
 * A frontend project (React-based) where feature flags are available client-side
 
 ---
@@ -88,15 +88,15 @@ Once connected, feature flag values will be available in GitBook under:
 unsigned.launchdarkly.flags
 ```
 
-### Bucket Integration
+### Reflag Integration
 
-#### 1. Install the GitBook + Bucket Integration
+#### 1. Install the GitBook + Reflag Integration
 
-In GitBook, enable the [**Bucket**](https://app.gitbook.com/integrations/bucket) integration for your site.
+In GitBook, enable the [**Reflag**](https://app.gitbook.com/integrations/reflag) integration for your site.
 
 #### 2. Add Your Secret Key
 
-In the GitBook integration settings, provide your **Bucket secret key**.
+In the GitBook integration settings, provide your **Reflag secret key**.
 
 #### 3. Install the GitBook Helper
 
@@ -107,8 +107,8 @@ npm install @gitbook/adaptive
 #### 4. Configure the Client
 
 ```tsx
-import { withBucket } from '@gitbook/adaptive';
-import { BucketProvider, useClient } from '@bucketco/react-sdk';
+import { withReflag } from '@gitbook/adaptive';
+import { ReflagProvider, useClient } from '@reflag/react-sdk';
 import MyApplication from './MyApplication';
 
 function PassFeatureFlagsToGitBookSite() {
@@ -116,7 +116,7 @@ function PassFeatureFlagsToGitBookSite() {
 
     React.useEffect(() => {
         if (!client) return;
-        return withBucket(client);
+        return withReflag(client);
     }, [client]);
 
     return null;
@@ -127,8 +127,8 @@ export function Application() {
     const appConfig = useAppConfig();
 
     return (
-        <BucketProvider
-            publishableKey={appConfig.bucketCo.publishableKey}
+        <ReflagProvider
+            publishableKey={appConfig.reflag.publishableKey}
             user={{
                 id: currentUser.uid,
                 email: currentUser.email ?? undefined,
@@ -140,7 +140,7 @@ export function Application() {
         >
             <PassFeatureFlagsToGitBookSite />
             <MyApplication />
-        </BucketProvider>
+        </ReflagProvider>
     );
 }
 ```
@@ -150,14 +150,14 @@ export function Application() {
 Once connected, feature flag values will be available in GitBook under:
 
 ```
-unsigned.bucket.flags
+unsigned.reflag.flags
 ```
 
 ---
 
 ## Generic Utilities
 
-If you don't use LaunchDarkly or Bucket, or need to pass custom data beyond feature flags, the SDK provides generic utilities for writing visitor data.
+If you don't use LaunchDarkly or Reflag, or need to pass custom data beyond feature flags, the SDK provides generic utilities for writing visitor data.
 
 ### writeGitBookVisitorCookie
 
