@@ -22,7 +22,7 @@ scopes:
     - site:views:read
     - site:adaptive:read
     - site:adaptive:write
-visibility: public
+visibility: unlisted
 organization: gitbook
 configurations:
     site:
