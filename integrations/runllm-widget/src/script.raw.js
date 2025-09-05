@@ -73,20 +73,20 @@
                     icon: 'sparkle',
                     ui: NATIVE_AI_EXPERIENCE === 'true',
                     open: function (query) {
-                        // Support both queue-style callable stub and object API
-                        try {
-                            if (typeof w.runllm === 'function') {
-                                w.runllm('open');
-                                if (query) w.runllm('sendMessage', query);
-                            } else if (w.runllm && typeof w.runllm.open === 'function') {
-                                w.runllm.open();
-                                if (query && typeof w.runllm.sendMessage === 'function') {
-                                    w.runllm.sendMessage(query);
+                        const queryRunllm = () => {
+                            w.runllm.open();
+                            if (query) w.runllm.sendMessage(query);
+                        };
+
+                        if (w.runllm && typeof w.runllm.open === 'function') {
+                            queryRunllm();
+                        } else {
+                            const id = setInterval(() => {
+                                if (w.runllm && typeof w.runllm.open === 'function') {
+                                    clearInterval(id);
+                                    queryRunllm();
                                 }
-                            }
-                        } catch (e) {
-                            // Swallow to avoid crashing host page
-                            console.error('RunLLM open failed', e);
+                            }, 100);
                         }
                     },
                 });
