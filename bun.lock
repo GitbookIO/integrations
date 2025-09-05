@@ -14,6 +14,18 @@
         "wrangler": "^2.1.12",
       },
     },
+    "integrations/ahrefs": {
+      "name": "@gitbook/integration-ahrefs",
+      "version": "0.1.1",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
     "integrations/arcade": {
       "name": "@gitbook/integration-arcade",
       "version": "0.2.2",
@@ -104,6 +116,18 @@
       "version": "0.2.11",
       "dependencies": {
         "@gitbook/runtime": "workspace:*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
+    "integrations/fullstory": {
+      "name": "@gitbook/integration-fullstory",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
       },
       "devDependencies": {
         "@gitbook/cli": "workspace:*",
@@ -371,7 +395,7 @@
     },
     "integrations/mermaid": {
       "name": "@gitbook/integration-mermaid",
-      "version": "0.4.0",
+      "version": "0.4.2",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -421,7 +445,7 @@
     },
     "integrations/plausible": {
       "name": "@gitbook/integration-plausible",
-      "version": "0.7.0",
+      "version": "0.9.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -495,7 +519,7 @@
     },
     "integrations/segment": {
       "name": "@gitbook/integration-segment",
-      "version": "2.1.3",
+      "version": "2.3.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -519,7 +543,7 @@
     },
     "integrations/slack": {
       "name": "@gitbook/integration-slack",
-      "version": "2.4.0",
+      "version": "2.5.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -640,7 +664,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.135.0",
+      "version": "0.138.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -967,6 +991,8 @@
 
     "@gitbook/document": ["@gitbook/document@workspace:packages/document"],
 
+    "@gitbook/integration-ahrefs": ["@gitbook/integration-ahrefs@workspace:integrations/ahrefs"],
+
     "@gitbook/integration-arcade": ["@gitbook/integration-arcade@workspace:integrations/arcade"],
 
     "@gitbook/integration-bucket": ["@gitbook/integration-bucket@workspace:integrations/bucket"],
@@ -982,6 +1008,8 @@
     "@gitbook/integration-figma": ["@gitbook/integration-figma@workspace:integrations/figma"],
 
     "@gitbook/integration-formspree": ["@gitbook/integration-formspree@workspace:integrations/formspree"],
+
+    "@gitbook/integration-fullstory": ["@gitbook/integration-fullstory@workspace:integrations/fullstory"],
 
     "@gitbook/integration-github": ["@gitbook/integration-github@workspace:integrations/github"],
 

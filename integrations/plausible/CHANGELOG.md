@@ -1,5 +1,11 @@
 # @gitbook/integration-plausible
 
+## 0.9.0
+
+### Minor Changes
+
+- 65c75ec: Revert Plausible from not tracking without cookie consent
+
 ## 0.8.0
 
 ### Minor Changes
