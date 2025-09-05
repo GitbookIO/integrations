@@ -1,9 +1,9 @@
 (function () {
     var w = window;
-    var d = document;
 
-    let k = window.runllm;
-    if (!k) {
+    // Queue-style stub
+    let r = w.runllm;
+    if (!r) {
         let i = function () {
             i.c(arguments);
         };
@@ -11,82 +11,94 @@
         i.c = function (args) {
             i.q.push(args);
         };
-        window.runllm = i;
+        w.runllm = i;
     }
 
     if (w.__RUNLLM_WIDGET_LOADED__) return;
 
-    const name = '<NAME>';
-    const serverAddress = '<SERVER_ADDRESS>';
-    const assistantID = '<ASSISTANT_ID>';
-    const position = '<POSITION>';
-    const keyboardShortcut = '<KEYBOARD_SHORTCUT>';
-    const themeColor = '<THEME_COLOR>';
-    const brandLogo = '<BRAND_LOGO>';
-    const communityUrl = '<COMMUNITY_URL>';
-    const communityType = '<COMMUNITY_TYPE>';
-    const disableAskAPerson = '<DISABLE_ASK_A_PERSON>';
-    const nativeAiExperience = '<NATIVE_AI_EXPERIENCE>';
+    const NAME = '<NAME>';
+    const SERVER_ADDRESS = '<SERVER_ADDRESS>';
+    const ASSISTANT_ID = '<ASSISTANT_ID>';
+    const POSITION = '<POSITION>';
+    const KEYBOARD_SHORTCUT = '<KEYBOARD_SHORTCUT>';
+    const THEME_COLOR = '<THEME_COLOR>';
+    const BRAND_LOGO = '<BRAND_LOGO>';
+    const COMMUNITY_URL = '<COMMUNITY_URL>';
+    const COMMUNITY_TYPE = '<COMMUNITY_TYPE>';
+    const DISABLE_ASK_A_PERSON = '<DISABLE_ASK_A_PERSON>';
+    const NATIVE_AI_EXPERIENCE = '<NATIVE_AI_EXPERIENCE>';
+
+    // Helper: only set attribute if value is real (not a placeholder or "undefined")
+    function setAttr(el, name, value) {
+        if (!value) return;
+        // If value looks like a placeholder <FOO> or literal "undefined", skip
+        if (/^<[^>]+>$/.test(value) || value === 'undefined') return;
+        el.setAttribute(name, value);
+    }
 
     var l = function () {
-        n = document.createElement('script');
-        n.id = 'runllm-widget-script';
-        n.src = 'https://widget.runllm.com';
-        n.async = true;
-        n.type = 'module';
-        n.setAttribute('runllm-assistant-id', assistantID);
-        if (serverAddress) {
-            n.setAttribute('runllm-server-address', serverAddress);
-        }
-        if (name) {
-            n.setAttribute('runllm-name', name);
-        }
-        if (position) {
-            n.setAttribute('runllm-position', position);
-        }
-        if (keyboardShortcut) {
-            n.setAttribute('runllm-keyboard-shortcut', keyboardShortcut);
-        }
-        if (themeColor) {
-            n.setAttribute('runllm-theme-color', themeColor);
-        }
-        if (communityUrl) {
-            n.setAttribute('runllm-community-url', communityUrl);
-        }
-        if (communityType) {
-            n.setAttribute('runllm-community-type', communityType);
-        }
-        if (disableAskAPerson) {
-            n.setAttribute('runllm-disable-ask-a-person', disableAskAPerson);
-        }
-        if (brandLogo) {
-            n.setAttribute('runllm-brand-logo', brandLogo);
-        }
-        if (nativeAiExperience === 'true') {
-            // Disable floating window
-            n.setAttribute('runllm-hide-trigger-button', true);
+        var s = document.createElement('script');
+        s.id = 'runllm-widget-script';
+        s.src = 'https://widget.runllm.com';
+        s.async = true;
+        s.type = 'module';
+
+        // Required
+        setAttr(s, 'runllm-assistant-id', ASSISTANT_ID);
+
+        // Optional
+        setAttr(s, 'runllm-server-address', SERVER_ADDRESS);
+        setAttr(s, 'runllm-name', NAME);
+        setAttr(s, 'runllm-position', POSITION);
+        setAttr(s, 'runllm-keyboard-shortcut', KEYBOARD_SHORTCUT);
+        setAttr(s, 'runllm-theme-color', THEME_COLOR);
+        setAttr(s, 'runllm-brand-logo', BRAND_LOGO);
+        setAttr(s, 'runllm-community-url', COMMUNITY_URL);
+        setAttr(s, 'runllm-community-type', COMMUNITY_TYPE);
+        setAttr(s, 'runllm-disable-ask-a-person', DISABLE_ASK_A_PERSON);
+
+        // Hide trigger button when embedding a native UI
+        if (NATIVE_AI_EXPERIENCE === 'true') {
+            s.setAttribute('runllm-hide-trigger-button', 'true');
         }
 
-        document.head.appendChild(n);
+        // Wait for the widget script to finish loading before registering assistant.
+        s.addEventListener('load', function () {
+            w.__RUNLLM_WIDGET_LOADED__ = true;
 
-        w.__RUNLLM_WIDGET_LOADED__ = true;
-
-        // Register and open RunLLM Window from GitBook UI
-        window.GitBook.registerAssistant({
-            label: 'RunLLM',
-            icon: 'sparkle',
-            ui: nativeAiExperience === 'true' ? true : false,
-            open: (query) => {
-                // Open RunLLM window with query
-                window.runllm.open();
-                window.runllm.sendMessage(query);
-            },
+            // Register and open RunLLM from GitBook UI
+            if (w.GitBook && w.GitBook.registerAssistant) {
+                w.GitBook.registerAssistant({
+                    label: 'RunLLM',
+                    icon: 'sparkle',
+                    ui: NATIVE_AI_EXPERIENCE === 'true',
+                    open: function (query) {
+                        // Support both queue-style callable stub and object API
+                        try {
+                            if (typeof w.runllm === 'function') {
+                                w.runllm('open');
+                                if (query) w.runllm('sendMessage', query);
+                            } else if (w.runllm && typeof w.runllm.open === 'function') {
+                                w.runllm.open();
+                                if (query && typeof w.runllm.sendMessage === 'function') {
+                                    w.runllm.sendMessage(query);
+                                }
+                            }
+                        } catch (e) {
+                            // Swallow to avoid crashing host page
+                            console.error('RunLLM open failed', e);
+                        }
+                    },
+                });
+            }
         });
+
+        document.head.appendChild(s);
     };
 
-    if (window.attachEvent) {
-        window.attachEvent('onload', l);
+    if (w.attachEvent) {
+        w.attachEvent('onload', l);
     } else {
-        window.addEventListener('load', l, false);
+        w.addEventListener('load', l, false);
     }
 })();
