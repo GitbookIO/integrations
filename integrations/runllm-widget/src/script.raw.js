@@ -1,4 +1,21 @@
 (function () {
+    var w = window;
+    var d = document;
+
+    let k = window.runllm;
+    if (!k) {
+        let i = function () {
+            i.c(arguments);
+        };
+        i.q = [];
+        i.c = function (args) {
+            i.q.push(args);
+        };
+        window.runllm = i;
+    }
+
+    if (w.__RUNLLM_WIDGET_LOADED__) return;
+
     const name = '<NAME>';
     const serverAddress = '<SERVER_ADDRESS>';
     const assistantID = '<ASSISTANT_ID>';
@@ -51,6 +68,8 @@
         }
 
         document.head.appendChild(n);
+
+        w.__RUNLLM_WIDGET_LOADED__ = true;
 
         // Register and open RunLLM Window from GitBook UI
         window.GitBook.registerAssistant({
