@@ -124,7 +124,7 @@
     },
     "integrations/fullstory": {
       "name": "@gitbook/integration-fullstory",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -664,7 +664,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.138.0",
+      "version": "0.139.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
