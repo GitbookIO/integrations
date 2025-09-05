@@ -68,17 +68,29 @@ The scopes your integration has permissions for.
 **Example:**
 
 <pre class="language-yaml"><code class="lang-yaml"><strong>scopes:
-</strong>  - space:content:read
-  - space:content:write
-  - space:metadata:read
-  - space:metadata:write
-  - space:views:read
+</strong>    # Spaces
+    - space:content:read
+    - space:content:write
+    - space:metadata:read
+    - space:metadata:write
+    - space:git:sync
+    # Sites
+    - site:metadata:read
+    - site:views:read
+    - site:script:inject ## Internal scope - see note below
+    - site:script:cookies ## Internal scope - see note below
+    - site:visitor:auth
+    - site:adaptive:read
+    - site:adaptive:write
+    # OpenAPI
+    - openapi:read
+    - openapi:write
+    # Conversations
+    - conversations:ingest
 </code></pre>
 
 {% hint style="danger" %}
 You may see the scope `site:script:inject` throughout GitBook owned integrations—This scope is only available for internal GitBook use.
-
-
 
 Building integrations that inject JavaScript into a space or page are not possible to build at this time.
 {% endhint %}
@@ -173,7 +185,7 @@ externalLinks:
 
 ### Configurations
 
-The configurations key allows you to specify specific steps and configurations for your integration through it's `environment`.&#x20;
+The configurations key allows you to specify specific steps and configurations for your integration through it's `environment`.
 
 You're able to set up default configurations under the `configurations.account` key, and site-specific configurations through the `configurations.site` key.
 
@@ -279,7 +291,7 @@ configurations:
 
 ### Secrets
 
-A list of secrets or environment variables that your integration might need in order to function. By default, environment variables are not loaded into GitBook's Manifest file.&#x20;
+A list of secrets or environment variables that your integration might need in order to function. By default, environment variables are not loaded into GitBook's Manifest file.
 
 We recommend using a package like [`dotenv-cli`](https://www.npmjs.com/package/dotenv-cli) to include environment variables in your integrations configuration through an `.env` file when using the `cli`.
 
