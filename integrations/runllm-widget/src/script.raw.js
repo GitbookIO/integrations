@@ -21,32 +21,6 @@
         el.setAttribute(name, value);
     }
 
-    // Register GitBook assistant immediately
-    if (w.GitBook && w.GitBook.registerAssistant) {
-        w.GitBook.registerAssistant({
-            label: 'RunLLM',
-            icon: 'sparkle',
-            ui: NATIVE_AI_EXPERIENCE === 'true',
-            open: function (query) {
-                const queryRunllm = () => {
-                    w.runllm.open();
-                    if (query) w.runllm.sendMessage(query);
-                };
-
-                if (w.runllm && typeof w.runllm.open === 'function') {
-                    queryRunllm();
-                } else {
-                    const id = setInterval(() => {
-                        if (w.runllm && typeof w.runllm.open === 'function') {
-                            clearInterval(id);
-                            queryRunllm();
-                        }
-                    }, 100);
-                }
-            },
-        });
-    }
-
     var l = function () {
         // Prevent duplicate script injection
         if (document.getElementById('runllm-widget-script')) return;
@@ -76,9 +50,33 @@
             s.setAttribute('runllm-hide-trigger-button', 'true');
         }
 
-        // Wait for the widget script to finish loading
+        // Wait for the widget script to finish loading before registering assistant.
         s.addEventListener('load', function () {
-            // Widget script loaded successfully
+            // Register and open RunLLM from GitBook UI
+            if (w.GitBook && w.GitBook.registerAssistant) {
+                w.GitBook.registerAssistant({
+                    label: 'RunLLM',
+                    icon: 'sparkle',
+                    ui: NATIVE_AI_EXPERIENCE === 'true',
+                    open: function (query) {
+                        const queryRunllm = () => {
+                            w.runllm.open();
+                            if (query) w.runllm.sendMessage(query);
+                        };
+
+                        if (w.runllm && typeof w.runllm.open === 'function') {
+                            queryRunllm();
+                        } else {
+                            const id = setInterval(() => {
+                                if (w.runllm && typeof w.runllm.open === 'function') {
+                                    clearInterval(id);
+                                    queryRunllm();
+                                }
+                            }, 100);
+                        }
+                    },
+                });
+            }
         });
 
         document.head.appendChild(s);
