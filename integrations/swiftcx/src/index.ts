@@ -72,5 +72,3 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 export default createIntegration<SwiftCXRuntimeContext>({
     fetch_published_script: handleFetchEvent,
 });
-
-
