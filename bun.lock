@@ -467,6 +467,19 @@
         "@gitbook/tsconfig": "workspace:*",
       },
     },
+    "integrations/reflag": {
+      "name": "@gitbook/integration-reflag",
+      "version": "0.3.3",
+      "dependencies": {
+        "@gitbook/runtime": "*",
+        "itty-router": "^5.0.18",
+      },
+      "devDependencies": {
+        "@cloudflare/workers-types": "*",
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
     "integrations/reo": {
       "name": "@gitbook/integration-reo.dev",
       "version": "0.5.0",
@@ -1058,6 +1071,8 @@
     "@gitbook/integration-plausible": ["@gitbook/integration-plausible@workspace:integrations/plausible"],
 
     "@gitbook/integration-posthog": ["@gitbook/integration-posthog@workspace:integrations/posthog"],
+
+    "@gitbook/integration-reflag": ["@gitbook/integration-reflag@workspace:integrations/reflag"],
 
     "@gitbook/integration-reo.dev": ["@gitbook/integration-reo.dev@workspace:integrations/reo"],
 
