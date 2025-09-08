@@ -69,7 +69,6 @@ window.MktoForms2.loadForm('//app-sj15.marketo.com', munchkinId, formId, (mktoFo
 
     if (message) {
         mktoForm.onSuccess(() => {
-            console.info('marketo-embed: form successfully submitted');
             form.innerHTML =
                 '<div class="mktoFormRow"><h3 class="mktoHtmlText">' +
                 decodeURIComponent(message) +

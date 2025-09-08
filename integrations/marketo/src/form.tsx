@@ -35,7 +35,6 @@ export const marketoFormBlock = createComponent<
     },
 
     async render(element, { environment }) {
-        console.log('Rendering Marketo form block');
         element.setCache({ maxAge: 0 });
         const formId = element.props.formId;
         const message = element.props.message;
@@ -46,11 +45,12 @@ export const marketoFormBlock = createComponent<
         webframeURL.searchParams.set('formId', formId || '');
         webframeURL.searchParams.set('munchkinId', accountId || '');
         webframeURL.searchParams.set('v', cacheKey);
-        element.props.message &&
+        if (element.props.message) {
             webframeURL.searchParams.set(
                 'message',
                 encodeURIComponent(element.props.message) || '',
             );
+        }
 
         return (
             <block
