@@ -68,19 +68,11 @@ window.MktoForms2.loadForm('//app-sj15.marketo.com', munchkinId, formId, (mktoFo
     });
 
     if (message) {
-        mktoForm.onSubmit(() => {
-            console.info('marketo-embed: form submitted (onSubmit)');
-            form.insertAdjacentHTML(
-                'beforeend',
-                '<div class="mktoFormRow"><h3 class="mktoHtmlText">' +
-                    decodeURIComponent(message) +
-                    '</h3></div>',
-            );
-        });
         mktoForm.onSuccess(() => {
             console.info('marketo-embed: form successfully submitted');
-            const buttonElt = document.getElementsByClassName('mktoButtonRow')[0];
-            buttonElt?.remove();
+            form.innerHTML = '<div class="mktoFormRow"><h3 class="mktoHtmlText">' +
+                    decodeURIComponent(message) +
+                    '</h3></div>';
             return false; // Prevent the default form submission behavior
         });
     }
