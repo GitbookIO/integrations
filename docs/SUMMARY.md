@@ -41,6 +41,16 @@
           spec: gitbook
     type: builtin:openapi
     ```
+  * ```yaml
+    props:
+      models: false
+    dependencies:
+      spec:
+        ref:
+          kind: openapi
+          spec: gitbook
+    type: builtin:openapi
+    ```
 * [Rate limiting](gitbook-api/rate-limiting.md)
 * [Pagination](gitbook-api/pagination.md)
 * [Errors](gitbook-api/errors.md)
