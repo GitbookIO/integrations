@@ -1,0 +1,73 @@
+name: swiftcx
+title: SwiftCX Chat Widget
+icon: ./assets/icon.png
+description: Add the SwiftCX chat widget to your published GitBook content.
+visibility: private
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+  - site:script:inject
+organization: gitbook
+contentSecurityPolicy:
+  script-src: |
+    https://dev.chatwidget.swiftcx.com
+    https://chatwidget.swiftcx.com
+    https://swiftcx.com;
+  style-src: |
+    'unsafe-inline';
+  frame-src: |
+    https://chatwidget.swiftcx.com
+    https://dev.chatwidget.swiftcx.com;
+  child-src: |
+    https://chatwidget.swiftcx.com
+    https://dev.chatwidget.swiftcx.com;
+  connect-src: |
+    https://sse.api.swiftcx.com
+    https://dev-sse.api.swiftcx.com;
+summary: |
+  # Overview
+
+  The SwiftCX integration for GitBook allows you to display the SwiftCX chat widget on your public documentation to connect and interact with your readers.
+
+  # How it works
+
+  Automatic chat widget on your documentation: Each of your connected GitBook spaces will fetch the SwiftCX chat widget script and inject it in your published content.
+
+  # Configure
+
+  You can configure the integration on single or multiple public spaces by navigating to the integrations in sub-navigation or org settings. You will then have to provide configuration values to finish the setup.
+categories:
+  - analytics
+configurations:
+  site:
+    properties:
+      customer_id:
+        type: string
+        title: Customer ID
+        description: This is a unique identifier for your customer in SwiftCX
+      agent_id:
+        type: string
+        title: Agent ID
+        description: This is a unique identifier for your agent in SwiftCX
+      access_token:
+        type: string
+        title: Access Token
+        description: 64-character access token for the above agent obtained from SwiftCX
+      origin:
+        type: string
+        title: Origin
+        description: HTTPS origin where this widget will be loaded from
+      environment:
+        type: string
+        enum:
+          - production
+          - development
+        title: Environment
+        description: Select production unless you are testing the widget in development mode in coordination with SwiftCX team.
+    required:
+      - customer_id
+      - agent_id
+      - access_token
+      - origin
+target: site
