@@ -64,7 +64,7 @@ configurations:
           - production
           - development
         title: Environment
-        description: Select production unless you are testing the widget in development mode in coordination with SwiftCX team.
+        description: "production: chatwidget.swiftcx.com; development: dev.chatwidget.swiftcx.com"
     required:
       - customer_id
       - agent_id
