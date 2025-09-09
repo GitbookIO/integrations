@@ -1,6 +1,6 @@
-import { BucketRuntimeEnvironment } from './types';
+import { ReflagRuntimeEnvironment } from './types';
 
-export function assertSiteInstallation(environment: BucketRuntimeEnvironment) {
+export function assertSiteInstallation(environment: ReflagRuntimeEnvironment) {
     const siteInstallation = environment.siteInstallation;
     if (!siteInstallation) {
         throw new Error('Expected a site installation, but none was found');
@@ -9,7 +9,7 @@ export function assertSiteInstallation(environment: BucketRuntimeEnvironment) {
     return siteInstallation;
 }
 
-export function assertInstallation(environment: BucketRuntimeEnvironment) {
+export function assertInstallation(environment: ReflagRuntimeEnvironment) {
     const installation = environment.installation;
     if (!installation) {
         throw new Error('Expected an installation, but none was found');
