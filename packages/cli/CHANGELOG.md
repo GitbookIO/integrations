@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.25.1
+
+### Patch Changes
+
+- b48b226: Remove outdated scopes references from CLI
+
 ## 0.25.0
 
 ### Minor Changes

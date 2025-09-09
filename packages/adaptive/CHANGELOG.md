@@ -1,5 +1,11 @@
 # @gitbook/adaptive
 
+## 1.0.0
+
+### Major Changes
+
+- f8c7dd7: Add withReflag helper and sunset withBucket following Bucket -> Reflag rebrand
+
 ## 0.1.1
 
 ### Patch Changes
