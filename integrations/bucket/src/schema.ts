@@ -79,9 +79,9 @@ export async function handleSyncAdaptiveSchema(
                             ...(existing.properties.unsigned?.type === 'object'
                                 ? existing.properties.unsigned.properties
                                 : {}),
-                            [context.environment.integration.name]: {
+                            reflag: {
                                 type: 'object',
-                                description: `Feature flags from the ${integrationId} integration`,
+                                description: `Feature flags from the reflag integration`,
                                 properties: {
                                     ...featureFlags.reduce(
                                         (acc, feature) => {
