@@ -78,7 +78,6 @@ jobs:
               with:
                   name: build-artifacts
                   path: |
-                      dist/
                       packages/*/dist/
                       integrations/*/dist/
                   retention-days: 1
