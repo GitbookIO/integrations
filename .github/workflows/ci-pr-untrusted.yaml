@@ -105,7 +105,11 @@ jobs:
               # Run a limited check that doesn't require external API access
               # This could be a dry-run mode or mock mode for integration tests
               # Add specific commands here that don't require secrets
-              # For now, we'll just verify the build was successful
+              # For now, we'll just verify the build was successful for packages
               run: |
                   echo "Running limited integration check (no external API calls)"                  
-                  test -d dist && echo "Build artifacts exist"
+                  test -d packages/adaptive/dist &&
+                  test -d packages/api/dist &&
+                  test -d packages/cli/dist &&
+                  test -d packages/document/dist &&
+                    echo "Build artifacts exist"
