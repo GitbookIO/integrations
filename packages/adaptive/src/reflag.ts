@@ -1,14 +1,14 @@
-import type { BucketClient } from '@bucketco/browser-sdk';
+import type { ReflagClient } from '@reflag/browser-sdk';
 import { writeGitBookVisitorCookie } from './utils';
 
 /**
- * Sets a client-side session cookie with the features enabled in the bucket client.
+ * Sets a client-side session cookie with the features enabled in the reflag client.
  */
-export function withBucket(client: BucketClient): () => void {
+export function withReflag(client: ReflagClient): () => void {
     const handler = () => {
         const features: Record<string, boolean> = {};
         // Check features enabled in the client
-        for (const [key, value] of Object.entries(client.getFeatures())) {
+        for (const [key, value] of Object.entries(client.getFlags())) {
             const enabled =
                 typeof value.isEnabledOverride === 'boolean'
                     ? value.isEnabledOverride
@@ -16,14 +16,14 @@ export function withBucket(client: BucketClient): () => void {
             features[key] = enabled;
         }
 
-        writeGitBookVisitorCookie('bucket', { bucket: features });
+        writeGitBookVisitorCookie('reflag', { reflag: features });
     };
 
     // Determine if we're in a browser environment
     const isBrowser = typeof window !== 'undefined';
 
     if (!isBrowser) {
-        console.warn('withBucket was called in a non-browser environment');
+        console.warn('withReflag was called in a non-browser environment');
         return () => {};
     }
 

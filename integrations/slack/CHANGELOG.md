@@ -1,5 +1,11 @@
 # @gitbook/integration-slack
 
+## 2.5.0
+
+### Minor Changes
+
+- 42efb2a: Improved slack notifications
+
 ## 2.4.0
 
 ### Minor Changes

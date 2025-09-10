@@ -1,5 +1,23 @@
 # @gitbook/api
 
+## 0.139.0
+
+### Minor Changes
+
+- d80f7f3: Support setting objectFit on cards cover images
+
+## 0.138.0
+
+### Minor Changes
+
+- 8dff8d6: Update API client with latest OpenAPI spec.
+
+## 0.137.0
+
+### Minor Changes
+
+- ac1b6e5: Bump @gitbook/api to use the latest API spec
+
 ## 0.136.0
 
 ### Minor Changes

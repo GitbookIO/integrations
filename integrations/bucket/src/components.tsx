@@ -1,19 +1,19 @@
 import { createComponent, ExposableError } from '@gitbook/runtime';
 import {
-    BucketAction,
-    BucketProps,
-    BucketRuntimeContext,
-    BucketSiteInstallationConfiguration,
-    BucketState,
+    ReflagAction,
+    ReflagProps,
+    ReflagRuntimeContext,
+    ReflagSiteInstallationConfiguration,
+    ReflagState,
 } from './types';
 import { assertInstallation, assertSiteInstallation } from './utils';
 import { GitBookAPI } from '@gitbook/api';
 
 export const configBlock = createComponent<
-    BucketProps,
-    BucketState,
-    BucketAction,
-    BucketRuntimeContext
+    ReflagProps,
+    ReflagState,
+    ReflagAction,
+    ReflagRuntimeContext
 >({
     componentId: 'config',
     initialState: (props) => {
@@ -32,11 +32,11 @@ export const configBlock = createComponent<
                 const secretKey = element.state.secret_key;
                 if (typeof secretKey !== 'string' || !secretKey) {
                     throw new ExposableError(
-                        'Incomplete configuration: missing Bucket environment secret key',
+                        'Incomplete configuration: missing Reflag environment secret key',
                     );
                 }
 
-                const configurationBody: BucketSiteInstallationConfiguration = {
+                const configurationBody: ReflagSiteInstallationConfiguration = {
                     secret_key: secretKey,
                 };
 
@@ -84,10 +84,10 @@ export const configBlock = createComponent<
                                 label="Secret key"
                                 hint={
                                     <text>
-                                        The secret key from your Bucket{' '}
+                                        The secret key from your Reflag{' '}
                                         <link
                                             target={{
-                                                url: 'https://app.bucket.co/envs/current/settings/app-environments',
+                                                url: 'https://app.reflag.com/envs/current/settings/app-environments',
                                             }}
                                         >
                                             environment settings.
@@ -116,7 +116,7 @@ export const configBlock = createComponent<
                 ) : (
                     <input
                         label="Enable Adaptive Content"
-                        hint="To use Bucket, you need to enable Adaptive Content in your site audience settings."
+                        hint="To use the Reflag integration, you need to enable Adaptive Content in your site audience settings."
                         element={
                             <button
                                 label="Enable"
