@@ -103,10 +103,10 @@ jobs:
             - name: Build
               run: bun run build
             - name: Check integrations (without external API calls)
+              # Run a limited check that doesn't require external API access
+              # This could be a dry-run mode or mock mode for integration tests
+              # Add specific commands here that don't require secrets
+              # For now, we'll just verify the build was successful
               run: |
-                  # Run a limited check that doesn't require external API access
-                  # This could be a dry-run mode or mock mode for integration tests
-                  echo "Running limited integration check (no external API calls)"
-                  # Add specific commands here that don't require secrets
-                  # For now, we'll just verify the build was successful
+                  echo "Running limited integration check (no external API calls)"                  
                   test -d dist && echo "Build artifacts exist"
