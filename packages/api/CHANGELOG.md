@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.140.0
+
+### Minor Changes
+
+- 3207736: Deprecate search scope API param
+
 ## 0.139.0
 
 ### Minor Changes
