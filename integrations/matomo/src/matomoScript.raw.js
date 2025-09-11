@@ -39,8 +39,11 @@
         );
     }
 
-    function sendBeacon(params) {
-        if (!hasConsent()) return;
+    function sendBeacon(params, forceCookieless) {
+        // Always allow tracking, but disable cookies if no consent
+        if (!hasConsent() || forceCookieless) {
+            params.cdt = 1; // Disable cookies for this request
+        }
         try {
             var url = MATOMO_URL + '/matomo.php';
             var beacon = new Image();
@@ -59,34 +62,43 @@
 
     function trackPageview() {
         if (LOAD_JS_TRACKER && window._paq) {
+            // If no consent, enable cookieless tracking
+            if (!hasConsent()) {
+                window._paq.push(['disableCookies']);
+            }
             window._paq.push(['setReferrerUrl', getReferrer()]);
             var uid = getUserId();
-            if (uid) window._paq.push(['setUserId', uid]);
+            if (uid && hasConsent()) window._paq.push(['setUserId', uid]);
             window._paq.push(['setDocumentTitle', document.title]);
             window._paq.push(['setCustomUrl', window.location.href]);
             window._paq.push(['trackPageView']);
             return;
         }
-        // Beacon fallback
+        // Beacon fallback - always track but use cookieless if no consent
         sendBeacon({
             idsite: SITE_ID,
             rec: 1,
             url: window.location.href,
             action_name: document.title,
             urlref: getReferrer(),
-            uid: getUserId(),
+            uid: hasConsent() ? getUserId() : '',
             rand: String(Math.random()).slice(2),
         });
     }
 
     function trackEvent(category, action, name, value) {
         if (LOAD_JS_TRACKER && window._paq) {
+            // If no consent, enable cookieless tracking
+            if (!hasConsent()) {
+                window._paq.push(['disableCookies']);
+            }
             var uid = getUserId();
-            if (uid) window._paq.push(['setUserId', uid]);
+            if (uid && hasConsent()) window._paq.push(['setUserId', uid]);
             if (TRACK_REFERRER) window._paq.push(['setReferrerUrl', getReferrer()]);
             window._paq.push(['trackEvent', category, action, name, value]);
             return;
         }
+        // Beacon fallback - always track but use cookieless if no consent
         sendBeacon({
             idsite: SITE_ID,
             rec: 1,
@@ -96,7 +108,7 @@
             e_v: value,
             url: window.location.href,
             urlref: getReferrer(),
-            uid: getUserId(),
+            uid: hasConsent() ? getUserId() : '',
             rand: String(Math.random()).slice(2),
         });
     }
@@ -157,6 +169,9 @@
                 var el = target.closest(sel);
                 if (el) {
                     if (LOAD_JS_TRACKER && window._paq) {
+                        if (!hasConsent()) {
+                            window._paq.push(['disableCookies']);
+                        }
                         window._paq.push(['trackGoal', Number(goalId)]);
                     } else {
                         sendBeacon({
@@ -174,10 +189,13 @@
 
     function loadJS() {
         if (!LOAD_JS_TRACKER) return;
-        if (!hasConsent()) return;
+        // Always load JS tracker, but configure for cookieless if no consent
         var _paq = (window._paq = window._paq || []);
+        if (!hasConsent()) {
+            _paq.push(['disableCookies']);
+        }
         var uid = getUserId();
-        if (uid) _paq.push(['setUserId', uid]);
+        if (uid && hasConsent()) _paq.push(['setUserId', uid]);
         if (TRACK_REFERRER) _paq.push(['setReferrerUrl', getReferrer()]);
         _paq.push(['enableLinkTracking']);
         _paq.push(['setTrackerUrl', MATOMO_URL + '/matomo.php']);
@@ -207,7 +225,10 @@
     bindClicks();
     applyGoals();
     loadJS();
-    trackPageview();
+    // If JS tracker not enabled or not loaded yet, track with beacon
+    if (!LOAD_JS_TRACKER || !window._paq) {
+        trackPageview();
+    }
 
     var originalPushState = window.history.pushState;
     if (originalPushState) {

@@ -31,7 +31,7 @@ export interface RuntimeContext<Environment extends RuntimeEnvironment = Integra
      * Use this function for any side-effects in your handlers that are not awaited, but must finish before
      * the execution context is closed.
      */
-    waitUntil: FetchEvent['waitUntil'];
+    waitUntil: (promise: Promise<any>) => void;
 }
 
 /**
@@ -48,7 +48,7 @@ export type RuntimeCallback<
  */
 export function createContext(
     environment: IntegrationEnvironment,
-    waitUntil: FetchEvent['waitUntil'],
+    waitUntil: (promise: Promise<any>) => void,
 ): RuntimeContext {
     return {
         environment,

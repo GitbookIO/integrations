@@ -85,7 +85,7 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                 const fetchBody = formData.get('fetch-body');
                 const context = createContext(
                     JSON.parse(formData.get('environment') as string) as IntegrationEnvironment,
-                    (promise) => ctx.waitUntil(promise),
+                    (promise: Promise<any>) => ctx.waitUntil(promise),
                 ) as Context;
 
                 logger.info(`[${event.eventId}] ${event.type}`);
