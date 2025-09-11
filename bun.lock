@@ -40,7 +40,7 @@
     },
     "integrations/bucket": {
       "name": "@gitbook/integration-bucket",
-      "version": "0.3.3",
+      "version": "0.4.0",
       "dependencies": {
         "@gitbook/runtime": "*",
         "itty-router": "^5.0.18",
@@ -381,7 +381,7 @@
     },
     "integrations/marketo": {
       "name": "@gitbook/integration-marketo",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -634,11 +634,11 @@
         "@gitbook/tsconfig": "workspace:*",
         "@types/react": "^19.1.12",
         "@types/react-dom": "^19.1.9",
-        "@vaultrice/react-components": "^1.1.1",
+        "@vaultrice/react-components": "^1.1.4",
         "@vitejs/plugin-react": "5.0.2",
         "react": "19.1.1",
         "react-dom": "19.1.1",
-        "vite": "7.1.3",
+        "vite": "7.1.5",
       },
     },
     "integrations/zendesk-conversations": {
@@ -668,7 +668,7 @@
     },
     "packages/adaptive": {
       "name": "@gitbook/adaptive",
-      "version": "0.1.1",
+      "version": "1.0.0",
       "dependencies": {
         "js-cookie": "^3.0.5",
       },
@@ -698,7 +698,7 @@
     },
     "packages/cli": {
       "name": "@gitbook/cli",
-      "version": "0.25.0",
+      "version": "0.25.1",
       "bin": {
         "gitbook": "./cli.js",
       },
@@ -1441,11 +1441,11 @@
 
     "@types/ws": ["@types/ws@8.5.14", "", { "dependencies": { "@types/node": "*" } }, "sha512-bd/YFLW+URhBzMXurx7lWByOu+xzU9+kb3RboOteXYDfW+tr+JZa99OyNmPINEGB/ahzKrEuc8rcv4gnpJmxTw=="],
 
-    "@vaultrice/react": ["@vaultrice/react@1.0.2", "", { "dependencies": { "@vaultrice/sdk": "^1.0.4" }, "peerDependencies": { "react": ">=17.0.0", "react-dom": ">=17.0.0" } }, "sha512-pW/gwef92KIL2awIsjIR9Req7RkyJ7oHil0gttj1gnaGhPwEomE1XDKdWA7qXYIwNFg8xcyD3YZZcgVHQWTMpw=="],
+    "@vaultrice/react": ["@vaultrice/react@1.0.3", "", { "dependencies": { "@vaultrice/sdk": "^1.0.5" }, "peerDependencies": { "react": ">=17.0.0", "react-dom": ">=17.0.0" } }, "sha512-JwtSlJU+0Lyt016wIxW363pZTdBHOuyUfWyiCL7qeEaRaS4C48WIwgL9d30bJmNH1cxVU1ifR7eDBarXZ9YEqg=="],
 
-    "@vaultrice/react-components": ["@vaultrice/react-components@1.1.1", "", { "dependencies": { "@vaultrice/react": "^1.0.2" }, "peerDependencies": { "react": ">=17.0.0", "react-dom": ">=17.0.0" } }, "sha512-tv2hRJNzcO8HVUJph8O2r9tJpyIdh7wICHRLxL5I+uXBpfgTYyBI9zFNYUKnmuG35WPCZ2QuQFSMPfyuqXsxCw=="],
+    "@vaultrice/react-components": ["@vaultrice/react-components@1.1.4", "", { "dependencies": { "@vaultrice/react": "^1.0.3" }, "peerDependencies": { "react": ">=17.0.0", "react-dom": ">=17.0.0" } }, "sha512-I3jzBHrUiK3+RqyesB1ioMPaGXsz+MP4NrlzZI1du5JxaLpebfI+6sQ9nb4D8DQxsQqIDzBhVNddS8bNYwF9jw=="],
 
-    "@vaultrice/sdk": ["@vaultrice/sdk@1.0.4", "", {}, "sha512-UHJJsr8WwwInsvU2NGuypHOGz/EATcDNLRc+mBOyGQx5SOm4+2mmAYbvYmVnI7wop0yliOzMTz3kA62Agvw+hw=="],
+    "@vaultrice/sdk": ["@vaultrice/sdk@1.0.5", "", {}, "sha512-3bh0XQMUNyc9IxVWa+XSKvxpJ7VrfgEbpl+4LkRclqKGaAmu0uNeT6idHDcxkzrIgXI8k+u5zVvVrhpMrZB27A=="],
 
     "@vitejs/plugin-react": ["@vitejs/plugin-react@5.0.2", "", { "dependencies": { "@babel/core": "^7.28.3", "@babel/plugin-transform-react-jsx-self": "^7.27.1", "@babel/plugin-transform-react-jsx-source": "^7.27.1", "@rolldown/pluginutils": "1.0.0-beta.34", "@types/babel__core": "^7.20.5", "react-refresh": "^0.17.0" }, "peerDependencies": { "vite": "^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0" } }, "sha512-tmyFgixPZCx2+e6VO9TNITWcCQl8+Nl/E8YbAyPVv85QCc7/A3JrdfG2A8gIzvVhWuzMOVrFW1aReaNxrI6tbw=="],
 
@@ -2571,7 +2571,7 @@
 
     "validate-npm-package-name": ["validate-npm-package-name@5.0.1", "", {}, "sha512-OljLrQ9SQdOUqTaQxqL5dEfZWrXExyyWsozYlAWFawPVNuD83igl7uJD2RTkNMbniIYgt8l81eCJGIdQF7avLQ=="],
 
-    "vite": ["vite@7.1.3", "", { "dependencies": { "esbuild": "^0.25.0", "fdir": "^6.5.0", "picomatch": "^4.0.3", "postcss": "^8.5.6", "rollup": "^4.43.0", "tinyglobby": "^0.2.14" }, "optionalDependencies": { "fsevents": "~2.3.3" }, "peerDependencies": { "@types/node": "^20.19.0 || >=22.12.0", "jiti": ">=1.21.0", "less": "^4.0.0", "lightningcss": "^1.21.0", "sass": "^1.70.0", "sass-embedded": "^1.70.0", "stylus": ">=0.54.8", "sugarss": "^5.0.0", "terser": "^5.16.0", "tsx": "^4.8.1", "yaml": "^2.4.2" }, "optionalPeers": ["@types/node", "jiti", "less", "lightningcss", "sass", "sass-embedded", "stylus", "sugarss", "terser", "tsx", "yaml"], "bin": { "vite": "bin/vite.js" } }, "sha512-OOUi5zjkDxYrKhTV3V7iKsoS37VUM7v40+HuwEmcrsf11Cdx9y3DIr2Px6liIcZFwt3XSRpQvFpL3WVy7ApkGw=="],
+    "vite": ["vite@7.1.5", "", { "dependencies": { "esbuild": "^0.25.0", "fdir": "^6.5.0", "picomatch": "^4.0.3", "postcss": "^8.5.6", "rollup": "^4.43.0", "tinyglobby": "^0.2.15" }, "optionalDependencies": { "fsevents": "~2.3.3" }, "peerDependencies": { "@types/node": "^20.19.0 || >=22.12.0", "jiti": ">=1.21.0", "less": "^4.0.0", "lightningcss": "^1.21.0", "sass": "^1.70.0", "sass-embedded": "^1.70.0", "stylus": ">=0.54.8", "sugarss": "^5.0.0", "terser": "^5.16.0", "tsx": "^4.8.1", "yaml": "^2.4.2" }, "optionalPeers": ["@types/node", "jiti", "less", "lightningcss", "sass", "sass-embedded", "stylus", "sugarss", "terser", "tsx", "yaml"], "bin": { "vite": "bin/vite.js" } }, "sha512-4cKBO9wR75r0BeIWWWId9XK9Lj6La5X846Zw9dFfzMRw38IlTk2iCcUt6hsyiDRcPidc55ZParFYDXi0nXOeLQ=="],
 
     "wcwidth": ["wcwidth@1.0.1", "", { "dependencies": { "defaults": "^1.0.3" } }, "sha512-XHPEwS0q6TaxcvG85+8EYkbiCux2XtWG2mkc47Ng2A77BQu9+DqIOJldST4HgPkuea7dvKSj5VgX3P1d4rW8Tg=="],
 
@@ -3009,7 +3009,7 @@
 
     "upper-case-first/tslib": ["tslib@2.8.1", "", {}, "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w=="],
 
-    "vite/tinyglobby": ["tinyglobby@0.2.14", "", { "dependencies": { "fdir": "^6.4.4", "picomatch": "^4.0.2" } }, "sha512-tX5e7OM1HnYr2+a2C/4V0htOcSQcoSTH9KgJnVvNm5zm/cyEWKJ7j7YutsH9CxMdtOkkLFy2AHrMci9IM8IPZQ=="],
+    "vite/tinyglobby": ["tinyglobby@0.2.15", "", { "dependencies": { "fdir": "^6.5.0", "picomatch": "^4.0.3" } }, "sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ=="],
 
     "wrangler/chokidar": ["chokidar@3.6.0", "", { "dependencies": { "anymatch": "~3.1.2", "braces": "~3.0.2", "glob-parent": "~5.1.2", "is-binary-path": "~2.1.0", "is-glob": "~4.0.1", "normalize-path": "~3.0.0", "readdirp": "~3.6.0" }, "optionalDependencies": { "fsevents": "~2.3.2" } }, "sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw=="],
 
