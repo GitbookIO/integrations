@@ -11,7 +11,7 @@
         "@gitbook/tsconfig": "workspace:*",
         "@types/react": "^19.1.12",
         "@types/react-dom": "^19.1.9",
-        "@vaultrice/react-components": "^1.1.4",
+        "@vaultrice/react-components": "^1.1.5",
         "@vitejs/plugin-react": "5.0.2",
         "react": "19.1.1",
         "react-dom": "19.1.1",

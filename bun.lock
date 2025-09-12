@@ -634,7 +634,7 @@
         "@gitbook/tsconfig": "workspace:*",
         "@types/react": "^19.1.12",
         "@types/react-dom": "^19.1.9",
-        "@vaultrice/react-components": "^1.1.4",
+        "@vaultrice/react-components": "^1.1.5",
         "@vitejs/plugin-react": "5.0.2",
         "react": "19.1.1",
         "react-dom": "19.1.1",
@@ -683,7 +683,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.139.0",
+      "version": "0.140.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -1441,11 +1441,11 @@
 
     "@types/ws": ["@types/ws@8.5.14", "", { "dependencies": { "@types/node": "*" } }, "sha512-bd/YFLW+URhBzMXurx7lWByOu+xzU9+kb3RboOteXYDfW+tr+JZa99OyNmPINEGB/ahzKrEuc8rcv4gnpJmxTw=="],
 
-    "@vaultrice/react": ["@vaultrice/react@1.0.3", "", { "dependencies": { "@vaultrice/sdk": "^1.0.5" }, "peerDependencies": { "react": ">=17.0.0", "react-dom": ">=17.0.0" } }, "sha512-JwtSlJU+0Lyt016wIxW363pZTdBHOuyUfWyiCL7qeEaRaS4C48WIwgL9d30bJmNH1cxVU1ifR7eDBarXZ9YEqg=="],
+    "@vaultrice/react": ["@vaultrice/react@1.0.4", "", { "dependencies": { "@vaultrice/sdk": "^1.0.6" }, "peerDependencies": { "react": ">=17.0.0", "react-dom": ">=17.0.0" } }, "sha512-ldwJ1YMmlPvUwv4yb1X9ZCqBvM5Qo3pZna6VKBi4AuF/KkYN6eEB9D7zuw87B9lCwPaRwhE6YQ9mok9VFXxU3g=="],
 
-    "@vaultrice/react-components": ["@vaultrice/react-components@1.1.4", "", { "dependencies": { "@vaultrice/react": "^1.0.3" }, "peerDependencies": { "react": ">=17.0.0", "react-dom": ">=17.0.0" } }, "sha512-I3jzBHrUiK3+RqyesB1ioMPaGXsz+MP4NrlzZI1du5JxaLpebfI+6sQ9nb4D8DQxsQqIDzBhVNddS8bNYwF9jw=="],
+    "@vaultrice/react-components": ["@vaultrice/react-components@1.1.5", "", { "dependencies": { "@vaultrice/react": "^1.0.4" }, "peerDependencies": { "react": ">=17.0.0", "react-dom": ">=17.0.0" } }, "sha512-tsDlMlmuVNvA5y//1yPiZUJ88SfhvlOVewZGBOnqikWPIvjX+3NvMNAvnn/k/QM3SINQpAD8X1Cw283lEg+66Q=="],
 
-    "@vaultrice/sdk": ["@vaultrice/sdk@1.0.5", "", {}, "sha512-3bh0XQMUNyc9IxVWa+XSKvxpJ7VrfgEbpl+4LkRclqKGaAmu0uNeT6idHDcxkzrIgXI8k+u5zVvVrhpMrZB27A=="],
+    "@vaultrice/sdk": ["@vaultrice/sdk@1.0.6", "", {}, "sha512-ETMJ14kTaMTDqnX7+mOqzQCaxJyXjK7ylnvzy6hSXaXUq4ip0upBOZg3BtNcqJZuFRy761cX15b9MA0+VzWbxw=="],
 
     "@vitejs/plugin-react": ["@vitejs/plugin-react@5.0.2", "", { "dependencies": { "@babel/core": "^7.28.3", "@babel/plugin-transform-react-jsx-self": "^7.27.1", "@babel/plugin-transform-react-jsx-source": "^7.27.1", "@rolldown/pluginutils": "1.0.0-beta.34", "@types/babel__core": "^7.20.5", "react-refresh": "^0.17.0" }, "peerDependencies": { "vite": "^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0" } }, "sha512-tmyFgixPZCx2+e6VO9TNITWcCQl8+Nl/E8YbAyPVv85QCc7/A3JrdfG2A8gIzvVhWuzMOVrFW1aReaNxrI6tbw=="],
 
