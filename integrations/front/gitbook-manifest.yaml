@@ -17,6 +17,8 @@ organization: gitbook
 contentSecurityPolicy:
     script-src: |
         chat-assets.frontapp.com;
+    style-src: |
+        chat-assets.frontapp.com;
 summary: |
     # Overview
 
