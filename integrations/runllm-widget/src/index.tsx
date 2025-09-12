@@ -11,6 +11,7 @@ type IntercomRuntimeContext = RuntimeContext<
     RuntimeEnvironment<
         {},
         {
+            native_ai_experience?: boolean;
             assistant_id?: string;
             name?: string;
             server_address?: string;
@@ -31,6 +32,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 ) => {
     const config = environment.siteInstallation?.configuration;
     const assistantId = config?.assistant_id;
+    const nativeAiExperience = environment.siteInstallation?.configuration?.native_ai_experience;
 
     if (!assistantId) {
         return;
@@ -48,6 +50,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 
     return new Response(
         (script as string)
+            .replace('<NATIVE_AI_EXPERIENCE>', nativeAiExperience ? 'true' : 'false')
             .replace('<ASSISTANT_ID>', assistantId)
             .replace('<NAME>', name)
             .replace('<SERVER_ADDRESS>', serverAddress)
