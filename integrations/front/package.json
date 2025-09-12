@@ -1,0 +1,16 @@
+{
+    "name": "@gitbook/integration-front",
+    "private": true,
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "publish": "gitbook publish ."
+    },
+    "dependencies": {
+        "@gitbook/runtime": "*"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "^0.25.0",
+        "@gitbook/tsconfig": "*",
+        "@cloudflare/workers-types": "*"
+    }
+}

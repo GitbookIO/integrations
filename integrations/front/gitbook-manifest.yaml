@@ -1,0 +1,43 @@
+name: front
+title: Front
+# icon:
+# previewImages:
+description: Add the Front chat widget to your published GitBook content.
+externalLinks:
+    - label: Website
+      url: https://front.com/
+visibility: public
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+organization: gitbook
+contentSecurityPolicy:
+    script-src: |
+        chat-assets.frontapp.com;
+summary: |
+    # Overview
+
+    The Front integration for GitBook allows you to display the Front chat widget on your public documentation to connect and interact with your readers.
+
+    # How it works
+
+    Automatic chat widget on your documentation: Each of your connected GitBook spaces will fetch the Front chat widget script and inject it in your published content.
+
+    # Configure
+
+    You can install and configure this integration with multiple sites. You will then have to provide Front Chat ID to finish the configuration. This can be found in the URL from your Front dashboard.
+
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            chat_id:
+                type: string
+                title: Front Chat ID
+                description: Available from your Front dashboard
+        required:
+            - chat_id
+target: site
