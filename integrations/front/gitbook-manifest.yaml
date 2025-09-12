@@ -1,7 +1,8 @@
 name: front
 title: Front
-# icon:
-# previewImages:
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/front-preview.png
 description: Add the Front chat widget to your published GitBook content.
 externalLinks:
     - label: Website
