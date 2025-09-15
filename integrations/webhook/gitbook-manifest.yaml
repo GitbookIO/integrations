@@ -1,0 +1,40 @@
+name: webhook
+title: Webhook
+icon: ./assets/icon.png
+organization: gitbook
+description: Send GitBook events to your webhook endpoints
+categories:
+    - other
+visibility: public
+script: ./src/index.ts
+scopes:
+    - space:content:read
+    - space:metadata:read
+    - page:feedback:read
+summary: |
+    # Overview
+    The Webhook integration allows you to receive real-time notifications when events occur in your GitBook spaces. Configure webhook URLs to receive events like page views, content updates, and user feedback.
+
+    # How it works
+    **Real-time notifications:** Get notified instantly when important events happen in your GitBook spaces.
+
+    **Flexible event selection:** Choose which events you want to receive - from page views to content updates.
+
+    **Secure delivery:** Optional HMAC signature verification ensures webhook authenticity.
+
+    **Reliable delivery:** Built-in retry logic ensures your webhooks are delivered even during temporary network issues.
+
+    # Configure
+    After installing the integration, configure your webhook URL and select which events you want to receive. The integration will send HTTP POST requests to your endpoint with event data in JSON format.
+
+    # Webhook Payload
+    Each webhook request includes:
+    - Event type and data
+    - Timestamp
+    - Installation information
+    - Optional HMAC signature for verification
+
+configurations:
+    space:
+        componentId: config
+target: space
