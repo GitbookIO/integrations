@@ -1,6 +1,8 @@
 name: swiftcx
 title: SwiftCX Chat Widget
 icon: ./assets/icon.png
+previewImages:
+    - ./assets/swiftcx-preview.png
 description: Add the SwiftCX chat widget to your published GitBook content.
 visibility: private
 script: ./src/index.ts
