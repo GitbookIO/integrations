@@ -40,7 +40,7 @@
     },
     "integrations/bucket": {
       "name": "@gitbook/integration-bucket",
-      "version": "0.3.3",
+      "version": "0.4.0",
       "dependencies": {
         "@gitbook/runtime": "*",
         "itty-router": "^5.0.18",
@@ -120,6 +120,18 @@
       "devDependencies": {
         "@gitbook/cli": "workspace:*",
         "@gitbook/tsconfig": "workspace:*",
+      },
+    },
+    "integrations/front": {
+      "name": "@gitbook/integration-front",
+      "version": "0.0.1",
+      "dependencies": {
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@cloudflare/workers-types": "*",
+        "@gitbook/cli": "^0.25.0",
+        "@gitbook/tsconfig": "*",
       },
     },
     "integrations/fullstory": {
@@ -381,7 +393,7 @@
     },
     "integrations/marketo": {
       "name": "@gitbook/integration-marketo",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -649,7 +661,7 @@
     },
     "packages/adaptive": {
       "name": "@gitbook/adaptive",
-      "version": "0.1.1",
+      "version": "1.0.0",
       "dependencies": {
         "js-cookie": "^3.0.5",
       },
@@ -664,7 +676,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.139.0",
+      "version": "0.140.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -679,7 +691,7 @@
     },
     "packages/cli": {
       "name": "@gitbook/cli",
-      "version": "0.25.0",
+      "version": "0.25.1",
       "bin": {
         "gitbook": "./cli.js",
       },
@@ -1006,6 +1018,8 @@
     "@gitbook/integration-figma": ["@gitbook/integration-figma@workspace:integrations/figma"],
 
     "@gitbook/integration-formspree": ["@gitbook/integration-formspree@workspace:integrations/formspree"],
+
+    "@gitbook/integration-front": ["@gitbook/integration-front@workspace:integrations/front"],
 
     "@gitbook/integration-fullstory": ["@gitbook/integration-fullstory@workspace:integrations/fullstory"],
 
