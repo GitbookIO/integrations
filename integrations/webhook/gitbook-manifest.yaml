@@ -18,11 +18,9 @@ summary: |
     # How it works
     **Real-time notifications:** Get notified instantly when important events happen in your GitBook spaces.
 
-    **Flexible event selection:** Choose which events you want to receive - from page views to content updates.
+    **Flexible event selection:** Choose which events you want to receive.
 
-    **Secure delivery:** Optional HMAC signature verification ensures webhook authenticity.
-
-    **Reliable delivery:** Built-in retry logic ensures your webhooks are delivered even during temporary network issues.
+    **Secure delivery:** HMAC signature verification ensures webhook authenticity.
 
     # Configure
     After installing the integration, configure your webhook URL and select which events you want to receive. The integration will send HTTP POST requests to your endpoint with event data in JSON format.
@@ -32,7 +30,7 @@ summary: |
     - Event type and data
     - Timestamp
     - Installation information
-    - Optional HMAC signature for verification
+    - HMAC signature for verification
 
 configurations:
     space:
