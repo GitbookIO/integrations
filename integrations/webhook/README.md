@@ -1,20 +1,18 @@
 # Webhook Integration
 
-A webhook integration for GitBook that allows users to receive real-time notifications for actionable events in their spaces.
+A webhook integration for GitBook that allows users to receive real-time notifications for actionable events.
 
 ## Features
 
-- **Actionable Events**: Receive notifications for meaningful events like content updates, visibility changes, and user feedback
-- **Flexible Configuration**: Set webhook URL and select which events to receive
-- **Reliable Delivery**: Built-in retry logic and error handling
-- **Secure**: HMAC signature verification for webhook authenticity
+- **Real-time notifications:** Get notified instantly when actionable events happen.
+- **Flexible event selection:** Choose which events you want to receive.
+- **Secure delivery:** HMAC signature verification ensures webhook authenticity.
 
 ## Configuration
 
 Users can configure:
 - Webhook URL (required)
 - Event selection (choose which events to receive)
-- Webhook secret (auto-generated for HMAC verification)
 
 ## Webhook Payload Format
 
