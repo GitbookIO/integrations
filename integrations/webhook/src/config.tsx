@@ -88,8 +88,6 @@ export const configComponent = createComponent<
         return (
             <configuration>
                 <box>
-                    <divider size="medium" />
-
                     <input
                         label="Webhook URL"
                         hint={<text>The URL where the events will be sent.</text>}
@@ -103,7 +101,6 @@ export const configComponent = createComponent<
 
                     <divider size="medium" />
 
-                    <markdown content="### Events" />
                     <text>Select which events you want to receive:</text>
 
                     {Object.values(EventType).map((eventType) => (
@@ -117,8 +114,6 @@ export const configComponent = createComponent<
                     <divider size="medium" />
 
                     <markdown content="### Webhook Secret" />
-                    <text>A secure secret has been generated for webhook verification:</text>
-                    <markdown content="### Secret" />
                     <text>Copy this secret to your webhook endpoint for HMAC verification:</text>
                     <codeblock content={element.state.secret} />
 
