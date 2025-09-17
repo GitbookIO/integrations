@@ -119,13 +119,19 @@ export const configComponent = createComponent<
 
                     <divider size="medium" />
 
-                    <button
-                        style="primary"
-                        label="Save Configuration"
-                        tooltip="Save webhook configuration"
-                        onPress={{
-                            action: 'save.config',
-                        }}
+                    <input
+                        label=""
+                        hint=""
+                        element={
+                            <button
+                                style="primary"
+                                label="Save Configuration"
+                                tooltip="Save webhook configuration"
+                                onPress={{
+                                    action: 'save.config',
+                                }}
+                            />
+                        }
                     />
                 </box>
             </configuration>
