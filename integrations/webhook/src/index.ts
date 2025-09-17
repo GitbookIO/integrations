@@ -15,7 +15,13 @@ const logger = Logger('webhook');
 /**
  * Common webhook delivery handler for all event types
  */
-const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) => {
+export const handleWebhookEvent = async (args: {
+    event: Event;
+    context: WebhookRuntimeContext;
+    webhookUrl: string;
+    secret: string;
+}) => {
+    const { event, context, webhookUrl, secret } = args;
     const { environment } = context;
     const spaceInstallation = environment.spaceInstallation;
 
@@ -51,7 +57,7 @@ const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) 
     const encoder = new TextEncoder();
     const key = await crypto.subtle.importKey(
         'raw',
-        encoder.encode(config.secret),
+        encoder.encode(secret),
         { name: 'HMAC', hash: 'SHA-256' },
         false,
         ['sign'],
@@ -64,7 +70,7 @@ const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) 
     const sendWebhookWithRetry = async (retryCount = 0): Promise<void> => {
         const startTime = Date.now();
         try {
-            const response = await fetch(config.webhook_url, {
+            const response = await fetch(webhookUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -151,11 +157,31 @@ const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) 
     context.waitUntil(sendWebhookWithRetry());
 };
 
+/**
+ * Wrapper for webhook events that uses saved configuration
+ */
+const handleConfiguredWebhookEvent = async (event: Event, context: WebhookRuntimeContext) => {
+    const { environment } = context;
+    const spaceInstallation = environment.spaceInstallation;
+
+    if (!spaceInstallation) {
+        logger.debug('No space installation found');
+        return;
+    }
+
+    return handleWebhookEvent({
+        event,
+        context,
+        webhookUrl: spaceInstallation.configuration.webhook_url,
+        secret: spaceInstallation.configuration.secret,
+    });
+};
+
 export default createIntegration<WebhookRuntimeContext>({
     components: [configComponent],
     events: {
-        [EventType.SPACE_CONTENT_UPDATED]: handleWebhookEvent,
-        [EventType.SPACE_VISIBILITY_UPDATED]: handleWebhookEvent,
-        [EventType.PAGE_FEEDBACK]: handleWebhookEvent,
+        [EventType.SPACE_CONTENT_UPDATED]: handleConfiguredWebhookEvent,
+        [EventType.SPACE_VISIBILITY_UPDATED]: handleConfiguredWebhookEvent,
+        [EventType.PAGE_FEEDBACK]: handleConfiguredWebhookEvent,
     },
 });

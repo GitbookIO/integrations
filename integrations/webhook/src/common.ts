@@ -9,9 +9,9 @@ export enum EventType {
 
 // All Available events - mapped from enum to display names
 export const AVAILABLE_EVENTS: Record<EventType, string> = {
-    [EventType.SPACE_CONTENT_UPDATED]: 'Space Content Updated',
-    [EventType.SPACE_VISIBILITY_UPDATED]: 'Space Visibility Updated',
-    [EventType.PAGE_FEEDBACK]: 'Page Feedback',
+    [EventType.SPACE_CONTENT_UPDATED]: 'Space content updated',
+    [EventType.SPACE_VISIBILITY_UPDATED]: 'Space visibility updated',
+    [EventType.PAGE_FEEDBACK]: 'Page feedback',
 } as const;
 
 // All event types as an array for iteration
@@ -32,6 +32,8 @@ export const REQUEST_TIMEOUT = 10000;
 export type WebhookState = {
     webhook_url: string;
     secret: string;
+    testMessage?: string;
+    testStatus?: 'success' | 'error';
 } & Record<EventType, boolean>;
 
 export type WebhookRuntimeContext = RuntimeContext<RuntimeEnvironment<{}, WebhookState>>;

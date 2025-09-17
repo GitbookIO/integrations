@@ -1,5 +1,9 @@
 import { createComponent, ExposableError } from '@gitbook/runtime';
-import { IntegrationInstallationConfiguration, ContentKitIcon } from '@gitbook/api';
+import {
+    IntegrationInstallationConfiguration,
+    ContentKitIcon,
+    SpaceContentUpdatedEvent,
+} from '@gitbook/api';
 import {
     AVAILABLE_EVENTS,
     EVENT_DESCRIPTIONS,
@@ -8,6 +12,7 @@ import {
     WebhookRuntimeContext,
     WebhookState,
 } from './common';
+import { handleWebhookEvent } from './index';
 
 type WebhookProps = {
     installation: {
@@ -22,7 +27,7 @@ type WebhookProps = {
     };
 };
 
-type WebhookAction = { action: 'save.config' };
+type WebhookAction = { action: 'save.config' } | { action: 'test.webhook' };
 
 export const configComponent = createComponent<
     WebhookProps,
@@ -92,58 +97,117 @@ export const configComponent = createComponent<
 
                 return { type: 'complete' };
             }
+            case 'test.webhook': {
+                const { environment } = context;
+                const spaceInstallation = environment.spaceInstallation!;
+                const webhookUrl = element.state.webhook_url?.trim();
+
+                if (!webhookUrl) {
+                    throw new ExposableError('Webhook URL is required');
+                }
+
+                try {
+                    await handleWebhookEvent({
+                        event: {
+                            type: EventType.SPACE_CONTENT_UPDATED,
+                            eventId: 'test-event-' + Date.now(),
+                            installationId: spaceInstallation.installation,
+                            spaceId: spaceInstallation.space,
+                            revisionId: 'test-revision-' + Date.now(),
+                        },
+                        context,
+                        webhookUrl,
+                        secret: element.state.secret,
+                    });
+
+                    return {
+                        state: {
+                            ...element.state,
+                            testMessage: '✅ Test webhook sent successfully!',
+                            testStatus: 'success' as const,
+                        },
+                    };
+                } catch (error) {
+                    return {
+                        state: {
+                            ...element.state,
+                            testMessage: `❌ Test webhook failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                            testStatus: 'error' as const,
+                        },
+                    };
+                }
+            }
         }
     },
     render: async (element) => {
         return (
             <configuration>
-                <box>
-                    <input
-                        label="Webhook URL"
-                        hint={<text>The URL where the events will be sent.</text>}
-                        element={
-                            <textinput
-                                state="webhook_url"
-                                placeholder="https://your-domain.com/webhook"
-                            />
-                        }
-                    />
-
-                    <divider size="medium" />
-
-                    <text>Select which events you want to receive:</text>
-
-                    {EVENT_TYPES.map((eventType) => (
-                        <input
-                            label={AVAILABLE_EVENTS[eventType]}
-                            hint={<text>{EVENT_DESCRIPTIONS[eventType]}</text>}
-                            element={<switch state={eventType} />}
+                <input
+                    label="Webhook URL"
+                    hint={<text>The URL where the events will be sent.</text>}
+                    element={
+                        <textinput
+                            state="webhook_url"
+                            placeholder="https://your-domain.com/webhook"
                         />
-                    ))}
+                    }
+                />
+                <input
+                    label=""
+                    hint=""
+                    element={
+                        <button
+                            style="secondary"
+                            label="Test Webhook"
+                            tooltip="Send a test webhook to verify your configuration"
+                            onPress={{
+                                action: 'test.webhook',
+                            }}
+                        />
+                    }
+                />
 
-                    <divider size="medium" />
+                {element.state.testMessage ? (
+                    <hstack align="center">
+                        <text>{element.state.testMessage}</text>
+                    </hstack>
+                ) : null}
 
-                    <markdown content="### Webhook Secret" />
-                    <text>Copy this secret to your webhook endpoint for HMAC verification:</text>
-                    <codeblock content={element.state.secret} />
+                <divider size="medium" />
 
-                    <divider size="medium" />
+                <text>Select which events you want to receive:</text>
 
+                {EVENT_TYPES.map((eventType) => (
                     <input
-                        label=""
-                        hint=""
-                        element={
-                            <button
-                                style="primary"
-                                label="Save Configuration"
-                                tooltip="Save webhook configuration"
-                                onPress={{
-                                    action: 'save.config',
-                                }}
-                            />
-                        }
+                        label={AVAILABLE_EVENTS[eventType]}
+                        element={<switch state={eventType} />}
                     />
-                </box>
+                ))}
+
+                <divider size="medium" />
+
+                <markdown content="### Secret" />
+                <text>
+                    You can copy and verify this secret in your webhook for HMAC verification:
+                </text>
+                <codeblock content={element.state.secret} />
+
+                <divider size="medium" />
+
+                <input
+                    label=""
+                    hint=""
+                    element={
+                        <button
+                            style="primary"
+                            label="Save Configuration"
+                            tooltip="Save webhook configuration"
+                            onPress={{
+                                action: 'save.config',
+                            }}
+                        />
+                    }
+                />
             </configuration>
         );
     },
