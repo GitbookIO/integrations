@@ -443,6 +443,18 @@
         "@gitbook/tsconfig": "workspace:*",
       },
     },
+    "integrations/plantuml": {
+      "name": "@gitbook/integration-plantuml",
+      "version": "0.0.1",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
     "integrations/plausible": {
       "name": "@gitbook/integration-plausible",
       "version": "0.9.0",
@@ -1067,6 +1079,8 @@
     "@gitbook/integration-oidc": ["@gitbook/integration-oidc@workspace:integrations/oidc"],
 
     "@gitbook/integration-pendo": ["@gitbook/integration-pendo@workspace:integrations/pendo"],
+
+    "@gitbook/integration-plantuml": ["@gitbook/integration-plantuml@workspace:integrations/plantuml"],
 
     "@gitbook/integration-plausible": ["@gitbook/integration-plausible@workspace:integrations/plausible"],
 

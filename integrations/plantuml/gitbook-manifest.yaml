@@ -1,0 +1,22 @@
+name: plantuml
+title: PlantUML
+icon: ./assets/icon.png
+organization: gitbook
+previewImages:
+    - ./assets/preview.png
+description: Build diagrams and visualizations using PlantUML.
+summary: |
+    # Overview
+
+    description
+visibility: public
+script: ./src/index.tsx
+scopes: []
+blocks:
+    - id: diagram
+      title: PlantUML diagram
+      description: PlantUML diagrams in GitBook
+      markdown:
+          codeblock: plantuml
+          body: content
+target: space
