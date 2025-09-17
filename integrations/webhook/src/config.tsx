@@ -3,9 +3,8 @@ import { IntegrationInstallationConfiguration } from '@gitbook/api';
 import {
     AVAILABLE_EVENTS,
     EVENT_TYPES,
-    EventType,
     WebhookRuntimeContext,
-    WebhookState,
+    WebhookConfiguration,
 } from './common';
 
 type WebhookProps = {
@@ -13,34 +12,28 @@ type WebhookProps = {
         configuration?: IntegrationInstallationConfiguration;
     };
     spaceInstallation?: {
-        configuration?: {
-            webhook_url: string;
-            events: Record<EventType, boolean>;
-            secret: string;
-        };
+        configuration?: WebhookConfiguration;
     };
 };
 
-type WebhookAction = { action: 'save.config' } | { action: 'test.webhook' };
+type WebhookAction = { action: 'save.config' };
 
 export const configComponent = createComponent<
     WebhookProps,
-    WebhookState,
+    WebhookConfiguration,
     WebhookAction,
     WebhookRuntimeContext
 >({
     componentId: 'config',
     initialState: (props) => {
         const spaceInstallation = props.spaceInstallation;
-        const existingEvents = spaceInstallation?.configuration?.events;
-
         const state = {
             webhook_url: spaceInstallation?.configuration?.webhook_url || '',
             secret: spaceInstallation?.configuration?.secret || crypto.randomUUID(),
-        } as WebhookState;
+        } as WebhookConfiguration;
 
         EVENT_TYPES.forEach((eventType) => {
-            state[eventType] = existingEvents?.[eventType] ?? false;
+            state[eventType] = spaceInstallation?.configuration?.[eventType] ?? false;
         });
 
         return state;
@@ -76,15 +69,14 @@ export const configComponent = createComponent<
                     spaceInstallation.space,
                     {
                         configuration: {
-                            ...spaceInstallation.configuration,
                             webhook_url: webhookUrl,
-                            events: Object.fromEntries(
+                            secret: element.state.secret,
+                            ...Object.fromEntries(
                                 EVENT_TYPES.map((eventType) => [
                                     eventType,
                                     element.state[eventType],
                                 ]),
                             ),
-                            secret: element.state.secret,
                         },
                     },
                 );

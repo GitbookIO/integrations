@@ -8,6 +8,7 @@ import {
     WebhookRuntimeContext,
     retryWithDelay,
     EventType,
+    EVENT_TYPES,
 } from './common';
 
 const logger = Logger('webhook');
@@ -27,10 +28,7 @@ const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) 
     const config = spaceInstallation.configuration;
 
     // Check if this event type is supported and enabled
-    if (
-        !Object.values(EventType).includes(event.type as EventType) ||
-        !config[event.type as EventType]
-    ) {
+    if (!EVENT_TYPES.includes(event.type as EventType) || !config[event.type as EventType]) {
         logger.debug(`Event ${event.type} is not enabled`);
         return;
     }

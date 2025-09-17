@@ -22,14 +22,12 @@ export const MAX_RETRIES = 3;
 export const BASE_DELAY = 1000;
 export const REQUEST_TIMEOUT = 10000;
 
-export type WebhookState = {
+export type WebhookConfiguration = {
     webhook_url: string;
     secret: string;
-    testMessage?: string;
-    testStatus?: 'success' | 'error';
 } & Record<EventType, boolean>;
 
-export type WebhookRuntimeContext = RuntimeContext<RuntimeEnvironment<{}, WebhookState>>;
+export type WebhookRuntimeContext = RuntimeContext<RuntimeEnvironment<{}, WebhookConfiguration>>;
 
 export const retryWithDelay = async (
     retryCount: number,
