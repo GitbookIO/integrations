@@ -1,8 +1,9 @@
 import { createComponent, ExposableError } from '@gitbook/runtime';
-import { IntegrationInstallationConfiguration } from '@gitbook/api';
+import { IntegrationInstallationConfiguration, ContentKitIcon } from '@gitbook/api';
 import {
     AVAILABLE_EVENTS,
     DEFAULT_EVENTS,
+    EVENT_DESCRIPTIONS,
     EventType,
     WebhookRuntimeContext,
     WebhookState,
@@ -87,16 +88,11 @@ export const configComponent = createComponent<
         return (
             <configuration>
                 <box>
-                    <markdown content="### Webhook Configuration" />
-                    <text>
-                        Configure your webhook URL and select which events you want to receive.
-                    </text>
-
                     <divider size="medium" />
 
                     <input
                         label="Webhook URL"
-                        hint={<text>The URL where webhook events will be sent.</text>}
+                        hint={<text>The URL where the events will be sent.</text>}
                         element={
                             <textinput
                                 state="webhook_url"
@@ -108,12 +104,12 @@ export const configComponent = createComponent<
                     <divider size="medium" />
 
                     <markdown content="### Events" />
-                    <text>Select which events you want to receive at your webhook URL:</text>
+                    <text>Select which events you want to receive:</text>
 
-                    {Object.entries(AVAILABLE_EVENTS).map(([eventType, eventName]) => (
+                    {Object.values(EventType).map((eventType) => (
                         <input
-                            label={eventName}
-                            hint={<text>Receive {eventType} events</text>}
+                            label={AVAILABLE_EVENTS[eventType]}
+                            hint={<text>{EVENT_DESCRIPTIONS[eventType]}</text>}
                             element={<switch state={`events.${eventType}`} />}
                         />
                     ))}
@@ -122,32 +118,19 @@ export const configComponent = createComponent<
 
                     <markdown content="### Webhook Secret" />
                     <text>A secure secret has been generated for webhook verification:</text>
-                    <input
-                        label="Secret"
-                        hint={
-                            <text>
-                                Copy this secret to your webhook endpoint for HMAC verification
-                            </text>
-                        }
-                        element={<textinput state="secret" disabled={true} />}
-                    />
+                    <markdown content="### Secret" />
+                    <text>Copy this secret to your webhook endpoint for HMAC verification:</text>
+                    <codeblock content={element.state.secret} />
 
                     <divider size="medium" />
 
-                    <input
-                        label=""
-                        hint=""
-                        element={
-                            <button
-                                style="primary"
-                                disabled={!element.state.webhook_url}
-                                label="Save Configuration"
-                                tooltip="Save webhook configuration"
-                                onPress={{
-                                    action: 'save.config',
-                                }}
-                            />
-                        }
+                    <button
+                        style="primary"
+                        label="Save Configuration"
+                        tooltip="Save webhook configuration"
+                        onPress={{
+                            action: 'save.config',
+                        }}
                     />
                 </box>
             </configuration>

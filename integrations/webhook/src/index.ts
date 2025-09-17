@@ -1,6 +1,5 @@
 import { createIntegration, Logger } from '@gitbook/runtime';
 import { Event } from '@gitbook/api';
-import { createHmac } from 'crypto';
 
 import { configComponent } from './config';
 import {
@@ -49,7 +48,18 @@ const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) 
     });
 
     // Add HMAC signature for webhook verification
-    const signature = createHmac('sha256', config.secret).update(jsonPayload).digest('hex');
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+        'raw',
+        encoder.encode(config.secret),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign'],
+    );
+    const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(jsonPayload));
+    const signature = Array.from(new Uint8Array(signatureBuffer))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
 
     const sendWebhookWithRetry = async (retryCount = 0): Promise<void> => {
         const startTime = Date.now();

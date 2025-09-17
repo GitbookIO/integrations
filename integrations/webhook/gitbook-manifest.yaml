@@ -2,7 +2,7 @@ name: webhook
 title: Webhook
 icon: ./assets/icon.png
 organization: gitbook
-description: Send GitBook events to your webhook endpoints
+description: Send GitBook events to your webhook endpoints.
 categories:
     - other
 visibility: public
