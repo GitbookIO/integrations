@@ -15,14 +15,7 @@ const logger = Logger('webhook');
 /**
  * Common webhook delivery handler for all event types
  */
-export const handleWebhookEvent = async (args: {
-    event: Event;
-    context: WebhookRuntimeContext;
-    webhookUrl: string;
-    secret: string;
-    skipEventTypeCheck?: boolean;
-}) => {
-    const { event, context, webhookUrl, secret, skipEventTypeCheck } = args;
+const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) => {
     const { environment } = context;
     const spaceInstallation = environment.spaceInstallation;
 
@@ -33,15 +26,13 @@ export const handleWebhookEvent = async (args: {
 
     const config = spaceInstallation.configuration;
 
-    // Check if this event type is supported and enabled (skip for test webhooks)
-    if (!skipEventTypeCheck) {
-        if (
-            !Object.values(EventType).includes(event.type as EventType) ||
-            !config[event.type as EventType]
-        ) {
-            logger.debug(`Event ${event.type} is not enabled`);
-            return;
-        }
+    // Check if this event type is supported and enabled
+    if (
+        !Object.values(EventType).includes(event.type as EventType) ||
+        !config[event.type as EventType]
+    ) {
+        logger.debug(`Event ${event.type} is not enabled`);
+        return;
     }
 
     // Prepare webhook payload
@@ -60,7 +51,7 @@ export const handleWebhookEvent = async (args: {
     const encoder = new TextEncoder();
     const key = await crypto.subtle.importKey(
         'raw',
-        encoder.encode(secret),
+        encoder.encode(config.secret),
         { name: 'HMAC', hash: 'SHA-256' },
         false,
         ['sign'],
@@ -73,7 +64,7 @@ export const handleWebhookEvent = async (args: {
     const sendWebhookWithRetry = async (retryCount = 0): Promise<void> => {
         const startTime = Date.now();
         try {
-            const response = await fetch(webhookUrl, {
+            const response = await fetch(config.webhook_url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -160,31 +151,11 @@ export const handleWebhookEvent = async (args: {
     context.waitUntil(sendWebhookWithRetry());
 };
 
-/**
- * Wrapper for webhook events that uses saved configuration
- */
-const handleConfiguredWebhookEvent = async (event: Event, context: WebhookRuntimeContext) => {
-    const { environment } = context;
-    const spaceInstallation = environment.spaceInstallation;
-
-    if (!spaceInstallation) {
-        logger.debug('No space installation found');
-        return;
-    }
-
-    return handleWebhookEvent({
-        event,
-        context,
-        webhookUrl: spaceInstallation.configuration.webhook_url,
-        secret: spaceInstallation.configuration.secret,
-    });
-};
-
 export default createIntegration<WebhookRuntimeContext>({
     components: [configComponent],
     events: {
-        [EventType.SPACE_CONTENT_UPDATED]: handleConfiguredWebhookEvent,
-        [EventType.SPACE_VISIBILITY_UPDATED]: handleConfiguredWebhookEvent,
-        [EventType.PAGE_FEEDBACK]: handleConfiguredWebhookEvent,
+        [EventType.SPACE_CONTENT_UPDATED]: handleWebhookEvent,
+        [EventType.SPACE_VISIBILITY_UPDATED]: handleWebhookEvent,
+        [EventType.PAGE_FEEDBACK]: handleWebhookEvent,
     },
 });

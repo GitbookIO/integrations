@@ -7,7 +7,6 @@ import {
     WebhookRuntimeContext,
     WebhookState,
 } from './common';
-import { handleWebhookEvent } from './index';
 
 type WebhookProps = {
     installation: {
@@ -92,47 +91,6 @@ export const configComponent = createComponent<
 
                 return { type: 'complete' };
             }
-            case 'test.webhook': {
-                const { environment } = context;
-                const spaceInstallation = environment.spaceInstallation!;
-                const webhookUrl = element.state.webhook_url?.trim();
-
-                if (!webhookUrl) {
-                    throw new ExposableError('Webhook URL is required');
-                }
-
-                try {
-                    await handleWebhookEvent({
-                        event: {
-                            type: EventType.SPACE_CONTENT_UPDATED,
-                            eventId: 'test-event-' + Date.now(),
-                            installationId: spaceInstallation.installation,
-                            spaceId: spaceInstallation.space,
-                            revisionId: 'test-revision-' + Date.now(),
-                        },
-                        context,
-                        webhookUrl,
-                        secret: element.state.secret,
-                        skipEventTypeCheck: true,
-                    });
-
-                    return {
-                        state: {
-                            ...element.state,
-                            testMessage: '✅ Test webhook sent successfully!',
-                            testStatus: 'success' as const,
-                        },
-                    };
-                } catch (error) {
-                    return {
-                        state: {
-                            ...element.state,
-                            testMessage: `❌ Test webhook failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-                            testStatus: 'error' as const,
-                        },
-                    };
-                }
-            }
         }
     },
     render: async (element) => {
@@ -148,26 +106,6 @@ export const configComponent = createComponent<
                         />
                     }
                 />
-                <input
-                    label=""
-                    hint=""
-                    element={
-                        <button
-                            style="secondary"
-                            label="Test Webhook"
-                            tooltip="Send a test webhook to verify your configuration"
-                            onPress={{
-                                action: 'test.webhook',
-                            }}
-                        />
-                    }
-                />
-
-                {element.state.testMessage ? (
-                    <hstack align="center">
-                        <text>{element.state.testMessage}</text>
-                    </hstack>
-                ) : null}
 
                 <divider size="medium" />
 
