@@ -146,7 +146,6 @@ export default createIntegration<WebhookRuntimeContext>({
     events: {
         [EventType.SPACE_CONTENT_UPDATED]: handleWebhookEvent,
         [EventType.SPACE_VISIBILITY_UPDATED]: handleWebhookEvent,
-        // TODO we need the new API package to enable this event
-        // [EventType.PAGE_FEEDBACK]: handleWebhookEvent,
+        [EventType.PAGE_FEEDBACK]: handleWebhookEvent,
     },
 });
