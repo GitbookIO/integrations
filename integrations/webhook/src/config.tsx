@@ -2,8 +2,8 @@ import { createComponent, ExposableError } from '@gitbook/runtime';
 import { IntegrationInstallationConfiguration, ContentKitIcon } from '@gitbook/api';
 import {
     AVAILABLE_EVENTS,
-    DEFAULT_EVENTS,
     EVENT_DESCRIPTIONS,
+    EVENT_TYPES,
     EventType,
     WebhookRuntimeContext,
     WebhookState,
@@ -33,11 +33,18 @@ export const configComponent = createComponent<
     componentId: 'config',
     initialState: (props) => {
         const spaceInstallation = props.spaceInstallation;
-        return {
+        const existingEvents = spaceInstallation?.configuration?.events;
+
+        const state = {
             webhook_url: spaceInstallation?.configuration?.webhook_url || '',
-            events: spaceInstallation?.configuration?.events || DEFAULT_EVENTS,
             secret: spaceInstallation?.configuration?.secret || crypto.randomUUID(),
-        };
+        } as WebhookState;
+
+        EVENT_TYPES.forEach((eventType) => {
+            state[eventType] = existingEvents?.[eventType] ?? false;
+        });
+
+        return state;
     },
     action: async (element, action, context) => {
         switch (action.action) {
@@ -59,9 +66,7 @@ export const configComponent = createComponent<
                 }
 
                 // Validate that at least one event is enabled
-                const hasEnabledEvents = Object.values(element.state.events).some(
-                    (enabled) => enabled,
-                );
+                const hasEnabledEvents = EVENT_TYPES.some((eventType) => element.state[eventType]);
                 if (!hasEnabledEvents) {
                     throw new ExposableError('At least one event type must be enabled');
                 }
@@ -74,7 +79,12 @@ export const configComponent = createComponent<
                         configuration: {
                             ...spaceInstallation.configuration,
                             webhook_url: webhookUrl,
-                            events: element.state.events,
+                            events: Object.fromEntries(
+                                EVENT_TYPES.map((eventType) => [
+                                    eventType,
+                                    element.state[eventType],
+                                ]),
+                            ),
                             secret: element.state.secret,
                         },
                     },
@@ -103,11 +113,11 @@ export const configComponent = createComponent<
 
                     <text>Select which events you want to receive:</text>
 
-                    {Object.values(EventType).map((eventType) => (
+                    {EVENT_TYPES.map((eventType) => (
                         <input
                             label={AVAILABLE_EVENTS[eventType]}
                             hint={<text>{EVENT_DESCRIPTIONS[eventType]}</text>}
-                            element={<switch state={`events.${eventType}`} />}
+                            element={<switch state={eventType} />}
                         />
                     ))}
 

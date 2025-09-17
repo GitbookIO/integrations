@@ -14,12 +14,8 @@ export const AVAILABLE_EVENTS: Record<EventType, string> = {
     [EventType.PAGE_FEEDBACK]: 'Page Feedback',
 } as const;
 
-// Events enabled by default - focusing on actionable events
-export const DEFAULT_EVENTS: Record<EventType, boolean> = {
-    [EventType.SPACE_CONTENT_UPDATED]: true,
-    [EventType.SPACE_VISIBILITY_UPDATED]: true,
-    [EventType.PAGE_FEEDBACK]: true,
-};
+// All event types as an array for iteration
+export const EVENT_TYPES = Object.values(EventType);
 
 // Description shown under the config toggles.
 export const EVENT_DESCRIPTIONS: Record<EventType, string> = {
@@ -35,9 +31,8 @@ export const REQUEST_TIMEOUT = 10000;
 
 export type WebhookState = {
     webhook_url: string;
-    events: Record<EventType, boolean>;
     secret: string;
-};
+} & Record<EventType, boolean>;
 
 export type WebhookRuntimeContext = RuntimeContext<RuntimeEnvironment<{}, WebhookState>>;
 

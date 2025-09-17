@@ -29,7 +29,7 @@ const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) 
     // Check if this event type is supported and enabled
     if (
         !Object.values(EventType).includes(event.type as EventType) ||
-        !config.events[event.type as EventType]
+        !config[event.type as EventType]
     ) {
         logger.debug(`Event ${event.type} is not enabled`);
         return;
