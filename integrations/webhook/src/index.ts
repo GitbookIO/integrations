@@ -20,8 +20,9 @@ export const handleWebhookEvent = async (args: {
     context: WebhookRuntimeContext;
     webhookUrl: string;
     secret: string;
+    skipEventTypeCheck?: boolean;
 }) => {
-    const { event, context, webhookUrl, secret } = args;
+    const { event, context, webhookUrl, secret, skipEventTypeCheck } = args;
     const { environment } = context;
     const spaceInstallation = environment.spaceInstallation;
 
@@ -32,13 +33,15 @@ export const handleWebhookEvent = async (args: {
 
     const config = spaceInstallation.configuration;
 
-    // Check if this event type is supported and enabled
-    if (
-        !Object.values(EventType).includes(event.type as EventType) ||
-        !config[event.type as EventType]
-    ) {
-        logger.debug(`Event ${event.type} is not enabled`);
-        return;
+    // Check if this event type is supported and enabled (skip for test webhooks)
+    if (!skipEventTypeCheck) {
+        if (
+            !Object.values(EventType).includes(event.type as EventType) ||
+            !config[event.type as EventType]
+        ) {
+            logger.debug(`Event ${event.type} is not enabled`);
+            return;
+        }
     }
 
     // Prepare webhook payload

@@ -1,12 +1,7 @@
 import { createComponent, ExposableError } from '@gitbook/runtime';
-import {
-    IntegrationInstallationConfiguration,
-    ContentKitIcon,
-    SpaceContentUpdatedEvent,
-} from '@gitbook/api';
+import { IntegrationInstallationConfiguration } from '@gitbook/api';
 import {
     AVAILABLE_EVENTS,
-    EVENT_DESCRIPTIONS,
     EVENT_TYPES,
     EventType,
     WebhookRuntimeContext,
@@ -118,6 +113,7 @@ export const configComponent = createComponent<
                         context,
                         webhookUrl,
                         secret: element.state.secret,
+                        skipEventTypeCheck: true,
                     });
 
                     return {

@@ -17,13 +17,6 @@ export const AVAILABLE_EVENTS: Record<EventType, string> = {
 // All event types as an array for iteration
 export const EVENT_TYPES = Object.values(EventType);
 
-// Description shown under the config toggles.
-export const EVENT_DESCRIPTIONS: Record<EventType, string> = {
-    [EventType.SPACE_CONTENT_UPDATED]: 'Occurs when the main content is updated.',
-    [EventType.SPACE_VISIBILITY_UPDATED]: 'Occurs on space visibility changes.',
-    [EventType.PAGE_FEEDBACK]: 'Occurs when users leave feedback on a page.',
-};
-
 // Retry configuration (delay and timeout are in ms)
 export const MAX_RETRIES = 3;
 export const BASE_DELAY = 1000;
