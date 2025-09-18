@@ -1,18 +1,36 @@
-import { createIntegration, Logger } from '@gitbook/runtime';
+import { createIntegration, Logger, FetchEventCallback, ExposableError } from '@gitbook/runtime';
 import { Event } from '@gitbook/api';
 
 import { configComponent } from './config';
 import {
     MAX_RETRIES,
-    REQUEST_TIMEOUT,
     WebhookRuntimeContext,
-    retryWithDelay,
     EventType,
     EVENT_TYPES,
     generateHmacSignature,
+    IntegrationTask,
+    deliverWebhook,
+    verifyIntegrationSignature,
 } from './common';
 
 const logger = Logger('webhook');
+
+/**
+ * Handle webhook retry tasks
+ */
+export const handleWebhookRetryTask = async (
+    task: IntegrationTask,
+    context: WebhookRuntimeContext,
+) => {
+    const { payload } = task;
+    const { event, webhookUrl, secret, retryCount, timestamp, signature } = payload;
+
+    logger.debug(
+        `Processing webhook retry task for event ${event.type} (attempt ${retryCount + 1}/${MAX_RETRIES})`,
+    );
+
+    await deliverWebhook(context, event, webhookUrl, secret, timestamp, signature, retryCount);
+};
 
 /**
  * Common webhook delivery handler for all event types
@@ -46,95 +64,9 @@ const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) 
         timestamp,
     });
 
-    const sendWebhookWithRetry = async (retryCount = 0): Promise<void> => {
-        const startTime = Date.now();
-        try {
-            const response = await fetch(config.webhookUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'User-Agent': 'GitBook-Webhook',
-                    'X-GitBook-Signature': `t=${timestamp},v1=${signature}`,
-                },
-                body: jsonPayload,
-                signal: AbortSignal.timeout(REQUEST_TIMEOUT),
-            });
-
-            if (!response.ok) {
-                const errorMessage = `Webhook delivery failed: ${response.status} ${response.statusText}`;
-                logger.error(errorMessage, {
-                    url: config.webhookUrl,
-                    eventType: event.type,
-                    retryCount,
-                    status: response.status,
-                    statusText: response.statusText,
-                });
-
-                // Retry on server errors (5xx) and rate limiting (429)
-                if (
-                    retryCount < MAX_RETRIES &&
-                    (response.status >= 500 || response.status === 429)
-                ) {
-                    return retryWithDelay(
-                        retryCount,
-                        () => sendWebhookWithRetry(retryCount + 1),
-                        logger,
-                    );
-                }
-
-                throw new Error(errorMessage);
-            }
-
-            logger.debug(`Webhook delivered successfully for event ${event.type}`, {
-                url: config.webhookUrl,
-                eventType: event.type,
-                retryCount,
-                responseTime: Date.now() - startTime,
-            });
-        } catch (error) {
-            const errorMessage = `Webhook delivery error: ${error instanceof Error ? error.message : String(error)}`;
-            logger.error(errorMessage, {
-                url: config.webhookUrl,
-                eventType: event.type,
-                retryCount,
-                errorName: error instanceof Error ? error.name : 'Unknown',
-            });
-
-            // Retry on network errors and timeouts
-            if (
-                retryCount < MAX_RETRIES &&
-                error instanceof Error &&
-                (error.name === 'AbortError' ||
-                    error.name === 'TimeoutError' ||
-                    error.message.includes('fetch') ||
-                    error.message.includes('ECONNREFUSED') ||
-                    error.message.includes('ENOTFOUND') ||
-                    error.message.includes('ETIMEDOUT') ||
-                    error.message.includes('ECONNRESET'))
-            ) {
-                return retryWithDelay(
-                    retryCount,
-                    () => sendWebhookWithRetry(retryCount + 1),
-                    logger,
-                );
-            }
-
-            if (retryCount >= MAX_RETRIES) {
-                logger.error(
-                    `Webhook delivery failed after ${MAX_RETRIES} retries for event ${event.type}`,
-                    {
-                        url: config.webhookUrl,
-                        eventType: event.type,
-                        finalError: errorMessage,
-                    },
-                );
-            }
-
-            throw error;
-        }
-    };
-
-    context.waitUntil(sendWebhookWithRetry());
+    context.waitUntil(
+        deliverWebhook(context, event, config.webhookUrl, config.secret, timestamp, signature, 0),
+    );
 };
 
 const events: Record<EventType, typeof handleWebhookEvent> = {
@@ -146,4 +78,42 @@ const events: Record<EventType, typeof handleWebhookEvent> = {
 export default createIntegration<WebhookRuntimeContext>({
     components: [configComponent],
     events,
+    fetch: async (request, context) => {
+        const { environment } = context;
+        const url = new URL(request.url);
+
+        if (url.pathname === '/tasks' && request.method === 'POST') {
+            const signature = request.headers.get('x-gitbook-integration-signature') ?? '';
+            const payloadString = await request.text();
+
+            // Verify the signature cryptographically
+            const verified = await verifyIntegrationSignature(
+                payloadString,
+                signature,
+                environment.signingSecrets.integration,
+            );
+
+            if (!verified) {
+                const message = `Invalid signature for integration task`;
+                logger.error(message);
+                throw new ExposableError(message);
+            }
+
+            const { task } = JSON.parse(payloadString) as { task: IntegrationTask };
+            logger.debug('received integration task', task);
+
+            context.waitUntil(
+                (async () => {
+                    await handleWebhookRetryTask(task, context);
+                })(),
+            );
+
+            return new Response(JSON.stringify({ acknowledged: true }), {
+                status: 200,
+                headers: { 'content-type': 'application/json' },
+            });
+        }
+
+        return new Response('Not found', { status: 404 });
+    },
 });
