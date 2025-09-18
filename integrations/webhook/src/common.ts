@@ -54,7 +54,13 @@ export function generateSecret(): string {
     return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
-export async function generateHmacSignature(payload: string, secret: string): Promise<string> {
+export async function generateHmacSignature(args: {
+    payload: string;
+    secret: string;
+    timestamp: number;
+}): Promise<string> {
+    const { payload, secret, timestamp } = args;
+
     const encoder = new TextEncoder();
     const key = await crypto.subtle.importKey(
         'raw',
@@ -63,7 +69,11 @@ export async function generateHmacSignature(payload: string, secret: string): Pr
         false,
         ['sign'],
     );
-    const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
+    const signatureBuffer = await crypto.subtle.sign(
+        'HMAC',
+        key,
+        encoder.encode(`${timestamp}.${payload}`),
+    );
     const signature = Array.from(new Uint8Array(signatureBuffer))
         .map((b) => b.toString(16).padStart(2, '0'))
         .join('');

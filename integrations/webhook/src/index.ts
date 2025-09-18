@@ -34,11 +34,17 @@ const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) 
         return;
     }
 
+    const timestamp = Math.floor(new Date().getTime() / 1000);
+
     // Prepare webhook payload
     const jsonPayload = JSON.stringify(event);
 
-    // Add HMAC signature for webhook verification
-    const signature = await generateHmacSignature(jsonPayload, config.secret);
+    // Generate HMAC signature for webhook verification
+    const signature = await generateHmacSignature({
+        payload: jsonPayload,
+        secret: config.secret,
+        timestamp,
+    });
 
     const sendWebhookWithRetry = async (retryCount = 0): Promise<void> => {
         const startTime = Date.now();
@@ -48,7 +54,7 @@ const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) 
                 headers: {
                     'Content-Type': 'application/json',
                     'User-Agent': 'GitBook-Webhook',
-                    'X-GitBook-Signature': `sha256=${signature}`,
+                    'X-GitBook-Signature': `t=${timestamp},v1=${signature}`,
                 },
                 body: jsonPayload,
                 signal: AbortSignal.timeout(REQUEST_TIMEOUT),
