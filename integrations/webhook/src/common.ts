@@ -28,56 +28,10 @@ export type WebhookConfiguration = {
     secret: string;
 } & Record<EventType, boolean>;
 
-// Task types for webhook retry
-export type IntegrationTaskType = 'webhook:retry';
-
-export type BaseIntegrationTask<Type extends IntegrationTaskType, Payload extends object> = {
-    type: Type;
-    payload: Payload;
-};
-
-export type IntegrationTaskWebhookRetry = BaseIntegrationTask<
-    'webhook:retry',
-    {
-        event: Event;
-        webhookUrl: string;
-        secret: string;
-        retryCount: number;
-        timestamp: number;
-        signature: string;
-    }
->;
-
-export type IntegrationTask = IntegrationTaskWebhookRetry;
-
 export type WebhookRuntimeContext = RuntimeContext<RuntimeEnvironment<{}, WebhookConfiguration>>;
 
 /**
- * Queue a webhook retry task using the integration task system
- */
-export async function queueWebhookRetryTask(
-    context: WebhookRuntimeContext,
-    task: IntegrationTaskWebhookRetry,
-): Promise<void> {
-    const { api, environment } = context;
-
-    // Calculate delay in seconds (exponential backoff with jitter)
-    const baseDelayMs = BASE_DELAY * Math.pow(2, task.payload.retryCount);
-    const jitter = Math.random() * 0.1 * baseDelayMs;
-    const delayMs = Math.floor(baseDelayMs + jitter);
-    const delaySeconds = Math.ceil(delayMs / 1000);
-
-    await api.integrations.queueIntegrationTask(environment.integration.name, {
-        task: {
-            type: task.type,
-            payload: task.payload,
-        },
-        schedule: delaySeconds,
-    });
-}
-
-/**
- * Shared webhook delivery logic
+ * Shared webhook delivery logic with built-in retry mechanism
  */
 export async function deliverWebhook(
     context: WebhookRuntimeContext,
@@ -86,7 +40,7 @@ export async function deliverWebhook(
     secret: string,
     timestamp: number,
     signature: string,
-    retryCount: number,
+    retriesLeft: number = MAX_RETRIES,
 ): Promise<void> {
     const logger = Logger('webhook');
     const jsonPayload = JSON.stringify(event);
@@ -109,24 +63,22 @@ export async function deliverWebhook(
             logger.error(errorMessage, {
                 url: webhookUrl,
                 eventType: event.type,
-                retryCount,
+                retriesLeft,
                 status: response.status,
                 statusText: response.statusText,
             });
 
             // Retry on server errors (5xx) and rate limiting (429)
-            if (retryCount < MAX_RETRIES && (response.status >= 500 || response.status === 429)) {
-                await queueWebhookRetryTask(context, {
-                    type: 'webhook:retry',
-                    payload: {
-                        event,
-                        webhookUrl,
-                        secret,
-                        retryCount: retryCount + 1,
-                        timestamp,
-                        signature,
-                    },
-                });
+            if (retriesLeft > 0 && (response.status >= 500 || response.status === 429)) {
+                await retryWithDelay(
+                    context,
+                    event,
+                    webhookUrl,
+                    secret,
+                    timestamp,
+                    signature,
+                    retriesLeft - 1,
+                );
                 return;
             }
 
@@ -136,7 +88,7 @@ export async function deliverWebhook(
         logger.debug(`Webhook delivered successfully for event ${event.type}`, {
             url: webhookUrl,
             eventType: event.type,
-            retryCount,
+            retriesLeft,
             responseTime: Date.now() - startTime,
         });
     } catch (error) {
@@ -144,13 +96,13 @@ export async function deliverWebhook(
         logger.error(errorMessage, {
             url: webhookUrl,
             eventType: event.type,
-            retryCount,
+            retriesLeft,
             errorName: error instanceof Error ? error.name : 'Unknown',
         });
 
         // Retry on network errors and timeouts
         if (
-            retryCount < MAX_RETRIES &&
+            retriesLeft > 0 &&
             error instanceof Error &&
             (error.name === 'AbortError' ||
                 error.name === 'TimeoutError' ||
@@ -160,21 +112,19 @@ export async function deliverWebhook(
                 error.message.includes('ETIMEDOUT') ||
                 error.message.includes('ECONNRESET'))
         ) {
-            await queueWebhookRetryTask(context, {
-                type: 'webhook:retry',
-                payload: {
-                    event,
-                    webhookUrl,
-                    secret,
-                    retryCount: retryCount + 1,
-                    timestamp,
-                    signature,
-                },
-            });
+            await retryWithDelay(
+                context,
+                event,
+                webhookUrl,
+                secret,
+                timestamp,
+                signature,
+                retriesLeft - 1,
+            );
             return;
         }
 
-        if (retryCount >= MAX_RETRIES) {
+        if (retriesLeft === 0) {
             logger.error(
                 `Webhook delivery failed after ${MAX_RETRIES} retries for event ${event.type}`,
                 {
@@ -187,6 +137,43 @@ export async function deliverWebhook(
 
         throw error;
     }
+}
+
+/**
+ * Retry webhook delivery with exponential backoff delay
+ */
+async function retryWithDelay(
+    context: WebhookRuntimeContext,
+    event: Event,
+    webhookUrl: string,
+    secret: string,
+    timestamp: number,
+    signature: string,
+    retriesLeft: number,
+): Promise<void> {
+    const logger = Logger('webhook');
+
+    // Calculate delay with exponential backoff and jitter
+    const attemptNumber = MAX_RETRIES - retriesLeft + 1;
+    const baseDelayMs = BASE_DELAY * Math.pow(2, attemptNumber - 1);
+    const jitter = Math.random() * 0.1 * baseDelayMs;
+    const delayMs = Math.floor(baseDelayMs + jitter);
+
+    logger.debug(
+        `Retrying webhook delivery in ${delayMs}ms (attempt ${attemptNumber + 1}/${MAX_RETRIES + 1})`,
+        {
+            url: webhookUrl,
+            eventType: event.type,
+            retriesLeft,
+            delayMs,
+        },
+    );
+
+    // Wait for the delay
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+
+    // Recursively call deliverWebhook with decremented retries
+    await deliverWebhook(context, event, webhookUrl, secret, timestamp, signature, retriesLeft);
 }
 
 export function generateSecret(): string {

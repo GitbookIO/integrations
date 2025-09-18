@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test';
 import type * as api from '@gitbook/api';
 
-import { deliverWebhook, queueWebhookRetryTask, MAX_RETRIES, REQUEST_TIMEOUT } from '../src/common';
+import { deliverWebhook, MAX_RETRIES, REQUEST_TIMEOUT } from '../src/common';
 
 // Mock fetch globally
 const mockFetch = mock(() => Promise.resolve(new Response('OK', { status: 200 })));
@@ -113,12 +113,15 @@ describe('Webhook Retry Logic', () => {
             expect(mockApi.integrations.queueIntegrationTask).not.toHaveBeenCalled();
         });
 
-        it('should queue retry task on 5xx server error', async () => {
+        it('should retry on 5xx server error', async () => {
             const context = createMockContext();
             const timestamp = Math.floor(Date.now() / 1000);
             const signature = 'test-signature';
 
-            mockFetch.mockResolvedValueOnce(new Response('Internal Server Error', { status: 500 }));
+            // Mock first call fails, second call succeeds
+            mockFetch
+                .mockResolvedValueOnce(new Response('Internal Server Error', { status: 500 }))
+                .mockResolvedValueOnce(new Response('OK', { status: 200 }));
 
             await deliverWebhook(
                 context,
@@ -127,33 +130,20 @@ describe('Webhook Retry Logic', () => {
                 'test-secret',
                 timestamp,
                 signature,
-                0,
             );
 
-            expect(mockFetch).toHaveBeenCalledTimes(1);
-            expect(mockApi.integrations.queueIntegrationTask).toHaveBeenCalledTimes(1);
-            expect(mockApi.integrations.queueIntegrationTask).toHaveBeenCalledWith('webhook-test', {
-                task: {
-                    type: 'webhook:retry',
-                    payload: {
-                        event: mockEvent,
-                        webhookUrl: 'https://example.com/webhook',
-                        secret: 'test-secret',
-                        retryCount: 1,
-                        timestamp,
-                        signature,
-                    },
-                },
-                schedule: expect.any(Number),
-            });
+            expect(mockFetch).toHaveBeenCalledTimes(2);
         });
 
-        it('should queue retry task on 429 rate limit error', async () => {
+        it('should retry on 429 rate limit error', async () => {
             const context = createMockContext();
             const timestamp = Math.floor(Date.now() / 1000);
             const signature = 'test-signature';
 
-            mockFetch.mockResolvedValueOnce(new Response('Too Many Requests', { status: 429 }));
+            // Mock first call fails, second call succeeds
+            mockFetch
+                .mockResolvedValueOnce(new Response('Too Many Requests', { status: 429 }))
+                .mockResolvedValueOnce(new Response('OK', { status: 200 }));
 
             await deliverWebhook(
                 context,
@@ -162,21 +152,23 @@ describe('Webhook Retry Logic', () => {
                 'test-secret',
                 timestamp,
                 signature,
-                0,
             );
 
-            expect(mockFetch).toHaveBeenCalledTimes(1);
-            expect(mockApi.integrations.queueIntegrationTask).toHaveBeenCalledTimes(1);
+            expect(mockFetch).toHaveBeenCalledTimes(2);
         });
 
-        it('should queue retry task on network timeout error', async () => {
+        it('should retry on network timeout error', async () => {
             const context = createMockContext();
             const timestamp = Math.floor(Date.now() / 1000);
             const signature = 'test-signature';
 
             const timeoutError = new Error('The operation was aborted');
             timeoutError.name = 'AbortError';
-            mockFetch.mockRejectedValueOnce(timeoutError);
+
+            // Mock first call fails, second call succeeds
+            mockFetch
+                .mockRejectedValueOnce(timeoutError)
+                .mockResolvedValueOnce(new Response('OK', { status: 200 }));
 
             await deliverWebhook(
                 context,
@@ -185,20 +177,22 @@ describe('Webhook Retry Logic', () => {
                 'test-secret',
                 timestamp,
                 signature,
-                0,
             );
 
-            expect(mockFetch).toHaveBeenCalledTimes(1);
-            expect(mockApi.integrations.queueIntegrationTask).toHaveBeenCalledTimes(1);
+            expect(mockFetch).toHaveBeenCalledTimes(2);
         });
 
-        it('should queue retry task on connection refused error', async () => {
+        it('should retry on connection refused error', async () => {
             const context = createMockContext();
             const timestamp = Math.floor(Date.now() / 1000);
             const signature = 'test-signature';
 
             const connectionError = new Error('ECONNREFUSED');
-            mockFetch.mockRejectedValueOnce(connectionError);
+
+            // Mock first call fails, second call succeeds
+            mockFetch
+                .mockRejectedValueOnce(connectionError)
+                .mockResolvedValueOnce(new Response('OK', { status: 200 }));
 
             await deliverWebhook(
                 context,
@@ -207,11 +201,9 @@ describe('Webhook Retry Logic', () => {
                 'test-secret',
                 timestamp,
                 signature,
-                0,
             );
 
-            expect(mockFetch).toHaveBeenCalledTimes(1);
-            expect(mockApi.integrations.queueIntegrationTask).toHaveBeenCalledTimes(1);
+            expect(mockFetch).toHaveBeenCalledTimes(2);
         });
 
         it('should not retry on 4xx client errors (except 429)', async () => {
@@ -252,12 +244,11 @@ describe('Webhook Retry Logic', () => {
                     'test-secret',
                     timestamp,
                     signature,
-                    MAX_RETRIES,
+                    0, // No retries left
                 ),
             ).rejects.toThrow('Webhook delivery failed: 500');
 
             expect(mockFetch).toHaveBeenCalledTimes(1);
-            expect(mockApi.integrations.queueIntegrationTask).not.toHaveBeenCalled();
         });
 
         it('should throw error after MAX_RETRIES attempts', async () => {
@@ -277,43 +268,11 @@ describe('Webhook Retry Logic', () => {
                     'test-secret',
                     timestamp,
                     signature,
-                    MAX_RETRIES,
+                    0, // No retries left
                 ),
             ).rejects.toThrow('The operation was aborted');
 
             expect(mockFetch).toHaveBeenCalledTimes(1);
-            expect(mockApi.integrations.queueIntegrationTask).not.toHaveBeenCalled();
-        });
-    });
-
-    describe('queueWebhookRetryTask', () => {
-        it('should calculate exponential backoff delay correctly', async () => {
-            const context = createMockContext();
-            const task = {
-                type: 'webhook:retry' as const,
-                payload: {
-                    event: mockEvent,
-                    webhookUrl: 'https://example.com/webhook',
-                    secret: 'test-secret',
-                    retryCount: 2,
-                    timestamp: Math.floor(Date.now() / 1000),
-                    signature: 'test-signature',
-                },
-            };
-
-            await queueWebhookRetryTask(context, task);
-
-            expect(mockApi.integrations.queueIntegrationTask).toHaveBeenCalledTimes(1);
-            const calls = (mockApi.integrations.queueIntegrationTask as any).mock.calls;
-            expect(calls.length).toBeGreaterThan(0);
-            const call = calls[0];
-            const schedule = call[1].schedule;
-
-            // For retryCount = 2, base delay = 1000 * 2^2 = 4000ms
-            // With jitter (0-10%), delay should be between 4000-4400ms
-            // Converted to seconds and rounded up, should be 4-5 seconds
-            expect(schedule).toBeGreaterThanOrEqual(4);
-            expect(schedule).toBeLessThanOrEqual(5);
         });
     });
 });
