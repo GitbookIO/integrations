@@ -3,6 +3,9 @@ title: Webhook
 icon: ./assets/icon.png
 organization: gitbook
 description: Send GitBook events to your webhook endpoints.
+externalLinks:
+    - label: Documentation
+      url: https://gitbook.com/docs/integrations/webhook
 categories:
     - other
 visibility: public
