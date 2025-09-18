@@ -34,16 +34,7 @@ const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) 
     }
 
     // Prepare webhook payload
-    const jsonPayload = JSON.stringify({
-        event_type: event.type,
-        event_data: event,
-        timestamp: new Date().toISOString(),
-        installation: {
-            integration: spaceInstallation.integration,
-            installation: spaceInstallation.installation,
-            space: spaceInstallation.space,
-        },
-    });
+    const jsonPayload = JSON.stringify(event);
 
     // Add HMAC signature for webhook verification
     const encoder = new TextEncoder();

@@ -17,8 +17,7 @@ A webhook integration for GitBook that allows users to receive real-time notific
 
 ```json
 {
-  "event_type": "site_view",
-  "event_data": {
+  "event": {
     "type": "site_view",
     "id": "evt_123456789",
     "space": {
