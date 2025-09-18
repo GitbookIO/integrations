@@ -44,7 +44,7 @@ A webhook integration for GitBook that allows users to receive real-time notific
 }
 ```
 
-If a webhook secret is configured, the request will include an `X-GitBook-Signature` header with an HMAC-SHA256 signature.
+All webhook requests include an `X-GitBook-Signature` header with an HMAC-SHA256 signature for verification.
 
 ## Supported Events
 
