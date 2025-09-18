@@ -8,25 +8,39 @@ A webhook integration for GitBook that allows users to receive real-time notific
 - **Flexible event selection:** Choose which events you want to receive.
 - **Secure delivery:** HMAC signature verification ensures webhook authenticity.
 
-## Configuration
+## Setup
 
-Users can configure:
-- Webhook URL (required)
-- Event selection (choose which events to receive)
+- Configure your webhook URL and select which events you want to receive
+- Optional - but recommended - copy and verify the secret in your endpoint
 
-## Webhook Payload Format
-
-Each webhook request includes:
+## Example: Site View Event
 
 ```json
 {
-  "event_type": "space_content_updated",
-  "event_data": { /* Original GitBook event data */ },
+  "event_type": "site_view",
+  "event_data": {
+    "type": "site_view",
+    "id": "evt_123456789",
+    "space": {
+      "id": "space_abc123",
+      "title": "My Documentation"
+    },
+    "page": {
+      "id": "page_def456",
+      "title": "Getting Started",
+      "path": "/getting-started"
+    },
+    "user": {
+      "id": "user_789",
+      "email": "user@example.com"
+    },
+    "timestamp": "2024-01-15T10:30:00.000Z"
+  },
   "timestamp": "2024-01-15T10:30:00.000Z",
   "installation": {
     "integration": "webhook",
     "installation": "install_123",
-    "space": "space_456"
+    "space": "space_abc123"
   }
 }
 ```
@@ -35,7 +49,7 @@ If a webhook secret is configured, the request will include an `X-GitBook-Signat
 
 ## Supported Events
 
-- `space_content_updated` - When content in a space is updated
-- `space_visibility_updated` - When space visibility or access permissions change
-- `page_feedback` - When users provide feedback on pages
+- **Site views** - When users visit pages on your site
+- **Content updates** - When content in your space is modified
+- **Page feedback** - When users provide feedback on pages
 
