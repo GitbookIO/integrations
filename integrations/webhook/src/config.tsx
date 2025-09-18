@@ -63,7 +63,7 @@ export const configComponent = createComponent<
                     spaceInstallation.space,
                     {
                         configuration: {
-                            webhook_url: webhookUrl,
+                            webhookUrl: webhookUrl,
                             secret: element.state.secret,
                             ...Object.fromEntries(
                                 EVENT_TYPES.map((eventType) => [
@@ -71,7 +71,7 @@ export const configComponent = createComponent<
                                     element.state[eventType],
                                 ]),
                             ),
-                        },
+                        } as WebhookConfiguration,
                     },
                 );
 
@@ -87,7 +87,7 @@ export const configComponent = createComponent<
                     hint={<text>The URL where the events will be sent.</text>}
                     element={
                         <textinput
-                            state="webhook_url"
+                            state="webhookUrl"
                             placeholder="https://your-domain.com/webhook"
                         />
                     }

@@ -62,7 +62,7 @@ const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) 
     const sendWebhookWithRetry = async (retryCount = 0): Promise<void> => {
         const startTime = Date.now();
         try {
-            const response = await fetch(config.webhook_url, {
+            const response = await fetch(config.webhookUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) 
             if (!response.ok) {
                 const errorMessage = `Webhook delivery failed: ${response.status} ${response.statusText}`;
                 logger.error(errorMessage, {
-                    url: config.webhook_url,
+                    url: config.webhookUrl,
                     eventType: event.type,
                     retryCount,
                     status: response.status,
@@ -98,7 +98,7 @@ const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) 
             }
 
             logger.debug(`Webhook delivered successfully for event ${event.type}`, {
-                url: config.webhook_url,
+                url: config.webhookUrl,
                 eventType: event.type,
                 retryCount,
                 responseTime: Date.now() - startTime,
@@ -106,7 +106,7 @@ const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) 
         } catch (error) {
             const errorMessage = `Webhook delivery error: ${error instanceof Error ? error.message : String(error)}`;
             logger.error(errorMessage, {
-                url: config.webhook_url,
+                url: config.webhookUrl,
                 eventType: event.type,
                 retryCount,
                 errorName: error instanceof Error ? error.name : 'Unknown',
@@ -135,7 +135,7 @@ const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) 
                 logger.error(
                     `Webhook delivery failed after ${MAX_RETRIES} retries for event ${event.type}`,
                     {
-                        url: config.webhook_url,
+                        url: config.webhookUrl,
                         eventType: event.type,
                         finalError: errorMessage,
                     },
