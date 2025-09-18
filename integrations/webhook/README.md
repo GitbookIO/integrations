@@ -52,3 +52,12 @@ If a webhook secret is configured, the request will include an `X-GitBook-Signat
 - **Content updates** - When content in your space is modified
 - **Page feedback** - When users provide feedback on pages
 
+## Delivery and Retries
+
+Webhook delivery is designed to be reliable:
+
+- **Exponential backoff with jitter** – initial delay of 1 s, doubling each time (up to 3 retries) with a small random factor to prevent synchronized retries.
+- **Automatic retry triggers** – network errors, timeouts, HTTP 5xx, and HTTP 429 (rate limiting).
+- **At-least-once guarantee** – your endpoint may receive the same event multiple times. Make sure handlers are idempotent.
+
+After three failed attempts no further retries occur.

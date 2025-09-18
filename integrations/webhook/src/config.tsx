@@ -5,6 +5,7 @@ import {
     EVENT_TYPES,
     WebhookRuntimeContext,
     WebhookConfiguration,
+    generateSecret,
 } from './common';
 
 export const configComponent = createComponent<
@@ -28,7 +29,7 @@ export const configComponent = createComponent<
 
         return {
             webhookUrl: spaceInstallation?.configuration?.webhookUrl || '',
-            secret: spaceInstallation?.configuration?.secret || crypto.randomUUID(),
+            secret: spaceInstallation?.configuration?.secret || generateSecret(),
             ...Object.fromEntries(
                 EVENT_TYPES.map((eventType) => [
                     eventType,

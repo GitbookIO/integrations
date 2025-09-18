@@ -17,10 +17,12 @@ summary: |
 
     # How it works
     **Real-time notifications:** Get notified instantly when selected events happen.
-    
+
     **Flexible event selection:** Choose which events you want to receive.
-    
+
     **Secure delivery:** HMAC signature verification ensures webhook authenticity.
+
+    **Reliable delivery:** 3 retries with exponential backoff - endpoints must be idempotent.
 
     # Configure
     After installing the integration, configure your webhook URL and select which events you want to receive. The integration will send HTTP POST requests to your endpoint with event data in JSON format.

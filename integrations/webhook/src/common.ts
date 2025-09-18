@@ -41,6 +41,15 @@ export const retryWithDelay = async (
     logger.debug(
         `Retrying webhook delivery in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`,
     );
+
     await new Promise((resolve) => setTimeout(resolve, delay));
+
     return sendWebhook();
 };
+
+export function generateSecret(): string {
+    const bytes = crypto.getRandomValues(new Uint8Array(32));
+    const b64 = btoa(String.fromCharCode(...bytes));
+
+    return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
