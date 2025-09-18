@@ -66,6 +66,7 @@ const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'User-Agent': 'GitBook-Webhook',
                     'X-GitBook-Signature': `sha256=${signature}`,
                 },
                 body: jsonPayload,

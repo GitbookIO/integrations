@@ -29,7 +29,12 @@ export const configComponent = createComponent<
         return {
             webhookUrl: spaceInstallation?.configuration?.webhookUrl || '',
             secret: spaceInstallation?.configuration?.secret || crypto.randomUUID(),
-            ...Object.fromEntries(EVENT_TYPES.map((eventType) => [eventType, false])),
+            ...Object.fromEntries(
+                EVENT_TYPES.map((eventType) => [
+                    eventType,
+                    spaceInstallation?.configuration?.[eventType] ?? false,
+                ]),
+            ),
         } as WebhookConfiguration;
     },
     action: async (element, action, context) => {
