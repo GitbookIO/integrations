@@ -25,23 +25,19 @@ export const configComponent = createComponent<
     componentId: 'config',
     initialState: (props) => {
         const spaceInstallation = props.spaceInstallation;
-        const state = {
-            webhook_url: spaceInstallation?.configuration?.webhook_url || '',
+
+        return {
+            webhookUrl: spaceInstallation?.configuration?.webhookUrl || '',
             secret: spaceInstallation?.configuration?.secret || crypto.randomUUID(),
+            ...Object.fromEntries(EVENT_TYPES.map((eventType) => [eventType, false])),
         } as WebhookConfiguration;
-
-        EVENT_TYPES.forEach((eventType) => {
-            state[eventType] = spaceInstallation?.configuration?.[eventType] ?? false;
-        });
-
-        return state;
     },
     action: async (element, action, context) => {
         switch (action.action) {
             case 'save.config': {
                 const { api, environment } = context;
                 const spaceInstallation = environment.spaceInstallation!;
-                const webhookUrl = element.state.webhook_url?.trim() || '';
+                const webhookUrl = element.state.webhookUrl.trim();
 
                 // Validate webhook URL
                 if (!webhookUrl) {

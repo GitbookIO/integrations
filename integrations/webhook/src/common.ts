@@ -23,7 +23,7 @@ export const BASE_DELAY = 1000;
 export const REQUEST_TIMEOUT = 10000;
 
 export type WebhookConfiguration = {
-    webhook_url: string;
+    webhookUrl: string;
     secret: string;
 } & Record<EventType, boolean>;
 

@@ -152,8 +152,8 @@ const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) 
 export default createIntegration<WebhookRuntimeContext>({
     components: [configComponent],
     events: {
-        [EventType.SPACE_CONTENT_UPDATED]: handleWebhookEvent,
-        [EventType.SPACE_VISIBILITY_UPDATED]: handleWebhookEvent,
+        [EventType.SITE_VIEW]: handleWebhookEvent,
+        [EventType.CONTENT_UPDATED]: handleWebhookEvent,
         [EventType.PAGE_FEEDBACK]: handleWebhookEvent,
     },
 });
