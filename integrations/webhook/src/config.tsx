@@ -114,7 +114,8 @@ export const configComponent = createComponent<
 
                 <markdown content="### Secret" />
                 <text>
-                    You can copy and verify this secret in your webhook for HMAC verification:
+                    Use this secret to verify the signature included in GitBook webhook events (i.e
+                    HMAC with SHA-256 verification):
                 </text>
                 <codeblock content={element.state.secret} />
 
