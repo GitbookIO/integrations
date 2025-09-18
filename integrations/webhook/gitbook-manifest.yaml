@@ -8,16 +8,18 @@ categories:
 visibility: public
 script: ./src/index.ts
 scopes:
+    - site:views:read
     - space:content:read
-    - space:metadata:read
     - page:feedback:read
 summary: |
     # Overview
-    The Webhook integration allows you to receive real-time notifications when actionable events occur. Configure webhook URLs to receive events like content updates and user feedback.
+    The Webhook integration allows you to receive real-time notifications when selected events occur. Configure a webhook URL to receive events like site views, content updates and user feedback.
 
     # How it works
-    **Real-time notifications:** Get notified instantly when actionable events happen.
+    **Real-time notifications:** Get notified instantly when selected events happen.
+    
     **Flexible event selection:** Choose which events you want to receive.
+    
     **Secure delivery:** HMAC signature verification ensures webhook authenticity.
 
     # Configure

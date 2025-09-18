@@ -2,16 +2,16 @@ import { RuntimeContext, RuntimeEnvironment, Logger } from '@gitbook/runtime';
 
 // Event types enum - only events that match our scopes
 export enum EventType {
-    SPACE_CONTENT_UPDATED = 'space_content_updated',
-    SPACE_VISIBILITY_UPDATED = 'space_visibility_updated',
+    SITE_VIEW = 'site_view',
+    CONTENT_UPDATED = 'space_content_updated',
     PAGE_FEEDBACK = 'page_feedback',
 }
 
 // All Available events - mapped from enum to display names
 export const AVAILABLE_EVENTS: Record<EventType, string> = {
-    [EventType.SPACE_CONTENT_UPDATED]: 'Space content updated',
-    [EventType.SPACE_VISIBILITY_UPDATED]: 'Space visibility updated',
-    [EventType.PAGE_FEEDBACK]: 'Page feedback',
+    [EventType.SITE_VIEW]: 'Site views',
+    [EventType.CONTENT_UPDATED]: 'Content updates',
+    [EventType.PAGE_FEEDBACK]: 'Page feedbacks',
 } as const;
 
 // All event types as an array for iteration

@@ -7,21 +7,19 @@ import {
     WebhookConfiguration,
 } from './common';
 
-type WebhookProps = {
-    installation: {
-        configuration?: IntegrationInstallationConfiguration;
-    };
-    spaceInstallation?: {
-        configuration?: WebhookConfiguration;
-    };
-};
-
-type WebhookAction = { action: 'save.config' };
-
 export const configComponent = createComponent<
-    WebhookProps,
+    {
+        installation: {
+            configuration?: IntegrationInstallationConfiguration;
+        };
+        spaceInstallation?: {
+            configuration?: WebhookConfiguration;
+        };
+    },
     WebhookConfiguration,
-    WebhookAction,
+    {
+        action: 'save.config';
+    },
     WebhookRuntimeContext
 >({
     componentId: 'config',
