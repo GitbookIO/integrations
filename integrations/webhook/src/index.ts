@@ -9,6 +9,7 @@ import {
     retryWithDelay,
     EventType,
     EVENT_TYPES,
+    generateHmacSignature,
 } from './common';
 
 const logger = Logger('webhook');
@@ -37,18 +38,7 @@ const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) 
     const jsonPayload = JSON.stringify(event);
 
     // Add HMAC signature for webhook verification
-    const encoder = new TextEncoder();
-    const key = await crypto.subtle.importKey(
-        'raw',
-        encoder.encode(config.secret),
-        { name: 'HMAC', hash: 'SHA-256' },
-        false,
-        ['sign'],
-    );
-    const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(jsonPayload));
-    const signature = Array.from(new Uint8Array(signatureBuffer))
-        .map((b) => b.toString(16).padStart(2, '0'))
-        .join('');
+    const signature = await generateHmacSignature(jsonPayload, config.secret);
 
     const sendWebhookWithRetry = async (retryCount = 0): Promise<void> => {
         const startTime = Date.now();

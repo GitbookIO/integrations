@@ -53,3 +53,20 @@ export function generateSecret(): string {
 
     return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
+
+export async function generateHmacSignature(payload: string, secret: string): Promise<string> {
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+        'raw',
+        encoder.encode(secret),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign'],
+    );
+    const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
+    const signature = Array.from(new Uint8Array(signatureBuffer))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
+
+    return signature;
+}
