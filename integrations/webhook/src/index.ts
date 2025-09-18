@@ -141,11 +141,13 @@ const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) 
     context.waitUntil(sendWebhookWithRetry());
 };
 
+const events: Record<EventType, typeof handleWebhookEvent> = {
+    [EventType.SITE_VIEW]: handleWebhookEvent,
+    [EventType.CONTENT_UPDATED]: handleWebhookEvent,
+    [EventType.PAGE_FEEDBACK]: handleWebhookEvent,
+};
+
 export default createIntegration<WebhookRuntimeContext>({
     components: [configComponent],
-    events: {
-        [EventType.SITE_VIEW]: handleWebhookEvent,
-        [EventType.CONTENT_UPDATED]: handleWebhookEvent,
-        [EventType.PAGE_FEEDBACK]: handleWebhookEvent,
-    },
+    events,
 });
