@@ -16,6 +16,9 @@ export const configComponent = createComponent<
         spaceInstallation?: {
             configuration?: WebhookConfiguration;
         };
+        siteInstallation?: {
+            configuration?: WebhookConfiguration;
+        };
     },
     WebhookConfiguration,
     {
@@ -25,16 +28,24 @@ export const configComponent = createComponent<
 >({
     componentId: 'config',
     initialState: (props) => {
-        const spaceInstallation = props.spaceInstallation;
+        // Get configuration from whichever installation type is available
+        const installation = props.spaceInstallation || props.siteInstallation;
+
+        // For organization-level installations, check the installation configuration
+        let config: any;
+        if (installation) {
+            config = installation.configuration;
+        } else if (props.installation) {
+            config = props.installation.configuration;
+        } else {
+            config = {};
+        }
 
         return {
-            webhookUrl: spaceInstallation?.configuration?.webhookUrl || '',
-            secret: spaceInstallation?.configuration?.secret || generateSecret(),
+            webhookUrl: config?.webhookUrl || '',
+            secret: config?.secret || generateSecret(),
             ...Object.fromEntries(
-                EVENT_TYPES.map((eventType) => [
-                    eventType,
-                    spaceInstallation?.configuration?.[eventType] ?? false,
-                ]),
+                EVENT_TYPES.map((eventType) => [eventType, config?.[eventType] ?? false]),
             ),
         } as WebhookConfiguration;
     },
@@ -42,7 +53,6 @@ export const configComponent = createComponent<
         switch (action.action) {
             case 'save.config': {
                 const { api, environment } = context;
-                const spaceInstallation = environment.spaceInstallation!;
                 const webhookUrl = element.state.webhookUrl.trim();
 
                 // Validate webhook URL
@@ -63,23 +73,38 @@ export const configComponent = createComponent<
                     throw new ExposableError('At least one event type must be enabled');
                 }
 
-                await api.integrations.updateIntegrationSpaceInstallation(
-                    spaceInstallation.integration,
-                    spaceInstallation.installation,
-                    spaceInstallation.space,
-                    {
-                        configuration: {
-                            webhookUrl: webhookUrl,
-                            secret: element.state.secret,
-                            ...Object.fromEntries(
-                                EVENT_TYPES.map((eventType) => [
-                                    eventType,
-                                    element.state[eventType],
-                                ]),
-                            ),
-                        } as WebhookConfiguration,
-                    },
-                );
+                const configuration = {
+                    webhookUrl: webhookUrl,
+                    secret: element.state.secret,
+                    ...Object.fromEntries(
+                        EVENT_TYPES.map((eventType) => [eventType, element.state[eventType]]),
+                    ),
+                } as WebhookConfiguration;
+
+                // Update the appropriate installation based on what's available
+                if (environment.spaceInstallation) {
+                    await api.integrations.updateIntegrationSpaceInstallation(
+                        environment.spaceInstallation.integration,
+                        environment.spaceInstallation.installation,
+                        environment.spaceInstallation.space,
+                        { configuration },
+                    );
+                } else if (environment.siteInstallation) {
+                    await api.integrations.updateIntegrationSiteInstallation(
+                        environment.siteInstallation.integration,
+                        environment.siteInstallation.installation,
+                        environment.siteInstallation.site,
+                        { configuration },
+                    );
+                } else if (environment.installation) {
+                    await api.integrations.updateIntegrationInstallation(
+                        environment.integration.name,
+                        environment.installation.id,
+                        { configuration },
+                    );
+                } else {
+                    throw new ExposableError('No installation found to update');
+                }
 
                 return { type: 'complete' };
             }

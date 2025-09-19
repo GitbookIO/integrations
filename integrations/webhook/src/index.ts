@@ -17,14 +17,20 @@ const logger = Logger('webhook');
  */
 const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) => {
     const { environment } = context;
-    const spaceInstallation = environment.spaceInstallation;
 
-    if (!spaceInstallation) {
-        logger.debug('No space installation found');
+    // Get configuration from whichever installation type is available
+    const installation = environment.spaceInstallation || environment.siteInstallation;
+
+    // For organization-level installations, check the installation configuration
+    let config: any;
+    if (installation) {
+        config = installation.configuration;
+    } else if (environment.installation) {
+        config = environment.installation.configuration;
+    } else {
+        logger.debug('No installation found');
         return;
     }
-
-    const config = spaceInstallation.configuration;
 
     // Check if this event type is supported and enabled
     if (!EVENT_TYPES.includes(event.type as EventType) || !config[event.type as EventType]) {

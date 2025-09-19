@@ -33,4 +33,8 @@ summary: |
 configurations:
     space:
         componentId: config
-target: space
+    site:
+        componentId: config
+    organization:
+        componentId: config
+target: all
