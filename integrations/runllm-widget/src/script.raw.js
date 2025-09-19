@@ -1,6 +1,18 @@
 (function () {
     var w = window;
 
+    let a = w.runllm;
+    if (!a) {
+        let i = function () {
+            i.c(arguments);
+        };
+        i.q = [];
+        i.c = function (args) {
+            i.q.push(args);
+        };
+        w.runllm = i;
+    }
+
     const NAME = '<NAME>';
     const SERVER_ADDRESS = '<SERVER_ADDRESS>';
     const ASSISTANT_ID = '<ASSISTANT_ID>';
@@ -45,41 +57,24 @@
         setAttr(s, 'runllm-community-type', COMMUNITY_TYPE);
         setAttr(s, 'runllm-disable-ask-a-person', DISABLE_ASK_A_PERSON);
 
+        document.head.appendChild(s);
+
         // Hide trigger button when embedding a native UI
         if (NATIVE_AI_EXPERIENCE === 'true') {
             s.setAttribute('runllm-hide-trigger-button', 'true');
         }
 
-        // Wait for the widget script to finish loading before registering assistant.
-        s.addEventListener('load', function () {
-            // Register and open RunLLM from GitBook UI
-            if (w.GitBook && w.GitBook.registerAssistant) {
-                w.GitBook.registerAssistant({
-                    label: 'RunLLM',
-                    icon: 'sparkle',
-                    ui: NATIVE_AI_EXPERIENCE === 'true',
-                    open: function (query) {
-                        const queryRunllm = () => {
-                            w.runllm.open();
-                            if (query) w.runllm.sendMessage(query);
-                        };
-
-                        if (w.runllm && typeof w.runllm.open === 'function') {
-                            queryRunllm();
-                        } else {
-                            const id = setInterval(() => {
-                                if (w.runllm && typeof w.runllm.open === 'function') {
-                                    clearInterval(id);
-                                    queryRunllm();
-                                }
-                            }, 100);
-                        }
-                    },
-                });
-            }
+        w.GitBook.registerAssistant({
+            label: 'RunLLM',
+            icon: 'sparkle',
+            ui: NATIVE_AI_EXPERIENCE === 'true',
+            open: function (query) {
+                if (w.runllm.open) {
+                    w.runllm.open();
+                    if (query) w.runllm.sendMessage(query);
+                }
+            },
         });
-
-        document.head.appendChild(s);
     };
 
     if (w.attachEvent) {
