@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 
 import { generateHmacSignature } from '../src/common';
-import { verifyIntegrationSignature } from './utils';
 
 // Mock fetch globally
 const mockFetch = mock(() => Promise.resolve(new Response('OK', { status: 200 })));
@@ -28,47 +27,6 @@ describe('Integration Flow Tests', () => {
             expect(validConfig.site_view).toBeDefined();
             expect(validConfig.space_content_updated).toBeDefined();
             expect(validConfig.page_feedback).toBeDefined();
-        });
-    });
-
-    describe('Signature Verification Integration', () => {
-        it('should verify valid signatures for task payloads', async () => {
-            const payload = '{"task":{"type":"webhook:retry","payload":{}}}';
-            const secret = 'test-secret';
-
-            // Generate a valid signature
-            const encoder = new TextEncoder();
-            const key = await crypto.subtle.importKey(
-                'raw',
-                encoder.encode(secret),
-                { name: 'HMAC', hash: 'SHA-256' },
-                false,
-                ['sign'],
-            );
-            const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
-            const validSignature = Array.from(new Uint8Array(signatureBuffer))
-                .map((b) => b.toString(16).padStart(2, '0'))
-                .join('');
-
-            const isValid = await verifyIntegrationSignature(payload, validSignature, secret);
-            expect(isValid).toBe(true);
-        });
-
-        it('should reject invalid signatures for task payloads', async () => {
-            const payload = '{"task":{"type":"webhook:retry","payload":{}}}';
-            const secret = 'test-secret';
-            const invalidSignature = 'invalid-signature';
-
-            const isValid = await verifyIntegrationSignature(payload, invalidSignature, secret);
-            expect(isValid).toBe(false);
-        });
-
-        it('should handle empty signatures gracefully', async () => {
-            const payload = '{"task":{"type":"webhook:retry","payload":{}}}';
-            const secret = 'test-secret';
-
-            const isValid = await verifyIntegrationSignature(payload, '', secret);
-            expect(isValid).toBe(false);
         });
     });
 

@@ -1,17 +1,34 @@
 /**
  * Verify integration task signature using HMAC-SHA256
+ * Parses the X-GitBook-Signature header format: t=timestamp,v1=signature
  */
 export async function verifyIntegrationSignature(
     payload: string,
-    signature: string,
+    signatureHeader: string,
     secret: string,
-    timestamp?: number,
 ): Promise<boolean> {
-    if (!signature) {
+    if (!signatureHeader) {
         return false;
     }
 
     try {
+        // Parse signature format: t=timestamp,v1=hash
+        const parts = signatureHeader.split(',');
+        let timestamp: string | undefined;
+        let hash: string | undefined;
+
+        for (const part of parts) {
+            if (part.startsWith('t=')) {
+                timestamp = part.substring(2);
+            } else if (part.startsWith('v1=')) {
+                hash = part.substring(3);
+            }
+        }
+
+        if (!timestamp || !hash) {
+            return false;
+        }
+
         const algorithm = { name: 'HMAC', hash: 'SHA-256' };
         const encoder = new TextEncoder();
         const key = await crypto.subtle.importKey('raw', encoder.encode(secret), algorithm, false, [
@@ -19,15 +36,15 @@ export async function verifyIntegrationSignature(
             'verify',
         ]);
 
-        // Use timestamp.payload format if timestamp is provided, otherwise just payload
-        const dataToSign = timestamp ? `${timestamp}.${payload}` : payload;
+        // Generate expected signature using timestamp.payload format
+        const dataToSign = `${timestamp}.${payload}`;
         const signed = await crypto.subtle.sign(algorithm.name, key, encoder.encode(dataToSign));
         const expectedSignature = Array.from(new Uint8Array(signed))
             .map((b) => b.toString(16).padStart(2, '0'))
             .join('');
 
         // Use constant-time comparison to prevent timing attacks
-        return safeCompare(expectedSignature, signature);
+        return safeCompare(expectedSignature, hash);
     } catch (error) {
         return false;
     }
