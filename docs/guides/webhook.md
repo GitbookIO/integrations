@@ -80,7 +80,6 @@ Triggered when users provide feedback on pages.
 ### Required Settings
 
 - **Webhook URL**: The endpoint where events will be sent
-- **Secret**: A shared secret for HMAC signature verification
 - **Event Types**: Select which events to receive
 
 ## Webhook Security
