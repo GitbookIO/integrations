@@ -1,4 +1,4 @@
-# Webhook Integration
+# Receiving webhook notifications
 
 The GitBook Webhook Integration allows you to receive real-time notifications when events occur in your GitBook spaces. This integration supports configurable webhook URLs, HMAC signature verification, and automatic retry logic with exponential backoff.
 
