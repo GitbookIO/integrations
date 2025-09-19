@@ -1,5 +1,16 @@
 # @gitbook/cli
 
+## 0.26.0
+
+### Minor Changes
+
+- 7a8ee22: Introduce the Webhook integration and bumps api and cli to latest openapi spec.
+
+### Patch Changes
+
+- Updated dependencies [7a8ee22]
+    - @gitbook/api@0.143.0
+
 ## 0.25.1
 
 ### Patch Changes
