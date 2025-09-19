@@ -1,7 +1,7 @@
 import { createIntegration, Logger } from '@gitbook/runtime';
 import { Event } from '@gitbook/api';
 
-import { configComponent, accountConfigComponent } from './config';
+import { config } from './config';
 import {
     WebhookRuntimeContext,
     EventType,
@@ -71,9 +71,6 @@ const events: Record<EventType, typeof handleWebhookEvent> = {
 };
 
 export default createIntegration<WebhookRuntimeContext>({
-    components: [accountConfigComponent, configComponent],
+    components: [config],
     events,
-    fetch: async (request, context) => {
-        return new Response('Not found', { status: 404 });
-    },
 });

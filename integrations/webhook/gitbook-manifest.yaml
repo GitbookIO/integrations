@@ -5,7 +5,7 @@ organization: gitbook
 description: Send GitBook events to your webhook endpoints.
 externalLinks:
     - label: Documentation
-      url: https://gitbook.com/docs/integrations/webhook
+      url: https://gitbook.com/docs/developers/guides/webhook
 categories:
     - other
 visibility: public
@@ -31,8 +31,6 @@ summary: |
     After installing the integration, configure your webhook URL and select which events you want to receive. The integration will send HTTP POST requests to your endpoint with event data in JSON format.
 
 configurations:
-    account:
-        componentId: account-config
     space:
         componentId: config
     site:
