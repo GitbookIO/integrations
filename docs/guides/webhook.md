@@ -99,7 +99,6 @@ Where:
 
 ### Signature Verification Example
 
-#### Node.js
 ```javascript
 const crypto = require('crypto');
 
