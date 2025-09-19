@@ -185,7 +185,7 @@ export const config = createComponent<
                         tooltip="Generate a new secret"
                         disabled={
                             element.state.secret !==
-                            element.props.installation?.configuration?.secret
+                            context.environment.installation?.configuration?.secret
                         }
                         onPress={{
                             action: 'regenerate.secret',
