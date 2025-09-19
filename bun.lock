@@ -40,7 +40,7 @@
     },
     "integrations/bucket": {
       "name": "@gitbook/integration-bucket",
-      "version": "0.3.3",
+      "version": "0.4.0",
       "dependencies": {
         "@gitbook/runtime": "*",
         "itty-router": "^5.0.18",
@@ -381,7 +381,7 @@
     },
     "integrations/marketo": {
       "name": "@gitbook/integration-marketo",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -622,6 +622,19 @@
         "@gitbook/tsconfig": "workspace:*",
       },
     },
+    "integrations/webhook": {
+      "name": "@gitbook/integration-webhook",
+      "version": "1.0.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+        "@sinonjs/fake-timers": "^15.0.0",
+      },
+    },
     "integrations/zendesk-conversations": {
       "name": "@gitbook/integration-zendesk-conversations",
       "version": "0.0.1",
@@ -649,7 +662,7 @@
     },
     "packages/adaptive": {
       "name": "@gitbook/adaptive",
-      "version": "0.1.1",
+      "version": "1.0.0",
       "dependencies": {
         "js-cookie": "^3.0.5",
       },
@@ -664,7 +677,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.139.0",
+      "version": "0.142.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -679,7 +692,7 @@
     },
     "packages/cli": {
       "name": "@gitbook/cli",
-      "version": "0.25.0",
+      "version": "0.25.1",
       "bin": {
         "gitbook": "./cli.js",
       },
@@ -1083,6 +1096,8 @@
 
     "@gitbook/integration-va-okta": ["@gitbook/integration-va-okta@workspace:integrations/va-okta"],
 
+    "@gitbook/integration-webhook": ["@gitbook/integration-webhook@workspace:integrations/webhook"],
+
     "@gitbook/integration-zendesk-conversations": ["@gitbook/integration-zendesk-conversations@workspace:integrations/zendesk-conversations"],
 
     "@gitbook/integration-zoominfo": ["@gitbook/integration-zoominfo@workspace:integrations/zoominfo"],
@@ -1328,6 +1343,10 @@
     "@repeaterjs/repeater": ["@repeaterjs/repeater@3.0.6", "", {}, "sha512-Javneu5lsuhwNCryN+pXH93VPQ8g0dBX7wItHFgYiwQmzE1sVdg5tWHiOgHywzL2W21XQopa7IwIEnNbmeUJYA=="],
 
     "@schemastore/package": ["@schemastore/package@0.0.10", "", {}, "sha512-D3LxMCnkgsb4LO5sDKf6E+yahM2SqpEHmkqMPDSJis5Cy/j2MgWo/g/iq0lECK0mrPWfx3hqKm2ZJlqxwbRJQA=="],
+
+    "@sinonjs/commons": ["@sinonjs/commons@3.0.1", "", { "dependencies": { "type-detect": "4.0.8" } }, "sha512-K3mCHKQ9sVh8o1C9cxkwxaOmXoAMlDxC1mYyHrjqOWEcBjYr76t96zL2zlj5dUGZ3HSw240X1qgH3Mjf1yJWpQ=="],
+
+    "@sinonjs/fake-timers": ["@sinonjs/fake-timers@15.0.0", "", { "dependencies": { "@sinonjs/commons": "^3.0.1" } }, "sha512-dlUB2oL+hDIYkIq/OWFBDhQAuU6kDey3eeMiYpVb7UXHhkMq/r1HloKXAbJwJZpYWkFWsydLjMqDpueMUEOjXQ=="],
 
     "@tsndr/cloudflare-worker-jwt": ["@tsndr/cloudflare-worker-jwt@3.1.3", "", {}, "sha512-ohuQzCICeki6wBOtmyqk0JJyJvl4vE1/RgXModJzm2U3xfiFNbkXtpa2HHGiH9BG7Wd/G7mtu2xtJ1R8W6iP5w=="],
 
@@ -2688,6 +2707,8 @@
     "@octokit/action/undici": ["undici@6.21.2", "", {}, "sha512-uROZWze0R0itiAKVPsYhFov9LxrPMHLMEQFszeI2gCN6bnIIZ8twzBCJcN2LJrBBLfrP0t1FW0g+JmKVl8Vk1g=="],
 
     "@octokit/auth-action/@octokit/auth-token": ["@octokit/auth-token@4.0.0", "", {}, "sha512-tY/msAuJo6ARbK6SPIxZrPBms3xPbfwBrulZe0Wtr/DIY9lje2HeV1uoebShn6mx7SjCHif6EjMvoREj+gZ+SA=="],
+
+    "@sinonjs/commons/type-detect": ["type-detect@4.0.8", "", {}, "sha512-0fr/mIH1dlO+x7TlcMy+bIDqKPsw/70tVyeHW787goQjhmqaZe10uwLujubK9q9Lg6Fiho1KUKDYz0Z7k7g5/g=="],
 
     "@whatwg-node/disposablestack/tslib": ["tslib@2.8.1", "", {}, "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w=="],
 
