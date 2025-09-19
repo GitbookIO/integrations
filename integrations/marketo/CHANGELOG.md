@@ -1,5 +1,11 @@
 # @gitbook/integration-marketo
 
+## 0.3.0
+
+### Minor Changes
+
+- a83d1d5: Marketo: add option to set an inline message on submit
+
 ## 0.2.1
 
 ### Patch Changes

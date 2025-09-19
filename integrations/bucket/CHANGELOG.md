@@ -1,5 +1,11 @@
 # @gitbook/integration-bucket
 
+## 0.4.0
+
+### Minor Changes
+
+- 10b67bc: Update Bucket integration for Bucket->Reflag rebrand
+
 ## 0.3.3
 
 ### Patch Changes

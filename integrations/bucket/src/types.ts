@@ -1,19 +1,19 @@
 import type { RuntimeContext, RuntimeEnvironment } from '@gitbook/runtime';
 
-export type BucketSiteInstallationConfiguration = {
+export type ReflagSiteInstallationConfiguration = {
     secret_key?: string;
     lastSyncAttemptAt?: number;
 };
 
-export type BucketRuntimeEnvironment = RuntimeEnvironment<{}, BucketSiteInstallationConfiguration>;
+export type ReflagRuntimeEnvironment = RuntimeEnvironment<{}, ReflagSiteInstallationConfiguration>;
 
-export type BucketRuntimeContext = RuntimeContext<BucketRuntimeEnvironment>;
+export type ReflagRuntimeContext = RuntimeContext<ReflagRuntimeEnvironment>;
 
-export type BucketState = BucketSiteInstallationConfiguration;
+export type ReflagState = ReflagSiteInstallationConfiguration;
 
-export type BucketProps = {
+export type ReflagProps = {
     siteInstallation: {
-        configuration?: BucketSiteInstallationConfiguration;
+        configuration?: ReflagSiteInstallationConfiguration;
     };
 };
-export type BucketAction = { action: 'save.config' };
+export type ReflagAction = { action: 'save.config' };
