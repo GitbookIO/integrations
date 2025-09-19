@@ -2,4 +2,4 @@
 '@gitbook/integration-webhook': patch
 ---
 
-Fix documentation links in webhook integration.
+Simpler config screens and fix documentation links in webhook integration.
