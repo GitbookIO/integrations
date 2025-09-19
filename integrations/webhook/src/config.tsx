@@ -2,7 +2,7 @@ import { createComponent, ExposableError } from '@gitbook/runtime';
 import { IntegrationInstallationConfiguration } from '@gitbook/api';
 import {
     AVAILABLE_EVENTS,
-    EVENT_TYPES,
+    EventType,
     WebhookRuntimeContext,
     WebhookConfiguration,
     generateSecret,
@@ -41,11 +41,22 @@ export const configComponent = createComponent<
             config = {};
         }
 
+        // Determine which events are available based on installation level
+        let availableEvents: EventType[] = [];
+        if (props.spaceInstallation) {
+            availableEvents = [EventType.CONTENT_UPDATED];
+        } else if (props.siteInstallation) {
+            availableEvents = [EventType.SITE_VIEW, EventType.PAGE_FEEDBACK];
+        } else if (props.installation) {
+            // Organization level - no events available
+            availableEvents = [];
+        }
+
         return {
             webhookUrl: config?.webhookUrl || '',
             secret: config?.secret || generateSecret(),
             ...Object.fromEntries(
-                EVENT_TYPES.map((eventType) => [eventType, config?.[eventType] ?? false]),
+                availableEvents.map((eventType) => [eventType, config?.[eventType] ?? false]),
             ),
         } as WebhookConfiguration;
     },
@@ -67,8 +78,22 @@ export const configComponent = createComponent<
                     throw new ExposableError('Please enter a valid webhook URL');
                 }
 
-                // Validate that at least one event is enabled
-                const hasEnabledEvents = EVENT_TYPES.some((eventType) => element.state[eventType]);
+                // Determine which events are available based on installation level
+                let availableEvents: EventType[] = [];
+                if (environment.spaceInstallation) {
+                    availableEvents = [EventType.CONTENT_UPDATED];
+                } else if (environment.siteInstallation) {
+                    availableEvents = [EventType.SITE_VIEW, EventType.PAGE_FEEDBACK];
+                } else if (environment.installation) {
+                    throw new ExposableError(
+                        'Configuration is not allowed at the organization level',
+                    );
+                }
+
+                // Validate that at least one available event is enabled
+                const hasEnabledEvents = availableEvents.some(
+                    (eventType) => element.state[eventType],
+                );
                 if (!hasEnabledEvents) {
                     throw new ExposableError('At least one event type must be enabled');
                 }
@@ -77,7 +102,7 @@ export const configComponent = createComponent<
                     webhookUrl: webhookUrl,
                     secret: element.state.secret,
                     ...Object.fromEntries(
-                        EVENT_TYPES.map((eventType) => [eventType, element.state[eventType]]),
+                        availableEvents.map((eventType) => [eventType, element.state[eventType]]),
                     ),
                 } as WebhookConfiguration;
 
@@ -110,7 +135,39 @@ export const configComponent = createComponent<
             }
         }
     },
-    render: async (element) => {
+    render: async (element, context) => {
+        const { environment } = context;
+
+        // Determine which events are available based on installation level
+        let availableEvents: EventType[] = [];
+        let installationLevel = '';
+
+        if (environment.spaceInstallation) {
+            // Space level: only content updates
+            availableEvents = [EventType.CONTENT_UPDATED];
+            installationLevel = 'space';
+        } else if (environment.siteInstallation) {
+            // Site level: site views and page feedback
+            availableEvents = [EventType.SITE_VIEW, EventType.PAGE_FEEDBACK];
+            installationLevel = 'site';
+        } else if (environment.installation) {
+            // Organization level: no configuration allowed
+            return (
+                <configuration>
+                    <text>
+                        This integration cannot be configured at the organization level. Please
+                        install it on individual spaces or sites to configure webhook events.
+                    </text>
+                </configuration>
+            );
+        } else {
+            return (
+                <configuration>
+                    <text>No installation found.</text>
+                </configuration>
+            );
+        }
+
         return (
             <configuration>
                 <input
@@ -126,9 +183,9 @@ export const configComponent = createComponent<
 
                 <divider size="medium" />
 
-                <text>Select which events you want to receive:</text>
+                <text>Select which events you want to receive for this {installationLevel}:</text>
 
-                {EVENT_TYPES.map((eventType) => (
+                {availableEvents.map((eventType) => (
                     <input
                         label={AVAILABLE_EVENTS[eventType]}
                         element={<switch state={eventType} />}

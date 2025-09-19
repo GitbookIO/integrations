@@ -35,6 +35,4 @@ configurations:
         componentId: config
     site:
         componentId: config
-    organization:
-        componentId: config
 target: all
