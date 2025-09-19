@@ -70,7 +70,7 @@ export const accountConfigComponent = createComponent<
             }
         }
     },
-    render: async (element) => {
+    render: async (element, context) => {
         return (
             <configuration>
                 <input
@@ -90,7 +90,7 @@ export const accountConfigComponent = createComponent<
                     Use this secret to verify the GitBook webhook signatures (SHA-256 HMAC). See our{' '}
                     <link
                         target={{
-                            url: 'https://gitbook.com/docs/developers/guides/webhook#signature-verification-example',
+                            url: `${context.environment.integration.externalLinks[0]?.url}#signature-verification-example`,
                         }}
                     >
                         documentation
