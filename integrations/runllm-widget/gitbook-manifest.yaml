@@ -2,7 +2,7 @@ name: runllm
 title: RunLLM
 visibility: public
 icon: ./assets/icon.png
-organization: gitbook
+organization: QZUjxgVOUhArzm2vj0tX
 description: Add RunLLM chat widget to your doc site.
 summary: |
     # Overview
@@ -46,6 +46,11 @@ contentSecurityPolicy:
 configurations:
     site:
         properties:
+            native_ai_experience:
+                type: boolean
+                title: Native AI experience
+                description: Toggle RunLLM to launch from GitBook's AI experience. Hides the trigger button.
+                default: false
             assistant_id:
                 type: string
                 title: Assistant ID
