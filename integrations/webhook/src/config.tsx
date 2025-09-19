@@ -261,16 +261,6 @@ export const configComponent = createComponent<
             // Site level: site views and page feedback
             availableEvents = [EventType.SITE_VIEW, EventType.PAGE_FEEDBACK];
             installationLevel = 'site';
-        } else if (environment.installation) {
-            // Organization level: no configuration allowed
-            return (
-                <configuration>
-                    <text>
-                        This integration cannot be configured at the organization level. Please
-                        install it on individual spaces or sites to configure webhook events.
-                    </text>
-                </configuration>
-            );
         } else {
             return (
                 <configuration>
