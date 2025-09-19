@@ -17,7 +17,7 @@ export const accountConfigComponent = createComponent<
     },
     WebhookAccountConfiguration,
     {
-        action: 'save.config';
+        action: 'save.config' | 'regenerate.secret';
     },
     WebhookRuntimeContext
 >({
@@ -60,6 +60,14 @@ export const accountConfigComponent = createComponent<
 
                 return { type: 'complete' };
             }
+            case 'regenerate.secret': {
+                return {
+                    state: {
+                        ...element.state,
+                        secret: generateSecret(),
+                    },
+                };
+            }
         }
     },
     render: async (element) => {
@@ -93,7 +101,24 @@ export const accountConfigComponent = createComponent<
                     </link>{' '}
                     for implementation examples.
                 </text>
-                <codeblock content={element.state.secret} />
+
+                <hstack align="center">
+                    <box grow={1}>
+                        <codeblock content={element.state.secret} />
+                    </box>
+                    <button
+                        style="secondary"
+                        label="Regenerate"
+                        tooltip="Generate a new secret"
+                        disabled={
+                            element.state.secret !==
+                            element.props.installation?.configuration?.secret
+                        }
+                        onPress={{
+                            action: 'regenerate.secret',
+                        }}
+                    />
+                </hstack>
 
                 <divider size="medium" />
 
@@ -162,11 +187,9 @@ export const configComponent = createComponent<
 
         // For space/site installations, we only store event preferences
         // The webhookUrl and secret come from the account-level configuration
-        return {
-            ...Object.fromEntries(
-                availableEvents.map((eventType) => [eventType, config?.[eventType] ?? false]),
-            ),
-        } as WebhookConfiguration;
+        return Object.fromEntries(
+            availableEvents.map((eventType) => [eventType, config?.[eventType] ?? false]),
+        ) as WebhookConfiguration;
     },
     action: async (element, action, context) => {
         switch (action.action) {
