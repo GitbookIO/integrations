@@ -124,7 +124,7 @@ export const accountConfigComponent = createComponent<
                     element={
                         <button
                             style="primary"
-                            label="Save changes"
+                            label="Save organization changes"
                             tooltip="Save webhook URL and secret"
                             onPress={{
                                 action: 'save.config',
@@ -288,7 +288,7 @@ export const configComponent = createComponent<
                     element={
                         <button
                             style="primary"
-                            label={`Save changes`}
+                            label={`Save ${installationLevel === 'space' ? 'space' : 'site'} changes`}
                             tooltip={`Save event preferences for this ${installationLevel}`}
                             onPress={{
                                 action: 'save.config',
