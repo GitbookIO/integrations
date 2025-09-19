@@ -183,6 +183,10 @@ The integration includes automatic retry logic for failed webhook deliveries:
 ### 1. Webhook Endpoint Design
 
 ```javascript
+const express = require('express');
+const crypto = require('crypto');
+const app = express();
+
 // Express.js example
 app.post('/webhooks/gitbook', express.raw({type: 'application/json'}), (req, res) => {
   // Get raw body as string for signature verification
@@ -220,6 +224,10 @@ app.post('/webhooks/gitbook', express.raw({type: 'application/json'}), (req, res
 Handle duplicate events gracefully:
 
 ```javascript
+const express = require('express');
+const crypto = require('crypto');
+const app = express();
+
 const processedEvents = new Set();
 
 function handleEvent(event) {
@@ -239,6 +247,10 @@ function handleEvent(event) {
 Process events asynchronously to respond quickly:
 
 ```javascript
+const express = require('express');
+const crypto = require('crypto');
+const app = express();
+
 app.post('/webhooks/gitbook', express.raw({type: 'application/json'}), (req, res) => {
   // Get raw body as string for signature verification
   const requestBody = req.body.toString();
