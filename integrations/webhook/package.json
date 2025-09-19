@@ -9,7 +9,8 @@
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",
-        "@gitbook/tsconfig": "workspace:*"
+        "@gitbook/tsconfig": "workspace:*",
+        "@sinonjs/fake-timers": "^15.0.0"
     },
     "scripts": {
         "typecheck": "tsc --noEmit",

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 
-import { generateHmacSignature, verifyIntegrationSignature } from '../src/common';
+import { generateHmacSignature } from '../src/common';
+import { verifyIntegrationSignature } from './utils';
 
 // Mock fetch globally
 const mockFetch = mock(() => Promise.resolve(new Response('OK', { status: 200 })));

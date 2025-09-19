@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'bun:test';
-
-import { verifyIntegrationSignature } from '../src/common';
+import { verifyIntegrationSignature } from './utils';
 
 describe('Signature Verification', () => {
     it('should verify valid signatures', async () => {

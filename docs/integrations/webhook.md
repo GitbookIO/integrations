@@ -185,16 +185,19 @@ The integration includes automatic retry logic for failed webhook deliveries:
 ```javascript
 // Express.js example
 app.post('/webhooks/gitbook', express.raw({type: 'application/json'}), (req, res) => {
+  // Get raw body as string for signature verification
+  const requestBody = req.body.toString();
+  
   // Verify signature first
   const signature = req.headers['x-gitbook-signature'];
-  const isValid = verifyGitBookSignature(req.body, signature, process.env.GITBOOK_SECRET);
+  const isValid = verifyGitBookSignature(requestBody, signature, process.env.GITBOOK_SECRET);
   
   if (!isValid) {
     return res.status(401).json({ error: 'Invalid signature' });
   }
   
   // Parse and process event
-  const event = JSON.parse(req.body);
+  const event = JSON.parse(requestBody);
   
   switch (event.type) {
     case 'site_view':
@@ -237,9 +240,12 @@ Process events asynchronously to respond quickly:
 
 ```javascript
 app.post('/webhooks/gitbook', express.raw({type: 'application/json'}), (req, res) => {
+  // Get raw body as string for signature verification
+  const requestBody = req.body.toString();
+  
   // Verify signature
   const signature = req.headers['x-gitbook-signature'];
-  const isValid = verifyGitBookSignature(req.body, signature, process.env.GITBOOK_SECRET);
+  const isValid = verifyGitBookSignature(requestBody, signature, process.env.GITBOOK_SECRET);
   
   if (!isValid) {
     return res.status(401).json({ error: 'Invalid signature' });
@@ -250,7 +256,7 @@ app.post('/webhooks/gitbook', express.raw({type: 'application/json'}), (req, res
   
   // Process asynchronously
   setImmediate(() => {
-    const event = JSON.parse(req.body);
+    const event = JSON.parse(requestBody);
     processEvent(event);
   });
 });
