@@ -48,9 +48,12 @@ All webhook requests include an `X-GitBook-Signature` header with an HMAC-SHA256
 
 ## Supported Events
 
+For sites:
 - **Site views** - When users visit pages on your site
-- **Content updates** - When content in your space is modified
 - **Page feedback** - When users provide feedback on pages
+
+For spaces:
+- **Content updates** - When content in your space is modified
 
 ## Delivery and Retries
 

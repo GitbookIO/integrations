@@ -10,6 +10,29 @@ The GitBook Webhook Integration allows you to receive real-time notifications wh
 - **Configurable Events**: Choose which events to receive (site views, content updates, page feedback)
 
 ## Supported Events
+The webhook integration can be installed either in Spaces or in Sites. The list of events you can select depends on where the integration is installed.
+
+For spaces:
+- **Content updates** - When content in your space is modified
+
+For sites:
+- **Site views** - When users visit pages on your site
+- **Page feedback** - When users provide feedback on pages
+
+
+### Content Updated Events (`space_content_updated`)
+Triggered when content in a space is modified.
+
+**Payload Example:**
+```json
+{
+  "eventId": "evt_2345678901bcdefg",
+  "type": "space_content_updated",
+  "spaceId": "space_xyz789",
+  "installationId": "inst_def456",
+  "revisionId": "rev_abc123def456"
+}
+```
 
 ### Site View Events (`site_view`)
 Triggered when a user visits a page on your GitBook site.
@@ -31,20 +54,6 @@ Triggered when a user visits a page on your GitBook site.
   },
   "url": "https://docs.example.com/getting-started",
   "referrer": "https://www.google.com/search?q=example+docs"
-}
-```
-
-### Content Updated Events (`space_content_updated`)
-Triggered when content in a space is modified.
-
-**Payload Example:**
-```json
-{
-  "eventId": "evt_2345678901bcdefg",
-  "type": "space_content_updated",
-  "spaceId": "space_xyz789",
-  "installationId": "inst_def456",
-  "revisionId": "rev_abc123def456"
 }
 ```
 

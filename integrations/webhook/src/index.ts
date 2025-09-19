@@ -1,7 +1,7 @@
 import { createIntegration, Logger } from '@gitbook/runtime';
 import { Event } from '@gitbook/api';
 
-import { configComponent } from './config';
+import { configComponent, accountConfigComponent } from './config';
 import {
     WebhookRuntimeContext,
     EventType,
@@ -17,17 +17,25 @@ const logger = Logger('webhook');
  */
 const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) => {
     const { environment } = context;
-    const spaceInstallation = environment.spaceInstallation;
 
-    if (!spaceInstallation) {
-        logger.debug('No space installation found');
+    // Get account-level configuration (webhookUrl and secret)
+    const accountConfig = environment.installation?.configuration;
+    if (!accountConfig?.webhookUrl || !accountConfig?.secret) {
+        logger.debug('Account-level webhook configuration not found');
         return;
     }
 
-    const config = spaceInstallation.configuration;
+    // Get event preferences from space/site installation
+    const installation = environment.spaceInstallation || environment.siteInstallation;
+    if (!installation) {
+        logger.debug('No space or site installation found');
+        return;
+    }
+
+    const eventConfig = installation.configuration;
 
     // Check if this event type is supported and enabled
-    if (!EVENT_TYPES.includes(event.type as EventType) || !config[event.type as EventType]) {
+    if (!EVENT_TYPES.includes(event.type as EventType) || !eventConfig[event.type as EventType]) {
         logger.debug(`Event ${event.type} is not enabled`);
         return;
     }
@@ -40,12 +48,19 @@ const handleWebhookEvent = async (event: Event, context: WebhookRuntimeContext) 
     // Generate HMAC signature for webhook verification
     const signature = await generateHmacSignature({
         payload: jsonPayload,
-        secret: config.secret,
+        secret: accountConfig.secret,
         timestamp,
     });
 
     context.waitUntil(
-        deliverWebhook(context, event, config.webhookUrl, config.secret, timestamp, signature),
+        deliverWebhook(
+            context,
+            event,
+            accountConfig.webhookUrl,
+            accountConfig.secret,
+            timestamp,
+            signature,
+        ),
     );
 };
 
@@ -56,7 +71,7 @@ const events: Record<EventType, typeof handleWebhookEvent> = {
 };
 
 export default createIntegration<WebhookRuntimeContext>({
-    components: [configComponent],
+    components: [accountConfigComponent, configComponent],
     events,
     fetch: async (request, context) => {
         return new Response('Not found', { status: 404 });
