@@ -75,7 +75,6 @@ export const accountConfigComponent = createComponent<
             <configuration>
                 <input
                     label="Webhook URL"
-                    hint={<text>The URL where the events will be sent.</text>}
                     element={
                         <textinput
                             state="webhookUrl"
@@ -88,10 +87,7 @@ export const accountConfigComponent = createComponent<
 
                 <markdown content="### Secret" />
                 <text>
-                    Use this secret to verify the GitBook webhook signatures (SHA-256 HMAC).
-                </text>
-                <text>
-                    See our{' '}
+                    Use this secret to verify the GitBook webhook signatures (SHA-256 HMAC). See our{' '}
                     <link
                         target={{
                             url: 'https://gitbook.com/docs/integrations/webhook#signature-verification-example',
