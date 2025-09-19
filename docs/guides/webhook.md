@@ -4,7 +4,7 @@ The GitBook Webhook Integration allows you to receive real-time notifications wh
 
 ## Features
 
-- **Real-time Event Delivery**: Receive instant notifications for space events
+- **Real-time Event Delivery**: Receive instant notifications for selected events
 - **HMAC Signature Verification**: Secure webhook delivery with cryptographic verification
 - **Automatic Retry Logic**: Built-in retry mechanism with exponential backoff for failed deliveries
 - **Configurable Events**: Choose which events to receive (site views, content updates, page feedback)

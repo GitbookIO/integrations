@@ -1,10 +1,10 @@
 # Webhook Integration
 
-A webhook integration for GitBook that allows users to receive real-time notifications for actionable events.
+A webhook integration for GitBook that allows users to receive real-time notifications for selected events.
 
 ## Features
 
-- **Real-time notifications:** Get notified instantly when actionable events happen.
+- **Real-time notifications:** Get notified instantly when selected events happen.
 - **Flexible event selection:** Choose which events you want to receive.
 - **Secure delivery:** HMAC signature verification ensures webhook authenticity.
 
