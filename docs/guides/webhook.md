@@ -228,17 +228,34 @@ const express = require('express');
 const crypto = require('crypto');
 const app = express();
 
-const processedEvents = new Set();
+const processedEvents = new Map();
+const EVENT_RETENTION_MS = 2 * 60 * 1000; // 2 minutes
+
+function remember(eventId) {
+  if (processedEvents.has(eventId)) return false;
+
+  // Insert and schedule automatic eviction
+  const timer = setTimeout(() => {
+    processedEvents.delete(eventId);
+  }, EVENT_RETENTION_MS);
+
+  processedEvents.set(eventId, timer);
+  return true;
+}
 
 function handleEvent(event) {
-  if (processedEvents.has(event.eventId)) {
+  // Guard goes first so concurrent deliveries don’t double-process
+  if (!remember(event.eventId)) {
     console.log('Duplicate event ignored:', event.eventId);
     return;
   }
-  
-  processedEvents.add(event.eventId);
-  
+
   // Process event...
+  // doWork(event);
+
+  // If processing fails and you want to allow a retry, you can undo the remember:
+  // clearTimeout(processedEvents.get(event.eventId));
+  // processedEvents.delete(event.eventId);
 }
 ```
 
