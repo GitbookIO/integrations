@@ -23,12 +23,16 @@ export const MAX_RETRIES = 3;
 export const BASE_DELAY = 1000;
 export const REQUEST_TIMEOUT = 10000;
 
-export type WebhookConfiguration = {
+export type WebhookConfiguration = Record<EventType, boolean>;
+
+export type WebhookAccountConfiguration = {
     webhookUrl: string;
     secret: string;
-} & Record<EventType, boolean>;
+};
 
-export type WebhookRuntimeContext = RuntimeContext<RuntimeEnvironment<{}, WebhookConfiguration>>;
+export type WebhookRuntimeContext = RuntimeContext<
+    RuntimeEnvironment<WebhookAccountConfiguration, WebhookConfiguration>
+>;
 
 /**
  * Shared webhook delivery logic with built-in retry mechanism

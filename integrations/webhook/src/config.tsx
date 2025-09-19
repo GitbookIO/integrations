@@ -5,13 +5,121 @@ import {
     EventType,
     WebhookRuntimeContext,
     WebhookConfiguration,
+    WebhookAccountConfiguration,
     generateSecret,
 } from './common';
+
+export const accountConfigComponent = createComponent<
+    {
+        installation: {
+            configuration?: WebhookAccountConfiguration;
+        };
+    },
+    WebhookAccountConfiguration,
+    {
+        action: 'save.config';
+    },
+    WebhookRuntimeContext
+>({
+    componentId: 'account-config',
+    initialState: (props) => {
+        const config = props.installation?.configuration;
+        return {
+            webhookUrl: config?.webhookUrl || '',
+            secret: config?.secret || generateSecret(),
+        };
+    },
+    action: async (element, action, context) => {
+        switch (action.action) {
+            case 'save.config': {
+                const { api, environment } = context;
+                const webhookUrl = element.state.webhookUrl.trim();
+
+                // Validate webhook URL
+                if (!webhookUrl) {
+                    throw new ExposableError('Webhook URL is required');
+                }
+
+                // Very basic URL format validation
+                try {
+                    new URL(webhookUrl);
+                } catch (error) {
+                    throw new ExposableError('Please enter a valid webhook URL');
+                }
+
+                const configuration = {
+                    webhookUrl: webhookUrl,
+                    secret: element.state.secret,
+                };
+
+                await api.integrations.updateIntegrationInstallation(
+                    environment.integration.name,
+                    environment.installation!.id,
+                    { configuration },
+                );
+
+                return { type: 'complete' };
+            }
+        }
+    },
+    render: async (element) => {
+        return (
+            <configuration>
+                <input
+                    label="Webhook URL"
+                    hint={<text>The URL where the events will be sent.</text>}
+                    element={
+                        <textinput
+                            state="webhookUrl"
+                            placeholder="https://your-domain.com/webhook"
+                        />
+                    }
+                />
+
+                <divider size="medium" />
+
+                <markdown content="### Secret" />
+                <text>
+                    Use this secret to verify the GitBook webhook signatures (SHA-256 HMAC).
+                </text>
+                <text>
+                    See our{' '}
+                    <link
+                        target={{
+                            url: 'https://gitbook.com/docs/integrations/webhook#signature-verification-example',
+                        }}
+                    >
+                        documentation
+                    </link>{' '}
+                    for implementation examples.
+                </text>
+                <codeblock content={element.state.secret} />
+
+                <divider size="medium" />
+
+                <input
+                    label=""
+                    hint=""
+                    element={
+                        <button
+                            style="primary"
+                            label="Save Account Configuration"
+                            tooltip="Save webhook URL and secret"
+                            onPress={{
+                                action: 'save.config',
+                            }}
+                        />
+                    }
+                />
+            </configuration>
+        );
+    },
+});
 
 export const configComponent = createComponent<
     {
         installation: {
-            configuration?: IntegrationInstallationConfiguration;
+            configuration?: WebhookAccountConfiguration;
         };
         spaceInstallation?: {
             configuration?: WebhookConfiguration;
@@ -52,9 +160,9 @@ export const configComponent = createComponent<
             availableEvents = [];
         }
 
+        // For space/site installations, we only store event preferences
+        // The webhookUrl and secret come from the account-level configuration
         return {
-            webhookUrl: config?.webhookUrl || '',
-            secret: config?.secret || generateSecret(),
             ...Object.fromEntries(
                 availableEvents.map((eventType) => [eventType, config?.[eventType] ?? false]),
             ),
@@ -64,19 +172,6 @@ export const configComponent = createComponent<
         switch (action.action) {
             case 'save.config': {
                 const { api, environment } = context;
-                const webhookUrl = element.state.webhookUrl.trim();
-
-                // Validate webhook URL
-                if (!webhookUrl) {
-                    throw new ExposableError('Webhook URL is required');
-                }
-
-                // Very basic URL format validation
-                try {
-                    new URL(webhookUrl);
-                } catch (error) {
-                    throw new ExposableError('Please enter a valid webhook URL');
-                }
 
                 // Determine which events are available based on installation level
                 let availableEvents: EventType[] = [];
@@ -98,13 +193,10 @@ export const configComponent = createComponent<
                     throw new ExposableError('At least one event type must be enabled');
                 }
 
-                const configuration = {
-                    webhookUrl: webhookUrl,
-                    secret: element.state.secret,
-                    ...Object.fromEntries(
-                        availableEvents.map((eventType) => [eventType, element.state[eventType]]),
-                    ),
-                } as WebhookConfiguration;
+                // Only save event preferences - webhookUrl and secret come from account-level config
+                const configuration = Object.fromEntries(
+                    availableEvents.map((eventType) => [eventType, element.state[eventType]]),
+                ) as WebhookConfiguration;
 
                 // Update the appropriate installation based on what's available
                 if (environment.spaceInstallation) {
@@ -170,19 +262,6 @@ export const configComponent = createComponent<
 
         return (
             <configuration>
-                <input
-                    label="Webhook URL"
-                    hint={<text>The URL where the events will be sent.</text>}
-                    element={
-                        <textinput
-                            state="webhookUrl"
-                            placeholder="https://your-domain.com/webhook"
-                        />
-                    }
-                />
-
-                <divider size="medium" />
-
                 <text>Select which events you want to receive for this {installationLevel}:</text>
 
                 {availableEvents.map((eventType) => (
@@ -194,33 +273,14 @@ export const configComponent = createComponent<
 
                 <divider size="medium" />
 
-                <markdown content="### Secret" />
-                <text>
-                    Use this secret to verify the GitBook webhook signatures (SHA-256 HMAC).
-                </text>
-                <text>
-                    See our{' '}
-                    <link
-                        target={{
-                            url: 'https://gitbook.com/docs/integrations/webhook#signature-verification-example',
-                        }}
-                    >
-                        documentation
-                    </link>{' '}
-                    for implementation examples.
-                </text>
-                <codeblock content={element.state.secret} />
-
-                <divider size="medium" />
-
                 <input
                     label=""
                     hint=""
                     element={
                         <button
                             style="primary"
-                            label="Save Configuration"
-                            tooltip="Save webhook configuration"
+                            label={`Save ${installationLevel === 'space' ? 'Space' : 'Site'} Configuration`}
+                            tooltip={`Save event preferences for this ${installationLevel}`}
                             onPress={{
                                 action: 'save.config',
                             }}
