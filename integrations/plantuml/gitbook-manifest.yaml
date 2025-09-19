@@ -8,7 +8,11 @@ description: Build diagrams and visualizations using PlantUML.
 summary: |
     # Overview
 
-    description
+    PlantUML lets you create diagrams and visualizations using text and code.
+
+    # How it works
+
+    Once the integration is installed in your space, insert the PlantUML block into a page. You can edit the code content and preview how it looks using the live editor. When published, users will see the rendered diagram.
 visibility: public
 script: ./src/index.tsx
 scopes: []
