@@ -209,4 +209,3 @@ export async function generateHmacSignature(args: {
 
     return signature;
 }
-
