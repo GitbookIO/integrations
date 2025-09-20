@@ -1,5 +1,11 @@
 # @gitbook/integration-github
 
+## 0.2.5
+
+### Patch Changes
+
+- 5580f32: Restrict URL pattern for unfurling block
+
 ## 0.2.4
 
 ### Patch Changes

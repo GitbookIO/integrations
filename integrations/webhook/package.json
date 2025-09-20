@@ -1,0 +1,22 @@
+{
+    "name": "@gitbook/integration-webhook",
+    "version": "1.0.0",
+    "description": "Generic webhook integration for GitBook events",
+    "private": true,
+    "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+        "@sinonjs/fake-timers": "^15.0.0"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "test": "bun test",
+        "publish-integrations-staging": "gitbook publish .",
+        "check": "gitbook check",
+        "publish-integrations": "gitbook publish ."
+    }
+}
