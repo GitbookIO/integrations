@@ -172,7 +172,7 @@
     },
     "integrations/github-files": {
       "name": "@gitbook/integration-github-files",
-      "version": "0.2.4",
+      "version": "0.2.5",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -204,7 +204,7 @@
     },
     "integrations/gitlab-files": {
       "name": "@gitbook/integration-gitlab-files",
-      "version": "0.2.3",
+      "version": "0.2.4",
       "dependencies": {
         "@gitbook/runtime": "*",
         "dotenv": "^16.1.1",
