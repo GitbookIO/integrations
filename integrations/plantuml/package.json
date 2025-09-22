@@ -1,9 +1,9 @@
 {
-    "name": "@gitbook/integration-gitlab-files",
-    "version": "0.2.4",
+    "name": "@gitbook/integration-plantuml",
+    "version": "0.0.1",
     "private": true,
     "dependencies": {
-        "dotenv": "^16.1.1",
+        "@gitbook/api": "*",
         "@gitbook/runtime": "*"
     },
     "devDependencies": {
@@ -12,8 +12,9 @@
     },
     "scripts": {
         "typecheck": "tsc --noEmit",
+        "publish-integrations-staging": "gitbook publish .",
         "check": "gitbook check",
-        "publish-integrations": "dotenv gitbook publish .",
-        "publish-integrations-staging": "gitbook publish ."
+        "publish-integrations": "gitbook publish .",
+        "dev": "gitbook dev ."
     }
 }
