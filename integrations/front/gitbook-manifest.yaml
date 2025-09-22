@@ -18,7 +18,7 @@ contentSecurityPolicy:
     script-src: |
         chat-assets.frontapp.com;
     style-src: |
-        'unsafe-inline';
+        unsafe-inline;
         self;
         blob:;
     img-src: |
