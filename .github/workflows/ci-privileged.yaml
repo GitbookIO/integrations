@@ -31,19 +31,8 @@ jobs:
                   # If manually triggered, checkout the PR branch
                   ref: ${{ github.event.inputs.pr_number && format('pull/{0}/head', github.event.inputs.pr_number) || github.ref }}
 
-            - name: Download build artifacts
-              id: download-artifacts
-              uses: actions/download-artifact@v4
-              with:
-                  name: build-artifacts
-                  path: .
-              continue-on-error: true
-
-            - name: Build (if artifacts not available)
-              if: steps.download-artifacts.outcome == 'failure'
-              run: |
-                  echo "Build artifacts not found, building from source..."
-                  bun run build
+            - name: Build
+              run: bun run build
 
             - name: Setup bun
               uses: oven-sh/setup-bun@v2
