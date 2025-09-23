@@ -27,20 +27,14 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4
-              with:
-                  # If manually triggered, checkout the PR branch
-                  ref: ${{ github.event.inputs.pr_number && format('pull/{0}/head', github.event.inputs.pr_number) || github.ref }}
-
-            - name: Download build artifacts
-              uses: actions/download-artifact@v4
-              with:
-                  name: build-artifacts
-                  path: .
 
             - name: Setup bun
               uses: oven-sh/setup-bun@v2
               with:
                   bun-version-file: 'package.json'
+
+            - name: Build
+              run: bun run build
 
             - name: Install dependencies
               run: bun install --frozen-lockfile
