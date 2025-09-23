@@ -80,7 +80,7 @@ jobs:
                   path: |
                       packages/*/dist/
                       integrations/*/dist/
-                  retention-days: 1
+                  retention-days: 7
 
     # This job only runs for PRs from the same repository (not forks)
     # It skips integration tests that require secrets
