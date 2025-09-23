@@ -15,6 +15,9 @@ import {
 import { slackAPI } from '../slack';
 import { QueryDisplayBlock, ShareTools, decodeSlackEscapeChars, Spacer, SourcesBlock } from '../ui';
 import { getInstallationApiClient, stripBotName, stripMarkdown } from '../utils';
+import { Logger } from '@gitbook/runtime';
+
+const logger = Logger('slack:queryAskAI');
 
 export type RelatedSource = {
     id: string;
@@ -160,6 +163,10 @@ export async function queryAskAI({
     channelName,
 }: IQueryAskAI) {
     const { environment, api } = context;
+
+    const askText = `_Asking: ${stripMarkdown(text)}_`;
+    logger.info(`${{ channelId, teamId, threadId }} -> ${askText}`);
+
     const { client, installation } = await getInstallationApiClient(api, teamId);
     if (!installation) {
         throw new Error('Installation not found');
@@ -181,7 +188,7 @@ export async function queryAskAI({
             responseUrl,
             payload: {
                 channel: channelId,
-                text: `_Asking: ${stripMarkdown(text)}_`,
+                text: askText,
                 ...(userId ? { user: userId } : {}), // actually shouldn't be optional
                 ...(threadId ? { thread_ts: threadId } : {}),
             },

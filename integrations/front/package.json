@@ -1,17 +1,17 @@
 {
-    "name": "@gitbook/integration-runllm-widget",
+    "name": "@gitbook/integration-front",
+    "version": "1.0.0",
     "private": true,
-    "version": "0.4.0",
     "scripts": {
         "typecheck": "tsc --noEmit",
         "publish": "gitbook publish ."
     },
     "dependencies": {
-        "@gitbook/api": "*",
         "@gitbook/runtime": "*"
     },
     "devDependencies": {
-        "@gitbook/cli": "workspace:*",
-        "@gitbook/tsconfig": "workspace:*"
+        "@gitbook/cli": "^0.25.0",
+        "@gitbook/tsconfig": "*",
+        "@cloudflare/workers-types": "*"
     }
 }
