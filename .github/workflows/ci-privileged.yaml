@@ -27,9 +27,6 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4
-              with:
-                  # If manually triggered, checkout the PR branch
-                  ref: ${{ github.event.inputs.pr_number && format('pull/{0}/head', github.event.inputs.pr_number) || github.ref }}
 
             - name: Build
               run: bun run build
