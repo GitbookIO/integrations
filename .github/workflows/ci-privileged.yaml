@@ -28,13 +28,13 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
 
-            - name: Build
-              run: bun run build
-
             - name: Setup bun
               uses: oven-sh/setup-bun@v2
               with:
                   bun-version-file: 'package.json'
+
+            - name: Build
+              run: bun run build
 
             - name: Install dependencies
               run: bun install --frozen-lockfile
