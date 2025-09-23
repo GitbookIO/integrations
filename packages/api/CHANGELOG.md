@@ -1,5 +1,29 @@
 # @gitbook/api
 
+## 0.143.0
+
+### Minor Changes
+
+- 7a8ee22: Introduce the Webhook integration and bumps api and cli to latest openapi spec.
+
+## 0.142.0
+
+### Minor Changes
+
+- 096b155: Bump to use the latest API spec
+
+## 0.141.0
+
+### Minor Changes
+
+- 0497150: Update API client with latest OpenAPI spec.
+
+## 0.140.0
+
+### Minor Changes
+
+- 3207736: Deprecate search scope API param
+
 ## 0.139.0
 
 ### Minor Changes

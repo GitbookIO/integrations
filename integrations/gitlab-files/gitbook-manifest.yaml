@@ -29,7 +29,7 @@ blocks:
       title: GitLab Files
       description: Insert a GitLab file as a code block
       urlUnfurl:
-          - https://gitlab.com/**
+          - https://gitlab.com/*/*/-/blob/**
 scopes: []
 configurations:
     account:

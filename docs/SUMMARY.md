@@ -25,22 +25,13 @@
   * [Referencing your integration in Markdown](guides/markdown.md)
   * [Working with HTTP requests](guides/receiving-requests.md)
   * [Using the CLI in CI/CD](guides/ci.md)
+  * [Receiving webhook notifications](guides/webhook.md)
 
 ## GitBook API
 
 * [Introduction](gitbook-api/overview.md)
 * [Authentication](gitbook-api/authentication.md)
 * [API reference](gitbook-api/api-reference/README.md)
-  * ```yaml
-    props:
-      models: false
-    dependencies:
-      spec:
-        ref:
-          kind: openapi
-          spec: gitbook
-    type: builtin:openapi
-    ```
   * ```yaml
     props:
       models: false

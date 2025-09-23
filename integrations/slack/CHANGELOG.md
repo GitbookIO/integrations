@@ -1,5 +1,11 @@
 # @gitbook/integration-slack
 
+## 2.5.1
+
+### Patch Changes
+
+- beb9868: Add logs while querying askAI in slack
+
 ## 2.5.0
 
 ### Minor Changes

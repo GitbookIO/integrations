@@ -1,20 +1,19 @@
 import { Logger } from '@gitbook/runtime';
-import type { BucketRuntimeContext } from './types';
+import type { ReflagRuntimeContext } from './types';
 import {
     GitBookAPI,
     GitBookAPIError,
     IntegrationEnvironmentSiteInstallation,
     IntegrationInstallation,
-    IntegrationSiteInstallation,
     type SiteAdaptiveJSONSchema,
 } from '@gitbook/api';
 
-const logger = Logger('bucket:tasks');
+const logger = Logger('reflag:tasks');
 
 export const SYNC_ADAPTIVE_SCHEMA_SCHEDULE_SECONDS = 3600; // 1 hour
 
 export async function handleSyncAdaptiveSchema(
-    context: BucketRuntimeContext,
+    context: ReflagRuntimeContext,
     installation: IntegrationInstallation,
     siteInstallation: IntegrationEnvironmentSiteInstallation,
 ): Promise<void> {
@@ -80,9 +79,9 @@ export async function handleSyncAdaptiveSchema(
                             ...(existing.properties.unsigned?.type === 'object'
                                 ? existing.properties.unsigned.properties
                                 : {}),
-                            [context.environment.integration.name]: {
+                            reflag: {
                                 type: 'object',
-                                description: `Feature flags from the ${integrationId} integration`,
+                                description: `Feature flags from the reflag integration`,
                                 properties: {
                                     ...featureFlags.reduce(
                                         (acc, feature) => {
@@ -155,7 +154,7 @@ async function getExistingAdaptiveSchema(
 }
 
 async function getFeatureFlags(secretKey: string) {
-    const res = await fetch('https://front.bucket.co/features', {
+    const res = await fetch('https://front.reflag.com/features', {
         headers: {
             Authorization: `Bearer ${secretKey}`,
         },
