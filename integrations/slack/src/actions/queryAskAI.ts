@@ -165,7 +165,7 @@ export async function queryAskAI({
     const { environment, api } = context;
 
     const askText = `_Asking: ${stripMarkdown(text)}_`;
-    logger.info(`${{ channelId, teamId, threadId }} -> ${askText}`);
+    logger.info(`${askText} (channelId: ${channelId}, teamId: ${teamId}, userId: ${userId})`);
 
     const { client, installation } = await getInstallationApiClient(api, teamId);
     if (!installation) {
@@ -215,6 +215,8 @@ export async function queryAskAI({
         if (!('markdown' in answer.answer)) {
             throw new Error('Answer is not in markdown format');
         }
+
+        logger.debug(`Answer has ${answer.answer.markdown.length} characters`);
 
         const answerText = capitalizeFirstLetter(answer.answer.markdown);
 

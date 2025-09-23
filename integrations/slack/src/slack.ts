@@ -143,7 +143,7 @@ export async function slackAPI<Result>(
     });
 
     if (!response.ok) {
-        logger.error(`slack returned an error ${response.status}: ${response.statusText}`);
+        logger.error(`API error ${response.status}: ${response.statusText}`);
         throw new Error(`${response.status} ${response.statusText}`);
     }
 
@@ -177,6 +177,7 @@ export async function slackAPI<Result>(
             }
         }
 
+        logger.error(`Result error: ${result.error}`);
         throw new Error(`${request.method} ${url.toString()}: ${result.error}`);
     }
 
