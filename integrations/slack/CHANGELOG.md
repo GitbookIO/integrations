@@ -1,5 +1,11 @@
 # @gitbook/integration-slack
 
+## 2.5.2
+
+### Patch Changes
+
+- 5f655cd: Add more logs to the slack integration
+
 ## 2.5.1
 
 ### Patch Changes
