@@ -4,7 +4,7 @@ icon: ./assets/icon.png
 previewImages:
     - ./assets/swiftcx-preview.png
 description: Add the SwiftCX chat widget to your published GitBook content.
-visibility: private
+visibility: public
 script: ./src/index.ts
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
