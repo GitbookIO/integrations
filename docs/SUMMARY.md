@@ -25,6 +25,7 @@
   * [Referencing your integration in Markdown](guides/markdown.md)
   * [Working with HTTP requests](guides/receiving-requests.md)
   * [Using the CLI in CI/CD](guides/ci.md)
+  * [Receiving webhook notifications](guides/webhook.md)
 
 ## GitBook API
 
