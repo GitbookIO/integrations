@@ -4,13 +4,13 @@ This document explains the CI workflow structure for handling pull requests from
 
 ## Workflow Structure
 
-### 1. `test.yaml` - Main Test Workflow
-- **Triggers**: `push` and `pull_request`
-- **Purpose**: Runs basic tests (unit tests, formatting, type checking, build)
-- **Integration Tests**: Only runs for PRs from the same repository (not forks)
-- **Fork Handling**: Adds informative comments to forked PRs explaining why integration tests are skipped
 
-### 2. `ci-pr-untrusted.yaml` - Untrusted PR Workflow
+
+
+
+
+
+### 1. `ci-pr-untrusted.yaml` - Untrusted PR Workflow
 - **Triggers**: `pull_request` (all PRs, including forks)
 - **Purpose**: Safe workflow that runs without secrets
 - **Jobs**: 
