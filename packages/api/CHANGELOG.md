@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.143.1
+
+### Patch Changes
+
+- 2e86c87: Bump API version to update Space content API endpoints
+
 ## 0.143.0
 
 ### Minor Changes

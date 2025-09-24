@@ -4,7 +4,7 @@
     "main": "./dist/index.cjs",
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
-    "version": "0.143.0",
+    "version": "0.143.1",
     "sideEffects": false,
     "files": [
         "README.md",
