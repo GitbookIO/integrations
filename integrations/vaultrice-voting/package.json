@@ -19,7 +19,7 @@
     },
     "scripts": {
         "typecheck": "tsc --noEmit",
-        "build:widget": "vite build --config vite.widget.config.ts && cp dist/voting.mjs src/script.raw.js",
+        "build:widget": "vite build --config vite.widget.config.ts && mv dist/voting.mjs src/script.raw.js",
         "build": "bun run build:widget",
         "publish-integrations-staging": "bun run build && gitbook publish .",
         "check": "gitbook check",
