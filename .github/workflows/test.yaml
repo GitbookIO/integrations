@@ -1,50 +1,83 @@
-name: CI - Privileged Integration Tests
+name: Test
 
 on:
-    workflow_run:
-        # This workflow runs after the untrusted PR workflow completes successfully
-        workflows: ['CI - Untrusted PR (Fork Safe)']
-        types: [completed]
-    workflow_dispatch:
-        # Allow manual triggering for maintainers
-        inputs:
-            pr_number:
-                description: 'PR number to test (optional)'
-                required: false
-                type: string
+    push:
+    pull_request:
 
 jobs:
-    # Only run if the untrusted workflow succeeded
-    integration-checks:
-        if: github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch'
+    test:
         runs-on: ubuntu-latest
-        name: Check Integrations (privileged)
-        # Use environment protection for additional security
-        environment: integration-checks
-        permissions:
-            contents: read
-            pull-requests: read
+        name: Test
         steps:
             - name: Checkout
               uses: actions/checkout@v4
-
             - name: Setup bun
               uses: oven-sh/setup-bun@v2
               with:
                   bun-version-file: 'package.json'
-
             - name: Install dependencies
               run: bun install --frozen-lockfile
-
+            - name: Run tests
+              run: bun run test
+    format:
+        runs-on: ubuntu-latest
+        name: Format
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Setup bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version-file: 'package.json'
+            - name: Install dependencies
+              run: bun install --frozen-lockfile
+            - name: Format
+              run: bun run format:check
+    typecheck:
+        runs-on: ubuntu-latest
+        name: Typecheck
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Setup bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version-file: 'package.json'
+            - name: Install dependencies
+              run: bun install --frozen-lockfile
+            - name: Format
+              run: bun run typecheck
+    build:
+        runs-on: ubuntu-latest
+        name: Build
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Setup bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version-file: 'package.json'
+            - name: Install dependencies
+              run: bun install --frozen-lockfile
             - name: Build
               run: bun run build
-
+    check:
+        runs-on: ubuntu-latest
+        name: Check integrations
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Setup bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version-file: 'package.json'
             - name: Setup 1Password CLI
               uses: ./.github/composite/setup-1password-op
               with:
                   OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-
-            - name: Run integration tests
+            - name: Install dependencies
+              run: bun install --frozen-lockfile
+            - name: Check
               run: bun run check
               env:
                   OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
@@ -55,9 +88,9 @@ jobs:
                   GITLAB_CLIENT_ID: ${{ secrets.GITLAB_CLIENT_ID }}
                   GITLAB_CLIENT_SECRET: ${{ secrets.GITLAB_CLIENT_SECRET }}
                   # Discord
-                  DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
-                  DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
-                  DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+                  DISCORD_CLIENT_ID: $ {{ secrets.DISCORD_CLIENT_ID }}
+                  DISCORD_CLIENT_SECRET: $ {{ secrets.DISCORD_CLIENT_SECRET }}
+                  DISCORD_BOT_TOKEN: $ {{ secrets.DISCORD_BOT_TOKEN }}
                   # Slack
                   SLACK_CLIENT_ID: ${{ secrets.SLACK_STAGING_CLIENT_ID }}
                   SLACK_CLIENT_SECRET: ${{ secrets.SLACK_STAGING_CLIENT_SECRET }}
