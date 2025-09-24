@@ -12377,7 +12377,7 @@ function k0(z, o) {
       credentials: v.credentials,
       choicesInstanceOptions: {
         class: v.votingClass || "_undefined_",
-        ttl: v.tll || 36e5
+        ttl: v.ttl || 36e5
         // 1 hour in ms
       }
     };
