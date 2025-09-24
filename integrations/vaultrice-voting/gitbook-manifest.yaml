@@ -7,10 +7,7 @@ icon: ./assets/icon.png
 previewImages:
     - ./assets/voting-preview.png
     - ./assets/install-config.png
-    # - ./assets/add-widget.png
     - ./assets/widget-config.png
-    # - ./assets/widget-preview-1.png
-    # - ./assets/widget-preview-2.png
 summary: |
     # Overview
 
@@ -59,18 +56,13 @@ configurations:
             - apiKey
             - apiSecret
 
-# Secrets — GitBook stores these securely and passes them to the worker
-# secrets:
-#   API_SECRET: ${{ env.VAULTRICE_API_SECRET }}
-
 # Scopes your integration needs
-scopes:
-    []
-    # - space:content:read
-    # - space:content:write
+scopes: []
 
 externalLinks:
     - label: Vaultrice Website
       url: https://www.vaultrice.com
     - label: Vaultrice App
       url: https://www.vaultrice.app
+
+target: space
