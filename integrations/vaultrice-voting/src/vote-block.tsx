@@ -170,7 +170,7 @@ export const VoteBlock = createComponent({
                                     <divider size="small" />
 
                                     <text style="bold">Voting Class</text>
-                                    <textinput state="votingClass" placeholder="Voting classs" />
+                                    <textinput state="votingClass" placeholder="Voting class" />
 
                                     <divider size="small" />
 
