@@ -20,7 +20,7 @@ function createVotingRoot(container: HTMLElement, initialState: any) {
             credentials: state.credentials,
             choicesInstanceOptions: {
                 class: state.votingClass || '_undefined_',
-                ttl: state.tll || 60 * 60 * 1000, // 1 hour in ms
+                ttl: state.ttl || 60 * 60 * 1000, // 1 hour in ms
             },
         };
         try {
