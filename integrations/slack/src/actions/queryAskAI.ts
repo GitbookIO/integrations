@@ -183,33 +183,34 @@ export async function queryAskAI(params: IQueryAskAI) {
     // @ts-ignore
     const parsedQuery = stripMarkdown(stripBotName(text, authorization?.user_id));
 
-    // async acknowledge the request to the end user early
-    slackAPI(
-        context,
-        {
-            method: 'POST',
-            path: messageType === 'ephemeral' ? 'chat.postEphemeral' : 'chat.postMessage',
-            responseUrl,
-            payload: {
-                channel: channelId,
-                text: askText,
-                ...(userId ? { user: userId } : {}), // actually shouldn't be optional
-                ...(threadId ? { thread_ts: threadId } : {}),
+    await Promise.all([
+        // acknowledge the ask query back to the user
+        slackAPI(
+            context,
+            {
+                method: 'POST',
+                path: messageType === 'ephemeral' ? 'chat.postEphemeral' : 'chat.postMessage',
+                responseUrl,
+                payload: {
+                    channel: channelId,
+                    text: askText,
+                    ...(userId ? { user: userId } : {}), // actually shouldn't be optional
+                    ...(threadId ? { thread_ts: threadId } : {}),
+                },
             },
-        },
-        {
+            {
+                accessToken,
+            },
+        ),
+        // Queue a task to process the AskAI query asynchronously. Because workers have a 30s timeout on
+        // waitUntil which is not enough for scenarios where AskAI might take longer to respond.
+        queueQueryAskAI({
+            ...params,
             accessToken,
-        },
-    );
-
-    // Queue a task to process the AskAI query asynchronously. Because workers have a 30s timeout on
-    // waitUntil which is not enough for scenarios where AskAI might take longer to respond.
-    await queueQueryAskAI({
-        ...params,
-        accessToken,
-        installation,
-        query: parsedQuery,
-    });
+            installation,
+            query: parsedQuery,
+        }),
+    ]);
 }
 
 /**
