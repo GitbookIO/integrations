@@ -1,6 +1,12 @@
 import { Router } from 'itty-router';
 
-import { createOAuthHandler, FetchEventCallback, OAuthResponse } from '@gitbook/runtime';
+import {
+    createOAuthHandler,
+    ExposableError,
+    FetchEventCallback,
+    Logger,
+    OAuthResponse,
+} from '@gitbook/runtime';
 
 import {
     createSlackEventsHandler,
@@ -13,6 +19,11 @@ import {
 import { unfurlLink } from './links';
 import { verifySlackRequest, acknowledgeSlackRequest } from './middlewares';
 import { getChannelsPaginated } from './slack';
+import { arrayToHex, safeCompare } from './utils';
+import { IntegrationTask } from './types';
+import { handleAskAITask } from './actions';
+
+const logger = Logger('slack');
 
 /**
  * Handle incoming HTTP requests:
@@ -44,6 +55,67 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             'im:history',
         ].join(' '),
     );
+
+    async function verifyIntegrationSignature(
+        payload: string,
+        signature: string,
+        secret: string,
+    ): Promise<boolean> {
+        if (!signature) {
+            return false;
+        }
+
+        const algorithm = { name: 'HMAC', hash: 'SHA-256' };
+        const enc = new TextEncoder();
+        const key = await crypto.subtle.importKey('raw', enc.encode(secret), algorithm, false, [
+            'sign',
+            'verify',
+        ]);
+        const signed = await crypto.subtle.sign(algorithm.name, key, enc.encode(payload));
+        const expectedSignature = arrayToHex(signed);
+
+        return safeCompare(expectedSignature, signature);
+    }
+
+    /**
+     * Handle integration tasks
+     */
+    router.post('/tasks', async (request) => {
+        const signature = request.headers.get('x-gitbook-integration-signature') ?? '';
+        const payloadString = await request.text();
+
+        const verified = await verifyIntegrationSignature(
+            payloadString,
+            signature,
+            environment.signingSecrets.integration,
+        );
+
+        if (!verified) {
+            const message = `Invalid signature for integration task`;
+            logger.error(message);
+            throw new ExposableError(message);
+        }
+
+        const { task } = JSON.parse(payloadString) as { task: IntegrationTask };
+        logger.debug('verified & received integration task', task.type);
+
+        switch (task.type) {
+            case 'ask:ai': {
+                await handleAskAITask(task, context);
+                break;
+            }
+            default: {
+                const error = `Unknown integration task type: ${task.type}`;
+                logger.error(error);
+                throw new Error(error);
+            }
+        }
+
+        return new Response(JSON.stringify({ processed: true }), {
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+        });
+    });
 
     /*
      * Authenticate the user using OAuth.

@@ -1,10 +1,11 @@
-import type {
+import {
     SearchAIAnswer,
     GitBookAPI,
     Revision,
     RevisionPage,
     RevisionPageGroup,
     SearchAIAnswerSource,
+    IntegrationInstallation,
 } from '@gitbook/api';
 
 import {
@@ -14,8 +15,14 @@ import {
 } from '../configuration';
 import { slackAPI } from '../slack';
 import { QueryDisplayBlock, ShareTools, decodeSlackEscapeChars, Spacer, SourcesBlock } from '../ui';
-import { getInstallationApiClient, stripBotName, stripMarkdown } from '../utils';
+import {
+    getInstallationApiClient,
+    getIntegrationInstallationForTeam,
+    stripBotName,
+    stripMarkdown,
+} from '../utils';
 import { Logger } from '@gitbook/runtime';
+import { IntegrationTaskAskAI } from '../types';
 
 const logger = Logger('slack:queryAskAI');
 
@@ -72,10 +79,8 @@ const capitalizeFirstLetter = (text: string) =>
 async function getRelatedSources(params: {
     sources?: SearchAIAnswer['sources'];
     client: GitBookAPI;
-    environment: SlackRuntimeEnvironment;
-    organization: string;
 }): Promise<RelatedSource[]> {
-    const { sources, client, organization } = params;
+    const { sources, client } = params;
 
     if (!sources || sources.length === 0) {
         return [];
@@ -149,29 +154,28 @@ async function getRelatedSources(params: {
 /*
  * Queries GitBook AskAI via the GitBook API and posts the answer in the form of Slack UI Blocks back to the original channel/conversation/thread.
  */
-export async function queryAskAI({
-    channelId,
-    teamId,
-    threadId,
-    userId,
-    text,
-    messageType,
-    context,
-    authorization,
-
-    responseUrl,
-    channelName,
-}: IQueryAskAI) {
-    const { environment, api } = context;
+export async function queryAskAI(params: IQueryAskAI) {
+    const {
+        channelId,
+        teamId,
+        threadId,
+        userId,
+        text,
+        messageType,
+        context,
+        authorization,
+        responseUrl,
+    } = params;
+    const { api } = context;
 
     const askText = `_Asking: ${stripMarkdown(text)}_`;
     logger.info(`${askText} (channelId: ${channelId}, teamId: ${teamId}, userId: ${userId})`);
 
-    const { client, installation } = await getInstallationApiClient(api, teamId);
+    const installation = await getIntegrationInstallationForTeam(context, teamId);
     if (!installation) {
         throw new Error('Installation not found');
     }
-    // Authenticate as the installation
+    // Use the slack access token
     const accessToken = (installation.configuration as SlackInstallationConfiguration)
         .oauth_credentials?.access_token;
 
@@ -198,10 +202,76 @@ export async function queryAskAI({
         },
     );
 
+    await queueQueryAskAI({
+        ...params,
+        accessToken,
+        installation,
+        query: parsedQuery,
+    });
+}
+
+/**
+ * Queues an integration task to process the AskAI query asynchronously.
+ */
+async function queueQueryAskAI(
+    params: IQueryAskAI & {
+        query: string;
+        installation: IntegrationInstallation;
+        accessToken: string | undefined;
+    },
+) {
+    const { accessToken, installation, query, context, ...rest } = params;
+
+    // Authenticate as the integration
+    const gitbook = new GitBookAPI({
+        userAgent: context.api.userAgent,
+        endpoint: context.environment.apiEndpoint,
+        authToken: context.environment.apiTokens.integration,
+    });
+
+    const task: IntegrationTaskAskAI = {
+        type: 'ask:ai',
+        payload: {
+            query,
+            organizationId: installation.target.organization,
+            installationId: installation.id,
+            accessToken,
+            ...rest,
+        },
+    };
+
+    logger.info(`Queue task ${task.type} for installation: ${task.payload.installationId})`);
+
+    await gitbook.integrations.queueIntegrationTask(context.environment.integration.name, {
+        task,
+    });
+}
+
+/**
+ * Handle the integration task to process the AskAI query.
+ */
+export async function handleAskAITask(task: IntegrationTaskAskAI, context: SlackRuntimeContext) {
+    const {
+        payload: {
+            channelName,
+            channelId,
+            userId,
+            text,
+            messageType,
+            responseUrl,
+            threadId,
+            query,
+            organizationId,
+            installationId,
+            accessToken,
+        },
+    } = task;
+
+    const client = await getInstallationApiClient(context, installationId);
     const result = await client.orgs.askInOrganization(
-        installation.target.organization,
+        organizationId,
         {
-            query: parsedQuery,
+            query,
         },
         {
             format: 'markdown',
@@ -223,8 +293,6 @@ export async function queryAskAI({
         const relatedSources = await getRelatedSources({
             sources: answer.sources,
             client,
-            environment,
-            organization: installation.target.organization,
         });
 
         const header = text.length > 150 ? `${text.slice(0, 140)}...` : text;

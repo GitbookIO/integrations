@@ -1,3 +1,5 @@
+import type { IQueryAskAI } from './actions';
+
 // Slack Block Kit Types
 export type SlackTextType = 'plain_text' | 'mrkdwn';
 
@@ -21,3 +23,22 @@ export type SlackBlock =
     | { type: 'context'; elements: SlackTextField[] }
     | { type: 'divider' }
     | { type: 'actions'; elements: SlackButtonElement[] };
+
+export type IntegrationTaskType = 'ask:ai';
+
+export type BaseIntegrationTask<Type extends IntegrationTaskType, Payload extends object> = {
+    type: Type;
+    payload: Payload;
+};
+
+export type IntegrationTaskAskAI = BaseIntegrationTask<
+    'ask:ai',
+    {
+        query: string;
+        organizationId: string;
+        installationId: string;
+        accessToken: string | undefined;
+    } & Omit<IQueryAskAI, 'context'>
+>;
+
+export type IntegrationTask = IntegrationTaskAskAI;
