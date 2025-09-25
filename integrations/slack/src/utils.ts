@@ -117,10 +117,10 @@ export function getActionNameAndType(actionId: string) {
 
 // Checks whether we should respond to a slack event
 export function isAllowedToRespond(eventPayload: any) {
-    const { bot_id } = eventPayload.event;
+    const isFromBot = Boolean(eventPayload.event?.bot_id);
     const isExternalChannel = eventPayload.is_ext_shared_channel;
 
-    return !bot_id && !isExternalChannel;
+    return !isFromBot && !isExternalChannel;
 }
 
 /**
