@@ -571,7 +571,7 @@
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
-        "itty-router": "^5.0.22",
+        "itty-router": "^4.0.26",
         "js-sha256": "^0.9.0",
         "remove-markdown": "^0.5.0",
       },
@@ -2640,7 +2640,7 @@
 
     "@gitbook/integration-runkit/itty-router": ["itty-router@2.6.6", "", {}, "sha512-hIPHtXGymCX7Lzb2I4G6JgZFE4QEEQwst9GORK7sMYUpJvLfy4yZJr95r04e8DzoAnj6HcxM2m4TbK+juu+18g=="],
 
-    "@gitbook/integration-slack/itty-router": ["itty-router@5.0.22", "", {}, "sha512-9hmdGErWdYDOurGYxSbqLhy4EFReIwk71hMZTJ5b+zfa2zjMNV1ftFno2b8VjAQvX615gNB8Qxbl9JMRqHnIVA=="],
+    "@gitbook/integration-slack/itty-router": ["itty-router@4.2.2", "", {}, "sha512-KegPW0l9SNPadProoFT07AB84uOqLUwzlXQ7HsqkS31WUrxkjdhcemRpTDUuetbMJ89uBtWeQSVoiEmUAu31uw=="],
 
     "@gitbook/integration-va-auth0/itty-router": ["itty-router@4.2.2", "", {}, "sha512-KegPW0l9SNPadProoFT07AB84uOqLUwzlXQ7HsqkS31WUrxkjdhcemRpTDUuetbMJ89uBtWeQSVoiEmUAu31uw=="],
 

@@ -5,7 +5,7 @@
     "dependencies": {
         "@gitbook/runtime": "*",
         "@gitbook/api": "*",
-        "itty-router": "^5.0.22",
+        "itty-router": "^4.0.26",
         "js-sha256": "^0.9.0",
         "remove-markdown": "^0.5.0"
     },
