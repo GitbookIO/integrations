@@ -202,6 +202,8 @@ export async function queryAskAI(params: IQueryAskAI) {
         },
     );
 
+    // Queue a task to process the AskAI query asynchronously. Because workers have a 30s timeout on
+    // waitUntil which is not enough for scenarios where AskAI might take longer to respond.
     await queueQueryAskAI({
         ...params,
         accessToken,
