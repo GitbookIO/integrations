@@ -1,6 +1,13 @@
 import { Router } from 'itty-router';
 
-import { createOAuthHandler, FetchEventCallback, OAuthResponse } from '@gitbook/runtime';
+import {
+    createOAuthHandler,
+    ExposableError,
+    FetchEventCallback,
+    Logger,
+    OAuthResponse,
+    verifyIntegrationRequestSignature,
+} from '@gitbook/runtime';
 
 import {
     createSlackEventsHandler,
@@ -13,6 +20,10 @@ import {
 import { unfurlLink } from './links';
 import { verifySlackRequest, acknowledgeSlackRequest } from './middlewares';
 import { getChannelsPaginated } from './slack';
+import { IntegrationTask } from './types';
+import { handleAskAITask } from './actions';
+
+const logger = Logger('slack');
 
 /**
  * Handle incoming HTTP requests:
@@ -44,6 +55,39 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             'im:history',
         ].join(' '),
     );
+
+    /**
+     * Handle integration tasks
+     */
+    router.post('/tasks', async (request) => {
+        const verified = await verifyIntegrationRequestSignature(request, environment);
+
+        if (!verified) {
+            const message = `Invalid signature for integration task`;
+            logger.error(message);
+            throw new ExposableError(message);
+        }
+
+        const { task } = JSON.parse(await request.text()) as { task: IntegrationTask };
+        logger.debug('verified & received integration task', task.type);
+
+        switch (task.type) {
+            case 'ask:ai': {
+                await handleAskAITask(task, context);
+                break;
+            }
+            default: {
+                const error = `Unknown integration task type: ${task.type}`;
+                logger.error(error);
+                throw new Error(error);
+            }
+        }
+
+        return new Response(JSON.stringify({ processed: true }), {
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+        });
+    });
 
     /*
      * Authenticate the user using OAuth.
