@@ -19,7 +19,6 @@ import {
 import { unfurlLink } from './links';
 import { verifySlackRequest, acknowledgeSlackRequest } from './middlewares';
 import { getChannelsPaginated } from './slack';
-import { arrayToHex, safeCompare } from './utils';
 import { IntegrationTask } from './types';
 import { handleAskAITask } from './actions';
 
@@ -72,9 +71,11 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             'verify',
         ]);
         const signed = await crypto.subtle.sign(algorithm.name, key, enc.encode(payload));
-        const expectedSignature = arrayToHex(signed);
+        const expectedSignature = [...new Uint8Array(signed)]
+            .map((x) => x.toString(16).padStart(2, '0'))
+            .join('');
 
-        return safeCompare(expectedSignature, signature);
+        return crypto.subtle.timingSafeEqual(enc.encode(expectedSignature), enc.encode(signature));
     }
 
     /**

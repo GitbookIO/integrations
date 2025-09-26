@@ -225,13 +225,6 @@ async function queueQueryAskAI(
 ) {
     const { accessToken, installation, query, context, ...rest } = params;
 
-    // Authenticate as the integration
-    const gitbook = new GitBookAPI({
-        userAgent: context.api.userAgent,
-        endpoint: context.environment.apiEndpoint,
-        authToken: context.environment.apiTokens.integration,
-    });
-
     const task: IntegrationTaskAskAI = {
         type: 'ask:ai',
         payload: {
@@ -245,7 +238,7 @@ async function queueQueryAskAI(
 
     logger.info(`Queue task ${task.type} for installation: ${task.payload.installationId})`);
 
-    await gitbook.integrations.queueIntegrationTask(context.environment.integration.name, {
+    await context.api.integrations.queueIntegrationTask(context.environment.integration.name, {
         task,
     });
 }
