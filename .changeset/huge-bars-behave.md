@@ -2,4 +2,4 @@
 '@gitbook/runtime': minor
 ---
 
-Export `verifyIntegrationSignature` utility method
+Export `verifyIntegrationRequestSignature` utility method

@@ -6,7 +6,7 @@ import {
     FetchEventCallback,
     Logger,
     OAuthResponse,
-    verifyIntegrationSignature,
+    verifyIntegrationRequestSignature,
 } from '@gitbook/runtime';
 
 import {
@@ -60,7 +60,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
      * Handle integration tasks
      */
     router.post('/tasks', async (request) => {
-        const verified = await verifyIntegrationSignature(request, environment);
+        const verified = await verifyIntegrationRequestSignature(request, environment);
 
         if (!verified) {
             const message = `Invalid signature for integration task`;

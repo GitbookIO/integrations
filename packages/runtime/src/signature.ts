@@ -1,6 +1,9 @@
 import { IntegrationEnvironment } from '@gitbook/api';
 
-export async function verifyIntegrationSignature(
+/**
+ * Verify that the request is signed with the integration secret.
+ */
+export async function verifyIntegrationRequestSignature(
     request: Request,
     environment: IntegrationEnvironment,
 ): Promise<boolean> {
