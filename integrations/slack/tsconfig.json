@@ -1,6 +1,3 @@
 {
-    "extends": "@gitbook/tsconfig/integration.json",
-    "compilerOptions": {
-        "lib": ["ESNext"]
-    }
+    "extends": "@gitbook/tsconfig/integration.json"
 }

@@ -6,6 +6,7 @@ import {
     FetchEventCallback,
     Logger,
     OAuthResponse,
+    verifyIntegrationSignature,
 } from '@gitbook/runtime';
 
 import {
@@ -55,41 +56,11 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         ].join(' '),
     );
 
-    async function verifyIntegrationSignature(
-        payload: string,
-        signature: string,
-        secret: string,
-    ): Promise<boolean> {
-        if (!signature) {
-            return false;
-        }
-
-        const algorithm = { name: 'HMAC', hash: 'SHA-256' };
-        const enc = new TextEncoder();
-        const key = await crypto.subtle.importKey('raw', enc.encode(secret), algorithm, false, [
-            'sign',
-            'verify',
-        ]);
-        const signed = await crypto.subtle.sign(algorithm.name, key, enc.encode(payload));
-        const expectedSignature = [...new Uint8Array(signed)]
-            .map((x) => x.toString(16).padStart(2, '0'))
-            .join('');
-
-        return crypto.subtle.timingSafeEqual(enc.encode(expectedSignature), enc.encode(signature));
-    }
-
     /**
      * Handle integration tasks
      */
     router.post('/tasks', async (request) => {
-        const signature = request.headers.get('x-gitbook-integration-signature') ?? '';
-        const payloadString = await request.text();
-
-        const verified = await verifyIntegrationSignature(
-            payloadString,
-            signature,
-            environment.signingSecrets.integration,
-        );
+        const verified = await verifyIntegrationSignature(request, environment);
 
         if (!verified) {
             const message = `Invalid signature for integration task`;
@@ -97,7 +68,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             throw new ExposableError(message);
         }
 
-        const { task } = JSON.parse(payloadString) as { task: IntegrationTask };
+        const { task } = JSON.parse(await request.text()) as { task: IntegrationTask };
         logger.debug('verified & received integration task', task.type);
 
         switch (task.type) {
