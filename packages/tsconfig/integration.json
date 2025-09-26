@@ -3,6 +3,7 @@
     "display": "Integration",
     "extends": "./base.json",
     "compilerOptions": {
+        "lib": ["ESNext"],
         "jsx": "react-jsx",
         "jsxImportSource": "@gitbook/runtime",
         "types": ["@cloudflare/workers-types"]
