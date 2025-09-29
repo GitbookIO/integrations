@@ -1,11 +1,11 @@
 {
     "name": "@gitbook/integration-slack",
-    "version": "2.5.2",
+    "version": "2.5.3",
     "private": true,
     "dependencies": {
         "@gitbook/runtime": "*",
         "@gitbook/api": "*",
-        "itty-router": "^2.6.1",
+        "itty-router": "^4.0.26",
         "js-sha256": "^0.9.0",
         "remove-markdown": "^0.5.0"
     },

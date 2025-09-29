@@ -6,5 +6,6 @@ export * from './events';
 export * from './context';
 export * from './logger';
 export * from './errors';
+export * from './signature';
 export type * from './jsx-runtime';
 export type * from './global';

@@ -1,5 +1,13 @@
 # @gitbook/integration-slack
 
+## 2.5.3
+
+### Patch Changes
+
+- 75d605c: Fix AI queries timing out after 30s
+- Updated dependencies [75d605c]
+    - @gitbook/runtime@0.22.0
+
 ## 2.5.2
 
 ### Patch Changes

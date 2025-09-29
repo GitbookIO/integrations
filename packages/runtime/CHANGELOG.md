@@ -1,5 +1,11 @@
 # @gitbook/runtime
 
+## 0.22.0
+
+### Minor Changes
+
+- 75d605c: Export `verifyIntegrationRequestSignature` utility method
+
 ## 0.21.0
 
 ### Minor Changes
