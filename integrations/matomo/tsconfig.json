@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "jsx": "react-jsx",
+        "jsxImportSource": "@gitbook/runtime",
+        "strict": true,
+        "skipLibCheck": true,
+        "types": []
+    }
+}
