@@ -1,0 +1,25 @@
+name: wistia
+title: Wistia
+icon: ./assets/icon.svg
+previewImages:
+    - ./assets/wistia-preview.png
+description: Add Wistia video analytics to your GitBook site.
+visibility: public
+script: ./src/index.ts
+scopes:
+    - site:script:inject
+    - site:script:cookies
+organization: gitbook
+contentSecurityPolicy:
+    script-src: https://fast.wistia.com;
+summary: |
+    # Overview
+    This integration adds the Wistia analytics script to your published GitBook site.
+
+    # How it works
+    The integration injects the Wistia script (https://fast.wistia.com/assets/external/E-v1.js) 
+    on your page to enable video analytics tracking.
+
+categories:
+    - analytics
+target: site
