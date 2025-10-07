@@ -10,10 +10,9 @@ import script from './script.raw.js';
 type SFSCEnvironment = RuntimeEnvironment<
     {},
     {
-        salesforce_instance_url?: string;
-        embedded_service_site_url?: string;
         org_id?: string;
         messaging_deployment_name?: string;
+        embedded_service_site_url?: string;
         scrt2_url?: string;
     }
 >;
@@ -27,10 +26,9 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     const cfg = environment.siteInstallation?.configuration || {};
 
     const required = [
-        'salesforce_instance_url',
-        'embedded_service_site_url',
         'org_id',
         'messaging_deployment_name',
+        'embedded_service_site_url',
         'scrt2_url',
     ] as const;
 
@@ -41,10 +39,9 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     }
 
     const replaced = (script as string)
-        .replace(/<INSTANCE_URL>/g, String(cfg.salesforce_instance_url))
-        .replace(/<EMBEDDED_SERVICE_SITE_URL>/g, String(cfg.embedded_service_site_url))
         .replace(/<ORG_ID>/g, String(cfg.org_id))
         .replace(/<MESSAGING_DEPLOYMENT_NAME>/g, String(cfg.messaging_deployment_name))
+        .replace(/<EMBEDDED_SERVICE_SITE_URL>/g, String(cfg.embedded_service_site_url))
         .replace(/<SCRT2_URL>/g, String(cfg.scrt2_url));
 
     return new Response(replaced, {
