@@ -29,7 +29,7 @@ contentSecurityPolicy:
 summary: |
     # Overview
 
-    This integration injects Salesforce Service Cloud Chat into your published GitBook content, enabling a simple support chat for your readers.
+    This integration injects Salesforce Service Cloud Chat into your published GitBook site, enabling a Salesforce support chat for your users.
 
     # Configure
 
