@@ -54,7 +54,7 @@ configurations:
             scrt2_url:
                 type: string
                 title: SCRT2 URL
-                description: Secure chat resource URL (e.g., https://yourSite.my.salesforce-scrt.com)
+                description: Secure chat resource URL (e.g., https://yourdomain.my.salesforce-scrt.com)
         required:
             - org_id
             - messaging_deployment_name
