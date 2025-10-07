@@ -39,10 +39,6 @@ categories:
 configurations:
     site:
         properties:
-            salesforce_instance_url:
-                type: string
-                title: Salesforce Instance URL
-                description: Your Salesforce instance URL (e.g., https://yourdomain.my.salesforce.com)
             embedded_service_site_url:
                 type: string
                 title: Embedded Service Site URL
@@ -60,7 +56,6 @@ configurations:
                 title: SCRT2 URL
                 description: Secure chat resource URL (e.g., https://yourSite.my.salesforce-scrt.com)
         required:
-            - salesforce_instance_url
             - embedded_service_site_url
             - org_id
             - messaging_deployment_name

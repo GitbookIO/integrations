@@ -1,5 +1,4 @@
 (function () {
-    var INSTANCE_URL = '<INSTANCE_URL>';
     var EMBEDDED_SERVICE_SITE_URL = '<EMBEDDED_SERVICE_SITE_URL>';
     var ORG_ID = '<ORG_ID>';
     var MESSAGING_DEPLOYMENT_NAME = '<MESSAGING_DEPLOYMENT_NAME>';
@@ -23,18 +22,20 @@
             return;
         }
 
-        w.embeddedservice_bootstrap.settings.language = 'en';
+        w.embeddedservice_bootstrap.settings.language = 'en_US';
 
-        w.embeddedservice_bootstrap.init(
-            MESSAGING_DEPLOYMENT_NAME,
-            SCRT2_URL,
-            INSTANCE_URL,
-            ORG_ID,
-            {
-                scrt2URL: SCRT2_URL,
-                siteUrl: EMBEDDED_SERVICE_SITE_URL,
-            },
-        );
+        try {
+            w.embeddedservice_bootstrap.init(
+                ORG_ID,
+                MESSAGING_DEPLOYMENT_NAME,
+                EMBEDDED_SERVICE_SITE_URL,
+                {
+                    scrt2URL: SCRT2_URL,
+                },
+            );
+        } catch (err) {
+            // initialization failed
+        }
     }
 
     function onMessagingLoaded() {
@@ -51,15 +52,8 @@
         }
 
         loadScript(
-            INSTANCE_URL.replace('https://', 'https://service.') +
-                '/embeddedservice/5.0/esw.min.js',
-            function () {
-                // Load messaging bootstrap if available
-                loadScript(
-                    EMBEDDED_SERVICE_SITE_URL.replace(/\/$/, '') + '/assets/js/bootstrap.min.js',
-                    onMessagingLoaded,
-                );
-            },
+            EMBEDDED_SERVICE_SITE_URL.replace(/\/$/, '') + '/assets/js/bootstrap.min.js',
+            onMessagingLoaded,
         );
 
         if (w.GitBook) {
