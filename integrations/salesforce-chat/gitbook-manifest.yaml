@@ -39,10 +39,6 @@ categories:
 configurations:
     site:
         properties:
-            embedded_service_site_url:
-                type: string
-                title: Embedded Service Site URL
-                description: Your Embedded Service site URL (e.g., https://yourdomain.my.site.com/SiteServiceMessagingforWebXXXX)
             org_id:
                 type: string
                 title: Salesforce Org ID
@@ -51,13 +47,17 @@ configurations:
                 type: string
                 title: Deployment Name
                 description: Name of your Messaging Deployment
+            embedded_service_site_url:
+                type: string
+                title: Embedded Service Site URL
+                description: Your Embedded Service site URL (e.g., https://yourdomain.my.site.com/SiteServiceMessagingforWebXXXX)
             scrt2_url:
                 type: string
                 title: SCRT2 URL
                 description: Secure chat resource URL (e.g., https://yourSite.my.salesforce-scrt.com)
         required:
-            - embedded_service_site_url
             - org_id
             - messaging_deployment_name
+            - embedded_service_site_url
             - scrt2_url
 target: site
