@@ -1,7 +1,7 @@
-name: salesforce-service-cloud-chat
+name: salesforce-chat
 title: Salesforce Service Cloud Chat
 organization: gitbook
-description: Add a minimal Salesforce Service Cloud Embedded Chat to your published GitBook content
+description: Add Salesforce Service Cloud Chat to your published GitBook content
 visibility: public
 script: ./src/index.ts
 scopes:
@@ -29,13 +29,13 @@ contentSecurityPolicy:
 summary: |
     # Overview
 
-    This integration injects Salesforce Service Cloud Embedded Chat into your published GitBook content, enabling a simple support chat for your readers.
+    This integration injects Salesforce Service Cloud Chat into your published GitBook content, enabling a simple support chat for your readers.
 
     # Configure
 
     Provide the required Salesforce identifiers and URLs from your Embedded Service deployment in Salesforce Setup.
 categories:
-    - support
+    - analytics
 configurations:
     site:
         properties:
@@ -46,19 +46,19 @@ configurations:
             embedded_service_site_url:
                 type: string
                 title: Embedded Service Site URL
-                description: Your Embedded Service site URL (e.g., https://yourdomain.my.site.com/embeddedService)
+                description: Your Embedded Service site URL (e.g., https://yourdomain.my.site.com/SiteServiceMessagingforWebXXXX)
             org_id:
                 type: string
                 title: Salesforce Org ID
-                description: The 18-character Salesforce Org ID (e.g., 00DxxxxxxxxxxxxXXX)
+                description: The Salesforce Org ID (e.g., 00DxxxxxxxxxxxxXXX)
             messaging_deployment_name:
                 type: string
-                title: Messaging Deployment Developer Name
-                description: Developer name of your Embedded Messaging deployment
+                title: Deployment Name
+                description: Name of your Messaging Deployment
             scrt2_url:
                 type: string
                 title: SCRT2 URL
-                description: Secure chat resource URL from your Messaging deployment (e.g., https://yourSite.force.com/ESW_Messaging)
+                description: Secure chat resource URL (e.g., https://yourSite.my.salesforce-scrt.com)
         required:
             - salesforce_instance_url
             - embedded_service_site_url
