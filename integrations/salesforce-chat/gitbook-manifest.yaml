@@ -17,19 +17,24 @@ contentSecurityPolicy:
     script-src: |
         https://service.force.com
         https://*.force.com
-        https://*.salesforce.com;
+        https://*.salesforce.com
+        https://*.salesforce-scrt.com;
     connect-src: |
         https://*.force.com
         https://*.salesforce.com
-        wss://*.salesforce.com;
+        https://*.salesforce-scrt.com
+        wss://*.salesforce.com
+        wss://*.salesforce-scrt.com;
     img-src: |
         data:
         blob:
         https://*.force.com
-        https://*.salesforce.com;
+        https://*.salesforce.com
+        https://*.salesforce-scrt.com;
     frame-src: |
         https://*.force.com
-        https://*.salesforce.com;
+        https://*.salesforce.com
+        https://*.salesforce-scrt.com;
     style-src: |
         'unsafe-inline';
 summary: |
