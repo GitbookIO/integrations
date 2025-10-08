@@ -4,9 +4,9 @@ organization: gitbook
 description: Add Salesforce Service Cloud Chat to your published GitBook content
 visibility: public
 script: ./src/index.ts
-icon: ../assets/icon.png
+icon: ./assets/salesforce-icon.png
 previewImages:
-    - ../assets/salesforce-visual.png
+    - ./assets/salesforce-visual.png
 externalLinks:
     - label: Documentation
       url: https://help.salesforce.com/s/articleView?id=service.miaw_intro_landing.htm&type=5
