@@ -113,7 +113,7 @@
     },
     "integrations/formspree": {
       "name": "@gitbook/integration-formspree",
-      "version": "0.2.11",
+      "version": "0.2.12",
       "dependencies": {
         "@gitbook/runtime": "workspace:*",
       },
@@ -529,6 +529,18 @@
         "@gitbook/tsconfig": "workspace:*",
       },
     },
+    "integrations/salesforce-chat": {
+      "name": "@gitbook/integration-salesforce-chat",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
     "integrations/salesviewer": {
       "name": "@gitbook/integration-salesviewer",
       "version": "1.0.0",
@@ -567,7 +579,7 @@
     },
     "integrations/slack": {
       "name": "@gitbook/integration-slack",
-      "version": "2.5.2",
+      "version": "2.5.3",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -701,7 +713,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.143.1",
+      "version": "0.143.2",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -756,7 +768,7 @@
     },
     "packages/runtime": {
       "name": "@gitbook/runtime",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dependencies": {
         "@gitbook/api": "*",
       },
@@ -1105,6 +1117,8 @@
     "@gitbook/integration-runkit": ["@gitbook/integration-runkit@workspace:integrations/runkit"],
 
     "@gitbook/integration-runllm-widget": ["@gitbook/integration-runllm-widget@workspace:integrations/runllm-widget"],
+
+    "@gitbook/integration-salesforce-chat": ["@gitbook/integration-salesforce-chat@workspace:integrations/salesforce-chat"],
 
     "@gitbook/integration-salesviewer": ["@gitbook/integration-salesviewer@workspace:integrations/salesviewer"],
 
