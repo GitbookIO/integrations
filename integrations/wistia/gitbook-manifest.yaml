@@ -17,9 +17,10 @@ summary: |
     This integration adds the Wistia analytics script to your published GitBook site.
 
     # How it works
-    The integration injects the Wistia script (https://fast.wistia.com/assets/external/E-v1.js) 
+    The integration injects the Wistia script (https://fast.wistia.com/assets/external/E-v1.js)
     on your page to enable video analytics tracking.
-
+    See example: https://docs.wistia.com/docs/iframe-embed-options#iframe-embed-options-and-bracket-notation
+    
 categories:
     - analytics
 target: site
