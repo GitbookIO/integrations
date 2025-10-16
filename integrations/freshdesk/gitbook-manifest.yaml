@@ -32,11 +32,11 @@ summary: |
 
     # How it works
 
-    Automatic chat widget on your documentation: Each of your connected GitBook spaces will fetch the Freshdesk chat widget script and inject it in your published content.
+    Automatic chat widget on your documentation: Each of your connected GitBook sites will fetch the Freshdesk chat widget script and inject it in your published content.
 
     # Configure
 
-    You can configure the integration on single or multiple public spaces by navigating to the integrations in sub-navigation or org settings. You will then have to provide Freshdesk widget ID to finish the configuration. This can be found in your Freshdesk dashboard.
+    You can configure the integration on single or multiple public sites by navigating to the integrations in sub-navigation or org settings. You will then have to provide Freshdesk widget ID to finish the configuration. This can be found in your Freshdesk dashboard, under the Widget section.
 
 categories:
     - analytics
@@ -46,7 +46,7 @@ configurations:
             widget_id:
                 type: string
                 title: Freshdesk Widget ID
-                description: Available in your Freshdesk dashboard
+                description: Available in your Freshdesk dashboard, under the Widget section
         required:
             - widget_id
 target: site
