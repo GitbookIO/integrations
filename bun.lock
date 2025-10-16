@@ -122,6 +122,18 @@
         "@gitbook/tsconfig": "workspace:*",
       },
     },
+    "integrations/freshdesk": {
+      "name": "@gitbook/integration-freshdesk",
+      "version": "0.4.4",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
     "integrations/front": {
       "name": "@gitbook/integration-front",
       "version": "1.0.0",
@@ -531,7 +543,7 @@
     },
     "integrations/salesforce-chat": {
       "name": "@gitbook/integration-salesforce-chat",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -1055,6 +1067,8 @@
     "@gitbook/integration-figma": ["@gitbook/integration-figma@workspace:integrations/figma"],
 
     "@gitbook/integration-formspree": ["@gitbook/integration-formspree@workspace:integrations/formspree"],
+
+    "@gitbook/integration-freshdesk": ["@gitbook/integration-freshdesk@workspace:integrations/freshdesk"],
 
     "@gitbook/integration-front": ["@gitbook/integration-front@workspace:integrations/front"],
 
