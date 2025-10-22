@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.144.0
+
+### Minor Changes
+
+- dd6352d: Update API
+
 ## 0.143.2
 
 ### Patch Changes
