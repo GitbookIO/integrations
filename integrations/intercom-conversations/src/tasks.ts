@@ -45,7 +45,7 @@ export async function handleIntercomIntegrationTask(
     const { type: taskType } = task;
     switch (taskType) {
         case 'ingest:closed-conversations':
-            await handleClosedConversationTasks(context, task);
+            await handleClosedConversationsTask(context, task);
             break;
         default:
             throw new Error(`Unknown intercom integration task type: ${task}`);
@@ -55,7 +55,7 @@ export async function handleIntercomIntegrationTask(
 /**
  * Handle an ingest intercom closed conversations task.
  */
-async function handleClosedConversationTasks(
+async function handleClosedConversationsTask(
     context: IntercomRuntimeContext,
     task: IntercomIntegrationTask,
 ): Promise<void> {
