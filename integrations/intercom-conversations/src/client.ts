@@ -1,5 +1,5 @@
 import { IntercomClient } from 'intercom-client';
-import { IntercomRuntimeContext, IntercomMeResponse } from './types';
+import type { IntercomRuntimeContext, IntercomMeResponse } from './types';
 import { ExposableError, getOAuthToken, Logger, OAuthConfig } from '@gitbook/runtime';
 
 const logger = Logger('intercom-conversations:client');
