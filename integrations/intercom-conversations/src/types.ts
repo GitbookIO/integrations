@@ -1,4 +1,4 @@
-import type { Organization } from '@gitbook/api';
+import type { IntegrationInstallation, Organization } from '@gitbook/api';
 import type { RuntimeEnvironment, RuntimeContext } from '@gitbook/runtime';
 import type { Intercom } from 'intercom-client';
 
@@ -93,6 +93,7 @@ export type IntercomIntegrationIngestClosedConversationsTask = IntercomIntegrati
     'ingest:closed-conversations',
     {
         organization: Organization['id'];
+        installation: IntegrationInstallation['id'];
         conversations: Array<Intercom.Conversation['id']>;
     }
 >;

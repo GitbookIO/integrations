@@ -58,6 +58,7 @@ export async function ingestLastClosedIntercomConversations(context: IntercomRun
             type: 'ingest:closed-conversations',
             payload: {
                 organization: installation.target.organization,
+                installation: installation.id,
                 conversations: intercomConversations,
             },
         });

@@ -16,15 +16,15 @@ export async function queueIntercomIntegrationTask(
 ): Promise<void> {
     const { environment } = context;
 
-    const installationAPIToken = environment.apiTokens.installation;
-    if (!installationAPIToken) {
+    const integrationAPIToken = environment.apiTokens.integration;
+    if (!integrationAPIToken) {
         throw new Error(`Expected installation API token`);
     }
 
     const api = new GitBookAPI({
         userAgent: context.api.userAgent,
         endpoint: context.environment.apiEndpoint,
-        authToken: installationAPIToken,
+        authToken: integrationAPIToken,
     });
 
     await api.integrations.queueIntegrationTask(environment.integration.name, {
@@ -59,7 +59,22 @@ async function handleClosedConversationTasks(
     context: IntercomRuntimeContext,
     task: IntercomIntegrationTask,
 ): Promise<void> {
-    const intercomClient = await getIntercomClient(context);
+    const { environment } = context;
+
+    const { data: installation } = await context.api.integrations.getIntegrationInstallationById(
+        environment.integration.name,
+        task.payload.installation,
+    );
+
+    const installationContext: IntercomRuntimeContext = {
+        ...context,
+        environment: {
+            ...context.environment,
+            installation,
+        },
+    };
+
+    const intercomClient = await getIntercomClient(installationContext);
 
     // Process conversations with fail-safe error handling
     const gitbookConversations = (
@@ -88,7 +103,11 @@ async function handleClosedConversationTasks(
     // Ingest intercom conversations to GitBook
     if (gitbookConversations.length > 0) {
         try {
-            await context.api.orgs.ingestConversation(
+            const installationApiClient = await context.api.createInstallationClient(
+                context.environment.integration.name,
+                installation.id,
+            );
+            await installationApiClient.orgs.ingestConversation(
                 task.payload.organization,
                 gitbookConversations,
             );
