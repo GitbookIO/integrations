@@ -1,5 +1,23 @@
 # @gitbook/api
 
+## 0.146.0
+
+### Minor Changes
+
+- 70c7d11: Bump API version
+
+## 0.145.0
+
+### Minor Changes
+
+- 2b5f94a: add page cover resizing
+
+## 0.144.0
+
+### Minor Changes
+
+- dd6352d: Update API
+
 ## 0.143.2
 
 ### Patch Changes
