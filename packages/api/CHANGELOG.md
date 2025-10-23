@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.145.0
+
+### Minor Changes
+
+- 2b5f94a: add page cover resizing
+
 ## 0.144.0
 
 ### Minor Changes
