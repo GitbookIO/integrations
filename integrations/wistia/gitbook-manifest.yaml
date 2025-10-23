@@ -14,7 +14,9 @@ contentSecurityPolicy:
     script-src: https://fast.wistia.com;
 summary: |
     # Overview
-    This integration adds the Wistia analytics script to your published GitBook site.
+    This integration introduces support for collecting analytics on videos played by users. You can explore the full range of analytics offered by Wistia(https://wistia.com/product/analytics).
+    The videos are hosted on Wistia and embedded in GitBook using the built-in video embed feature. To enable tracking of these analytics—along with relevant information from the root page—Wistia's JavaScript libraries must be included on the root page.
+    This plugin facilitates that by injecting the required Wistia script into the page.
 
     # How it works
     The integration injects the Wistia script (https://fast.wistia.com/assets/external/E-v1.js)
