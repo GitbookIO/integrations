@@ -52,7 +52,7 @@ export async function ingestLastClosedIntercomConversations(context: IntercomRun
     while (pageIndex < maxPages) {
         pageIndex += 1;
 
-        const intercomConversations = page.data.map((conversion) => conversion.id);
+        const intercomConversations = page.data.map((conversation) => conversation.id);
         totalConvsToIngest += intercomConversations.length;
         tasks.push({
             type: 'ingest:closed-conversations',
