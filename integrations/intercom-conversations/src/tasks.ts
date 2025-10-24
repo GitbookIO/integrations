@@ -18,7 +18,7 @@ export async function queueIntercomIntegrationTask(
 
     const integrationAPIToken = environment.apiTokens.integration;
     if (!integrationAPIToken) {
-        throw new Error(`Expected installation API token`);
+        throw new Error(`Expected integration API token in queueIntercomIntegrationTask`);
     }
 
     const api = new GitBookAPI({
