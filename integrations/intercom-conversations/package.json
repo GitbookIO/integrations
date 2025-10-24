@@ -6,6 +6,7 @@
         "@gitbook/runtime": "*",
         "@gitbook/api": "*",
         "p-map": "^7.0.3",
+        "itty-router": "^4.0.27",
         "intercom-client": "^6.3.0"
     },
     "devDependencies": {

@@ -1,5 +1,5 @@
 import { createComponent, InstallationConfigurationProps } from '@gitbook/runtime';
-import { IntercomRuntimeContext, IntercomRuntimeEnvironment } from './types';
+import type { IntercomRuntimeContext, IntercomRuntimeEnvironment } from './types';
 
 /**
  * Configuration component for the Intercom integration.

@@ -124,7 +124,7 @@
     },
     "integrations/freshdesk": {
       "name": "@gitbook/integration-freshdesk",
-      "version": "0.1.0",
+      "version": "1.0.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -318,6 +318,7 @@
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
         "intercom-client": "^6.3.0",
+        "itty-router": "^4.0.27",
         "p-map": "^7.0.3",
       },
       "devDependencies": {
@@ -2649,6 +2650,8 @@
     "@gitbook/integration-gitlab/itty-router": ["itty-router@4.2.2", "", {}, "sha512-KegPW0l9SNPadProoFT07AB84uOqLUwzlXQ7HsqkS31WUrxkjdhcemRpTDUuetbMJ89uBtWeQSVoiEmUAu31uw=="],
 
     "@gitbook/integration-hubspot-conversations/itty-router": ["itty-router@2.6.6", "", {}, "sha512-hIPHtXGymCX7Lzb2I4G6JgZFE4QEEQwst9GORK7sMYUpJvLfy4yZJr95r04e8DzoAnj6HcxM2m4TbK+juu+18g=="],
+
+    "@gitbook/integration-intercom-conversations/itty-router": ["itty-router@4.2.2", "", {}, "sha512-KegPW0l9SNPadProoFT07AB84uOqLUwzlXQ7HsqkS31WUrxkjdhcemRpTDUuetbMJ89uBtWeQSVoiEmUAu31uw=="],
 
     "@gitbook/integration-jira/itty-router": ["itty-router@2.6.6", "", {}, "sha512-hIPHtXGymCX7Lzb2I4G6JgZFE4QEEQwst9GORK7sMYUpJvLfy4yZJr95r04e8DzoAnj6HcxM2m4TbK+juu+18g=="],
 
