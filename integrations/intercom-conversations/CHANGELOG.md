@@ -1,5 +1,11 @@
 # @gitbook/integration-intercom-conversations
 
+## 0.2.0
+
+### Minor Changes
+
+- 29faf81: Fix intercom-conversations integration worker timeouts
+
 ## 0.1.0
 
 ### Minor Changes
