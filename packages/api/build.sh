@@ -34,6 +34,9 @@ esbuild ./src/index.ts --bundle --platform=node --format=cjs --outfile=./dist/in
 echo "Bundling ESM format from code..."
 esbuild ./src/index.ts --bundle --platform=node --format=esm --outfile=./dist/index.js --log-level=warning
 
+echo "Extracting API constants..."
+bun ./scripts/extract-constants.ts
+
 # Finally we build the TypeScript declaration files
 echo "Generating public types from code..."
 tsc --project tsconfig.json --noEmit false --declaration --allowJs --emitDeclarationOnly --outDir ./dist/ --rootDir ./src

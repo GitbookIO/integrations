@@ -726,7 +726,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.143.2",
+      "version": "0.145.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -758,6 +758,7 @@
         "js-yaml": "^4.1.0",
         "miniflare": "^4.20250525.0",
         "ora": "^6.2.0",
+        "picocolors": "^1.1.1",
         "prompts": "^2.4.2",
         "zod": "^3.25.42",
       },

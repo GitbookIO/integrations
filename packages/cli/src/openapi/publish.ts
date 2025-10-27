@@ -1,8 +1,7 @@
 import * as fs from 'fs';
-import * as path from 'path';
-
 import * as api from '@gitbook/api';
 import { getAPIClient } from '../remote';
+import { logger } from '../logger';
 
 /**
  * Publish an OpenAPI specification to GitBook from a URL.
@@ -22,16 +21,13 @@ export async function publishOpenAPISpecificationFromURL(args: {
      */
     url: string;
 }): Promise<api.OpenAPISpec> {
+    const slug = validateSlug(args.specSlug);
     const api = await getAPIClient(true);
-    const spec = await api.orgs.createOrUpdateOpenApiSpecBySlug(
-        args.organizationId,
-        args.specSlug,
-        {
-            source: {
-                url: args.url,
-            },
+    const spec = await api.orgs.createOrUpdateOpenApiSpecBySlug(args.organizationId, slug, {
+        source: {
+            url: args.url,
         },
-    );
+    });
     return spec.data;
 }
 
@@ -53,17 +49,14 @@ export async function publishOpenAPISpecificationFromFilepath(args: {
      */
     filepath: string;
 }): Promise<api.OpenAPISpec> {
+    const slug = validateSlug(args.specSlug);
     const api = await getAPIClient(true);
     const fileContent = await readOpenAPIFile(args.filepath);
-    const spec = await api.orgs.createOrUpdateOpenApiSpecBySlug(
-        args.organizationId,
-        args.specSlug,
-        {
-            source: {
-                text: fileContent,
-            },
+    const spec = await api.orgs.createOrUpdateOpenApiSpecBySlug(args.organizationId, slug, {
+        source: {
+            text: fileContent,
         },
-    );
+    });
     return spec.data;
 }
 
@@ -76,8 +69,34 @@ async function readOpenAPIFile(filePath: string): Promise<string> {
         return fileContent;
     } catch (error) {
         if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
-            throw new Error(`OpenAPI specification file not found: ${filePath}`);
+            logger.error(`OpenAPI specification file not found: ${filePath}`);
+            process.exit(1);
         }
         throw error;
     }
+}
+
+/**
+ * Validate the OpenAPI specification slug.
+ * It should match the pattern and be between the minimum and maximum length.
+ */
+function validateSlug(specSlug: string) {
+    if (!new RegExp(api.OPEN_APISPEC_SLUG_PATTERN).test(specSlug)) {
+        logger.error(
+            `Invalid OpenAPI specification slug, must match pattern: ${api.OPEN_APISPEC_SLUG_PATTERN}`,
+        );
+        process.exit(1);
+    }
+
+    if (
+        specSlug.length < api.OPEN_APISPEC_SLUG_MIN_LENGTH ||
+        specSlug.length > api.OPEN_APISPEC_SLUG_MAX_LENGTH
+    ) {
+        logger.error(
+            `Invalid OpenAPI specification slug, must be between ${api.OPEN_APISPEC_SLUG_MIN_LENGTH} and ${api.OPEN_APISPEC_SLUG_MAX_LENGTH} characters`,
+        );
+        process.exit(1);
+    }
+
+    return specSlug;
 }
