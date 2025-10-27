@@ -48,15 +48,6 @@ for (const [schemaName, schema] of Object.entries(api.components.schemas)) {
     if (
         schema &&
         typeof schema === 'object' &&
-        'pattern' in schema &&
-        typeof schema.pattern === 'string'
-    ) {
-        constants[formatKey(schemaName, 'pattern')] = schema.pattern;
-    }
-
-    if (
-        schema &&
-        typeof schema === 'object' &&
         'enum' in schema &&
         Array.isArray(schema.enum) &&
         (schema.enum.every((item) => typeof item === 'string') ||

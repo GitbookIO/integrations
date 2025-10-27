@@ -76,12 +76,14 @@ async function readOpenAPIFile(filePath: string): Promise<string> {
     }
 }
 
+
+const OPENAPISPEC_SLUG_REGEX = new RegExp(api.OPEN_APISPEC_SLUG_PATTERN);
 /**
  * Validate the OpenAPI specification slug.
  * It should match the pattern and be between the minimum and maximum length.
  */
 function validateSlug(specSlug: string) {
-    if (!new RegExp(api.OPEN_APISPEC_SLUG_PATTERN).test(specSlug)) {
+    if (!OPENAPISPEC_SLUG_REGEX.test(specSlug)) {
         logger.error(
             `Invalid OpenAPI specification slug, must match pattern: ${api.OPEN_APISPEC_SLUG_PATTERN}`,
         );
