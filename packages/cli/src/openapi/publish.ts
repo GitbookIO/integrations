@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as api from '@gitbook/api';
 import { getAPIClient } from '../remote';
-import { logger } from '../logger';
 
 /**
  * Publish an OpenAPI specification to GitBook from a URL.
@@ -69,13 +68,11 @@ async function readOpenAPIFile(filePath: string): Promise<string> {
         return fileContent;
     } catch (error) {
         if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
-            logger.error(`OpenAPI specification file not found: ${filePath}`);
-            process.exit(1);
+            throw new Error(`OpenAPI specification file not found: ${filePath}`);
         }
         throw error;
     }
 }
-
 
 const OPENAPISPEC_SLUG_REGEX = new RegExp(api.OPEN_APISPEC_SLUG_PATTERN);
 /**
@@ -84,20 +81,18 @@ const OPENAPISPEC_SLUG_REGEX = new RegExp(api.OPEN_APISPEC_SLUG_PATTERN);
  */
 function validateSlug(specSlug: string) {
     if (!OPENAPISPEC_SLUG_REGEX.test(specSlug)) {
-        logger.error(
+        throw new Error(
             `Invalid OpenAPI specification slug, must match pattern: ${api.OPEN_APISPEC_SLUG_PATTERN}`,
         );
-        process.exit(1);
     }
 
     if (
         specSlug.length < api.OPEN_APISPEC_SLUG_MIN_LENGTH ||
         specSlug.length > api.OPEN_APISPEC_SLUG_MAX_LENGTH
     ) {
-        logger.error(
+        throw new Error(
             `Invalid OpenAPI specification slug, must be between ${api.OPEN_APISPEC_SLUG_MIN_LENGTH} and ${api.OPEN_APISPEC_SLUG_MAX_LENGTH} characters`,
         );
-        process.exit(1);
     }
 
     return specSlug;

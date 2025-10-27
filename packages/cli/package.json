@@ -16,8 +16,7 @@
         "zod": "^3.25.42",
         "chokidar": "^4.0.1",
         "miniflare": "^4.20250525.0",
-        "@1password/op-js": "^0.1.13",
-        "picocolors": "^1.1.1"
+        "@1password/op-js": "^0.1.13"
     },
     "devDependencies": {
         "@gitbook/tsconfig": "*",
