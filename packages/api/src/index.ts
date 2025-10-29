@@ -5,6 +5,7 @@ import { Api } from './client';
 import { GitBookAPIError } from './GitBookAPIError';
 
 export * from './client';
+export * from './constants';
 export { GitBookAPIError };
 
 export const GITBOOK_DEFAULT_ENDPOINT = 'https://api.gitbook.com';
