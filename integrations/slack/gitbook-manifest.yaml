@@ -19,6 +19,7 @@ script: ./src/index.ts
 scopes:
     - space:content:read
     - space:metadata:read
+    - conversations:ingest
 summary: |
     # Overview
     With the GitBook Slack integration, your teams have instant access to your documentation, and can get AI-summarized answers about your content.
