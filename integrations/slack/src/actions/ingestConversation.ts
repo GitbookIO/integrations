@@ -33,7 +33,7 @@ export async function ingestSlackConversation(params: IngestSlackConversationAct
                     return parseSlackConversationPermalink(params.text);
                 } catch (error) {
                     logger.debug(
-                        'Error when parsing the link of the conversation to ingest',
+                        `⚠️ We couldn’t understand that link. Please check it and try again.`,
                         error,
                     );
                 }
@@ -48,11 +48,9 @@ export async function ingestSlackConversation(params: IngestSlackConversationAct
             {
                 method: 'POST',
                 path: 'chat.postMessage',
-                responseUrl: responseUrl,
                 payload: {
                     channel: channelId,
-                    text: `_Unable to retrieve the details of the conversation_`,
-                    ...(userId ? { user: userId } : {}),
+                    text: `⚠️ We couldn’t get the conversation details. Please try again.`,
                 },
             },
             {
@@ -64,25 +62,21 @@ export async function ingestSlackConversation(params: IngestSlackConversationAct
     }
 
     await Promise.all([
-        // acknowledge the ingest command back to the user
         slackAPI(
             context,
             {
                 method: 'POST',
-                path: 'chat.postEphemeral',
-                responseUrl,
+                path: 'chat.postMessage',
                 payload: {
                     channel: channelId,
-                    text: 'Sending this conversation to Docs Agent to improve your documentation...',
-                    ...(userId ? { user: userId } : {}),
-                    ...(threadId ? { thread_ts: threadId } : {}),
+                    text: '🚀 Sharing this conversation with Docs Agent to improve your docs...',
+                    thread_ts: threadId,
                 },
             },
             {
                 accessToken,
             },
         ),
-        // Queue a task to ingest the conversation asynchronously.
         queueIngestSlackConversationTask({
             channelId,
             channelName,
@@ -173,12 +167,10 @@ export async function handleIngestSlackConversationTask(
             {
                 method: 'POST',
                 path: 'chat.postMessage',
-                responseUrl,
                 payload: {
                     channel: channelId,
-                    text: '🤖 This conversation has been sent to Docs Agents',
-                    ...(userId ? { user: userId } : {}),
-                    ...(threadId ? { thread_ts: threadId } : {}),
+                    text: `🤖 Got it! Docs Agent is on it. We'll analyze this and suggest changes if needed.`,
+                    thread_ts: threadId,
                 },
             },
             {
@@ -191,12 +183,10 @@ export async function handleIngestSlackConversationTask(
             {
                 method: 'POST',
                 path: 'chat.postMessage',
-                responseUrl,
                 payload: {
                     channel: channelId,
-                    text: '_An error occured whilst ingesting the converation_',
-                    ...(userId ? { user: userId } : {}),
-                    ...(threadId ? { thread_ts: threadId } : {}),
+                    text: `⚠️ Something went wrong while sending this conversation to Docs Agent.`,
+                    thread_ts: threadId,
                 },
             },
             {
