@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.26.1
+
+### Patch Changes
+
+- 9275222: Validate OpenAPI slug with pattern
+
 ## 0.26.0
 
 ### Minor Changes
