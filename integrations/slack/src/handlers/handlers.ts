@@ -101,7 +101,7 @@ function parseGitBookCommand(commandText: string): {
     if (isGitBookCommand(subcommand)) {
         return {
             subcommand,
-            subcommandText: tokens.slice(1).join(''),
+            subcommandText: tokens.slice(1).join(' '),
         };
     }
 
