@@ -13,15 +13,14 @@ import {
     createSlackEventsHandler,
     createSlackCommandsHandler,
     slackActionsHandler,
-    queryAskAISlashHandler,
     messageEventHandler,
     appMentionEventHandler,
+    gitbookCommandHandler,
 } from './handlers';
 import { unfurlLink } from './links';
 import { verifySlackRequest, acknowledgeSlackRequest } from './middlewares';
 import { getChannelsPaginated } from './slack';
-import { IntegrationTask } from './types';
-import { handleAskAITask } from './actions';
+import { handleAskAITask, handleIngestSlackConversationTask, IntegrationTask } from './actions';
 
 const logger = Logger('slack');
 
@@ -76,8 +75,12 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
                 await handleAskAITask(task, context);
                 break;
             }
+            case 'ingest:conversation': {
+                await handleIngestSlackConversationTask(task, context);
+                break;
+            }
             default: {
-                const error = `Unknown integration task type: ${task.type}`;
+                const error = `Unknown integration task: ${task}`;
                 logger.error(error);
                 throw new Error(error);
             }
@@ -153,8 +156,8 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         '/commands',
         verifySlackRequest,
         createSlackCommandsHandler({
-            '/gitbook': queryAskAISlashHandler,
-            '/gitbookstaging': queryAskAISlashHandler, // needed to allow our staging app to co-exist with the prod app
+            '/gitbook': gitbookCommandHandler,
+            '/gitbookstaging': gitbookCommandHandler, // needed to allow our staging app to co-exist with the prod app
         }),
         acknowledgeSlackRequest,
     );

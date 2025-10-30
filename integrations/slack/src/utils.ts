@@ -1,6 +1,6 @@
 import removeMarkdown from 'remove-markdown';
 
-import { GitBookAPI, IntegrationInstallation } from '@gitbook/api';
+import { IntegrationInstallation } from '@gitbook/api';
 
 import { SlackInstallationConfiguration, SlackRuntimeContext } from './configuration';
 
@@ -109,8 +109,24 @@ export function stripBotName(text: string, botName: string) {
     return text.split(new RegExp(`^.*<@${botName}> `)).join('');
 }
 
-export function getActionNameAndType(actionId: string) {
-    const [actionName, actionPostType = 'ephemeral'] = actionId.split(':');
+export function getActionNameAndType(payload: any) {
+    let actionId: string | undefined;
+
+    if (payload?.type === 'block_actions' && payload.actions?.length > 0) {
+        actionId = payload.actions[0].action_id;
+    } else if (
+        payload?.type === 'shortcut' ||
+        payload?.type === 'message_action' ||
+        payload?.type === 'global_shortcut'
+    ) {
+        actionId = payload.callback_id;
+    }
+
+    if (!actionId) {
+        throw new Error('Unable to extract action identifier from payload');
+    }
+
+    const [actionName, actionPostType] = actionId.split(':');
 
     return { actionName, actionPostType };
 }
