@@ -26,11 +26,14 @@ export async function ingestSlackConversation(params: IngestSlackConversationAct
     const accessToken = (installation.configuration as SlackInstallationConfiguration)
         .oauth_credentials?.access_token;
 
+    const permalink = params.text;
+    const isIngestedFromLink = !!permalink;
+
     const conversationToIngest: IngestSlackConversationActionParams['conversationToIngest'] =
         (() => {
-            if (params.text) {
+            if (permalink) {
                 try {
-                    return parseSlackConversationPermalink(params.text);
+                    return parseSlackConversationPermalink(permalink);
                 } catch (error) {
                     logger.debug(
                         `⚠️ We couldn’t understand that link. Please check it and try again.`,
@@ -69,8 +72,15 @@ export async function ingestSlackConversation(params: IngestSlackConversationAct
                 path: 'chat.postMessage',
                 payload: {
                     channel: channelId,
-                    text: '🚀 Sharing this conversation with Docs Agent to improve your docs...',
+                    ...(isIngestedFromLink
+                        ? {
+                              markdown_text: `🚀 Sharing [this conversation](${permalink}) with Docs Agent to improve your docs...`,
+                          }
+                        : {
+                              text: `🚀 Sharing this conversation with Docs Agent to improve your docs...`,
+                          }),
                     thread_ts: threadId,
+                    unfurl_links: isIngestedFromLink,
                 },
             },
             {
