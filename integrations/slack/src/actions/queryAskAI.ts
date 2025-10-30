@@ -8,11 +8,7 @@ import {
     IntegrationInstallation,
 } from '@gitbook/api';
 
-import {
-    SlackInstallationConfiguration,
-    SlackRuntimeEnvironment,
-    SlackRuntimeContext,
-} from '../configuration';
+import { SlackInstallationConfiguration, SlackRuntimeContext } from '../configuration';
 import { slackAPI } from '../slack';
 import { QueryDisplayBlock, ShareTools, decodeSlackEscapeChars, Spacer, SourcesBlock } from '../ui';
 import {
@@ -22,35 +18,15 @@ import {
     stripMarkdown,
 } from '../utils';
 import { Logger } from '@gitbook/runtime';
-import { IntegrationTaskAskAI } from '../types';
+import { AskAIActionParams, IntegrationTaskAskAI } from './types';
 
-const logger = Logger('slack:queryAskAI');
+const logger = Logger('slack:actions:askAI');
 
 export type RelatedSource = {
     id: string;
     sourceUrl: string;
     page: { path?: string; title: string };
 };
-
-export interface IQueryAskAI {
-    channelId: string;
-    channelName?: string;
-    responseUrl?: string;
-    teamId: string;
-    text: string;
-    context: SlackRuntimeContext;
-
-    /* postEphemeral vs postMessage */
-    messageType: 'ephemeral' | 'permanent';
-
-    /* needed for postEphemeral */
-    userId?: string;
-
-    /* Get AskAI reply in thread */
-    threadId?: string;
-
-    authorization?: string;
-}
 
 // Recursively extracts all pages from a collection of RevisionPages
 function extractAllPages(rootPages: Array<RevisionPage>) {
@@ -154,13 +130,13 @@ async function getRelatedSources(params: {
 /*
  * Queries GitBook AskAI via the GitBook API and posts the answer in the form of Slack UI Blocks back to the original channel/conversation/thread.
  */
-export async function queryAskAI(params: IQueryAskAI) {
+export async function queryAskAI(params: AskAIActionParams) {
     const {
         channelId,
         teamId,
         threadId,
         userId,
-        text,
+        queryText: text,
         messageType,
         context,
         authorization,
@@ -217,7 +193,7 @@ export async function queryAskAI(params: IQueryAskAI) {
  * Queues an integration task to process the AskAI query asynchronously.
  */
 async function queueQueryAskAI(
-    params: IQueryAskAI & {
+    params: AskAIActionParams & {
         query: string;
         installation: IntegrationInstallation;
         accessToken: string | undefined;
@@ -252,7 +228,7 @@ export async function handleAskAITask(task: IntegrationTaskAskAI, context: Slack
             channelName,
             channelId,
             userId,
-            text,
+            queryText: text,
             messageType,
             responseUrl,
             threadId,
