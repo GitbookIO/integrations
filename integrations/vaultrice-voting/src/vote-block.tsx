@@ -167,7 +167,8 @@ export const VoteBlock = createComponent({
             MAX_HEIGHT_PX: 900, // allow tall charts when many options present
         };
 
-        const cfg = isPreview ? PREVIEW : RESULTS;
+        // const cfg = isPreview ? PREVIEW : RESULTS;
+        const cfg = RESULTS;
 
         // Compute final pixel height and derive aspect ratio
         let computedHeightPx = (cfg.BASE_HEIGHT_PX + cfg.ROW_HEIGHT_PX * rows) * cfg.CONTENT_SCALE;
