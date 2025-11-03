@@ -16,15 +16,32 @@ interface ActionBaseParams {
 }
 
 interface IngestSlackConversationWithConversation extends ActionBaseParams {
+    /**
+     * Used when the ingestion originates from a Slack conversation shortcut.
+     * The target conversation in this case is both the conversation to ingest
+     * and the one where notifications are sent.
+     * Identified by the `channelId` and `messageTs` values.
+     */
     conversationToIngest: {
         channelId: string;
         messageTs: string;
     };
+    /**
+     * Not present when the ingestion is triggered directly from the conversation shortcut context.
+     */
     text?: never;
 }
 
 interface IngestSlackConversationWithText extends ActionBaseParams {
+    /**
+     * Used when the ingestion originates from outside the conversation to ingest,
+     * for example from a slash command that includes a permalink in the command text.
+     * The `text` field contains the permalink identifying the target conversation.
+     */
     text: string;
+    /**
+     * Not present when the ingestion is triggered using a text or link reference.
+     */
     conversationToIngest?: never;
 }
 
