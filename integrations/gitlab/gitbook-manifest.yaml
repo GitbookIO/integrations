@@ -44,4 +44,5 @@ configurations:
 secrets:
     PROXY_URL: ${{ env.PROXY_URL }}
     PROXY_SECRET: ${{ env.PROXY_SECRET }}
+    REFLAG_SECRET_KEY: ${{ env.REFLAG_SECRET_KEY }}
 target: space

@@ -5,6 +5,7 @@ import { Logger, ExposableError } from '@gitbook/runtime';
 import type { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
 import { signResponse } from './utils';
 
+
 const logger = Logger('gitlab:api');
 
 /**
@@ -267,8 +268,8 @@ async function requestGitLab(
 ): Promise<Response> {
     logger.debug(`GitLab API -> [${options.method}] ${url.toString()}`);
     // Hardcoded test org, will need to switch to use Reflag for that.
-    const shouldUseProxy = context.environment.installation?.target.organization === "bpM5n3M20vPLEwz3Nsi2";
-    const response = shouldUseProxy ? await proxyRequest(context, url.toString(), {
+    const useProxy = await shouldUseProxy(context);
+    const response = useProxy ? await proxyRequest(context, url.toString(), {
         ...options,
         headers: {
             ...options.headers,
@@ -337,4 +338,30 @@ export async function proxyRequest(context: GitLabRuntimeContext, url: string, o
             'X-Gitbook-Proxy-Signature': signature,
         },
     });
+}
+
+export async function shouldUseProxy(context: GitLabRuntimeContext): Promise<boolean> {
+
+    const companyId = context.environment.installation?.target.organization;
+    if(!companyId) {
+        return false;
+    }
+    try {
+        const response = await fetch(`https://front.reflag.com/features/enabled?context.company.id=${companyId}&key=GIT_SYNC_STATIC_IP`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${context.environment.secrets.REFLAG_SECRET_KEY}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        const json = await response.json() as {features: {GIT_SYNC_STATIC_IP: {isEnabled: boolean}}};
+        const flag = json.features.GIT_SYNC_STATIC_IP;
+
+        return flag.isEnabled;
+
+    } catch(e) {
+        logger.error('Error checking Reflag feature flag:', e);
+        return false;
+    }
 }
