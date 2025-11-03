@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.26.2
+
+### Patch Changes
+
+- 2d9dc8b: Bump CLI to use new OpenAPI slug pattern
+
 ## 0.26.1
 
 ### Patch Changes
