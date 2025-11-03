@@ -132,12 +132,26 @@ export const VoteBlock = createComponent({
             parsedChoices = JSON.parse(element.state.choices || '[]');
         } catch (e) {}
 
+        // Estimate frame height from content (header + per-row height) and derive aspect ratio
+        // This produces a tighter frame and avoids the large whitespace below the chart.
+        const choiceCount = Array.isArray(parsedChoices) ? parsedChoices.length : 0;
+        const minRows = 2; // don't make the widget too short
+        const maxRows = 8; // avoid extremely tall widgets
+        const rows = Math.min(Math.max(choiceCount, minRows), maxRows);
+
+        // Pixels are only used as a reference to compute a stable aspect ratio.
+        // Tweak BASE_HEIGHT_PX / ROW_HEIGHT_PX to match your actual embed styling.
+        const REF_WIDTH = 768;
+        const BASE_HEIGHT_PX = 120; // header + paddings
+        const ROW_HEIGHT_PX = 60; // approximate height per choice row
+        const aspectRatio = REF_WIDTH / (BASE_HEIGHT_PX + ROW_HEIGHT_PX * rows);
+
         const votingWidget = (
             <webframe
                 source={{
                     url: url.toString(),
                 }}
-                aspectRatio={7 / (parsedChoices.length < 3 ? 4 : parsedChoices.length + 1)}
+                aspectRatio={aspectRatio}
                 data={{
                     votingId: element.dynamicState('votingId'),
                     votingClass: element.dynamicState('votingClass'),
