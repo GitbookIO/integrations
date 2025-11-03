@@ -109,6 +109,16 @@ export function stripBotName(text: string, botName: string) {
     return text.split(new RegExp(`^.*<@${botName}> `)).join('');
 }
 
+/**
+ * Extracts the action name and type from a Slack interaction payload.
+ *
+ * This function supports both shortcut and block action payloads:
+ * - Shortcuts can be triggered from menus such as the "More actions" button on messages.
+ * - Block actions come from interactive Block Kit components.
+ *
+ * Because all these events are handled as "actions" in the integration, this helper
+ * centralizes how we derive the action name and type from the event payload.
+ */
 export function getActionNameAndType(payload: any) {
     let actionId: string | undefined;
 
