@@ -7,7 +7,7 @@ import {
     SlackConversationThread,
 } from '../slack';
 import { getInstallationApiClient, getIntegrationInstallationForTeam } from '../utils';
-import { IngestSlackConversationActionParams, IntegrationTaskIngestConversation } from './types';
+import { IngestSlackConversationActionParams } from './types';
 import { Logger } from '@gitbook/runtime';
 
 const logger = Logger('slack:actions:ingestConversation');
@@ -16,7 +16,7 @@ const logger = Logger('slack:actions:ingestConversation');
  * Ingest the slack conversation to GitBook aiming at improving the organization docs.
  */
 export async function ingestSlackConversation(params: IngestSlackConversationActionParams) {
-    const { responseUrl, channelId, channelName, userId, threadId, context, teamId } = params;
+    const { channelId, threadId, context, teamId } = params;
 
     const installation = await getIntegrationInstallationForTeam(context, teamId);
     if (!installation) {
@@ -87,26 +87,26 @@ export async function ingestSlackConversation(params: IngestSlackConversationAct
                 accessToken,
             },
         ),
-        queueIngestSlackConversationTask({
-            channelId,
-            channelName,
-            teamId,
-            responseUrl,
-            userId,
-            threadId,
+        handleIngestSlackConversationAction(
+            {
+                channelId,
+                threadId,
+                installation,
+                accessToken,
+                conversationToIngest,
+            },
             context,
-            accessToken,
-            installation,
-            conversationToIngest,
-        }),
+        ),
     ]);
 }
 
 /**
- * Queues an integration task to ingest the Slack conversation asynchronously.
+ * Handle the integration action to ingest a slack conversation.
  */
-async function queueIngestSlackConversationTask(
-    params: IngestSlackConversationActionParams & {
+export async function handleIngestSlackConversationAction(
+    params: {
+        channelId: IngestSlackConversationActionParams['channelId'];
+        threadId: IngestSlackConversationActionParams['threadId'];
         installation: IntegrationInstallation;
         accessToken: string | undefined;
         conversationToIngest: {
@@ -114,54 +114,12 @@ async function queueIngestSlackConversationTask(
             messageTs: string;
         };
     },
-) {
-    const { accessToken, installation, context, conversationToIngest } = params;
-
-    const task: IntegrationTaskIngestConversation = {
-        type: 'ingest:conversation',
-        payload: {
-            channelId: params.channelId,
-            teamId: params.teamId,
-            channelName: params.channelName,
-            responseUrl: params.responseUrl,
-            threadId: params.threadId,
-            userId: params.userId,
-            organizationId: installation.target.organization,
-            installationId: installation.id,
-            accessToken,
-            conversationToIngest,
-        },
-    };
-
-    await context.api.integrations.queueIntegrationTask(context.environment.integration.name, {
-        task,
-    });
-
-    logger.info(`Queue task ${task.type} for installation: ${task.payload.installationId})`);
-}
-
-/**
- * Handle the integration task to ingest a slack conversation.
- */
-export async function handleIngestSlackConversationTask(
-    task: IntegrationTaskIngestConversation,
     context: SlackRuntimeContext,
 ) {
-    const {
-        payload: {
-            channelId,
-            userId,
-            responseUrl,
-            threadId,
-            organizationId,
-            installationId,
-            accessToken,
-            conversationToIngest,
-        },
-    } = task;
+    const { channelId, threadId, installation, accessToken, conversationToIngest } = params;
 
     const [client, conversation] = await Promise.all([
-        getInstallationApiClient(context, installationId),
+        getInstallationApiClient(context, installation.id),
         (async () => {
             const slackThread = await getSlackThread(context, conversationToIngest, {
                 accessToken,
@@ -171,7 +129,7 @@ export async function handleIngestSlackConversationTask(
     ]);
 
     try {
-        await client.orgs.ingestConversation(organizationId, conversation);
+        await client.orgs.ingestConversation(installation.target.organization, conversation);
         await slackAPI(
             context,
             {

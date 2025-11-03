@@ -20,7 +20,7 @@ import {
 import { unfurlLink } from './links';
 import { verifySlackRequest, acknowledgeSlackRequest } from './middlewares';
 import { getChannelsPaginated } from './slack';
-import { handleAskAITask, handleIngestSlackConversationTask, IntegrationTask } from './actions';
+import { handleAskAITask, handleIngestSlackConversationAction, IntegrationTask } from './actions';
 
 const logger = Logger('slack');
 
@@ -73,10 +73,6 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         switch (task.type) {
             case 'ask:ai': {
                 await handleAskAITask(task, context);
-                break;
-            }
-            case 'ingest:conversation': {
-                await handleIngestSlackConversationTask(task, context);
                 break;
             }
             default: {

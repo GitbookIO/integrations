@@ -41,25 +41,12 @@ export interface AskAIActionParams extends ActionBaseParams {
     authorization?: string;
 }
 
-export type IntegrationTaskType = 'ask:ai' | 'ingest:conversation';
+export type IntegrationTaskType = 'ask:ai';
 
 export type BaseIntegrationTask<Type extends IntegrationTaskType, Payload extends object> = {
     type: Type;
     payload: Payload;
 };
-
-export type IntegrationTaskIngestConversation = BaseIntegrationTask<
-    'ingest:conversation',
-    {
-        organizationId: string;
-        installationId: string;
-        accessToken: string | undefined;
-        conversationToIngest: {
-            channelId: string;
-            messageTs: string;
-        };
-    } & Omit<IngestSlackConversationActionParams, 'context' | 'conversationToIngest' | 'text'>
->;
 
 export type IntegrationTaskAskAI = BaseIntegrationTask<
     'ask:ai',
@@ -71,4 +58,4 @@ export type IntegrationTaskAskAI = BaseIntegrationTask<
     } & Omit<AskAIActionParams, 'context'>
 >;
 
-export type IntegrationTask = IntegrationTaskIngestConversation | IntegrationTaskAskAI;
+export type IntegrationTask = IntegrationTaskAskAI;
