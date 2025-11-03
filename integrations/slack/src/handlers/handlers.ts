@@ -1,9 +1,10 @@
 import { Logger } from '@gitbook/runtime';
 
 import type { SlashEvent } from './commands';
-import { queryAskAI } from '../actions';
+import { ingestSlackConversation, queryAskAI } from '../actions';
 import { SlackRuntimeContext } from '../configuration';
 import { isAllowedToRespond, stripBotName } from '../utils';
+import { extractIntentFromMessage } from '../actions/intent';
 
 const logger = Logger('slack:handlers');
 
@@ -80,13 +81,30 @@ export async function messageEventHandler(eventPayload: any, context: SlackRunti
  */
 export async function appMentionEventHandler(eventPayload: any, context: SlackRuntimeContext) {
     // pull out required params from the slashEvent for queryAskAI
-    const { type, text, thread_ts, channel, user, team } = eventPayload.event;
+    const { type, text, thread_ts, channel, user, team, response_url } = eventPayload.event;
 
     // check for bot_id so that the bot doesn't trigger itself
     if (['message', 'app_mention'].includes(type) && isAllowedToRespond(eventPayload)) {
         // strip out the bot-name in the mention and account for user mentions within the query
         // @ts-ignore
         const parsedMessage = stripBotName(text, eventPayload.authorizations[0]?.user_id);
+        const userIntent = extractIntentFromMessage(parsedMessage);
+
+        if (userIntent.intent === 'ingest' && userIntent.confidence > 0.5) {
+            await ingestSlackConversation({
+                channelId: channel,
+                responseUrl: response_url,
+                teamId: team.id,
+                threadId: thread_ts,
+                userId: user.id,
+                context,
+                conversationToIngest: {
+                    channelId: channel,
+                    messageTs: thread_ts,
+                },
+            });
+            return;
+        }
 
         // send to AskAI
         await queryAskAI({

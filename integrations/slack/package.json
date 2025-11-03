@@ -3,20 +3,25 @@
     "version": "2.5.3",
     "private": true,
     "dependencies": {
-        "@gitbook/runtime": "*",
         "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
         "itty-router": "^4.0.26",
         "js-sha256": "^0.9.0",
-        "remove-markdown": "^0.5.0"
+        "remove-markdown": "^0.5.0",
+        "toygrad": "^2.6.0"
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",
-        "@gitbook/tsconfig": "workspace:*"
+        "@gitbook/tsconfig": "workspace:*",
+        "@vanillaes/csv": "^3.0.4",
+        "commander": "^14.0.2"
     },
     "scripts": {
         "typecheck": "tsc --noEmit",
         "check": "gitbook check",
+        "test": "bun test",
         "publish-integrations": "gitbook publish .",
-        "publish-integrations-staging": "gitbook publish ."
+        "publish-integrations-staging": "gitbook publish .",
+        "train-classifier": "bun run scripts/train-classifier.ts --"
     }
 }
