@@ -140,11 +140,43 @@ export const VoteBlock = createComponent({
         const rows = Math.min(Math.max(choiceCount, minRows), maxRows);
 
         // Pixels are only used as a reference to compute a stable aspect ratio.
-        // Tweak BASE_HEIGHT_PX / ROW_HEIGHT_PX to match your actual embed styling.
         const REF_WIDTH = 768;
-        const BASE_HEIGHT_PX = 120; // header + paddings
-        const ROW_HEIGHT_PX = 60; // approximate height per choice row
-        const aspectRatio = REF_WIDTH / (BASE_HEIGHT_PX + ROW_HEIGHT_PX * rows);
+
+        // Use a slightly different calibration for "preview" (editable) vs "results" (live)
+        // Preview tends to be more compact; results often include bars / badges that need less extra padding.
+        const isPreview = !!element.context.editable;
+
+        // Preview calibration (looser): keeps the editor preview visually balanced
+        const PREVIEW = {
+            BASE_HEIGHT_PX: 96,
+            ROW_HEIGHT_PX: 46,
+            CONTENT_SCALE: 0.67,
+            MIN_HEIGHT_PX: 220,
+            MAX_HEIGHT_PX: 420,
+        };
+
+        // Results calibration (tighter): reduces whitespace under bars in the results screen
+        // Adjusted to match observed results rendering (~768 x 479 for a 4-row chart).
+        // These numbers bias the computation towards a taller result frame so the iframe
+        // more closely matches the actual chart area (reduces whitespace).
+        const RESULTS = {
+            BASE_HEIGHT_PX: 96, // header + top/bottom paddings
+            ROW_HEIGHT_PX: 96, // measured visible height per choice row (empirical)
+            CONTENT_SCALE: 1.0, // no extra shrink — use direct pixel model for results
+            MIN_HEIGHT_PX: 360, // avoid very short results frames
+            MAX_HEIGHT_PX: 900, // allow tall charts when many options present
+        };
+
+        const cfg = isPreview ? PREVIEW : RESULTS;
+
+        // Compute final pixel height and derive aspect ratio
+        let computedHeightPx = (cfg.BASE_HEIGHT_PX + cfg.ROW_HEIGHT_PX * rows) * cfg.CONTENT_SCALE;
+        computedHeightPx = Math.min(
+            Math.max(computedHeightPx, cfg.MIN_HEIGHT_PX),
+            cfg.MAX_HEIGHT_PX,
+        );
+
+        const aspectRatio = REF_WIDTH / computedHeightPx;
 
         const votingWidget = (
             <webframe
