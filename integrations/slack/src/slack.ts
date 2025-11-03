@@ -247,7 +247,7 @@ export async function slackAPI<Result>(
         throw new Error(`${response.status} ${response.statusText}`);
     }
 
-    const result = await response.json<SlackResponse<Result>>();
+    const result = (await response.json()) as SlackResponse<Result>;
 
     if (!result.ok) {
         if (retriesLeft > 0) {
