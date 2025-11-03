@@ -47,6 +47,9 @@ jobs:
                   GITBOOK_ENDPOINT: https://api.gitbook.com
                   GITBOOK_ORGANIZATION: gitbook
                   OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+                  # Proxy
+                  PROXY_URL: ${{ secrets.PROXY_URL }}
+                  PROXY_SECRET: ${{ secrets.PROXY_SECRET }}
                   # GitHub Files
                   UNFURL_GITHUB_CLIENT_ID: ${{ secrets.UNFURL_GITHUB_CLIENT_ID }}
                   UNFURL_GITHUB_CLIENT_SECRET: ${{ secrets.UNFURL_GITHUB_CLIENT_SECRET }}

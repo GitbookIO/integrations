@@ -41,4 +41,7 @@ scopes:
 configurations:
     space:
         componentId: configure
+secrets:
+    PROXY_URL: ${{ env.PROXY_URL }}
+    PROXY_SECRET: ${{ env.PROXY_SECRET }}
 target: space

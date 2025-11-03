@@ -2,7 +2,8 @@ import LinkHeader from 'http-link-header';
 
 import { Logger, ExposableError } from '@gitbook/runtime';
 
-import type { GitLabSpaceConfiguration } from './types';
+import type { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
+import { signResponse } from './utils';
 
 const logger = Logger('gitlab:api');
 
@@ -38,8 +39,8 @@ interface GLFetchOptions {
 /**
  * Fetch the current GitLab user. It will use the access token from the environment.
  */
-export async function getCurrentUser(config: GitLabSpaceConfiguration) {
-    const user = await gitlabAPI<GLUser>(config, {
+export async function getCurrentUser(context: GitLabRuntimeContext, config: GitLabSpaceConfiguration) {
+    const user = await gitlabAPI<GLUser>(context, config, {
         path: '/user',
     });
 
@@ -51,10 +52,11 @@ export async function getCurrentUser(config: GitLabSpaceConfiguration) {
  * the access token from the environment.
  */
 export async function fetchProjects(
+    context: GitLabRuntimeContext,
     config: GitLabSpaceConfiguration,
     options: GLFetchOptions = {},
 ) {
-    const projects = await gitlabAPI<Array<GLProject>>(config, {
+    const projects = await gitlabAPI<Array<GLProject>>(context, config, {
         path: '/projects',
         params: {
             membership: true,
@@ -71,11 +73,12 @@ export async function fetchProjects(
  * Search currently authenticated user projects for a given query.
  */
 export async function searchUserProjects(
+    context: GitLabRuntimeContext,
     config: GitLabSpaceConfiguration,
     search: string,
     options: GLFetchOptions = {},
 ) {
-    const projects = await gitlabAPI<Array<GLProject>>(config, {
+    const projects = await gitlabAPI<Array<GLProject>>(context, config, {
         path: `/users/${config.userId}/projects`,
         params: {
             search,
@@ -91,8 +94,8 @@ export async function searchUserProjects(
 /**
  * Fetch a GitLab project by its ID.
  */
-export async function fetchProject(config: GitLabSpaceConfiguration, projectId: number) {
-    const project = await gitlabAPI<GLProject>(config, {
+export async function fetchProject(context: GitLabRuntimeContext, config: GitLabSpaceConfiguration, projectId: number) {
+    const project = await gitlabAPI<GLProject>(context, config, {
         path: `/projects/${projectId}`,
     });
 
@@ -102,8 +105,8 @@ export async function fetchProject(config: GitLabSpaceConfiguration, projectId: 
 /**
  * Fetch all branches for a given project repository.
  */
-export async function fetchProjectBranches(config: GitLabSpaceConfiguration, projectId: number) {
-    const branches = await gitlabAPI<Array<GLBranch>>(config, {
+export async function fetchProjectBranches(context: GitLabRuntimeContext, config: GitLabSpaceConfiguration, projectId: number) {
+    const branches = await gitlabAPI<Array<GLBranch>>(context, config, {
         path: `/projects/${projectId}/repository/branches`,
         params: {
             per_page: 100,
@@ -118,12 +121,13 @@ export async function fetchProjectBranches(config: GitLabSpaceConfiguration, pro
  * Configure a GitLab webhook for a given project.
  */
 export async function addProjectWebhook(
+    context: GitLabRuntimeContext,
     config: GitLabSpaceConfiguration,
     projectId: number,
     webhookUrl: string,
     webhookToken: string,
 ) {
-    const { id } = await gitlabAPI<{ id: number }>(config, {
+    const { id } = await gitlabAPI<{ id: number }>(context, config, {
         method: 'POST',
         path: `/projects/${projectId}/hooks`,
         body: {
@@ -141,11 +145,12 @@ export async function addProjectWebhook(
  * Delete a GitLab webhook for a given project.
  */
 export async function deleteProjectWebhook(
+    context: GitLabRuntimeContext,
     config: GitLabSpaceConfiguration,
     projectId: number,
     webhookId: number,
 ) {
-    await gitlabAPI(config, {
+    await gitlabAPI(context, config, {
         method: 'DELETE',
         path: `/projects/${projectId}/hooks/${webhookId}`,
     });
@@ -155,12 +160,13 @@ export async function deleteProjectWebhook(
  * Create a commit status for a commit SHA.
  */
 export async function editCommitStatus(
+    context: GitLabRuntimeContext,
     config: GitLabSpaceConfiguration,
     projectId: number,
     sha: string,
     status: object,
 ): Promise<void> {
-    await gitlabAPI(config, {
+    await gitlabAPI(context, config, {
         method: 'POST',
         path: `/projects/${projectId}/statuses/${sha}`,
         body: status,
@@ -171,6 +177,7 @@ export async function editCommitStatus(
  * Execute a GitLab API request.
  */
 export async function gitlabAPI<T>(
+    context: GitLabRuntimeContext,
     config: GitLabSpaceConfiguration,
     request: {
         method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
@@ -209,7 +216,7 @@ export async function gitlabAPI<T>(
         body: body ? JSON.stringify(body) : undefined,
     };
 
-    const response = await requestGitLab(token, url, options);
+    const response = await requestGitLab(context, token, url, options);
 
     const isJSONResponse = response.headers.get('Content-Type')?.includes('application/json');
     if (!isJSONResponse) {
@@ -234,7 +241,7 @@ export async function gitlabAPI<T>(
             const nextURLSearchParams = Object.fromEntries(nextURL.searchParams);
             if (nextURLSearchParams.page) {
                 url.searchParams.set('page', nextURLSearchParams.page as string);
-                const nextResponse = await requestGitLab(token, url, options);
+                const nextResponse = await requestGitLab(context, token, url, options);
                 const nextData = await nextResponse.json();
                 // @ts-ignore
                 data = [...data, ...(paginatedListProperty ? nextData[listProperty] : nextData)];
@@ -253,12 +260,24 @@ export async function gitlabAPI<T>(
  * It will throw an error if the response is not ok.
  */
 async function requestGitLab(
+    context: GitLabRuntimeContext,
     token: string,
     url: URL,
     options: RequestInit = {},
 ): Promise<Response> {
     logger.debug(`GitLab API -> [${options.method}] ${url.toString()}`);
-    const response = await fetch(url.toString(), {
+    // Hardcoded test org, will need to switch to use Reflag for that.
+    const shouldUseProxy = context.environment.installation?.target.organization === "bpM5n3M20vPLEwz3Nsi2";
+    const response = shouldUseProxy ? await proxyRequest(context, url.toString(), {
+        ...options,
+        headers: {
+            ...options.headers,
+            ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+            Accept: 'application/json',
+            Authorization: `Bearer ${token}`,
+            'User-Agent': 'GitLab-Integration-Worker',
+        },
+    }) : await fetch(url.toString(), {
         ...options,
         headers: {
             ...options.headers,
@@ -302,4 +321,20 @@ export function getAccessTokenOrThrow(config: GitLabSpaceConfiguration): string 
     }
 
     return accessToken;
+}
+
+
+export async function proxyRequest(context: GitLabRuntimeContext, url: string, options: RequestInit = {}): Promise<Response> {
+    const signature = await signResponse(url, context.environment.secrets.PROXY_SECRET);
+    const proxyUrl = new URL(context.environment.secrets.PROXY_URL);
+
+    proxyUrl.searchParams.set('target', url);
+
+    return fetch(proxyUrl.toString(), {
+        ...options,
+        headers: {
+            ...options.headers,
+            'X-Gitbook-Proxy-Signature': signature,
+        },
+    });
 }
