@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.147.0
+
+### Minor Changes
+
+- b0fcacf: Update api for search results ancestors
+
 ## 0.146.0
 
 ### Minor Changes
