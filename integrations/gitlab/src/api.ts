@@ -5,7 +5,6 @@ import { Logger, ExposableError } from '@gitbook/runtime';
 import type { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
 import { signResponse } from './utils';
 
-
 const logger = Logger('gitlab:api');
 
 /**
@@ -40,7 +39,10 @@ interface GLFetchOptions {
 /**
  * Fetch the current GitLab user. It will use the access token from the environment.
  */
-export async function getCurrentUser(context: GitLabRuntimeContext, config: GitLabSpaceConfiguration) {
+export async function getCurrentUser(
+    context: GitLabRuntimeContext,
+    config: GitLabSpaceConfiguration,
+) {
     const user = await gitlabAPI<GLUser>(context, config, {
         path: '/user',
     });
@@ -95,7 +97,11 @@ export async function searchUserProjects(
 /**
  * Fetch a GitLab project by its ID.
  */
-export async function fetchProject(context: GitLabRuntimeContext, config: GitLabSpaceConfiguration, projectId: number) {
+export async function fetchProject(
+    context: GitLabRuntimeContext,
+    config: GitLabSpaceConfiguration,
+    projectId: number,
+) {
     const project = await gitlabAPI<GLProject>(context, config, {
         path: `/projects/${projectId}`,
     });
@@ -106,7 +112,11 @@ export async function fetchProject(context: GitLabRuntimeContext, config: GitLab
 /**
  * Fetch all branches for a given project repository.
  */
-export async function fetchProjectBranches(context: GitLabRuntimeContext, config: GitLabSpaceConfiguration, projectId: number) {
+export async function fetchProjectBranches(
+    context: GitLabRuntimeContext,
+    config: GitLabSpaceConfiguration,
+    projectId: number,
+) {
     const branches = await gitlabAPI<Array<GLBranch>>(context, config, {
         path: `/projects/${projectId}/repository/branches`,
         params: {
@@ -269,25 +279,27 @@ async function requestGitLab(
     logger.debug(`GitLab API -> [${options.method}] ${url.toString()}`);
     // Hardcoded test org, will need to switch to use Reflag for that.
     const useProxy = await shouldUseProxy(context);
-    const response = useProxy ? await proxyRequest(context, url.toString(), {
-        ...options,
-        headers: {
-            ...options.headers,
-            ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-            Accept: 'application/json',
-            Authorization: `Bearer ${token}`,
-            'User-Agent': 'GitLab-Integration-Worker',
-        },
-    }) : await fetch(url.toString(), {
-        ...options,
-        headers: {
-            ...options.headers,
-            ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-            Accept: 'application/json',
-            Authorization: `Bearer ${token}`,
-            'User-Agent': 'GitLab-Integration-Worker',
-        },
-    });
+    const response = useProxy
+        ? await proxyRequest(context, url.toString(), {
+              ...options,
+              headers: {
+                  ...options.headers,
+                  ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+                  Accept: 'application/json',
+                  Authorization: `Bearer ${token}`,
+                  'User-Agent': 'GitLab-Integration-Worker',
+              },
+          })
+        : await fetch(url.toString(), {
+              ...options,
+              headers: {
+                  ...options.headers,
+                  ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+                  Accept: 'application/json',
+                  Authorization: `Bearer ${token}`,
+                  'User-Agent': 'GitLab-Integration-Worker',
+              },
+          });
 
     if (!response.ok) {
         const text = await response.text();
@@ -324,8 +336,11 @@ export function getAccessTokenOrThrow(config: GitLabSpaceConfiguration): string 
     return accessToken;
 }
 
-
-export async function proxyRequest(context: GitLabRuntimeContext, url: string, options: RequestInit = {}): Promise<Response> {
+export async function proxyRequest(
+    context: GitLabRuntimeContext,
+    url: string,
+    options: RequestInit = {},
+): Promise<Response> {
     const signature = await signResponse(url, context.environment.secrets.PROXY_SECRET);
     const proxyUrl = new URL(context.environment.secrets.PROXY_URL);
 
@@ -341,26 +356,29 @@ export async function proxyRequest(context: GitLabRuntimeContext, url: string, o
 }
 
 export async function shouldUseProxy(context: GitLabRuntimeContext): Promise<boolean> {
-
     const companyId = context.environment.installation?.target.organization;
-    if(!companyId) {
+    if (!companyId) {
         return false;
     }
     try {
-        const response = await fetch(`https://front.reflag.com/features/enabled?context.company.id=${companyId}&key=GIT_SYNC_STATIC_IP`, {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${context.environment.secrets.REFLAG_SECRET_KEY}`,
-                "Content-Type": "application/json"
-            }
-        });
+        const response = await fetch(
+            `https://front.reflag.com/features/enabled?context.company.id=${companyId}&key=GIT_SYNC_STATIC_IP`,
+            {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${context.environment.secrets.REFLAG_SECRET_KEY}`,
+                    'Content-Type': 'application/json',
+                },
+            },
+        );
 
-        const json = await response.json() as {features: {GIT_SYNC_STATIC_IP: {isEnabled: boolean}}};
+        const json = (await response.json()) as {
+            features: { GIT_SYNC_STATIC_IP: { isEnabled: boolean } };
+        };
         const flag = json.features.GIT_SYNC_STATIC_IP;
 
         return flag.isEnabled;
-
-    } catch(e) {
+    } catch (e) {
         logger.error('Error checking Reflag feature flag:', e);
         return false;
     }

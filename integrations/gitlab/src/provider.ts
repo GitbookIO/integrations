@@ -38,7 +38,10 @@ export async function installWebhook(
  * Remove the GitLab webhook for the currently configured space installation
  * project.
  */
-export async function uninstallWebhook(context: GitLabRuntimeContext, config: GitLabSpaceConfiguration) {
+export async function uninstallWebhook(
+    context: GitLabRuntimeContext,
+    config: GitLabSpaceConfiguration,
+) {
     assertIsDefined(config.project, { label: 'config.project', statusCode: 400 });
     assertIsDefined(config.webhookId, { label: 'config.webhookId', statusCode: 400 });
 
