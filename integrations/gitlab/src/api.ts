@@ -345,6 +345,7 @@ export async function proxyRequest(
     const proxyUrl = new URL(context.environment.secrets.PROXY_URL);
 
     proxyUrl.searchParams.set('target', url);
+    logger.info(`Proxying request to ${proxyUrl.toString()}, original target: ${url}`);
 
     return fetch(proxyUrl.toString(), {
         ...options,
@@ -379,7 +380,7 @@ export async function shouldUseProxy(context: GitLabRuntimeContext): Promise<boo
 
         return flag.isEnabled;
     } catch (e) {
-        logger.error('Error checking Reflag feature flag:', e);
+        logger.debug('Error checking Reflag feature flag:', e);
         return false;
     }
 }
