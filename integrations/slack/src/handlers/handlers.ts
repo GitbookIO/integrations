@@ -1,10 +1,9 @@
 import { Logger } from '@gitbook/runtime';
 
 import type { SlashEvent } from './commands';
-import { ingestSlackConversation, queryAskAI } from '../actions';
+import { inferUserIntentAndTriggerAction, ingestSlackConversation, queryAskAI } from '../actions';
 import { SlackRuntimeContext } from '../configuration';
 import { isAllowedToRespond, stripBotName } from '../utils';
-import { extractIntentFromMessage } from '../actions/intent';
 
 const logger = Logger('slack:handlers');
 
@@ -88,35 +87,19 @@ export async function appMentionEventHandler(eventPayload: any, context: SlackRu
         // strip out the bot-name in the mention and account for user mentions within the query
         // @ts-ignore
         const parsedMessage = stripBotName(text, eventPayload.authorizations[0]?.user_id);
-        const userIntent = extractIntentFromMessage(parsedMessage);
 
-        if (userIntent.intent === 'ingest' && userIntent.confidence > 0.5) {
-            await ingestSlackConversation({
-                channelId: channel,
-                responseUrl: response_url,
-                teamId: team.id,
-                threadId: thread_ts,
-                userId: user.id,
-                context,
-                conversationToIngest: {
+        context.waitUntil(
+            inferUserIntentAndTriggerAction(
+                {
                     channelId: channel,
-                    messageTs: thread_ts,
+                    threadTs: thread_ts,
+                    userId: user,
+                    teamId: team,
+                    userMessage: parsedMessage,
+                    authorization: eventPayload.authorizations[0],
                 },
-            });
-            return;
-        }
-
-        // send to AskAI
-        await queryAskAI({
-            teamId: team,
-            channelId: channel,
-            threadId: thread_ts,
-            userId: user,
-            messageType: 'permanent',
-            queryText: parsedMessage,
-            context,
-            // @ts-ignore
-            authorization: eventPayload.authorizations[0],
-        });
+                context,
+            ),
+        );
     }
 }
