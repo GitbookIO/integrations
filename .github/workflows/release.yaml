@@ -66,8 +66,8 @@ jobs:
                   GITBOOK_ORGANIZATION: gitbookio
                   OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
                   # Proxy
-                  PROXY_URL: ${{ secrets.PROXY_STAGING_URL }}
-                  PROXY_SECRET: ${{ secrets.PROXY_STAGING_SECRET }}
+                  GITBOOK_PROXY_URL: ${{ secrets.PROXY_STAGING_URL }}
+                  GITBOOK_PROXY_SECRET: ${{ secrets.PROXY_STAGING_SECRET }}
                   REFLAG_SECRET_KEY: ${{ secrets.REFLAG_STAGING_SECRET_KEY }}
                   # GitHub Files
                   UNFURL_GITHUB_CLIENT_ID: ${{ secrets.UNFURL_GITHUB_CLIENT_ID }}
