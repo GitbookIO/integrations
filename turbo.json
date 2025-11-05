@@ -42,7 +42,10 @@
         "GITHUBCOPILOT_APP_ID",
         "GITHUBCOPILOT_APP_URL",
         "GITHUBCOPILOT_CLIENT_ID",
-        "GITHUBCOPILOT_CLIENT_SECRET"
+        "GITHUBCOPILOT_CLIENT_SECRET",
+        "GITBOOK_PROXY_URL",
+        "GITBOOK_PROXY_SECRET",
+        "REFLAG_SECRET_KEY"
     ],
     "tasks": {
         "build": {
