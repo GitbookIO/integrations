@@ -1,11 +1,6 @@
 import { ConversationInput, ConversationPart, IntegrationInstallation } from '@gitbook/api';
 import { SlackInstallationConfiguration, SlackRuntimeContext } from '../configuration';
-import {
-    getSlackThread,
-    parseSlackConversationPermalink,
-    slackAPI,
-    SlackConversationThread,
-} from '../slack';
+import { getSlackThread, slackAPI, SlackConversationThread } from '../slack';
 import { getInstallationApiClient, getIntegrationInstallationForTeam } from '../utils';
 import { IngestSlackConversationActionParams } from './types';
 import { Logger } from '@gitbook/runtime';
@@ -16,7 +11,7 @@ const logger = Logger('slack:actions:ingestConversation');
  * Ingest the slack conversation to GitBook aiming at improving the organization docs.
  */
 export async function ingestSlackConversation(params: IngestSlackConversationActionParams) {
-    const { channelId, threadId, context, teamId } = params;
+    const { channelId, threadId, context, teamId, conversationToIngest } = params;
 
     const installation = await getIntegrationInstallationForTeam(context, teamId);
     if (!installation) {
@@ -26,44 +21,6 @@ export async function ingestSlackConversation(params: IngestSlackConversationAct
     const accessToken = (installation.configuration as SlackInstallationConfiguration)
         .oauth_credentials?.access_token;
 
-    const permalink = params.text;
-    const isIngestedFromLink = !!permalink;
-
-    const conversationToIngest: IngestSlackConversationActionParams['conversationToIngest'] =
-        (() => {
-            if (permalink) {
-                try {
-                    return parseSlackConversationPermalink(permalink);
-                } catch (error) {
-                    logger.debug(
-                        `⚠️ We couldn’t understand that link. Please check it and try again.`,
-                        error,
-                    );
-                }
-            }
-
-            return params.conversationToIngest;
-        })();
-
-    if (!conversationToIngest) {
-        await slackAPI(
-            context,
-            {
-                method: 'POST',
-                path: 'chat.postMessage',
-                payload: {
-                    channel: channelId,
-                    text: `⚠️ We couldn’t get the conversation details. Please try again.`,
-                },
-            },
-            {
-                accessToken,
-            },
-        );
-
-        return;
-    }
-
     await Promise.all([
         slackAPI(
             context,
@@ -72,15 +29,8 @@ export async function ingestSlackConversation(params: IngestSlackConversationAct
                 path: 'chat.postMessage',
                 payload: {
                     channel: channelId,
-                    ...(isIngestedFromLink
-                        ? {
-                              markdown_text: `🚀 Sharing [this conversation](${permalink}) with Docs Agent to improve your docs...`,
-                          }
-                        : {
-                              text: `🚀 Sharing this conversation with Docs Agent to improve your docs...`,
-                          }),
+                    text: `🚀 Sharing this conversation with Docs Agent to improve your docs...`,
                     thread_ts: threadId,
-                    unfurl_links: isIngestedFromLink,
                 },
             },
             {

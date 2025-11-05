@@ -1,7 +1,7 @@
 import { Logger } from '@gitbook/runtime';
 
 import type { SlashEvent } from './commands';
-import { ingestSlackConversation, queryAskAI } from '../actions';
+import { queryAskAI } from '../actions';
 import { SlackRuntimeContext } from '../configuration';
 import { isAllowedToRespond, stripBotName } from '../utils';
 
@@ -12,55 +12,9 @@ const logger = Logger('slack:handlers');
 //
 
 /**
- * Handle /gitbook slack command request by routing to the correct subcommand handler.
- */
-export async function gitbookCommandHandler(slashEvent: SlashEvent, context: SlackRuntimeContext) {
-    const { subcommand, subcommandText } = parseGitBookCommand(slashEvent.text);
-
-    switch (subcommand) {
-        case 'ingest':
-            return ingestConversationSubCommandHandler(
-                { ...slashEvent, text: subcommandText },
-                context,
-            );
-        case 'ask':
-        default:
-            return askAISubCommandHandler(
-                {
-                    ...slashEvent,
-                    text: subcommandText,
-                },
-                context,
-            );
-    }
-}
-
-/**
- * Handle an ingest slack conversation subcommand.
- */
-async function ingestConversationSubCommandHandler(
-    slashEvent: SlashEvent,
-    context: SlackRuntimeContext,
-) {
-    const { team_id, channel_id, channel_name, user_id, thread_ts, response_url, text } =
-        slashEvent;
-
-    return ingestSlackConversation({
-        channelId: channel_id,
-        channelName: channel_name,
-        responseUrl: response_url,
-        teamId: team_id,
-        threadId: thread_ts,
-        userId: user_id,
-        context,
-        text,
-    });
-}
-
-/**
  * Handle an askAI subcommand.
  */
-async function askAISubCommandHandler(slashEvent: SlashEvent, context: SlackRuntimeContext) {
+export async function askAICommandHandler(slashEvent: SlashEvent, context: SlackRuntimeContext) {
     // pull out required params from the slashEvent for queryAskAI
     const { team_id, channel_id, thread_ts, user_id, text, channel_name, response_url } =
         slashEvent;
@@ -82,33 +36,6 @@ async function askAISubCommandHandler(slashEvent: SlashEvent, context: SlackRunt
         logger.error('Error calling queryAskAI. Perhaps no installation was found?');
         return {};
     }
-}
-
-const GITBOOK_COMMANDS = ['ask', 'ingest', 'help'] as const;
-type GitBookCommand = (typeof GITBOOK_COMMANDS)[number];
-
-function isGitBookCommand(value: string): value is GitBookCommand {
-    return (GITBOOK_COMMANDS as readonly string[]).includes(value);
-}
-
-function parseGitBookCommand(commandText: string): {
-    subcommand: GitBookCommand;
-    subcommandText: string;
-} {
-    const tokens = commandText.trim().split(/\s+/);
-    const subcommand = tokens[0];
-
-    if (isGitBookCommand(subcommand)) {
-        return {
-            subcommand,
-            subcommandText: tokens.slice(1).join(' '),
-        };
-    }
-
-    return {
-        subcommand: 'ask',
-        subcommandText: commandText,
-    };
 }
 
 //

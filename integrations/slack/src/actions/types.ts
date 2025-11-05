@@ -15,7 +15,7 @@ interface ActionBaseParams {
     threadId?: string;
 }
 
-interface IngestSlackConversationWithConversation extends ActionBaseParams {
+export interface IngestSlackConversationActionParams extends ActionBaseParams {
     /**
      * Used when the ingestion originates from a Slack conversation shortcut.
      * The target conversation in this case is both the conversation to ingest
@@ -26,28 +26,7 @@ interface IngestSlackConversationWithConversation extends ActionBaseParams {
         channelId: string;
         messageTs: string;
     };
-    /**
-     * Not present when the ingestion is triggered directly from the conversation shortcut context.
-     */
-    text?: never;
 }
-
-interface IngestSlackConversationWithText extends ActionBaseParams {
-    /**
-     * Used when the ingestion originates from outside the conversation to ingest,
-     * for example from a slash command that includes a permalink in the command text.
-     * The `text` field contains the permalink identifying the target conversation.
-     */
-    text: string;
-    /**
-     * Not present when the ingestion is triggered using a text or link reference.
-     */
-    conversationToIngest?: never;
-}
-
-export type IngestSlackConversationActionParams =
-    | IngestSlackConversationWithConversation
-    | IngestSlackConversationWithText;
 
 export interface AskAIActionParams extends ActionBaseParams {
     queryText: string;

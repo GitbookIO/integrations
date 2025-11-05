@@ -167,32 +167,6 @@ export async function getSlackThread(
 }
 
 /**
- * Extracts channel ID and message timestamp from a Slack thread/conversation permalink.
- */
-export function parseSlackConversationPermalink(permalink: string): {
-    channelId: string;
-    messageTs: string;
-} {
-    let url: URL;
-
-    try {
-        url = new URL(permalink);
-    } catch {
-        throw new Error(`Invalid URL: ${permalink}`);
-    }
-
-    const match = url.pathname.match(/^\/archives\/([A-Z0-9]+)\/p(\d+)$/);
-    if (!match) {
-        throw new Error(`Invalid Slack permalink path format: ${url.pathname}`);
-    }
-
-    const [, channelId, rawTs] = match;
-    const messageTs = `${rawTs.slice(0, 10)}.${rawTs.slice(10)}`;
-
-    return { channelId, messageTs };
-}
-
-/**
  * Executes a Slack API request to fetch channels, handles pagination, then returns the merged
  * results.
  */

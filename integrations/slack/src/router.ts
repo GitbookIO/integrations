@@ -15,12 +15,12 @@ import {
     slackActionsHandler,
     messageEventHandler,
     appMentionEventHandler,
-    gitbookCommandHandler,
+    askAICommandHandler,
 } from './handlers';
 import { unfurlLink } from './links';
 import { verifySlackRequest, acknowledgeSlackRequest } from './middlewares';
 import { getChannelsPaginated } from './slack';
-import { handleAskAITask, handleIngestSlackConversationAction, IntegrationTask } from './actions';
+import { handleAskAITask, IntegrationTask } from './actions';
 
 const logger = Logger('slack');
 
@@ -152,8 +152,8 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         '/commands',
         verifySlackRequest,
         createSlackCommandsHandler({
-            '/gitbook': gitbookCommandHandler,
-            '/gitbookstaging': gitbookCommandHandler, // needed to allow our staging app to co-exist with the prod app
+            '/gitbook': askAICommandHandler,
+            '/gitbookstaging': askAICommandHandler, // needed to allow our staging app to co-exist with the prod app
         }),
         acknowledgeSlackRequest,
     );
