@@ -1,5 +1,11 @@
 # @gitbook/integration-gitlab
 
+## 0.6.1
+
+### Patch Changes
+
+- 2d4e05d: Add logs
+
 ## 0.6.0
 
 ### Minor Changes
