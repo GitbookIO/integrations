@@ -81,6 +81,10 @@ jobs:
               run: bun run check
               env:
                   OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+                  # Proxy
+                  GITBOOK_PROXY_URL: ${{ secrets.PROXY_STAGING_URL }}
+                  GITBOOK_PROXY_SECRET: ${{ secrets.PROXY_STAGING_SECRET }}
+                  REFLAG_SECRET_KEY: ${{ secrets.REFLAG_STAGING_SECRET_KEY }}
                   # GitHub Files
                   UNFURL_GITHUB_CLIENT_ID: ${{ secrets.UNFURL_GITHUB_CLIENT_ID }}
                   UNFURL_GITHUB_CLIENT_SECRET: ${{ secrets.UNFURL_GITHUB_CLIENT_SECRET }}

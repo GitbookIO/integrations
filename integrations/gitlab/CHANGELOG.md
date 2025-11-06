@@ -1,5 +1,23 @@
 # @gitbook/integration-gitlab
 
+## 0.6.2
+
+### Patch Changes
+
+- 8571f6c: remove useless logs
+
+## 0.6.1
+
+### Patch Changes
+
+- 2d4e05d: Add logs
+
+## 0.6.0
+
+### Minor Changes
+
+- f10d08a: Add support for custom proxy
+
 ## 0.5.3
 
 ### Patch Changes

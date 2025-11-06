@@ -33,14 +33,15 @@
 * [Authentication](gitbook-api/authentication.md)
 * [API reference](gitbook-api/api-reference/README.md)
   * ```yaml
+    type: builtin:openapi
     props:
       models: false
+      downloadLink: true
     dependencies:
       spec:
         ref:
           kind: openapi
           spec: gitbook
-    type: builtin:openapi
     ```
 * [Rate limiting](gitbook-api/rate-limiting.md)
 * [Pagination](gitbook-api/pagination.md)

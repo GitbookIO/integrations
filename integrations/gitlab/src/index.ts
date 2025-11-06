@@ -164,6 +164,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
         if (querySelectedProject) {
             try {
                 const selectedProject = await fetchProject(
+                    context,
                     spaceConfig,
                     parseInt(querySelectedProject, 10),
                 );
@@ -180,7 +181,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
 
         if (queryProject) {
             const q = encodeURIComponent(queryProject);
-            const searchedProjects = await searchUserProjects(spaceConfig, q, {
+            const searchedProjects = await searchUserProjects(context, spaceConfig, q, {
                 page: 1,
                 per_page: 100,
                 walkPagination: false,
@@ -201,7 +202,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
             });
         } else {
             const page = pageNumber || 1;
-            const projects = await fetchProjects(spaceConfig, {
+            const projects = await fetchProjects(context, spaceConfig, {
                 page,
                 per_page: 100,
                 walkPagination: false,
@@ -251,7 +252,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
         const querySelectedBranch =
             selectedBranch && typeof selectedBranch === 'string' ? selectedBranch : undefined;
 
-        const branches = projectId ? await fetchProjectBranches(config, projectId) : [];
+        const branches = projectId ? await fetchProjectBranches(context, config, projectId) : [];
 
         const data = branches.map(
             (branch): ContentKitSelectOption => ({
@@ -405,7 +406,7 @@ const handleSpaceInstallationDeleted: EventCallback<
         return;
     }
 
-    await uninstallWebhook(configuration);
+    await uninstallWebhook(context, configuration);
 };
 
 export default createIntegration({

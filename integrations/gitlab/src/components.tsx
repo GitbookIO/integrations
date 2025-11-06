@@ -68,7 +68,7 @@ export const configBlock = createComponent<
                         : undefined,
                 };
 
-                const glUser = await getCurrentUser(config);
+                const glUser = await getCurrentUser(context, config);
 
                 await context.api.integrations.updateIntegrationSpaceInstallation(
                     spaceInstallation.integration,
@@ -149,7 +149,7 @@ export const configBlock = createComponent<
 
             case 'save.configuration': {
                 await saveSpaceConfiguration(context, element.state);
-                return { type: 'complete' };
+                return { type: 'complete' as const };
             }
         }
     },
