@@ -276,9 +276,8 @@ async function requestGitLab(
     url: URL,
     options: RequestInit = {},
 ): Promise<Response> {
-    logger.debug(`GitLab API -> [${options.method}] ${url.toString()}`);
-    // Hardcoded test org, will need to switch to use Reflag for that.
     const useProxy = await shouldUseProxy(context);
+    logger.debug(`GitLab API -> [${options.method}] ${url.toString()}, using proxy: ${useProxy}`);
     const response = useProxy
         ? await proxyRequest(context, url.toString(), {
               ...options,
@@ -380,7 +379,6 @@ export async function shouldUseProxy(context: GitLabRuntimeContext): Promise<boo
 
         return flag.isEnabled;
     } catch (e) {
-        logger.debug('Error checking Reflag feature flag:', e);
         return false;
     }
 }
