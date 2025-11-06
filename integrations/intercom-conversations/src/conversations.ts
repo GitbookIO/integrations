@@ -20,9 +20,13 @@ export async function ingestLastClosedIntercomConversations(context: IntercomRun
     const intercomClient = await getIntercomClient(context);
 
     let pageIndex = 0;
-    const perPage = 100;
-    const maxPages = 7; // Keep under ~1000 subrequest limit. Calc: 7 pages * 100 items ≈ 700 detail calls + 7 search page calls ≈ ~707 Intercom calls (+7 GitBook ingests ≈ ~714 total).
+    const perPage = 50;
+    const maxPages = 14; // 14 pages * 50 items ≈ 14 search page calls.
     let totalConvsToIngest = 0;
+
+    logger.info(
+        `Conversation ingestion started. A maximum of ${maxPages * perPage} conversations will be processed.`,
+    );
 
     let page = await intercomClient.conversations.search(
         {
@@ -44,9 +48,7 @@ export async function ingestLastClosedIntercomConversations(context: IntercomRun
         },
     );
 
-    logger.info(
-        `Conversation ingestion started. A maximum of ${maxPages * perPage} conversations will be processed.`,
-    );
+    logger.info(`First page of conversation fetched.`);
 
     const tasks: Array<IntercomIntegrationTask> = [];
     while (pageIndex < maxPages) {
@@ -67,8 +69,11 @@ export async function ingestLastClosedIntercomConversations(context: IntercomRun
             break;
         }
 
+        logger.info(`Fetching next page ${pageIndex + 1}.`);
         page = await page.getNextPage();
     }
+
+    logger.info(`Queuing ${tasks.length} tasks to ingest intercom closed conversations...`);
 
     await pMap(tasks, async (task) => queueIntercomIntegrationTask(context, task), {
         concurrency: 3,
