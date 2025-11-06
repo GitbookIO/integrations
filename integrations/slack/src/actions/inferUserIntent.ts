@@ -45,6 +45,38 @@ export async function inferUserIntentAndTriggerAction(
 
     logger.debug('Infering user intent from message', userMessage);
 
+    const installation = await getIntegrationInstallationForTeam(context, teamId);
+    if (!installation) {
+        throw new Error('Installation not found');
+    }
+    const installationConfiguration = installation.configuration as SlackInstallationConfiguration;
+    const accessToken = installationConfiguration.oauth_credentials?.access_token;
+    const accessTokenScopes = installationConfiguration.oauth_credentials?.requested_scopes || [];
+
+    // Installations created before the Docs Agents feature was released may not have a token with the
+    // required scope to call this API. Since this is non-blocking, we skip the API call if the token lacks
+    // the necessary permission.
+    if (accessTokenScopes.includes('assistant:write')) {
+        await slackAPI(
+            context,
+            {
+                method: 'POST',
+                path: 'assistant.threads.setStatus',
+                payload: {
+                    channel_id: channelId,
+                    thread_ts: threadTs,
+                    status: 'is working on your request...',
+                    loading_messages: [
+                        'Reading your message…',
+                        'Understanding your request…',
+                        'Determining the best action…',
+                    ],
+                },
+            },
+            { accessToken },
+        );
+    }
+
     const result = await generateText({
         model: openai('gpt-5-nano'),
         messages: [
@@ -103,13 +135,6 @@ You are a Slack assistant designed to help users with their product documentatio
             })
             .filter((content) => content && content.type === 'text');
         const lastAssistantMessage = assistantMessages.pop();
-
-        const installation = await getIntegrationInstallationForTeam(context, teamId);
-        if (!installation) {
-            throw new Error('Installation not found');
-        }
-        const accessToken = (installation.configuration as SlackInstallationConfiguration)
-            .oauth_credentials?.access_token;
 
         await slackAPI(
             context,

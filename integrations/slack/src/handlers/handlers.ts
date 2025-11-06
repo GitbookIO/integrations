@@ -80,19 +80,20 @@ export async function messageEventHandler(eventPayload: any, context: SlackRunti
  */
 export async function appMentionEventHandler(eventPayload: any, context: SlackRuntimeContext) {
     // pull out required params from the slashEvent for queryAskAI
-    const { type, text, thread_ts, channel, user, team, response_url } = eventPayload.event;
+    const { type, text, channel, ts, thread_ts, user, team } = eventPayload.event;
 
     // check for bot_id so that the bot doesn't trigger itself
     if (['message', 'app_mention'].includes(type) && isAllowedToRespond(eventPayload)) {
         // strip out the bot-name in the mention and account for user mentions within the query
         // @ts-ignore
         const parsedMessage = stripBotName(text, eventPayload.authorizations[0]?.user_id);
+        logger.info('Received payload', JSON.stringify(eventPayload));
 
         context.waitUntil(
             inferUserIntentAndTriggerAction(
                 {
                     channelId: channel,
-                    threadTs: thread_ts,
+                    threadTs: thread_ts ?? ts,
                     userId: user,
                     teamId: team,
                     userMessage: parsedMessage,
