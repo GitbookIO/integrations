@@ -48,8 +48,6 @@ export async function ingestLastClosedIntercomConversations(context: IntercomRun
         },
     );
 
-    logger.info(`First page of conversation fetched.`);
-
     const tasks: Array<IntercomIntegrationTask> = [];
     while (pageIndex < maxPages) {
         pageIndex += 1;
@@ -69,7 +67,6 @@ export async function ingestLastClosedIntercomConversations(context: IntercomRun
             break;
         }
 
-        logger.info(`Fetching next page ${pageIndex + 1}.`);
         page = await page.getNextPage();
     }
 
