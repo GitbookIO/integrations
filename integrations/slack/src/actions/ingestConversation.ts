@@ -1,7 +1,11 @@
 import { ConversationInput, ConversationPart, IntegrationInstallation } from '@gitbook/api';
 import { SlackInstallationConfiguration, SlackRuntimeContext } from '../configuration';
 import { getSlackThread, slackAPI, SlackConversationThread } from '../slack';
-import { getInstallationApiClient, getIntegrationInstallationForTeam } from '../utils';
+import {
+    getInstallationApiClient,
+    getIntegrationInstallationForTeam,
+    isDocsAgentsConversationsEnabled,
+} from '../utils';
 import { IngestSlackConversationActionParams } from './types';
 import { Logger } from '@gitbook/runtime';
 
@@ -21,6 +25,11 @@ export async function ingestSlackConversation(params: IngestSlackConversationAct
     const accessToken = (installation.configuration as SlackInstallationConfiguration)
         .oauth_credentials?.access_token;
 
+    const isDocsAgentsEnabled = await isDocsAgentsConversationsEnabled({
+        organizationId: installation.target.organization,
+        context,
+    });
+
     await Promise.all([
         slackAPI(
             context,
@@ -29,7 +38,9 @@ export async function ingestSlackConversation(params: IngestSlackConversationAct
                 path: 'chat.postMessage',
                 payload: {
                     channel: channelId,
-                    text: `🚀 Sharing this conversation with Docs Agent to improve your docs...`,
+                    text: isDocsAgentsEnabled
+                        ? `🚀 Sharing this conversation with Docs Agent to improve your docs...`
+                        : `✨ Docs Agent is currently in private alpha.\n\nRequest early access for your organization: https://app.gitbook.com/o/${installation.target.organization}/agents`,
                     thread_ts: threadId,
                 },
             },
@@ -37,16 +48,18 @@ export async function ingestSlackConversation(params: IngestSlackConversationAct
                 accessToken,
             },
         ),
-        handleIngestSlackConversationAction(
-            {
-                channelId,
-                threadId,
-                installation,
-                accessToken,
-                conversationToIngest,
-            },
-            context,
-        ),
+        isDocsAgentsEnabled
+            ? handleIngestSlackConversationAction(
+                  {
+                      channelId,
+                      threadId,
+                      installation,
+                      accessToken,
+                      conversationToIngest,
+                  },
+                  context,
+              )
+            : Promise.resolve(),
     ]);
 }
 
