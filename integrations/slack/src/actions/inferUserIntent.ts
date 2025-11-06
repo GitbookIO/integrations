@@ -53,20 +53,23 @@ export async function inferUserIntentAndTriggerAction(
                 content: `
 You are a Slack assistant designed to help users with their product documentation.
 
-# Instructions:
+# Instructions
 1. Determine the user's intent from the message.
 2. Select the appropriate tool from the available tools listed below based on the user's intent to handle the request.
 3. If the intent is unclear, politely ask the user for clarification.
 4. Only return freeform text asking for clarification to the user when no tool clearly applies.
 
-# Tools:
+# Tools
 - **askAIQuery**: Use when the user is clearly asking a question about their product, features, documentation, or content.
-- **ingestConversation**: Use to ingest the current Slack thread so that any feedback or information from the conversation can be used to improve the user's documentation. Only call this tool when the user explicitly asks to ingest, learn from the thread to improve their docs.
+- **ingestConversation**: Use to ingest the current Slack thread so that any feedback or discussion can be used to improve the user's documentation.  
+  - When a user refers to “this feedback,” “this conversation,” or similar phrases without specifying details, infer that they mean the feedback in the current Slack thread.  
+  - Do **not** ask for clarification unless it’s genuinely ambiguous (for example, if the user mentions feedback from another source).
 
-# Rules:
+# Rules
 - Always pick the tool that best matches the user's intent.
-- Do not make assumptions; base your decision solely on the current message.
-- Ask for clarification in a polite, friendly tone if unsure.
+- Be concise and polite when asking for clarification.
+- Make reasonable inferences from context — for example, “this feedback” refers to the current thread.
+- Base decisions solely on the current message and its immediate context.
 `,
             },
             {
@@ -79,17 +82,34 @@ You are a Slack assistant designed to help users with their product documentatio
 
     // If no tool was called, the AI couldn't get the user intent with confidence so ask for clarifications.
     if (!result.toolCalls || result.toolCalls.length === 0) {
+        logger.debug(
+            'Could not infer intent based on the message, asking for clarification. AI result: ',
+            JSON.stringify(result.response),
+        );
+
+        const assistantMessages = result.response.messages
+            .filter((msg) => msg.role === 'assistant')
+            .flatMap((msg) => {
+                const { content } = msg;
+                if (Array.isArray(content)) {
+                    return content;
+                }
+                return [
+                    {
+                        type: 'text',
+                        text: content,
+                    },
+                ] as const;
+            })
+            .filter((content) => content && content.type === 'text');
+        const lastAssistantMessage = assistantMessages.pop();
+
         const installation = await getIntegrationInstallationForTeam(context, teamId);
         if (!installation) {
             throw new Error('Installation not found');
         }
         const accessToken = (installation.configuration as SlackInstallationConfiguration)
             .oauth_credentials?.access_token;
-
-        logger.debug(
-            'Could not infer intent based on the message, asking for clarification. AI result: ',
-            JSON.stringify(result),
-        );
 
         await slackAPI(
             context,
@@ -99,16 +119,18 @@ You are a Slack assistant designed to help users with their product documentatio
                 payload: {
                     channel: channelId,
                     thread_ts: threadTs,
-                    text: `⚠️ Oops, I didn’t quite catch what you want me to do. Could you clarify?`,
+                    text: lastAssistantMessage
+                        ? lastAssistantMessage.text
+                        : `⚠️ Oops, I didn’t quite catch what you want me to do. Could you clarify?`,
                 },
             },
             { accessToken },
         );
 
-        logger.debug('Actions called based on the user message:', JSON.stringify(result.toolCalls));
-
         return;
     }
+
+    logger.debug('Actions called based on the user message:', JSON.stringify(result.toolCalls));
 }
 
 function getActionsTools(
