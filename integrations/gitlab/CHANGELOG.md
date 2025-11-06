@@ -1,5 +1,11 @@
 # @gitbook/integration-gitlab
 
+## 0.6.2
+
+### Patch Changes
+
+- 8571f6c: remove useless logs
+
 ## 0.6.1
 
 ### Patch Changes
