@@ -1,0 +1,68 @@
+name: vaultrice-voting-widget
+title: Vaultrice Voting Integration
+description: Add interactive voting widgets to your GitBook documentation with real-time results.
+visibility: public
+organization: lTQNmOvSMj7VuZMuxuG8
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/voting-preview.png
+    - ./assets/install-config.png
+    - ./assets/widget-config.png
+summary: |
+    # Overview
+
+    The Vaultrice Voting Integration allows you to embed interactive voting widgets directly into your GitBook pages. Users can vote on options and see real-time results without requiring any backend infrastructure.
+
+    # Features
+
+    - **Real-time voting**: Vote counts update instantly across all clients
+    - **No backend required**: Powered by Vaultrice's encrypted key-value storage
+    - **Persistent results**: Vote data is stored securely and persists across sessions
+    - **Customizable**: Configure titles, descriptions, and voting options
+
+    # How it works
+
+    Once installed, you can insert voting widgets into any page. Configure the voting options, title, and description through the block editor. Results are displayed in real-time as users vote.
+
+# Integration script (we'll return this from fetch_published_script)
+script: ./src/index.ts
+
+blocks:
+    - id: vote-block
+      title: Vaultrice Voting Widget
+      description: Insert a Vaultrice voting widget.
+      categories:
+          - content
+          - other
+
+# Integration user-configurable settings
+configurations:
+    account:
+        properties:
+            projectId:
+                type: string
+                title: Vaultrice Project ID
+                description: 'Create an account and paste your Project ID. (like here: https://www.vaultrice.com/docs/quickstart)'
+            apiKey:
+                type: string
+                title: Vaultrice API Key
+                description: 'Create an account and paste your API Key. (like here: https://www.vaultrice.com/docs/quickstart)'
+            apiSecret:
+                type: string
+                title: Vaultrice API Secret
+                description: 'Create an account and paste your API Secret. (like here: https://www.vaultrice.com/docs/quickstart)'
+        required:
+            - projectId
+            - apiKey
+            - apiSecret
+
+# Scopes your integration needs
+scopes: []
+
+externalLinks:
+    - label: Vaultrice Website
+      url: https://www.vaultrice.com
+    - label: Vaultrice App
+      url: https://www.vaultrice.app
+
+target: space

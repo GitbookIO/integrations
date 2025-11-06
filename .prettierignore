@@ -26,3 +26,4 @@ docs
 
 ## Project specific ignores
 integrations/runkit/src/webframe.ts
+integrations/vaultrice-voting/src/script.raw.js

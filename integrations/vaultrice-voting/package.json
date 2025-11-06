@@ -1,0 +1,28 @@
+{
+    "name": "@gitbook/integration-vaultrice-voting",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+        "@types/react": "^19.1.13",
+        "@types/react-dom": "^19.1.9",
+        "@vaultrice/react-components": "^1.2.1",
+        "@vitejs/plugin-react": "5.0.2",
+        "react": "19.1.1",
+        "react-dom": "19.1.1",
+        "vite": "7.1.5"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "build:widget": "vite build --config vite.widget.config.ts && mv dist/voting.mjs src/script.raw.js",
+        "build": "bun run build:widget",
+        "publish-integrations-staging": "bun run build && gitbook publish .",
+        "check": "gitbook check",
+        "publish-integrations": "bun run build && gitbook publish ."
+    }
+}
