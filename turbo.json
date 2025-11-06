@@ -20,6 +20,7 @@
         "SLACK_CLIENT_ID",
         "SLACK_CLIENT_SECRET",
         "SLACK_SIGNING_SECRET",
+        "SLACK_OPENAI_API_KEY",
         "FIGMA_CLIENT_ID",
         "FIGMA_CLIENT_SECRET",
         "MAILCHIMP_CLIENT_ID",
