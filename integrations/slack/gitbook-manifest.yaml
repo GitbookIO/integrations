@@ -79,4 +79,30 @@ secrets:
     CLIENT_SECRET: ${{ env.SLACK_CLIENT_SECRET }}
     SIGNING_SECRET: ${{ env.SLACK_SIGNING_SECRET }}
     OPENAI_API_KEY: ${{ env.SLACK_OPENAI_API_KEY }}
+envs:
+    dev-steeve:
+        organization: idE5kUnGGjoPGcbu3FZJ
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-integrations/slackDevSteeve/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/slackDevSteeve/CLIENT_SECRET" }}
+            SIGNING_SECRET: ${{ "op://gitbook-integrations/slackDevSteeve/SIGNING_SECRET" }}
+            OPENAI_API_KEY: ${{ "op://gitbook-integrations/slackDevSteeve/OPENAI_API_KEY" }}
+    test:
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-integrations/slackStaging/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/slackStaging/CLIENT_SECRET" }}
+            SIGNING_SECRET: ${{ "op://gitbook-integrations/slackStaging/SIGNING_SECRET" }}
+            OPENAI_API_KEY: ${{ "op://gitbook-integrations/slackStaging/OPENAI_API_KEY" }}
+    staging:
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-integrations/slackStaging/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/slackStaging/CLIENT_SECRET" }}
+            SIGNING_SECRET: ${{ "op://gitbook-integrations/slackStaging/SIGNING_SECRET" }}
+            OPENAI_API_KEY: ${{ "op://gitbook-integrations/slackStaging/OPENAI_API_KEY" }}
+    prod:
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-integrations/slackProd/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/slackProd/CLIENT_SECRET" }}
+            SIGNING_SECRET: ${{ "op://gitbook-integrations/slackProd/SIGNING_SECRET" }}
+            OPENAI_API_KEY: ${{ "op://gitbook-integrations/slackProd/OPENAI_API_KEY" }}
 target: space
