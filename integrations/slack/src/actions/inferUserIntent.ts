@@ -45,44 +45,49 @@ export async function inferUserIntentAndTriggerAction(
 
     logger.debug('Infering user intent from message', userMessage);
 
-    const installation = await getIntegrationInstallationForTeam(context, teamId);
-    if (!installation) {
-        throw new Error('Installation not found');
-    }
-    const installationConfiguration = installation.configuration as SlackInstallationConfiguration;
-    const accessToken = installationConfiguration.oauth_credentials?.access_token;
-    const accessTokenScopes = installationConfiguration.oauth_credentials?.requested_scopes || [];
+    const [accessToken, result] = await Promise.all([
+        (async () => {
+            const installation = await getIntegrationInstallationForTeam(context, teamId);
+            if (!installation) {
+                throw new Error('Installation not found');
+            }
+            const installationConfiguration =
+                installation.configuration as SlackInstallationConfiguration;
+            const accessToken = installationConfiguration.oauth_credentials?.access_token;
+            const accessTokenScopes =
+                installationConfiguration.oauth_credentials?.requested_scopes || [];
 
-    // Installations created before the Docs Agents feature was released may not have a token with the
-    // required scope to call this API. Since this is non-blocking, we skip the API call if the token lacks
-    // the necessary permission.
-    if (accessTokenScopes.includes('assistant:write')) {
-        await slackAPI(
-            context,
-            {
-                method: 'POST',
-                path: 'assistant.threads.setStatus',
-                payload: {
-                    channel_id: channelId,
-                    thread_ts: threadTs,
-                    status: 'is working on your request...',
-                    loading_messages: [
-                        'Reading your message…',
-                        'Understanding your request…',
-                        'Determining the best action…',
-                    ],
-                },
-            },
-            { accessToken },
-        );
-    }
-
-    const result = await generateText({
-        model: openai('gpt-5-nano'),
-        messages: [
-            {
-                role: 'system',
-                content: `
+            // Installations created before the Docs Agents feature was released may not have a token with the
+            // required scope to call this API. Since this is non-blocking, we skip the API call if the token lacks
+            // the necessary permission.
+            if (accessTokenScopes.includes('assistant:write')) {
+                await slackAPI(
+                    context,
+                    {
+                        method: 'POST',
+                        path: 'assistant.threads.setStatus',
+                        payload: {
+                            channel_id: channelId,
+                            thread_ts: threadTs,
+                            status: 'is working on your request...',
+                            loading_messages: [
+                                'Reading your message…',
+                                'Understanding your request…',
+                                'Determining the best action…',
+                            ],
+                        },
+                    },
+                    { accessToken },
+                );
+            }
+            return accessToken;
+        })(),
+        generateText({
+            model: openai('gpt-5-nano'),
+            messages: [
+                {
+                    role: 'system',
+                    content: `
 You are a Slack assistant designed to help users with their product documentation.
 
 # Instructions
@@ -103,14 +108,15 @@ You are a Slack assistant designed to help users with their product documentatio
 - Make reasonable inferences from context — for example, “this feedback” refers to the current thread.
 - Base decisions solely on the current message and its immediate context.
 `,
-            },
-            {
-                role: 'user',
-                content: userMessage,
-            },
-        ],
-        tools,
-    });
+                },
+                {
+                    role: 'user',
+                    content: userMessage,
+                },
+            ],
+            tools,
+        }),
+    ]);
 
     // If no tool was called, the AI couldn't get the user intent with confidence so ask for clarifications.
     if (!result.toolCalls || result.toolCalls.length === 0) {
