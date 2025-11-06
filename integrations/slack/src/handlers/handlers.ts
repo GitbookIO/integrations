@@ -87,7 +87,6 @@ export async function appMentionEventHandler(eventPayload: any, context: SlackRu
         // strip out the bot-name in the mention and account for user mentions within the query
         // @ts-ignore
         const parsedMessage = stripBotName(text, eventPayload.authorizations[0]?.user_id);
-        logger.info('Received payload', JSON.stringify(eventPayload));
 
         context.waitUntil(
             inferUserIntentAndTriggerAction(
