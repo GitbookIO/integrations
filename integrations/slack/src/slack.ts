@@ -14,6 +14,24 @@ type SlackChannel = {
     name: string;
 };
 
+export type SlackConversationThread = {
+    channelId: string;
+    messageTs: string;
+    link: string;
+    createdAt: string;
+    messages: SlackConversationMessage[];
+};
+
+type SlackConversationMessage = {
+    type: 'message';
+    user?: string;
+    text?: string;
+    ts: string;
+    thread_ts?: string;
+    reply_count?: number;
+    [key: string]: any; // Slack can include other fields like attachments, blocks, etc.
+};
+
 /**
  * Cloudflare workers have a maximum number of subrequests we can call (50 on a free account)
  * https://developers.cloudflare.com/workers/platform/limits/#how-many-subrequests-can-i-make
@@ -64,6 +82,88 @@ async function fetchChannelsByType(context: SlackRuntimeContext, types: string) 
     }
 
     return channels;
+}
+
+/**
+ * Retrieves a Slack thread with its replies.
+ */
+export async function getSlackThread(
+    context: SlackRuntimeContext,
+    params: { channelId: string; messageTs: string },
+    options: Parameters<typeof slackAPI>[2],
+): Promise<SlackConversationThread> {
+    const { channelId, messageTs } = params;
+    const messages: SlackConversationMessage[] = [];
+
+    let [convRepliesResponse, permalinkResponse] = await Promise.all([
+        slackAPI<{
+            messages: SlackConversationMessage[];
+            has_more?: boolean;
+            response_metadata?: { next_cursor?: string };
+        }>(
+            context,
+            {
+                method: 'GET',
+                path: 'conversations.replies',
+                payload: {
+                    channel: channelId,
+                    ts: messageTs,
+                    limit: 200,
+                },
+            },
+            options,
+        ),
+        slackAPI<{ permalink: string }>(
+            context,
+            {
+                method: 'GET',
+                path: 'chat.getPermalink',
+                payload: {
+                    channel: channelId,
+                    message_ts: messageTs,
+                },
+            },
+            options,
+        ),
+    ]);
+
+    messages.push(...(convRepliesResponse.messages || []));
+
+    let numberOfCalls = 0;
+    while (
+        convRepliesResponse.response_metadata?.next_cursor &&
+        numberOfCalls < maximumSubrequests
+    ) {
+        logger.debug('Request was paginated, calling the next cursor');
+        convRepliesResponse = await slackAPI(
+            context,
+            {
+                method: 'GET',
+                path: 'conversations.replies',
+                payload: {
+                    channel: channelId,
+                    ts: messageTs,
+                    limit: 200,
+                    cursor: convRepliesResponse.response_metadata.next_cursor,
+                },
+            },
+            options,
+        );
+
+        messages.push(...(convRepliesResponse.messages || []));
+        numberOfCalls++;
+    }
+
+    const parentMessage = messages[0];
+    const createdAt = new Date(parseFloat(parentMessage.ts) * 1000).toISOString();
+
+    return {
+        channelId,
+        messageTs,
+        link: permalinkResponse.permalink,
+        createdAt,
+        messages,
+    };
 }
 
 /**
@@ -147,7 +247,7 @@ export async function slackAPI<Result>(
         throw new Error(`${response.status} ${response.statusText}`);
     }
 
-    const result = await response.json<SlackResponse<Result>>();
+    const result = (await response.json()) as SlackResponse<Result>;
 
     if (!result.ok) {
         if (retriesLeft > 0) {
