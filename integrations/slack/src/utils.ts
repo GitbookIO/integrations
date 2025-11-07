@@ -148,3 +148,36 @@ export function isAllowedToRespond(eventPayload: any) {
 
     return !isFromBot && !isExternalChannel;
 }
+
+/**
+ * Check if Docs agents conversation is enabled for the organization.
+ *
+ * TODO: Remove when Docs agents reached general availability.
+ */
+export async function isDocsAgentsConversationsEnabled(params: {
+    organizationId: string;
+    context: SlackRuntimeContext;
+}): Promise<boolean> {
+    const { organizationId, context } = params;
+    try {
+        const response = await fetch(
+            `https://front.reflag.com/features/enabled?context.company.id=${organizationId}&key=DOCS_AGENTS_CONVERSATIONS`,
+            {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${context.environment.secrets.REFLAG_SECRET_KEY}`,
+                    'Content-Type': 'application/json',
+                },
+            },
+        );
+
+        const json = (await response.json()) as {
+            features: { DOCS_AGENTS_CONVERSATIONS: { isEnabled: boolean } };
+        };
+        const flag = json.features.DOCS_AGENTS_CONVERSATIONS;
+
+        return flag.isEnabled;
+    } catch (e) {
+        return false;
+    }
+}
