@@ -142,7 +142,6 @@ export async function queryAskAI(params: AskAIActionParams) {
         authorization,
         responseUrl,
     } = params;
-    const { api } = context;
 
     const askText = `_Asking: ${stripMarkdown(text)}_`;
     logger.info(`${askText} (channelId: ${channelId}, teamId: ${teamId}, userId: ${userId})`);

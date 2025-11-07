@@ -3,6 +3,7 @@ import { RuntimeContext, RuntimeEnvironment } from '@gitbook/runtime';
 export interface SlackInstallationConfiguration {
     oauth_credentials?: {
         access_token: string;
+        requested_scopes?: string[];
     };
 
     default_channel?: string;

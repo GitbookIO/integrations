@@ -1,7 +1,7 @@
 import { Logger } from '@gitbook/runtime';
 
 import type { SlashEvent } from './commands';
-import { queryAskAI } from '../actions';
+import { inferUserIntentAndTriggerAction, ingestSlackConversation, queryAskAI } from '../actions';
 import { SlackRuntimeContext } from '../configuration';
 import { isAllowedToRespond, stripBotName } from '../utils';
 
@@ -80,7 +80,7 @@ export async function messageEventHandler(eventPayload: any, context: SlackRunti
  */
 export async function appMentionEventHandler(eventPayload: any, context: SlackRuntimeContext) {
     // pull out required params from the slashEvent for queryAskAI
-    const { type, text, thread_ts, channel, user, team } = eventPayload.event;
+    const { type, text, channel, ts, thread_ts, user, team } = eventPayload.event;
 
     // check for bot_id so that the bot doesn't trigger itself
     if (['message', 'app_mention'].includes(type) && isAllowedToRespond(eventPayload)) {
@@ -88,17 +88,18 @@ export async function appMentionEventHandler(eventPayload: any, context: SlackRu
         // @ts-ignore
         const parsedMessage = stripBotName(text, eventPayload.authorizations[0]?.user_id);
 
-        // send to AskAI
-        await queryAskAI({
-            teamId: team,
-            channelId: channel,
-            threadId: thread_ts,
-            userId: user,
-            messageType: 'permanent',
-            queryText: parsedMessage,
-            context,
-            // @ts-ignore
-            authorization: eventPayload.authorizations[0],
-        });
+        context.waitUntil(
+            inferUserIntentAndTriggerAction(
+                {
+                    channelId: channel,
+                    threadTs: thread_ts ?? ts,
+                    userId: user,
+                    teamId: team,
+                    userMessage: parsedMessage,
+                    authorization: eventPayload.authorizations[0],
+                },
+                context,
+            ),
+        );
     }
 }

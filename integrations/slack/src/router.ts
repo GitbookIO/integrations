@@ -40,21 +40,6 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         ).pathname,
     });
 
-    const encodedScopes = encodeURIComponent(
-        [
-            'app_mentions:read',
-            'chat:write',
-            'channels:join',
-            'channels:read',
-            'groups:read',
-            'links:read',
-            'links:write',
-            'commands',
-            'channels:history',
-            'im:history',
-        ].join(' '),
-    );
-
     /**
      * Handle integration tasks
      */
@@ -88,6 +73,21 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         });
     });
 
+    const requestedScopes = [
+        'app_mentions:read',
+        'chat:write',
+        'channels:join',
+        'channels:read',
+        'groups:read',
+        'links:read',
+        'links:write',
+        'commands',
+        'channels:history',
+        'im:history',
+        'assistant:write',
+    ];
+    const encodedScopes = encodeURIComponent(requestedScopes.join(' '));
+
     /*
      * Authenticate the user using OAuth.
      */
@@ -115,7 +115,10 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
                 return {
                     externalIds: [response.team.id],
                     configuration: {
-                        oauth_credentials: { access_token: response.access_token },
+                        oauth_credentials: {
+                            access_token: response.access_token,
+                            requested_scopes: requestedScopes,
+                        },
                     },
                 };
             },

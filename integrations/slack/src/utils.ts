@@ -76,12 +76,12 @@ export async function getInstallationConfig(context: SlackRuntimeContext, extern
 
 export async function parseEventPayload(req: Request) {
     // Clone the request so its body is still available to the fallback
-    const event = await req.clone().json<{
+    const event = (await req.clone().json()) as {
         event?: { type: string; [key: string]: any };
         type?: string;
         bot_id?: string;
         is_ext_shared_channel?: boolean;
-    }>(); // TODO: untyping this for now
+    };
 
     return event;
 }
