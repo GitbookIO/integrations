@@ -29,6 +29,7 @@ export async function ingestSlackConversation(params: IngestSlackConversationAct
         organizationId: installation.target.organization,
         context,
     });
+    const appOrgURL = installation.urls.app.replace('/integrations/slack', '');
 
     await Promise.all([
         slackAPI(
@@ -40,7 +41,7 @@ export async function ingestSlackConversation(params: IngestSlackConversationAct
                     channel: channelId,
                     text: isDocsAgentsEnabled
                         ? `🚀 Sharing this conversation with Docs Agent to improve your docs...`
-                        : `✨ Docs Agent is currently in private alpha.\n\nRequest early access for your organization: https://app.gitbook.com/o/${installation.target.organization}/agents`,
+                        : `✨ Docs Agent is currently in private alpha.\n\nRequest early access for your organization: ${appOrgURL}/agents`,
                     thread_ts: threadId,
                 },
             },
