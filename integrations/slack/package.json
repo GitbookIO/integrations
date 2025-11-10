@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-slack",
-    "version": "2.5.3",
+    "version": "2.6.0",
     "private": true,
     "dependencies": {
         "@ai-sdk/openai": "^2.0.62",
