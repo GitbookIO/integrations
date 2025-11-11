@@ -1,5 +1,6 @@
 name: wistia
 title: Wistia
+organization: gitbook
 icon: ./assets/icon.svg
 previewImages:
     - ./assets/wistia-preview.png
