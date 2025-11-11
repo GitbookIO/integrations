@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.148.0
+
+### Minor Changes
+
+- 5c9aabe: bump api including updates
+
 ## 0.147.0
 
 ### Minor Changes
