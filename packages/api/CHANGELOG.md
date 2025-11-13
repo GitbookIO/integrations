@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.150.0
+
+### Minor Changes
+
+- b485c8a: bump api changelog-props
+
 ## 0.149.0
 
 ### Minor Changes
