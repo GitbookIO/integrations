@@ -3,7 +3,7 @@ import LinkHeader from 'http-link-header';
 import { Logger, ExposableError } from '@gitbook/runtime';
 
 import type { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
-import { assertIsDefined, getSpaceConfigOrThrow } from './utils';
+import { assertIsDefined, getSpaceConfigOrThrow, signResponse } from './utils';
 
 export type OAuthTokenCredentials = NonNullable<GitHubSpaceConfiguration['oauth_credentials']>;
 
@@ -293,17 +293,29 @@ async function requestGitHubAPI(
     retriesLeft = 1,
 ): Promise<Response> {
     const { access_token } = credentials;
-    logger.debug(`GitHub API -> [${options.method}] ${url.toString()}`);
-    const response = await fetch(url.toString(), {
-        ...options,
-        headers: {
-            ...options.headers,
-            Accept: 'application/vnd.github+json',
-            Authorization: `Bearer ${access_token}`,
-            'User-Agent': 'GitHub-Integration-Worker',
-            'X-GitHub-Api-Version': '2022-11-28',
-        },
-    });
+    const useProxy = await shouldUseProxy(context);
+    logger.debug(`GitHub API -> [${options.method}] ${url.toString()}, using proxy: ${useProxy}`);
+    const response = useProxy
+        ? await proxyRequest(context, url.toString(), {
+              ...options,
+              headers: {
+                  ...options.headers,
+                  Accept: 'application/vnd.github+json',
+                  Authorization: `Bearer ${access_token}`,
+                  'User-Agent': 'GitHub-Integration-Worker',
+                  'X-GitHub-Api-Version': '2022-11-28',
+              },
+          })
+        : await fetch(url.toString(), {
+              ...options,
+              headers: {
+                  ...options.headers,
+                  Accept: 'application/vnd.github+json',
+                  Authorization: `Bearer ${access_token}`,
+                  'User-Agent': 'GitHub-Integration-Worker',
+                  'X-GitHub-Api-Version': '2022-11-28',
+              },
+          });
 
     if (!response.ok) {
         // If the access token is expired, we try to refresh it
@@ -314,8 +326,7 @@ async function requestGitHubAPI(
             logger.debug(`refreshing OAuth credentials for space ${spaceInstallation.space}`);
 
             const refreshed = await refreshCredentials(
-                context.environment.secrets.CLIENT_ID,
-                context.environment.secrets.CLIENT_SECRET,
+                context,
                 credentials.refresh_token,
             );
 
@@ -349,23 +360,30 @@ async function requestGitHubAPI(
 }
 
 async function refreshCredentials(
-    clientId: string,
-    clientSecret: string,
+    context: GithubRuntimeContext,
     refreshToken: string,
 ): Promise<OAuthTokenCredentials> {
     const url = new URL('https://github.com/login/oauth/access_token');
 
-    url.searchParams.set('client_id', clientId);
-    url.searchParams.set('client_secret', clientSecret);
+    url.searchParams.set('client_id', context.environment.secrets.CLIENT_ID);
+    url.searchParams.set('client_secret', context.environment.secrets.CLIENT_SECRET);
     url.searchParams.set('grant_type', 'refresh_token');
     url.searchParams.set('refresh_token', refreshToken);
 
-    const resp = await fetch(url.toString(), {
-        method: 'POST',
-        headers: {
-            'User-Agent': 'GitHub-Integration-Worker',
-        },
-    });
+    const useProxy = await shouldUseProxy(context);
+    const resp = useProxy
+        ? await proxyRequest(context, url.toString(), {
+              method: 'POST',
+              headers: {
+                  'User-Agent': 'GitHub-Integration-Worker',
+              },
+          })
+        : await fetch(url.toString(), {
+              method: 'POST',
+              headers: {
+                  'User-Agent': 'GitHub-Integration-Worker',
+              },
+          });
 
     if (!resp.ok) {
         // If refresh fails for whatever reason, we ask the user to re-authenticate
@@ -401,4 +419,52 @@ export function extractTokenCredentialsOrThrow(
     }
 
     return oAuthCredentials;
+}
+
+export async function proxyRequest(
+    context: GithubRuntimeContext,
+    url: string,
+    options: RequestInit = {},
+): Promise<Response> {
+    const signature = await signResponse(url, context.environment.secrets.PROXY_SECRET);
+    const proxyUrl = new URL(context.environment.secrets.PROXY_URL);
+
+    proxyUrl.searchParams.set('target', url);
+    logger.info(`Proxying request to ${proxyUrl.toString()}, original target: ${url}`);
+
+    return fetch(proxyUrl.toString(), {
+        ...options,
+        headers: {
+            ...options.headers,
+            'X-Gitbook-Proxy-Signature': signature,
+        },
+    });
+}
+
+export async function shouldUseProxy(context: GithubRuntimeContext): Promise<boolean> {
+    const companyId = context.environment.installation?.target.organization;
+    if (!companyId) {
+        return false;
+    }
+    try {
+        const response = await fetch(
+            `https://front.reflag.com/features/enabled?context.company.id=${companyId}&key=GIT_SYNC_STATIC_IP`,
+            {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${context.environment.secrets.REFLAG_SECRET_KEY}`,
+                    'Content-Type': 'application/json',
+                },
+            },
+        );
+
+        const json = (await response.json()) as {
+            features: { GIT_SYNC_STATIC_IP: { isEnabled: boolean } };
+        };
+        const flag = json.features.GIT_SYNC_STATIC_IP;
+
+        return flag.isEnabled;
+    } catch (e) {
+        return false;
+    }
 }
