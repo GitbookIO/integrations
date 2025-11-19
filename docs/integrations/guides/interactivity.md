@@ -1,4 +1,12 @@
+---
+description: >-
+  Add interactivity to custom blocks in GitBook integrations using inputs,
+  buttons, and more
+---
+
 # Creating interactive blocks
+
+GitBook allows you to create custom, interactive blocks using ContentKit, a UI kit made by GitBook for building integrations.
 
 ContentKit components can be interactive, meaning visitors using your integration can do things like type or click in your components. Different components expose different action handlers, like buttons exposing an `onPress` event.
 
@@ -91,7 +99,7 @@ window.addEventListener("message", (event) => {
 
 Some blocks might be static or only generated from link unfurling, but most blocks are designed to be editable by the user. Editable means that the user can interact with the blocks to change its properties.
 
-Updating the properties of a block is done through a [`@editor.node.updateProps`](../integrations/runtime.md#actions) action:
+Updating the properties of a block is done through a [`@editor.node.updateProps`](../development/runtime.md#actions) action:
 
 ```jsx
 <block>

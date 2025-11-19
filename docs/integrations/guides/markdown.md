@@ -1,6 +1,6 @@
 # Referencing your integration in Markdown
 
-In some cases (ex: with our official [Mermaid](../../integrations/mermaid/gitbook-manifest.yaml#L25-L31) block), you might want to format custom blocks as code-blocks in Markdown.
+In some cases (ex: with our official [Mermaid](../../../integrations/mermaid/gitbook-manifest.yaml#L25-L31) block), you might want to format custom blocks as code-blocks in Markdown.
 
 In your `gitbook-manifest.yaml`, define the `markdown` property for the a block:
 

@@ -1,9 +1,9 @@
 ---
-description: Learn about the gitbook-manifest.yaml file your integration uses.
+description: Learn about the gitbook-manifest.yaml file your integration uses
 icon: gear
 ---
 
-# Configuration
+# Configure your integration
 
 Integrations are defined through a file called `gitbook-manifest.yaml`. This file is automatically created through the CLI when creating a new integration.
 
@@ -16,7 +16,7 @@ The name of your integration. Must be unique across all GitBook integrations.
 **Example:**
 
 ```yaml
-name: slack
+name: unique-integration-name
 ```
 
 ### Title<mark style="color:red;">\*</mark>
@@ -26,7 +26,7 @@ The title of your integration.
 **Example:**
 
 ```yaml
-title: Slack
+title: My Integration
 ```
 
 ### Description<mark style="color:red;">\*</mark>
@@ -36,24 +36,24 @@ A short description for your integration.
 **Example:**
 
 ```yaml
-description: Notify a channel or individual in Slack with real-time events from GitBook.
+description: A short, descriptive overview of my integration.
 ```
 
 ### Organization<mark style="color:red;">\*</mark>
 
-The `id` or `subdomain` of the organization that owns this integration.
+The [`id`](concepts.md) or `subdomain` of the organization that owns this integration.
 
 **Example:**
 
 ```yaml
-organization: gitbook
+organization: <org_id>
 ```
 
 ### Visibility<mark style="color:red;">\*</mark>
 
 The visibility for your integration.
 
-<table><thead><tr><th width="243.5546875" valign="top">Visibility</th><th>Description</th></tr></thead><tbody><tr><td valign="top"><code>private</code></td><td>Default for new integrations. Only members from the organization defined in the integration's manifest will be able to install the integration.</td></tr><tr><td valign="top"><code>unlisted</code></td><td>Members from any organization can install the integration. The integration will only be available to install via it's shared install link.</td></tr><tr><td valign="top"><code>public</code></td><td>Members from any organization can install the integration. Integrations wanting to submit to the marketplace must use this visibility.</td></tr></tbody></table>
+<table><thead><tr><th width="243.5546875" valign="top">Visibility</th><th>Description</th></tr></thead><tbody><tr><td valign="top"><code>private</code></td><td>Default for new integrations. Only members from the organization defined in the integration's manifest will be able to install the integration.</td></tr><tr><td valign="top"><code>unlisted</code></td><td>Members from any organization can install the integration. The integration will only be available to install via it's shared install link.</td></tr><tr><td valign="top"><code>public</code></td><td>Members from any organization can install the integration. You need this visibility to <a href="submit-your-app-for-review.md">submit your integration to the marketplace</a>."</td></tr></tbody></table>
 
 **Example:**
 
@@ -97,7 +97,7 @@ Building integrations that inject JavaScript into a space or page are not possib
 
 ### Script
 
-The main script to execute for your integration. Should contain the call [`createIntegration()`](runtime.md#createintegration).
+The main script to execute for your integration. Should contain the call [`createIntegration()`](development/runtime.md#createintegration).
 
 **Example:**
 
@@ -107,7 +107,7 @@ script: ./src/index.ts
 
 ### Blocks
 
-Component block(s) referenced by `name` to render in the ( ⌘ + / ) menu. See [`createComponent()`](runtime.md#createcomponent) to learn more.
+Component block(s) referenced by `name` to render in the ( ⌘ + / ) menu. See [`createComponent()`](development/runtime.md#createcomponent) to learn more.
 
 **Example:**
 
@@ -166,7 +166,7 @@ A list of locally referenced assets to display on the installation page for your
 
 ```yaml
 previewImages:
-    - ./assets/slack-preview.png
+    - ./assets/integration-preview-image.png
 ```
 
 ### External Links
@@ -178,9 +178,9 @@ A list of URLs to display on the installation page for your integration. Each li
 ```yaml
 externalLinks:
     - label: Documentation
-      url: https://www.gitbook.com/integrations/slack
-    - label: Slack Homepage
-      url: https://slack.com/
+      url: https://example.com/docs
+    - label: Homepage
+      url: https://example.com/
 ```
 
 ### Configurations
@@ -239,7 +239,7 @@ boolean_property:
 
 **`button`**
 
-Button configurations can be used if you need to set up an OAuth connection with a provider in order to use your integration. See [`createOAuthHandler()`](runtime.md#createoauthhandler) for more information.
+Button configurations can be used if you need to set up an OAuth connection with a provider in order to use your integration. See [`createOAuthHandler()`](development/runtime.md#createoauthhandler) for more information.
 
 ```yaml
 button_property:
@@ -259,7 +259,7 @@ configurations:
             oauth_credentials:
                 type: button
                 title: Connection
-                description: Authorization between Slack and GitBook.
+                description: Authorization between my app and GitBook.
                 button_text: Authorize
                 callback_url: /oauth
             default_channel:

@@ -1,7 +1,3 @@
----
-icon: puzzle-piece
----
-
 # Integration runtime
 
 GitBook Runtime is the platform that lets you build and run integrations within GitBook. Integrations can extend GitBook’s functionality by providing custom UI components, handling events, managing OAuth authentication, and communicating over HTTP. This guide explains how to build an integration, what each key element does, and how they interact.
@@ -165,15 +161,15 @@ The `context.environment` object can include the following:
 
 #### Runtime secrets
 
-| Key         | Type   | Description                                                                                                         |
-| ----------- | ------ | ------------------------------------------------------------------------------------------------------------------- |
-| **secrets** | object | Secrets stored on the integration for runtime use. Defined in the integration's [configuration](configurations.md). |
+| Key         | Type   | Description                                                                                                            |
+| ----------- | ------ | ---------------------------------------------------------------------------------------------------------------------- |
+| **secrets** | object | Secrets stored on the integration for runtime use. Defined in the integration's [configuration](../configurations.md). |
 
 ### Events
 
 GitBook fires events when specific actions occur (like viewing a page or updating content). Your integration can listen to these events to update state, log information, or trigger other actions.
 
-Depending on the event, your integration may need the correct [scope permissions](configurations.md#scopes).
+Depending on the event, your integration may need the correct [scope permissions](../configurations.md#scopes).
 
 Inside the `createIntegration()` call, you define event handlers:
 

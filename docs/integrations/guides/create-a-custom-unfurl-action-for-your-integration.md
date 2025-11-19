@@ -1,16 +1,16 @@
 # Creating a custom unfurl action
 
-Link unfurling refers to the automatic previewing of website links shared in online platforms—Like chat applications, social media platforms, or messaging services.&#x20;
+Link unfurling refers to the automatic previewing of website links shared in online platforms—Like chat applications, social media platforms, or messaging services.
 
 When you paste or share a link in a supported platform, the platform will automatically retrieve information from the linked web page and display a preview of that content.
 
-When making an integration in GitBook, you're able to tap into this action, and display or embed content-rich blocks and previews. &#x20;
+When making an integration in GitBook, you're able to tap into this action, and display or embed content-rich blocks and previews.
 
 ### Unfurling in GitBook already works
 
-Before you dive in and create an integration for your platform, embedding your service might already be supported in GitBook.&#x20;
+Before you dive in and create an integration for your platform, embedding your service might already be supported in GitBook.
 
-Underneath the hood, GitBook uses the service [iFramely](https://iframely.com/domains) to unpack and unfurl links pasted in the editor.&#x20;
+Underneath the hood, GitBook uses the service [iFramely](https://iframely.com/domains) to unpack and unfurl links pasted in the editor.
 
 If the iFramely service doesn't support the unfurling your link out of the box, it defaults to displaying the link as text instead.
 
@@ -20,7 +20,7 @@ If the link you're trying to unfurl doesn't work out of the box, you'll need to 
 
 Creating an integration in GitBook allows you to add extra functionality to the way you're working. You can connect tools, build workflows, and further customize GitBook pages you create.
 
-To build your first integration, head to our [Quickstart](../getting-started/setup-guide.md)!
+To build your first integration, head to our [Quickstart](../quickstart.md)!
 
 After you have the boilerplate set up, we can take a look at an example code block for unfurling a link.
 

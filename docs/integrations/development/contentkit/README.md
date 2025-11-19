@@ -1,8 +1,3 @@
----
-description: Build integrations using GitBook’s UI framework.
-icon: cube
----
-
 # ContentKit
 
 ContentKit is a UI framework allows you to build integrations that work from directly within GitBook. It is used to define interactive layouts for Custom Blocks, Configurations flows and more.
@@ -45,7 +40,7 @@ export default createIntegration({
 
 #### Define a custom block
 
-Blocks must defined in the integration's manifest file:
+Blocks must defined in the [integration's manifest](../../configurations.md#blocks) file:
 
 ```yaml
 blocks:
@@ -57,7 +52,7 @@ All blocks defined in an installed integrations will be listed in the insertion 
 
 ### Props
 
-Props in ContentKit components are accessed in the render function of your integration. They work similarly to [props in React](https://react.dev/learn/passing-props-to-a-component), and help describe the way your component should render.&#x20;
+Props in ContentKit components are accessed in the render function of your integration. They work similarly to [props in React](https://react.dev/learn/passing-props-to-a-component), and help describe the way your component should render.
 
 Props are bound to your component block for all instances.
 
@@ -85,7 +80,7 @@ State in a ContentKit component is a way to keep track of data and information a
 ### Actions
 
 {% hint style="success" %}
-&#x20;See [Creating interactive blocks](../../guides/interactivity.md) to read a guide on handling events in your integration.
+See [Creating interactive blocks](../../guides/interactivity.md) to read a guide on handling events in your integration.
 {% endhint %}
 
 Actions in components are ways to handle or respond to events that happen in the UI of your component, and help update your components state.
@@ -105,7 +100,7 @@ Update the properties stored on the editor node binded to the current component.
 
 #### `@ui.url.open`
 
-An action to send to open a URL.&#x20;
+An action to send to open a URL.
 
 ```json
 {
@@ -185,9 +180,9 @@ See [Creating a custom unfurl action](../../guides/create-a-custom-unfurl-action
 
 #### Custom Actions
 
-In addition to the default actions provided by GitBook, you're able to define custom actions for your components when your components are interacted with.&#x20;
+In addition to the default actions provided by GitBook, you're able to define custom actions for your components when your components are interacted with.
 
-Custom actions are referenced by name, and can be parsed in the `createComponent` call when creating components.&#x20;
+Custom actions are referenced by name, and can be parsed in the `createComponent` call when creating components.
 
 The Action `name` will be sent on the `action` object:
 

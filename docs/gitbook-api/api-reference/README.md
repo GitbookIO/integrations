@@ -1,11 +1,11 @@
 ---
-description: GitBook’s full API reference.
+description: GitBook’s full API reference
 icon: brackets-curly
 ---
 
 # API reference
 
-The GitBook API provides developers with a powerful and flexible way to interact with GitBook's platform programmatically. It offers endpoints to manage content and integrate GitBook functionalities into external applications.&#x20;
+The GitBook API provides developers with a powerful and flexible way to interact with GitBook's platform programmatically. It offers endpoints to manage content and integrate GitBook functionalities into external applications.
 
 This API is RESTful and supports standard HTTP methods like `GET`, `POST`, `PATCH`, and `DELETE`.
 
