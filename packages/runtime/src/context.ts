@@ -54,7 +54,7 @@ export function createContext(
         environment,
         api: new GitBookAPI({
             endpoint: environment.apiEndpoint,
-            authToken: environment.authToken,
+            authToken: environment.apiTokens.installation ?? environment.apiTokens.integration,
             userAgent: `integration-${environment.integration.name}/${environment.integration.version}`,
         }),
 
