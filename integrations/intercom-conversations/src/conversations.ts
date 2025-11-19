@@ -48,20 +48,21 @@ export async function ingestLastClosedIntercomConversations(context: IntercomRun
         `Conversation ingestion started. A maximum of ${maxPages * perPage} conversations will be processed.`,
     );
 
-    const tasks: Array<IntercomIntegrationTask> = [];
+    const pendingTasks: Array<Promise<void>> = [];
     while (pageIndex < maxPages) {
         pageIndex += 1;
 
         const intercomConversations = page.data.map((conversation) => conversation.id);
         totalConvsToIngest += intercomConversations.length;
-        tasks.push({
+
+        pendingTasks.push(queueIntercomIntegrationTask(context, {
             type: 'ingest:closed-conversations',
             payload: {
                 organization: installation.target.organization,
                 installation: installation.id,
                 conversations: intercomConversations,
             },
-        });
+        }));
 
         if (!page.hasNextPage()) {
             break;
@@ -70,13 +71,10 @@ export async function ingestLastClosedIntercomConversations(context: IntercomRun
         page = await page.getNextPage();
     }
 
-    await pMap(tasks, async (task) => queueIntercomIntegrationTask(context, task), {
-        concurrency: 3,
-    });
-
     logger.info(
-        `Dispatched ${tasks.length} tasks to ingest a total of ${totalConvsToIngest} intercom closed conversations`,
+        `Dispatched ${pendingTasks.length} tasks to ingest a total of ${totalConvsToIngest} intercom closed conversations`,
     );
+    context.waitUntil(Promise.all(pendingTasks));
 }
 
 /**

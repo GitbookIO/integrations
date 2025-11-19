@@ -14,19 +14,7 @@ export async function queueIntercomIntegrationTask(
     context: IntercomRuntimeContext,
     task: IntercomIntegrationTask,
 ): Promise<void> {
-    const { environment } = context;
-
-    const integrationAPIToken = environment.apiTokens.integration;
-    if (!integrationAPIToken) {
-        throw new Error(`Expected integration API token in queueIntercomIntegrationTask`);
-    }
-
-    const api = new GitBookAPI({
-        userAgent: context.api.userAgent,
-        endpoint: context.environment.apiEndpoint,
-        authToken: integrationAPIToken,
-    });
-
+    const { api, environment } = context;
     await api.integrations.queueIntegrationTask(environment.integration.name, {
         task: {
             type: task.type,
