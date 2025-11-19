@@ -21,8 +21,11 @@ export async function ingestLastClosedIntercomConversations(context: IntercomRun
 
     let pageIndex = 0;
     const perPage = 100;
-    const maxPages = 7; // Keep under ~1000 subrequest limit. Calc: 7 pages * 100 items ≈ 700 detail calls + 7 search page calls ≈ ~707 Intercom calls (+7 GitBook ingests ≈ ~714 total).
+    const maxPages = 5; // Keep under ~1000 subrequest limit. Calc: 7 pages * 100 items ≈ 700 detail calls + 7 search page calls ≈ ~707 Intercom calls (+7 GitBook ingests ≈ ~714 total).
     let totalConvsToIngest = 0;
+
+    const now = new Date();
+    const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
     let page = await intercomClient.conversations.search(
         {
@@ -33,6 +36,11 @@ export async function ingestLastClosedIntercomConversations(context: IntercomRun
                         field: 'state',
                         operator: '=',
                         value: 'closed',
+                    },
+                    {
+                        field: "created_at",
+                        operator: '>',
+                        value: Math.floor(oneMonthAgo.getTime() / 1000).toString(),
                     },
                 ],
             },
