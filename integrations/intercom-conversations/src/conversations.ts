@@ -38,7 +38,7 @@ export async function ingestLastClosedIntercomConversations(context: IntercomRun
                         value: 'closed',
                     },
                     {
-                        field: "created_at",
+                        field: 'created_at',
                         operator: '>',
                         value: Math.floor(oneMonthAgo.getTime() / 1000).toString(),
                     },
@@ -63,14 +63,16 @@ export async function ingestLastClosedIntercomConversations(context: IntercomRun
         const intercomConversations = page.data.map((conversation) => conversation.id);
         totalConvsToIngest += intercomConversations.length;
 
-        pendingTasks.push(queueIntercomIntegrationTask(context, {
-            type: 'ingest:closed-conversations',
-            payload: {
-                organization: installation.target.organization,
-                installation: installation.id,
-                conversations: intercomConversations,
-            },
-        }));
+        pendingTasks.push(
+            queueIntercomIntegrationTask(context, {
+                type: 'ingest:closed-conversations',
+                payload: {
+                    organization: installation.target.organization,
+                    installation: installation.id,
+                    conversations: intercomConversations,
+                },
+            }),
+        );
 
         if (!page.hasNextPage()) {
             break;
