@@ -592,7 +592,7 @@
     },
     "integrations/slack": {
       "name": "@gitbook/integration-slack",
-      "version": "2.5.3",
+      "version": "2.6.0",
       "dependencies": {
         "@ai-sdk/openai": "^2.0.62",
         "@gitbook/api": "*",
@@ -729,7 +729,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.147.0",
+      "version": "0.151.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
