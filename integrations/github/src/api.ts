@@ -325,10 +325,7 @@ async function requestGitHubAPI(
 
             logger.debug(`refreshing OAuth credentials for space ${spaceInstallation.space}`);
 
-            const refreshed = await refreshCredentials(
-                context,
-                credentials.refresh_token,
-            );
+            const refreshed = await refreshCredentials(context, credentials.refresh_token);
 
             await context.api.integrations.updateIntegrationSpaceInstallation(
                 spaceInstallation.integration,
