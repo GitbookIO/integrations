@@ -4,6 +4,8 @@ icon: ./assets/icon.png
 description: Automatically sync Intercom tickets to docs updates in GitBook.
 visibility: public
 script: ./src/index.ts
+previewImages:
+    - ./assets/intercom-conversations-preview.png
 summary: |
     # Overview
 
