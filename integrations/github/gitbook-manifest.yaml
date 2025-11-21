@@ -50,5 +50,4 @@ secrets:
     WEBHOOK_SECRET: ${{ env.GITHUB_WEBHOOK_SECRET }}
     PROXY_URL: ${{ env.GITBOOK_PROXY_URL }}
     PROXY_SECRET: ${{ env.GITBOOK_PROXY_SECRET }}
-    REFLAG_SECRET_KEY: ${{ env.REFLAG_SECRET_KEY }}
 target: space
