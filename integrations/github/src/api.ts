@@ -439,29 +439,5 @@ export async function proxyRequest(
 }
 
 export async function shouldUseProxy(context: GithubRuntimeContext): Promise<boolean> {
-    const companyId = context.environment.installation?.target.organization;
-    if (!companyId) {
-        return false;
-    }
-    try {
-        const response = await fetch(
-            `https://front.reflag.com/features/enabled?context.company.id=${companyId}&key=GIT_SYNC_STATIC_IP`,
-            {
-                method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${context.environment.secrets.REFLAG_SECRET_KEY}`,
-                    'Content-Type': 'application/json',
-                },
-            },
-        );
-
-        const json = (await response.json()) as {
-            features: { GIT_SYNC_STATIC_IP: { isEnabled: boolean } };
-        };
-        const flag = json.features.GIT_SYNC_STATIC_IP;
-
-        return flag.isEnabled;
-    } catch (e) {
-        return false;
-    }
+    return context.environment.proxied || false;
 }
