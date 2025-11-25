@@ -1,5 +1,7 @@
 ---
-description: Publish your apps and integrations publicly or privately
+description: >-
+  Publish your apps and integrations publicly or privately in order to use them
+  in GitBook
 icon: up-from-line
 ---
 
