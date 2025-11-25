@@ -1,5 +1,5 @@
 ---
-description: Develop and test integrations in GitBook
+description: Develop and test integrations locally on your machine
 icon: shapes
 ---
 

@@ -1,6 +1,12 @@
+---
+description: Extend GitBook with custom components, event handling, OAuth flows, and HTTP
+---
+
 # Integration runtime
 
-GitBook Runtime is the platform that lets you build and run integrations within GitBook. Integrations can extend GitBook’s functionality by providing custom UI components, handling events, managing OAuth authentication, and communicating over HTTP. This guide explains how to build an integration, what each key element does, and how they interact.
+GitBook’s integration runtime is the platform that lets you build and run integrations within GitBook. Integrations can extend GitBook’s functionality by providing custom UI components, handling events, managing OAuth authentication, and communicating over HTTP.&#x20;
+
+This guide explains how to build an integration, what each key element does, and how they interact.
 
 The main building blocks are:
 
@@ -17,7 +23,7 @@ The main building blocks are:
 
 Integrations are created using the `createIntegration()` method. This method is the entrypoint for your integration and sets up its runtime context, including HTTP fetch methods, UI components, and event handlers.
 
-```js
+```javascript
 export default createIntegration({
   fetch: async (request, context) => {
     // Process an HTTP request.
@@ -45,7 +51,7 @@ export default createIntegration({
 
 UI components let you build interactive elements that appear in GitBook’s quick insert menu (⌘ + /) or in the configuration screen of your integration. Use the `createComponent()` method to define a component’s identifier, initial state, actions, and rendering logic.
 
-```js
+```javascript
 const myComponent = createComponent({
   componentId: "unique-id",
   initialState: (props) => ({ message: "Click me" }),
@@ -75,7 +81,7 @@ const myComponent = createComponent({
 
 When your integration requires user authentication via OAuth, you use `createOAuthHandler()` to define the OAuth flow. This function sets up redirection, token exchange, and extraction of credentials.
 
-```js
+```javascript
 const oauthHandler = createOAuthHandler({
   redirectURL: `${environment.integration.urls.publicEndpoint}/oauth`,
   clientId: environment.secrets.CLIENT_ID,
@@ -103,7 +109,7 @@ const oauthHandler = createOAuthHandler({
 
 The render function returns the UI for the component using ContentKit markup.
 
-```js
+```javascript
 render: async (element, context) => {
   return (
     <block>
@@ -117,7 +123,7 @@ render: async (element, context) => {
 
 GitBook provides an environment object that gives your integration details about the runtime context, such as API endpoints, integration configuration, installation details, and secrets.
 
-```js
+```javascript
 // Accessing environment values in your fetch or render method:
 const { apiEndpoint, integration, secrets } = context.environment;
 console.log("API endpoint:", apiEndpoint);
@@ -173,7 +179,7 @@ Depending on the event, your integration may need the correct [scope permissions
 
 Inside the `createIntegration()` call, you define event handlers:
 
-```js
+```javascript
 export default createIntegration({
   events: {
     space_view: async (event, context) => {
@@ -200,7 +206,7 @@ Here are the available events you can read:
 
 Interactive components can respond to user **events** via **actions**. They are defined in your component when using `createComponent()`.
 
-```js
+```javascript
 action: async (element, action, context) => {
   // Process the action
   switch (action.action) {
@@ -224,7 +230,7 @@ Integrations communicate with external services via HTTP using the Fetch API.
 
 #### Fetch Method Example
 
-```js
+```javascript
 fetch: async (request, context) => {
   const data = { message: "Hello World" };
   return new Response(JSON.stringify(data), {
@@ -237,7 +243,7 @@ fetch: async (request, context) => {
 
 **Request Example:**
 
-```js
+```javascript
 const request = new Request("https://example.com", {
   method: "POST",
   body: '{"message": "Hello World"}',
@@ -246,7 +252,7 @@ const request = new Request("https://example.com", {
 
 **Response Example:**
 
-```js
+```javascript
 const handleFetchEvent = async (request, context) => {
   return new Response(JSON.stringify({ message: "Hello World" }), {
     headers: { "Content-Type": "application/json" }

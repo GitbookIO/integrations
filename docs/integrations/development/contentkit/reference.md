@@ -1,3 +1,7 @@
+---
+description: Learn about the components available from ContentKit
+---
+
 # Component reference
 
 Here you’ll find the component reference for all of the ContentKit blocks you can use in your components. Components are divided into 3 different categories:

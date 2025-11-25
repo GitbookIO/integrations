@@ -1,4 +1,5 @@
 ---
+description: Learn how to use the GitBook API within minutes
 icon: bolt
 ---
 
@@ -8,21 +9,25 @@ The GitBook API allows you to read and write information across the spaces and p
 
 You can use the GitBook API to:
 
-* Create, update, and delete organizations, spaces, collections, and published docs sites
-* Manage users, teams, and access permissions at both the space and organization level
-* Import and export content (pages, files, and reusable content)
-* Create, list, review, merge, and update change requests
-* Post, retrieve, update, and delete comments (and comment replies)
-* Configure custom hostnames, URLs, and search settings
-* Monitor content performance with analytics endpoints
-* Manage integrations and OpenAPI documentation
+* Create, update, and delete [organizations](broken-reference), [spaces](broken-reference), [collections](broken-reference), and [published docs sites](broken-reference)
+* [Manage users, teams, and access permissions](broken-reference) at both the space and organization level
+* [Import and export content](broken-reference) (pages, files, and reusable content)
+* [Create, list, review, merge, and update change requests](broken-reference)
+* [Post, retrieve, update, and delete comments](broken-reference) (and comment replies)
+* [Configure custom hostnames](broken-reference), URLs, and search settings
+* [Monitor content performance](broken-reference) with analytics endpoints
+* [Manage integrations](broken-reference) and OpenAPI documentation
 
 …and much more, all via simple REST calls.
 
+{% stepper %}
+{% step %}
 ### Getting started
 
 You’ll need a GitBook account to start using the developer platform. If you don’t already have an account, you can sign up for free [here](https://app.gitbook.com/join).
+{% endstep %}
 
+{% step %}
 ### Create a personal access token
 
 After creating a GitBook account, you'll be able to create a personal access token in your [developer settings](https://app.gitbook.com/account/developer).
@@ -34,7 +39,9 @@ As always with access tokens, this token is specific to your user and should not
 {% endhint %}
 
 Once you have your personal access token, you'll want to understand the differences between the pieces of the GitBook Integrations Platform in order to start developing your first app.
+{% endstep %}
 
+{% step %}
 ### Make your first API call
 
 The example below shows how to make an API call that asks GitBook Assistant a question in a site within your organization.
@@ -69,7 +76,7 @@ The API will return an answer generated from your site’s content.
 {% endtab %}
 
 {% tab title="JavaScript" %}
-To send a question to the Ask API from JavaScript, you can use [GitBook’s client library](../integrations/development/browser-node/). After initializing the client with your personal access token, call the `askQueryInSpace()` method with your organization ID, site ID, and query payload.
+To send a question to the Ask API from JavaScript, you can use [GitBook’s client library](../integrations/development/client-library/). After initializing the client with your personal access token, call the `askQueryInSpace()` method with your organization ID, site ID, and query payload.
 
 **Ask a question using GitBook’s JavaScript SDK**
 
@@ -157,6 +164,8 @@ This will return the Ask API’s generated answer based on your site’s content
 {% endtabs %}
 
 GitBook’s API has many different API calls that allow you to interact with GitBook in different ways. After sending your first request, head to the API reference to explore the different endpoints GitBook offers.
+{% endstep %}
+{% endstepper %}
 
 ### Explore GitBook’s API
 

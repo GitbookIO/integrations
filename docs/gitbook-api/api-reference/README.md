@@ -1,5 +1,5 @@
 ---
-description: GitBook’s full API reference
+description: Explore the endpoints available from GitBook’s API
 icon: brackets-curly
 ---
 

@@ -1,7 +1,5 @@
 ---
-description: >-
-  In this guide you’ll learn how to get up and running with GitBook’s developer
-  platform in minutes
+description: Build an integration with GitBook’s developer platform in minutes
 icon: bolt
 ---
 
@@ -11,15 +9,19 @@ GitBook’s developer platform allows you to build integrations that seamlessly 
 
 You can use the integration platform to:
 
-* [**Automate repetitive tasks**](guides/ci.md)**:** Sync content, manage permissions, or trigger actions without leaving GitBook.
+* **Automate repetitive tasks:** Sync content, manage permissions, or trigger actions without leaving GitBook.
 * [**Embed interactive components**](development/contentkit/)**:** Enhance documentation pages with custom built UI, buttons, and dynamic content.
 * **Integrate data from other tools**: Pull in data from external sources and connect them with your GitBook workflow.
 * **Securely connect systems:** Handle authentication via OAuth and manage access control programmatically.
 
+{% stepper %}
+{% step %}
 ### Getting started
 
 You’ll need a GitBook account to start using the developer platform. If you don’t already have an account, you can sign up for free [here](https://app.gitbook.com/join).
+{% endstep %}
 
+{% step %}
 ### Create a personal access token
 
 After creating a GitBook account, you'll be able to create a personal access token in your [developer settings](https://app.gitbook.com/account/developer).
@@ -31,7 +33,9 @@ As always with access tokens, this token is specific to your user and should not
 {% endhint %}
 
 Once you have your personal access token, you'll want to understand the differences between the pieces of the GitBook Integrations Platform in order to start developing your first app.
+{% endstep %}
 
+{% step %}
 ### Install the GitBook CLI
 
 The [GitBook CLI](reference/) requires Node v18 or later. It can be installed from NPM using:
@@ -40,17 +44,19 @@ The [GitBook CLI](reference/) requires Node v18 or later. It can be installed fr
 npm install @gitbook/cli -g
 ```
 
-### Authenticate with your account
+#### Authenticate with your account
 
 Once you have the CLI installed, you can run the following command and authenticate yourself with your personal access token using the following command:
 
 ```bash
 gitbook auth
 ```
+{% endstep %}
 
-### Bootstrap your integration
+{% step %}
+### Create your integration
 
-Bootstrap your first integration by running the following command:
+You can bootstrap your first integration by running the following command in your terminal:
 
 ```bash
 gitbook new
@@ -59,12 +65,16 @@ gitbook new
 The prompts will ask you for a `name`, `title`, `organization`, and `scopes` for your integration.
 
 {% hint style="warning" %}
-In order to publish your integration, your `.gitbook-manifest.yaml` must:
+In order to publish your integration, your integration must:
 
 * Include a unique `name`
 * Include an `organization` id that your authenticated user is a member of.
 {% endhint %}
 
+After bootstrapping your integration, you’re ready to open your integration in an IDE and start building.
+{% endstep %}
+
+{% step %}
 ### Develop your integration locally
 
 In order to [develop your integration](development/) on your local machine, you’ll first need to publish your integration. In the root of your integration, run:
@@ -82,9 +92,17 @@ gitbook dev
 ```
 
 After running the development script, you’re ready to start building your integration. Any changes made in your local version of the integration will be sent to the space you have your integration installed in. You’ll also be able to see logs in your console where applicable.
+{% endstep %}
 
+{% step %}
 ### Install and use your integration
 
 Once you’re ready to start using your integration in GitBook, you’ll need to install your integration into a space or site.&#x20;
 
 You can find your integration’s install link returned in your terminal after publishing your integration with the `gitbook publish` command.
+{% endstep %}
+{% endstepper %}
+
+### Explore the integration platform
+
+<table data-view="cards"><thead><tr><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Configure your integration</strong></td><td><a href="configurations.md">configurations.md</a></td></tr><tr><td><strong>Build components</strong></td><td><a href="development/contentkit/">contentkit</a></td></tr><tr><td><strong>Publish your integration</strong></td><td><a href="publishing.md">publishing.md</a></td></tr></tbody></table>
