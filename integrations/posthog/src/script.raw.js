@@ -64,5 +64,5 @@ function getCookie(cname) {
             e._i.push([i, s, a]);
         }),
         (e.__SV = 1));
+    posthog.init(projectApiKey, { api_host: instanceAddress });
 })(document, window.posthog || []);
-posthog.init(projectApiKey, { api_host: instanceAddress });
