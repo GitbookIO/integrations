@@ -1,13 +1,45 @@
 name: intercom-conversations
 title: Intercom Connector
 icon: ./assets/icon.png
-description: Ingest Intercom support conversations into GitBook for auto-improvements.
+description: Automatically sync Intercom tickets to docs updates in GitBook.
 visibility: public
 script: ./src/index.ts
+previewImages:
+    - ./assets/intercom-conversations-preview.png
 summary: |
     # Overview
 
-    Automatically get AI-suggested change requests for your docs based on Intercom support conversations.
+    By connecting Intercom to GitBook, you turn every resolved ticket into a source of documentation intelligence. The integration continuously ingests conversation data, detects recurring issues, and identifies where your docs can be clearer, more accurate, or more complete.
+
+    ## How it works
+
+    GitBook's Docs Agent analyzes the conversation data, detects recurring issues, and identifies where your docs can be clearer, more accurate, or more complete. It then opens proactive change requests based on this insight—suggesting edits, drafting improvements, and helping you keep content fresh as your product evolves. You can also @mention the AI agent or chat with it directly to accelerate reviews and edits inside any change request.
+
+    ## Configure
+
+    1. Authorize GitBook to access Intercom
+        After installing the app in Intercom, make sure you install the GitBook integration in your GitBook account to continue set up. After installing the GitBook integration, open the integration settings and click Connect Account. This enables GitBook to pull closed tickets and their full conversation history while automatically stripping sensitive data.
+
+    2. Select what customer conversations to use as context
+        Choose the inboxes, tags, or teams that best represent the voice of your customers.
+        GitBook uses these conversations to understand issues, trends, and documentation gaps.
+
+    3. Let the Docs Agent learn from your tickets
+        Behind the scenes, GitBook classifies and analyzes each conversation to identify:
+            - Frequently asked questions
+            - Outdated or unclear documentation
+            - Missing troubleshooting steps
+            - Opportunities to improve explanations
+    4. Watch GitBook open proactive change requests
+        Once patterns emerge, GitBook will automatically open change requests with suggested content updates.
+        Each change request includes:
+            - A proposed doc edit or improvement
+            - Conversation context explaining why
+            - A working draft written by the AI agent
+    5. Use the AI agent to refine and finalize
+        Inside any change request, @mention the GitBook agent or open its chat panel to request rewrites, edits, clarifications, or additions.
+        You stay in control while the agent accelerates the entire documentation update cycle.
+
 scopes:
     - conversations:ingest
 organization: gitbook
