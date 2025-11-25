@@ -21,8 +21,11 @@ export async function ingestLastClosedIntercomConversations(context: IntercomRun
 
     let pageIndex = 0;
     const perPage = 100;
-    const maxPages = 7; // Keep under ~1000 subrequest limit. Calc: 7 pages * 100 items ≈ 700 detail calls + 7 search page calls ≈ ~707 Intercom calls (+7 GitBook ingests ≈ ~714 total).
+    const maxPages = 5; // Keep under ~1000 subrequest limit. Calc: 7 pages * 100 items ≈ 700 detail calls + 7 search page calls ≈ ~707 Intercom calls (+7 GitBook ingests ≈ ~714 total).
     let totalConvsToIngest = 0;
+
+    const now = new Date();
+    const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
     let page = await intercomClient.conversations.search(
         {
@@ -33,6 +36,11 @@ export async function ingestLastClosedIntercomConversations(context: IntercomRun
                         field: 'state',
                         operator: '=',
                         value: 'closed',
+                    },
+                    {
+                        field: 'created_at',
+                        operator: '>',
+                        value: Math.floor(oneMonthAgo.getTime() / 1000).toString(),
                     },
                 ],
             },
@@ -48,20 +56,23 @@ export async function ingestLastClosedIntercomConversations(context: IntercomRun
         `Conversation ingestion started. A maximum of ${maxPages * perPage} conversations will be processed.`,
     );
 
-    const tasks: Array<IntercomIntegrationTask> = [];
+    const pendingTasks: Array<Promise<void>> = [];
     while (pageIndex < maxPages) {
         pageIndex += 1;
 
         const intercomConversations = page.data.map((conversation) => conversation.id);
         totalConvsToIngest += intercomConversations.length;
-        tasks.push({
-            type: 'ingest:closed-conversations',
-            payload: {
-                organization: installation.target.organization,
-                installation: installation.id,
-                conversations: intercomConversations,
-            },
-        });
+
+        pendingTasks.push(
+            queueIntercomIntegrationTask(context, {
+                type: 'ingest:closed-conversations',
+                payload: {
+                    organization: installation.target.organization,
+                    installation: installation.id,
+                    conversations: intercomConversations,
+                },
+            }),
+        );
 
         if (!page.hasNextPage()) {
             break;
@@ -70,13 +81,10 @@ export async function ingestLastClosedIntercomConversations(context: IntercomRun
         page = await page.getNextPage();
     }
 
-    await pMap(tasks, async (task) => queueIntercomIntegrationTask(context, task), {
-        concurrency: 3,
-    });
-
     logger.info(
-        `Dispatched ${tasks.length} tasks to ingest a total of ${totalConvsToIngest} intercom closed conversations`,
+        `Dispatched ${pendingTasks.length} tasks to ingest a total of ${totalConvsToIngest} intercom closed conversations`,
     );
+    context.waitUntil(Promise.all(pendingTasks));
 }
 
 /**
