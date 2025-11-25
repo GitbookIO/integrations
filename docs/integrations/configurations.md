@@ -39,6 +39,24 @@ A short description for your integration.
 description: A short, descriptive overview of my integration.
 ```
 
+### Summary
+
+A summary for your integration displayed on the installation page. Supports Markdown.
+
+{% hint style="info" %}
+The summary field is limited to 2048 characters.
+{% endhint %}
+
+**Example:**
+
+```yaml
+summary: |
+    # Overview
+    The GitBook Slack integration brings the power of GitBook to your Slack workspace. Your teams have instant access to your GitBook knowledge base, without leaving Slack.
+    # Configure
+    You can install the integration on a single space by clicking the integrations button in sub-navigation panel. If you prefer to install the Slack integration on multiple on all spaces you can enable this through organization settings. To configure the integration you will have to authorize the connection between Slack and GitBook. You can also select the default channel to post messages to.
+```
+
 ### Organization<mark style="color:red;">\*</mark>
 
 The [`id`](concepts.md) or `subdomain` of the organization that owns this integration.
@@ -132,20 +150,6 @@ categories:
     - marketing
     - authenticated-access
     - other
-```
-
-### Summary
-
-A summary for your integration displayed on the installation page. Supports Markdown.
-
-**Example:**
-
-```yaml
-summary: |
-    # Overview
-    The GitBook Slack integration brings the power of GitBook to your Slack workspace. Your teams have instant access to your GitBook knowledge base, without leaving Slack.
-    # Configure
-    You can install the integration on a single space by clicking the integrations button in sub-navigation panel. If you prefer to install the Slack integration on multiple on all spaces you can enable this through organization settings. To configure the integration you will have to authorize the connection between Slack and GitBook. You can also select the default channel to post messages to.
 ```
 
 ### Icon
