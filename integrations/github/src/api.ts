@@ -3,7 +3,7 @@ import LinkHeader from 'http-link-header';
 import { Logger, ExposableError } from '@gitbook/runtime';
 
 import type { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
-import { assertIsDefined, getSpaceConfigOrThrow } from './utils';
+import { assertIsDefined, getSpaceConfigOrThrow, signResponse } from './utils';
 
 export type OAuthTokenCredentials = NonNullable<GitHubSpaceConfiguration['oauth_credentials']>;
 
@@ -293,8 +293,8 @@ async function requestGitHubAPI(
     retriesLeft = 1,
 ): Promise<Response> {
     const { access_token } = credentials;
-    logger.debug(`GitHub API -> [${options.method}] ${url.toString()}`);
-    const response = await fetch(url.toString(), {
+    logger.debug(`GitHub API -> [${options.method}] ${url.toString()}, using proxy: ${context.environment.proxied}`);
+    const response = await context.fetchWithProxy(url.toString(), {
         ...options,
         headers: {
             ...options.headers,
@@ -313,11 +313,7 @@ async function requestGitHubAPI(
 
             logger.debug(`refreshing OAuth credentials for space ${spaceInstallation.space}`);
 
-            const refreshed = await refreshCredentials(
-                context.environment.secrets.CLIENT_ID,
-                context.environment.secrets.CLIENT_SECRET,
-                credentials.refresh_token,
-            );
+            const refreshed = await refreshCredentials(context, credentials.refresh_token);
 
             await context.api.integrations.updateIntegrationSpaceInstallation(
                 spaceInstallation.integration,
@@ -349,18 +345,17 @@ async function requestGitHubAPI(
 }
 
 async function refreshCredentials(
-    clientId: string,
-    clientSecret: string,
+    context: GithubRuntimeContext,
     refreshToken: string,
 ): Promise<OAuthTokenCredentials> {
     const url = new URL('https://github.com/login/oauth/access_token');
 
-    url.searchParams.set('client_id', clientId);
-    url.searchParams.set('client_secret', clientSecret);
+    url.searchParams.set('client_id', context.environment.secrets.CLIENT_ID);
+    url.searchParams.set('client_secret', context.environment.secrets.CLIENT_SECRET);
     url.searchParams.set('grant_type', 'refresh_token');
     url.searchParams.set('refresh_token', refreshToken);
 
-    const resp = await fetch(url.toString(), {
+    const resp = await context.fetchWithProxy(url.toString(), {
         method: 'POST',
         headers: {
             'User-Agent': 'GitHub-Integration-Worker',
