@@ -164,7 +164,7 @@ icon: ./assets/icon.png
 
 ### Preview Images
 
-A list of locally referenced assets to display on the installation page for your integration.
+A list of locally referenced assets to display on the installation page for your integration. (recommended: 1600px × 800px, aspect ratio: `2:1`)
 
 **Example:**
 
