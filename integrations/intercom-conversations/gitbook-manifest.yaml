@@ -9,36 +9,28 @@ previewImages:
 summary: |
     # Overview
 
-    By connecting Intercom to GitBook, you turn every resolved ticket into a source of documentation intelligence. The integration continuously ingests conversation data, detects recurring issues, and identifies where your docs can be clearer, more accurate, or more complete.
+    Connecting Intercom to GitBook turns every resolved ticket into documentation intelligence. The integration ingests conversation data, spots recurring issues, and surfaces where your docs need to be clearer, more accurate, or more complete.
 
     ## How it works
 
-    GitBook's Docs Agent analyzes the conversation data, detects recurring issues, and identifies where your docs can be clearer, more accurate, or more complete. It then opens proactive change requests based on this insight—suggesting edits, drafting improvements, and helping you keep content fresh as your product evolves. You can also @mention the AI agent or chat with it directly to accelerate reviews and edits inside any change request.
+    GitBook’s Docs Agent analyzes incoming conversations, identifies patterns, and highlights gaps in your documentation. When it finds issues, it opens proactive change requests with suggested edits, drafted improvements, and the context behind each recommendation. You can also @mention the AI agent or chat with it directly to speed up reviews and polish updates.
 
     ## Configure
 
-    1. Authorize GitBook to access Intercom
-        After installing the app in Intercom, make sure you install the GitBook integration in your GitBook account to continue set up. After installing the GitBook integration, open the integration settings and click Connect Account. This enables GitBook to pull closed tickets and their full conversation history while automatically stripping sensitive data.
+    1. Authorize GitBook to access Intercom  
+       Install the GitBook app in your GitBook account, then open its settings and click Connect Account. This allows GitBook to pull closed tickets and their conversation history while automatically stripping sensitive data.
 
-    2. Select what customer conversations to use as context
-        Choose the inboxes, tags, or teams that best represent the voice of your customers.
-        GitBook uses these conversations to understand issues, trends, and documentation gaps.
+    2. Select which conversations to use  
+       Choose the inboxes, tags, or teams that best represent your customers. GitBook uses this data to understand issues, trends, and gaps.
 
-    3. Let the Docs Agent learn from your tickets
-        Behind the scenes, GitBook classifies and analyzes each conversation to identify:
-            - Frequently asked questions
-            - Outdated or unclear documentation
-            - Missing troubleshooting steps
-            - Opportunities to improve explanations
-    4. Watch GitBook open proactive change requests
-        Once patterns emerge, GitBook will automatically open change requests with suggested content updates.
-        Each change request includes:
-            - A proposed doc edit or improvement
-            - Conversation context explaining why
-            - A working draft written by the AI agent
-    5. Use the AI agent to refine and finalize
-        Inside any change request, @mention the GitBook agent or open its chat panel to request rewrites, edits, clarifications, or additions.
-        You stay in control while the agent accelerates the entire documentation update cycle.
+    3. Let the Docs Agent learn  
+       GitBook analyzes each conversation to detect FAQs, outdated content, unclear explanations, missing troubleshooting steps, and opportunities to improve clarity.
+
+    4. Watch it open proactive change requests  
+       As patterns emerge, GitBook creates change requests with proposed edits, context from customer conversations, and a working draft written by the AI agent.
+
+    5. Refine with the AI agent  
+       Inside any change request, @mention the agent or open its chat panel to request rewrites, clarifications, or additions. You stay in control while the agent accelerates updates.
 
 scopes:
     - conversations:ingest
