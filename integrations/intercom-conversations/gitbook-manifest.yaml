@@ -20,6 +20,7 @@ secrets:
 target: organization
 envs:
     production:
+        visibility: unlisted
         secrets:
             CLIENT_ID: ${{ "op://gitbook-x-prod/intercomConversationsIntegration/CLIENT_ID" }}
             CLIENT_SECRET: ${{ "op://gitbook-x-prod/intercomConversationsIntegration/CLIENT_SECRET" }}
