@@ -1,5 +1,4 @@
 import { GitBookAPI, IntegrationEnvironment } from '@gitbook/api';
-import { fetchWithProxy } from 'proxy';
 
 export interface RuntimeEnvironment<
     InstallationConfiguration = {},
@@ -61,11 +60,6 @@ export interface RuntimeContext<
      * the execution context is closed.
      */
     waitUntil: FetchEvent['waitUntil'];
-
-    /**
-     * Fetch function that will proxy requests if the integration installation is configured to use a proxy.
-     */
-    fetchWithProxy: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
 }
 
 /**
@@ -116,6 +110,5 @@ export function createContext(
         },
 
         waitUntil,
-        fetchWithProxy: fetchWithProxy(environment),
     };
 }

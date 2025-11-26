@@ -294,7 +294,7 @@ async function requestGitHubAPI(
 ): Promise<Response> {
     const { access_token } = credentials;
     logger.debug(`GitHub API -> [${options.method}] ${url.toString()}, using proxy: ${context.environment.proxied}`);
-    const response = await context.fetchWithProxy(url.toString(), {
+    const response = await fetch(url.toString(), {
         ...options,
         headers: {
             ...options.headers,
@@ -355,7 +355,7 @@ async function refreshCredentials(
     url.searchParams.set('grant_type', 'refresh_token');
     url.searchParams.set('refresh_token', refreshToken);
 
-    const resp = await context.fetchWithProxy(url.toString(), {
+    const resp = await fetch(url.toString(), {
         method: 'POST',
         headers: {
             'User-Agent': 'GitHub-Integration-Worker',
