@@ -25,7 +25,8 @@ export const configComponent = createComponent<
                     <box>
                         <hint>
                             <text style="bold">
-                                The connector is configured and conversations are being ingested. You can now close this dialog.
+                                The connector is configured and conversations are being ingested.
+                                You can now close this dialog.
                             </text>
                         </hint>
                         <divider size="medium" />
@@ -38,11 +39,7 @@ export const configComponent = createComponent<
                         <button
                             style="secondary"
                             disabled={false}
-                            label={
-                                isConfigured
-                                    ? 'Re-authorize'
-                                    : 'Authorize'
-                            }
+                            label={isConfigured ? 'Re-authorize' : 'Authorize'}
                             onPress={{
                                 action: '@ui.url.open',
                                 url: `${installation?.urls.publicEndpoint}/oauth`,
