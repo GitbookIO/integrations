@@ -1,5 +1,11 @@
 # @gitbook/integration-intercom-conversations
 
+## 0.2.2
+
+### Patch Changes
+
+- 259b5a0: Show a message once integration has been authenticated.
+
 ## 0.2.1
 
 ### Patch Changes
