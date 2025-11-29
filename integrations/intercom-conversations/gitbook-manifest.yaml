@@ -46,8 +46,8 @@ envs:
     production:
         visibility: unlisted
         secrets:
-            CLIENT_ID: ${{ "op://gitbook-x-prod/intercomConversationsIntegration/CLIENT_ID" }}
-            CLIENT_SECRET: ${{ "op://gitbook-x-prod/intercomConversationsIntegration/CLIENT_SECRET" }}
+            CLIENT_ID: ${{ "op://gitbook-integrations/intercomConversationsProd/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/intercomConversationsProd/CLIENT_SECRET" }}
     test:
         secrets:
             CLIENT_ID: ${{ "op://gitbook-integrations/intercomConversationsStaging/CLIENT_ID" }}
