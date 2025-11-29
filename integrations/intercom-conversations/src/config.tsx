@@ -17,8 +17,21 @@ export const configComponent = createComponent<
             return null;
         }
 
+        const isConfigured = !!element.props.installation.configuration.oauth_credentials;
+
         return (
             <configuration>
+                {isConfigured ? (
+                    <box>
+                        <hint>
+                            <text style="bold">
+                                The connector is configured and conversations are being ingested.
+                                You can now close this dialog.
+                            </text>
+                        </hint>
+                        <divider size="medium" />
+                    </box>
+                ) : null}
                 <input
                     label="Authenticate"
                     hint="Authorize GitBook to access your Intercom account."
@@ -26,11 +39,7 @@ export const configComponent = createComponent<
                         <button
                             style="secondary"
                             disabled={false}
-                            label={
-                                element.props.installation.configuration.oauth_credentials
-                                    ? 'Re-authorize'
-                                    : 'Authorize'
-                            }
+                            label={isConfigured ? 'Re-authorize' : 'Authorize'}
                             onPress={{
                                 action: '@ui.url.open',
                                 url: `${installation?.urls.publicEndpoint}/oauth`,
