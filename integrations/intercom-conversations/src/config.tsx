@@ -25,8 +25,9 @@ export const configComponent = createComponent<
                     <box>
                         <hint>
                             <text>
-                                The connector is configured and conversations are being ingested, it might take minutes for the conversations to be ingested.
-                                You can now close this dialog.
+                                The connector is configured and conversations are being ingested, it
+                                might take minutes for the conversations to be ingested. You can now
+                                close this dialog.
                             </text>
                         </hint>
                         <divider size="medium" />
