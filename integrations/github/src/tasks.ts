@@ -26,12 +26,12 @@ export async function queueTaskForImportSpaces(
  * Handle an integration task.
  */
 export async function handleIntegrationTask(
-    context: GithubRuntimeContext,
     task: IntegrationTask,
+    context: GithubRuntimeContext
 ): Promise<void> {
     switch (task.type) {
         case 'import:spaces':
-            await handleImportDispatchForSpaces(context, task.payload);
+            await handleImportDispatchForSpaces(task.payload, context);
             break;
         default:
             throw new Error(`Unknown integration task type: ${task}`);
@@ -46,8 +46,8 @@ export async function handleIntegrationTask(
  * than 50 as that is the limit imposed by Cloudflare workers.
  */
 export async function handleImportDispatchForSpaces(
-    context: GithubRuntimeContext,
     payload: IntegrationTaskImportSpaces['payload'],
+    context: GithubRuntimeContext
 ): Promise<number | undefined> {
     const { configQuery, page, standaloneRef, eventTimestamp } = payload;
 

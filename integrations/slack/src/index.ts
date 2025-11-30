@@ -5,6 +5,7 @@ import { SlackRuntimeContext } from './configuration';
 import { handleFetchEvent } from './router';
 import { slackAPI } from './slack';
 import { SlackBlock, SlackButtonElement } from './types';
+import { handleAskAITask } from './actions';
 
 /*
  * Handle content being updated: send a notification on Slack.
@@ -250,8 +251,9 @@ const handleSpaceContentUpdated: EventCallback<
 
 export default createIntegration({
     fetch: handleFetchEvent,
-
     events: {
         space_content_updated: handleSpaceContentUpdated,
     },
+    // @ts-ignore
+    task: handleAskAITask,
 });
