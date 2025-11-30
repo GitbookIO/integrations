@@ -205,11 +205,17 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
 
                     // @ts-expect-error - until the api client is updated to include the task event
                     case 'task': {
+                        // @ts-expect-error - until the api client is updated to include the task event
+                        const task = event.task as ExtractTaskPayload<Context>;
+
+                        // @ts-expect-error - We log the type even if it's not always defined
+                        logger.info(`handling task ${task.type}`);
+
                         if (!definition.task) {
                             throw new ExposableError('Integration does not handle tasks', 400);
                         }
 
-                        await definition.task(event, context);
+                        await definition.task(task, context);
                         return new Response('OK', { status: 200 });
                     }
 
