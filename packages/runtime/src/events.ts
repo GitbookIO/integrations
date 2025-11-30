@@ -74,6 +74,5 @@ export type FetchVisitorAuthenticationEventCallback<
 /**
  * Callback to handle integration tasks.
  */
-export type IntegrationTaskEventCallback<
-    Context extends RuntimeContext = RuntimeContext,
-> = RuntimeCallback<[ExtractTaskPayload<Context>], Promise<void>, Context>;
+export type IntegrationTaskEventCallback<Context extends RuntimeContext = RuntimeContext> =
+    RuntimeCallback<[ExtractTaskPayload<Context>], Promise<void>, Context>;

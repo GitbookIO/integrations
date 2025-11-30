@@ -27,7 +27,7 @@ export async function queueTaskForImportSpaces(
  */
 export async function handleIntegrationTask(
     task: IntegrationTask,
-    context: GithubRuntimeContext
+    context: GithubRuntimeContext,
 ): Promise<void> {
     switch (task.type) {
         case 'import:spaces':
@@ -47,7 +47,7 @@ export async function handleIntegrationTask(
  */
 export async function handleImportDispatchForSpaces(
     payload: IntegrationTaskImportSpaces['payload'],
-    context: GithubRuntimeContext
+    context: GithubRuntimeContext,
 ): Promise<number | undefined> {
     const { configQuery, page, standaloneRef, eventTimestamp } = payload;
 

@@ -27,7 +27,7 @@ export async function queueIntercomIntegrationTask(
  */
 export async function handleIntercomIntegrationTask(
     task: IntercomIntegrationTask,
-    context: IntercomRuntimeContext
+    context: IntercomRuntimeContext,
 ): Promise<void> {
     const { type: taskType } = task;
     switch (taskType) {
@@ -44,7 +44,7 @@ export async function handleIntercomIntegrationTask(
  */
 async function handleClosedConversationsTask(
     task: IntercomIntegrationTask,
-    context: IntercomRuntimeContext
+    context: IntercomRuntimeContext,
 ): Promise<void> {
     const { environment } = context;
 

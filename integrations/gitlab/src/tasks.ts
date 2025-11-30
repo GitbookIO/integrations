@@ -27,7 +27,7 @@ export async function queueTaskForImportSpaces(
  */
 export async function handleIntegrationTask(
     task: IntegrationTask,
-    context: GitLabRuntimeContext
+    context: GitLabRuntimeContext,
 ): Promise<void> {
     switch (task.type) {
         case 'import:spaces':

@@ -1,10 +1,6 @@
 import { Router } from 'itty-router';
 
-import {
-    createIntegration,
-    createOAuthHandler,
-    Logger,
-} from '@gitbook/runtime';
+import { createIntegration, createOAuthHandler, Logger } from '@gitbook/runtime';
 import { getIntercomOAuthConfig } from './client';
 import { configComponent } from './config';
 import { ingestLastClosedIntercomConversations } from './conversations';

@@ -80,7 +80,10 @@ export function getIntercomOAuthConfig(context: IntercomRuntimeContext) {
 /**
  * Initialize an Intercom API client for a given installation.
  */
-export async function getIntercomClient(context: IntercomRuntimeContext, installation = context.environment.installation) {
+export async function getIntercomClient(
+    context: IntercomRuntimeContext,
+    installation = context.environment.installation,
+) {
     if (!installation) {
         throw new Error('Installation not found');
     }

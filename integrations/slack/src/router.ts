@@ -1,11 +1,6 @@
 import { Router } from 'itty-router';
 
-import {
-    createOAuthHandler,
-    FetchEventCallback,
-    Logger,
-    OAuthResponse,
-} from '@gitbook/runtime';
+import { createOAuthHandler, FetchEventCallback, Logger, OAuthResponse } from '@gitbook/runtime';
 
 import {
     createSlackEventsHandler,

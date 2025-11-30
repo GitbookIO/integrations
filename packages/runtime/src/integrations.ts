@@ -205,10 +205,7 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
 
                     case 'task': {
                         if (!definition.task) {
-                            throw new ExposableError(
-                                'Integration does not handle tasks',
-                                400,
-                            );
+                            throw new ExposableError('Integration does not handle tasks', 400);
                         }
 
                         await definition.task(event, context);
