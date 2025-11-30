@@ -1,5 +1,13 @@
 # @gitbook/integration-github
 
+## 0.6.4
+
+### Patch Changes
+
+- d7fa48f: Replace custom code for tasks to leverage the new runtime API.
+- Updated dependencies [d7fa48f]
+    - @gitbook/runtime@0.23.0
+
 ## 0.6.3
 
 ### Patch Changes
