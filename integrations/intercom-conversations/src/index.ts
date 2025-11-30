@@ -1,16 +1,10 @@
 import { Router } from 'itty-router';
 
-import {
-    createIntegration,
-    createOAuthHandler,
-    ExposableError,
-    Logger,
-    verifyIntegrationRequestSignature,
-} from '@gitbook/runtime';
+import { createIntegration, createOAuthHandler, Logger } from '@gitbook/runtime';
 import { getIntercomOAuthConfig } from './client';
 import { configComponent } from './config';
 import { ingestLastClosedIntercomConversations } from './conversations';
-import type { IntercomIntegrationTask, IntercomRuntimeContext } from './types';
+import type { IntercomRuntimeContext } from './types';
 import { handleIntercomWebhookRequest } from './intercom-webhooks';
 import { handleIntercomIntegrationTask } from './tasks';
 
@@ -44,33 +38,6 @@ export default createIntegration<IntercomRuntimeContext>({
             return handleIntercomWebhookRequest(request, context);
         });
 
-        /**
-         * Integration tasks handler.
-         */
-        router.post('/tasks', async (request) => {
-            const verified = await verifyIntegrationRequestSignature(request, environment);
-
-            if (!verified) {
-                const message = `Invalid signature for integration task`;
-                logger.error(message);
-                throw new ExposableError(message);
-            }
-
-            const { task } = JSON.parse(await request.text()) as { task: IntercomIntegrationTask };
-            logger.debug('Verified & received integration task', task);
-
-            context.waitUntil(
-                (async () => {
-                    await handleIntercomIntegrationTask(context, task);
-                })(),
-            );
-
-            return new Response(JSON.stringify({ acknowledged: true }), {
-                status: 200,
-                headers: { 'content-type': 'application/json' },
-            });
-        });
-
         try {
             const response = await router.handle(request, context);
             if (!response) {
@@ -98,4 +65,5 @@ export default createIntegration<IntercomRuntimeContext>({
             }
         },
     },
+    task: handleIntercomIntegrationTask,
 });

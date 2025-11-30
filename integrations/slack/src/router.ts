@@ -1,13 +1,6 @@
 import { Router } from 'itty-router';
 
-import {
-    createOAuthHandler,
-    ExposableError,
-    FetchEventCallback,
-    Logger,
-    OAuthResponse,
-    verifyIntegrationRequestSignature,
-} from '@gitbook/runtime';
+import { createOAuthHandler, FetchEventCallback, Logger, OAuthResponse } from '@gitbook/runtime';
 
 import {
     createSlackEventsHandler,
@@ -38,39 +31,6 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
                 environment.installation?.urls.publicEndpoint ||
                 environment.integration.urls.publicEndpoint,
         ).pathname,
-    });
-
-    /**
-     * Handle integration tasks
-     */
-    router.post('/tasks', async (request) => {
-        const verified = await verifyIntegrationRequestSignature(request, environment);
-
-        if (!verified) {
-            const message = `Invalid signature for integration task`;
-            logger.error(message);
-            throw new ExposableError(message);
-        }
-
-        const { task } = JSON.parse(await request.text()) as { task: IntegrationTask };
-        logger.debug('verified & received integration task', task.type);
-
-        switch (task.type) {
-            case 'ask:ai': {
-                await handleAskAITask(task, context);
-                break;
-            }
-            default: {
-                const error = `Unknown integration task: ${task}`;
-                logger.error(error);
-                throw new Error(error);
-            }
-        }
-
-        return new Response(JSON.stringify({ processed: true }), {
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-        });
     });
 
     const requestedScopes = [

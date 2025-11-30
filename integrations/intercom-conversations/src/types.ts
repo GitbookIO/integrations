@@ -12,7 +12,10 @@ export type IntercomInstallationConfiguration = {
 };
 
 export type IntercomRuntimeEnvironment = RuntimeEnvironment<IntercomInstallationConfiguration>;
-export type IntercomRuntimeContext = RuntimeContext<IntercomRuntimeEnvironment>;
+export type IntercomRuntimeContext = RuntimeContext<
+    IntercomRuntimeEnvironment,
+    IntercomIntegrationTask
+>;
 
 /**
  * Intercom API response types

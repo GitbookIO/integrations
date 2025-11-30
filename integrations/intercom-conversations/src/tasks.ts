@@ -14,8 +14,7 @@ export async function queueIntercomIntegrationTask(
     context: IntercomRuntimeContext,
     task: IntercomIntegrationTask,
 ): Promise<void> {
-    const { api, environment } = context;
-    await api.integrations.queueIntegrationTask(environment.integration.name, {
+    await context.integration.queueTask({
         task: {
             type: task.type,
             payload: task.payload,
@@ -27,13 +26,13 @@ export async function queueIntercomIntegrationTask(
  * Handles an intercom integration dispatched task.
  */
 export async function handleIntercomIntegrationTask(
-    context: IntercomRuntimeContext,
     task: IntercomIntegrationTask,
+    context: IntercomRuntimeContext,
 ): Promise<void> {
     const { type: taskType } = task;
     switch (taskType) {
         case 'ingest:closed-conversations':
-            await handleClosedConversationsTask(context, task);
+            await handleClosedConversationsTask(task, context);
             break;
         default:
             throw new Error(`Unknown intercom integration task type: ${task}`);
@@ -44,8 +43,8 @@ export async function handleIntercomIntegrationTask(
  * Handle an ingest intercom closed conversations task.
  */
 async function handleClosedConversationsTask(
-    context: IntercomRuntimeContext,
     task: IntercomIntegrationTask,
+    context: IntercomRuntimeContext,
 ): Promise<void> {
     const { environment } = context;
 
@@ -54,15 +53,7 @@ async function handleClosedConversationsTask(
         task.payload.installation,
     );
 
-    const installationContext: IntercomRuntimeContext = {
-        ...context,
-        environment: {
-            ...context.environment,
-            installation,
-        },
-    };
-
-    const intercomClient = await getIntercomClient(installationContext);
+    const intercomClient = await getIntercomClient(context, installation);
 
     // Process conversations with fail-safe error handling
     const gitbookConversations = (
