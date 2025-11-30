@@ -203,6 +203,7 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                         return await contentSource.compute(event, context);
                     }
 
+                    // @ts-expect-error - until the api client is updated to include the task event
                     case 'task': {
                         if (!definition.task) {
                             throw new ExposableError('Integration does not handle tasks', 400);
