@@ -14,8 +14,7 @@ export async function queueTaskForImportSpaces(
     context: GithubRuntimeContext,
     task: IntegrationTaskImportSpaces,
 ): Promise<void> {
-    const { api, environment } = context;
-    await api.integrations.queueIntegrationTask(environment.integration.name, {
+    await context.integration.queueTask({
         task: {
             type: task.type,
             payload: task.payload,

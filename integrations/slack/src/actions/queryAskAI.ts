@@ -213,7 +213,7 @@ async function queueQueryAskAI(
 
     logger.info(`Queue task ${task.type} for installation: ${task.payload.installationId})`);
 
-    await context.api.integrations.queueIntegrationTask(context.environment.integration.name, {
+    await context.integration.queueTask({
         task,
     });
 }
