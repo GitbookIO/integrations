@@ -65,7 +65,5 @@ export default createIntegration<IntercomRuntimeContext>({
             }
         },
     },
-    task: async (task, context) => {
-        await handleIntercomIntegrationTask(task, context);
-    },
+    task: handleIntercomIntegrationTask,
 });
