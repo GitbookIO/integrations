@@ -15,7 +15,7 @@ export interface RuntimeEnvironment<
     };
 }
 
-export interface RuntimeContext<Environment extends RuntimeEnvironment = IntegrationEnvironment> {
+export interface RuntimeContext<Environment extends RuntimeEnvironment = IntegrationEnvironment, TaskPayload extends object = object> {
     /**
      * Environment of the integration.
      */
@@ -41,7 +41,7 @@ export interface RuntimeContext<Environment extends RuntimeEnvironment = Integra
          */
         queueTask(input: {
             /** Payload for the integration task */
-            task: object;
+            task: TaskPayload;
             /**
              * Number of seconds to wait before executing the task, defaults to 0
              * @min 0
@@ -58,6 +58,11 @@ export interface RuntimeContext<Environment extends RuntimeEnvironment = Integra
      */
     waitUntil: FetchEvent['waitUntil'];
 }
+
+/**
+ * Extract the task payload type from a context.
+ */
+export type ExtractTaskPayload<Context extends RuntimeContext> = Parameters<Context['integration']['queueTask']>[0]['task'];
 
 /**
  * Callback with the runtime context.
