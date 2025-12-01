@@ -1,5 +1,12 @@
 # @gitbook/integration-formspree
 
+## 0.2.13
+
+### Patch Changes
+
+- Updated dependencies [d7fa48f]
+    - @gitbook/runtime@0.23.0
+
 ## 0.2.12
 
 ### Patch Changes

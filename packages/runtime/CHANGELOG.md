@@ -1,5 +1,11 @@
 # @gitbook/runtime
 
+## 0.23.0
+
+### Minor Changes
+
+- d7fa48f: Provide core runtime API to handle and dispatch tasks
+
 ## 0.22.0
 
 ### Minor Changes

@@ -1,5 +1,14 @@
 # @gitbook/integration-intercom-conversations
 
+## 0.2.2
+
+### Patch Changes
+
+- d7fa48f: Replace custom code for tasks to leverage the new runtime API.
+- 259b5a0: Show a message once integration has been authenticated.
+- Updated dependencies [d7fa48f]
+    - @gitbook/runtime@0.23.0
+
 ## 0.2.1
 
 ### Patch Changes
