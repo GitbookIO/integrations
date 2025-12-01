@@ -203,9 +203,7 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                         return await contentSource.compute(event, context);
                     }
 
-                    // @ts-expect-error - until the api client is updated to include the task event
                     case 'task': {
-                        // @ts-expect-error - until the api client is updated to include the task event
                         const task = event.task as ExtractTaskPayload<Context>;
 
                         // @ts-expect-error - We log the type even if it's not always defined
