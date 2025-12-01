@@ -34,7 +34,7 @@ export async function handleIntercomWebhookRequest(
     );
 
     if (installations.length === 0) {
-        throw new Error(`No installations found for Intercom workspace: ${appId}`);
+        throw new ExposableError(`No installations found for Intercom workspace: ${appId}`);
     }
 
     if (topic === 'conversation.admin.closed') {
