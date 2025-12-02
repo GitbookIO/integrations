@@ -391,7 +391,7 @@ export async function getOAuthToken<TOAuthResponse = OAuthResponse>(
         throw new Error(`Failed to exchange code for access token ${await response.text()}`);
     }
 
-    const json = (await response.json()) as (OAuthResponse & TOAuthResponse);
+    const json = (await response.json()) as OAuthResponse & TOAuthResponse;
     const creds = await extractCredentials(json);
     const accessToken = (creds.configuration?.['oauth_credentials'] as OAuthConfiguration)
         ?.access_token;
