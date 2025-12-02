@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@gitbook/integrations",
@@ -113,7 +114,7 @@
     },
     "integrations/formspree": {
       "name": "@gitbook/integration-formspree",
-      "version": "0.2.12",
+      "version": "0.2.13",
       "dependencies": {
         "@gitbook/runtime": "workspace:*",
       },
@@ -160,7 +161,7 @@
     },
     "integrations/github": {
       "name": "@gitbook/integration-github",
-      "version": "0.6.3",
+      "version": "0.6.4",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -210,7 +211,7 @@
     },
     "integrations/gitlab": {
       "name": "@gitbook/integration-gitlab",
-      "version": "0.6.2",
+      "version": "0.6.3",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -313,7 +314,7 @@
     },
     "integrations/intercom-conversations": {
       "name": "@gitbook/integration-intercom-conversations",
-      "version": "0.2.0",
+      "version": "0.2.2",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -592,7 +593,7 @@
     },
     "integrations/slack": {
       "name": "@gitbook/integration-slack",
-      "version": "2.5.3",
+      "version": "2.6.1",
       "dependencies": {
         "@ai-sdk/openai": "^2.0.62",
         "@gitbook/api": "*",
@@ -729,7 +730,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.147.0",
+      "version": "0.152.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -784,7 +785,7 @@
     },
     "packages/runtime": {
       "name": "@gitbook/runtime",
-      "version": "0.22.0",
+      "version": "0.23.0",
       "dependencies": {
         "@gitbook/api": "*",
       },
