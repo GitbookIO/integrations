@@ -276,7 +276,9 @@ async function requestGitLab(
     url: URL,
     options: RequestInit = {},
 ): Promise<Response> {
-    logger.debug(`GitLab API -> [${options.method}] ${url.toString()}, using proxy: ${context.environment.proxied}`);
+    logger.debug(
+        `GitLab API -> [${options.method}] ${url.toString()}, using proxy: ${context.environment.proxied}`,
+    );
     const response = await fetch(url.toString(), {
         ...options,
         headers: {
@@ -321,4 +323,3 @@ export function getAccessTokenOrThrow(config: GitLabSpaceConfiguration): string 
 
     return accessToken;
 }
-
