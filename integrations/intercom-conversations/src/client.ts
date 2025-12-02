@@ -90,7 +90,11 @@ export async function getIntercomClient(
 /**
  * Extract the workspace ID from the OAuth scope.
  */
-function parseWorkspaceIdFromScope(scope: string): string | null {
+function parseWorkspaceIdFromScope(scope: string | undefined): string | null {
+    if (!scope) {
+        return null;
+    }
+
     const workspaceIdMatch = scope.match(/workspace_id:([^\s,]+)/);
     return workspaceIdMatch ? workspaceIdMatch[1] : null;
 }
