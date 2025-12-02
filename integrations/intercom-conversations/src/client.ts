@@ -1,33 +1,18 @@
 import { IntercomClient } from 'intercom-client';
-import type { IntercomRuntimeContext } from './types';
-import {
-    ExposableError,
-    getOAuthToken,
-    Logger,
-    OAuthConfig,
-    OAuthResponse,
-} from '@gitbook/runtime';
+import type { IntercomRuntimeContext, IntercomMeResponse } from './types';
+import { ExposableError, getOAuthToken, Logger, OAuthConfig } from '@gitbook/runtime';
 
 const logger = Logger('intercom-conversations:client');
-
-type IntercomOAuthResponse = OAuthResponse & {
-    token_type: 'Bearer';
-
-    /**
-     * Intercom returns a scope property which contains the workspace ID as "workspace_id:<id>"
-     */
-    scope: string;
-};
 
 /**
  * Get the OAuth configuration for the Intercom integration.
  */
 export function getIntercomOAuthConfig(context: IntercomRuntimeContext) {
-    const config: OAuthConfig<IntercomOAuthResponse> = {
+    const config: OAuthConfig = {
         redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
         clientId: context.environment.secrets.CLIENT_ID,
         clientSecret: context.environment.secrets.CLIENT_SECRET,
-        scopes: ['conversations.read'],
+        scopes: ['conversations.read', 'read_admins'],
         authorizeURL: () => 'https://app.intercom.com/oauth',
         accessTokenURL: () => 'https://api.intercom.io/auth/eagle/token',
         extractCredentials: async (response) => {
@@ -40,24 +25,52 @@ export function getIntercomOAuthConfig(context: IntercomRuntimeContext) {
                 );
             }
 
-            logger.debug(`Intercom OAuth response received with scope "${response.scope}"`);
+            logger.debug('Intercom OAuth response received', {
+                hasAccessToken: !!response.access_token,
+                tokenLength: response.access_token?.length,
+            });
 
-            const workspaceId = parseWorkspaceIdFromScope(response.scope);
-            if (!workspaceId) {
-                logger.error('Unable to parse workspace ID from OAuth response', response);
-                throw new Error('Failed to determine Intercom workspace ID from OAuth');
-            }
-
-            logger.info(`Intercom workspace ID "${workspaceId}" extracted from OAuth scope`);
-
-            return {
-                externalIds: [workspaceId],
-                configuration: {
-                    oauth_credentials: {
-                        access_token: response.access_token,
+            // Get workspace information using the access token
+            // We use fetch here instead of IntercomClient because the /me endpoint is not supported yet in the client.
+            try {
+                const meResponse = await fetch('https://api.intercom.io/me', {
+                    headers: {
+                        Authorization: `Bearer ${response.access_token}`,
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                        'Intercom-Version': '2.13',
                     },
-                },
-            };
+                });
+
+                if (!meResponse.ok) {
+                    const errorText = await meResponse.text();
+                    throw new Error(
+                        `Failed to fetch workspace info: ${meResponse.status} ${meResponse.statusText} - ${errorText}`,
+                    );
+                }
+
+                const meData = (await meResponse.json()) as IntercomMeResponse;
+
+                const workspaceId = meData.app?.id_code;
+                if (!workspaceId) {
+                    logger.error('No workspace ID in /me response', { meData });
+                    throw new ExposableError('No workspace ID found in response');
+                }
+
+                return {
+                    externalIds: [workspaceId],
+                    configuration: {
+                        oauth_credentials: {
+                            access_token: response.access_token,
+                        },
+                    },
+                };
+            } catch (error) {
+                logger.error('Failed to fetch Intercom workspace info', {
+                    error: error instanceof Error ? error.message : String(error),
+                });
+                throw new ExposableError(`Failed to get Intercom workspace ID: ${error}`);
+            }
         },
     };
 
@@ -85,16 +98,4 @@ export async function getIntercomClient(
     return new IntercomClient({
         token,
     });
-}
-
-/**
- * Extract the workspace ID from the OAuth scope.
- */
-function parseWorkspaceIdFromScope(scope: string | undefined): string | null {
-    if (!scope) {
-        return null;
-    }
-
-    const workspaceIdMatch = scope.match(/workspace_id:([^\s,]+)/);
-    return workspaceIdMatch ? workspaceIdMatch[1] : null;
 }

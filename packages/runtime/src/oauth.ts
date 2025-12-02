@@ -342,7 +342,7 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
  * Get the OAuth token from the credentials.
  * It will refresh the token if it's expired.
  */
-export async function getOAuthToken<TOAuthResponse = OAuthResponse>(
+export async function getOAuthToken<TOAuthResponse extends OAuthResponse = OAuthResponse>(
     credentials: OAuthConfiguration,
     config: Pick<
         OAuthConfig<TOAuthResponse>,

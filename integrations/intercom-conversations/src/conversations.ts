@@ -2,7 +2,7 @@ import { ConversationInput } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
 import { Intercom } from 'intercom-client';
 import { getIntercomClient } from './client';
-import type { IntercomRuntimeContext } from './types';
+import type { IntercomIntegrationTask, IntercomRuntimeContext } from './types';
 import { queueIntercomIntegrationTask } from './tasks';
 import pMap from 'p-map';
 
