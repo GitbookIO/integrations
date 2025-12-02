@@ -307,6 +307,19 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                 });
 
                 if (!tokenResp.ok) {
+                    if (tokenResp.headers.get('content-type')?.includes('application/json')) {
+                        const errorResponse = await tokenResp.json();
+                        logger.error(
+                            `Error while fetching token from auth provider (status: ${tokenResp.status}): `,
+                            JSON.stringify(errorResponse),
+                        );
+                    } else {
+                        const errorText = await tokenResp.text();
+                        logger.error(
+                            `Error while fetching token from auth provider (status: ${tokenResp.status}): `,
+                            JSON.stringify(errorText),
+                        );
+                    }
                     return new Response(
                         'Error: Could not fetch ID token from your authentication provider',
                         {
@@ -317,8 +330,8 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
 
                 const tokenRespData = await tokenResp.json<OIDCTokenResponseData>();
                 if (!tokenRespData.id_token) {
-                    logger.debug(JSON.stringify(tokenResp, null, 2));
-                    logger.debug(
+                    logger.error(JSON.stringify(tokenResp));
+                    logger.error(
                         `Did not receive access token. Error: ${tokenResp && 'error' in tokenResp ? tokenResp.error : ''} ${
                             tokenResp && 'error_description' in tokenResp
                                 ? tokenResp.error_description
