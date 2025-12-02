@@ -1,5 +1,12 @@
 # @gitbook/runtime
 
+## 0.23.1
+
+### Patch Changes
+
+- aab7f96: Improve the typing of OAuth functions.
+- 84ea77c: Fix TS error with latest API spec.
+
 ## 0.23.0
 
 ### Minor Changes
