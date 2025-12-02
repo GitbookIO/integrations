@@ -1,6 +1,12 @@
 import { IntercomClient } from 'intercom-client';
 import type { IntercomRuntimeContext } from './types';
-import { ExposableError, getOAuthToken, Logger, OAuthConfig, OAuthResponse } from '@gitbook/runtime';
+import {
+    ExposableError,
+    getOAuthToken,
+    Logger,
+    OAuthConfig,
+    OAuthResponse,
+} from '@gitbook/runtime';
 
 const logger = Logger('intercom-conversations:client');
 
@@ -11,8 +17,7 @@ type IntercomOAuthResponse = OAuthResponse & {
      * Intercom returns a scope property which contains the workspace ID as "workspace_id:<id>"
      */
     scope: string;
-}
-
+};
 
 /**
  * Get the OAuth configuration for the Intercom integration.
