@@ -57,7 +57,7 @@ export async function inferUserIntentAndTriggerAction(
             const accessTokenScopes =
                 installationConfiguration.oauth_credentials?.requested_scopes || [];
 
-            // Installations created before the Docs Agents feature was released may not have a token with the
+            // Installations created before the GitBook Agent feature was released may not have a token with the
             // required scope to call this API. Since this is non-blocking, we skip the API call if the token lacks
             // the necessary permission.
             if (accessTokenScopes.includes('assistant:write')) {

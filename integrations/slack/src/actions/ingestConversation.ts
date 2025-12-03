@@ -40,8 +40,8 @@ export async function ingestSlackConversation(params: IngestSlackConversationAct
                 payload: {
                     channel: channelId,
                     text: isDocsAgentsEnabled
-                        ? `🚀 Sharing this conversation with Docs Agent to improve your docs...`
-                        : `✨ Docs Agent is currently in private alpha.\n\nRequest early access for your organization: ${appOrgURL}/agents`,
+                        ? `🚀 Sharing this conversation with GitBook Agent to improve your docs...`
+                        : `✨ GitBook Agent is currently in private alpha.\n\nRequest early access for your organization: ${appOrgURL}/agents`,
                     thread_ts: threadId,
                 },
             },
@@ -101,7 +101,7 @@ export async function handleIngestSlackConversationAction(
                 path: 'chat.postMessage',
                 payload: {
                     channel: channelId,
-                    text: `🤖 Got it! Docs Agent is on it. We'll analyze this and suggest changes if needed.`,
+                    text: `🤖 Got it! GitBook Agent is on it. We'll analyze this and suggest changes if needed.`,
                     thread_ts: threadId,
                 },
             },
@@ -117,7 +117,7 @@ export async function handleIngestSlackConversationAction(
                 path: 'chat.postMessage',
                 payload: {
                     channel: channelId,
-                    text: `⚠️ Something went wrong while sending this conversation to Docs Agent.`,
+                    text: `⚠️ Something went wrong while sending this conversation to GitBook Agent.`,
                     thread_ts: threadId,
                 },
             },
