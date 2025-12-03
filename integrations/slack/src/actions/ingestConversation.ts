@@ -101,7 +101,7 @@ export async function handleIngestSlackConversationAction(
                 path: 'chat.postMessage',
                 payload: {
                     channel: channelId,
-                    text: `🤖 Got it! GitBook Agent is on it. We'll analyze this and suggest changes if needed.`,
+                    text: `🤖 Got it! GitBook Agent will analyze this conversation and suggest changes if needed.`,
                     thread_ts: threadId,
                 },
             },
