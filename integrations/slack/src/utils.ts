@@ -150,9 +150,9 @@ export function isAllowedToRespond(eventPayload: any) {
 }
 
 /**
- * Check if Docs agents conversation is enabled for the organization.
+ * Check if GitBook Agent conversations ingestion is enabled for the organization.
  *
- * TODO: Remove when Docs agents reached general availability.
+ * TODO: Remove when GitBook Agent reached general availability.
  */
 export async function isDocsAgentsConversationsEnabled(params: {
     organizationId: string;
