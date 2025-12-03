@@ -1,5 +1,14 @@
 # @gitbook/integration-intercom-conversations
 
+## 0.2.3
+
+### Patch Changes
+
+- aab7f96: Fix authentication flow when not requiring the permission "read_admins".
+- Updated dependencies [aab7f96]
+- Updated dependencies [84ea77c]
+    - @gitbook/runtime@0.23.1
+
 ## 0.2.2
 
 ### Patch Changes
