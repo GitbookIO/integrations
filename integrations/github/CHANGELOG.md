@@ -1,5 +1,13 @@
 # @gitbook/integration-github
 
+## 0.6.5
+
+### Patch Changes
+
+- 247db36: Improve support for proxy
+- Updated dependencies [7cb9bbc]
+    - @gitbook/api@0.152.1
+
 ## 0.6.4
 
 ### Patch Changes
