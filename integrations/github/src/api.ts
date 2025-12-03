@@ -3,7 +3,7 @@ import LinkHeader from 'http-link-header';
 import { Logger, ExposableError } from '@gitbook/runtime';
 
 import type { GithubRuntimeContext, GitHubSpaceConfiguration } from './types';
-import { assertIsDefined, getSpaceConfigOrThrow, signResponse } from './utils';
+import { assertIsDefined, getSpaceConfigOrThrow } from './utils';
 
 export type OAuthTokenCredentials = NonNullable<GitHubSpaceConfiguration['oauth_credentials']>;
 
@@ -293,9 +293,7 @@ async function requestGitHubAPI(
     retriesLeft = 1,
 ): Promise<Response> {
     const { access_token } = credentials;
-    logger.debug(
-        `GitHub API -> [${options.method}] ${url.toString()}, using proxy: ${context.environment.proxied}`,
-    );
+    logger.debug(`GitHub API -> [${options.method}] ${url.toString()}`);
     const response = await fetch(url.toString(), {
         ...options,
         headers: {

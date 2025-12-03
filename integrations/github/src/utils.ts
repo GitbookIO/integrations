@@ -98,58 +98,6 @@ export function arrayToHex(arr: ArrayBuffer) {
 }
 
 /**
- * Convert a hex string to an array buffer
- */
-function hexToArray(input: string) {
-    if (input.length % 2 !== 0) {
-        throw new RangeError('Expected string to be an even number of characters');
-    }
-
-    const view = new Uint8Array(input.length / 2);
-
-    for (let i = 0; i < input.length; i += 2) {
-        view[i / 2] = parseInt(input.substring(i, i + 2), 16);
-    }
-
-    return view.buffer;
-}
-
-/**
- * Import a secret CryptoKey to use for signing.
- */
-async function importKey(secret: string): Promise<CryptoKey> {
-    return await crypto.subtle.importKey(
-        'raw',
-        new TextEncoder().encode(secret),
-        { name: 'HMAC', hash: 'SHA-256' },
-        false,
-        ['sign', 'verify'],
-    );
-}
-
-/**
- * Sign a message with a secret key by using HMAC-SHA256 algorithm.
- */
-export async function signResponse(message: string, secret: string): Promise<string> {
-    const key = await importKey(secret);
-    const signed = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(message));
-    return arrayToHex(signed);
-}
-
-/**
- * Verify that a message matches a signature by using HMAC-SHA256 algorithm.
- */
-export async function verifySignature(
-    message: string,
-    signature: string,
-    secret: string,
-): Promise<boolean> {
-    const key = await importKey(secret);
-    const sigBuf = hexToArray(signature);
-    return await crypto.subtle.verify('HMAC', key, sigBuf, new TextEncoder().encode(message));
-}
-
-/**
  * Constant-time string comparison. Equivalent of `crypto.timingSafeEqual`.
  **/
 export function safeCompare(expected: string, actual: string) {
