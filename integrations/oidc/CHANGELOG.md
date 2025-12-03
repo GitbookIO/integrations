@@ -1,5 +1,11 @@
 # @gitbook/integration-oidc
 
+## 0.2.8
+
+### Patch Changes
+
+- f8c2288: Add user-agent to the token request and make scope config parsing more user-friendly
+
 ## 0.2.7
 
 ### Patch Changes
