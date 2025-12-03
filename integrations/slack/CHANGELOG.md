@@ -1,5 +1,11 @@
 # @gitbook/integration-slack
 
+## 2.6.2
+
+### Patch Changes
+
+- 2cc438c: Copy changes to the Slack integration
+
 ## 2.6.1
 
 ### Patch Changes
