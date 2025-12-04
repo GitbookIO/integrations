@@ -6,7 +6,8 @@
         "@gitbook/runtime": "*",
         "@gitbook/api": "*",
         "itty-router": "^2.6.1",
-        "octokit": "^5.0.5"
+        "octokit": "^5.0.5",
+        "@tsndr/cloudflare-worker-jwt": "^3.2.0"
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",
