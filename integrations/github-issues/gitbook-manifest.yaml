@@ -1,0 +1,49 @@
+name: github-issues
+title: GitHub Issues
+icon: ./assets/icon.png
+description: Automatically sync GitHub issues to docs updates in GitBook.
+visibility: public
+script: ./src/index.ts
+summary: |
+    # Overview
+
+    Automatically get AI-suggested change requests for your docs based on feedback from your GitHub Issues.
+scopes:
+    - conversations:ingest
+organization: gitbook
+configurations:
+    account:
+        componentId: config
+secrets:
+    GITHUB_APP_ID: ${{ env.GITHUB_APP_ID }}
+    GITHUB_APP_NAME: ${{ env.GITHUB_APP_NAME }}
+    GITHUB_PRIVATE_KEY: ${{ env.GITHUB_PRIVATE_KEY }}
+    CLIENT_ID: ${{ env.GITHUB_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.GITHUB_CLIENT_SECRET }}
+    WEBHOOK_SECRET: ${{ env.GITHUB_WEBHOOK_SECRET }}
+target: organization
+envs:
+    test:
+        secrets:
+            GITHUB_APP_ID: ${{ "op://gitbook-integrations/githubConversationsStaging/GITHUB_APP_ID" }}
+            GITHUB_APP_NAME: ${{ "op://gitbook-integrations/githubConversationsStaging/GITHUB_APP_NAME" }}
+            GITHUB_PRIVATE_KEY: ${{ "op://gitbook-integrations/githubConversationsStaging/GITHUB_PRIVATE_KEY" }}
+            CLIENT_ID: ${{ "op://gitbook-integrations/githubConversationsStaging/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/githubConversationsStaging/CLIENT_SECRET" }}
+            WEBHOOK_SECRET: ${{ "op://gitbook-integrations/githubConversationsStaging/WEBHOOK_SECRET" }}
+    staging:
+        secrets:
+            GITHUB_APP_ID: ${{ "op://gitbook-integrations/githubConversationsStaging/GITHUB_APP_ID" }}
+            GITHUB_APP_NAME: ${{ "op://gitbook-integrations/githubConversationsStaging/GITHUB_APP_NAME" }}
+            GITHUB_PRIVATE_KEY: ${{ "op://gitbook-integrations/githubConversationsStaging/GITHUB_PRIVATE_KEY" }}
+            CLIENT_ID: ${{ "op://gitbook-integrations/githubConversationsStaging/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/githubConversationsStaging/CLIENT_SECRET" }}
+            WEBHOOK_SECRET: ${{ "op://gitbook-integrations/githubConversationsStaging/WEBHOOK_SECRET" }}
+    production:
+        secrets:
+            GITHUB_APP_ID: ${{ "op://gitbook-integrations/githubConversationsProduction/GITHUB_APP_ID" }}
+            GITHUB_APP_NAME: ${{ "op://gitbook-integrations/githubConversationsProduction/GITHUB_APP_NAME" }}
+            GITHUB_PRIVATE_KEY: ${{ "op://gitbook-integrations/githubConversationsProduction/GITHUB_PRIVATE_KEY" }}
+            CLIENT_ID: ${{ "op://gitbook-integrations/githubConversationsProduction/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/githubConversationsProduction/CLIENT_SECRET" }}
+            WEBHOOK_SECRET: ${{ "op://gitbook-integrations/githubConversationsProduction/WEBHOOK_SECRET" }}
