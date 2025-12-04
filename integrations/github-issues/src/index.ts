@@ -1,9 +1,9 @@
 import { createIntegration, Logger } from '@gitbook/runtime';
 import { Router } from 'itty-router';
-import type { GitHubIssuesRuntimeContext } from './types';
+import type { GitHubIssuesRuntimeContext, GitHubWebhookInstallationEventPayload } from './types';
 import { configComponent } from './components';
 import { handleGitHubAppSetup } from './setup';
-import { verifyGitHubWebhookSignature } from './webhook';
+import { handleGitHubAppInstallationEvent, verifyGitHubWebhookSignature } from './webhook';
 
 const logger = Logger('github-issues');
 
@@ -21,17 +21,33 @@ export default createIntegration<GitHubIssuesRuntimeContext>({
          */
         router.post('/webhook', async (request: Request) => {
             const rawBody = await request.text();
-            const payload = rawBody ? JSON.parse(rawBody) : {};
             const githubEvent = request.headers.get('x-github-event');
 
-            logger.info('Received GitHub webhook', {
-                event: githubEvent,
-                action: payload.action,
-            });
+            logger.info(`received GitHub "${githubEvent}" webhook event`);
 
-            const isSignatureValid = await verifyGitHubWebhookSignature(request, rawBody, context);
+            const isSignatureValid = await verifyGitHubWebhookSignature(context, request, rawBody);
             if (!isSignatureValid) {
                 return new Response('Unauthorized', { status: 401 });
+            }
+
+            if (!rawBody) {
+                return new Response('Malformed webhook', { status: 412 });
+            }
+
+            switch (githubEvent) {
+                case 'installation': {
+                    const eventPayload: GitHubWebhookInstallationEventPayload = JSON.parse(rawBody);
+
+                    if (eventPayload.action === 'created') {
+                        // We handle created installation when the GitHub installation setup callback is called
+                        // in order to properly linked them to an GitBook integration installation ID
+                        break;
+                    }
+
+                    return context.waitUntil(
+                        handleGitHubAppInstallationEvent(context, eventPayload),
+                    );
+                }
             }
 
             return new Response('OK', { status: 200 });

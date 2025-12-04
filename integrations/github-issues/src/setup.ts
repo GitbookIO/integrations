@@ -108,19 +108,18 @@ export async function handleGitHubAppSetup(args: {
             },
         );
     } catch (error) {
-        logger.error('Failed to store GitHub installation_id: ', {
-            error: error instanceof Error ? error.message : String(error),
-            githubAppInstallationId,
-            gitBookInstallationId,
-        });
+        logger.error(
+            `Failed to update GitBook installation ${gitBookInstallationId} with GitHub installation ${githubAppInstallationId}: `,
+            error instanceof Error ? error.message : String(error),
+        );
 
         return new Response(
             `<html>
                 <body>
                 <h1>Setup Failed</h1>
                 <p>There was an error connecting your GitHub App to GitBook.</p>
-                <p>Please try again or contact support by providing this error:</p>
-                <p>Error: ${error instanceof Error ? error.message : String(error)}</p>
+                <p>Please try again, or contact support and providing them with this error:</p>
+                <pre>Error: ${error instanceof Error ? error.message : String(error)}</pre>
                 </body>
             </html>`,
             {

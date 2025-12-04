@@ -7,6 +7,7 @@
         "@gitbook/api": "*",
         "itty-router": "^2.6.1",
         "octokit": "^5.0.5",
+        "p-map": "^7.0.4",
         "@tsndr/cloudflare-worker-jwt": "^3.2.0"
     },
     "devDependencies": {
