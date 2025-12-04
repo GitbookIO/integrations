@@ -1,51 +1,9 @@
 import jwt from '@tsndr/cloudflare-worker-jwt';
-import { GitHubIssuesRuntimeContext } from './types';
+
 import { ExposableError, Logger } from '@gitbook/runtime';
+import { GitHubIssuesRuntimeContext } from './types';
 
 const logger = Logger('github-issues:app-setup');
-
-interface GitHubAppSetupState {
-    /**
-     * The Gitbook integration installation ID the GitHub app setup is linked to.
-     */
-    gitBookInstallationId: string;
-}
-
-/**
- * Create a JWT signed with integration secret to store a GitHub app setup state.
- */
-export async function createGitHubAppSetupState(
-    context: GitHubIssuesRuntimeContext,
-    state: GitHubAppSetupState,
-) {
-    const token = await jwt.sign<GitHubAppSetupState>(
-        { gitBookInstallationId: state.gitBookInstallationId },
-        context.environment.signingSecrets.integration,
-    );
-    return token;
-}
-
-/**
- * Verify the signature of a JWT token that was passed as state of a Github app post installation.
- */
-export async function verifyGitHubAppSetupState(
-    context: GitHubIssuesRuntimeContext,
-    token: string,
-) {
-    const verifiedToken = await jwt.verify<GitHubAppSetupState>(
-        token,
-        context.environment.signingSecrets.integration,
-    );
-    if (!verifiedToken) {
-        throw new ExposableError('Invalid GitHub app setup state token signature');
-    }
-
-    const { payload } = verifiedToken;
-    if (!payload || typeof payload.gitBookInstallationId !== 'string') {
-        throw new ExposableError('Malformed GitHub app setup state token');
-    }
-    return payload;
-}
 
 /**
  * Handle GitHub app installattion setup requests.
@@ -57,12 +15,12 @@ export async function handleGitHubAppSetup(args: {
 }) {
     const { context, githubAppInstallationId, unverifiedAppSetupState } = args;
 
-    const { gitBookInstallationId } = await verifyGitHubAppSetupState(
+    const { gitbookInstallationId } = await verifyGitHubAppSetupState(
         context,
         unverifiedAppSetupState,
     );
 
-    if (!gitBookInstallationId) {
+    if (!gitbookInstallationId) {
         return new ExposableError('Missing GitBook installation ID in GitHub app setup state');
     }
 
@@ -70,7 +28,7 @@ export async function handleGitHubAppSetup(args: {
         const { data: installation } =
             await context.api.integrations.getIntegrationInstallationById(
                 context.environment.integration.name,
-                gitBookInstallationId,
+                gitbookInstallationId,
             );
 
         const existingConfig = installation?.configuration || {};
@@ -82,7 +40,7 @@ export async function handleGitHubAppSetup(args: {
 
         await context.api.integrations.updateIntegrationInstallation(
             context.environment.integration.name,
-            gitBookInstallationId,
+            gitbookInstallationId,
             {
                 configuration: {
                     ...existingConfig,
@@ -109,7 +67,7 @@ export async function handleGitHubAppSetup(args: {
         );
     } catch (error) {
         logger.error(
-            `Failed to update GitBook installation ${gitBookInstallationId} with GitHub installation ${githubAppInstallationId}: `,
+            `Failed to update GitBook installation ${gitbookInstallationId} with GitHub installation ${githubAppInstallationId}: `,
             error instanceof Error ? error.message : String(error),
         );
 
@@ -128,4 +86,47 @@ export async function handleGitHubAppSetup(args: {
             },
         );
     }
+}
+
+interface GitHubAppSetupState {
+    /**
+     * The Gitbook integration installation ID the GitHub app setup is linked to.
+     */
+    gitbookInstallationId: string;
+}
+
+/**
+ * Create a JWT signed with integration secret to store a GitHub app setup state.
+ */
+export async function createGitHubAppSetupState(
+    context: GitHubIssuesRuntimeContext,
+    state: GitHubAppSetupState,
+) {
+    const token = await jwt.sign<GitHubAppSetupState>(
+        { gitbookInstallationId: state.gitbookInstallationId },
+        context.environment.signingSecrets.integration,
+    );
+    return token;
+}
+
+/**
+ * Verify the signature of a JWT token that was passed as state of a Github app post installation.
+ */
+export async function verifyGitHubAppSetupState(
+    context: GitHubIssuesRuntimeContext,
+    token: string,
+) {
+    const verifiedToken = await jwt.verify<GitHubAppSetupState>(
+        token,
+        context.environment.signingSecrets.integration,
+    );
+    if (!verifiedToken) {
+        throw new ExposableError('Invalid GitHub app setup state token signature');
+    }
+
+    const { payload } = verifiedToken;
+    if (!payload || typeof payload.gitbookInstallationId !== 'string') {
+        throw new ExposableError('Malformed GitHub app setup state token');
+    }
+    return payload;
 }

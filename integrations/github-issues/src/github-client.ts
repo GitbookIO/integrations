@@ -1,0 +1,125 @@
+import jwt from '@tsndr/cloudflare-worker-jwt';
+import { Octokit } from 'octokit';
+
+import { ExposableError, Logger } from '@gitbook/runtime';
+import { GitHubIssuesRepository, GitHubIssuesRuntimeContext } from './types';
+
+const logger = Logger('github-issues:github-client');
+
+const GITBOOK_INTEGRATION_USER_AGENT = 'GitBook-GitHub-Issues-Integration';
+const GITHUB_API_VERSION = '2022-11-28';
+
+/**
+ * Fetch repositories with issues from a specific GitHub App installation
+ */
+export async function fetchGitHubReposForInstallation(
+    octokit: Octokit,
+    installationId: string,
+): Promise<GitHubIssuesRepository[]> {
+    try {
+        const response = await octokit.request('GET /installation/repositories', {
+            per_page: 100,
+            headers: {
+                'X-GitHub-Api-Version': GITHUB_API_VERSION,
+            },
+        });
+
+        const repositories = response.data.repositories;
+
+        return repositories.filter((repo) => repo.has_issues);
+    } catch (error) {
+        logger.error(
+            `Failed to fetch GitHub repositories with issue for installation ${installationId}: `,
+            error instanceof Error ? error.message : String(error),
+        );
+        return [];
+    }
+}
+
+/**
+ * Get an authenticated Octokit instance for a GitHub app installation.
+ */
+export async function getOctokitClientForInstallation(
+    context: GitHubIssuesRuntimeContext,
+    githubInstallationId: string,
+): Promise<Octokit> {
+    const { installation } = context.environment;
+    if (!installation) {
+        throw new ExposableError(`GitBook installation not found`);
+    }
+
+    const config = getGitHubAppConfig(context);
+    if (!config.appId || !config.privateKey) {
+        throw new ExposableError('GitHub App credentials not configured');
+    }
+
+    const token = await getGitHubInstallationAccessToken({
+        githubInstallationId,
+        appId: config.appId,
+        privateKey: config.privateKey,
+    });
+
+    return new Octokit({
+        auth: token,
+        userAgent: GITBOOK_INTEGRATION_USER_AGENT,
+    });
+}
+/**
+ * Generate a JWT token for GitHub App authentication.
+ */
+async function generateGitHubAppJWT(appId: string, privateKey: string): Promise<string> {
+    const now = Math.floor(Date.now() / 1000);
+
+    const payload = {
+        iat: now - 60, // Issued 60 seconds ago (for clock drift)
+        exp: now + 60 * 10,
+        iss: appId,
+    };
+
+    return await jwt.sign(payload, privateKey, { algorithm: 'RS256' });
+}
+
+/**
+ * Get an access token for a GitHub App installation.
+ */
+async function getGitHubInstallationAccessToken(args: {
+    githubInstallationId: string;
+    appId: string;
+    privateKey: string;
+}): Promise<string> {
+    const { githubInstallationId, appId, privateKey } = args;
+    const jwtToken = await generateGitHubAppJWT(appId, privateKey);
+
+    const octokit = new Octokit({
+        auth: jwtToken,
+        userAgent: GITBOOK_INTEGRATION_USER_AGENT,
+    });
+
+    try {
+        const response = await octokit.request(
+            'POST /app/installations/{installation_id}/access_tokens',
+            {
+                installation_id: parseInt(githubInstallationId),
+                headers: {
+                    'X-GitHub-Api-Version': GITHUB_API_VERSION,
+                },
+            },
+        );
+
+        return response.data.token;
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        throw new Error(`Failed to get installation access token: ${errorMessage}`);
+    }
+}
+
+/**
+ * Get GitHub App configuration for installation-based authentication.
+ */
+export function getGitHubAppConfig(context: GitHubIssuesRuntimeContext) {
+    return {
+        appId: context.environment.secrets.GITHUB_APP_ID,
+        privateKey: context.environment.secrets.GITHUB_PRIVATE_KEY,
+        installationIds: context.environment.installation?.configuration?.installation_ids,
+    };
+}

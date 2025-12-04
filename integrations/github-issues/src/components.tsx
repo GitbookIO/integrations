@@ -3,7 +3,7 @@ import type { GitHubIssuesRuntimeContext, GitHubIssuesRuntimeEnvironment } from 
 import { createGitHubAppSetupState } from './setup';
 
 /**
- * Configuration component for the GitHub Conversations integration.
+ * Configuration component for the GitHub Issues integration.
  */
 export const configComponent = createComponent<
     InstallationConfigurationProps<GitHubIssuesRuntimeEnvironment>,
@@ -26,7 +26,7 @@ export const configComponent = createComponent<
             `https://github.com/apps/${context.environment.secrets.GITHUB_APP_NAME}/installations/new`,
         );
         const githubAppSetupState = await createGitHubAppSetupState(context, {
-            gitBookInstallationId: installation.id,
+            gitbookInstallationId: installation.id,
         });
         githubAppInstallURL.searchParams.append('state', githubAppSetupState);
 

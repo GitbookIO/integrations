@@ -4,6 +4,9 @@ import type { GitHubIssuesRuntimeContext, GitHubWebhookInstallationEventPayload 
 import { configComponent } from './components';
 import { handleGitHubAppSetup } from './setup';
 import { handleGitHubAppInstallationEvent, verifyGitHubWebhookSignature } from './webhook';
+import { triggerInitialIngestionForGitBookInstallation } from './ingestion';
+import { getGitHubInstallationIds } from './utils';
+import { handleGitHubIssuesIntegrationTask } from './tasks';
 
 const logger = Logger('github-issues');
 
@@ -87,6 +90,27 @@ export default createIntegration<GitHubIssuesRuntimeContext>({
     },
     components: [configComponent],
     events: {
-        installation_setup: async (_, context) => {},
+        installation_setup: async (_, context) => {
+            const githubInstallationIds = getGitHubInstallationIds(context);
+            const hasInstallations = githubInstallationIds.length > 0;
+            const gitbookInstallationId = context.environment.installation?.id;
+
+            if (!hasInstallations) {
+                logger.info(
+                    `GitBook installation ${gitbookInstallationId} has no associated GitHub installations. Skipping initial ingestion.`,
+                );
+                return;
+            }
+
+            try {
+                await triggerInitialIngestionForGitBookInstallation(context);
+            } catch (error) {
+                logger.error(
+                    `GitBook installation ${gitbookInstallationId} setup failed: `,
+                    error instanceof Error ? error.message : String(error),
+                );
+            }
+        },
     },
+    task: handleGitHubIssuesIntegrationTask,
 });

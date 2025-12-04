@@ -23,14 +23,6 @@ secrets:
     WEBHOOK_SECRET: ${{ env.GITHUB_WEBHOOK_SECRET }}
 target: organization
 envs:
-    test:
-        secrets:
-            GITHUB_APP_ID: ${{ "op://gitbook-integrations/githubConversationsStaging/GITHUB_APP_ID" }}
-            GITHUB_APP_NAME: ${{ "op://gitbook-integrations/githubConversationsStaging/GITHUB_APP_NAME" }}
-            GITHUB_PRIVATE_KEY: ${{ "op://gitbook-integrations/githubConversationsStaging/GITHUB_PRIVATE_KEY" }}
-            CLIENT_ID: ${{ "op://gitbook-integrations/githubConversationsStaging/CLIENT_ID" }}
-            CLIENT_SECRET: ${{ "op://gitbook-integrations/githubConversationsStaging/CLIENT_SECRET" }}
-            WEBHOOK_SECRET: ${{ "op://gitbook-integrations/githubConversationsStaging/WEBHOOK_SECRET" }}
     dev-steeve:
         organization: idE5kUnGGjoPGcbu3FZJ
         secrets:
@@ -40,19 +32,3 @@ envs:
             CLIENT_ID: ${{ "op://gitbook-integrations/githubIssuesDevSteeve/CLIENT_ID" }}
             CLIENT_SECRET: ${{ "op://gitbook-integrations/githubIssuesDevSteeve/CLIENT_SECRET" }}
             WEBHOOK_SECRET: ${{ "op://gitbook-integrations/githubIssuesDevSteeve/WEBHOOK_SECRET" }}
-    staging:
-        secrets:
-            GITHUB_APP_ID: ${{ "op://gitbook-integrations/githubConversationsStaging/GITHUB_APP_ID" }}
-            GITHUB_APP_NAME: ${{ "op://gitbook-integrations/githubConversationsStaging/GITHUB_APP_NAME" }}
-            GITHUB_PRIVATE_KEY: ${{ "op://gitbook-integrations/githubConversationsStaging/GITHUB_PRIVATE_KEY" }}
-            CLIENT_ID: ${{ "op://gitbook-integrations/githubConversationsStaging/CLIENT_ID" }}
-            CLIENT_SECRET: ${{ "op://gitbook-integrations/githubConversationsStaging/CLIENT_SECRET" }}
-            WEBHOOK_SECRET: ${{ "op://gitbook-integrations/githubConversationsStaging/WEBHOOK_SECRET" }}
-    production:
-        secrets:
-            GITHUB_APP_ID: ${{ "op://gitbook-integrations/githubConversationsProduction/GITHUB_APP_ID" }}
-            GITHUB_APP_NAME: ${{ "op://gitbook-integrations/githubConversationsProduction/GITHUB_APP_NAME" }}
-            GITHUB_PRIVATE_KEY: ${{ "op://gitbook-integrations/githubConversationsProduction/GITHUB_PRIVATE_KEY" }}
-            CLIENT_ID: ${{ "op://gitbook-integrations/githubConversationsProduction/CLIENT_ID" }}
-            CLIENT_SECRET: ${{ "op://gitbook-integrations/githubConversationsProduction/CLIENT_SECRET" }}
-            WEBHOOK_SECRET: ${{ "op://gitbook-integrations/githubConversationsProduction/WEBHOOK_SECRET" }}
