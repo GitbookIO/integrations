@@ -1,0 +1,34 @@
+name: github-issues
+title: GitHub Issues
+icon: ./assets/icon.png
+description: Automatically sync GitHub issues to docs updates in GitBook.
+visibility: public
+script: ./src/index.ts
+summary: |
+    # Overview
+
+    Automatically get AI-suggested change requests for your docs based on feedback from your GitHub Issues.
+scopes:
+    - conversations:ingest
+organization: gitbook
+configurations:
+    account:
+        componentId: config
+secrets:
+    GITHUB_APP_ID: ${{ env.GITHUB_APP_ID }}
+    GITHUB_APP_NAME: ${{ env.GITHUB_APP_NAME }}
+    GITHUB_PRIVATE_KEY: ${{ env.GITHUB_PRIVATE_KEY }}
+    CLIENT_ID: ${{ env.GITHUB_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.GITHUB_CLIENT_SECRET }}
+    WEBHOOK_SECRET: ${{ env.GITHUB_WEBHOOK_SECRET }}
+target: organization
+envs:
+    dev-steeve:
+        organization: idE5kUnGGjoPGcbu3FZJ
+        secrets:
+            GITHUB_APP_ID: ${{ "op://gitbook-integrations/githubIssuesDevSteeve/GITHUB_APP_ID" }}
+            GITHUB_APP_NAME: ${{ "op://gitbook-integrations/githubIssuesDevSteeve/GITHUB_APP_NAME" }}
+            GITHUB_PRIVATE_KEY: ${{ "op://gitbook-integrations/githubIssuesDevSteeve/GITHUB_PRIVATE_KEY" }}
+            CLIENT_ID: ${{ "op://gitbook-integrations/githubIssuesDevSteeve/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/githubIssuesDevSteeve/CLIENT_SECRET" }}
+            WEBHOOK_SECRET: ${{ "op://gitbook-integrations/githubIssuesDevSteeve/WEBHOOK_SECRET" }}

@@ -33,6 +33,7 @@
         "GITHUB_CLIENT_ID",
         "GITHUB_CLIENT_SECRET",
         "GITHUB_WEBHOOK_SECRET",
+        "GITHUB_APP_NAME",
         "GITHUB_PRIVATE_KEY",
         "LUCID_CLIENT_ID",
         "LUCID_CLIENT_SECRET",
