@@ -7,7 +7,7 @@ import type {
 } from './types';
 import { configComponent } from './components';
 import { handleGitHubAppSetup } from './setup';
-import { handleGitHubAppInstallationEvent, verifyGitHubWebhookSignature } from './webhook';
+import { handleGitHubAppInstallationDeletedEvent, verifyGitHubWebhookSignature } from './webhook';
 import { triggerInitialGitHubIssuesIngestion } from './ingestion';
 import { getGitHubInstallationIds } from './utils';
 import { handleGitHubIssuesIntegrationTask } from './tasks';
@@ -46,14 +46,16 @@ export default createIntegration<GitHubIssuesRuntimeContext>({
                     const eventPayload: GitHubWebhookEventPayload['installation'] =
                         JSON.parse(rawBody);
 
-                    if (eventPayload) {
+                    if (eventPayload.action !== 'deleted') {
                         // We handle created installation when the GitHub installation setup callback is called
-                        // in order to properly linked them to an GitBook integration installation ID
+                        // in order to properly linked them to an GitBook integration installation ID.
+
+                        // Other actions are not supported yet.
                         break;
                     }
 
                     return context.waitUntil(
-                        handleGitHubAppInstallationEvent(context, eventPayload),
+                        handleGitHubAppInstallationDeletedEvent(context, eventPayload),
                     );
                 }
             }

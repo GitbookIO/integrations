@@ -8,9 +8,9 @@ const logger = Logger('github-issues:webhook');
 /**
  * Process a GitHub App installation deleted event by removing it from the linked GitBook installations.
  */
-export async function handleGitHubAppInstallationEvent(
+export async function handleGitHubAppInstallationDeletedEvent(
     context: GitHubIssuesRuntimeContext,
-    payload: GitHubWebhookEventPayload['installation'],
+    payload: Extract<GitHubWebhookEventPayload['installation'], { action: 'deleted' }>,
 ) {
     const githubInstallationId = String(payload.installation.id);
 
