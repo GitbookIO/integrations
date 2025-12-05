@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.154.0
+
+### Minor Changes
+
+- 1ddf69b: Bump API to include customization.ai.suggestions
+
 ## 0.153.0
 
 ### Minor Changes

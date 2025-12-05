@@ -13,7 +13,7 @@ summary: |
 
     ## How it works
 
-    GitBook’s Docs Agent analyzes incoming conversations, identifies patterns, and highlights gaps in your documentation. When it finds issues, it opens proactive change requests with suggested edits, drafted improvements, and the context behind each recommendation. You can also @mention the AI agent or chat with it directly to speed up reviews and polish updates.
+    GitBook Agent analyzes incoming conversations, identifies patterns, and highlights gaps in your documentation. When it finds issues, it opens proactive change requests with suggested edits, drafted improvements, and the context behind each recommendation. You can also @mention the AI agent or chat with it directly to speed up reviews and polish updates.
 
     ## Configure
 
@@ -23,7 +23,7 @@ summary: |
     2. Select which conversations to use  
        Choose the inboxes, tags, or teams that best represent your customers. GitBook uses this data to understand issues, trends, and gaps.
 
-    3. Let the Docs Agent learn  
+    3. Let the GitBook Agent learn  
        GitBook analyzes each conversation to detect FAQs, outdated content, unclear explanations, missing troubleshooting steps, and opportunities to improve clarity.
 
     4. Watch it open proactive change requests  
