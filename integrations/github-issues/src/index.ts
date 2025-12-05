@@ -7,7 +7,11 @@ import type {
 } from './types';
 import { configComponent } from './components';
 import { handleGitHubAppSetup } from './setup';
-import { handleGitHubAppInstallationDeletedEvent, verifyGitHubWebhookSignature } from './webhook';
+import {
+    handleGitHubAppInstallationDeletedEvent,
+    handleGitHubAppRepositoryAddedToInstallation,
+    verifyGitHubWebhookSignature,
+} from './webhook';
 import { triggerInitialGitHubIssuesIngestion } from './ingestion';
 import { getGitHubInstallationIds } from './utils';
 import { handleGitHubIssuesIntegrationTask } from './tasks';
@@ -57,6 +61,16 @@ export default createIntegration<GitHubIssuesRuntimeContext>({
                     return context.waitUntil(
                         handleGitHubAppInstallationDeletedEvent(context, eventPayload),
                     );
+                }
+                case 'installation_repositories': {
+                    const eventPayload: GitHubWebhookEventPayload['installation_repositories'] =
+                        JSON.parse(rawBody);
+
+                    if (eventPayload.action !== 'added') {
+                        break;
+                    }
+
+                    await handleGitHubAppRepositoryAddedToInstallation(context, eventPayload);
                 }
             }
 

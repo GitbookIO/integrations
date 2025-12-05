@@ -1,12 +1,13 @@
 import pMap from 'p-map';
 
-import { Logger } from '@gitbook/runtime';
+import { ExposableError, Logger } from '@gitbook/runtime';
 import { GitHubIssuesRuntimeContext, GitHubWebhookEventPayload } from './types';
+import { getGitHubInstallationIds } from './utils';
 
 const logger = Logger('github-issues:webhook');
 
 /**
- * Process a GitHub App installation deleted event by removing it from the linked GitBook installations.
+ * Process a GitHub App "installation" deleted event by removing it from the linked GitBook installations.
  */
 export async function handleGitHubAppInstallationDeletedEvent(
     context: GitHubIssuesRuntimeContext,
@@ -71,6 +72,76 @@ export async function handleGitHubAppInstallationDeletedEvent(
     );
 
     return new Response('Installation webhook received', { status: 200 });
+}
+
+/**
+ * Process a GitHub App "installation_repositories" event when an installation was granted access to one or more repositories
+ * by triggering an inital ingestion for these repos.
+ */
+export async function handleGitHubAppRepositoryAddedToInstallation(
+    context: GitHubIssuesRuntimeContext,
+    payload: Extract<GitHubWebhookEventPayload['installation_repositories'], { action: 'added' }>,
+) {
+    const { installation: gitbookInstallation } = context.environment;
+    if (!gitbookInstallation) {
+        throw new ExposableError('GitBook installation not found');
+    }
+
+    const githubInstallationId = String(payload.installation.id);
+    const githubInstallationIds = getGitHubInstallationIds(context);
+    if (githubInstallationIds.length === 0) {
+        throw new ExposableError('No GitHub App installation IDs found');
+    }
+
+    if (!githubInstallationId.includes(githubInstallationId)) {
+        throw new ExposableError(
+            `GitHub App installation ID ${githubInstallationId} not found in GitBook installation ${gitbookInstallation}`,
+        );
+    }
+
+    logger.info(
+        `handling GitHub App installation_repositories event with added repositories for installation ID ${githubInstallationId}...`,
+    );
+
+    const addedRepos = payload.repositories_added.map((addedRepo) => {
+        const [owner, name] = addedRepo.full_name.split('/');
+
+        return { owner, name };
+    });
+
+    let totalRepoToProcess = addedRepos.length;
+
+    if (!totalRepoToProcess) {
+        logger.info('No repository added. Skipping');
+    }
+
+    const pendingTaskPromises: Array<Promise<void>> = [];
+    for (const repo of addedRepos) {
+        pendingTaskPromises.push(
+            context.integration.queueTask({
+                task: {
+                    type: 'ingest:github-repo:closed-issues',
+                    payload: {
+                        organization: gitbookInstallation.target.organization,
+                        gitbookInstallationId: gitbookInstallation.id,
+                        githubInstallationId: githubInstallationId,
+                        repository: {
+                            owner: repo.owner,
+                            name: repo.name,
+                        },
+                    },
+                },
+            }),
+        );
+    }
+
+    context.waitUntil(Promise.all(pendingTaskPromises));
+
+    logger.info(
+        `Dispatched ${pendingTaskPromises.length} tasks to ingest a total of ${totalRepoToProcess} github repositories`,
+    );
+
+    return new Response('Installation repositories added webhook received', { status: 200 });
 }
 
 /**
