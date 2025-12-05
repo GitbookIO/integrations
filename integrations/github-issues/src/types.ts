@@ -19,7 +19,9 @@ export type GitHubIssuesRuntimeContext = RuntimeContext<
 /**
  * Integration tasks.
  */
-type GitHubIssuesIntegrationTaskType = 'ingest:github-installation:repo-issues';
+type GitHubIssuesIntegrationTaskType =
+    | 'ingest:github-repo:closed-issues'
+    | 'ingest:github-repo:issues-batch';
 
 type GitHubIssuesIntegrationBaseTask<
     Type extends GitHubIssuesIntegrationTaskType,
@@ -29,12 +31,15 @@ type GitHubIssuesIntegrationBaseTask<
     payload: Payload;
 };
 
-export type GitHubIssuesIntegrationIngestRepo = GitHubIssuesIntegrationBaseTask<
-    'ingest:github-installation:repo-issues',
+/**
+ * Task dispatched to ingest all recently closed issues from a GitHub repository.
+ */
+export type GitHubIssuesIntegrationIngestRepoClosedIssues = GitHubIssuesIntegrationBaseTask<
+    'ingest:github-repo:closed-issues',
     {
         organization: Organization['id'];
         gitbookInstallationId: IntegrationInstallation['id'];
-        githubInstallationId: GitHubIssuesAppInstallation['id'];
+        githubInstallationId: string;
         repository: {
             name: GitHubIssuesRepository['name'];
             owner: GitHubIssuesRepository['owner']['login'];
@@ -42,12 +47,32 @@ export type GitHubIssuesIntegrationIngestRepo = GitHubIssuesIntegrationBaseTask<
     }
 >;
 
-export type GitHubIssuesIntegrationTask = GitHubIssuesIntegrationIngestRepo;
+/**
+ * Task dispatched to ingest a batch of GitHub issue from a repo.
+ */
+export type GitHubIssuesIntegrationIngestRepoIssuesBatch = GitHubIssuesIntegrationBaseTask<
+    'ingest:github-repo:issues-batch',
+    {
+        organization: Organization['id'];
+        gitbookInstallationId: IntegrationInstallation['id'];
+        githubInstallationId: string;
+        issuesIds: string[];
+        repository: {
+            name: GitHubIssuesRepository['name'];
+            owner: GitHubIssuesRepository['owner']['login'];
+        };
+    }
+>;
+
+export type GitHubIssuesIntegrationTask =
+    | GitHubIssuesIntegrationIngestRepoClosedIssues
+    | GitHubIssuesIntegrationIngestRepoIssuesBatch;
 
 /**
  * GitHub API/webhook schemas types.
  */
 export type GitHubIssuesAppInstallation = components['schemas']['installation'];
+export type GitHubIssuesIssue = components['schemas']['issue'];
 export type GitHubIssuesRepository = components['schemas']['repository'];
 
 export type GitHubWebhookInstallationCreatedEventPayload =

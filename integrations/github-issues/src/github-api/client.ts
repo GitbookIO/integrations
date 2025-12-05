@@ -1,40 +1,9 @@
 import jwt from '@tsndr/cloudflare-worker-jwt';
 import { Octokit } from 'octokit';
 
-import { ExposableError, Logger } from '@gitbook/runtime';
-import { GitHubIssuesRepository, GitHubIssuesRuntimeContext } from './types';
-
-const logger = Logger('github-issues:github-client');
-
-const GITBOOK_INTEGRATION_USER_AGENT = 'GitBook-GitHub-Issues-Integration';
-const GITHUB_API_VERSION = '2022-11-28';
-
-/**
- * Fetch repositories with issues from a specific GitHub App installation
- */
-export async function fetchGitHubReposForInstallation(
-    octokit: Octokit,
-    installationId: string,
-): Promise<GitHubIssuesRepository[]> {
-    try {
-        const response = await octokit.request('GET /installation/repositories', {
-            per_page: 100,
-            headers: {
-                'X-GitHub-Api-Version': GITHUB_API_VERSION,
-            },
-        });
-
-        const repositories = response.data.repositories;
-
-        return repositories.filter((repo) => repo.has_issues);
-    } catch (error) {
-        logger.error(
-            `Failed to fetch GitHub repositories with issue for installation ${installationId}: `,
-            error instanceof Error ? error.message : String(error),
-        );
-        return [];
-    }
-}
+import { ExposableError } from '@gitbook/runtime';
+import { GitHubIssuesRuntimeContext } from '../types';
+import { GITBOOK_INTEGRATION_USER_AGENT, GITHUB_API_VERSION } from './utils';
 
 /**
  * Get an authenticated Octokit instance for a GitHub app installation.

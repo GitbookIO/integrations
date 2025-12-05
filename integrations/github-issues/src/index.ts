@@ -4,7 +4,7 @@ import type { GitHubIssuesRuntimeContext, GitHubWebhookInstallationEventPayload 
 import { configComponent } from './components';
 import { handleGitHubAppSetup } from './setup';
 import { handleGitHubAppInstallationEvent, verifyGitHubWebhookSignature } from './webhook';
-import { triggerInitialIngestionForGitBookInstallation } from './ingestion';
+import { triggerInitialGitHubIssuesIngestion } from './ingestion';
 import { getGitHubInstallationIds } from './utils';
 import { handleGitHubIssuesIntegrationTask } from './tasks';
 
@@ -103,7 +103,7 @@ export default createIntegration<GitHubIssuesRuntimeContext>({
             }
 
             try {
-                await triggerInitialIngestionForGitBookInstallation(context);
+                await triggerInitialGitHubIssuesIngestion(context);
             } catch (error) {
                 logger.error(
                     `GitBook installation ${gitbookInstallationId} setup failed: `,

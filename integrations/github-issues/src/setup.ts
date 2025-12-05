@@ -55,7 +55,7 @@ export async function handleGitHubAppSetup(args: {
                 <body>
                 <h1>GitHub App Connected!</h1>
                 <p>Your GitHub App has been successfully connected to GitBook.</p>
-                <p>We'll start ingesting your discussions shortly.</p>
+                <p>We'll start ingesting your GitHub issues shortly.</p>
                 <script>window.close();</script>
                 </body>
             </html>`,
