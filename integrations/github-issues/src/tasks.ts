@@ -106,14 +106,14 @@ async function handleIngestGitHubRepoIssuesBatch(
 
     const response = await getGitHubRepoIssuesByIds({ octokit, issueIds: payload.issuesIds });
 
-    if (!response.search) {
+    if (!response.nodes || response.nodes.length === 0) {
         logger.info(
             `No GitHub issues found with IDs: ${JSON.stringify(payload.issuesIds)} for GitBook installation ${payload.gitbookInstallationId}`,
         );
         return;
     }
 
-    const issues = response.search.nodes;
+    const issues = response.nodes;
     let totalIngested = 0;
 
     await pMap(

@@ -10,6 +10,7 @@ import { handleGitHubAppSetup } from './setup';
 import {
     handleGitHubAppInstallationDeletedEvent,
     handleGitHubAppRepositoryAddedToInstallation,
+    handlerGitHubIssueClosed,
     verifyGitHubWebhookSignature,
 } from './webhook';
 import { triggerInitialGitHubIssuesIngestion } from './ingestion';
@@ -58,9 +59,7 @@ export default createIntegration<GitHubIssuesRuntimeContext>({
                         break;
                     }
 
-                    return context.waitUntil(
-                        handleGitHubAppInstallationDeletedEvent(context, eventPayload),
-                    );
+                    return await handleGitHubAppInstallationDeletedEvent(context, eventPayload);
                 }
                 case 'installation_repositories': {
                     const eventPayload: GitHubWebhookEventPayload['installation_repositories'] =
@@ -70,7 +69,19 @@ export default createIntegration<GitHubIssuesRuntimeContext>({
                         break;
                     }
 
-                    await handleGitHubAppRepositoryAddedToInstallation(context, eventPayload);
+                    return await handleGitHubAppRepositoryAddedToInstallation(
+                        context,
+                        eventPayload,
+                    );
+                }
+                case 'issues': {
+                    const eventPayload: GitHubWebhookEventPayload['issues'] = JSON.parse(rawBody);
+
+                    if (eventPayload.action !== 'closed') {
+                        break;
+                    }
+
+                    return await handlerGitHubIssueClosed(context, eventPayload);
                 }
             }
 

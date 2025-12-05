@@ -64,8 +64,8 @@ export async function triggerInitialGitHubIssuesIngestion(context: GitHubIssuesR
                                     gitbookInstallationId: gitbookInstallation.id,
                                     githubInstallationId: githubInstallationId,
                                     repository: {
-                                        name: repo.name,
                                         owner: repo.owner.login,
+                                        name: repo.name,
                                     },
                                 },
                             },
@@ -74,7 +74,7 @@ export async function triggerInitialGitHubIssuesIngestion(context: GitHubIssuesR
                 }
             } catch (err) {
                 logger.error(
-                    `Error while fetching repositories for installation ${githubInstallationId}`,
+                    `Error while fetching repositories for installation ${githubInstallationId}: `,
                     err,
                 );
                 return;
@@ -83,11 +83,11 @@ export async function triggerInitialGitHubIssuesIngestion(context: GitHubIssuesR
         { concurrency: 5 },
     );
 
+    context.waitUntil(Promise.all(pendingTaskPromises));
+
     logger.info(
         `Dispatched ${pendingTaskPromises.length} tasks to ingest a total of ${totalRepoToProcess} github repositories`,
     );
-
-    context.waitUntil(Promise.all(pendingTaskPromises));
 }
 
 /**

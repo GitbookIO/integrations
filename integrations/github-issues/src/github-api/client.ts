@@ -12,11 +12,6 @@ export async function getOctokitClientForInstallation(
     context: GitHubIssuesRuntimeContext,
     githubInstallationId: string,
 ): Promise<Octokit> {
-    const { installation } = context.environment;
-    if (!installation) {
-        throw new ExposableError(`GitBook installation not found`);
-    }
-
     const config = getGitHubAppConfig(context);
     if (!config.appId || !config.privateKey) {
         throw new ExposableError('GitHub App credentials not configured');
@@ -94,6 +89,5 @@ export function getGitHubAppConfig(context: GitHubIssuesRuntimeContext) {
     return {
         appId: context.environment.secrets.GITHUB_APP_ID,
         privateKey,
-        installationIds: context.environment.installation?.configuration?.installation_ids,
     };
 }

@@ -9,7 +9,7 @@ const logger = Logger('github-issues:github-client');
 /**
  * Fetch repositories with issues from a specific GitHub App installation
  */
-export async function fetchGitHubReposForInstallation(
+export async function getGitHubReposForInstallation(
     octokit: Octokit,
     installationId: string,
 ): Promise<GitHubIssuesRepository[]> {

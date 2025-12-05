@@ -55,6 +55,32 @@ export async function getGitHubRepoClosedIssueIdsLast30Days(args: {
 /**
  * Retrieve a list of issues from a GitHub repository matching the list of provided IDs.
  */
+export async function getGitHubRepoIssueById(args: {
+    octokit: Octokit;
+    issueId: GitHubIssue['id'];
+}) {
+    const { octokit, issueId } = args;
+
+    const graphQLQuery = `
+        ${ISSUE_WITH_COMMENTS_FRAGMENT}
+        query GetIssueById($issueId: ID!) {
+            node(id: $issueId) {
+                ...IssueWithComments
+            }
+        }
+    `;
+
+    try {
+        return await octokit.graphql<GetIssueByIdResponse>(graphQLQuery, { issueId });
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        throw new Error(`GitHub GraphQL API error: ${errorMessage}`);
+    }
+}
+
+/**
+ * Retrieve a list of issues from a GitHub repository matching the list of provided IDs.
+ */
 export async function getGitHubRepoIssuesByIds(args: {
     octokit: Octokit;
     issueIds: GitHubIssue['id'][];
@@ -119,10 +145,7 @@ const ISSUE_WITH_COMMENTS_FRAGMENT = `
 //
 // Note: Make sure to update corresponding fragments when updating the schema types.
 //
-type GetClosedIssuesLast30DaysResponse = GitHubIssuesSearchResponse<{ id: GitHubIssue['id'] }>;
-type GetIssuesByIdsResponse = GitHubIssuesSearchResponse<GitHubIssue>;
-
-export interface GitHubIssuesSearchResponse<IssueNodesType> {
+interface GitHubIssuesSearchResponse<IssueNodesType> {
     search: {
         issueCount: number;
         pageInfo: {
@@ -131,6 +154,13 @@ export interface GitHubIssuesSearchResponse<IssueNodesType> {
         };
         nodes: IssueNodesType[];
     } | null;
+}
+type GetClosedIssuesLast30DaysResponse = GitHubIssuesSearchResponse<{ id: GitHubIssue['id'] }>;
+interface GetIssuesByIdsResponse {
+    nodes: GitHubIssue[];
+}
+interface GetIssueByIdResponse {
+    node: GitHubIssue;
 }
 
 export interface GitHubIssue {

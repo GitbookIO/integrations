@@ -3,6 +3,8 @@ import pMap from 'p-map';
 import { ExposableError, Logger } from '@gitbook/runtime';
 import { GitHubIssuesRuntimeContext, GitHubWebhookEventPayload } from './types';
 import { getGitHubInstallationIds } from './utils';
+import { ingestGitHubIssue } from './ingestion';
+import { getGitHubRepoIssueById, getOctokitClientForInstallation } from './github-api';
 
 const logger = Logger('github-issues:webhook');
 
@@ -142,6 +144,47 @@ export async function handleGitHubAppRepositoryAddedToInstallation(
     );
 
     return new Response('Installation repositories added webhook received', { status: 200 });
+}
+
+/**
+ * Process a GitHub issue closed event by ingesting the details of the issue.
+ */
+export async function handlerGitHubIssueClosed(
+    context: GitHubIssuesRuntimeContext,
+    payload: Extract<GitHubWebhookEventPayload['issues'], { action: 'closed' }>,
+) {
+    const { issue, installation: githubInstallation } = payload;
+
+    const { installation: gitbookInstallation } = context.environment;
+    if (!gitbookInstallation) {
+        throw new ExposableError('GitBook installation not found');
+    }
+
+    if (!githubInstallation) {
+        throw new ExposableError('Missing GitHub installation ID from event');
+    }
+
+    const githubInstallationId = String(githubInstallation.id);
+
+    logger.info(`handling GitHub for installation ID ${githubInstallationId}...`);
+
+    const octokit = await getOctokitClientForInstallation(context, githubInstallationId);
+    const response = await getGitHubRepoIssueById({ octokit, issueId: String(issue.id) });
+
+    if (!response.node) {
+        logger.info(
+            `No GitHub issue found with ID: ${issue.id} for GitBook installation ${gitbookInstallation}`,
+        );
+        return;
+    }
+    await ingestGitHubIssue({
+        organizationId: gitbookInstallation.target.organization,
+        gitbookInstallationId: gitbookInstallation.id,
+        issue: response.node,
+        context,
+    });
+
+    return new Response('Issue closed webhook received', { status: 200 });
 }
 
 /**
