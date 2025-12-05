@@ -1,6 +1,10 @@
 import { createIntegration, Logger } from '@gitbook/runtime';
 import { Router } from 'itty-router';
-import type { GitHubIssuesRuntimeContext, GitHubWebhookInstallationEventPayload } from './types';
+import type {
+    GitHubIssuesRuntimeContext,
+    GitHubWebhookEventPayload,
+    GitHubWebhookEventType,
+} from './types';
 import { configComponent } from './components';
 import { handleGitHubAppSetup } from './setup';
 import { handleGitHubAppInstallationEvent, verifyGitHubWebhookSignature } from './webhook';
@@ -24,7 +28,7 @@ export default createIntegration<GitHubIssuesRuntimeContext>({
          */
         router.post('/webhook', async (request: Request) => {
             const rawBody = await request.text();
-            const githubEvent = request.headers.get('x-github-event');
+            const githubEvent = request.headers.get('x-github-event') as GitHubWebhookEventType;
 
             logger.info(`received GitHub "${githubEvent}" webhook event`);
 
@@ -39,9 +43,10 @@ export default createIntegration<GitHubIssuesRuntimeContext>({
 
             switch (githubEvent) {
                 case 'installation': {
-                    const eventPayload: GitHubWebhookInstallationEventPayload = JSON.parse(rawBody);
+                    const eventPayload: GitHubWebhookEventPayload['installation'] =
+                        JSON.parse(rawBody);
 
-                    if (eventPayload.action === 'created') {
+                    if (eventPayload) {
                         // We handle created installation when the GitHub installation setup callback is called
                         // in order to properly linked them to an GitBook integration installation ID
                         break;

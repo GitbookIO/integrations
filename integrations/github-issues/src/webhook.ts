@@ -1,7 +1,7 @@
 import pMap from 'p-map';
 
 import { Logger } from '@gitbook/runtime';
-import { GitHubIssuesRuntimeContext, GitHubWebhookInstallationDeletedEventPayload } from './types';
+import { GitHubIssuesRuntimeContext, GitHubWebhookEventPayload } from './types';
 
 const logger = Logger('github-issues:webhook');
 
@@ -10,7 +10,7 @@ const logger = Logger('github-issues:webhook');
  */
 export async function handleGitHubAppInstallationEvent(
     context: GitHubIssuesRuntimeContext,
-    payload: GitHubWebhookInstallationDeletedEventPayload,
+    payload: GitHubWebhookEventPayload['installation'],
 ) {
     const githubInstallationId = String(payload.installation.id);
 

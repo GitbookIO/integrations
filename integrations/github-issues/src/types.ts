@@ -1,6 +1,7 @@
 import { IntegrationInstallation, Organization } from '@gitbook/api';
 import { RuntimeEnvironment, RuntimeContext } from '@gitbook/runtime';
 import type { components } from '@octokit/openapi-types';
+import type { EventPayloadMap } from '@octokit/webhooks-types';
 
 export type GitHubIssuesInstallationConfiguration = {
     /**
@@ -75,11 +76,5 @@ export type GitHubIssuesAppInstallation = components['schemas']['installation'];
 export type GitHubIssuesIssue = components['schemas']['issue'];
 export type GitHubIssuesRepository = components['schemas']['repository'];
 
-export type GitHubWebhookInstallationCreatedEventPayload =
-    components['schemas']['webhook-installation-created'];
-export type GitHubWebhookInstallationDeletedEventPayload =
-    components['schemas']['webhook-installation-deleted'];
-
-export type GitHubWebhookInstallationEventPayload =
-    | GitHubWebhookInstallationCreatedEventPayload
-    | GitHubWebhookInstallationDeletedEventPayload;
+export type GitHubWebhookEventType = keyof EventPayloadMap;
+export type GitHubWebhookEventPayload = EventPayloadMap;
