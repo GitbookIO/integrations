@@ -5,7 +5,7 @@ import { GitHubIssuesRuntimeContext } from './types';
 import { getGitHubInstallationIds } from './utils';
 import {
     AuthorAssociation,
-    fetchGitHubReposForInstallation,
+    getGitHubReposForInstallation,
     getOctokitClientForInstallation,
     GitHubIssue,
 } from './github-api';
@@ -44,7 +44,7 @@ export async function triggerInitialGitHubIssuesIngestion(context: GitHubIssuesR
                     context,
                     githubInstallationId,
                 );
-                const repos = await fetchGitHubReposForInstallation(octokit, githubInstallationId);
+                const repos = await getGitHubReposForInstallation(octokit, githubInstallationId);
 
                 if (repos.length === 0) {
                     logger.info(
