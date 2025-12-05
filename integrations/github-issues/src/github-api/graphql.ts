@@ -54,8 +54,6 @@ export async function getGitHubRepoClosedIssueIdsLast30Days(args: {
 
 /**
  * Retrieve a list of issues from a GitHub repository matching the list of provided IDs.
- *
- * Fetch only IDs for fast retrieval.
  */
 export async function getGitHubRepoIssuesByIds(args: {
     octokit: Octokit;

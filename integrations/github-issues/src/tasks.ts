@@ -116,16 +116,20 @@ async function handleIngestGitHubRepoIssuesBatch(
     const issues = response.search.nodes;
     let totalIngested = 0;
 
-    await pMap(issues, async (issue) => {
-        await ingestGitHubIssue({
-            organizationId: payload.organization,
-            gitbookInstallationId: payload.gitbookInstallationId,
-            issue,
-            context,
-        });
+    await pMap(
+        issues,
+        async (issue) => {
+            await ingestGitHubIssue({
+                organizationId: payload.organization,
+                gitbookInstallationId: payload.gitbookInstallationId,
+                issue,
+                context,
+            });
 
-        totalIngested += 1;
-    });
+            totalIngested += 1;
+        },
+        { concurrency: 5 },
+    );
 
     logger.info(
         `Ingested ${totalIngested} issues from ${payload.repository.owner}/${payload.repository.name} (GitBook installation ${payload.gitbookInstallationId})`,
