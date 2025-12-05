@@ -86,9 +86,14 @@ async function getGitHubInstallationAccessToken(args: {
  * Get GitHub App configuration for installation-based authentication.
  */
 export function getGitHubAppConfig(context: GitHubIssuesRuntimeContext) {
+    // We store the private key in 1password with newlines escaped to avoid the newlines from being removed when stored as password field in the OP entry.
+    // This means that it will also be stored with escaped newlines in the integration secret config so we need to restore the newlines
+    // before we sign the JWT as we need the private key in a proper PKCS8 format.
+    const privateKey = context.environment.secrets.GITHUB_PRIVATE_KEY.replace(/\\n/g, '\n');
+
     return {
         appId: context.environment.secrets.GITHUB_APP_ID,
-        privateKey: context.environment.secrets.GITHUB_PRIVATE_KEY,
+        privateKey,
         installationIds: context.environment.installation?.configuration?.installation_ids,
     };
 }
