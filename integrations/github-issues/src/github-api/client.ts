@@ -3,7 +3,8 @@ import { Octokit } from 'octokit';
 
 import { ExposableError } from '@gitbook/runtime';
 import { GitHubIssuesRuntimeContext } from '../types';
-import { GITBOOK_INTEGRATION_USER_AGENT, GITHUB_API_VERSION } from './utils';
+
+const GITBOOK_INTEGRATION_USER_AGENT = 'GitBook-GitHub-Issues-Integration';
 
 /**
  * Get an authenticated Octokit instance for a GitHub app installation.
@@ -64,9 +65,6 @@ async function getGitHubInstallationAccessToken(args: {
             'POST /app/installations/{installation_id}/access_tokens',
             {
                 installation_id: parseInt(githubInstallationId),
-                headers: {
-                    'X-GitHub-Api-Version': GITHUB_API_VERSION,
-                },
             },
         );
 

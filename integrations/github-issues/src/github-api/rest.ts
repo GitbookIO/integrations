@@ -2,7 +2,6 @@ import type { Octokit } from 'octokit';
 
 import { Logger } from '@gitbook/runtime';
 import { GitHubIssuesRepository } from '../types';
-import { GITHUB_API_VERSION } from './utils';
 
 const logger = Logger('github-issues:github-client');
 
@@ -16,9 +15,6 @@ export async function getGitHubReposForInstallation(
     try {
         const response = await octokit.request('GET /installation/repositories', {
             per_page: 100,
-            headers: {
-                'X-GitHub-Api-Version': GITHUB_API_VERSION,
-            },
         });
 
         const repositories = response.data.repositories;

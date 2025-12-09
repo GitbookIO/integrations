@@ -129,7 +129,6 @@ function parseGitHubIssueAsGitBookConversation(issue: GitHubIssue): Conversation
         metadata: {
             url: issue.url,
             attributes: {
-                source: 'github-issues',
                 repository: `${issue.repository.owner.login}/${issue.repository.name}`,
                 issue_number: String(issue.number),
             },
