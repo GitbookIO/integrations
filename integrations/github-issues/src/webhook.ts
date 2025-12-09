@@ -84,26 +84,27 @@ export async function handleGitHubAppRepositoryAddedToInstallation(
     context: GitHubIssuesRuntimeContext,
     payload: Extract<GitHubWebhookEventPayload['installation_repositories'], { action: 'added' }>,
 ) {
-    const { installation: gitbookInstallation } = context.environment;
-    if (!gitbookInstallation) {
-        throw new ExposableError('GitBook installation not found');
-    }
-
     const githubInstallationId = String(payload.installation.id);
-    const githubInstallationIds = getGitHubInstallationIds(context);
-    if (githubInstallationIds.length === 0) {
-        throw new ExposableError('No GitHub App installation IDs found');
-    }
-
-    if (!githubInstallationId.includes(githubInstallationId)) {
-        throw new ExposableError(
-            `GitHub App installation ID ${githubInstallationId} not found in GitBook installation ${gitbookInstallation}`,
-        );
-    }
 
     logger.info(
         `handling GitHub App installation_repositories event with added repositories for installation ID ${githubInstallationId}...`,
     );
+
+    const {
+        data: { items: installations },
+    } = await context.api.integrations.listIntegrationInstallations(
+        context.environment.integration.name,
+        {
+            externalId: githubInstallationId,
+        },
+    );
+
+    if (installations.length === 0) {
+        logger.info(
+            `No GitBook installations found for GitHub installation: ${githubInstallationId}`,
+        );
+        return new Response('Installation webhook received', { status: 200 });
+    }
 
     const addedRepos = payload.repositories_added.map((addedRepo) => {
         const [owner, name] = addedRepo.full_name.split('/');
@@ -118,23 +119,26 @@ export async function handleGitHubAppRepositoryAddedToInstallation(
     }
 
     const pendingTaskPromises: Array<Promise<void>> = [];
-    for (const repo of addedRepos) {
-        pendingTaskPromises.push(
-            context.integration.queueTask({
-                task: {
-                    type: 'ingest:github-repo:closed-issues',
-                    payload: {
-                        organization: gitbookInstallation.target.organization,
-                        gitbookInstallationId: gitbookInstallation.id,
-                        githubInstallationId: githubInstallationId,
-                        repository: {
-                            owner: repo.owner,
-                            name: repo.name,
+
+    for (const gitbookInstallation of installations) {
+        for (const repo of addedRepos) {
+            pendingTaskPromises.push(
+                context.integration.queueTask({
+                    task: {
+                        type: 'ingest:github-repo:closed-issues',
+                        payload: {
+                            organization: gitbookInstallation.target.organization,
+                            gitbookInstallationId: gitbookInstallation.id,
+                            githubInstallationId: githubInstallationId,
+                            repository: {
+                                owner: repo.owner,
+                                name: repo.name,
+                            },
                         },
                     },
-                },
-            }),
-        );
+                }),
+            );
+        }
     }
 
     context.waitUntil(Promise.all(pendingTaskPromises));
@@ -155,11 +159,6 @@ export async function handlerGitHubIssueClosed(
 ) {
     const { issue, installation: githubInstallation } = payload;
 
-    const { installation: gitbookInstallation } = context.environment;
-    if (!gitbookInstallation) {
-        throw new ExposableError('GitBook installation not found');
-    }
-
     if (!githubInstallation) {
         throw new ExposableError('Missing GitHub installation ID from event');
     }
@@ -168,21 +167,55 @@ export async function handlerGitHubIssueClosed(
 
     logger.info(`handling GitHub for installation ID ${githubInstallationId}...`);
 
+    const {
+        data: { items: installations },
+    } = await context.api.integrations.listIntegrationInstallations(
+        context.environment.integration.name,
+        {
+            externalId: githubInstallationId,
+        },
+    );
+
+    if (installations.length === 0) {
+        logger.info(
+            `No GitBook installations found for GitHub installation: ${githubInstallationId}`,
+        );
+        return new Response('Issue closed webhook received', { status: 200 });
+    }
+
     const octokit = await getOctokitClientForInstallation(context, githubInstallationId);
-    const response = await getGitHubRepoIssueById({ octokit, issueId: String(issue.id) });
+    const response = await getGitHubRepoIssueById({ octokit, issueId: String(issue.node_id) });
 
     if (!response.node) {
         logger.info(
-            `No GitHub issue found with ID: ${issue.id} for GitBook installation ${gitbookInstallation}`,
+            `No GitHub issue found with ID: ${issue.node_id} for GitHub installation ${githubInstallation.id}`,
         );
         return;
     }
-    await ingestGitHubIssue({
-        organizationId: gitbookInstallation.target.organization,
-        gitbookInstallationId: gitbookInstallation.id,
-        issue: response.node,
-        context,
-    });
+
+    await pMap(
+        installations,
+        async (gitbookInstallation) => {
+            try {
+                await ingestGitHubIssue({
+                    organizationId: gitbookInstallation.target.organization,
+                    gitbookInstallationId: gitbookInstallation.id,
+                    issue: response.node,
+                    context,
+                });
+
+                logger.info(
+                    `Triggered ingestion of GitHub issue ${response.node.url} for GitBook installation ${gitbookInstallation.id}`,
+                );
+            } catch (error) {
+                logger.error(
+                    `Error triggering ingestion of GitHub issue ${response.node.url} for GitBook installation ${gitbookInstallation.id}: `,
+                    error instanceof Error ? error.message : String(error),
+                );
+            }
+        },
+        { concurrency: 5 },
+    );
 
     return new Response('Issue closed webhook received', { status: 200 });
 }
