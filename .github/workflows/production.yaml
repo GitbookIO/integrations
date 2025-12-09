@@ -76,7 +76,6 @@ jobs:
                   # GitHub
                   GITHUB_APP_INSTALL_URL: ${{ secrets.GITBOOK_GITHUB_APP_INSTALL_URL }}
                   GITHUB_APP_ID: ${{ secrets.GITBOOK_GITHUB_APP_ID }}
-                  GITHUB_APP_NAME: ${{ secrets.GITHUB_APP_NAME }}
                   GITHUB_CLIENT_ID: ${{ secrets.GITBOOK_GITHUB_CLIENT_ID }}
                   GITHUB_CLIENT_SECRET: ${{ secrets.GITBOOK_GITHUB_CLIENT_SECRET }}
                   GITHUB_WEBHOOK_SECRET: ${{ secrets.GITBOOK_GITHUB_WEBHOOK_SECRET }}

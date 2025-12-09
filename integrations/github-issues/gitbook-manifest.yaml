@@ -14,13 +14,6 @@ organization: gitbook
 configurations:
     account:
         componentId: config
-secrets:
-    GITHUB_APP_ID: ${{ env.GITHUB_APP_ID }}
-    GITHUB_APP_NAME: ${{ env.GITHUB_APP_NAME }}
-    GITHUB_PRIVATE_KEY: ${{ env.GITHUB_PRIVATE_KEY }}
-    CLIENT_ID: ${{ env.GITHUB_CLIENT_ID }}
-    CLIENT_SECRET: ${{ env.GITHUB_CLIENT_SECRET }}
-    WEBHOOK_SECRET: ${{ env.GITHUB_WEBHOOK_SECRET }}
 target: organization
 envs:
     dev-steeve:
