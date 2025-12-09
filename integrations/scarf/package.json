@@ -1,0 +1,17 @@
+{
+    "name": "@gitbook/integration-scarf-gitbook",
+    "version": "0.0.1",
+    "private": true,
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "publish": "gitbook publish ."
+    },
+    "dependencies": {
+        "@gitbook/runtime": "*"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "^0.22.0",
+        "@gitbook/tsconfig": "*",
+        "@cloudflare/workers-types": "*"
+    }
+}
