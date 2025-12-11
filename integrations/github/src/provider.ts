@@ -53,6 +53,7 @@ export function getRepositoryUrl(config: GitHubSpaceConfiguration, withExtension
 export async function getRepositoryAuth(
     context: GithubRuntimeContext,
     config: GitHubSpaceConfiguration,
+    isProxied: boolean,
 ) {
     assertIsDefined(config.installation, { label: 'config.installation', statusCode: 400 });
 
@@ -61,6 +62,7 @@ export async function getRepositoryAuth(
         context,
         appJWT,
         config.installation,
+        isProxied,
     );
 
     return {
