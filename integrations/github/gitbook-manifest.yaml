@@ -48,4 +48,5 @@ secrets:
     CLIENT_ID: ${{ env.GITHUB_CLIENT_ID }}
     CLIENT_SECRET: ${{ env.GITHUB_CLIENT_SECRET }}
     WEBHOOK_SECRET: ${{ env.GITHUB_WEBHOOK_SECRET }}
+    PROXY_SECRET: ${{ env.GITBOOK_PROXY_SECRET }}
 target: space

@@ -71,6 +71,18 @@ export async function handleImportDispatchForSpaces(
                         spaceInstallation.integration,
                         spaceInstallation.installation,
                     );
+                let isProxied = context.environment.installation?.network?.proxy || false;
+
+                // The webhook is under the root of the integration, so we don't have access to the installation
+                // We need to fetch it to know if we need to proxy the requests
+                if (!context.environment.installation) {
+                    const {data: installation} = await context.api.integrations.getIntegrationInstallationById(
+                        spaceInstallation.integration,
+                        spaceInstallation.installation,
+                    );
+
+                    isProxied = installation.network?.proxy || false;
+                }                  
 
                 // Set the token in the duplicated context to be used by the API client
                 const installationContext: GithubRuntimeContext = {
@@ -93,6 +105,7 @@ export async function handleImportDispatchForSpaces(
                           }
                         : undefined,
                     eventTimestamp,
+                    isProxied,
                 });
             } catch (error) {
                 logger.error(
