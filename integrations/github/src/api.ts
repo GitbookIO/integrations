@@ -175,7 +175,7 @@ export async function createAppInstallationAccessToken(
             path: `/app/installations/${installationId}/access_tokens`,
             additionalHeaders: isProxied
                 ? {
-                      'X-Gitbook-Proxy-Token': context.environment.secrets.PROXY_SECRET,
+                      'X-Gitbook-Proxy-Enabled': 'true',
                   }
                 : {},
         },
