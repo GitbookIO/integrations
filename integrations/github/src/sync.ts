@@ -56,7 +56,13 @@ export async function triggerImport(
     } = {},
 ) {
     const { api } = context;
-    const { force = false, updateGitInfo = false, standalone, eventTimestamp, isProxied = false } = options;
+    const {
+        force = false,
+        updateGitInfo = false,
+        standalone,
+        eventTimestamp,
+        isProxied = false,
+    } = options;
     const spaceId =
         typeof spaceInstallation.space === 'string'
             ? spaceInstallation.space

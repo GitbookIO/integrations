@@ -173,9 +173,11 @@ export async function createAppInstallationAccessToken(
         {
             method: 'POST',
             path: `/app/installations/${installationId}/access_tokens`,
-            additionalHeaders: isProxied ? { 
-                'X-Gitbook-Proxy-Token': context.environment.secrets.PROXY_SECRET,
-             } : {}
+            additionalHeaders: isProxied
+                ? {
+                      'X-Gitbook-Proxy-Token': context.environment.secrets.PROXY_SECRET,
+                  }
+                : {},
         },
     );
 
@@ -249,7 +251,7 @@ async function githubAPI<T>(
     const options = {
         method,
         body: body ? JSON.stringify(body) : undefined,
-        headers: additionalHeaders
+        headers: additionalHeaders,
     };
 
     const response = await requestGitHubAPI(context, credentials, url, options);

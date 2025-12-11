@@ -62,7 +62,7 @@ export async function getRepositoryAuth(
         context,
         appJWT,
         config.installation,
-        isProxied
+        isProxied,
     );
 
     return {
