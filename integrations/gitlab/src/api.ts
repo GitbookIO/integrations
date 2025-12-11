@@ -2,7 +2,8 @@ import LinkHeader from 'http-link-header';
 
 import { Logger, ExposableError } from '@gitbook/runtime';
 
-import type { GitLabSpaceConfiguration } from './types';
+import type { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
+import { signResponse } from './utils';
 
 const logger = Logger('gitlab:api');
 
@@ -38,8 +39,11 @@ interface GLFetchOptions {
 /**
  * Fetch the current GitLab user. It will use the access token from the environment.
  */
-export async function getCurrentUser(config: GitLabSpaceConfiguration) {
-    const user = await gitlabAPI<GLUser>(config, {
+export async function getCurrentUser(
+    context: GitLabRuntimeContext,
+    config: GitLabSpaceConfiguration,
+) {
+    const user = await gitlabAPI<GLUser>(context, config, {
         path: '/user',
     });
 
@@ -51,10 +55,11 @@ export async function getCurrentUser(config: GitLabSpaceConfiguration) {
  * the access token from the environment.
  */
 export async function fetchProjects(
+    context: GitLabRuntimeContext,
     config: GitLabSpaceConfiguration,
     options: GLFetchOptions = {},
 ) {
-    const projects = await gitlabAPI<Array<GLProject>>(config, {
+    const projects = await gitlabAPI<Array<GLProject>>(context, config, {
         path: '/projects',
         params: {
             membership: true,
@@ -71,11 +76,12 @@ export async function fetchProjects(
  * Search currently authenticated user projects for a given query.
  */
 export async function searchUserProjects(
+    context: GitLabRuntimeContext,
     config: GitLabSpaceConfiguration,
     search: string,
     options: GLFetchOptions = {},
 ) {
-    const projects = await gitlabAPI<Array<GLProject>>(config, {
+    const projects = await gitlabAPI<Array<GLProject>>(context, config, {
         path: `/users/${config.userId}/projects`,
         params: {
             search,
@@ -91,8 +97,12 @@ export async function searchUserProjects(
 /**
  * Fetch a GitLab project by its ID.
  */
-export async function fetchProject(config: GitLabSpaceConfiguration, projectId: number) {
-    const project = await gitlabAPI<GLProject>(config, {
+export async function fetchProject(
+    context: GitLabRuntimeContext,
+    config: GitLabSpaceConfiguration,
+    projectId: number,
+) {
+    const project = await gitlabAPI<GLProject>(context, config, {
         path: `/projects/${projectId}`,
     });
 
@@ -102,8 +112,12 @@ export async function fetchProject(config: GitLabSpaceConfiguration, projectId: 
 /**
  * Fetch all branches for a given project repository.
  */
-export async function fetchProjectBranches(config: GitLabSpaceConfiguration, projectId: number) {
-    const branches = await gitlabAPI<Array<GLBranch>>(config, {
+export async function fetchProjectBranches(
+    context: GitLabRuntimeContext,
+    config: GitLabSpaceConfiguration,
+    projectId: number,
+) {
+    const branches = await gitlabAPI<Array<GLBranch>>(context, config, {
         path: `/projects/${projectId}/repository/branches`,
         params: {
             per_page: 100,
@@ -118,12 +132,13 @@ export async function fetchProjectBranches(config: GitLabSpaceConfiguration, pro
  * Configure a GitLab webhook for a given project.
  */
 export async function addProjectWebhook(
+    context: GitLabRuntimeContext,
     config: GitLabSpaceConfiguration,
     projectId: number,
     webhookUrl: string,
     webhookToken: string,
 ) {
-    const { id } = await gitlabAPI<{ id: number }>(config, {
+    const { id } = await gitlabAPI<{ id: number }>(context, config, {
         method: 'POST',
         path: `/projects/${projectId}/hooks`,
         body: {
@@ -141,11 +156,12 @@ export async function addProjectWebhook(
  * Delete a GitLab webhook for a given project.
  */
 export async function deleteProjectWebhook(
+    context: GitLabRuntimeContext,
     config: GitLabSpaceConfiguration,
     projectId: number,
     webhookId: number,
 ) {
-    await gitlabAPI(config, {
+    await gitlabAPI(context, config, {
         method: 'DELETE',
         path: `/projects/${projectId}/hooks/${webhookId}`,
     });
@@ -155,12 +171,13 @@ export async function deleteProjectWebhook(
  * Create a commit status for a commit SHA.
  */
 export async function editCommitStatus(
+    context: GitLabRuntimeContext,
     config: GitLabSpaceConfiguration,
     projectId: number,
     sha: string,
     status: object,
 ): Promise<void> {
-    await gitlabAPI(config, {
+    await gitlabAPI(context, config, {
         method: 'POST',
         path: `/projects/${projectId}/statuses/${sha}`,
         body: status,
@@ -171,6 +188,7 @@ export async function editCommitStatus(
  * Execute a GitLab API request.
  */
 export async function gitlabAPI<T>(
+    context: GitLabRuntimeContext,
     config: GitLabSpaceConfiguration,
     request: {
         method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
@@ -209,7 +227,7 @@ export async function gitlabAPI<T>(
         body: body ? JSON.stringify(body) : undefined,
     };
 
-    const response = await requestGitLab(token, url, options);
+    const response = await requestGitLab(context, token, url, options);
 
     const isJSONResponse = response.headers.get('Content-Type')?.includes('application/json');
     if (!isJSONResponse) {
@@ -234,7 +252,7 @@ export async function gitlabAPI<T>(
             const nextURLSearchParams = Object.fromEntries(nextURL.searchParams);
             if (nextURLSearchParams.page) {
                 url.searchParams.set('page', nextURLSearchParams.page as string);
-                const nextResponse = await requestGitLab(token, url, options);
+                const nextResponse = await requestGitLab(context, token, url, options);
                 const nextData = await nextResponse.json();
                 // @ts-ignore
                 data = [...data, ...(paginatedListProperty ? nextData[listProperty] : nextData)];
@@ -253,6 +271,7 @@ export async function gitlabAPI<T>(
  * It will throw an error if the response is not ok.
  */
 async function requestGitLab(
+    context: GitLabRuntimeContext,
     token: string,
     url: URL,
     options: RequestInit = {},
@@ -268,7 +287,6 @@ async function requestGitLab(
             'User-Agent': 'GitLab-Integration-Worker',
         },
     });
-
     if (!response.ok) {
         const text = await response.text();
 

@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-formspree",
-    "version": "0.2.12",
+    "version": "0.2.14",
     "private": true,
     "dependencies": {
         "@gitbook/runtime": "workspace:*"

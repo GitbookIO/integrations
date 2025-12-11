@@ -1,5 +1,26 @@
 # @gitbook/integration-slack
 
+## 2.6.2
+
+### Patch Changes
+
+- 2cc438c: Copy changes to the Slack integration
+
+## 2.6.1
+
+### Patch Changes
+
+- d7fa48f: Replace custom code for tasks to leverage the new runtime API.
+- Updated dependencies [d7fa48f]
+    - @gitbook/runtime@0.23.0
+
+## 2.6.0
+
+### Minor Changes
+
+- 3cc38b8: Add support for Docs agents ingestion to Slack integration app mentions
+- 3cc38b8: Add support for ingesting conversation to Docs Agents in Slack integration
+
 ## 2.5.3
 
 ### Patch Changes

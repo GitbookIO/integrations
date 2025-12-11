@@ -1,16 +1,17 @@
 import { ConversationInput } from '@gitbook/api';
 import { Logger } from '@gitbook/runtime';
-import { Intercom, IntercomClient } from 'intercom-client';
-import pMap from 'p-map';
+import { Intercom } from 'intercom-client';
 import { getIntercomClient } from './client';
-import { IntercomRuntimeContext } from './types';
+import type { IntercomIntegrationTask, IntercomRuntimeContext } from './types';
+import { queueIntercomIntegrationTask } from './tasks';
+import pMap from 'p-map';
 
-const logger = Logger('intercom-conversations');
+const logger = Logger('intercom-conversations:ingest');
 
 /**
  * Ingest the last closed conversations from Intercom.
  */
-export async function ingestConversations(context: IntercomRuntimeContext) {
+export async function ingestLastClosedIntercomConversations(context: IntercomRuntimeContext) {
     const { installation } = context.environment;
     if (!installation) {
         throw new Error('Installation not found');
@@ -20,8 +21,11 @@ export async function ingestConversations(context: IntercomRuntimeContext) {
 
     let pageIndex = 0;
     const perPage = 100;
-    const maxPages = 7; // Keep under ~1000 subrequest limit. Calc: 7 pages * 100 items ≈ 700 detail calls + 7 search page calls ≈ ~707 Intercom calls (+7 GitBook ingests ≈ ~714 total).
-    let totalProcessed = 0;
+    const maxPages = 5; // Keep under ~1000 subrequest limit. Calc: 7 pages * 100 items ≈ 700 detail calls + 7 search page calls ≈ ~707 Intercom calls (+7 GitBook ingests ≈ ~714 total).
+    let totalConvsToIngest = 0;
+
+    const now = new Date();
+    const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
     let page = await intercomClient.conversations.search(
         {
@@ -32,6 +36,11 @@ export async function ingestConversations(context: IntercomRuntimeContext) {
                         field: 'state',
                         operator: '=',
                         value: 'closed',
+                    },
+                    {
+                        field: 'created_at',
+                        operator: '>',
+                        value: Math.floor(oneMonthAgo.getTime() / 1000).toString(),
                     },
                 ],
             },
@@ -47,43 +56,23 @@ export async function ingestConversations(context: IntercomRuntimeContext) {
         `Conversation ingestion started. A maximum of ${maxPages * perPage} conversations will be processed.`,
     );
 
+    const pendingTasks: Array<Promise<void>> = [];
     while (pageIndex < maxPages) {
         pageIndex += 1;
 
-        // Process conversations with fail-safe error handling
-        const gitbookConversations = (
-            await pMap(
-                page.data,
-                async (conversation) => {
-                    try {
-                        return await parseConversationAsGitBook(intercomClient, conversation);
-                    } catch {
-                        return null;
-                    }
-                },
-                {
-                    concurrency: 3,
-                },
-            )
-        ).filter((conversation) => conversation !== null);
+        const intercomConversations = page.data.map((conversation) => conversation.id);
+        totalConvsToIngest += intercomConversations.length;
 
-        // Ingest conversations to GitBook
-        if (gitbookConversations.length > 0) {
-            try {
-                await context.api.orgs.ingestConversation(
-                    installation.target.organization,
-                    gitbookConversations,
-                );
-                totalProcessed += gitbookConversations.length;
-                logger.info(
-                    `Successfully ingested ${gitbookConversations.length} conversations from page ${pageIndex}`,
-                );
-            } catch (error) {
-                logger.error(
-                    `Failed to ingest ${gitbookConversations.length} conversations from page ${pageIndex}: ${error}`,
-                );
-            }
-        }
+        pendingTasks.push(
+            queueIntercomIntegrationTask(context, {
+                type: 'ingest:closed-conversations',
+                payload: {
+                    organization: installation.target.organization,
+                    installation: installation.id,
+                    conversations: intercomConversations,
+                },
+            }),
+        );
 
         if (!page.hasNextPage()) {
             break;
@@ -92,50 +81,43 @@ export async function ingestConversations(context: IntercomRuntimeContext) {
         page = await page.getNextPage();
     }
 
-    logger.info(`Conversation ingestion completed. Processed ${totalProcessed} conversations`);
+    logger.info(
+        `Dispatched ${pendingTasks.length} tasks to ingest a total of ${totalConvsToIngest} intercom closed conversations`,
+    );
+    context.waitUntil(Promise.all(pendingTasks));
 }
 
 /**
- * Fetch the the full conversation details and parse it into a GitBook conversation format.
+ * Parse a fetched intercom conversation into a GitBook conversation format.
  */
-export async function parseConversationAsGitBook(
-    intercom: IntercomClient,
-    partialConversation: Intercom.Conversation,
-): Promise<ConversationInput> {
-    if (partialConversation.state !== 'closed') {
-        throw new Error(`Conversation ${partialConversation.id} is not closed`);
+export function parseIntercomConversationAsGitBook(
+    conversation: Intercom.Conversation,
+): ConversationInput {
+    if (conversation.state !== 'closed') {
+        throw new Error(`Conversation ${conversation.id} is not closed`);
     }
 
     const resultConversation: ConversationInput = {
-        id: partialConversation.id,
+        id: conversation.id,
         metadata: {
-            url: `https://app.intercom.com/a/inbox/_/inbox/conversation/${partialConversation.id}`,
+            url: `https://app.intercom.com/a/inbox/_/inbox/conversation/${conversation.id}`,
             attributes: {},
-            createdAt: new Date(partialConversation.created_at * 1000).toISOString(),
+            createdAt: new Date(conversation.created_at * 1000).toISOString(),
         },
         parts: [],
     };
 
-    if (partialConversation.source.subject) {
-        resultConversation.subject = partialConversation.source.subject;
+    if (conversation.source.subject) {
+        resultConversation.subject = conversation.source.subject;
     }
 
-    if (partialConversation.source.body) {
+    if (conversation.source.body) {
         resultConversation.parts.push({
             type: 'message',
             role: 'user',
-            body: partialConversation.source.body,
+            body: conversation.source.body,
         });
     }
-
-    // Fetch full conversation details
-    const conversation = await intercom.conversations.find(
-        { conversation_id: partialConversation.id },
-        {
-            headers: { Accept: 'application/json' },
-            timeoutInSeconds: 3,
-        },
-    );
 
     for (const part of conversation.conversation_parts?.conversation_parts ?? []) {
         if (part.author.type === 'bot') {

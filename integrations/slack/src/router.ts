@@ -1,27 +1,19 @@
 import { Router } from 'itty-router';
 
-import {
-    createOAuthHandler,
-    ExposableError,
-    FetchEventCallback,
-    Logger,
-    OAuthResponse,
-    verifyIntegrationRequestSignature,
-} from '@gitbook/runtime';
+import { createOAuthHandler, FetchEventCallback, Logger, OAuthResponse } from '@gitbook/runtime';
 
 import {
     createSlackEventsHandler,
     createSlackCommandsHandler,
     slackActionsHandler,
-    queryAskAISlashHandler,
     messageEventHandler,
     appMentionEventHandler,
+    askAICommandHandler,
 } from './handlers';
 import { unfurlLink } from './links';
 import { verifySlackRequest, acknowledgeSlackRequest } from './middlewares';
 import { getChannelsPaginated } from './slack';
-import { IntegrationTask } from './types';
-import { handleAskAITask } from './actions';
+import { handleAskAITask, IntegrationTask } from './actions';
 
 const logger = Logger('slack');
 
@@ -41,53 +33,20 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         ).pathname,
     });
 
-    const encodedScopes = encodeURIComponent(
-        [
-            'app_mentions:read',
-            'chat:write',
-            'channels:join',
-            'channels:read',
-            'groups:read',
-            'links:read',
-            'links:write',
-            'commands',
-            'channels:history',
-            'im:history',
-        ].join(' '),
-    );
-
-    /**
-     * Handle integration tasks
-     */
-    router.post('/tasks', async (request) => {
-        const verified = await verifyIntegrationRequestSignature(request, environment);
-
-        if (!verified) {
-            const message = `Invalid signature for integration task`;
-            logger.error(message);
-            throw new ExposableError(message);
-        }
-
-        const { task } = JSON.parse(await request.text()) as { task: IntegrationTask };
-        logger.debug('verified & received integration task', task.type);
-
-        switch (task.type) {
-            case 'ask:ai': {
-                await handleAskAITask(task, context);
-                break;
-            }
-            default: {
-                const error = `Unknown integration task type: ${task.type}`;
-                logger.error(error);
-                throw new Error(error);
-            }
-        }
-
-        return new Response(JSON.stringify({ processed: true }), {
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-        });
-    });
+    const requestedScopes = [
+        'app_mentions:read',
+        'chat:write',
+        'channels:join',
+        'channels:read',
+        'groups:read',
+        'links:read',
+        'links:write',
+        'commands',
+        'channels:history',
+        'im:history',
+        'assistant:write',
+    ];
+    const encodedScopes = encodeURIComponent(requestedScopes.join(' '));
 
     /*
      * Authenticate the user using OAuth.
@@ -116,7 +75,10 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
                 return {
                     externalIds: [response.team.id],
                     configuration: {
-                        oauth_credentials: { access_token: response.access_token },
+                        oauth_credentials: {
+                            access_token: response.access_token,
+                            requested_scopes: requestedScopes,
+                        },
                     },
                 };
             },
@@ -153,8 +115,8 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         '/commands',
         verifySlackRequest,
         createSlackCommandsHandler({
-            '/gitbook': queryAskAISlashHandler,
-            '/gitbookstaging': queryAskAISlashHandler, // needed to allow our staging app to co-exist with the prod app
+            '/gitbook': askAICommandHandler,
+            '/gitbookstaging': askAICommandHandler, // needed to allow our staging app to co-exist with the prod app
         }),
         acknowledgeSlackRequest,
     );

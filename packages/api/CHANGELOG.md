@@ -1,5 +1,77 @@
 # @gitbook/api
 
+## 0.154.0
+
+### Minor Changes
+
+- 1ddf69b: Bump API to include customization.ai.suggestions
+
+## 0.153.0
+
+### Minor Changes
+
+- 1e03949: Bump GitBook API
+
+## 0.152.1
+
+### Patch Changes
+
+- 7cb9bbc: Bump GitBook API
+
+## 0.152.0
+
+### Minor Changes
+
+- de9f017: Bump API
+
+## 0.151.0
+
+### Minor Changes
+
+- 526e63a: Bump API to latest version
+
+## 0.150.0
+
+### Minor Changes
+
+- b485c8a: bump api changelog-props
+
+## 0.149.0
+
+### Minor Changes
+
+- d7b4c43: Bump API to use the latest spec
+
+## 0.148.0
+
+### Minor Changes
+
+- 5c9aabe: bump api including updates
+
+## 0.147.0
+
+### Minor Changes
+
+- b0fcacf: Update api for search results ancestors
+
+## 0.146.0
+
+### Minor Changes
+
+- 70c7d11: Bump API version
+
+## 0.145.0
+
+### Minor Changes
+
+- 2b5f94a: add page cover resizing
+
+## 0.144.0
+
+### Minor Changes
+
+- dd6352d: Update API
+
 ## 0.143.2
 
 ### Patch Changes

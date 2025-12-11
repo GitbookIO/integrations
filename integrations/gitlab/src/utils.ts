@@ -73,7 +73,10 @@ export function computeConfigQueryKey(projectId: number, ref: string): string {
 export function normalizeInstanceUrl(url: string): string {
     let instanceUrl = url.trim();
     instanceUrl = instanceUrl.endsWith('/') ? instanceUrl.slice(0, -1) : instanceUrl;
-    instanceUrl = instanceUrl.startsWith('https://') ? instanceUrl : `https://${instanceUrl}`;
+    instanceUrl =
+        instanceUrl.startsWith('https://') || instanceUrl.startsWith('http://')
+            ? instanceUrl
+            : `https://${instanceUrl}`;
     return instanceUrl;
 }
 

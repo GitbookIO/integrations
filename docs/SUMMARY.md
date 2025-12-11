@@ -1,59 +1,53 @@
 # Table of contents
 
-## Getting Started
+* [Developer documentation](README.md)
 
-* [Developer Documentation](README.md)
-* [Quickstart](getting-started/setup-guide.md)
-* [Development](getting-started/development.md)
-* [Publishing](getting-started/publishing.md)
+## Build an integration <a href="#integrations" id="integrations"></a>
 
-## Integrations
-
-* [Introduction](integrations/integrations.md)
-* [Using the CLI](integrations/reference.md)
-* [Configuration](integrations/configurations.md)
-* [ContentKit](integrations/contentkit/README.md)
-  * [Component reference](integrations/contentkit/reference.md)
-* [Integration runtime](integrations/runtime.md)
-
-***
-
-* [Client library](browser-node.md)
-* [Guides](guides/README.md)
-  * [Creating a custom unfurl action](guides/create-a-custom-unfurl-action-for-your-integration.md)
-  * [Creating interactive blocks](guides/interactivity.md)
-  * [Referencing your integration in Markdown](guides/markdown.md)
-  * [Working with HTTP requests](guides/receiving-requests.md)
-  * [Using the CLI in CI/CD](guides/ci.md)
-  * [Receiving webhook notifications](guides/webhook.md)
+* [Quickstart](integrations/quickstart.md)
+* [Install the CLI](integrations/reference/README.md)
+  * [CLI reference](integrations/reference/cli-reference.md)
+* [Configure your integration](integrations/configurations.md)
+* [Develop your integration](integrations/development/README.md)
+  * [ContentKit](integrations/development/contentkit/README.md)
+    * [Component reference](integrations/development/contentkit/reference.md)
+    * [Markdown](integrations/development/contentkit/markdown.md)
+  * [Integration runtime](integrations/development/runtime.md)
+  * [Client library](integrations/development/client-library/README.md)
+    * [GitBook methods](integrations/development/client-library/gitbook-methods.md)
+* [Publish your integration](integrations/publishing.md)
+* [Submit your integration for review](integrations/submit-your-app-for-review.md)
+* [Concepts](integrations/concepts.md)
+* [Guides](integrations/guides/README.md)
+  * [Create a custom unfurl action](integrations/guides/create-a-custom-unfurl-action-for-your-integration.md)
+  * [Create interactive blocks](integrations/guides/interactivity.md)
+  * [Receive webhook notifications](integrations/guides/webhook.md)
+  * [Work with HTTP requests](integrations/guides/receiving-requests.md)
 
 ## GitBook API
 
-* [Introduction](gitbook-api/overview.md)
-* [Authentication](gitbook-api/authentication.md)
+* [Quickstart](gitbook-api/quickstart.md)
 * [API reference](gitbook-api/api-reference/README.md)
   * ```yaml
     props:
       models: false
+      downloadLink: true
+    type: builtin:openapi
     dependencies:
       spec:
         ref:
           kind: openapi
           spec: gitbook
-    type: builtin:openapi
     ```
+* [Authentication](gitbook-api/authentication.md)
 * [Rate limiting](gitbook-api/rate-limiting.md)
 * [Pagination](gitbook-api/pagination.md)
 * [Errors](gitbook-api/errors.md)
-
-## Marketplace
-
-* [Overview](marketplace/overview.md)
-* [Submit your app for review](marketplace/submit-your-app-for-review.md)
+* [Concepts](gitbook-api/concepts.md)
+* [Guides](gitbook-api/guides/README.md)
+  * [Track advanced analytics with GitBook's Events Aggregation API](https://gitbook.com/docs/guides/docs-analytics/track-advanced-analytics-with-gitbooks-events-aggregation-api)
 
 ## Resources
 
-* [Concepts](resources/concepts.md)
-* [Changelog](resources/api.md)
 * [ContentKit playground](https://app.gitbook.com/dev/contentkit/)
 * [GitHub examples](https://github.com/GitbookIO/integrations)

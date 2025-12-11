@@ -1,5 +1,20 @@
 # @gitbook/integration-oidc
 
+## 0.2.8
+
+### Patch Changes
+
+- f8c2288: Add user-agent to the token request and make scope config parsing more user-friendly
+
+## 0.2.7
+
+### Patch Changes
+
+- 5474280: Add error logs when token request fails
+- Updated dependencies [aab7f96]
+- Updated dependencies [84ea77c]
+    - @gitbook/runtime@0.23.1
+
 ## 0.2.6
 
 ### Patch Changes

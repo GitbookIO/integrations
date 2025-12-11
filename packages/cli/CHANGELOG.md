@@ -1,5 +1,23 @@
 # @gitbook/cli
 
+## 0.26.3
+
+### Patch Changes
+
+- 67d2581: Log the environment currently used when executing a command.
+
+## 0.26.2
+
+### Patch Changes
+
+- 2d9dc8b: Bump CLI to use new OpenAPI slug pattern
+
+## 0.26.1
+
+### Patch Changes
+
+- 9275222: Validate OpenAPI slug with pattern
+
 ## 0.26.0
 
 ### Minor Changes

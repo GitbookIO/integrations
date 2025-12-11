@@ -313,11 +313,7 @@ async function requestGitHubAPI(
 
             logger.debug(`refreshing OAuth credentials for space ${spaceInstallation.space}`);
 
-            const refreshed = await refreshCredentials(
-                context.environment.secrets.CLIENT_ID,
-                context.environment.secrets.CLIENT_SECRET,
-                credentials.refresh_token,
-            );
+            const refreshed = await refreshCredentials(context, credentials.refresh_token);
 
             await context.api.integrations.updateIntegrationSpaceInstallation(
                 spaceInstallation.integration,
@@ -349,14 +345,13 @@ async function requestGitHubAPI(
 }
 
 async function refreshCredentials(
-    clientId: string,
-    clientSecret: string,
+    context: GithubRuntimeContext,
     refreshToken: string,
 ): Promise<OAuthTokenCredentials> {
     const url = new URL('https://github.com/login/oauth/access_token');
 
-    url.searchParams.set('client_id', clientId);
-    url.searchParams.set('client_secret', clientSecret);
+    url.searchParams.set('client_id', context.environment.secrets.CLIENT_ID);
+    url.searchParams.set('client_secret', context.environment.secrets.CLIENT_SECRET);
     url.searchParams.set('grant_type', 'refresh_token');
     url.searchParams.set('refresh_token', refreshToken);
 
