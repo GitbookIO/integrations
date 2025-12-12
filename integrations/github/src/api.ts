@@ -165,6 +165,7 @@ export async function createAppInstallationAccessToken(
     context: GithubRuntimeContext,
     appJWT: string,
     installationId: number,
+    isProxied?: boolean,
 ): Promise<string> {
     const { token } = await githubAPI<{ token: string; expires_at: string }>(
         context,
@@ -172,6 +173,11 @@ export async function createAppInstallationAccessToken(
         {
             method: 'POST',
             path: `/app/installations/${installationId}/access_tokens`,
+            additionalHeaders: isProxied
+                ? {
+                      'X-Gitbook-Proxy-Enabled': 'true',
+                  }
+                : {},
         },
     );
 
@@ -220,6 +226,10 @@ async function githubAPI<T>(
          * @default true
          */
         walkPagination?: boolean;
+        /**
+         * Additional headers to add to the request
+         */
+        additionalHeaders?: Record<string, string>;
     },
 ): Promise<T> {
     const {
@@ -229,6 +239,7 @@ async function githubAPI<T>(
         params,
         listProperty = '',
         walkPagination = true,
+        additionalHeaders = {},
     } = request;
 
     const credentials = tokenCredentials || extractTokenCredentialsOrThrow(context);
@@ -240,6 +251,7 @@ async function githubAPI<T>(
     const options = {
         method,
         body: body ? JSON.stringify(body) : undefined,
+        headers: additionalHeaders,
     };
 
     const response = await requestGitHubAPI(context, credentials, url, options);
