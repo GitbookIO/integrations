@@ -1,5 +1,11 @@
 # @gitbook/integration-posthog
 
+## 1.2.1
+
+### Patch Changes
+
+- 294ecd7: Move posthog init to main function call
+
 ## 1.2.0
 
 ### Minor Changes
