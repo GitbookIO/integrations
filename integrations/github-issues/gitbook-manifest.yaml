@@ -21,7 +21,7 @@ summary: |
        Install the GitBook app and connect your GitHub account to allow GitBook to read issues from selected repositories.
 
     2. Choose repositories 
-       Select which repositories, labels, or issue states GitBook should analyze to focus on the most relevant feedback.
+       Select which repositories GitBook should analyze to focus on the most relevant feedback.
 
     3. Let the GitBook Agent analyze issues  
        GitBook scans issues to detect repeated questions, confusing workflows, outdated references, and missing explanations. The integration will also analyze recent issues closed in the last 30 days.
