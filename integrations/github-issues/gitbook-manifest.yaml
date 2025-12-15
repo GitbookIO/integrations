@@ -4,10 +4,31 @@ icon: ./assets/icon.png
 description: Automatically sync GitHub issues to docs updates in GitBook.
 visibility: public
 script: ./src/index.ts
+previewImages:
+    - ./assets/github-issues-preview.png
 summary: |
     # Overview
 
-    Automatically get AI-suggested change requests for your docs based on feedback from your GitHub Issues.
+    Connecting GitHub Issues to GitBook turns user-reported bugs, questions, and feature requests into documentation updates. The integration analyzes closed issues, detects recurring problems, and surfaces where your docs are outdated, unclear, or missing critical information.
+
+    ## How it works
+
+    GitBook Agent reviews closed GitHub Issues, identifies patterns across reports, and maps them to relevant documentation gaps. When it finds opportunities to improve, it automatically opens proactive change requests with suggested edits, drafted updates, and clear context pulled from the issues themselves.
+
+    ## Configure
+
+    1. Authorize GitBook to access GitHub  
+       Install the GitBook app and connect your GitHub account to allow GitBook to read issues from selected repositories.
+
+    2. Choose repositories 
+       Select which repositories GitBook should analyze to focus on the most relevant feedback.
+
+    3. Let the GitBook Agent analyze issues  
+       GitBook scans issues to detect repeated questions, confusing workflows, outdated references, and missing explanations. The integration will also analyze recent issues closed in the last 30 days.
+
+    4. Receive proactive change requests  
+       As patterns emerge, GitBook opens change requests with proposed documentation updates, supporting context from GitHub Issues, and an initial draft written by the AI agent.
+
 scopes:
     - conversations:ingest
 organization: gitbook
