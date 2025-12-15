@@ -24,7 +24,7 @@ summary: |
        Select which repositories, labels, or issue states GitBook should analyze to focus on the most relevant feedback.
 
     3. Let the GitBook Agent analyze issues  
-       GitBook scans issues to detect repeated questions, confusing workflows, outdated references, and missing explanations.
+       GitBook scans issues to detect repeated questions, confusing workflows, outdated references, and missing explanations. The integration will also analyze recent issues closed in the last 30 days.
 
     4. Receive proactive change requests  
        As patterns emerge, GitBook opens change requests with proposed documentation updates, supporting context from GitHub Issues, and an initial draft written by the AI agent.
