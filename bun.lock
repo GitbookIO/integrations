@@ -26,6 +26,18 @@
         "@gitbook/tsconfig": "workspace:*",
       },
     },
+    "integrations/amplitude": {
+      "name": "@gitbook/integration-amplitude",
+      "version": "1.0.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
     "integrations/arcade": {
       "name": "@gitbook/integration-arcade",
       "version": "0.2.2",
@@ -160,7 +172,7 @@
     },
     "integrations/github": {
       "name": "@gitbook/integration-github",
-      "version": "0.6.5",
+      "version": "0.6.6",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -210,7 +222,7 @@
     },
     "integrations/github-issues": {
       "name": "@gitbook/integration-github-issues",
-      "version": "0.0.1",
+      "version": "0.0.2",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -1091,6 +1103,8 @@
     "@gitbook/document": ["@gitbook/document@workspace:packages/document"],
 
     "@gitbook/integration-ahrefs": ["@gitbook/integration-ahrefs@workspace:integrations/ahrefs"],
+
+    "@gitbook/integration-amplitude": ["@gitbook/integration-amplitude@workspace:integrations/amplitude"],
 
     "@gitbook/integration-arcade": ["@gitbook/integration-arcade@workspace:integrations/arcade"],
 
