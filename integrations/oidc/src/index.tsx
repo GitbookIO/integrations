@@ -208,7 +208,7 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                             </link>
                         </text>
                     }
-                    element={<textinput state="scopes" placeholder="Scopes" />}
+                    element={<textinput state="scope" placeholder="Scopes" />}
                 />
                 <divider size="medium" />
                 <hint>
