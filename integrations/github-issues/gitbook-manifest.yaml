@@ -9,11 +9,11 @@ previewImages:
 summary: |
     # Overview
 
-    Connecting GitHub Issues to GitBook turns user-reported bugs, questions, and feature requests into documentation intelligence. The integration analyzes incoming issues, detects recurring problems, and surfaces where your docs are outdated, unclear, or missing critical information.
+    Connecting GitHub Issues to GitBook turns user-reported bugs, questions, and feature requests into documentation updates. The integration analyzes closed issues, detects recurring problems, and surfaces where your docs are outdated, unclear, or missing critical information.
 
     ## How it works
 
-    GitBook Agent reviews new and existing GitHub Issues, identifies patterns across reports, and maps them to relevant documentation gaps. When it finds opportunities to improve, it automatically opens proactive change requests with suggested edits, drafted updates, and clear context pulled from the issues themselves.
+    GitBook Agent reviews closed GitHub Issues, identifies patterns across reports, and maps them to relevant documentation gaps. When it finds opportunities to improve, it automatically opens proactive change requests with suggested edits, drafted updates, and clear context pulled from the issues themselves.
 
     ## Configure
 
