@@ -20,7 +20,7 @@ summary: |
     1. Authorize GitBook to access GitHub  
        Install the GitBook app and connect your GitHub account to allow GitBook to read issues from selected repositories.
 
-    2. Choose repositories and issue types  
+    2. Choose repositories 
        Select which repositories, labels, or issue states GitBook should analyze to focus on the most relevant feedback.
 
     3. Let the GitBook Agent analyze issues  
