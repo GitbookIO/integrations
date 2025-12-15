@@ -460,7 +460,7 @@
     },
     "integrations/oidc": {
       "name": "@gitbook/integration-oidc",
-      "version": "0.2.7",
+      "version": "0.2.8",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -608,7 +608,7 @@
     },
     "integrations/slack": {
       "name": "@gitbook/integration-slack",
-      "version": "2.6.1",
+      "version": "2.6.2",
       "dependencies": {
         "@ai-sdk/openai": "^2.0.62",
         "@gitbook/api": "*",
@@ -703,6 +703,18 @@
         "@sinonjs/fake-timers": "^15.0.0",
       },
     },
+    "integrations/wistia": {
+      "name": "@gitbook/integration-wistia",
+      "version": "1.0.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
     "integrations/zendesk-conversations": {
       "name": "@gitbook/integration-zendesk-conversations",
       "version": "0.0.1",
@@ -745,7 +757,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.153.0",
+      "version": "0.154.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -1183,6 +1195,8 @@
     "@gitbook/integration-va-okta": ["@gitbook/integration-va-okta@workspace:integrations/va-okta"],
 
     "@gitbook/integration-webhook": ["@gitbook/integration-webhook@workspace:integrations/webhook"],
+
+    "@gitbook/integration-wistia": ["@gitbook/integration-wistia@workspace:integrations/wistia"],
 
     "@gitbook/integration-zendesk-conversations": ["@gitbook/integration-zendesk-conversations@workspace:integrations/zendesk-conversations"],
 
