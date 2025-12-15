@@ -1,29 +1,41 @@
-# Receiving webhook notifications
+---
+description: Learn how to receive webhook notifications through GitBook’s integration
+---
 
-The GitBook Webhook Integration allows you to receive real-time notifications when events occur in your GitBook spaces. This integration supports configurable webhook URL, HMAC signature verification, and automatic retry logic with exponential backoff.
+# Receive webhook notifications
 
-## Features
+The [Webhook integration](https://www.gitbook.com/integrations/webhook) allows you to receive real-time notifications when events occur in your GitBook spaces. This integration supports configurable webhook URL, HMAC signature verification, and automatic retry logic with exponential backoff.
 
-- **Real-time Event Delivery**: Receive instant notifications for selected events
-- **HMAC Signature Verification**: Secure webhook delivery with cryptographic verification
-- **Automatic Retry Logic**: Built-in retry mechanism with exponential backoff for failed deliveries
-- **Configurable Events**: Choose which events to receive (site views, content updates, page feedback)
+### Features
 
-## Supported Events
-The webhook integration can be installed either in Spaces or in Sites. The list of events you can select depends on where the integration is installed.
+* **Real-time event delivery**: Receive instant notifications for selected events
+* **HMAC signature verification**: Secure webhook delivery with cryptographic verification
+* **Automatic retry logic**: Built-in retry mechanism with exponential backoff for failed deliveries
+* **Configurable events**: Choose which events to receive (site views, content updates, page feedback)
+
+### Getting started
+
+Before following the rest of the guide, make sure the [Webhook integration](https://www.gitbook.com/integrations/webhook) is installed into your organization.&#x20;
+
+### Supported events
+
+The webhook integration can be installed either in spaces or in sites. The list of events you can select depends on where the integration is installed.
 
 For spaces:
-- **Content updates** - When content in your space is modified
+
+* **Content updates** - When content in your space is modified
 
 For sites:
-- **Site views** - When users visit pages on your site
-- **Page feedback** - When users provide feedback on pages
 
+* **Site views** - When users visit pages on your site
+* **Page feedback** - When users provide feedback on pages
 
-### Content Updated Events (`space_content_updated`)
+#### Content updated events (`space_content_updated`)
+
 Triggered when content in a space is modified.
 
-**Payload Example:**
+**Payload example:**
+
 ```json
 {
   "eventId": "evt_2345678901bcdefg",
@@ -34,10 +46,12 @@ Triggered when content in a space is modified.
 }
 ```
 
-### Site View Events (`site_view`)
+#### Site view events (`site_view`)
+
 Triggered when a user visits a page on your GitBook site.
 
-**Payload Example:**
+**Payload example:**
+
 ```json
 {
   "eventId": "evt_1234567890abcdef",
@@ -57,10 +71,12 @@ Triggered when a user visits a page on your GitBook site.
 }
 ```
 
-### Page Feedback Events (`page_feedback`)
+#### Page feedback events (`page_feedback`)
+
 Triggered when users provide feedback on pages.
 
-**Payload Example:**
+**Payload example:**
+
 ```json
 {
   "eventId": "evt_3456789012cdefgh",
@@ -84,29 +100,31 @@ Triggered when users provide feedback on pages.
 }
 ```
 
-## Configuration
+### Configuration
 
-### Required Settings
+#### Required settings
 
-- **Webhook URL**: The endpoint where events will be sent
-- **Event Types**: Select which events to receive
+* **Webhook URL**: The endpoint where events will be sent
+* **Event types**: Select which events to receive
 
-## Webhook Security
+### Webhook security
 
-### HMAC Signature Verification
+#### HMAC signature verification
 
 All webhook requests include an HMAC-SHA256 signature in the `X-GitBook-Signature` header for verification.
 
-**Header Format:**
+**Header format:**
+
 ```
 X-GitBook-Signature: t=1640995200,v1=abc123def456...
 ```
 
 Where:
-- `t`: Unix timestamp of the request
-- `v1`: HMAC-SHA256 signature of the payload
 
-### Signature Verification Example
+* `t`: Unix timestamp of the request
+* `v1`: HMAC-SHA256 signature of the payload
+
+#### Signature verification example
 
 ```javascript
 const crypto = require('crypto');
@@ -153,41 +171,40 @@ const isValid = verifyGitBookSignature(
 );
 ```
 
-
-## Retry Logic
+### Retry logic
 
 The integration includes automatic retry logic for failed webhook deliveries:
 
-- **Max Retries**: 3 attempts
-- **Backoff Strategy**: Exponential backoff with jitter
-- **Base Delay**: 1 second
-- **Jitter**: ±10% of base delay
-- **Retry Conditions**: 
-  - Network errors (timeouts, connection refused)
-  - Server errors (5xx status codes)
-  - Rate limiting (429 status codes)
-- **No Retry**: Client errors (4xx except 429)
+* **Max retries**: 3 attempts
+* **Backoff strategy**: Exponential backoff with jitter
+* **Base delay**: 1 second
+* **Jitter**: ±10% of base delay
+* **Retry conditions**:
+  * Network errors (timeouts, connection refused)
+  * Server errors (5xx status codes)
+  * Rate limiting (429 status codes)
+* **No retry**: Client errors (4xx except 429)
 
-### Retry Schedule Example
+#### Retry schedule example
 
-| Attempt | Base Delay | Jitter Range | Total Delay Range | Schedule |
-|---------|------------|--------------|-------------------|----------|
+| Attempt | Base delay | Jitter range | Total delay range | Schedule |
+| ------- | ---------- | ------------ | ----------------- | -------- |
 | 1       | 1s         | ±0.1s        | 1.0-1.1s          | 1s       |
 | 2       | 2s         | ±0.2s        | 2.0-2.2s          | 2s       |
 | 3       | 4s         | ±0.4s        | 4.0-4.4s          | 4s       |
 
-## Error Handling
+### Error handling
 
-### HTTP Status Codes
+#### HTTP status codes
 
-- **200**: Success
-- **400**: Bad Request (client error, no retry)
-- **429**: Too Many Requests (rate limited, will retry)
-- **500**: Internal Server Error (server error, will retry)
+* **200**: Success
+* **400**: Bad Request (client error, no retry)
+* **429**: Too Many Requests (rate limited, will retry)
+* **500**: Internal Server Error (server error, will retry)
 
-## Best Practices
+### Best practices
 
-### 1. Webhook Endpoint Design
+#### 1. Webhook endpoint design
 
 ```javascript
 const express = require('express');
@@ -226,7 +243,7 @@ app.post('/webhooks/gitbook', express.raw({type: 'application/json'}), (req, res
 });
 ```
 
-### 2. Idempotency
+#### 2. Idempotency
 
 Handle duplicate events gracefully:
 
@@ -266,7 +283,7 @@ function handleEvent(event) {
 }
 ```
 
-### 3. Async Processing
+#### 3. Async processing
 
 Process events asynchronously to respond quickly:
 

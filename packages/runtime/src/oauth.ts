@@ -342,10 +342,10 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
  * Get the OAuth token from the credentials.
  * It will refresh the token if it's expired.
  */
-export async function getOAuthToken(
+export async function getOAuthToken<TOAuthResponse extends OAuthResponse = OAuthResponse>(
     credentials: OAuthConfiguration,
     config: Pick<
-        OAuthConfig,
+        OAuthConfig<TOAuthResponse>,
         'accessTokenURL' | 'clientId' | 'clientSecret' | 'extractCredentials'
     >,
     context: RuntimeContext,
@@ -391,7 +391,7 @@ export async function getOAuthToken(
         throw new Error(`Failed to exchange code for access token ${await response.text()}`);
     }
 
-    const json = (await response.json()) as OAuthResponse;
+    const json = (await response.json()) as OAuthResponse & TOAuthResponse;
     const creds = await extractCredentials(json);
     const accessToken = (creds.configuration?.['oauth_credentials'] as OAuthConfiguration)
         ?.access_token;

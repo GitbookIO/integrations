@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.26.3
+
+### Patch Changes
+
+- 67d2581: Log the environment currently used when executing a command.
+
 ## 0.26.2
 
 ### Patch Changes

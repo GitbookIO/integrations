@@ -1,5 +1,5 @@
 ---
-description: Learn about the gitbook-manifest.yaml file your integration uses
+description: Learn about the gitbook-manifest.yaml file used to configure your integration
 icon: gear
 ---
 
@@ -39,6 +39,24 @@ A short description for your integration.
 description: A short, descriptive overview of my integration.
 ```
 
+### Summary
+
+A summary for your integration displayed on the installation page. Supports Markdown.
+
+{% hint style="info" %}
+The summary field is limited to 2048 characters.
+{% endhint %}
+
+**Example:**
+
+```yaml
+summary: |
+    # Overview
+    The GitBook Slack integration brings the power of GitBook to your Slack workspace. Your teams have instant access to your GitBook knowledge base, without leaving Slack.
+    # Configure
+    You can install the integration on a single space by clicking the integrations button in sub-navigation panel. If you prefer to install the Slack integration on multiple on all spaces you can enable this through organization settings. To configure the integration you will have to authorize the connection between Slack and GitBook. You can also select the default channel to post messages to.
+```
+
 ### Organization<mark style="color:red;">\*</mark>
 
 The [`id`](concepts.md) or `subdomain` of the organization that owns this integration.
@@ -69,30 +87,30 @@ The scopes your integration has permissions for.
 
 <pre class="language-yaml"><code class="lang-yaml"><strong>scopes:
 </strong>    # Spaces
-    - space:content:read
-    - space:content:write
-    - space:metadata:read
-    - space:metadata:write
-    - space:git:sync
+    - space:content:read ## Read space content
+    - space:content:write ### Write space content
+    - space:metadata:read ## Read metadata related to a space
+    - space:metadata:write ## Write metadata related to a space
+    - space:git:sync ## Manage Git Sync within a space
     # Sites
-    - site:metadata:read
-    - site:views:read
+    - site:metadata:read ## Read metadata related to a site
+    - site:views:read ## Read analytics related to a site
     - site:script:inject ## Internal scope - see note below
     - site:script:cookies ## Internal scope - see note below
-    - site:visitor:auth
-    - site:adaptive:read
-    - site:adaptive:write
+    - site:visitor:auth ## Enable workflows related to authenticated access
+    - site:adaptive:read ## Read claims available from Adaptive Content
+    - site:adaptive:write ## Write claims avaiable to Adaptive Content
     # OpenAPI
-    - openapi:read
-    - openapi:write
+    - openapi:read ## Read information from a sites OpenAPI spec
+    - openapi:write ## Write information to a sites OpenAPI spec
     # Conversations
     - conversations:ingest
 </code></pre>
 
 {% hint style="danger" %}
-You may see the scope `site:script:inject` throughout GitBook owned integrations—This scope is only available for internal GitBook use.
+You may see the scope `site:script:inject` throughout GitBook owned integrations — This scope is only available for internal GitBook use.
 
-Building integrations that inject JavaScript into a space or page are not possible to build at this time.
+Building integrations that inject JavaScript into a site or space is not possible at this time.
 {% endhint %}
 
 ### Script
@@ -134,20 +152,6 @@ categories:
     - other
 ```
 
-### Summary
-
-A summary for your integration displayed on the installation page. Supports Markdown.
-
-**Example:**
-
-```yaml
-summary: |
-    # Overview
-    The GitBook Slack integration brings the power of GitBook to your Slack workspace. Your teams have instant access to your GitBook knowledge base, without leaving Slack.
-    # Configure
-    You can install the integration on a single space by clicking the integrations button in sub-navigation panel. If you prefer to install the Slack integration on multiple on all spaces you can enable this through organization settings. To configure the integration you will have to authorize the connection between Slack and GitBook. You can also select the default channel to post messages to.
-```
-
 ### Icon
 
 A locally referenced icon for your integration. Asset must be located alongside the code for your integration.
@@ -160,7 +164,7 @@ icon: ./assets/icon.png
 
 ### Preview Images
 
-A list of locally referenced assets to display on the installation page for your integration.
+A list of locally referenced assets to display on the installation page for your integration. (recommended: 1600px × 800px, aspect ratio: `2:1`)
 
 **Example:**
 

@@ -1,0 +1,23 @@
+{
+    "name": "@gitbook/integration-github-issues",
+    "version": "0.0.2",
+    "private": true,
+    "dependencies": {
+        "@gitbook/runtime": "*",
+        "@gitbook/api": "*",
+        "itty-router": "^2.6.1",
+        "octokit": "^5.0.5",
+        "p-map": "^7.0.4",
+        "@tsndr/cloudflare-worker-jwt": "^3.2.0"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "check": "gitbook check",
+        "publish-integrations": "gitbook publish .",
+        "publish-integrations-staging": "gitbook publish .  --env staging"
+    }
+}

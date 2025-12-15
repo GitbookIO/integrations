@@ -1,3 +1,7 @@
+---
+description: Learn how to build components with GitBook’s UI kit
+---
+
 # ContentKit
 
 ContentKit is a UI framework allows you to build integrations that work from directly within GitBook. It is used to define interactive layouts for Custom Blocks, Configurations flows and more.

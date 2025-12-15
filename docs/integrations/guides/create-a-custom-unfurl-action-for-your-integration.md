@@ -1,4 +1,10 @@
-# Creating a custom unfurl action
+---
+description: >-
+  Build an integration that allows you to unfurl and display embedded links on a
+  page
+---
+
+# Create a custom unfurl action
 
 Link unfurling refers to the automatic previewing of website links shared in online platforms—Like chat applications, social media platforms, or messaging services.
 
@@ -6,15 +12,15 @@ When you paste or share a link in a supported platform, the platform will automa
 
 When making an integration in GitBook, you're able to tap into this action, and display or embed content-rich blocks and previews.
 
-### Unfurling in GitBook already works
-
-Before you dive in and create an integration for your platform, embedding your service might already be supported in GitBook.
+{% hint style="info" %}
+#### Most links unfurl automatically in GitBook
 
 Underneath the hood, GitBook uses the service [iFramely](https://iframely.com/domains) to unpack and unfurl links pasted in the editor.
 
 If the iFramely service doesn't support the unfurling your link out of the box, it defaults to displaying the link as text instead.
 
 If the link you're trying to unfurl doesn't work out of the box, you'll need to create an integration to handle the unfurling of your link.
+{% endhint %}
 
 ### Create an integration
 

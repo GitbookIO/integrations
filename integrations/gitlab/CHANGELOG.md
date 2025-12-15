@@ -1,5 +1,21 @@
 # @gitbook/integration-gitlab
 
+## 0.6.4
+
+### Patch Changes
+
+- 247db36: Improve support for proxy
+- Updated dependencies [7cb9bbc]
+    - @gitbook/api@0.152.1
+
+## 0.6.3
+
+### Patch Changes
+
+- d7fa48f: Replace custom code for tasks to leverage the new runtime API.
+- Updated dependencies [d7fa48f]
+    - @gitbook/runtime@0.23.0
+
 ## 0.6.2
 
 ### Patch Changes

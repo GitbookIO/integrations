@@ -1,5 +1,5 @@
 ---
-description: GitBook's official Node.js client library
+description: Install and use GitBook's official Node.js client library
 ---
 
 # Client library

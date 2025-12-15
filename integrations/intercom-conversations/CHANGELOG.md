@@ -1,5 +1,31 @@
 # @gitbook/integration-intercom-conversations
 
+## 0.2.3
+
+### Patch Changes
+
+- aab7f96: Fix authentication flow when not requiring the permission "read_admins".
+- Updated dependencies [aab7f96]
+- Updated dependencies [84ea77c]
+    - @gitbook/runtime@0.23.1
+
+## 0.2.2
+
+### Patch Changes
+
+- d7fa48f: Replace custom code for tasks to leverage the new runtime API.
+- 259b5a0: Show a message once integration has been authenticated.
+- Updated dependencies [d7fa48f]
+    - @gitbook/runtime@0.23.0
+
+## 0.2.1
+
+### Patch Changes
+
+- 733162c: Updated metadata
+- Updated dependencies [de9f017]
+    - @gitbook/api@0.152.0
+
 ## 0.2.0
 
 ### Minor Changes

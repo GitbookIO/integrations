@@ -13,7 +13,7 @@ export async function getAPIClient(requireAuth: boolean = true): Promise<GitBook
     const authConfig = getAuthConfig();
     if (!authConfig.token && requireAuth) {
         throw new Error(
-            'You must be authenticated before you can run this command.\n  Run "gitbook auth" to authenticate.',
+            `You must be authenticated before you can run this command.\n  Run "${getAuthCommand()}" to authenticate.`,
         );
     }
 
@@ -76,6 +76,11 @@ export async function whoami(): Promise<void> {
             console.log(`Environment: ${env}`);
         }
     } else {
-        console.log(`No authentication configured.`);
+        console.log(`No authentication configured. Run "${getAuthCommand()}" to authenticate.`);
     }
+}
+
+function getAuthCommand() {
+    const env = getEnvironment();
+    return env === DEFAULT_ENV ? 'gitbook auth' : `gitbook auth --env ${env}`;
 }

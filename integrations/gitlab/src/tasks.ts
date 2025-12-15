@@ -14,8 +14,7 @@ export async function queueTaskForImportSpaces(
     context: GitLabRuntimeContext,
     task: IntegrationTaskImportSpaces,
 ): Promise<void> {
-    const { api, environment } = context;
-    await api.integrations.queueIntegrationTask(environment.integration.name, {
+    await context.integration.queueTask({
         task: {
             type: task.type,
             payload: task.payload,
@@ -27,12 +26,12 @@ export async function queueTaskForImportSpaces(
  * Handle an integration task.
  */
 export async function handleIntegrationTask(
-    context: GitLabRuntimeContext,
     task: IntegrationTask,
+    context: GitLabRuntimeContext,
 ): Promise<void> {
     switch (task.type) {
         case 'import:spaces':
-            await handleImportDispatchForSpaces(context, task.payload);
+            await handleImportDispatchForSpaces(task.payload, context);
             break;
         default:
             throw new Error(`Unknown integration task type: ${task}`);
@@ -47,8 +46,8 @@ export async function handleIntegrationTask(
  * than 50 as that is the limit imposed by Cloudflare workers.
  */
 export async function handleImportDispatchForSpaces(
-    context: GitLabRuntimeContext,
     payload: IntegrationTaskImportSpaces['payload'],
+    context: GitLabRuntimeContext,
 ): Promise<number | undefined> {
     const { configQuery, page, standaloneRef, eventTimestamp } = payload;
 

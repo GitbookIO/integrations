@@ -1,5 +1,5 @@
 ---
-description: Available methods from the GitBook client library
+description: Learn about the available methods from the GitBook client library
 ---
 
 # GitBook methods

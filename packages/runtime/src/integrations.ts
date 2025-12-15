@@ -2,12 +2,13 @@ import { Event, IntegrationEnvironment } from '@gitbook/api';
 import type * as Cloudflare from '@cloudflare/workers-types/experimental';
 
 import { ComponentDefinition } from './components';
-import { createContext, RuntimeContext } from './context';
+import { createContext, ExtractTaskPayload, RuntimeContext } from './context';
 import {
     EventCallbackMap,
     FetchEventCallback,
     FetchPublishScriptEventCallback,
     FetchVisitorAuthenticationEventCallback,
+    IntegrationTaskEventCallback,
 } from './events';
 import { Logger } from './logger';
 import { ExposableError } from './errors';
@@ -15,7 +16,7 @@ import { ContentSourceDefinition } from './contentSources';
 
 const logger = Logger('integrations');
 
-interface IntegrationRuntimeDefinition<Context extends RuntimeContext = RuntimeContext> {
+export interface IntegrationRuntimeDefinition<Context extends RuntimeContext = RuntimeContext> {
     /**
      * Handler for the fetch event. As it has slightly stricter typing, it's pulled out of the generic
      * events map.
@@ -46,6 +47,11 @@ interface IntegrationRuntimeDefinition<Context extends RuntimeContext = RuntimeC
      * Content sources to expose in the integration.
      */
     contentSources?: Array<ContentSourceDefinition<Context>>;
+
+    /**
+     * Handler for integration tasks.
+     */
+    task?: IntegrationTaskEventCallback<Context>;
 }
 
 /**
@@ -195,6 +201,20 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                         }
 
                         return await contentSource.compute(event, context);
+                    }
+
+                    case 'task': {
+                        const task = event.task as ExtractTaskPayload<Context>;
+
+                        // @ts-expect-error - We log the type even if it's not always defined
+                        logger.info(`handling task ${task.type}`);
+
+                        if (!definition.task) {
+                            throw new ExposableError('Integration does not handle tasks', 400);
+                        }
+
+                        await definition.task(task, context);
+                        return new Response('OK', { status: 200 });
                     }
 
                     default: {
