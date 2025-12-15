@@ -4,6 +4,8 @@ icon: ./assets/icon.png
 description: Ingest HubSpot support conversations into GitBook for auto-improvements.
 visibility: public
 script: ./src/index.ts
+previewImages:
+    - ./assets/hubspot-preview.png
 summary: |
     # Overview
 

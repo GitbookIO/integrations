@@ -4,6 +4,8 @@ icon: ./assets/icon.png
 description: Ingest Zendesk support tickets into GitBook for auto-improvements.
 visibility: public
 script: ./src/index.tsx
+previewImages:
+    - ./assets/zendesk-preview.png
 summary: |
     # Overview
 
