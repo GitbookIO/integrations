@@ -1,5 +1,11 @@
 # @gitbook/integration-github
 
+## 0.6.6
+
+### Patch Changes
+
+- c770fee: Fix proxy for the webhook endpoint
+
 ## 0.6.5
 
 ### Patch Changes
