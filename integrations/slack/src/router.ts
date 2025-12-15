@@ -1,18 +1,21 @@
 import { Router } from 'itty-router';
 
-import { createOAuthHandler, FetchEventCallback, OAuthResponse } from '@gitbook/runtime';
+import { createOAuthHandler, FetchEventCallback, Logger, OAuthResponse } from '@gitbook/runtime';
 
 import {
     createSlackEventsHandler,
     createSlackCommandsHandler,
     slackActionsHandler,
-    queryAskAISlashHandler,
     messageEventHandler,
     appMentionEventHandler,
+    askAICommandHandler,
 } from './handlers';
 import { unfurlLink } from './links';
 import { verifySlackRequest, acknowledgeSlackRequest } from './middlewares';
 import { getChannelsPaginated } from './slack';
+import { handleAskAITask, IntegrationTask } from './actions';
+
+const logger = Logger('slack');
 
 /**
  * Handle incoming HTTP requests:
@@ -30,20 +33,20 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         ).pathname,
     });
 
-    const encodedScopes = encodeURIComponent(
-        [
-            'app_mentions:read',
-            'chat:write',
-            'channels:join',
-            'channels:read',
-            'groups:read',
-            'links:read',
-            'links:write',
-            'commands',
-            'channels:history',
-            'im:history',
-        ].join(' '),
-    );
+    const requestedScopes = [
+        'app_mentions:read',
+        'chat:write',
+        'channels:join',
+        'channels:read',
+        'groups:read',
+        'links:read',
+        'links:write',
+        'commands',
+        'channels:history',
+        'im:history',
+        'assistant:write',
+    ];
+    const encodedScopes = encodeURIComponent(requestedScopes.join(' '));
 
     /*
      * Authenticate the user using OAuth.
@@ -72,7 +75,10 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
                 return {
                     externalIds: [response.team.id],
                     configuration: {
-                        oauth_credentials: { access_token: response.access_token },
+                        oauth_credentials: {
+                            access_token: response.access_token,
+                            requested_scopes: requestedScopes,
+                        },
                     },
                 };
             },
@@ -109,8 +115,8 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
         '/commands',
         verifySlackRequest,
         createSlackCommandsHandler({
-            '/gitbook': queryAskAISlashHandler,
-            '/gitbookstaging': queryAskAISlashHandler, // needed to allow our staging app to co-exist with the prod app
+            '/gitbook': askAICommandHandler,
+            '/gitbookstaging': askAICommandHandler, // needed to allow our staging app to co-exist with the prod app
         }),
         acknowledgeSlackRequest,
     );

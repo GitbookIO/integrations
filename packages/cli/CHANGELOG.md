@@ -1,5 +1,34 @@
 # @gitbook/cli
 
+## 0.26.3
+
+### Patch Changes
+
+- 67d2581: Log the environment currently used when executing a command.
+
+## 0.26.2
+
+### Patch Changes
+
+- 2d9dc8b: Bump CLI to use new OpenAPI slug pattern
+
+## 0.26.1
+
+### Patch Changes
+
+- 9275222: Validate OpenAPI slug with pattern
+
+## 0.26.0
+
+### Minor Changes
+
+- 7a8ee22: Introduce the Webhook integration and bumps api and cli to latest openapi spec.
+
+### Patch Changes
+
+- Updated dependencies [7a8ee22]
+    - @gitbook/api@0.143.0
+
 ## 0.25.1
 
 ### Patch Changes

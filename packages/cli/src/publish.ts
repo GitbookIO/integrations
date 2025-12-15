@@ -22,7 +22,7 @@ export async function publishIntegration(
 
     if (typeof manifest.target === 'string') {
         console.log(
-            `ℹ️ Publishing integration with "${manifest.target}" as target for installations.`,
+            `ℹ️  Publishing integration with "${manifest.target}" as target for installations.`,
         );
     }
 

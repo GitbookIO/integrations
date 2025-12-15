@@ -17,9 +17,6 @@
         "DISCORD_CLIENT_ID",
         "DISCORD_CLIENT_SECRET",
         "DISCORD_BOT_TOKEN",
-        "SLACK_CLIENT_ID",
-        "SLACK_CLIENT_SECRET",
-        "SLACK_SIGNING_SECRET",
         "FIGMA_CLIENT_ID",
         "FIGMA_CLIENT_SECRET",
         "MAILCHIMP_CLIENT_ID",
@@ -36,13 +33,17 @@
         "GITHUB_CLIENT_ID",
         "GITHUB_CLIENT_SECRET",
         "GITHUB_WEBHOOK_SECRET",
+        "GITHUB_APP_NAME",
         "GITHUB_PRIVATE_KEY",
         "LUCID_CLIENT_ID",
         "LUCID_CLIENT_SECRET",
         "GITHUBCOPILOT_APP_ID",
         "GITHUBCOPILOT_APP_URL",
         "GITHUBCOPILOT_CLIENT_ID",
-        "GITHUBCOPILOT_CLIENT_SECRET"
+        "GITHUBCOPILOT_CLIENT_SECRET",
+        "GITBOOK_PROXY_URL",
+        "GITBOOK_PROXY_SECRET",
+        "REFLAG_SECRET_KEY"
     ],
     "tasks": {
         "build": {

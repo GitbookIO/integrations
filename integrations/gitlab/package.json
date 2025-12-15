@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-gitlab",
-    "version": "0.5.3",
+    "version": "0.6.4",
     "private": true,
     "scripts": {
         "typecheck": "tsc --noEmit",

@@ -51,11 +51,18 @@ export async function triggerImport(
          * in the same order on GitBook and on the remote repository.
          */
         eventTimestamp?: Date;
+
+        isProxied?: boolean;
     } = {},
 ) {
     const { api } = context;
-    const { force = false, updateGitInfo = false, standalone, eventTimestamp } = options;
-
+    const {
+        force = false,
+        updateGitInfo = false,
+        standalone,
+        eventTimestamp,
+        isProxied = false,
+    } = options;
     const spaceId =
         typeof spaceInstallation.space === 'string'
             ? spaceInstallation.space
@@ -72,7 +79,7 @@ export async function triggerImport(
 
     logger.info(`Initiating an import from GitHub to GitBook space ${spaceId}`);
 
-    const auth = await getRepositoryAuth(context, config);
+    const auth = await getRepositoryAuth(context, config, isProxied);
     const repoTreeURL = getGitTreeURL(config);
 
     const urlWithAuth = new URL(getRepositoryUrl(config, true));
@@ -136,7 +143,7 @@ export async function triggerExport(
 
     const { data: revision } = await api.spaces.getCurrentRevision(spaceId);
 
-    const auth = await getRepositoryAuth(context, config);
+    const auth = await getRepositoryAuth(context, config, false);
     const repoTreeURL = getGitTreeURL(config);
 
     const urlWithAuth = new URL(getRepositoryUrl(config, true));

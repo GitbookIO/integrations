@@ -14,8 +14,7 @@ export async function queueTaskForImportSpaces(
     context: GithubRuntimeContext,
     task: IntegrationTaskImportSpaces,
 ): Promise<void> {
-    const { api, environment } = context;
-    await api.integrations.queueIntegrationTask(environment.integration.name, {
+    await context.integration.queueTask({
         task: {
             type: task.type,
             payload: task.payload,
@@ -27,12 +26,12 @@ export async function queueTaskForImportSpaces(
  * Handle an integration task.
  */
 export async function handleIntegrationTask(
-    context: GithubRuntimeContext,
     task: IntegrationTask,
+    context: GithubRuntimeContext,
 ): Promise<void> {
     switch (task.type) {
         case 'import:spaces':
-            await handleImportDispatchForSpaces(context, task.payload);
+            await handleImportDispatchForSpaces(task.payload, context);
             break;
         default:
             throw new Error(`Unknown integration task type: ${task}`);
@@ -47,8 +46,8 @@ export async function handleIntegrationTask(
  * than 50 as that is the limit imposed by Cloudflare workers.
  */
 export async function handleImportDispatchForSpaces(
-    context: GithubRuntimeContext,
     payload: IntegrationTaskImportSpaces['payload'],
+    context: GithubRuntimeContext,
 ): Promise<number | undefined> {
     const { configQuery, page, standaloneRef, eventTimestamp } = payload;
 
@@ -72,6 +71,19 @@ export async function handleImportDispatchForSpaces(
                         spaceInstallation.integration,
                         spaceInstallation.installation,
                     );
+                let isProxied = context.environment.installation?.network?.proxy || false;
+
+                // The webhook is under the root of the integration, so we don't have access to the installation
+                // We need to fetch it to know if we need to proxy the requests
+                if (!context.environment.installation) {
+                    const { data: installation } =
+                        await context.api.integrations.getIntegrationInstallationById(
+                            spaceInstallation.integration,
+                            spaceInstallation.installation,
+                        );
+
+                    isProxied = installation.network?.proxy || false;
+                }
 
                 // Set the token in the duplicated context to be used by the API client
                 const installationContext: GithubRuntimeContext = {
@@ -94,6 +106,7 @@ export async function handleImportDispatchForSpaces(
                           }
                         : undefined,
                     eventTimestamp,
+                    isProxied,
                 });
             } catch (error) {
                 logger.error(

@@ -109,10 +109,13 @@ export async function handlePushEvent(context: GitLabRuntimeContext, payload: Gi
     const headCommitSha = payload.after;
     const headCommit = payload.commits.find((commit) => commit.id === headCommitSha);
 
-    const total = await handleImportDispatchForSpaces(context, {
-        configQuery: queryKey,
-        eventTimestamp: headCommit?.timestamp ? new Date(headCommit.timestamp) : undefined,
-    });
+    const total = await handleImportDispatchForSpaces(
+        {
+            configQuery: queryKey,
+            eventTimestamp: headCommit?.timestamp ? new Date(headCommit.timestamp) : undefined,
+        },
+        context,
+    );
 
     logger.debug(`${total} space configurations are affected`);
 }
@@ -142,10 +145,13 @@ export async function handleMergeRequestEvent(
 
         const queryKey = computeConfigQueryKey(gitlabProjectId, targetRef);
 
-        const total = await handleImportDispatchForSpaces(context, {
-            configQuery: queryKey,
-            standaloneRef: sourceRef,
-        });
+        const total = await handleImportDispatchForSpaces(
+            {
+                configQuery: queryKey,
+                standaloneRef: sourceRef,
+            },
+            context,
+        );
 
         logger.debug(`${total} space configurations are affected`);
     } else {

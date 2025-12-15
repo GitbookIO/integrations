@@ -1,5 +1,5 @@
 import { IntercomClient } from 'intercom-client';
-import { IntercomRuntimeContext, IntercomMeResponse } from './types';
+import type { IntercomRuntimeContext, IntercomMeResponse } from './types';
 import { ExposableError, getOAuthToken, Logger, OAuthConfig } from '@gitbook/runtime';
 
 const logger = Logger('intercom-conversations:client');
@@ -12,7 +12,7 @@ export function getIntercomOAuthConfig(context: IntercomRuntimeContext) {
         redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
         clientId: context.environment.secrets.CLIENT_ID,
         clientSecret: context.environment.secrets.CLIENT_SECRET,
-        scopes: ['conversations.read', 'read_admins'],
+        scopes: ['conversations.read', 'read_single_admin'],
         authorizeURL: () => 'https://app.intercom.com/oauth',
         accessTokenURL: () => 'https://api.intercom.io/auth/eagle/token',
         extractCredentials: async (response) => {
@@ -80,9 +80,10 @@ export function getIntercomOAuthConfig(context: IntercomRuntimeContext) {
 /**
  * Initialize an Intercom API client for a given installation.
  */
-export async function getIntercomClient(context: IntercomRuntimeContext) {
-    const { installation } = context.environment;
-
+export async function getIntercomClient(
+    context: IntercomRuntimeContext,
+    installation = context.environment.installation,
+) {
     if (!installation) {
         throw new Error('Installation not found');
     }

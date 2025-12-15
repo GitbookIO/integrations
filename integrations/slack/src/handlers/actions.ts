@@ -1,6 +1,14 @@
-import { queryAskAI, type IQueryAskAI } from '../actions';
+import { Logger } from '@gitbook/runtime';
+import {
+    ingestSlackConversation,
+    IngestSlackConversationActionParams,
+    queryAskAI,
+    type AskAIActionParams,
+} from '../actions';
 import { SlackRuntimeContext } from '../configuration';
 import { getActionNameAndType, parseActionPayload } from '../utils';
+
+const logger = Logger('slack:actions:handler');
 
 /**
  * Handle an action from Slack.
@@ -9,19 +17,16 @@ import { getActionNameAndType, parseActionPayload } from '../utils';
 export const slackActionsHandler = async (request: Request, context: SlackRuntimeContext) => {
     const actionPayload = await parseActionPayload(request);
 
-    const { actions, container, channel, team, user } = actionPayload;
+    const { actionName, actionPostType } = getActionNameAndType(actionPayload);
+    const { actions, container, channel, team, user, message_ts, response_url } = actionPayload;
 
-    // go through all actions sent and call the action from './actions/index.ts'
-    if (actions?.length > 0) {
-        const action = actions[0];
-        const { actionName, actionPostType } = getActionNameAndType(action.action_id);
-
-        // dispatch the action to an appropriate action function
-        if (actionName === 'queryAskAI') {
-            const params: IQueryAskAI = {
+    switch (actionName) {
+        case 'queryAskAI': {
+            const action = actions[0];
+            const params: AskAIActionParams = {
                 channelId: channel.id,
                 teamId: team.id,
-                text: action.value ?? action.text.text,
+                queryText: action.value ?? action.text.text,
                 messageType: actionPostType as 'ephemeral' | 'permanent',
 
                 // pass thread if exists
@@ -32,10 +37,30 @@ export const slackActionsHandler = async (request: Request, context: SlackRuntim
                 context,
             };
 
-            // queryAskAI:ephemeral, queryAskAI:permanent
-            const handlerPromise = queryAskAI(params);
+            context.waitUntil(queryAskAI(params));
 
-            context.waitUntil(handlerPromise);
+            return;
         }
+        case 'ingest_conversation': {
+            const params: IngestSlackConversationActionParams = {
+                channelId: channel.id,
+                channelName: channel.name,
+                responseUrl: response_url,
+                teamId: team.id,
+                threadId: message_ts,
+                userId: user.id,
+                context,
+                conversationToIngest: {
+                    channelId: channel.id,
+                    messageTs: message_ts,
+                },
+            };
+
+            context.waitUntil(ingestSlackConversation(params));
+
+            return;
+        }
+        default:
+            logger.debug(`No matching handler for action: ${actionName}`);
     }
 };

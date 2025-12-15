@@ -1,0 +1,47 @@
+name: amplitude
+title: Amplitude
+icon: ./assets/icon.png
+description: Track and identify GitBook page visitors with Amplitude analytics.
+previewImages:
+    - ./assets/amplitude-preview.png
+externalLinks:
+    - label: Documentation
+      url: https://www.amplitude.com/docs/
+visibility: public
+organization: gitbook
+script: ./src/index.ts
+scopes:
+    - site:script:inject
+    - site:script:cookies
+contentSecurityPolicy:
+    script-src: |
+        https://cdn.amplitude.com;
+    connect-src: |
+        cdn.amplitude.com;
+summary: |
+    # Overview
+
+    Amplitude is a powerful analytics and visitor identification platform that helps you understand who visits your pages and track their behavior.
+
+    # How it works
+
+    The GitBook Amplitude integration allows you to track traffic in your published sites from your Amplitude dashboard.
+
+    Each of your connected GitBook sites will fetch the Amplitude tracking script and inject it in your public content, enabling visitor tracking and identification.
+
+    # Configure
+    Install the integration on the GitBook site of your choice.
+
+    Locate the API Key you want to use, which is available in Amplitude dashboard under "Organization Settings > Projects":
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            amplitude_api_key:
+                type: string
+                title: Amplitude API Key
+                description: Your Amplitude API Key
+        required:
+            - amplitude_api_key
+target: site

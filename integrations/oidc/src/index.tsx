@@ -58,6 +58,8 @@ const getDomainWithHttps = (url: string): string => {
     }
 };
 
+const GITBOOK_OIDC_USER_AGENT = 'GitBook-OIDC-Integration';
+
 const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntimeContext>({
     componentId: 'config',
     initialState: (props) => {
@@ -87,7 +89,7 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                     access_token_endpoint: getDomainWithHttps(
                         element.state.access_token_endpoint ?? '',
                     ),
-                    scope: element.state.scope,
+                    scope: element.state.scope ? normalizeScopes(element.state.scope) : undefined,
                 };
                 await api.integrations.updateIntegrationSiteInstallation(
                     siteInstallation.integration,
@@ -191,10 +193,11 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                 />
 
                 <input
-                    label="OAuth Scope"
+                    label="OAuth Scopes"
                     hint={
                         <text>
-                            The scope to be granted to the access token. Enter oidc if not sure
+                            The list of scopes to be granted to the ID token. Enter openid if not
+                            sure
                             <link
                                 target={{
                                     url: 'https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest',
@@ -205,7 +208,7 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                             </link>
                         </text>
                     }
-                    element={<textinput state="scope" placeholder="Scope" />}
+                    element={<textinput state="scope" placeholder="Scopes" />}
                 />
                 <divider size="medium" />
                 <hint>
@@ -234,6 +237,16 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
         );
     },
 });
+
+/**
+ * Normalize a user-provided scopes string into a space seperated list as
+ * expected by OIDC/OAuth when making the auth request.
+ *
+ * Spec: https://datatracker.ietf.org/doc/html/rfc6749#section-3.3
+ */
+function normalizeScopes(input: string): string {
+    return input.replace(/,/g, ' ').replace(/\s+/g, ' ').trim();
+}
 
 /**
  * Get the published content related urls.
@@ -302,11 +315,20 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
 
                 const tokenResp = await fetch(accessTokenEndpoint, {
                     method: 'POST',
-                    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'User-Agent': GITBOOK_OIDC_USER_AGENT,
+                    },
                     body: searchParams,
                 });
 
                 if (!tokenResp.ok) {
+                    const errorText = await tokenResp.text();
+                    logger.error(
+                        `Error while fetching token from auth provider (status: ${tokenResp.status}): `,
+                        errorText,
+                    );
+
                     return new Response(
                         'Error: Could not fetch ID token from your authentication provider',
                         {
@@ -317,8 +339,8 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
 
                 const tokenRespData = await tokenResp.json<OIDCTokenResponseData>();
                 if (!tokenRespData.id_token) {
-                    logger.debug(JSON.stringify(tokenResp, null, 2));
-                    logger.debug(
+                    logger.error(JSON.stringify(tokenResp));
+                    logger.error(
                         `Did not receive access token. Error: ${tokenResp && 'error' in tokenResp ? tokenResp.error : ''} ${
                             tokenResp && 'error_description' in tokenResp
                                 ? tokenResp.error_description

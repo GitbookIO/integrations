@@ -65,6 +65,10 @@ jobs:
                   GITBOOK_ENDPOINT: https://api.gitbook-staging.com
                   GITBOOK_ORGANIZATION: gitbookio
                   OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+                  # Proxy
+                  GITBOOK_PROXY_URL: ${{ secrets.PROXY_STAGING_URL }}
+                  GITBOOK_PROXY_SECRET: ${{ secrets.PROXY_STAGING_SECRET }}
+                  REFLAG_SECRET_KEY: ${{ secrets.REFLAG_STAGING_SECRET_KEY }}
                   # GitHub Files
                   UNFURL_GITHUB_CLIENT_ID: ${{ secrets.UNFURL_GITHUB_CLIENT_ID }}
                   UNFURL_GITHUB_CLIENT_SECRET: ${{ secrets.UNFURL_GITHUB_CLIENT_SECRET }}
@@ -75,10 +79,6 @@ jobs:
                   DISCORD_CLIENT_ID: $ {{ secrets.DISCORD_CLIENT_ID }}
                   DISCORD_CLIENT_SECRET: $ {{ secrets.DISCORD_CLIENT_SECRET }}
                   DISCORD_BOT_TOKEN: $ {{ secrets.DISCORD_BOT_TOKEN }}
-                  # Slack
-                  SLACK_CLIENT_ID: ${{ secrets.SLACK_STAGING_CLIENT_ID }}
-                  SLACK_CLIENT_SECRET: ${{ secrets.SLACK_STAGING_CLIENT_SECRET }}
-                  SLACK_SIGNING_SECRET: ${{ secrets.SLACK_STAGING_SIGNING_SECRET }}
                   # Figma
                   FIGMA_CLIENT_ID: ${{ secrets.FIGMA_STAGING_CLIENT_ID }}
                   FIGMA_CLIENT_SECRET: ${{ secrets.FIGMA_STAGING_CLIENT_SECRET }}

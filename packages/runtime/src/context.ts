@@ -15,7 +15,10 @@ export interface RuntimeEnvironment<
     };
 }
 
-export interface RuntimeContext<Environment extends RuntimeEnvironment = IntegrationEnvironment> {
+export interface RuntimeContext<
+    Environment extends RuntimeEnvironment = IntegrationEnvironment,
+    TaskPayload extends object = object,
+> {
     /**
      * Environment of the integration.
      */
@@ -23,8 +26,33 @@ export interface RuntimeContext<Environment extends RuntimeEnvironment = Integra
 
     /**
      * Authenticated client to the GitBook API.
+     * Depending on the context, this can be the integration client or the installation client.
      */
     api: GitBookAPI;
+
+    /**
+     * Context about the integration.
+     */
+    integration: {
+        /**
+         * Authenticated client to the GitBook API for the integration.
+         */
+        api: GitBookAPI;
+
+        /**
+         * Queue an integration task.
+         */
+        queueTask(input: {
+            /** Payload for the integration task */
+            task: TaskPayload;
+            /**
+             * Number of seconds to wait before executing the task, defaults to 0
+             * @min 0
+             * @max 86400
+             */
+            schedule?: number;
+        }): Promise<void>;
+    };
 
     /**
      * Wait for any pending promises to complete before finishing the execution.
@@ -33,6 +61,13 @@ export interface RuntimeContext<Environment extends RuntimeEnvironment = Integra
      */
     waitUntil: FetchEvent['waitUntil'];
 }
+
+/**
+ * Extract the task payload type from a context.
+ */
+export type ExtractTaskPayload<Context extends RuntimeContext> = Parameters<
+    Context['integration']['queueTask']
+>[0]['task'];
 
 /**
  * Callback with the runtime context.
@@ -50,13 +85,29 @@ export function createContext(
     environment: IntegrationEnvironment,
     waitUntil: FetchEvent['waitUntil'],
 ): RuntimeContext {
+    const integrationAPI = new GitBookAPI({
+        endpoint: environment.apiEndpoint,
+        authToken: environment.apiTokens.integration,
+        userAgent: `integration-${environment.integration.name}/${environment.integration.version}`,
+    });
+
     return {
         environment,
         api: new GitBookAPI({
             endpoint: environment.apiEndpoint,
-            authToken: environment.authToken,
+            authToken: environment.apiTokens.installation ?? environment.apiTokens.integration,
             userAgent: `integration-${environment.integration.name}/${environment.integration.version}`,
         }),
+
+        integration: {
+            api: integrationAPI,
+            queueTask: async (input) => {
+                await integrationAPI.integrations.queueIntegrationTask(
+                    environment.integration.name,
+                    input,
+                );
+            },
+        },
 
         waitUntil,
     };

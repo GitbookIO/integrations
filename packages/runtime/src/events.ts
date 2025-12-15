@@ -5,7 +5,7 @@ import {
     FetchVisitorAuthenticationEvent,
 } from '@gitbook/api';
 
-import { RuntimeCallback, RuntimeContext } from './context';
+import { ExtractTaskPayload, RuntimeCallback, RuntimeContext } from './context';
 
 /**
  * Type of an event.
@@ -70,3 +70,9 @@ export type FetchPublishScriptEventCallback<Context extends RuntimeContext = Run
 export type FetchVisitorAuthenticationEventCallback<
     Context extends RuntimeContext = RuntimeContext,
 > = RuntimeCallback<[FetchVisitorAuthenticationEvent], Response | Promise<Response>, Context>;
+
+/**
+ * Callback to handle integration tasks.
+ */
+export type IntegrationTaskEventCallback<Context extends RuntimeContext = RuntimeContext> =
+    RuntimeCallback<[ExtractTaskPayload<Context>], Promise<void>, Context>;
