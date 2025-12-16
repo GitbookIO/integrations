@@ -1,5 +1,11 @@
 # @gitbook/integration-oidc
 
+## 0.2.9
+
+### Patch Changes
+
+- 43d7374: Fix issue where scopes can't be saved
+
 ## 0.2.8
 
 ### Patch Changes

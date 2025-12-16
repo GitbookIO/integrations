@@ -1,5 +1,11 @@
 # @gitbook/integration-intercom-conversations
 
+## 0.3.0
+
+### Minor Changes
+
+- 51b2f91: Update metadata
+
 ## 0.2.3
 
 ### Patch Changes
