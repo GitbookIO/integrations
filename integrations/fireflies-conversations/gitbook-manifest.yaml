@@ -1,0 +1,37 @@
+name: fireflies-conversations
+title: Fireflies Connector
+icon: ./assets/logo.png
+description: Automatically sync Fireflies transcripts to docs updates in GitBook.
+visibility: public
+script: ./src/index.ts
+previewImages:
+    - ./assets/hubspot-preview.png
+summary: |
+    # Overview
+
+    Connecting Fireflies to GitBook turns every meeting transcript into documentation intelligence. The integration ingests transcript data, spots recurring issues, and surfaces where your docs need to be clearer, more accurate, or more complete.
+
+    ## How it works
+
+    GitBook Agent analyzes incoming transcripts, identifies patterns, and highlights gaps in your documentation. When it finds issues, it opens proactive change requests with suggested edits, drafted improvements, and the context behind each recommendation. You can also @mention the AI agent or chat with it directly to speed up reviews and polish updates.
+
+    ## Configure
+
+    1. Add your Fireflies API key  
+       Install the GitBook app in your GitBook account, then open its settings and enter your Fireflies API key. This allows GitBook to pull transcripts and their conversation history while automatically stripping sensitive data.
+
+    2. Let the GitBook Agent learn  
+       GitBook analyzes each transcript to detect FAQs, outdated content, unclear explanations, missing troubleshooting steps, and opportunities to improve clarity.
+
+    3. Watch it open proactive change requests  
+       As patterns emerge, GitBook creates change requests with proposed edits, context from meeting transcripts, and a working draft written by the AI agent.
+
+    4. Refine with the AI agent  
+       Inside any change request, @mention the agent or open its chat panel to request rewrites, clarifications, or additions. You stay in control while the agent accelerates updates.
+scopes:
+    - conversations:ingest
+organization: gitbook
+configurations:
+    account:
+        componentId: config
+target: organization
