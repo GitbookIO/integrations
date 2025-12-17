@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.155.0
+
+### Minor Changes
+
+- 6db938f: Bump to 0.155.0 to include button actions
+
 ## 0.154.0
 
 ### Minor Changes
