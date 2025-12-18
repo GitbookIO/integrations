@@ -3,6 +3,7 @@ import { Router } from 'itty-router';
 import { FirefliesRuntimeContext } from './types';
 import { ingestConversations } from './conversations';
 import { configComponent } from './config';
+import { handleFirefliesWebhookRequest } from './webhooks';
 
 const logger = Logger('fireflies-conversations');
 
@@ -14,6 +15,13 @@ export default createIntegration<FirefliesRuntimeContext>({
                     context.environment.installation?.urls.publicEndpoint ||
                     context.environment.integration.urls.publicEndpoint,
             ).pathname,
+        });
+
+        /*
+         * Webhook handler to ingest transcripts when transcription completes.
+         */
+        router.post('/webhook', async (request) => {
+            return handleFirefliesWebhookRequest(request, context);
         });
 
         const response = await router.handle(request, context);

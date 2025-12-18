@@ -37,6 +37,36 @@ const TRANSCRIPTS_QUERY = `
 `;
 
 /**
+ * GraphQL query to fetch a single transcript by ID.
+ */
+const TRANSCRIPT_BY_ID_QUERY = `
+  query Transcript($id: String!) {
+    transcript(id: $id) {
+      id
+      title
+      date
+      duration
+      transcript_url
+      sentences {
+        index
+        speaker_name
+        speaker_id
+        text
+        start_time
+        end_time
+      }
+      speakers {
+        id
+        name
+      }
+      participants
+      host_email
+      organizer_email
+    }
+  }
+`;
+
+/**
  * Ingest transcripts from Fireflies.
  */
 export async function ingestConversations(context: FirefliesRuntimeContext) {
@@ -66,7 +96,7 @@ export async function ingestConversations(context: FirefliesRuntimeContext) {
         try {
             // Get transcripts from Fireflies using GraphQL
             const response = await firefliesGraphQLRequest<
-                FirefliesGraphQLResponse<FirefliesTranscript[]>
+                FirefliesGraphQLResponse<FirefliesTranscript>
             >(context, TRANSCRIPTS_QUERY, {
                 limit,
                 skip,
@@ -124,6 +154,41 @@ export async function ingestConversations(context: FirefliesRuntimeContext) {
 }
 
 /**
+ * Fetch a single transcript by ID from Fireflies.
+ */
+export async function fetchTranscriptById(
+    context: FirefliesRuntimeContext,
+    transcriptId: string,
+): Promise<FirefliesTranscript | null> {
+    try {
+        const response = await firefliesGraphQLRequest<
+            FirefliesGraphQLResponse<FirefliesTranscript>
+        >(context, TRANSCRIPT_BY_ID_QUERY, {
+            id: transcriptId,
+        });
+
+        const transcript = response.data?.transcript;
+        if (!transcript) {
+            logger.info(`Transcript not found: ${transcriptId}`);
+            return null;
+        }
+
+        logger.debug(`Fetched transcript ${transcriptId}`, {
+            title: transcript.title,
+            sentenceCount: transcript.sentences?.length || 0,
+        });
+
+        return transcript;
+    } catch (error) {
+        logger.error('Failed to fetch transcript from Fireflies', {
+            transcriptId,
+            error: error instanceof Error ? error.message : String(error),
+        });
+        throw error;
+    }
+}
+
+/**
  * Parse a Fireflies transcript into a GitBook conversation.
  */
 export async function parseTranscriptAsGitBook(
@@ -142,7 +207,9 @@ export async function parseTranscriptAsGitBook(
             attributes: {
                 transcriptId: transcript.id,
                 title: transcript.title,
-                duration: transcript.duration,
+                ...(transcript.duration !== undefined && {
+                    duration: transcript.duration.toString(),
+                }),
             },
             createdAt: new Date(transcript.date).toISOString(),
         },

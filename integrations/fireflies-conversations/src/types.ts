@@ -5,6 +5,10 @@ export type FirefliesInstallationConfiguration = {
      * Fireflies API key.
      */
     api_key?: string;
+    /**
+     * Fireflies webhook secret for verifying webhook signatures.
+     */
+    webhook_secret?: string;
 };
 
 export type FirefliesRuntimeEnvironment = RuntimeEnvironment<FirefliesInstallationConfiguration>;
@@ -46,9 +50,19 @@ export interface FirefliesTranscript {
 export interface FirefliesGraphQLResponse<T> {
     data?: {
         transcripts?: T[];
+        transcript?: T;
     };
     errors?: Array<{
         message: string;
         extensions?: Record<string, unknown>;
     }>;
+}
+
+/**
+ * Fireflies webhook payload structure.
+ */
+export interface FirefliesWebhookPayload {
+    meetingId: string;
+    eventType: string;
+    clientReferenceId?: string;
 }

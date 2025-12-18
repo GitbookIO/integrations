@@ -3,6 +3,7 @@ import { FirefliesRuntimeContext, FirefliesRuntimeEnvironment } from './types';
 
 type FirefliesConfigState = {
     api_key: string;
+    webhook_secret: string;
 };
 
 type FirefliesConfigAction = { action: 'save.config' };
@@ -21,6 +22,7 @@ export const configComponent = createComponent<
         const installation = props.installation;
         return {
             api_key: installation.configuration?.api_key || '',
+            webhook_secret: installation.configuration?.webhook_secret || '',
         };
     },
     action: async (element, action, context) => {
@@ -36,6 +38,7 @@ export const configComponent = createComponent<
                 const configurationBody = {
                     ...installation.configuration,
                     api_key: element.state.api_key,
+                    webhook_secret: element.state.webhook_secret,
                 };
 
                 await api.integrations.updateIntegrationInstallation(
@@ -58,6 +61,7 @@ export const configComponent = createComponent<
         }
 
         const hasApiKey = !!element.props.installation.configuration?.api_key;
+        const hasWebhookSecret = !!element.props.installation.configuration?.webhook_secret;
 
         return (
             <configuration>
@@ -71,8 +75,18 @@ export const configComponent = createComponent<
                     }
                 />
 
+                <input
+                    label="Webhook Secret"
+                    hint={
+                        'Enter your Fireflies webhook secret for verifying webhook requests. You can find or generate this in Settings → Developer Settings in your Fireflies dashboard.'
+                    }
+                    element={
+                        <textinput state="webhook_secret" placeholder="Enter your webhook secret" />
+                    }
+                />
+
                 <button
-                    label={hasApiKey ? 'Update API Key' : 'Save API Key'}
+                    label={hasApiKey ? 'Update Configuration' : 'Save Configuration'}
                     onPress={{
                         action: 'save.config',
                     }}
@@ -82,6 +96,9 @@ export const configComponent = createComponent<
                     <hint>
                         <text>
                             The integration is configured and transcripts are being ingested.
+                            {hasWebhookSecret
+                                ? ' Webhook support is enabled for real-time transcript ingestion.'
+                                : ' To enable real-time webhook ingestion, add your webhook secret and configure the webhook URL in your Fireflies dashboard.'}
                         </text>
                     </hint>
                 ) : (
