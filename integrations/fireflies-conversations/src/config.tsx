@@ -85,6 +85,26 @@ export const configComponent = createComponent<
                     }
                 />
 
+                <input
+                    label="Webhook URL"
+                    hint={
+                        <text>
+                            Add this URL to the <text style="bold">Webhooks</text> section in your{' '}
+                            <text style="bold">Developer Settings</text> in your Fireflies dashboard
+                            at{' '}
+                            <link
+                                target={{
+                                    url: 'https://app.fireflies.ai/settings',
+                                }}
+                            >
+                                app.fireflies.ai/settings
+                            </link>
+                            .
+                        </text>
+                    }
+                    element={<codeblock content={`${installation.urls.publicEndpoint}/webhook`} />}
+                />
+
                 <button
                     label={hasApiKey ? 'Update Configuration' : 'Save Configuration'}
                     onPress={{
