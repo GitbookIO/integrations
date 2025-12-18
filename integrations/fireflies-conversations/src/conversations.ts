@@ -202,6 +202,7 @@ export async function parseTranscriptAsGitBook(
 
     const resultConversation: ConversationInput = {
         id: transcript.id,
+        subject: transcript.title,
         metadata: {
             url: transcript.transcript_url || `https://app.fireflies.ai/viewer/${transcript.id}`,
             attributes: {
