@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.157.0
+
+### Minor Changes
+
+- 6733e2a: Update API to include new manifest limits
+
 ## 0.155.0
 
 ### Minor Changes
