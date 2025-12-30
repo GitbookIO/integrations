@@ -28,7 +28,7 @@
     },
     "integrations/amplitude": {
       "name": "@gitbook/integration-amplitude",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -222,7 +222,7 @@
     },
     "integrations/github-issues": {
       "name": "@gitbook/integration-github-issues",
-      "version": "0.0.2",
+      "version": "0.1.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -315,7 +315,7 @@
     },
     "integrations/hubspot-conversations": {
       "name": "@gitbook/integration-hubspot-conversations",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -341,7 +341,7 @@
     },
     "integrations/intercom-conversations": {
       "name": "@gitbook/integration-intercom-conversations",
-      "version": "0.2.3",
+      "version": "0.3.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -472,7 +472,7 @@
     },
     "integrations/oidc": {
       "name": "@gitbook/integration-oidc",
-      "version": "0.2.8",
+      "version": "0.2.9",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -522,7 +522,7 @@
     },
     "integrations/posthog": {
       "name": "@gitbook/integration-posthog",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -729,7 +729,7 @@
     },
     "integrations/zendesk-conversations": {
       "name": "@gitbook/integration-zendesk-conversations",
-      "version": "0.0.1",
+      "version": "0.1.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -769,7 +769,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.154.0",
+      "version": "0.155.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
