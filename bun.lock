@@ -769,7 +769,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.155.0",
+      "version": "0.156.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -2732,11 +2732,7 @@
 
     "@gitbook/integration-hubspot-conversations/itty-router": ["itty-router@2.6.6", "", {}, "sha512-hIPHtXGymCX7Lzb2I4G6JgZFE4QEEQwst9GORK7sMYUpJvLfy4yZJr95r04e8DzoAnj6HcxM2m4TbK+juu+18g=="],
 
-    "@gitbook/integration-hubspot-conversations/p-map": ["p-map@7.0.3", "", {}, "sha512-VkndIv2fIB99swvQoA65bm+fsmt6UNdGeIB0oxBs+WhAhdh08QA04JXpI7rbB9r08/nkbysKoya9rtDERYOYMA=="],
-
     "@gitbook/integration-intercom-conversations/itty-router": ["itty-router@4.2.2", "", {}, "sha512-KegPW0l9SNPadProoFT07AB84uOqLUwzlXQ7HsqkS31WUrxkjdhcemRpTDUuetbMJ89uBtWeQSVoiEmUAu31uw=="],
-
-    "@gitbook/integration-intercom-conversations/p-map": ["p-map@7.0.3", "", {}, "sha512-VkndIv2fIB99swvQoA65bm+fsmt6UNdGeIB0oxBs+WhAhdh08QA04JXpI7rbB9r08/nkbysKoya9rtDERYOYMA=="],
 
     "@gitbook/integration-jira/itty-router": ["itty-router@2.6.6", "", {}, "sha512-hIPHtXGymCX7Lzb2I4G6JgZFE4QEEQwst9GORK7sMYUpJvLfy4yZJr95r04e8DzoAnj6HcxM2m4TbK+juu+18g=="],
 
@@ -2765,8 +2761,6 @@
     "@gitbook/integration-va-azure/itty-router": ["itty-router@4.2.2", "", {}, "sha512-KegPW0l9SNPadProoFT07AB84uOqLUwzlXQ7HsqkS31WUrxkjdhcemRpTDUuetbMJ89uBtWeQSVoiEmUAu31uw=="],
 
     "@gitbook/integration-va-okta/itty-router": ["itty-router@4.2.2", "", {}, "sha512-KegPW0l9SNPadProoFT07AB84uOqLUwzlXQ7HsqkS31WUrxkjdhcemRpTDUuetbMJ89uBtWeQSVoiEmUAu31uw=="],
-
-    "@gitbook/integration-zendesk-conversations/p-map": ["p-map@7.0.3", "", {}, "sha512-VkndIv2fIB99swvQoA65bm+fsmt6UNdGeIB0oxBs+WhAhdh08QA04JXpI7rbB9r08/nkbysKoya9rtDERYOYMA=="],
 
     "@gitbook/runtime/esbuild": ["esbuild@0.14.54", "", { "optionalDependencies": { "@esbuild/linux-loong64": "0.14.54", "esbuild-android-64": "0.14.54", "esbuild-android-arm64": "0.14.54", "esbuild-darwin-64": "0.14.54", "esbuild-darwin-arm64": "0.14.54", "esbuild-freebsd-64": "0.14.54", "esbuild-freebsd-arm64": "0.14.54", "esbuild-linux-32": "0.14.54", "esbuild-linux-64": "0.14.54", "esbuild-linux-arm": "0.14.54", "esbuild-linux-arm64": "0.14.54", "esbuild-linux-mips64le": "0.14.54", "esbuild-linux-ppc64le": "0.14.54", "esbuild-linux-riscv64": "0.14.54", "esbuild-linux-s390x": "0.14.54", "esbuild-netbsd-64": "0.14.54", "esbuild-openbsd-64": "0.14.54", "esbuild-sunos-64": "0.14.54", "esbuild-windows-32": "0.14.54", "esbuild-windows-64": "0.14.54", "esbuild-windows-arm64": "0.14.54" }, "bin": { "esbuild": "bin/esbuild" } }, "sha512-Cy9llcy8DvET5uznocPyqL3BFRrFXSVqbgpMJ9Wz8oVjZlh/zUSNbPRbov0VX7VxN2JH1Oa0uNxZ7eLRb62pJA=="],
 
