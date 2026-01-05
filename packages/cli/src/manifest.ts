@@ -94,7 +94,7 @@ const IntegrationManifestEnvironmentSchema = z.object({
 const IntegrationManifestSchema = z
     .object({
         name: IntegrationNameSchema,
-        title: z.string().max(api.INTEGRATION_PROPERTY_TITLE_MAX_LENGTH),
+        title: z.string().min(2).max(50),
         script: z.string(),
         icon: z.string().optional(),
         description: z.string().optional(),
