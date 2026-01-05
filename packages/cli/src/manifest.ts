@@ -24,7 +24,7 @@ const IntegrationManifestContentSource = z.object({
 });
 
 const JSONSchemaBaseSchema = z.object({
-    title: z.string().max(30).optional(),
+    title: z.string().max(api.INTEGRATION_PROPERTY_TITLE_MAX_LENGTH).optional(),
     description: z.string().max(100).optional(),
 });
 
