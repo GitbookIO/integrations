@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.27.0
+
+### Minor Changes
+
+- bea08c8: Use new property limits in manifest
+
 ## 0.26.3
 
 ### Patch Changes
