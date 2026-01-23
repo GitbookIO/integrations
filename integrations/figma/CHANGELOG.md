@@ -1,5 +1,11 @@
 # @gitbook/integration-figma
 
+## 0.4.0
+
+### Minor Changes
+
+- 8214715: Move Figma integration secrets to 1Password
+
 ## 0.3.0
 
 ### Minor Changes
