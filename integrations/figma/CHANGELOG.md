@@ -1,5 +1,11 @@
 # @gitbook/integration-figma
 
+## 0.5.1
+
+### Patch Changes
+
+- cdef5e9: Migrate Figma authorize URL to new version
+
 ## 0.5.0
 
 ### Minor Changes
