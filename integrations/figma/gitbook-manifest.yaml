@@ -40,8 +40,7 @@ configurations:
         required:
             - oauth_credentials
 envs:
-    production:
-        secrets:
-            CLIENT_ID: ${{ "op://gitbook-integrations/figmaIntegrationProd/CLIENT_ID" }}
-            CLIENT_SECRET: ${{ "op://gitbook-integrations/figmaIntegrationProd/CLIENT_SECRET" }}
+    secrets:
+        CLIENT_ID: ${{ "op://gitbook-integrations/figmaIntegrationProd/CLIENT_ID" }}
+        CLIENT_SECRET: ${{ "op://gitbook-integrations/figmaIntegrationProd/CLIENT_SECRET" }}
 target: space
