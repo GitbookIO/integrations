@@ -79,9 +79,6 @@ jobs:
                   DISCORD_CLIENT_ID: $ {{ secrets.DISCORD_CLIENT_ID }}
                   DISCORD_CLIENT_SECRET: $ {{ secrets.DISCORD_CLIENT_SECRET }}
                   DISCORD_BOT_TOKEN: $ {{ secrets.DISCORD_BOT_TOKEN }}
-                  # Figma
-                  FIGMA_CLIENT_ID: ${{ secrets.FIGMA_STAGING_CLIENT_ID }}
-                  FIGMA_CLIENT_SECRET: ${{ secrets.FIGMA_STAGING_CLIENT_SECRET }}
                   # Mailchimp
                   MAILCHIMP_CLIENT_ID: ${{ secrets.MAILCHIMP_STAGING_CLIENT_ID }}
                   MAILCHIMP_CLIENT_SECRET: ${{ secrets.MAILCHIMP_STAGING_CLIENT_SECRET }}
