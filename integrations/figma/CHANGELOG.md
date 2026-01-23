@@ -1,5 +1,11 @@
 # @gitbook/integration-figma
 
+## 0.5.0
+
+### Minor Changes
+
+- c395dbe: Update production publishing
+
 ## 0.4.0
 
 ### Minor Changes
