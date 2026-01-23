@@ -39,7 +39,9 @@ configurations:
                 callback_url: /oauth
         required:
             - oauth_credentials
-secrets:
-    CLIENT_ID: ${{ env.FIGMA_CLIENT_ID }}
-    CLIENT_SECRET: ${{ env.FIGMA_CLIENT_SECRET }}
+envs:
+    production:
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-integrations/figmaIntegrationProd/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/figmaIntegrationProd/CLIENT_SECRET" }}
 target: space
