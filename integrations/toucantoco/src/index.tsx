@@ -18,6 +18,8 @@ type ToucanRuntimeContext = RuntimeContext<ToucanRuntimeEnvironment>;
 const embedBlock = createComponent<{
     toucanId?: string;
     url?: string;
+    height?: number;
+    width?: number;
 }>({
     componentId: 'embed',
 
@@ -41,7 +43,16 @@ const embedBlock = createComponent<{
 
     async render(element, context) {
         const { environment } = context;
-        const { toucanId, url } = element.props;
+        const { toucanId, url, height, width } = element.props;
+
+        function getAspectRatio(height?: number, width?: number): number {
+            if (height && width && height > 0 && width > 0) {
+                return width / height;
+            }
+            return 1;
+        }
+
+        const aspectRatio = getAspectRatio(height, width);
 
         if (!toucanId || !url) {
             return (
@@ -77,7 +88,7 @@ const embedBlock = createComponent<{
                     source={{
                         url,
                     }}
-                    aspectRatio={1}
+                    aspectRatio={aspectRatio}
                 />
             </block>
         );
