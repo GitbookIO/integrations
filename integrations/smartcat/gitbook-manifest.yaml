@@ -1,0 +1,21 @@
+name: smartcat
+title: Smartcat
+organization: gitbook
+visibility: unlisted
+description: 'Add Smartcat to your GitBook to translate your content.'
+script: src/index.tsx
+scopes:
+    - space:script:inject
+    - site:script:inject
+secrets: {}
+contentSecurityPolicy:
+    script-src: https://cdn.smartcat-proxy.com;
+configurations:
+    site:
+        properties:
+            site_tag:
+                type: string
+                title: Smartcat Site Tag
+                description: Available in Smartcat’s settings.
+        required:
+            - site_tag
