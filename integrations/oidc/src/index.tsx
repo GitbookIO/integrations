@@ -293,6 +293,34 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
             if ('site' in siteInstallation && siteInstallation.site) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
 
+                const error = request.query.error?.toString();
+                if (error) {
+                    const state = request.query.state?.toString();
+                    let location = state ? state.substring(state.indexOf('-') + 1) : '';
+                    location = location.startsWith('/') ? location.slice(1) : location;
+                    const publishedContentUrl = publishedContentUrls?.published;
+                    if (!publishedContentUrl) {
+                        return new Response("Error: Site's published URL is missing", {
+                            status: 500,
+                        });
+                    }
+
+                    const url = new URL(
+                        `${
+                            publishedContentUrl.endsWith('/')
+                                ? publishedContentUrl
+                                : `${publishedContentUrl}/`
+                        }${location || ''}`,
+                    );
+                    url.searchParams.append('error', error);
+                    const errorDescription = request.query.error_description?.toString();
+                    if (errorDescription) {
+                        url.searchParams.append('error_description', errorDescription);
+                    }
+
+                    return Response.redirect(url.toString());
+                }
+
                 const accessTokenEndpoint = siteInstallation.configuration.access_token_endpoint;
                 const clientId = siteInstallation.configuration.client_id;
                 const clientSecret = siteInstallation.configuration.client_secret;
