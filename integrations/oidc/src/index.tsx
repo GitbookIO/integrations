@@ -280,6 +280,35 @@ function assertOrgId(environment: OIDCRuntimeEnvironment) {
     return orgId;
 }
 
+/**
+ * Validates that the configured access token endpoint is not pointing back to this integration.
+ * Prevents misconfiguration where the token endpoint is set to the integration handler URL.
+ */
+function validateAccessTokenEndpoint(tokenEndpoint: string, installationURL: string) {
+    let tokenUrl: URL;
+    let installUrl: URL;
+
+    try {
+        tokenUrl = new URL(tokenEndpoint);
+    } catch {
+        throw new Error(`Invalid access token endpoint URL: "${tokenEndpoint}"`);
+    }
+
+    try {
+        installUrl = new URL(installationURL);
+    } catch {
+        throw new Error(`Invalid installation URL: "${installationURL}"`);
+    }
+
+    if (tokenUrl.protocol !== 'https:') {
+        throw new Error('Access token endpoint must use https');
+    }
+
+    if (tokenUrl.host === installUrl.host) {
+        throw new Error('Invalid access token endpoint URL.');
+    }
+}
+
 const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request, context) => {
     const { environment } = context;
     const siteInstallation = assertSiteInstallation(environment);
@@ -305,6 +334,26 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                         },
                     );
                 }
+
+                try {
+                    validateAccessTokenEndpoint(accessTokenEndpoint, installationURL);
+                } catch (e) {
+                    const message =
+                        e instanceof Error ? e.message : 'Invalid access token endpoint';
+                    logger.error(`Access token endpoint validation failed: ${message}`);
+                    return new Response(`Error: ${message}`, { status: 400 });
+                }
+
+                if (!request.query.code) {
+                    `Error: authorization response from upstream provider doesn't include the auth code.` +
+                        (request.query.error
+                            ? ` (error: ${request.query.error.toString()} - ${request.query.error_description?.toString()})`
+                            : '');
+                    return new Response(`Error: received request without authorization code`, {
+                        status: 401,
+                    });
+                }
+
                 const searchParams = new URLSearchParams({
                     grant_type: 'authorization_code',
                     client_id: clientId,
@@ -320,6 +369,9 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                         'User-Agent': GITBOOK_OIDC_USER_AGENT,
                     },
                     body: searchParams,
+                    // Safeguards against upstream OAuth servers not following OAuth spec and potentially returning a redirect
+                    // response on error instead of returning a 4xx responses.
+                    redirect: 'error',
                 });
 
                 if (!tokenResp.ok) {
