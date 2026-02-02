@@ -262,6 +262,19 @@ async function getPublishedContentUrls(context: OIDCRuntimeContext) {
     return publishedContentData.data.urls;
 }
 
+function buildPublishedContentRedirectUrl(
+    publishedContentUrl: string,
+    state: string | undefined,
+): URL {
+    let location = state ? state.substring(state.indexOf('-') + 1) : '';
+    location = location.startsWith('/') ? location.slice(1) : location;
+    return new URL(
+        `${publishedContentUrl.endsWith('/') ? publishedContentUrl : `${publishedContentUrl}/`}${
+            location || ''
+        }`,
+    );
+}
+
 function assertSiteInstallation(environment: OIDCRuntimeEnvironment) {
     const siteInstallation = environment.siteInstallation;
     if (!siteInstallation) {
@@ -295,9 +308,6 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
 
                 const error = request.query.error?.toString();
                 if (error) {
-                    const state = request.query.state?.toString();
-                    let location = state ? state.substring(state.indexOf('-') + 1) : '';
-                    location = location.startsWith('/') ? location.slice(1) : location;
                     const publishedContentUrl = publishedContentUrls?.published;
                     if (!publishedContentUrl) {
                         return new Response("Error: Site's published URL is missing", {
@@ -305,12 +315,9 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                         });
                     }
 
-                    const url = new URL(
-                        `${
-                            publishedContentUrl.endsWith('/')
-                                ? publishedContentUrl
-                                : `${publishedContentUrl}/`
-                        }${location || ''}`,
+                    const url = buildPublishedContentRedirectUrl(
+                        publishedContentUrl,
+                        request.query.state?.toString(),
                     );
                     url.searchParams.append('error', error);
                     const errorDescription = request.query.error_description?.toString();
@@ -417,15 +424,9 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                     );
                 }
 
-                const state = request.query.state?.toString();
-                let location = state ? state.substring(state.indexOf('-') + 1) : '';
-                location = location.startsWith('/') ? location.slice(1) : location;
-                const url = new URL(
-                    `${
-                        publishedContentUrl.endsWith('/')
-                            ? publishedContentUrl
-                            : `${publishedContentUrl}/`
-                    }${location || ''}`,
+                const url = buildPublishedContentRedirectUrl(
+                    publishedContentUrl,
+                    request.query.state?.toString(),
                 );
                 url.searchParams.append('jwt_token', jwtToken);
 
