@@ -114,7 +114,7 @@
     },
     "integrations/figma": {
       "name": "@gitbook/integration-figma",
-      "version": "0.3.0",
+      "version": "0.5.1",
       "dependencies": {
         "@gitbook/runtime": "*",
       },
@@ -125,7 +125,7 @@
     },
     "integrations/formspree": {
       "name": "@gitbook/integration-formspree",
-      "version": "0.2.14",
+      "version": "0.3.0",
       "dependencies": {
         "@gitbook/runtime": "workspace:*",
       },
@@ -769,7 +769,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.156.0",
+      "version": "0.159.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -784,7 +784,7 @@
     },
     "packages/cli": {
       "name": "@gitbook/cli",
-      "version": "0.26.3",
+      "version": "0.27.0",
       "bin": {
         "gitbook": "./cli.js",
       },

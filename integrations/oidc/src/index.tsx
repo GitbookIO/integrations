@@ -371,7 +371,7 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                     body: searchParams,
                     // Safeguards against upstream OAuth servers not following OAuth spec and potentially returning a redirect
                     // response on error instead of returning a 4xx responses.
-                    redirect: 'error',
+                    redirect: 'manual',
                 });
 
                 if (!tokenResp.ok) {
