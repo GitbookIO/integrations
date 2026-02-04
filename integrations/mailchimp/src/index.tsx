@@ -39,6 +39,8 @@ type MailchimpAction =
     | { action: '@ui.modal.close'; listId?: string; cta?: string };
 
 const DEFAULT_CTA = 'Sign up to our mailing list to receive updates!';
+const DEFAULT_DISCLAIMER =
+    'By clicking Subscribe, you agree to the processing of your email address in accordance with our privacy policy.';
 
 /**
  * A Block to subscribe to a Mailchimp mailing list.
@@ -151,6 +153,11 @@ const mailchimpSubscribe = createComponent<
                             />
                         </box>
                     </hstack>
+                    <box>
+                        <text size="small" muted>
+                            {DEFAULT_DISCLAIMER}
+                        </text>
+                    </box>
                     {typeof success === 'boolean' && success === false ? (
                         <box>
                             <text>An error occured, the site owner has been notified</text>
