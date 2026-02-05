@@ -154,9 +154,7 @@ const mailchimpSubscribe = createComponent<
                         </box>
                     </hstack>
                     <box>
-                        <text size="small" muted>
-                            {DEFAULT_DISCLAIMER}
-                        </text>
+                        <text>{DEFAULT_DISCLAIMER}</text>
                     </box>
                     {typeof success === 'boolean' && success === false ? (
                         <box>
