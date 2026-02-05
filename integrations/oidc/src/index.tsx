@@ -262,6 +262,19 @@ async function getPublishedContentUrls(context: OIDCRuntimeContext) {
     return publishedContentData.data.urls;
 }
 
+function buildPublishedContentRedirectUrl(
+    publishedContentUrl: string,
+    state: string | undefined,
+): URL {
+    let location = state ? state.substring(state.indexOf('-') + 1) : '';
+    location = location.startsWith('/') ? location.slice(1) : location;
+    return new URL(
+        `${publishedContentUrl.endsWith('/') ? publishedContentUrl : `${publishedContentUrl}/`}${
+            location || ''
+        }`,
+    );
+}
+
 function assertSiteInstallation(environment: OIDCRuntimeEnvironment) {
     const siteInstallation = environment.siteInstallation;
     if (!siteInstallation) {
@@ -321,6 +334,28 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
         router.get('/visitor-auth/response', async (request) => {
             if ('site' in siteInstallation && siteInstallation.site) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
+
+                const error = request.query.error?.toString();
+                if (error) {
+                    const publishedContentUrl = publishedContentUrls?.published;
+                    if (!publishedContentUrl) {
+                        return new Response("Error: Site's published URL is missing", {
+                            status: 500,
+                        });
+                    }
+
+                    const url = buildPublishedContentRedirectUrl(
+                        publishedContentUrl,
+                        request.query.state?.toString(),
+                    );
+                    url.searchParams.append('error', error);
+                    const errorDescription = request.query.error_description?.toString();
+                    if (errorDescription) {
+                        url.searchParams.append('error_description', errorDescription);
+                    }
+
+                    return Response.redirect(url.toString());
+                }
 
                 const accessTokenEndpoint = siteInstallation.configuration.access_token_endpoint;
                 const clientId = siteInstallation.configuration.client_id;
@@ -441,15 +476,9 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                     );
                 }
 
-                const state = request.query.state?.toString();
-                let location = state ? state.substring(state.indexOf('-') + 1) : '';
-                location = location.startsWith('/') ? location.slice(1) : location;
-                const url = new URL(
-                    `${
-                        publishedContentUrl.endsWith('/')
-                            ? publishedContentUrl
-                            : `${publishedContentUrl}/`
-                    }${location || ''}`,
+                const url = buildPublishedContentRedirectUrl(
+                    publishedContentUrl,
+                    request.query.state?.toString(),
                 );
                 url.searchParams.append('jwt_token', jwtToken);
 
