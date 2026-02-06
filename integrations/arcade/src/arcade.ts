@@ -30,10 +30,11 @@ export async function fetchArcadeOEmbedData(flowId: string): Promise<ArcadeOEmbe
 }
 
 /**
- * Extract the Arcade flow ID from the embed URL.
+ * Extract the Arcade flow ID and language from the embed URL.
  */
 export function extractArcadeFlowFromURL(input: string): {
     flowId?: string;
+    language?: string;
 } {
     const url = new URL(input);
     if (!['app.arcade.software', 'demo.arcade.software'].includes(url.hostname)) {
@@ -45,5 +46,6 @@ export function extractArcadeFlowFromURL(input: string): {
         return {};
     }
 
-    return { flowId: parts[2] };
+    const language = url.searchParams.get('language') ?? undefined;
+    return { flowId: parts[2], ...(language && { language }) };
 }

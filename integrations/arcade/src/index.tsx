@@ -18,6 +18,7 @@ type ArcadeRuntimeContext = RuntimeContext<ArcadeRuntimeEnvironment>;
 const embedBlock = createComponent<{
     flowId?: string;
     url?: string;
+    language?: string;
 }>({
     componentId: 'embed',
 
@@ -41,7 +42,7 @@ const embedBlock = createComponent<{
 
     async render(element, context) {
         const { environment } = context;
-        const { flowId, url } = element.props;
+        const { flowId, url, language } = element.props;
 
         if (!flowId) {
             return (
@@ -69,11 +70,12 @@ const embedBlock = createComponent<{
 
         const embedData = await fetchArcadeOEmbedData(flowId);
         const aspectRatio = embedData.width / embedData.height;
+        const embedUrl = `https://demo.arcade.software/${flowId}?embed${language ? `&language=${encodeURIComponent(language)}` : ''}`;
         return (
             <block>
                 <webframe
                     source={{
-                        url: `https://demo.arcade.software/${flowId}?embed`,
+                        url: embedUrl,
                     }}
                     aspectRatio={aspectRatio}
                 />
