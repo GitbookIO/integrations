@@ -38,7 +38,8 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     { environment }: MixpanelRuntimeContext,
 ) => {
     const projectToken = environment.siteInstallation?.configuration?.project_token;
-    const serverRegion = environment.siteInstallation?.configuration?.server_region || 'Standard (US)';
+    const serverRegion =
+        environment.siteInstallation?.configuration?.server_region || 'Standard (US)';
 
     if (!projectToken) {
         throw new Error(
@@ -49,8 +50,10 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     }
 
     const apiHost = getApiHost(serverRegion);
-    const scriptContent = (script as string).replace('<TO_REPLACE>', projectToken).replace('<API_HOST_PLACEHOLDER>', apiHost);
-    
+    const scriptContent = (script as string)
+        .replace('<TO_REPLACE>', projectToken)
+        .replace('<API_HOST_PLACEHOLDER>', apiHost);
+
     return new Response(scriptContent, {
         headers: {
             'Content-Type': 'application/javascript',
