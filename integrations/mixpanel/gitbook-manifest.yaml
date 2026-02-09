@@ -35,6 +35,15 @@ configurations:
                 type: string
                 title: Project Token
                 description: Available in Mixpanel's Project Settings section
+            server_region:
+                type: string
+                title: Server Region
+                description: Select the server region where your data will be ingested
+                default: Standard (US)
+                enum:
+                    - Standard (US)
+                    - EU
+                    - India
         required:
             - project_token
 target: site
