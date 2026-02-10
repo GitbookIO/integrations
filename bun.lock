@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@gitbook/integrations",
@@ -769,7 +770,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.156.0",
+      "version": "0.157.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -784,7 +785,7 @@
     },
     "packages/cli": {
       "name": "@gitbook/cli",
-      "version": "0.26.3",
+      "version": "0.27.0",
       "bin": {
         "gitbook": "./cli.js",
       },

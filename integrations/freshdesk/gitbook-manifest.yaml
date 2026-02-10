@@ -19,12 +19,12 @@ organization: gitbook
 contentSecurityPolicy:
     font-src: |
         freshdesk.com
-        https://widget.freshworks.com;
+        *.freshworks.com;
     script-src: |
-        widget.freshworks.com;
+        *.freshworks.com;
     style-src: |
         freshdesk.com
-        https://widget.freshworks.com;
+        *.freshworks.com;
 summary: |
     # Overview
 
@@ -36,17 +36,17 @@ summary: |
 
     # Configure
 
-    You can configure the integration on single or multiple public sites by navigating to the integrations in sub-navigation or org settings. You will then have to provide Freshdesk widget ID to finish the configuration. This can be found in your Freshdesk dashboard, under the Widget section.
+    You can configure the integration on single or multiple public sites by navigating to the integrations in sub-navigation or org settings. You will then have to provide the full Freshdesk widget URL to finish the configuration. You can find this in your Freshworks account from the Embed Widget option.
 
 categories:
     - analytics
 configurations:
     site:
         properties:
-            widget_id:
+            widget_url:
                 type: string
-                title: Freshdesk Widget ID
-                description: Available in your Freshdesk dashboard, under the Widget section
+                title: Freshdesk Widget URL
+                description: Paste the full URL from Freshworks Embed Widget (for example: https://widget.freshworks.com/widgets/<widget_id>.js)
         required:
-            - widget_id
+            - widget_url
 target: site
