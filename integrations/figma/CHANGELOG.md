@@ -1,5 +1,23 @@
 # @gitbook/integration-figma
 
+## 0.5.1
+
+### Patch Changes
+
+- cdef5e9: Migrate Figma authorize URL to new version
+
+## 0.5.0
+
+### Minor Changes
+
+- c395dbe: Update production publishing
+
+## 0.4.0
+
+### Minor Changes
+
+- 8214715: Move Figma integration secrets to 1Password
+
 ## 0.3.0
 
 ### Minor Changes

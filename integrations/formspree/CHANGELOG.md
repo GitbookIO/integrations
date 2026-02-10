@@ -1,5 +1,11 @@
 # @gitbook/integration-formspree
 
+## 0.3.0
+
+### Minor Changes
+
+- 0ac4455: Normalize Formspree endpoint from configuration
+
 ## 0.2.14
 
 ### Patch Changes

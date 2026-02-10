@@ -1,5 +1,11 @@
 # @gitbook/integration-oidc
 
+## 0.3.0
+
+### Minor Changes
+
+- 9f5f400: Add safeguards to OIDC VA integration
+
 ## 0.2.9
 
 ### Patch Changes

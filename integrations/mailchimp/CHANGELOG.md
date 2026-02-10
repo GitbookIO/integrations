@@ -1,5 +1,11 @@
 # @gitbook/integration-mailchimp
 
+## 1.3.0
+
+### Minor Changes
+
+- df7c081: Add GDPR disclaimer to mailchimp block
+
 ## 1.2.0
 
 ### Minor Changes
