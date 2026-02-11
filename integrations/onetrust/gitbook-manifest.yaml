@@ -4,6 +4,8 @@ description: Add the OneTrust cookie consent banner to your published GitBook si
 visibility: public
 organization: gitbook
 icon: ./assets/icon.png
+previewImages:
+    - ./assets/onetrust-preview.png
 script: ./src/index.ts
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
