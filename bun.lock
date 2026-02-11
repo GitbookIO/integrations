@@ -485,6 +485,19 @@
         "@gitbook/tsconfig": "workspace:*",
       },
     },
+    "integrations/onetrust": {
+      "name": "@gitbook/integration-onetrust",
+      "version": "0.0.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/browser-types": "^0.1.4",
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
     "integrations/pendo": {
       "name": "@gitbook/integration-pendo",
       "version": "0.0.6",
@@ -1095,13 +1108,23 @@
 
     "@floating-ui/utils": ["@floating-ui/utils@0.2.9", "", {}, "sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg=="],
 
+    "@fortawesome/fontawesome-common-types": ["@fortawesome/fontawesome-common-types@7.2.0", "", {}, "sha512-IpR0bER9FY25p+e7BmFH25MZKEwFHTfRAfhOyJubgiDnoJNsSvJ7nigLraHtp4VOG/cy8D7uiV0dLkHOne5Fhw=="],
+
+    "@fortawesome/fontawesome-svg-core": ["@fortawesome/fontawesome-svg-core@7.2.0", "", { "dependencies": { "@fortawesome/fontawesome-common-types": "7.2.0" } }, "sha512-6639htZMjEkwskf3J+e6/iar+4cTNM9qhoWuRfj9F3eJD6r7iCzV1SWnQr2Mdv0QT0suuqU8BoJCZUyCtP9R4Q=="],
+
     "@gitbook/adaptive": ["@gitbook/adaptive@workspace:packages/adaptive"],
 
     "@gitbook/api": ["@gitbook/api@workspace:packages/api"],
 
+    "@gitbook/browser-types": ["@gitbook/browser-types@0.1.4", "", { "dependencies": { "@gitbook/api": "0.159.0", "@gitbook/icons": "" } }, "sha512-O8SbKdKilvU5HBa8Rrp6lMG9xSF6O5QIkCzrkPOQ9q5A8Q/uV/4TyAbrWJ0LgsR+kHaOdNEYFzb6IRYxK8mxhw=="],
+
     "@gitbook/cli": ["@gitbook/cli@workspace:packages/cli"],
 
     "@gitbook/document": ["@gitbook/document@workspace:packages/document"],
+
+    "@gitbook/fontawesome-pro": ["@gitbook/fontawesome-pro@1.0.16", "", { "dependencies": { "@fortawesome/fontawesome-common-types": "^7.1.0" } }, "sha512-jypE3FpC5U7lealzpGVq1Jie5Ay5jYv/UkOLxPhOpffjCd98A+Ex08M6GyINMDO7KCBaF5p8pbdl693hf0DwNg=="],
+
+    "@gitbook/icons": ["@gitbook/icons@0.4.3", "", { "dependencies": { "@fortawesome/fontawesome-svg-core": "^7.1.0", "@gitbook/fontawesome-pro": "1.0.16" }, "peerDependencies": { "react": "*" }, "bin": { "gitbook-icons": "bin/gitbook-icons.js" } }, "sha512-BszvEOMdsxQCmRMw7hxKn8p/bYJQ1kBfy6FW3ClgLtziQBjWkxEPPnyoWdDrZji8Qwa/X5DLBT6oeGRzmvum/g=="],
 
     "@gitbook/integration-ahrefs": ["@gitbook/integration-ahrefs@workspace:integrations/ahrefs"],
 
@@ -1174,6 +1197,8 @@
     "@gitbook/integration-mixpanel": ["@gitbook/integration-mixpanel@workspace:integrations/mixpanel"],
 
     "@gitbook/integration-oidc": ["@gitbook/integration-oidc@workspace:integrations/oidc"],
+
+    "@gitbook/integration-onetrust": ["@gitbook/integration-onetrust@workspace:integrations/onetrust"],
 
     "@gitbook/integration-pendo": ["@gitbook/integration-pendo@workspace:integrations/pendo"],
 
@@ -2326,6 +2351,8 @@
     "queue-microtask": ["queue-microtask@1.2.3", "", {}, "sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A=="],
 
     "quick-lru": ["quick-lru@7.0.0", "", {}, "sha512-MX8gB7cVYTrYcFfAnfLlhRd0+Toyl8yX8uBx1MrX7K0jegiz9TumwOK27ldXrgDlHRdVi+MqU9Ssw6dr4BNreg=="],
+
+    "react": ["react@19.2.4", "", {}, "sha512-9nfp2hYpCwOjAN+8TZFGhtWEwgvWHXqESH8qT89AT/lWklpLON22Lc8pEtnpsZz7VmawabSU0gCjnj8aC0euHQ=="],
 
     "read-yaml-file": ["read-yaml-file@1.1.0", "", { "dependencies": { "graceful-fs": "^4.1.5", "js-yaml": "^3.6.1", "pify": "^4.0.1", "strip-bom": "^3.0.0" } }, "sha512-VIMnQi/Z4HT2Fxuwg5KrY174U1VdUIASQVWXXyqtNRtxSr9IYkn1rsI6Tb6HsrHCmB7gVpNwX6JxPTHcH6IoTA=="],
 
