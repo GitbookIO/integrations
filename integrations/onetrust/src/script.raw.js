@@ -51,7 +51,10 @@
                     w.dispatchEvent(new Event('onetrust-banner-loaded'));
                     // Emit initial consent for returning visitors (OnetrustActiveGroups
                     // is populated from stored consent; OTConsentApplied won't fire)
-                    if (!w.GitBook.isCookiesTrackingDisabled() && w.OnetrustActiveGroups !== undefined) {
+                    if (
+                        !w.GitBook.isCookiesTrackingDisabled() &&
+                        w.OnetrustActiveGroups !== undefined
+                    ) {
                         emitConsent();
                     }
                 } catch (e) {}

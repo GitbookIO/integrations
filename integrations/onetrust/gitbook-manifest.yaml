@@ -35,4 +35,3 @@ configurations:
         required:
             - domain_script_id
 target: site
-
