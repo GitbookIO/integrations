@@ -14,7 +14,7 @@ contentSecurityPolicy:
         https://cdn.cookielaw.org;
 summary: |
     # Overview
-    This integration allows to add the OneTrust cookie consent banner on your published GitBook site.
+    This integration allows you to add the OneTrust cookie consent banner on your published GitBook site.
 
     # How it works
     The integration injects the OneTrust SDK `otSDKStub.js` on your page, using your Domain Script ID,
