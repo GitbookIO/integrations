@@ -1,7 +1,7 @@
 /**
  * ABOUTME: DevTune AI Traffic tracking beacon for GitBook sites.
  * Tracks page views including SPA navigations (pushState/popstate).
- * The <SNIPPET_KEY> placeholder is replaced server-side by the integration.
+ * The snippet key placeholder is replaced server-side by the integration.
  */
 (function (win, doc) {
   var snippetKey = '<SNIPPET_KEY>';
