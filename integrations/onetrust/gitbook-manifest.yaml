@@ -1,0 +1,36 @@
+name: onetrust
+title: OneTrust Cookie Consent
+description: Add the OneTrust cookie consent banner to your published GitBook site.
+visibility: public
+organization: gitbook
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+    - site:script:cookies
+contentSecurityPolicy:
+    script-src: |
+        https://cdn.cookielaw.org;
+summary: |
+    # Overview
+    This integration injects the OneTrust SDK to display a cookie consent banner on your GitBook site.
+
+    # How it works
+    The integration injects OneTrust's `otSDKStub.js` using your Domain Script ID. The banner will manage consent and load cookies accordingly.
+
+    # Configure
+    Install the integration on the GitBook site of your choice and provide your OneTrust Domain Script ID (the value used in `data-domain-script`).
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            domain_script_id:
+                type: string
+                title: Domain Script ID
+                description: The OneTrust Domain Script ID used in data-domain-script
+        required:
+            - domain_script_id
+target: site
+
