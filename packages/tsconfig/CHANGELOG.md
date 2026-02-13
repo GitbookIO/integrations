@@ -1,5 +1,11 @@
 # @gitbook/tsconfig
 
+## 0.1.2
+
+### Patch Changes
+
+- ce9b4c3: Fix NPM trusted publishing by defining repository in the package.json
+
 ## 0.1.1
 
 ### Patch Changes

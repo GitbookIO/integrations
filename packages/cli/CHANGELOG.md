@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.27.2
+
+### Patch Changes
+
+- ce9b4c3: Fix NPM trusted publishing by defining repository in the package.json
+
 ## 0.27.1
 
 ### Patch Changes
