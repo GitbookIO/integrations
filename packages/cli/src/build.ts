@@ -2,11 +2,8 @@ import * as esbuild from 'esbuild';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { createRequire } from 'module';
 
 import { resolveFile, readIntegrationManifest } from './manifest';
-
-const require = createRequire(import.meta.url);
 
 interface BuildOutput {
     /** path where the final script is outputted */
