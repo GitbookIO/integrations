@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.160.0
+
+### Minor Changes
+
+- 55992f4: Add tags support on pages and updates
+
 ## 0.159.0
 
 ### Minor Changes
