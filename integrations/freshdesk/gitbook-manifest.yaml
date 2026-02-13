@@ -46,7 +46,7 @@ configurations:
             widget_url:
                 type: string
                 title: Freshdesk Widget URL
-                description: Paste the full URL from Freshworks Embed Widget (for example: https://widget.freshworks.com/widgets/<widget_id>.js)
+                description: Paste the full URL from Freshworks Embed Widget.
         required:
             - widget_url
 target: site
