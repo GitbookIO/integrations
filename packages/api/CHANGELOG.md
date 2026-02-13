@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.160.1
+
+### Patch Changes
+
+- 25d0e77: Use NPM trusted publishing for publishing the package.
+
 ## 0.160.0
 
 ### Minor Changes
