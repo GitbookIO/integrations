@@ -26,5 +26,9 @@
             "import": "./dist/index.js",
             "types": "./dist/index.d.ts"
         }
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
     }
 }

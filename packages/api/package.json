@@ -48,5 +48,9 @@
         },
         "./spec/openapi.json": "./spec/openapi.json",
         "./spec/openapi.yaml": "./spec/openapi.yaml"
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
     }
 }

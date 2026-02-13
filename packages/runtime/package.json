@@ -19,5 +19,9 @@
         ".": "./src/index.ts",
         "./jsx-runtime": "./src/contentkit-jsx.ts",
         "./jsx-dev-runtime": "./src/contentkit-jsx.ts"
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
     }
 }
