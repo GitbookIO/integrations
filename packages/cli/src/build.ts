@@ -8,47 +8,6 @@ import { resolveFile, readIntegrationManifest } from './manifest';
 
 const require = createRequire(import.meta.url);
 
-function logGitBookAPIDiagnostics(referencePath: string) {
-    try {
-        const pkgPath = require.resolve('@gitbook/api/package.json', {
-            paths: [path.dirname(referencePath)],
-        });
-        const pkgDir = path.dirname(pkgPath);
-        const distDir = path.join(pkgDir, 'dist');
-        const expectedFiles = ['index.js', 'index.cjs', 'index.d.ts'];
-        const statuses = expectedFiles.map((filename) => ({
-            filename,
-            exists: fs.existsSync(path.join(distDir, filename)),
-        }));
-        const missing = statuses.filter((status) => !status.exists);
-
-        if (missing.length > 0) {
-            const distExists = fs.existsSync(distDir);
-            const distContents = distExists ? fs.readdirSync(distDir) : [];
-            console.warn(
-                [
-                    '[diagnostic] @gitbook/api build artifacts missing.',
-                    `  Resolved path: ${pkgDir}`,
-                    `  Missing: ${missing
-                        .map((status) => path.join('dist', status.filename))
-                        .join(', ')}`,
-                    distExists
-                        ? `  dist contents: ${distContents.length > 0 ? distContents.join(', ') : '(empty)'}`
-                        : '  dist directory is missing entirely.',
-                ].join('\n'),
-            );
-        } else {
-            console.log(`[#diagnostic] @gitbook/api build artifacts detected at ${distDir}.`);
-        }
-    } catch (error) {
-        console.warn(
-            `[#diagnostic] Failed to resolve @gitbook/api relative to ${referencePath}: ${
-                (error as Error).message
-            }`,
-        );
-    }
-}
-
 interface BuildOutput {
     /** path where the final script is outputted */
     path: string;
@@ -73,8 +32,6 @@ export async function buildScriptFromManifest(
      */
     const inputFilePath = resolveFile(manifestSpecPath, manifest.script);
     const outputFilePath = path.join(os.tmpdir(), '.gitbook', manifest.name, 'script.js');
-
-    logGitBookAPIDiagnostics(inputFilePath);
 
     await esbuild.build({
         platform: 'neutral',
