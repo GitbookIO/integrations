@@ -2,7 +2,7 @@
     "name": "@gitbook/adaptive",
     "description": "Utility to use adaptive content in GitBook",
     "type": "module",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "sideEffects": false,
     "files": [
         "README.md",
