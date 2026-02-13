@@ -38,5 +38,9 @@
     },
     "bin": {
         "gitbook": "./cli.js"
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
     }
 }

@@ -31,5 +31,9 @@
             "default": "./dist/index.cjs"
         },
         "./package.json": "./package.json"
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
     }
 }
