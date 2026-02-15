@@ -25,7 +25,6 @@ externalLinks:
       url: https://getsyft.app/
 script: src/index.tsx
 scopes:
-    - space:script:inject
     - site:script:inject
 secrets: {}
 contentSecurityPolicy:
