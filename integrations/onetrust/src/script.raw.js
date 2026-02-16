@@ -24,6 +24,9 @@
     function l() {
         if (!w.GitBook || typeof w.GitBook.registerCookieBanner !== 'function') return;
 
+        const cookieState = w.GitBook.isCookiesTrackingDisabled();
+        const hasRecordedConsent = cookieState !== undefined;
+
         w.GitBook.registerCookieBanner(function ({ onApprove, onReject }) {
             injectOneTrust();
 
@@ -51,10 +54,7 @@
                     w.dispatchEvent(new Event('onetrust-banner-loaded'));
                     // Emit initial consent for returning visitors (OnetrustActiveGroups
                     // is populated from stored consent; OTConsentApplied won't fire)
-                    if (
-                        !w.GitBook.isCookiesTrackingDisabled() &&
-                        w.OnetrustActiveGroups !== undefined
-                    ) {
+                    if (!hasRecordedConsent && w.OnetrustActiveGroups !== undefined) {
                         emitConsent();
                     }
                 } catch (e) {}
@@ -62,7 +62,7 @@
 
             // OTConsentApplied fires when user clicks Accept/Reject
             w.addEventListener('OTConsentApplied', function () {
-                if (!w.GitBook.isCookiesTrackingDisabled()) {
+                if (!hasRecordedConsent) {
                     emitConsent();
                 }
             });
