@@ -1,6 +1,6 @@
 {
-    "name": "@gitbook/integration-mixpanel",
-    "version": "0.7.0",
+    "name": "@gitbook/integration-onetrust",
+    "version": "0.1.1",
     "private": true,
     "dependencies": {
         "@gitbook/api": "*",
@@ -8,7 +8,8 @@
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",
-        "@gitbook/tsconfig": "workspace:*"
+        "@gitbook/tsconfig": "workspace:*",
+        "@gitbook/browser-types": "^0.1.4"
     },
     "scripts": {
         "typecheck": "tsc --noEmit",

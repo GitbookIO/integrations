@@ -1,5 +1,17 @@
 # @gitbook/adaptive
 
+## 1.0.2
+
+### Patch Changes
+
+- ce9b4c3: Fix NPM trusted publishing by defining repository in the package.json
+
+## 1.0.1
+
+### Patch Changes
+
+- 25d0e77: Use NPM trusted publishing for publishing the package.
+
 ## 1.0.0
 
 ### Major Changes
