@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.161.0
+
+### Minor Changes
+
+- 5fedaf9: Bump API version
+
 ## 0.160.1
 
 ### Patch Changes
