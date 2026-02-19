@@ -58,9 +58,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
         },
     };
 
-    const initConfigJson = JSON.stringify(initConfig)
-        .replace(/\\/g, '\\\\')
-        .replace(/'/g, "\\'");
+    const initConfigJson = JSON.stringify(initConfig).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
     let scriptContent = (script as string).replace(/<TO_REPLACE>/g, amplitudeApiKey);
     scriptContent = scriptContent.replace('<TO_REPLACE_INIT_CONFIG>', initConfigJson);
