@@ -1,4 +1,4 @@
-(function (w, d, s, apiKey) {
+(function (w, d, s, apiKey, initConfigJson) {
     const GRANTED_COOKIE = '__gitbook_cookie_granted';
 
     function getCookie(cname) {
@@ -30,10 +30,8 @@
     j.referrerPolicy = 'no-referrer-when-downgrade';
     j.onload = function () {
         window.amplitude.add(window.sessionReplay.plugin({ sampleRate: 1 }));
-        window.amplitude.init(apiKey, {
-            fetchRemoteConfig: true,
-            autocapture: true,
-        });
+        const initConfig = JSON.parse(initConfigJson || '{}');
+        window.amplitude.init(apiKey, initConfig);
     };
     f.parentNode.insertBefore(j, f);
-})(window, document, 'script', '<TO_REPLACE>');
+})(window, document, 'script', '<TO_REPLACE>', '<TO_REPLACE_INIT_CONFIG>');
