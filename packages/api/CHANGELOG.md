@@ -1,5 +1,29 @@
 # @gitbook/api
 
+## 0.162.0
+
+### Minor Changes
+
+- 3b3bd97: Update API client with latest OpenAPI spec.
+
+## 0.161.0
+
+### Minor Changes
+
+- 5fedaf9: Bump API version
+
+## 0.160.1
+
+### Patch Changes
+
+- 25d0e77: Use NPM trusted publishing for publishing the package.
+
+## 0.160.0
+
+### Minor Changes
+
+- 55992f4: Add tags support on pages and updates
+
 ## 0.159.0
 
 ### Minor Changes

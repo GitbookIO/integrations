@@ -1,7 +1,7 @@
 {
     "name": "@gitbook/cli",
     "description": "CLI to build and publish integrations on GitBook.com",
-    "version": "0.27.0",
+    "version": "0.27.2",
     "dependencies": {
         "@gitbook/api": "*",
         "check-node-version": "^4.2.1",
@@ -38,5 +38,14 @@
     },
     "bin": {
         "gitbook": "./cli.js"
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/GitbookIO/integrations.git",
+        "directory": "packages/cli"
     }
 }
