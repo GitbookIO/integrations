@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.163.0
+
+### Minor Changes
+
+- ed24481: Update API client with latest OpenAPI spec.
+
 ## 0.162.0
 
 ### Minor Changes
