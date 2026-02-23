@@ -16,7 +16,9 @@ type FreshdeskRuntimeContext = RuntimeContext<
     >
 >;
 
-function parseWidgetConfiguration(widgetInput?: string): { widgetId: string; widgetURL: string } | null {
+function parseWidgetConfiguration(
+    widgetInput?: string,
+): { widgetId: string; widgetURL: string } | null {
     if (!widgetInput?.trim()) {
         return null;
     }
