@@ -29,7 +29,7 @@
     },
     "integrations/amplitude": {
       "name": "@gitbook/integration-amplitude",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -126,7 +126,7 @@
     },
     "integrations/formspree": {
       "name": "@gitbook/integration-formspree",
-      "version": "0.3.0",
+      "version": "0.3.2",
       "dependencies": {
         "@gitbook/runtime": "workspace:*",
       },
@@ -487,7 +487,7 @@
     },
     "integrations/onetrust": {
       "name": "@gitbook/integration-onetrust",
-      "version": "0.0.0",
+      "version": "0.1.1",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -768,7 +768,7 @@
     },
     "packages/adaptive": {
       "name": "@gitbook/adaptive",
-      "version": "1.0.0",
+      "version": "1.0.2",
       "dependencies": {
         "js-cookie": "^3.0.5",
       },
@@ -783,7 +783,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.160.0",
+      "version": "0.162.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -798,7 +798,7 @@
     },
     "packages/cli": {
       "name": "@gitbook/cli",
-      "version": "0.27.0",
+      "version": "0.27.2",
       "bin": {
         "gitbook": "./cli.js",
       },
@@ -827,7 +827,7 @@
     },
     "packages/document": {
       "name": "@gitbook/document",
-      "version": "0.1.1",
+      "version": "0.1.3",
       "dependencies": {
         "@gitbook/api": "*",
       },
@@ -838,7 +838,7 @@
     },
     "packages/runtime": {
       "name": "@gitbook/runtime",
-      "version": "0.23.1",
+      "version": "0.23.3",
       "dependencies": {
         "@gitbook/api": "*",
       },
@@ -850,7 +850,7 @@
     },
     "packages/tsconfig": {
       "name": "@gitbook/tsconfig",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "devDependencies": {
         "@cloudflare/workers-types": "^4.20240925.0",
       },
