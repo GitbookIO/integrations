@@ -43,10 +43,10 @@ categories:
 configurations:
     site:
         properties:
-            widget_url:
+            widget_id:
                 type: string
-                title: Freshdesk Widget URL
-                description: Paste the full URL from Freshworks Embed Widget.
+                title: widget_url
+                description: Paste either your Freshdesk widget ID or the full widget URL from Freshworks Embed Widget.
         required:
-            - widget_url
+            - widget_id
 target: site

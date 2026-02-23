@@ -12,46 +12,53 @@ type FreshdeskRuntimeContext = RuntimeContext<
         {},
         {
             widget_id?: string;
-            widget_url?: string;
         }
     >
 >;
+
+function parseWidgetConfiguration(widgetInput?: string): { widgetId: string; widgetURL: string } | null {
+    if (!widgetInput?.trim()) {
+        return null;
+    }
+
+    const value = widgetInput.trim();
+
+    try {
+        const parsedURL = new URL(value);
+        const widgetId = parsedURL.pathname.match(/\/widgets\/([^/]+)\.js$/)?.[1];
+        if (!widgetId) {
+            return null;
+        }
+
+        return {
+            widgetId,
+            widgetURL: parsedURL.toString(),
+        };
+    } catch {
+        return {
+            widgetId: value,
+            widgetURL: `https://widget.freshworks.com/widgets/${value}.js`,
+        };
+    }
+}
 
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
     { environment }: FreshdeskRuntimeContext,
 ) => {
-    const configuredWidgetURL = environment.siteInstallation?.configuration?.widget_url;
-    const legacyWidgetId = environment.siteInstallation?.configuration?.widget_id;
-    const widgetURL =
-        configuredWidgetURL ??
-        (legacyWidgetId ? `https://widget.freshworks.com/widgets/${legacyWidgetId}.js` : undefined);
-    if (!widgetURL) {
+    const widgetInput = environment.siteInstallation?.configuration?.widget_id;
+    const widgetConfig = parseWidgetConfiguration(widgetInput);
+    if (!widgetConfig) {
         throw new Error(
-            `The Freshdesk Widget URL is missing from the configuration (ID: ${
-                'spaceId' in event ? event.spaceId : event.siteId
-            }).`,
-        );
-    }
-
-    const widgetId = (() => {
-        try {
-            return new URL(widgetURL).pathname.match(/\/widgets\/([^/]+)\.js$/)?.[1];
-        } catch {
-            return undefined;
-        }
-    })();
-    if (!widgetId) {
-        throw new Error(
-            `The Freshdesk Widget URL is invalid. Expected a URL ending with /widgets/<widget_id>.js (ID: ${
+            `The Freshdesk widget configuration is invalid. Expected a widget ID or a full URL ending with /widgets/<widget_id>.js (ID: ${
                 'spaceId' in event ? event.spaceId : event.siteId
             }).`,
         );
     }
 
     const scriptContent = (script as string)
-        .replaceAll('<WIDGET_ID>', widgetId)
-        .replaceAll('<WIDGET_URL>', widgetURL);
+        .replaceAll('<WIDGET_ID>', widgetConfig.widgetId)
+        .replaceAll('<WIDGET_URL>', widgetConfig.widgetURL);
 
     return new Response(scriptContent, {
         headers: {
