@@ -1,0 +1,43 @@
+name: devtune
+title: DevTune AI Traffic
+icon: ./assets/icon.png
+description: Track AI bot crawlers and LLM referral traffic to your documentation.
+externalLinks:
+    - label: Documentation
+      url: https://devtune.ai/docs/integrations/gitbook
+    - label: DevTune Dashboard
+      url: https://devtune.ai
+visibility: public
+organization: gitbook
+script: ./src/index.ts
+scopes:
+    - site:script:inject
+contentSecurityPolicy:
+    connect-src: devtune.ai
+summary: |
+    # Overview
+    DevTune AI Traffic tracks which AI bots crawl your documentation and which
+    AI platforms (ChatGPT, Claude, Perplexity, Gemini, Copilot) send visitors.
+
+    # How it works
+    A lightweight (~1KB) tracking beacon fires on each page view using
+    navigator.sendBeacon(). No cookies. No PII. Only page metadata and
+    user agent are transmitted for server-side bot/referral classification.
+
+    # Configure
+    1. Sign up at devtune.ai and create a project
+    2. Go to AI Traffic Settings and copy your snippet key
+    3. Install this integration on your GitBook site
+    4. Paste your snippet key (format: dt_xxxxxxxxxxxx)
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            snippet_key:
+                type: string
+                title: Snippet Key
+                description: Your DevTune snippet key (starts with dt_). Find it in your project's AI Traffic Settings.
+        required:
+            - snippet_key
+target: site
