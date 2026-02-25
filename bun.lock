@@ -126,7 +126,7 @@
     },
     "integrations/formspree": {
       "name": "@gitbook/integration-formspree",
-      "version": "0.3.0",
+      "version": "0.3.2",
       "dependencies": {
         "@gitbook/runtime": "workspace:*",
       },
@@ -487,13 +487,13 @@
     },
     "integrations/onetrust": {
       "name": "@gitbook/integration-onetrust",
-      "version": "0.0.0",
+      "version": "0.1.1",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
       },
       "devDependencies": {
-        "@gitbook/browser-types": "^0.1.4",
+        "@gitbook/browser-types": "^0.1.5",
         "@gitbook/cli": "workspace:*",
         "@gitbook/tsconfig": "workspace:*",
       },
@@ -768,7 +768,7 @@
     },
     "packages/adaptive": {
       "name": "@gitbook/adaptive",
-      "version": "1.0.0",
+      "version": "1.0.2",
       "dependencies": {
         "js-cookie": "^3.0.5",
       },
@@ -783,7 +783,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.160.0",
+      "version": "0.161.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -798,7 +798,7 @@
     },
     "packages/cli": {
       "name": "@gitbook/cli",
-      "version": "0.27.0",
+      "version": "0.27.2",
       "bin": {
         "gitbook": "./cli.js",
       },
@@ -827,7 +827,7 @@
     },
     "packages/document": {
       "name": "@gitbook/document",
-      "version": "0.1.1",
+      "version": "0.1.3",
       "dependencies": {
         "@gitbook/api": "*",
       },
@@ -838,7 +838,7 @@
     },
     "packages/runtime": {
       "name": "@gitbook/runtime",
-      "version": "0.23.1",
+      "version": "0.23.3",
       "dependencies": {
         "@gitbook/api": "*",
       },
@@ -850,7 +850,7 @@
     },
     "packages/tsconfig": {
       "name": "@gitbook/tsconfig",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "devDependencies": {
         "@cloudflare/workers-types": "^4.20240925.0",
       },
@@ -1116,7 +1116,7 @@
 
     "@gitbook/api": ["@gitbook/api@workspace:packages/api"],
 
-    "@gitbook/browser-types": ["@gitbook/browser-types@0.1.4", "", { "dependencies": { "@gitbook/api": "0.159.0", "@gitbook/icons": "" } }, "sha512-O8SbKdKilvU5HBa8Rrp6lMG9xSF6O5QIkCzrkPOQ9q5A8Q/uV/4TyAbrWJ0LgsR+kHaOdNEYFzb6IRYxK8mxhw=="],
+    "@gitbook/browser-types": ["@gitbook/browser-types@0.1.5", "", { "dependencies": { "@gitbook/api": "0.163.0", "@gitbook/icons": "" } }, "sha512-Nsm+nBW+Y6G+65FES9Zb8nKhXT1BlBleU68bIzdSkyCKvEcVsbvs36FBbURI9eazjikG5yDTE9Hr4621qebvGw=="],
 
     "@gitbook/cli": ["@gitbook/cli@workspace:packages/cli"],
 
@@ -2733,6 +2733,8 @@
     "@envelop/types/tslib": ["tslib@2.8.1", "", {}, "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w=="],
 
     "@gitbook/api/esbuild": ["esbuild@0.14.54", "", { "optionalDependencies": { "@esbuild/linux-loong64": "0.14.54", "esbuild-android-64": "0.14.54", "esbuild-android-arm64": "0.14.54", "esbuild-darwin-64": "0.14.54", "esbuild-darwin-arm64": "0.14.54", "esbuild-freebsd-64": "0.14.54", "esbuild-freebsd-arm64": "0.14.54", "esbuild-linux-32": "0.14.54", "esbuild-linux-64": "0.14.54", "esbuild-linux-arm": "0.14.54", "esbuild-linux-arm64": "0.14.54", "esbuild-linux-mips64le": "0.14.54", "esbuild-linux-ppc64le": "0.14.54", "esbuild-linux-riscv64": "0.14.54", "esbuild-linux-s390x": "0.14.54", "esbuild-netbsd-64": "0.14.54", "esbuild-openbsd-64": "0.14.54", "esbuild-sunos-64": "0.14.54", "esbuild-windows-32": "0.14.54", "esbuild-windows-64": "0.14.54", "esbuild-windows-arm64": "0.14.54" }, "bin": { "esbuild": "bin/esbuild" } }, "sha512-Cy9llcy8DvET5uznocPyqL3BFRrFXSVqbgpMJ9Wz8oVjZlh/zUSNbPRbov0VX7VxN2JH1Oa0uNxZ7eLRb62pJA=="],
+
+    "@gitbook/browser-types/@gitbook/api": ["@gitbook/api@0.163.0", "", { "dependencies": { "event-iterator": "^2.0.0", "eventsource-parser": "^3.0.0" } }, "sha512-iEIJcHuh8qUhtgdd13IK/RKHNyvHvvqY2GuEBUGsCd42P3dm8QkgM7OUoCCaFiKBpuU+OZ+UtEB8N+9yJEgL7Q=="],
 
     "@gitbook/cli/esbuild": ["esbuild@0.17.19", "", { "optionalDependencies": { "@esbuild/android-arm": "0.17.19", "@esbuild/android-arm64": "0.17.19", "@esbuild/android-x64": "0.17.19", "@esbuild/darwin-arm64": "0.17.19", "@esbuild/darwin-x64": "0.17.19", "@esbuild/freebsd-arm64": "0.17.19", "@esbuild/freebsd-x64": "0.17.19", "@esbuild/linux-arm": "0.17.19", "@esbuild/linux-arm64": "0.17.19", "@esbuild/linux-ia32": "0.17.19", "@esbuild/linux-loong64": "0.17.19", "@esbuild/linux-mips64el": "0.17.19", "@esbuild/linux-ppc64": "0.17.19", "@esbuild/linux-riscv64": "0.17.19", "@esbuild/linux-s390x": "0.17.19", "@esbuild/linux-x64": "0.17.19", "@esbuild/netbsd-x64": "0.17.19", "@esbuild/openbsd-x64": "0.17.19", "@esbuild/sunos-x64": "0.17.19", "@esbuild/win32-arm64": "0.17.19", "@esbuild/win32-ia32": "0.17.19", "@esbuild/win32-x64": "0.17.19" }, "bin": { "esbuild": "bin/esbuild" } }, "sha512-XQ0jAPFkK/u3LcVRcvVHQcTIqD6E2H1fvZMA5dQPSOWb3suUbWbfbRf94pjc0bNzRYLfIrDRQXr7X+LHIm5oHw=="],
 
