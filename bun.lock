@@ -783,7 +783,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.162.0",
+      "version": "0.164.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
