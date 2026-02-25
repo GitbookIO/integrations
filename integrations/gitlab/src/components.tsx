@@ -190,7 +190,15 @@ export const configBlock = createComponent<
                                         >
                                             User Settings
                                         </link>
-                                        ) or a Project access token. The token requires the{' '}
+                                        ) or a Project access token (learn more{' '}
+                                        <link
+                                            target={{
+                                                url: 'https://docs.gitlab.com/user/project/settings/project_access_tokens/',
+                                            }}
+                                        >
+                                            here
+                                        </link>
+                                        ). The token requires the{' '}
                                         <text style="bold">
                                             api, read_repository, write_repository
                                         </text>{' '}
