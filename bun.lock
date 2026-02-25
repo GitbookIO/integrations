@@ -29,7 +29,7 @@
     },
     "integrations/amplitude": {
       "name": "@gitbook/integration-amplitude",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -783,7 +783,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.161.0",
+      "version": "0.162.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
