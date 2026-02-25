@@ -182,18 +182,19 @@ export const configBlock = createComponent<
                                 label="GitLab access token"
                                 hint={
                                     <text>
-                                        The access token requires the{' '}
+                                        You can use either a Personal access token (create one in{' '}
+                                        <link
+                                            target={{
+                                                url: 'https://gitlab.com/-/user_settings/personal_access_tokens',
+                                            }}
+                                        >
+                                            User Settings
+                                        </link>
+                                        ) or a Project access token. The token requires the{' '}
                                         <text style="bold">
                                             api, read_repository, write_repository
                                         </text>{' '}
-                                        scope for the integration to work. You can create one at{' '}
-                                        <link
-                                            target={{
-                                                url: 'https://gitlab.com/-/profile/personal_access_tokens',
-                                            }}
-                                        >
-                                            User Settings → Access Tokens.
-                                        </link>
+                                        scope for the integration to work.
                                     </text>
                                 }
                                 element={
