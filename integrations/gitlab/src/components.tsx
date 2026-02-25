@@ -182,21 +182,21 @@ export const configBlock = createComponent<
                                 label="GitLab access token"
                                 hint={
                                     <text>
-                                        You can use either a Personal access token (create one in{' '}
+                                        You can use either a Personal access token (
                                         <link
                                             target={{
                                                 url: 'https://gitlab.com/-/user_settings/personal_access_tokens',
                                             }}
                                         >
-                                            User Settings
+                                            User Settings → Access Tokens
                                         </link>
-                                        ) or a Project access token (learn more{' '}
+                                        ) or a Project access token (
                                         <link
                                             target={{
                                                 url: 'https://docs.gitlab.com/user/project/settings/project_access_tokens/',
                                             }}
                                         >
-                                            here
+                                            Learn more
                                         </link>
                                         ). The token requires the{' '}
                                         <text style="bold">
