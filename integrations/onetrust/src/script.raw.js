@@ -110,9 +110,17 @@
                     if (rejectBtn) rejectBtn.style.display = 'none';
 
                     const lang = (d.documentElement.lang || 'en').toLowerCase();
+                    const baseLang = lang.split('-')[0];
+                    const matchKey =
+                        doneTranslations[lang] !== undefined
+                            ? lang
+                            : Object.keys(doneTranslations).find(function (k) {
+                                  return k.startsWith(baseLang);
+                              });
                     const doneBtn = d.createElement('button');
                     doneBtn.id = 'gpc-done-btn-handler';
-                    doneBtn.textContent = doneTranslations[lang] || doneTranslations['en'];
+                    doneBtn.textContent =
+                        (matchKey && doneTranslations[matchKey]) || doneTranslations['en'];
 
                     if (acceptBtn) {
                         doneBtn.className = acceptBtn.className;
