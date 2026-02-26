@@ -447,6 +447,18 @@
         "esbuild": "^0.15.7",
       },
     },
+    "integrations/matomo": {
+      "name": "@gitbook/integration-matomo",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
     "integrations/mermaid": {
       "name": "@gitbook/integration-mermaid",
       "version": "0.4.2",
@@ -1191,6 +1203,8 @@
     "@gitbook/integration-mailchimp": ["@gitbook/integration-mailchimp@workspace:integrations/mailchimp"],
 
     "@gitbook/integration-marketo": ["@gitbook/integration-marketo@workspace:integrations/marketo"],
+
+    "@gitbook/integration-matomo": ["@gitbook/integration-matomo@workspace:integrations/matomo"],
 
     "@gitbook/integration-mermaid": ["@gitbook/integration-mermaid@workspace:integrations/mermaid"],
 
