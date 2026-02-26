@@ -45,6 +45,8 @@ It also hosts the default integrations provided by the GitBook team:
 - [`segment`](./integrations/segment/)
 - [`slack`](./integrations/slack/)
 - [`toucantoco`](./integrations/toucantoco/)
+- [`webhook`](./integrations/webhook/)
+
 
 ## Contributing
 
