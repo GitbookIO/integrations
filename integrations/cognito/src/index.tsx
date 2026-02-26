@@ -294,7 +294,7 @@ const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (reque
                     const jwtToken = await jwt.sign(
                         {
                             ...(decodedCognitoToken.payload ?? {}),
-                            exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60),
+                            exp: Math.floor(Date.now() / 1000) + 24 * (60 * 60),
                         },
                         privateKey,
                     );
