@@ -36,11 +36,16 @@ type MailchimpBlockState = {
 
 type MailchimpAction =
     | { action: 'subscribe'; email: string }
-    | { action: '@ui.modal.close'; listIndex: number; cta: string; listIds: string[] };
+    | { action: '@ui.modal.close'; listIndex: string | undefined; cta: string; listIds: string[] };
 
 const DEFAULT_CTA = 'Sign up to our mailing list to receive updates!';
 const DEFAULT_DISCLAIMER =
     'By clicking Subscribe, you agree to the processing of your email address in accordance with our privacy policy.';
+
+function parsePositiveInteger(value: string): number | null {
+    const num = parseInt(value, 10);
+    return num >= 0 && !isNaN(num) ? num : null;
+}
 
 /**
  * A Block to subscribe to a Mailchimp mailing list.
@@ -102,14 +107,29 @@ const mailchimpSubscribe = createComponent<
                 }
             }
             case '@ui.modal.close': {
-                const listIndex = 'listIndex' in action ? action.listIndex : null;
-                const listIds = 'listIds' in action ? action.listIds : null;
-                const cta = 'cta' in action ? action.cta : null;
-                const listId = listIds !== null && listIndex !== null ? listIds[listIndex] : null;
+                if (!('listIndex' in action) || !('listIds' in action) || !('cta' in action)) {
+                    throw new ExposableError('Invalid @ui.modal.close action payload');
+                }
+                const listIndex = (() => {
+                    if (!action.listIndex) {
+                        return null;
+                    }
+                    const listIndex = parsePositiveInteger(action.listIndex);
+                    if (listIndex === null) {
+                        throw new ExposableError(
+                            `Invalid @ui.modal.close listIndex value: ${action.listIndex}`,
+                        );
+                    }
+                    return listIndex;
+                })();
+                const listId =
+                    listIndex !== null && listIndex < action.listIds.length
+                        ? action.listIds[listIndex]
+                        : null;
                 return {
                     props: {
                         listId: listId ?? element.props.listId,
-                        cta: cta || element.props.cta,
+                        cta: action.cta,
                     },
                 };
             }
@@ -218,7 +238,10 @@ const settingsModal = createComponent<
         const { listId } = element.props;
         const lists = await getMailingLists(configuration.api_endpoint, accessToken);
         const initialListIndex = listId
-            ? lists.findIndex((list) => list.id === element.props.listId)
+            ? (() => {
+                  const index = lists.findIndex((list) => list.id === element.props.listId);
+                  return index === -1 ? undefined : index;
+              })()
             : undefined;
 
         return (
