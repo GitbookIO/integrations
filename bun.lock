@@ -279,6 +279,18 @@
         "@gitbook/tsconfig": "workspace:*",
       },
     },
+    "integrations/gurubase": {
+      "name": "@gitbook/integration-gurubase",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
     "integrations/heap": {
       "name": "@gitbook/integration-heap",
       "version": "0.7.0",
@@ -1165,6 +1177,8 @@
     "@gitbook/integration-gitlab-files": ["@gitbook/integration-gitlab-files@workspace:integrations/gitlab-files"],
 
     "@gitbook/integration-googleanalytics": ["@gitbook/integration-googleanalytics@workspace:integrations/googleanalytics"],
+
+    "@gitbook/integration-gurubase": ["@gitbook/integration-gurubase@workspace:integrations/gurubase"],
 
     "@gitbook/integration-heap": ["@gitbook/integration-heap@workspace:integrations/heap"],
 
