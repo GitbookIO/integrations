@@ -19,7 +19,6 @@ script: ./src/index.ts
 scopes:
     - space:content:read
     - space:metadata:read
-    - conversations:ingest
 summary: |
     # Overview
     With the GitBook Slack integration, your teams have instant access to your documentation, and can get AI-summarized answers about your content.
@@ -79,7 +78,6 @@ secrets:
     CLIENT_SECRET: ${{ env.SLACK_CLIENT_SECRET }}
     SIGNING_SECRET: ${{ env.SLACK_SIGNING_SECRET }}
     OPENAI_API_KEY: ${{ env.SLACK_OPENAI_API_KEY }}
-    REFLAG_SECRET_KEY: ${{ env.REFLAG_SECRET_KEY }}
 envs:
     dev-steeve:
         organization: idE5kUnGGjoPGcbu3FZJ
@@ -88,26 +86,22 @@ envs:
             CLIENT_SECRET: ${{ "op://gitbook-integrations/slackDevSteeve/CLIENT_SECRET" }}
             SIGNING_SECRET: ${{ "op://gitbook-integrations/slackDevSteeve/SIGNING_SECRET" }}
             OPENAI_API_KEY: ${{ "op://gitbook-integrations/slackDevSteeve/OPENAI_API_KEY" }}
-            REFLAG_SECRET_KEY: ${{ "op://gitbook-integrations/reflagDev/REFLAG_SECRET_KEY" }}
     test:
         secrets:
             CLIENT_ID: ${{ "op://gitbook-integrations/slackStaging/CLIENT_ID" }}
             CLIENT_SECRET: ${{ "op://gitbook-integrations/slackStaging/CLIENT_SECRET" }}
             SIGNING_SECRET: ${{ "op://gitbook-integrations/slackStaging/SIGNING_SECRET" }}
             OPENAI_API_KEY: ${{ "op://gitbook-integrations/slackStaging/OPENAI_API_KEY" }}
-            REFLAG_SECRET_KEY: ${{ "op://gitbook-integrations/reflagStaging/REFLAG_SECRET_KEY" }}
     staging:
         secrets:
             CLIENT_ID: ${{ "op://gitbook-integrations/slackStaging/CLIENT_ID" }}
             CLIENT_SECRET: ${{ "op://gitbook-integrations/slackStaging/CLIENT_SECRET" }}
             SIGNING_SECRET: ${{ "op://gitbook-integrations/slackStaging/SIGNING_SECRET" }}
             OPENAI_API_KEY: ${{ "op://gitbook-integrations/slackStaging/OPENAI_API_KEY" }}
-            REFLAG_SECRET_KEY: ${{ "op://gitbook-integrations/reflagStaging/REFLAG_SECRET_KEY" }}
     prod:
         secrets:
             CLIENT_ID: ${{ "op://gitbook-integrations/slackProd/CLIENT_ID" }}
             CLIENT_SECRET: ${{ "op://gitbook-integrations/slackProd/CLIENT_SECRET" }}
             SIGNING_SECRET: ${{ "op://gitbook-integrations/slackProd/SIGNING_SECRET" }}
             OPENAI_API_KEY: ${{ "op://gitbook-integrations/slackProd/OPENAI_API_KEY" }}
-            REFLAG_SECRET_KEY: ${{ "op://gitbook-integrations/reflagProd/REFLAG_SECRET_KEY" }}
 target: space

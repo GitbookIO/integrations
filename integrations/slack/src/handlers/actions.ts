@@ -1,10 +1,5 @@
 import { Logger } from '@gitbook/runtime';
-import {
-    ingestSlackConversation,
-    IngestSlackConversationActionParams,
-    queryAskAI,
-    type AskAIActionParams,
-} from '../actions';
+import { queryAskAI, type AskAIActionParams } from '../actions';
 import { SlackRuntimeContext } from '../configuration';
 import { getActionNameAndType, parseActionPayload } from '../utils';
 
@@ -38,25 +33,6 @@ export const slackActionsHandler = async (request: Request, context: SlackRuntim
             };
 
             context.waitUntil(queryAskAI(params));
-
-            return;
-        }
-        case 'ingest_conversation': {
-            const params: IngestSlackConversationActionParams = {
-                channelId: channel.id,
-                channelName: channel.name,
-                responseUrl: response_url,
-                teamId: team.id,
-                threadId: message_ts,
-                userId: user.id,
-                context,
-                conversationToIngest: {
-                    channelId: channel.id,
-                    messageTs: message_ts,
-                },
-            };
-
-            context.waitUntil(ingestSlackConversation(params));
 
             return;
         }
