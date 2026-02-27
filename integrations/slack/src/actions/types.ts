@@ -15,19 +15,6 @@ interface ActionBaseParams {
     threadId?: string;
 }
 
-export interface IngestSlackConversationActionParams extends ActionBaseParams {
-    /**
-     * Used when the ingestion originates from a Slack conversation shortcut.
-     * The target conversation in this case is both the conversation to ingest
-     * and the one where notifications are sent.
-     * Identified by the `channelId` and `messageTs` values.
-     */
-    conversationToIngest: {
-        channelId: string;
-        messageTs: string;
-    };
-}
-
 export interface AskAIActionParams extends ActionBaseParams {
     queryText: string;
 

@@ -1,7 +1,7 @@
 import { Logger } from '@gitbook/runtime';
 
 import type { SlashEvent } from './commands';
-import { inferUserIntentAndTriggerAction, ingestSlackConversation, queryAskAI } from '../actions';
+import { inferUserIntentAndTriggerAction, queryAskAI } from '../actions';
 import { SlackRuntimeContext } from '../configuration';
 import { isAllowedToRespond, stripBotName } from '../utils';
 
