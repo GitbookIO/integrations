@@ -3,7 +3,6 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { z } from 'zod';
 
 import { queryAskAI } from './queryAskAI';
-import { ingestSlackConversation } from './ingestConversation';
 import type { SlackInstallationConfiguration, SlackRuntimeContext } from '../configuration';
 import { slackAPI } from '../slack';
 import { getIntegrationInstallationForTeam } from '../utils';
@@ -98,14 +97,10 @@ You are a Slack assistant designed to help users with their product documentatio
 
 # Tools
 - **askAIQuery**: Use when the user is clearly asking a question about their product, features, documentation, or content.
-- **ingestConversation**: Use to ingest the current Slack thread so that any feedback or discussion can be used to improve the user's documentation.  
-  - When a user refers to “this feedback,” “this conversation,” or similar phrases without specifying details, infer that they mean the feedback in the current Slack thread.  
-  - Do **not** ask for clarification unless it’s genuinely ambiguous (for example, if the user mentions feedback from another source).
 
 # Rules
-- Always pick the tool that best matches the user's intent.
+- Always pick the tool that best matches the user’s intent.
 - Be concise and polite when asking for clarification.
-- Make reasonable inferences from context — for example, “this feedback” refers to the current thread.
 - Base decisions solely on the current message and its immediate context.
 `,
                 },
@@ -189,26 +184,7 @@ function getActionsTools(
         },
     });
 
-    const ingestConversationTool = tool({
-        description: 'Ingest this Slack conversation thread for improving documentation.',
-        inputSchema: z.object({}),
-        execute: async () => {
-            return ingestSlackConversation({
-                channelId,
-                teamId,
-                threadId: threadTs,
-                userId,
-                context: slackRuntimeContext,
-                conversationToIngest: {
-                    channelId,
-                    messageTs: threadTs,
-                },
-            });
-        },
-    });
-
     return {
         askAIQuery: askAIQueryTool,
-        ingestConversation: ingestConversationTool,
     };
 }

@@ -1,5 +1,23 @@
 # @gitbook/api
 
+## 0.165.0
+
+### Minor Changes
+
+- 30ca6c3: Bump API client
+
+## 0.164.0
+
+### Minor Changes
+
+- ba33ced: Update API client with latest OpenAPI spec.
+
+## 0.163.0
+
+### Minor Changes
+
+- ed24481: Update API client with latest OpenAPI spec.
+
 ## 0.162.0
 
 ### Minor Changes
