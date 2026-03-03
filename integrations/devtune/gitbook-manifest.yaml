@@ -7,7 +7,7 @@ externalLinks:
       url: https://devtune.ai/docs/integrations/gitbook
     - label: DevTune Dashboard
       url: https://devtune.ai
-visibility: public
+visibility: unlisted
 organization: gitbook
 script: ./src/index.ts
 scopes:
