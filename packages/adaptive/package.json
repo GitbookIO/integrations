@@ -2,7 +2,7 @@
     "name": "@gitbook/adaptive",
     "description": "Utility to use adaptive content in GitBook",
     "type": "module",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "sideEffects": false,
     "files": [
         "README.md",
@@ -31,5 +31,14 @@
             "default": "./dist/index.cjs"
         },
         "./package.json": "./package.json"
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/GitbookIO/integrations.git",
+        "directory": "packages/adaptive"
     }
 }
