@@ -1,5 +1,5 @@
 window.fwSettings = {
-    widget_id: '<TO_REPLACE>',
+    widget_id: '<WIDGET_ID>',
 };
 !(function () {
     if ('function' != typeof window.FreshworksWidget) {
@@ -14,7 +14,7 @@ window.fwSettings = {
 (function () {
     var s = document.createElement('script');
     s.type = 'text/javascript';
-    s.src = 'https://widget.freshworks.com/widgets/<TO_REPLACE>.js';
+    s.src = '<WIDGET_URL>';
     s.async = true;
     s.defer = true;
     document.getElementsByTagName('head')[0].appendChild(s);
