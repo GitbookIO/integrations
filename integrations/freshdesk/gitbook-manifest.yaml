@@ -45,7 +45,7 @@ configurations:
         properties:
             widget_id:
                 type: string
-                title: widget_url
+                title: Widget URL
                 description: Paste either your Freshdesk widget ID or the full widget URL from Freshworks Embed Widget.
         required:
             - widget_id
