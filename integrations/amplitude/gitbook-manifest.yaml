@@ -18,6 +18,7 @@ contentSecurityPolicy:
         https://cdn.amplitude.com;
     connect-src: |
         cdn.amplitude.com;
+        api2.amplitude.com;
 summary: |
     # Overview
 
@@ -42,6 +43,61 @@ configurations:
                 type: string
                 title: Amplitude API Key
                 description: Your Amplitude API Key
+            server_url:
+                type: string
+                title: Server URL
+                description: URL where events are uploaded
+                default: https://api2.amplitude.com/2/httpapi
+            autocapture_attribution:
+                type: boolean
+                title: Attribution
+                description: Enable marketing attribution tracking
+                default: true
+            autocapture_page_views:
+                type: boolean
+                title: Page Views
+                description: Enable page view tracking
+                default: true
+            autocapture_sessions:
+                type: boolean
+                title: Sessions
+                description: Enable session tracking
+                default: true
+            autocapture_form_interactions:
+                type: boolean
+                title: Form Interactions
+                description: Enable form start and form submit tracking
+                default: true
+            autocapture_file_downloads:
+                type: boolean
+                title: File Downloads
+                description: Enable file download tracking
+                default: true
+            autocapture_element_interactions:
+                type: boolean
+                title: Element Interactions
+                description: Enable element click and form field interaction tracking
+                default: false
+            autocapture_frustration_interactions:
+                type: boolean
+                title: Frustration Interactions
+                description: Enable rage clicks and dead clicks tracking (SDK 2.24.0+)
+                default: false
+            autocapture_page_url_enrichment:
+                type: boolean
+                title: Page URL Enrichment
+                description: Add page URL-related properties to all events
+                default: true
+            autocapture_network_tracking:
+                type: boolean
+                title: Network Tracking
+                description: Enable XHR and Fetch network request tracking
+                default: false
+            autocapture_web_vitals:
+                type: boolean
+                title: Web Vitals
+                description: Enable Core Web Vitals tracking (SDK 2.27.0+)
+                default: false
         required:
             - amplitude_api_key
 target: site

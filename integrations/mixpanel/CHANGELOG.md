@@ -1,5 +1,11 @@
 # @gitbook/integration-mixpanel
 
+## 0.7.0
+
+### Minor Changes
+
+- 3875e38: Add server region to mixpanel configuration
+
 ## 0.6.0
 
 ### Minor Changes

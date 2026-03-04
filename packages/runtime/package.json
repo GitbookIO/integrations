@@ -1,7 +1,7 @@
 {
     "name": "@gitbook/runtime",
     "type": "module",
-    "version": "0.23.1",
+    "version": "0.23.3",
     "sideEffects": false,
     "main": "src/index.ts",
     "dependencies": {
@@ -19,5 +19,14 @@
         ".": "./src/index.ts",
         "./jsx-runtime": "./src/contentkit-jsx.ts",
         "./jsx-dev-runtime": "./src/contentkit-jsx.ts"
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/GitbookIO/integrations.git",
+        "directory": "packages/runtime"
     }
 }

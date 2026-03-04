@@ -1,5 +1,12 @@
 # @gitbook/integration-gitlab
 
+## 0.6.5
+
+### Patch Changes
+
+- c6f080a: Update GitLab access token hint copy
+- 852d5ff: Update hint for GitLab access token
+
 ## 0.6.4
 
 ### Patch Changes

@@ -11,6 +11,10 @@ jobs:
     release:
         name: Release
         runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            pull-requests: write
+            id-token: write
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -19,6 +23,15 @@ jobs:
                   fetch-depth: 0
                   # Using a PAT instead of the default token to ensure commits trigger CI
                   token: ${{ secrets.GH_PERSONAL_TOKEN }}
+            - name: Setup Node.js for npm trusted publishing
+              uses: actions/setup-node@v4
+              with:
+                  # npm trusted publishing requires npm 11.5.1+ (Node 22.14.0+)
+                  node-version: '24'
+                  registry-url: 'https://registry.npmjs.org'
+            # Ensure npm 11.5.1 or later is installed
+            - name: Update npm
+              run: npm install -g npm@latest
             - name: Setup bun
               uses: oven-sh/setup-bun@v2
               with:
@@ -34,7 +47,7 @@ jobs:
                   # Using a PAT instead of GITHUB_TOKEN because we need to run workflows when releases are created
                   # https://github.com/orgs/community/discussions/26875#discussioncomment-3253761
                   GITHUB_TOKEN: ${{ secrets.GH_PERSONAL_TOKEN }}
-                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  NPM_CONFIG_PROVENANCE: true
 
     publish-integrations-staging:
         name: Publish Integrations to Staging

@@ -1,5 +1,11 @@
 # @gitbook/integration-arcade
 
+## 0.3.0
+
+### Minor Changes
+
+- 76e1a39: Add query param for language
+
 ## 0.2.2
 
 ### Patch Changes

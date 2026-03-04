@@ -91,4 +91,5 @@ window.mixpanel.init('<TO_REPLACE>', {
     debug: true,
     track_pageview: true,
     persistence: 'localStorage',
+    api_host: '<API_HOST_PLACEHOLDER>',
 });
