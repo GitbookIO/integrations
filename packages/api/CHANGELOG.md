@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.165.0
+
+### Minor Changes
+
+- 30ca6c3: Bump API client
+
 ## 0.164.0
 
 ### Minor Changes

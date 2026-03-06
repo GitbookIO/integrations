@@ -9,7 +9,11 @@
 
     s.onload = function () {
         if (window.FrontChat) {
-            window.FrontChat('init', { chatId: chatId, useDefaultLauncher: true });
+            window.FrontChat('init', {
+                chatId: chatId,
+                useDefaultLauncher: true,
+                colorScheme: 'light dark',
+            });
         }
     };
 

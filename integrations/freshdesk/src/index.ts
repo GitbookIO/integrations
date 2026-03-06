@@ -16,20 +16,53 @@ type FreshdeskRuntimeContext = RuntimeContext<
     >
 >;
 
+function parseWidgetConfiguration(
+    widgetInput?: string,
+): { widgetId: string; widgetURL: string } | null {
+    if (!widgetInput?.trim()) {
+        return null;
+    }
+
+    const value = widgetInput.trim();
+
+    try {
+        const parsedURL = new URL(value);
+        const widgetId = parsedURL.pathname.match(/\/widgets\/([^/]+)\.js$/)?.[1];
+        if (!widgetId) {
+            return null;
+        }
+
+        return {
+            widgetId,
+            widgetURL: parsedURL.toString(),
+        };
+    } catch {
+        return {
+            widgetId: value,
+            widgetURL: `https://widget.freshworks.com/widgets/${value}.js`,
+        };
+    }
+}
+
 export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
     { environment }: FreshdeskRuntimeContext,
 ) => {
-    const widgetId = environment.siteInstallation?.configuration?.widget_id;
-    if (!widgetId) {
+    const widgetInput = environment.siteInstallation?.configuration?.widget_id;
+    const widgetConfig = parseWidgetConfiguration(widgetInput);
+    if (!widgetConfig) {
         throw new Error(
-            `The Freshdesk Widget ID is missing from the configuration (ID: ${
+            `The Freshdesk widget configuration is invalid. Expected a widget ID or a full URL ending with /widgets/<widget_id>.js (ID: ${
                 'spaceId' in event ? event.spaceId : event.siteId
             }).`,
         );
     }
 
-    return new Response((script as string).replaceAll('<TO_REPLACE>', widgetId), {
+    const scriptContent = (script as string)
+        .replaceAll('<WIDGET_ID>', widgetConfig.widgetId)
+        .replaceAll('<WIDGET_URL>', widgetConfig.widgetURL);
+
+    return new Response(scriptContent, {
         headers: {
             'Content-Type': 'application/javascript',
             'Cache-Control': 'max-age=604800',
