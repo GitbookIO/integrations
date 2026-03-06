@@ -1,5 +1,12 @@
 # @gitbook/api
 
+## 0.166.0
+
+### Minor Changes
+
+- c1a41ad: Update API client with latest OpenAPI spec.
+- 6baff43: Bump API to use OpenAPI 3.1
+
 ## 0.165.0
 
 ### Minor Changes
