@@ -90,6 +90,18 @@
         "@gitbook/tsconfig": "workspace:*",
       },
     },
+    "integrations/devtune": {
+      "name": "@gitbook/integration-devtune",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
     "integrations/discord": {
       "name": "@gitbook/integration-discord",
       "dependencies": {
@@ -1083,6 +1095,8 @@
     "@gitbook/integration-cognito": ["@gitbook/integration-cognito@workspace:integrations/cognito"],
 
     "@gitbook/integration-crisp": ["@gitbook/integration-crisp@workspace:integrations/crisp"],
+
+    "@gitbook/integration-devtune": ["@gitbook/integration-devtune@workspace:integrations/devtune"],
 
     "@gitbook/integration-discord": ["@gitbook/integration-discord@workspace:integrations/discord"],
 
