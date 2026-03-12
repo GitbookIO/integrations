@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.170.0
+
+### Minor Changes
+
+- bde00d5: Bump API to expose login url for published site
+
 ## 0.169.0
 
 ### Minor Changes
