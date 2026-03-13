@@ -418,10 +418,15 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
 
                 let jwtToken: string | undefined;
                 try {
+                    const minimumExp = Math.floor(Date.now() / 1000) + 60 * 60;
+                    const upstreamTokenExp =
+                        typeof decodedIdToken?.payload?.exp === 'number'
+                            ? decodedIdToken.payload.exp
+                            : undefined;
                     jwtToken = await jwt.sign(
                         {
                             ...(decodedIdToken.payload ?? {}),
-                            exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60),
+                            exp: Math.max(minimumExp, upstreamTokenExp ?? 0),
                         },
                         privateKey,
                     );
