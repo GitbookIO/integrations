@@ -1,5 +1,11 @@
 # @gitbook/integration-cognito
 
+## 0.4.0
+
+### Minor Changes
+
+- 781f78a: Update VA/OIDC integrations to use upstream provider token's expiry
+
 ## 0.3.0
 
 ### Minor Changes
