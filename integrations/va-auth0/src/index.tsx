@@ -295,9 +295,6 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
 
                 const auth0TokenData = await auth0TokenResp.json<Auth0TokenResponseData>();
                 let userInfo;
-                const decodedAuth0AccessToken = auth0TokenData.access_token
-                    ? await jwt.decode(auth0TokenData.access_token)
-                    : undefined;
                 if (includeClaimsInToken) {
                     // Auth0 returns an opaque access token (i.e., one that doesn't include user or custom claims) when
                     // exchanging an authorization code for a token—unless an audience (aud parameter) is set to a valid
@@ -340,14 +337,12 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
 
                 try {
                     const minimumExp = Math.floor(Date.now() / 1000) + 60 * 60;
-                    const upstreamTokenExp =
-                        typeof decodedAuth0AccessToken?.payload?.exp === 'number'
-                            ? decodedAuth0AccessToken.payload.exp
-                            : undefined;
+                    const upstreamAccessTokenExp =
+                        Math.floor(Date.now() / 1000) + auth0TokenData.expires_in;
                     const jwtToken = await jwt.sign(
                         {
                             ...(userInfo ?? {}),
-                            exp: Math.max(minimumExp, upstreamTokenExp ?? 0),
+                            exp: Math.max(minimumExp, upstreamAccessTokenExp),
                         },
                         privateKey,
                     );
