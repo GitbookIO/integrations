@@ -25,7 +25,7 @@
         "eventsource-parser": "^3.0.0"
     },
     "devDependencies": {
-        "swagger-typescript-api": "^13.3.0",
+        "swagger-typescript-api": "^13.6.5",
         "swagger-cli": "^4.0.4",
         "esbuild": "^0.14.42",
         "typescript": "^5.6.2",
