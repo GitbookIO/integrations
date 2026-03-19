@@ -1,5 +1,11 @@
 # @gitbook/integration-linear
 
+## 1.2.0
+
+### Minor Changes
+
+- 08af844: Update Linear integration's manifest to pull from 1Password
+
 ## 1.1.2
 
 ### Patch Changes
