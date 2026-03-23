@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.173.0
+
+### Minor Changes
+
+- 8e9e854: Bump API to support sticky table headers
+
 ## 0.172.0
 
 ### Minor Changes
