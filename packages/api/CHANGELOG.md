@@ -1,5 +1,54 @@
 # @gitbook/api
 
+## 0.173.0
+
+### Minor Changes
+
+- 8e9e854: Bump API to support sticky table headers
+
+## 0.172.0
+
+### Minor Changes
+
+- 3508d78: Bump API
+
+## 0.171.0
+
+### Minor Changes
+
+- 4f86286: Update API client with latest OpenAPI spec.
+
+## 0.170.0
+
+### Minor Changes
+
+- bde00d5: Bump API to expose login url for published site
+
+## 0.169.0
+
+### Minor Changes
+
+- ad22455: Bump API
+
+## 0.168.0
+
+### Minor Changes
+
+- d3a5fc8: Bump API to use the latest spec
+
+## 0.167.0
+
+### Minor Changes
+
+- 9d92f77: Bump API
+
+## 0.166.0
+
+### Minor Changes
+
+- c1a41ad: Update API client with latest OpenAPI spec.
+- 6baff43: Bump API to use OpenAPI 3.1
+
 ## 0.165.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @gitbook/integration-freshdesk
 
+## 1.1.0
+
+### Minor Changes
+
+- d565165: Update Freshdesk configuration options
+
 ## 1.0.1
 
 ### Patch Changes
