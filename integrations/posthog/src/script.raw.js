@@ -1,5 +1,6 @@
 const projectApiKey = '<ph_project_api_key>';
-const instanceAddress = '<ph_instance_address>';
+const apiHost = '<ph_api_host>';
+const uiHost = '<ph_ui_host>';
 const GRANTED_COOKIE = '__gitbook_cookie_granted';
 
 function getCookie(cname) {
@@ -64,5 +65,5 @@ function getCookie(cname) {
             e._i.push([i, s, a]);
         }),
         (e.__SV = 1));
-    posthog.init(projectApiKey, { api_host: instanceAddress });
+    posthog.init(projectApiKey, { api_host: apiHost, ui_host: uiHost });
 })(document, window.posthog || []);

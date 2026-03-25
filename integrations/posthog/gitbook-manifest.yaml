@@ -16,7 +16,8 @@ scopes:
     - site:script:cookies
 organization: gitbook
 contentSecurityPolicy:
-    script-src: https://eu.posthog.com https://app.posthog.com;
+    script-src: '*'
+    connect-src: '*'
 summary: |
     # Overview
     This integration allows to add the PostHog installation snippet on your published GitBook site.
@@ -28,6 +29,7 @@ summary: |
     # Configure
     Install the integration on the GitBook space of your choice.
     Locate the PostHog project API key and instance address you are using, which is available in PostHog's installation section.
+    Optionally, set a reverse proxy URL (HTTPS origin) if you use PostHog's reverse proxy so events are sent through your domain.
 
 categories:
     - analytics
@@ -45,6 +47,10 @@ configurations:
                 enum:
                     - EU
                     - US
+            reverseProxyUrl:
+                type: string
+                title: Reverse proxy URL (optional)
+                description: HTTPS origin for a reverse proxy, or leave empty for default ingest.
         required:
             - projectApiKey
             - instanceAddress
