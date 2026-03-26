@@ -131,6 +131,8 @@ export async function fetchRepositoryBranches(context: GithubRuntimeContext, rep
             per_page: 100,
             page: 1,
         },
+        // The branch selector is an interactive dropdown, so avoid walking every page.
+        walkPagination: false,
     });
 
     return branches;
