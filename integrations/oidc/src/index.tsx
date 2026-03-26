@@ -1,5 +1,6 @@
 import * as jwt from '@tsndr/cloudflare-worker-jwt';
 import { Router } from 'itty-router';
+import { getDomain } from 'tldts';
 
 import { IntegrationInstallationConfiguration } from '@gitbook/api';
 import {
@@ -309,6 +310,71 @@ function validateAccessTokenEndpoint(tokenEndpoint: string, installationURL: str
     }
 }
 
+/**
+ * Fetch a token from the configured upstream auth token endpoint.
+ * Allows a single 307/308 redirect only when the redirected endpoint stays on the same base domain.
+ */
+async function fetchTokenFromUpstreamAuth(
+    accessTokenEndpoint: string,
+    searchParams: URLSearchParams,
+): Promise<Response> {
+    const baseEndpoint = new URL(accessTokenEndpoint);
+    const response = await fetch(baseEndpoint.toString(), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': GITBOOK_OIDC_USER_AGENT,
+        },
+        body: searchParams.toString(),
+        // We handle redirects manually to prevent forwarding credentials across trust boundaries.
+        redirect: 'manual',
+    });
+
+    if (response.status !== 307 && response.status !== 308) {
+        return response;
+    }
+
+    const location = response.headers.get('location');
+    if (!location) {
+        logger.error('Token endpoint redirect missing location header');
+        return response;
+    }
+
+    let nextUrl: URL;
+    try {
+        nextUrl = new URL(location, baseEndpoint);
+    } catch {
+        logger.error(`Token endpoint redirect location is invalid: ${location}`);
+        return response;
+    }
+
+    if (nextUrl.protocol !== 'https:') {
+        logger.error(`Token endpoint redirect rejected due to non-https target: ${nextUrl}`);
+        return response;
+    }
+
+    const baseDomain = getDomain(baseEndpoint.toString()) ?? baseEndpoint.hostname;
+    const nextDomain = getDomain(nextUrl.toString()) ?? nextUrl.hostname;
+    if (nextDomain !== baseDomain) {
+        logger.error(
+            `Token endpoint redirect rejected due to cross-domain target: ${baseDomain} -> ${nextDomain}`,
+        );
+        return response;
+    }
+
+    logger.info(`Following token endpoint redirect to: ${nextUrl.toString()}`);
+
+    return fetch(nextUrl.toString(), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': GITBOOK_OIDC_USER_AGENT,
+        },
+        body: searchParams.toString(),
+        redirect: 'manual',
+    });
+}
+
 const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request, context) => {
     const { environment } = context;
     const siteInstallation = assertSiteInstallation(environment);
@@ -362,17 +428,10 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                     redirect_uri: `${installationURL}/visitor-auth/response`,
                 });
 
-                const tokenResp = await fetch(accessTokenEndpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'User-Agent': GITBOOK_OIDC_USER_AGENT,
-                    },
-                    body: searchParams,
-                    // Safeguards against upstream OAuth servers not following OAuth spec and potentially returning a redirect
-                    // response on error instead of returning a 4xx responses.
-                    redirect: 'manual',
-                });
+                const tokenResp = await fetchTokenFromUpstreamAuth(
+                    accessTokenEndpoint,
+                    searchParams,
+                );
 
                 if (!tokenResp.ok) {
                     const errorText = await tokenResp.text();

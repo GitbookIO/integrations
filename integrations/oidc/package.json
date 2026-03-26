@@ -6,7 +6,8 @@
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
         "itty-router": "^4.0.14",
-        "@tsndr/cloudflare-worker-jwt": "2.3.2"
+        "@tsndr/cloudflare-worker-jwt": "2.3.2",
+        "tldts": "^7.0.22"
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",
