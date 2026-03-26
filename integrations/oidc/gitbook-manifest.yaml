@@ -9,7 +9,7 @@ script: ./src/index.tsx
 scopes:
     - site:metadata:read
     - site:visitor:auth
-organization: gitbook
+organization: IieGJWcsOMLv4mfZWCaU
 summary: |
     # Overview
     Visitor Authentication allows you to publish content behind an authentication wall, so your content is only accessible to people you choose.

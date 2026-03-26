@@ -1,5 +1,6 @@
 import * as jwt from '@tsndr/cloudflare-worker-jwt';
 import { Router } from 'itty-router';
+import { getDomain } from 'tldts';
 
 import { IntegrationInstallationConfiguration } from '@gitbook/api';
 import {
@@ -352,14 +353,16 @@ async function fetchTokenFromUpstreamAuth(
         return response;
     }
 
-    const baseDomain = getBaseDomainFromHostname(baseEndpoint.hostname);
-    const nextDomain = getBaseDomainFromHostname(nextUrl.hostname);
+    const baseDomain = getDomain(baseEndpoint.toString()) ?? baseEndpoint.hostname;
+    const nextDomain = getDomain(nextUrl.toString()) ?? nextUrl.hostname;
     if (nextDomain !== baseDomain) {
         logger.error(
             `Token endpoint redirect rejected due to cross-domain target: ${baseDomain} -> ${nextDomain}`,
         );
         return response;
     }
+
+    logger.info(`Following token endpoint redirect to: ${nextUrl.toString()}`);
 
     return fetch(nextUrl.toString(), {
         method: 'POST',
@@ -370,16 +373,6 @@ async function fetchTokenFromUpstreamAuth(
         body: searchParams.toString(),
         redirect: 'manual',
     });
-}
-
-function getBaseDomainFromHostname(hostname: string): string {
-    const normalized = hostname.toLowerCase().replace(/\.$/, '');
-    const labels = normalized.split('.').filter(Boolean);
-    if (labels.length < 2) {
-        return normalized;
-    }
-
-    return labels.slice(-2).join('.');
 }
 
 const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request, context) => {
