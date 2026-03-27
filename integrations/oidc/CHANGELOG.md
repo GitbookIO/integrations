@@ -1,5 +1,13 @@
 # @gitbook/integration-oidc
 
+## 0.4.1
+
+### Patch Changes
+
+- 6b5fa20: Update OIDC integration to allow redirect on/token requests for trusted origin
+- Updated dependencies [16379b1]
+    - @gitbook/api@0.174.0
+
 ## 0.4.0
 
 ### Minor Changes

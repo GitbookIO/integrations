@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.174.0
+
+### Minor Changes
+
+- 16379b1: Bump API to use new localized fields
+
 ## 0.173.0
 
 ### Minor Changes

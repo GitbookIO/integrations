@@ -1,5 +1,13 @@
 # @gitbook/integration-gitlab
 
+## 0.6.6
+
+### Patch Changes
+
+- b65956d: Limit Git Sync branch selector requests to the first page of branches to avoid configuration timeouts on repositories with large branch counts.
+- Updated dependencies [16379b1]
+    - @gitbook/api@0.174.0
+
 ## 0.6.5
 
 ### Patch Changes

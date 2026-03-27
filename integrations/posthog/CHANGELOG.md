@@ -1,5 +1,16 @@
 # @gitbook/integration-posthog
 
+## 1.3.0
+
+### Minor Changes
+
+- 552014d: Add support for a reverse proxy
+
+### Patch Changes
+
+- Updated dependencies [16379b1]
+    - @gitbook/api@0.174.0
+
 ## 1.2.1
 
 ### Patch Changes
