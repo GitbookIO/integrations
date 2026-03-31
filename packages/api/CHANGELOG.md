@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.175.0
+
+### Minor Changes
+
+- 21a4ec5: Bump API to latest version
+
 ## 0.174.0
 
 ### Minor Changes
