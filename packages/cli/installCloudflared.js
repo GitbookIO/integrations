@@ -4,10 +4,12 @@
  */
 const { execSync } = require('child_process');
 const fs = require('fs');
+const os = require('os');
 const https = require('https');
 const path = require('path');
 
 const RELEASE_BASE = 'https://github.com/cloudflare/cloudflared/releases/';
+const CLOUDFLARED_VERSION = '2026.3.0';
 
 const LINUX_URL = {
     arm64: 'cloudflared-linux-arm64',
@@ -33,11 +35,61 @@ function resolveBase(version) {
     return `${RELEASE_BASE}download/${version}/`;
 }
 
+function getGitBookDataDirectory() {
+    if (process.platform === 'darwin') {
+        return path.join(os.homedir(), 'Library', 'Application Support', 'gitbook');
+    }
+
+    if (process.platform === 'win32') {
+        return path.join(
+            process.env.LOCALAPPDATA || path.join(os.homedir(), 'AppData', 'Local'),
+            'gitbook',
+        );
+    }
+
+    return path.join(
+        process.env.XDG_DATA_HOME || path.join(os.homedir(), '.local', 'share'),
+        'gitbook',
+    );
+}
+
+function getCloudflaredBinaryPath() {
+    return path.join(
+        getGitBookDataDirectory(),
+        'bin',
+        process.platform === 'win32' ? 'cloudflared.exe' : 'cloudflared',
+    );
+}
+
+async function hasCloudflared(binaryPath) {
+    const mode = process.platform === 'win32' ? fs.constants.F_OK : fs.constants.X_OK;
+
+    try {
+        await fs.promises.access(binaryPath, mode);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+async function ensureCloudflaredInstalled(onInstall = () => {}, onComplete = () => {}) {
+    const binaryPath = getCloudflaredBinaryPath();
+
+    if (await hasCloudflared(binaryPath)) {
+        return binaryPath;
+    }
+
+    onInstall();
+    await installCloudflared(binaryPath, CLOUDFLARED_VERSION);
+    onComplete();
+    return binaryPath;
+}
+
 /**
  * Install cloudflared to the given path.
- * @param to The path to the binary to install.
- * @param version The version of cloudflared to install.
- * @returns The path to the binary that was installed.
+ * @param {string} to The path to the binary to install.
+ * @param {string} version The version of cloudflared to install.
+ * @returns {Promise<string>} The path to the binary that was installed.
  */
 async function installCloudflared(to, version = 'latest') {
     if (process.platform === 'linux') {
@@ -136,8 +188,4 @@ function download(url, to, redirect = 0) {
     });
 }
 
-/**
- * Install the cloudflared binary inside the dist folder.
- * Locking the version to 2023.4.1 instead of latest to avoid breaking changes.
- */
-installCloudflared(path.join(__dirname, 'dist', 'cloudflared'), '2023.4.1');
+module.exports = ensureCloudflaredInstalled;

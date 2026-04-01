@@ -26,11 +26,10 @@
     },
     "files": [
         "dist/**",
-        "postinstall.js"
+        "installCloudflared.js"
     ],
     "scripts": {
         "build": "./build.sh",
-        "postinstall": "node postinstall.js",
         "typecheck": "tsc --noEmit"
     },
     "engines": {
