@@ -1,19 +1,42 @@
 import { spawn } from 'child_process';
-import * as path from 'path';
+
+export interface DevTunnel {
+    tunnelUrl: string;
+    close(): void;
+}
 
 /**
  * Create a tunnel using `cloudflared` mapped to `localhost:{port}`
  */
-export function createDevTunnel(port: number): Promise<string> {
+export function createDevTunnel(port: number, cloudflaredPath: string): Promise<DevTunnel> {
     return new Promise((resolve, reject) => {
         let tunnelUrl: string;
         let connectionsCount = 0;
-        const cloudflared = spawn(path.join(__dirname, 'cloudflared'), [
+        let resolved = false;
+        const cloudflared = spawn(cloudflaredPath, [
             'tunnel',
             '--no-autoupdate',
             '--url',
             `http://localhost:${port}`,
         ]);
+
+        const close = () => {
+            if (cloudflared.exitCode === null && !cloudflared.killed) {
+                cloudflared.kill('SIGTERM');
+            }
+        };
+
+        const resolveWhenReady = () => {
+            if (resolved || !tunnelUrl || connectionsCount < 1) {
+                return;
+            }
+
+            resolved = true;
+            resolve({
+                tunnelUrl,
+                close,
+            });
+        };
 
         cloudflared.stderr.on('data', (data) => {
             const output = data.toString();
@@ -31,14 +54,18 @@ export function createDevTunnel(port: number): Promise<string> {
                 connectionsCount++;
             }
 
-            if (connectionsCount >= 1) {
-                resolve(tunnelUrl);
-            }
+            resolveWhenReady();
         });
 
         cloudflared.on('close', (code) => {
-            if (code !== 0) {
-                throw new Error(`cloudflared exited with code ${code}`);
+            if (!resolved && code !== 0) {
+                reject(new Error(`cloudflared exited with code ${code}`));
+            }
+        });
+
+        cloudflared.on('error', (error) => {
+            if (!resolved) {
+                reject(error);
             }
         });
     });
