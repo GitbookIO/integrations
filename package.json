@@ -9,7 +9,6 @@
     "scripts": {
         "build": "turbo run build",
         "check": "turbo run check",
-        "smoke-test:cli": "bash ./scripts/smoke-test-cli.sh",
         "test": "turbo run test",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
