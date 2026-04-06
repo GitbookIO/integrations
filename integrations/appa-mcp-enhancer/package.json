@@ -1,0 +1,20 @@
+{
+    "name": "@gitbook/integration-appa-mcp-enhancer",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "itty-router": "^3.0.12",
+        "@gitbook/runtime": "*",
+        "@gitbook/api": "*"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "check": "gitbook check",
+        "publish-integrations": "gitbook publish .",
+        "publish-integrations-staging": "gitbook publish ."
+    }
+}
