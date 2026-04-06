@@ -8,7 +8,13 @@ import {
 } from '@gitbook/runtime';
 
 import { AppaRuntimeContext, AppaInstallationConfiguration } from './types';
-import { provisionMcpServer, syncSpace, getServerStatus } from './appa';
+import {
+    exchangeAuthCode,
+    provisionMcpServer,
+    syncSpace,
+    getServerStatus,
+    verifyWebhookSignature,
+} from './appa';
 
 const APPA_DASHBOARD_URL = 'https://appatools.com/mcp-studio/dashboard';
 
@@ -119,14 +125,30 @@ const handleFetchEvent: FetchEventCallback<AppaRuntimeContext> = async (request,
 
     router.get('/callback', async (req) => {
         const url = new URL(req.url);
-        const apiKey = url.searchParams.get('api_key');
-        const userId = url.searchParams.get('user_id');
+        const code = url.searchParams.get('code');
 
-        if (!apiKey || !userId) {
-            return new Response('Missing credentials from Appa. Please try again.', {
+        if (!code) {
+            return new Response('Missing authorization code. Please try again.', {
                 status: 400,
             });
         }
+
+        const clientSecret = environment.secrets?.APPA_CLIENT_SECRET;
+        if (!clientSecret) {
+            return new Response('Integration misconfigured: missing client secret.', {
+                status: 500,
+            });
+        }
+
+        const credentials = await exchangeAuthCode(code, clientSecret);
+        if (!credentials) {
+            return new Response(
+                'Failed to exchange authorization code. The code may have expired — please try again.',
+                { status: 400 }
+            );
+        }
+
+        const { api_key: apiKey, user_id: userId } = credentials;
 
         const spaceId =
             environment.spaceInstallation?.space || environment.installation?.id || '';
@@ -170,22 +192,7 @@ const handleFetchEvent: FetchEventCallback<AppaRuntimeContext> = async (request,
             );
         }
 
-        const successHtml = `
-<!DOCTYPE html>
-<html>
-<head><title>Connected to Appa</title></head>
-<body style="font-family:system-ui;max-width:480px;margin:80px auto;text-align:center">
-    <h1>Connected!</h1>
-    <p>Your enhanced MCP endpoint is ready:</p>
-    <code style="display:block;padding:12px;background:#f4f4f5;border-radius:8px;word-break:break-all;margin:16px 0">
-        ${provision.sseEndpoint}
-    </code>
-    <p>Add more sources in <a href="${APPA_DASHBOARD_URL}/${provision.serverId}">MCP Studio</a>.</p>
-    <p style="color:#888;font-size:14px;margin-top:24px">You can close this window.</p>
-</body>
-</html>`;
-
-        return new Response(successHtml, {
+        return new Response(buildSuccessPage(provision.sseEndpoint, provision.serverId), {
             headers: { 'Content-Type': 'text/html' },
         });
     });
@@ -213,6 +220,19 @@ const handleFetchEvent: FetchEventCallback<AppaRuntimeContext> = async (request,
     });
 
     router.post('/webhook', async (req) => {
+        const clientSecret = environment.secrets?.APPA_CLIENT_SECRET;
+        if (!clientSecret) {
+            return new Response('Webhook secret not configured', { status: 500 });
+        }
+
+        const rawBody = await req.text?.() ?? '';
+        const signature = req.headers.get('x-appa-signature') ?? '';
+
+        const valid = await verifyWebhookSignature(rawBody, signature, clientSecret);
+        if (!valid) {
+            return new Response('Invalid signature', { status: 401 });
+        }
+
         const config = environment.installation
             ?.configuration as AppaInstallationConfiguration;
         const creds = config?.appa_credentials;
@@ -221,7 +241,12 @@ const handleFetchEvent: FetchEventCallback<AppaRuntimeContext> = async (request,
             return new Response('Not connected', { status: 400 });
         }
 
-        const body = await req.json?.();
+        let body: { event?: string } | undefined;
+        try {
+            body = JSON.parse(rawBody);
+        } catch {
+            return new Response('Invalid JSON', { status: 400 });
+        }
 
         if (body?.event === 'content_updated') {
             const spaceUrl =
@@ -263,6 +288,142 @@ const handleSpaceContentUpdated = async (
 
     await syncSpace(creds.server_id, spaceUrl, creds.api_key);
 };
+
+function buildSuccessPage(endpoint: string, serverId: string): string {
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Connected to Appa</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #f8f9fb 0%, #eef1f5 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            max-width: 480px;
+            width: 100%;
+            padding: 40px 32px;
+            text-align: center;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #ecfdf5;
+            color: #059669;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 100px;
+            margin-bottom: 20px;
+        }
+        .badge svg { flex-shrink: 0; }
+        h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            color: #6b7280;
+            font-size: 15px;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+        .endpoint-box {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+        .endpoint-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #9ca3af;
+            margin-bottom: 6px;
+        }
+        .endpoint-url {
+            font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 13px;
+            color: #374151;
+            word-break: break-all;
+            line-height: 1.5;
+        }
+        .actions { display: flex; flex-direction: column; gap: 10px; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.15s ease;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-primary {
+            background: #4b5563;
+            color: #fff;
+        }
+        .btn-primary:hover { background: #374151; }
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        .btn-secondary:hover { background: #e5e7eb; }
+        .close-hint {
+            color: #9ca3af;
+            font-size: 13px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Connected
+        </div>
+        <h1>Your enhanced MCP is ready</h1>
+        <p class="subtitle">
+            GitBook content is being indexed. Add more sources like GitHub repos, websites, or other MCP endpoints in MCP Studio.
+        </p>
+        <div class="endpoint-box">
+            <div class="endpoint-label">MCP Endpoint</div>
+            <div class="endpoint-url">${endpoint}</div>
+        </div>
+        <div class="actions">
+            <a href="${APPA_DASHBOARD_URL}/${serverId}" class="btn btn-primary" target="_blank">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                Open MCP Studio
+            </a>
+            <button class="btn btn-secondary" onclick="navigator.clipboard.writeText('${endpoint}');this.textContent='Copied!'">
+                Copy endpoint URL
+            </button>
+        </div>
+        <p class="close-hint">You can close this window and return to GitBook.</p>
+    </div>
+</body>
+</html>`;
+}
 
 export default createIntegration<AppaRuntimeContext>({
     fetch: handleFetchEvent,
