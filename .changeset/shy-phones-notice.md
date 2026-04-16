@@ -3,4 +3,4 @@
 '@gitbook/integration-gitlab': patch
 ---
 
-Fix git sync export showing no commit message for computed revisions
+Revert previous gitsync integration changes
