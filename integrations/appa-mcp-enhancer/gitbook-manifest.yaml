@@ -1,0 +1,66 @@
+name: appa-mcp-enhancer
+title: Appa MCP Enhancer
+icon: ./assets/icon.png
+organization: gitbook
+visibility: unlisted
+description: Enhance your GitBook docs MCP with additional sources — GitHub repos, websites, and other MCP endpoints — through Appa's no-code MCP Studio.
+categories:
+    - collaboration
+previewImages:
+    - ./assets/preview.png
+externalLinks:
+    - label: Appa Tools
+      url: https://appatools.com
+    - label: MCP Studio
+      url: https://appatools.com/mcp-studio
+    - label: Documentation
+      url: https://docs.appatools.com/mcp-studio
+summary: |
+    # Overview
+
+    The Appa MCP Enhancer integration lets you augment your GitBook documentation MCP with additional context sources — GitHub repos, websites, API docs, and other MCP endpoints — all managed through Appa's no-code MCP Studio.
+
+    Your GitBook docs stay as the primary knowledge source. Appa adds supplementary context from your codebase, external documentation, and other MCP servers so AI agents get a complete picture.
+
+    # How it works
+
+    1. Install the integration and connect your Appa account.
+    2. Appa automatically registers your GitBook space as a source.
+    3. Add more sources (repos, websites, MCP URLs) in MCP Studio.
+    4. Get a single MCP endpoint that combines all sources.
+    5. Connect the endpoint to Cursor, Claude Desktop, or any MCP client.
+
+    # Configure
+
+    Click **Connect Appa** to link your Appa account. If you don't have one, you can create a free account at [appatools.com/mcp-studio](https://appatools.com/mcp-studio).
+
+    Once connected, you'll see your enhanced MCP endpoint URL. Copy it into your IDE or MCP client to start using it.
+script: ./src/index.tsx
+scopes:
+    - space:content:read
+    - space:metadata:read
+configurations:
+    account:
+        properties:
+            appa_credentials:
+                type: button
+                title: Appa Connection
+                description: Connect your Appa account to manage additional MCP sources.
+                button_text: Connect Appa
+                callback_url: /connect
+        required:
+            - appa_credentials
+    space:
+        properties:
+            mcp_endpoint:
+                type: string
+                title: Enhanced MCP Endpoint
+                description: Your combined MCP endpoint URL. Copy this into your IDE or MCP client configuration.
+            auto_sync:
+                type: boolean
+                title: Auto-sync content
+                description: Automatically re-index your GitBook content when it changes.
+                default: true
+secrets:
+    APPA_CLIENT_SECRET: ${{ env.APPA_MCP_CLIENT_SECRET }}
+target: space
