@@ -134,10 +134,7 @@ export async function triggerExport(
 
     logger.info(`Initiating an export from space ${spaceId} to GitLab`);
 
-    // We only need the source revision here so mergedFrom is preserved for the export commit
-    // message. Computed revision details are not needed here because the runner git sync
-    // computes the revision anyway.
-    const { data: revision } = await api.spaces.getCurrentRevision(spaceId, { computed: false });
+    const { data: revision } = await api.spaces.getCurrentRevision(spaceId);
 
     const auth = await getRepositoryAuth(config);
     const repoTreeURL = getGitTreeURL(config);
