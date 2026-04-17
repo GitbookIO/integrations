@@ -1,5 +1,14 @@
 # @gitbook/integration-github
 
+## 0.6.8
+
+### Patch Changes
+
+- d12bbb0: Fix git sync export showing no commit message for computed revisions
+- 0cc2b06: Revert previous gitsync integration changes
+- Updated dependencies [d12bbb0]
+    - @gitbook/api@0.178.0
+
 ## 0.6.7
 
 ### Patch Changes

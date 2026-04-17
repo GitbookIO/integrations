@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.178.0
+
+### Minor Changes
+
+- d12bbb0: Fix git sync export showing no commit message for computed revisions
+
 ## 0.177.0
 
 ### Minor Changes
