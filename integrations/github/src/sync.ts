@@ -213,7 +213,8 @@ export async function updateCommitWithPreviewLinks(
  * Get the commit message for the export of a revision.
  */
 function getCommitMessageForRevision(config: GitHubSpaceConfiguration, revision: Revision): string {
-    const changeRequest = revision.type === 'merge' ? revision.mergedFrom : null;
+    const changeRequest =
+        revision.type === 'merge' || revision.type === 'computed' ? revision.mergedFrom : null;
 
     if (!changeRequest) {
         return `GitBook: No commit message`;
