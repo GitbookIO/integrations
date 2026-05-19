@@ -11,7 +11,7 @@
         s.type = 'text/javascript';
         s.src = 'https://consent.cookiebot.com/uc.js';
         s.setAttribute('data-cbid', '<CBID>');
-        __BLOCKING_MODE__
+        __BLOCKING_MODE__;
         d.head.appendChild(s);
     }
 
