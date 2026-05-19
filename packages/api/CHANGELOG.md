@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.181.0
+
+### Minor Changes
+
+- 2eeed90: Update API with latest document block integration schema
+
 ## 0.180.0
 
 ### Minor Changes
