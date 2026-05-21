@@ -1,0 +1,48 @@
+name: cookiebot
+title: Cookiebot
+description: Add the Cookiebot cookie consent banner to your published GitBook site.
+visibility: public
+organization: gitbook
+icon: ./assets/icon.png
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+    - site:script:cookies
+contentSecurityPolicy:
+    script-src: |
+        https://consent.cookiebot.com;
+summary: |
+    # Overview
+    This integration allows you to add the Cookiebot cookie consent banner on your published GitBook site.
+
+    # How it works
+    The integration injects the Cookiebot CMP script (`uc.js`) on your page, using your Domain Group ID,
+    so that the cookie consent banner is displayed and consent is managed according to your Cookiebot configuration.
+
+    # Configure
+    Install the integration on the GitBook site of your choice.
+    Provide your Cookiebot Domain Group ID (the `data-cbid` value from your installation snippet, found under "Your scripts" in your Cookiebot account).
+    Choose auto or manual blocking mode to match how you configured Cookiebot on your site.
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            implementation_id:
+                type: string
+                title: Domain Group ID (CBID)
+                description: Cookiebot domain group ID (data-cbid). Find it under Your scripts in your Cookiebot account.
+            blocking_mode:
+                type: string
+                title: Blocking mode
+                description: Auto sets data-blockingmode=auto. Manual omits it; tag scripts with data-cookieconsent.
+                default: manual
+                enum:
+                    - auto
+                    - manual
+        required:
+            - implementation_id
+            - blocking_mode
+target: site
