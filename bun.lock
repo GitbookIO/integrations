@@ -359,6 +359,17 @@
         "@gitbook/tsconfig": "workspace:*",
       },
     },
+    "integrations/lead-forensics": {
+      "name": "@gitbook/integration-lead-forensics",
+      "version": "1.0.0",
+      "dependencies": {
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
     "integrations/linear": {
       "name": "@gitbook/integration-linear",
       "version": "1.2.0",
@@ -1138,6 +1149,8 @@
     "@gitbook/integration-koala": ["@gitbook/integration-koala@workspace:integrations/koala"],
 
     "@gitbook/integration-launchdarkly": ["@gitbook/integration-launchdarkly@workspace:integrations/launchdarkly"],
+
+    "@gitbook/integration-lead-forensics": ["@gitbook/integration-lead-forensics@workspace:integrations/lead-forensics"],
 
     "@gitbook/integration-linear": ["@gitbook/integration-linear@workspace:integrations/linear"],
 

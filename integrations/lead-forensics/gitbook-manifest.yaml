@@ -1,0 +1,41 @@
+name: lead-forensics
+title: Lead Forensics
+organization: gitbook
+visibility: public
+description: 'Identify and understand B2B visitors on your published GitBook site with Lead Forensics.'
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/lead-forensics-preview.png
+summary: |
+    # Overview
+    This integration adds the Lead Forensics tracker to your published GitBook site.
+
+    # How it works
+    The integration injects the Lead Forensics script on your page using the configured tracking identifier.
+
+    # Configure
+    Install the integration on the GitBook site of your choice.
+
+    Locate the tracking value from your Lead Forensics installation snippet and enter it below.
+externalLinks:
+    - label: Website
+      url: https://www.leadforensics.com/
+categories:
+    - analytics
+script: src/index.tsx
+scopes:
+    - site:script:inject
+secrets: {}
+contentSecurityPolicy:
+    script-src: https://secure.leadforensics.com https://*.leadforensics.com;
+    connect-src: https://secure.leadforensics.com https://*.leadforensics.com;
+configurations:
+    site:
+        properties:
+            tracking_id:
+                type: string
+                title: Tracking ID
+                description: Value from your Lead Forensics tracking snippet (update after you wire script.raw.js).
+        required:
+            - tracking_id
+target: site
