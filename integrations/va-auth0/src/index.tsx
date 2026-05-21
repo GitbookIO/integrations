@@ -415,6 +415,13 @@ export default createIntegration({
         url.searchParams.append('redirect_uri', `${installationURL}/visitor-auth/response`);
         url.searchParams.append('state', location);
 
+        // When present, include the `invitation` and `organization` search params in the authorize request to support Auth0 invitation flow.
+        const additionalSearchParams = event.searchParams ?? {};
+        if (additionalSearchParams.invitation && additionalSearchParams.organization) {
+            url.searchParams.append('invitation', additionalSearchParams.invitation);
+            url.searchParams.append('organization', additionalSearchParams.organization);
+        }
+
         return Response.redirect(url.toString());
     },
 });
