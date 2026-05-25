@@ -11,26 +11,22 @@ type HubSpotRuntimeContext = RuntimeContext<
     RuntimeEnvironment<
         {},
         {
-            script_loader_url?: string;
+            hubspot_id?: string;
         }
     >
 >;
 
-export const handleFetchEvent: FetchPublishScriptEventCallback = (
+export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
-    { environment }: HubSpotRuntimeContext
+    { environment }: HubSpotRuntimeContext,
 ) => {
-    const scriptLoaderURL =
-        environment.siteInstallation?.configuration?.script_loader_url ??
-        environment.spaceInstallation.configuration.script_loader_url;
+    const hubspotId = environment.siteInstallation?.configuration?.hubspot_id;
 
-    if (!scriptLoaderURL) {
-        throw new Error(
-            `The HubSpot Script Loader URL is missing from the configuration (ID: ${event.spaceId}).`
-        );
+    if (!hubspotId) {
+        return;
     }
 
-    return new Response(script.replace('<TO_REPLACE_SCRIPT_LOADER_ID>', scriptLoaderURL), {
+    return new Response((script as string).replace('<hubspot_id>', hubspotId), {
         headers: {
             'Content-Type': 'application/javascript',
             'Cache-Control': 'max-age=604800',

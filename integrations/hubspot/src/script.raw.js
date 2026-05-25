@@ -1,6 +1,6 @@
 function loadScript() {
     if (!document.getElementById('hs-script-loader')) {
-        const trackingID = '<TO_REPLACE_SCRIPT_LOADER_ID>';
+        const trackingID = '<hubspot_id>';
 
         const scriptLoaderURL = '//js.hs-scripts.com/' + trackingID + '.js';
         const headTag = document.getElementsByTagName('head')[0];
