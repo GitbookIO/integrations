@@ -34,7 +34,7 @@ configurations:
             hubspot_id:
                 type: string
                 title: HubSpot Tracking ID
-                description: The numeric tracking ID from your HubSpot script URL (e.g. the ID in //js.hs-scripts.com/{hubspot_id}.js)
+                description: The numeric ID from your HubSpot script URL (//js.hs-scripts.com/{hubspot_id}.js)
         required:
             - hubspot_id
 target: site
