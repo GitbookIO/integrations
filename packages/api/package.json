@@ -4,7 +4,7 @@
     "main": "./dist/index.cjs",
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
-    "version": "0.114.0",
+    "version": "0.181.0",
     "sideEffects": false,
     "files": [
         "README.md",
@@ -25,7 +25,7 @@
         "eventsource-parser": "^3.0.0"
     },
     "devDependencies": {
-        "swagger-typescript-api": "^13.0.3",
+        "swagger-typescript-api": "^13.3.0",
         "swagger-cli": "^4.0.4",
         "esbuild": "^0.14.42",
         "typescript": "^5.6.2",
@@ -48,5 +48,9 @@
         },
         "./spec/openapi.json": "./spec/openapi.json",
         "./spec/openapi.yaml": "./spec/openapi.yaml"
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
     }
 }

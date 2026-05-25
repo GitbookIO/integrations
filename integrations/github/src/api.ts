@@ -131,6 +131,8 @@ export async function fetchRepositoryBranches(context: GithubRuntimeContext, rep
             per_page: 100,
             page: 1,
         },
+        // The branch selector is an interactive dropdown, so avoid walking every page.
+        walkPagination: false,
     });
 
     return branches;
@@ -165,6 +167,7 @@ export async function createAppInstallationAccessToken(
     context: GithubRuntimeContext,
     appJWT: string,
     installationId: number,
+    isProxied?: boolean,
 ): Promise<string> {
     const { token } = await githubAPI<{ token: string; expires_at: string }>(
         context,
@@ -172,6 +175,11 @@ export async function createAppInstallationAccessToken(
         {
             method: 'POST',
             path: `/app/installations/${installationId}/access_tokens`,
+            additionalHeaders: isProxied
+                ? {
+                      'X-Gitbook-Proxy-Enabled': 'true',
+                  }
+                : {},
         },
     );
 
@@ -220,6 +228,10 @@ async function githubAPI<T>(
          * @default true
          */
         walkPagination?: boolean;
+        /**
+         * Additional headers to add to the request
+         */
+        additionalHeaders?: Record<string, string>;
     },
 ): Promise<T> {
     const {
@@ -229,6 +241,7 @@ async function githubAPI<T>(
         params,
         listProperty = '',
         walkPagination = true,
+        additionalHeaders = {},
     } = request;
 
     const credentials = tokenCredentials || extractTokenCredentialsOrThrow(context);
@@ -240,6 +253,7 @@ async function githubAPI<T>(
     const options = {
         method,
         body: body ? JSON.stringify(body) : undefined,
+        headers: additionalHeaders,
     };
 
     const response = await requestGitHubAPI(context, credentials, url, options);
@@ -313,11 +327,7 @@ async function requestGitHubAPI(
 
             logger.debug(`refreshing OAuth credentials for space ${spaceInstallation.space}`);
 
-            const refreshed = await refreshCredentials(
-                context.environment.secrets.CLIENT_ID,
-                context.environment.secrets.CLIENT_SECRET,
-                credentials.refresh_token,
-            );
+            const refreshed = await refreshCredentials(context, credentials.refresh_token);
 
             await context.api.integrations.updateIntegrationSpaceInstallation(
                 spaceInstallation.integration,
@@ -349,14 +359,13 @@ async function requestGitHubAPI(
 }
 
 async function refreshCredentials(
-    clientId: string,
-    clientSecret: string,
+    context: GithubRuntimeContext,
     refreshToken: string,
 ): Promise<OAuthTokenCredentials> {
     const url = new URL('https://github.com/login/oauth/access_token');
 
-    url.searchParams.set('client_id', clientId);
-    url.searchParams.set('client_secret', clientSecret);
+    url.searchParams.set('client_id', context.environment.secrets.CLIENT_ID);
+    url.searchParams.set('client_secret', context.environment.secrets.CLIENT_SECRET);
     url.searchParams.set('grant_type', 'refresh_token');
     url.searchParams.set('refresh_token', refreshToken);
 

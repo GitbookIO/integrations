@@ -68,7 +68,7 @@ export const configBlock = createComponent<
                         : undefined,
                 };
 
-                const glUser = await getCurrentUser(config);
+                const glUser = await getCurrentUser(context, config);
 
                 await context.api.integrations.updateIntegrationSpaceInstallation(
                     spaceInstallation.integration,
@@ -149,7 +149,7 @@ export const configBlock = createComponent<
 
             case 'save.configuration': {
                 await saveSpaceConfiguration(context, element.state);
-                return { type: 'complete' };
+                return { type: 'complete' as const };
             }
         }
     },
@@ -182,18 +182,27 @@ export const configBlock = createComponent<
                                 label="GitLab access token"
                                 hint={
                                     <text>
-                                        The access token requires the{' '}
+                                        You can use either a Personal access token (
+                                        <link
+                                            target={{
+                                                url: 'https://gitlab.com/-/user_settings/personal_access_tokens',
+                                            }}
+                                        >
+                                            User Settings → Access Tokens
+                                        </link>
+                                        ) or a Project access token (
+                                        <link
+                                            target={{
+                                                url: 'https://docs.gitlab.com/user/project/settings/project_access_tokens/',
+                                            }}
+                                        >
+                                            Learn more
+                                        </link>
+                                        ). The token requires the{' '}
                                         <text style="bold">
                                             api, read_repository, write_repository
                                         </text>{' '}
-                                        scope for the integration to work. You can create one at{' '}
-                                        <link
-                                            target={{
-                                                url: 'https://gitlab.com/-/profile/personal_access_tokens',
-                                            }}
-                                        >
-                                            User Settings → Access Tokens.
-                                        </link>
+                                        scope for the integration to work.
                                     </text>
                                 }
                                 element={
@@ -334,7 +343,7 @@ export const configBlock = createComponent<
                                             space in your repository.{' '}
                                             <link
                                                 target={{
-                                                    url: 'https://docs.gitbook.com/getting-started/git-sync/monorepos',
+                                                    url: 'https://gitbook.com/docs/getting-started/git-sync/monorepos',
                                                 }}
                                             >
                                                 Learn more.
@@ -357,7 +366,7 @@ export const configBlock = createComponent<
                                             from GitBook by a custom template.{' '}
                                             <link
                                                 target={{
-                                                    url: 'https://docs.gitbook.com/getting-started/git-sync/commits',
+                                                    url: 'https://gitbook.com/docs/getting-started/git-sync/commits',
                                                 }}
                                             >
                                                 Learn more.

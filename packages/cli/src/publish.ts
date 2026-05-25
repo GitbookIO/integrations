@@ -22,12 +22,13 @@ export async function publishIntegration(
 
     if (typeof manifest.target === 'string') {
         console.log(
-            `ℹ️ Publishing integration with "${manifest.target}" as target for installations.`,
+            `ℹ️  Publishing integration with "${manifest.target}" as target for installations.`,
         );
     }
 
     // Publish the integration.
     const created = await api.integrations.publishIntegration(manifest.name, {
+        runtime: 'v2',
         title: manifest.title,
         icon: manifest.icon
             ? await readImage(resolveFile(specFilePath, manifest.icon), 'icon')

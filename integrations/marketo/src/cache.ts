@@ -21,5 +21,5 @@ export function getWebframeCacheControl(): string {
  * Returns the cache key that controls the webframe handler response caching.
  */
 export function getWebframeCacheKey(): string {
-    return `v=${version}`;
+    return version;
 }

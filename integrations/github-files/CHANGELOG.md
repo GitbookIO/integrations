@@ -1,5 +1,25 @@
 # @gitbook/integration-github
 
+## 0.2.5
+
+### Patch Changes
+
+- 5580f32: Restrict URL pattern for unfurling block
+
+## 0.2.4
+
+### Patch Changes
+
+- 0bf599e: Fix Github files URL parsing
+- Updated dependencies [8edbe3b]
+    - @gitbook/api@0.128.0
+
+## 0.2.3
+
+### Patch Changes
+
+- 8ac0f8d: Fix GitHub & GitLab files embed hide/show action
+
 ## 0.2.2
 
 ### Patch Changes

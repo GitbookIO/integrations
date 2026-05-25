@@ -1,0 +1,56 @@
+name: fullstory
+title: Fullstory
+icon: ./assets/icon.png
+organization: gitbook
+description: Capture user sessions in GitBook with Fullstory to understand reader behavior and improve UX.
+previewImages:
+    - ./assets/fullstory-preview.png
+externalLinks:
+    - label: Documentation
+      url: https://www.gitbook.com/integrations/fullstory
+visibility: public
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+    - site:script:cookies
+contentSecurityPolicy:
+    script-src: |
+        https://fullstory.com
+        https://edge.fullstory.com;
+    img-src: |
+        data:
+        blob:
+        fullstory.com
+        edge.fullstory.com;
+    font-src: |
+        data:;
+    connect-src: |
+        fullstory.com
+        edge.fullstory.com
+        about:;
+summary: |
+    # Overview
+
+    Fullstory is a digital experience analytics platform that helps companies understand how users interact with their websites and apps. The Fullstory integration for GitBook allows you to gather analytics in Fullstory from visitors to your docs site.
+
+    # How it works
+
+    AI-powered insights from your documentation: Each of your connected GitBook sites will fetch the Fullstory tracking script and inject it into your public content.
+
+    # Configure
+
+    GitBook admins can enable the Fullstory integration by navigating to organization settings. The integration can be enabled on a per-site basis or for all sites in the organization.
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            organization_id:
+                type: string
+                title: Organization ID
+                description: Look for this in your Fullstory account.
+        required:
+            - organization_id
+target: site

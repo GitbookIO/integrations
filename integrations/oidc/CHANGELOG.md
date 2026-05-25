@@ -1,5 +1,76 @@
 # @gitbook/integration-oidc
 
+## 0.4.1
+
+### Patch Changes
+
+- 6b5fa20: Update OIDC integration to allow redirect on/token requests for trusted origin
+- Updated dependencies [16379b1]
+    - @gitbook/api@0.174.0
+
+## 0.4.0
+
+### Minor Changes
+
+- 781f78a: Update VA/OIDC integrations to use upstream provider token's expiry
+
+## 0.3.0
+
+### Minor Changes
+
+- 9f5f400: Add safeguards to OIDC VA integration
+
+## 0.2.9
+
+### Patch Changes
+
+- 43d7374: Fix issue where scopes can't be saved
+
+## 0.2.8
+
+### Patch Changes
+
+- f8c2288: Add user-agent to the token request and make scope config parsing more user-friendly
+
+## 0.2.7
+
+### Patch Changes
+
+- 5474280: Add error logs when token request fails
+- Updated dependencies [aab7f96]
+- Updated dependencies [84ea77c]
+    - @gitbook/runtime@0.23.1
+
+## 0.2.6
+
+### Patch Changes
+
+- 993d1ab: Fix case where oidc integration can redirect to a url ending with double triailling slash
+
+## 0.2.5
+
+### Patch Changes
+
+- 11f118b: Fix OIDC integration failing for some auth providers
+
+## 0.2.4
+
+### Patch Changes
+
+- a3daa1f: Log error stacktrace when getting route handling uncaught errors #909
+
+## 0.2.3
+
+### Patch Changes
+
+- a295590: Add support to OIDC integration to pull user/custom claims from auth token
+
+## 0.2.2
+
+### Patch Changes
+
+- dd283e4: Fix OIDC integration lowercasing endpoints URLs
+
 ## 0.2.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'bun:test';
 
-import * as api from '@gitbook/api';
+import type * as api from '@gitbook/api';
 
 import packageJson from '../package.json';
 import { generateSegmentTrackEvent } from '../src/events';
@@ -9,8 +9,6 @@ const fakeSpaceViewEvent: api.SiteViewEvent = {
     eventId: 'fake-event-id',
     type: 'site_view',
     siteId: 'fake-site-id',
-    spaceId: 'fake-space-id',
-    pageId: 'fake-page-id',
     installationId: 'fake-installation-id',
     visitor: {
         anonymousId: 'gitbookAnonymousId',
@@ -20,14 +18,14 @@ const fakeSpaceViewEvent: api.SiteViewEvent = {
             fake_cookie: 'cookie',
         },
     },
-    url: 'https://docs.gitbook.com/integrations?utm_source=gitbook',
+    url: 'https://gitbook.com/docs/integrations?utm_source=gitbook',
     referrer: 'https://www.gitbook.com/',
 };
 
 describe('events', () => {
     it('should generate the Segment Track Event with expected properties', () => {
         const expectedSegmentEvent = {
-            event: '[GitBook] space_view',
+            event: '[GitBook] site_view',
             anonymousId: 'gitbookAnonymousId',
             context: {
                 library: {
@@ -36,17 +34,15 @@ describe('events', () => {
                 },
                 page: {
                     referrer: 'https://www.gitbook.com/',
-                    path: '/integrations',
+                    path: '/docs/integrations',
                     search: '?utm_source=gitbook',
-                    url: 'https://docs.gitbook.com/integrations?utm_source=gitbook',
+                    url: 'https://gitbook.com/docs/integrations?utm_source=gitbook',
                 },
                 userAgent: 'fake-user-agent',
                 ip: '127.0.0.1',
             },
             properties: {
                 siteId: 'fake-site-id',
-                spaceId: 'fake-space-id',
-                pageId: 'fake-page-id',
             },
         };
         const actualSegmentEvent = generateSegmentTrackEvent(fakeSpaceViewEvent);

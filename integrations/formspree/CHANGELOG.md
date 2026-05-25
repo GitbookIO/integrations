@@ -1,5 +1,60 @@
 # @gitbook/integration-formspree
 
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies [ce9b4c3]
+    - @gitbook/runtime@0.23.3
+
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [25d0e77]
+    - @gitbook/runtime@0.23.2
+
+## 0.3.0
+
+### Minor Changes
+
+- 0ac4455: Normalize Formspree endpoint from configuration
+
+## 0.2.14
+
+### Patch Changes
+
+- Updated dependencies [aab7f96]
+- Updated dependencies [84ea77c]
+    - @gitbook/runtime@0.23.1
+
+## 0.2.13
+
+### Patch Changes
+
+- Updated dependencies [d7fa48f]
+    - @gitbook/runtime@0.23.0
+
+## 0.2.12
+
+### Patch Changes
+
+- Updated dependencies [75d605c]
+    - @gitbook/runtime@0.22.0
+
+## 0.2.11
+
+### Patch Changes
+
+- 04be551: Update types in formspree integration to render email field correctly
+
+## 0.2.10
+
+### Patch Changes
+
+- Updated dependencies [5b37e83]
+    - @gitbook/runtime@0.21.0
+
 ## 0.2.9
 
 ### Patch Changes

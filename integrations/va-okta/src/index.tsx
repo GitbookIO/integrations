@@ -387,10 +387,15 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                             status: 400,
                         });
                     }
+                    const minimumExp = Math.floor(Date.now() / 1000) + 60 * 60;
+                    const upstreamTokenExp =
+                        typeof decodedOktaToken?.payload?.exp === 'number'
+                            ? decodedOktaToken.payload.exp
+                            : undefined;
                     const jwtToken = await jwt.sign(
                         {
                             ...(decodedOktaToken.payload ?? {}),
-                            exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60),
+                            exp: Math.max(minimumExp, upstreamTokenExp ?? 0),
                         },
                         privateKey,
                     );

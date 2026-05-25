@@ -293,6 +293,7 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                     });
                 }
 
+                const auth0TokenData = await auth0TokenResp.json<Auth0TokenResponseData>();
                 let userInfo;
                 if (includeClaimsInToken) {
                     // Auth0 returns an opaque access token (i.e., one that doesn't include user or custom claims) when
@@ -306,7 +307,6 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                     // However, many authentication providers discourage this method in favor of the Authorization Code flow.
                     // Additionally, some customers may disable the Implicit Grant flow in their Auth0 application.
                     // Therefore, retrieving user data via the /userinfo endpoint is a more robust solution.
-                    const auth0TokenData = await auth0TokenResp.json<Auth0TokenResponseData>();
                     if (!auth0TokenData.access_token) {
                         return new Response('Error: No Access Token found in response from Auth0', {
                             status: 401,
@@ -336,10 +336,13 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                 }
 
                 try {
+                    const minimumExp = Math.floor(Date.now() / 1000) + 60 * 60;
+                    const upstreamAccessTokenExp =
+                        Math.floor(Date.now() / 1000) + auth0TokenData.expires_in;
                     const jwtToken = await jwt.sign(
                         {
                             ...(userInfo ?? {}),
-                            exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60),
+                            exp: Math.max(minimumExp, upstreamAccessTokenExp),
                         },
                         privateKey,
                     );
@@ -411,6 +414,13 @@ export default createIntegration({
         }
         url.searchParams.append('redirect_uri', `${installationURL}/visitor-auth/response`);
         url.searchParams.append('state', location);
+
+        // When present, include the `invitation` and `organization` search params in the authorize request to support Auth0 invitation flow.
+        const additionalSearchParams = event.searchParams ?? {};
+        if (additionalSearchParams.invitation && additionalSearchParams.organization) {
+            url.searchParams.append('invitation', additionalSearchParams.invitation);
+            url.searchParams.append('organization', additionalSearchParams.organization);
+        }
 
         return Response.redirect(url.toString());
     },

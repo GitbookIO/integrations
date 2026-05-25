@@ -1,0 +1,30 @@
+name: wistia
+title: Wistia
+organization: gitbook
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/wistia-preview.png
+description: Add Wistia video analytics to your GitBook site.
+visibility: public
+script: ./src/index.ts
+externalLinks:
+    - label: Website
+      url: https://wistia.com/
+scopes:
+    - site:script:inject
+    - site:script:cookies
+contentSecurityPolicy:
+    script-src: https://fast.wistia.com;
+summary: |
+    # Overview
+    This integration introduces support for collecting analytics on videos played by users. You can explore the full range of analytics offered by Wistia(https://wistia.com/product/analytics).
+    The videos are hosted on Wistia and embedded in GitBook using the built-in video embed feature. To enable tracking of these analytics—along with relevant information from the root page—Wistia's JavaScript libraries must be included on the root page.
+    This plugin facilitates that by injecting the required Wistia script into the page.
+
+    # How it works
+    The integration injects the Wistia script (https://fast.wistia.com/assets/external/E-v1.js)
+    on your page to enable video analytics tracking.
+    See example: https://docs.wistia.com/docs/iframe-embed-options#iframe-embed-options-and-bracket-notation
+categories:
+    - analytics
+target: site

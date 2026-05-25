@@ -291,10 +291,15 @@ const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (reque
                             status: 400,
                         });
                     }
+                    const minimumExp = Math.floor(Date.now() / 1000) + 60 * 60;
+                    const upstreamTokenExp =
+                        typeof decodedCognitoToken?.payload?.exp === 'number'
+                            ? decodedCognitoToken.payload.exp
+                            : undefined;
                     const jwtToken = await jwt.sign(
                         {
                             ...(decodedCognitoToken.payload ?? {}),
-                            exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60),
+                            exp: Math.max(minimumExp, upstreamTokenExp ?? 0),
                         },
                         privateKey,
                     );

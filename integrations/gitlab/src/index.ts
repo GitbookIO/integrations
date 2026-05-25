@@ -20,8 +20,6 @@ import {
     assertIsDefined,
     verifySignature,
     BRANCH_REF_PREFIX,
-    arrayToHex,
-    safeCompare,
 } from './utils';
 import { handleMergeRequestEvent, handlePushEvent } from './webhooks';
 
@@ -36,61 +34,6 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
                 environment.installation?.urls.publicEndpoint ||
                 environment.integration.urls.publicEndpoint,
         ).pathname,
-    });
-
-    async function verifyIntegrationSignature(
-        payload: string,
-        signature: string,
-        secret: string,
-    ): Promise<boolean> {
-        if (!signature) {
-            return false;
-        }
-
-        const algorithm = { name: 'HMAC', hash: 'SHA-256' };
-        const enc = new TextEncoder();
-        const key = await crypto.subtle.importKey('raw', enc.encode(secret), algorithm, false, [
-            'sign',
-            'verify',
-        ]);
-        const signed = await crypto.subtle.sign(algorithm.name, key, enc.encode(payload));
-        const expectedSignature = arrayToHex(signed);
-
-        return safeCompare(expectedSignature, signature);
-    }
-
-    /**
-     * Handle integration tasks
-     */
-    router.post('/tasks', async (request) => {
-        const signature = request.headers.get('x-gitbook-integration-signature') ?? '';
-        const payloadString = await request.text();
-
-        const verified = await verifyIntegrationSignature(
-            payloadString,
-            signature,
-            environment.signingSecrets.integration,
-        );
-
-        if (!verified) {
-            const message = `Invalid signature for integration task`;
-            logger.error(message);
-            throw new ExposableError(message);
-        }
-
-        const { task } = JSON.parse(payloadString) as { task: IntegrationTask };
-        logger.debug('verified & received integration task', task);
-
-        context.waitUntil(
-            (async () => {
-                await handleIntegrationTask(context, task);
-            })(),
-        );
-
-        return new Response(JSON.stringify({ acknowledged: true }), {
-            status: 200,
-            headers: { 'content-type': 'application/json' },
-        });
     });
 
     /**
@@ -164,6 +107,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
         if (querySelectedProject) {
             try {
                 const selectedProject = await fetchProject(
+                    context,
                     spaceConfig,
                     parseInt(querySelectedProject, 10),
                 );
@@ -180,7 +124,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
 
         if (queryProject) {
             const q = encodeURIComponent(queryProject);
-            const searchedProjects = await searchUserProjects(spaceConfig, q, {
+            const searchedProjects = await searchUserProjects(context, spaceConfig, q, {
                 page: 1,
                 per_page: 100,
                 walkPagination: false,
@@ -201,7 +145,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
             });
         } else {
             const page = pageNumber || 1;
-            const projects = await fetchProjects(spaceConfig, {
+            const projects = await fetchProjects(context, spaceConfig, {
                 page,
                 per_page: 100,
                 walkPagination: false,
@@ -251,7 +195,7 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
         const querySelectedBranch =
             selectedBranch && typeof selectedBranch === 'string' ? selectedBranch : undefined;
 
-        const branches = projectId ? await fetchProjectBranches(config, projectId) : [];
+        const branches = projectId ? await fetchProjectBranches(context, config, projectId) : [];
 
         const data = branches.map(
             (branch): ContentKitSelectOption => ({
@@ -405,7 +349,7 @@ const handleSpaceInstallationDeleted: EventCallback<
         return;
     }
 
-    await uninstallWebhook(configuration);
+    await uninstallWebhook(context, configuration);
 };
 
 export default createIntegration({
@@ -417,4 +361,5 @@ export default createIntegration({
         space_gitsync_completed: handleGitSyncCompleted,
         space_installation_deleted: handleSpaceInstallationDeleted,
     },
+    task: handleIntegrationTask,
 });

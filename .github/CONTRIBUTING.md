@@ -27,7 +27,7 @@ We recommend adding as many relevant links, minimal reproductions of the issue, 
 If you're interested in solving an issue in our repository, start by scanning through it's exisiting issues to find one that you're interested in working on. If you find an issue to work on, you are welcome to open a PR with a fix. See the following sections below for more information on contributing for specific sections.
 
 ### Docs
-The official developer docs for GitBook, hosted on https://developer.gitbook.com/. Our documentation uses one of GitBook's most useful features-[Git Sync](https://docs.gitbook.com/product-tour/git-sync)!
+The official developer docs for GitBook, hosted on https://developer.gitbook.com/. Our documentation uses one of GitBook's most useful features-[Git Sync](https://gitbook.com/docs/product-tour/git-sync)!
 
 Git Sync allows you to keep your GitBook site up to date with a remote repository either on GitHub or GitLab. In our case we have the [/docs](../docs/) directory synced with https://developer.gitbook.com/. This means that any changes reviewed, approved, and merged into this directory will automatically be deployed!
 
@@ -39,9 +39,9 @@ If you're interested in contributing to any of our already published integration
 ### Packages
 You're also welcome to contribute updates or improvements to the packages living in [/packages](../packages/). Head to each package's documentation page to learn more about what each one does.
 
-`@gitbook/cli`: https://developer.gitbook.com/cli/quickstart
-`@gitbook/api`: https://developer.gitbook.com/gitbook-api/librairies/browser-node
-`@gitbook/runtime`: https://developer.gitbook.com/integrations/reference
+`@gitbook/cli`: https://gitbook.com/docs/developers/integrations/reference
+`@gitbook/api`: https://gitbook.com/docs/developers/gitbook-api/overview
+`@gitbook/runtime`: https://gitbook.com/docs/developers/integrations/runtime
 
 ## Contributing
 

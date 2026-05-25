@@ -1,5 +1,432 @@
 # @gitbook/api
 
+## 0.181.0
+
+### Minor Changes
+
+- 2eeed90: Update API with latest document block integration schema
+
+## 0.180.0
+
+### Minor Changes
+
+- 8fcd14a: Update API client with latest OpenAPI spec.
+
+## 0.179.0
+
+### Minor Changes
+
+- 4629e41: Update API client with latest OpenAPI spec.
+
+## 0.178.0
+
+### Minor Changes
+
+- d12bbb0: Fix git sync export showing no commit message for computed revisions
+
+## 0.177.0
+
+### Minor Changes
+
+- 4e27cbe: Bump API to latest version
+
+## 0.176.0
+
+### Minor Changes
+
+- a419454: Bump API to latest version
+
+## 0.175.0
+
+### Minor Changes
+
+- 21a4ec5: Bump API to latest version
+
+## 0.174.0
+
+### Minor Changes
+
+- 16379b1: Bump API to use new localized fields
+
+## 0.173.0
+
+### Minor Changes
+
+- 8e9e854: Bump API to support sticky table headers
+
+## 0.172.0
+
+### Minor Changes
+
+- 3508d78: Bump API
+
+## 0.171.0
+
+### Minor Changes
+
+- 4f86286: Update API client with latest OpenAPI spec.
+
+## 0.170.0
+
+### Minor Changes
+
+- bde00d5: Bump API to expose login url for published site
+
+## 0.169.0
+
+### Minor Changes
+
+- ad22455: Bump API
+
+## 0.168.0
+
+### Minor Changes
+
+- d3a5fc8: Bump API to use the latest spec
+
+## 0.167.0
+
+### Minor Changes
+
+- 9d92f77: Bump API
+
+## 0.166.0
+
+### Minor Changes
+
+- c1a41ad: Update API client with latest OpenAPI spec.
+- 6baff43: Bump API to use OpenAPI 3.1
+
+## 0.165.0
+
+### Minor Changes
+
+- 30ca6c3: Bump API client
+
+## 0.164.0
+
+### Minor Changes
+
+- ba33ced: Update API client with latest OpenAPI spec.
+
+## 0.163.0
+
+### Minor Changes
+
+- ed24481: Update API client with latest OpenAPI spec.
+
+## 0.162.0
+
+### Minor Changes
+
+- 3b3bd97: Update API client with latest OpenAPI spec.
+
+## 0.161.0
+
+### Minor Changes
+
+- 5fedaf9: Bump API version
+
+## 0.160.1
+
+### Patch Changes
+
+- 25d0e77: Use NPM trusted publishing for publishing the package.
+
+## 0.160.0
+
+### Minor Changes
+
+- 55992f4: Add tags support on pages and updates
+
+## 0.159.0
+
+### Minor Changes
+
+- 6048cf2: Bump 0.159.0
+
+## 0.158.0
+
+### Minor Changes
+
+- 26bb94e: Bump 0.158.0
+
+## 0.157.0
+
+### Minor Changes
+
+- 6733e2a: Update API to include new manifest limits
+
+## 0.155.0
+
+### Minor Changes
+
+- 6db938f: Bump to 0.155.0 to include button actions
+
+## 0.154.0
+
+### Minor Changes
+
+- 1ddf69b: Bump API to include customization.ai.suggestions
+
+## 0.153.0
+
+### Minor Changes
+
+- 1e03949: Bump GitBook API
+
+## 0.152.1
+
+### Patch Changes
+
+- 7cb9bbc: Bump GitBook API
+
+## 0.152.0
+
+### Minor Changes
+
+- de9f017: Bump API
+
+## 0.151.0
+
+### Minor Changes
+
+- 526e63a: Bump API to latest version
+
+## 0.150.0
+
+### Minor Changes
+
+- b485c8a: bump api changelog-props
+
+## 0.149.0
+
+### Minor Changes
+
+- d7b4c43: Bump API to use the latest spec
+
+## 0.148.0
+
+### Minor Changes
+
+- 5c9aabe: bump api including updates
+
+## 0.147.0
+
+### Minor Changes
+
+- b0fcacf: Update api for search results ancestors
+
+## 0.146.0
+
+### Minor Changes
+
+- 70c7d11: Bump API version
+
+## 0.145.0
+
+### Minor Changes
+
+- 2b5f94a: add page cover resizing
+
+## 0.144.0
+
+### Minor Changes
+
+- dd6352d: Update API
+
+## 0.143.2
+
+### Patch Changes
+
+- 900d88d: Bump API version
+
+## 0.143.1
+
+### Patch Changes
+
+- 2e86c87: Bump API version to update Space content API endpoints
+
+## 0.143.0
+
+### Minor Changes
+
+- 7a8ee22: Introduce the Webhook integration and bumps api and cli to latest openapi spec.
+
+## 0.142.0
+
+### Minor Changes
+
+- 096b155: Bump to use the latest API spec
+
+## 0.141.0
+
+### Minor Changes
+
+- 0497150: Update API client with latest OpenAPI spec.
+
+## 0.140.0
+
+### Minor Changes
+
+- 3207736: Deprecate search scope API param
+
+## 0.139.0
+
+### Minor Changes
+
+- d80f7f3: Support setting objectFit on cards cover images
+
+## 0.138.0
+
+### Minor Changes
+
+- 8dff8d6: Update API client with latest OpenAPI spec.
+
+## 0.137.0
+
+### Minor Changes
+
+- ac1b6e5: Bump @gitbook/api to use the latest API spec
+
+## 0.136.0
+
+### Minor Changes
+
+- 21e2539: Update API client with latest OpenAPI spec.
+
+## 0.135.0
+
+### Minor Changes
+
+- c1caf3e: Update API client with latest OpenAPI spec.
+
+## 0.134.0
+
+### Minor Changes
+
+- 9f92c1f: Bump @gitbook/api to use the latest API spec
+
+## 0.133.0
+
+### Minor Changes
+
+- 7a26de2: Bump @gitbook/api to use latest spec
+
+## 0.132.0
+
+### Minor Changes
+
+- 41e242f: Update API client with latest OpenAPI spec.
+
+## 0.131.0
+
+### Minor Changes
+
+- b72b44b: Bump @gitbook/api to use latest spec
+
+## 0.130.0
+
+### Minor Changes
+
+- 4d07deb: Bump @gitbook/api to use the latest spec
+
+## 0.129.0
+
+### Minor Changes
+
+- 4b359c7: Update API client with latest OpenAPI spec.
+
+## 0.128.0
+
+### Minor Changes
+
+- 8edbe3b: Bump to include AI assistant in API schema
+
+## 0.127.0
+
+### Minor Changes
+
+- 4db20d3: Bump API to use the latest OpenAPI spec
+
+## 0.126.0
+
+### Minor Changes
+
+- ada360e: Update API client with latest OpenAPI spec.
+
+## 0.125.0
+
+### Minor Changes
+
+- 365b77e: Update API client with latest OpenAPI spec.
+
+## 0.124.0
+
+### Minor Changes
+
+- c33c32e: Bump API to use the latest spec
+
+## 0.123.0
+
+### Minor Changes
+
+- b67367a: Update API client with latest OpenAPI spec.
+
+## 0.122.0
+
+### Minor Changes
+
+- 59a8ccc: Update API with latest OpenAPI spec.
+
+## 0.121.0
+
+### Minor Changes
+
+- 40bf04e: Update API client with latest OpenAPI spec.
+
+## 0.120.0
+
+### Minor Changes
+
+- dfc36e3: Update API client with latest OpenAPI spec.
+
+## 0.119.0
+
+### Minor Changes
+
+- 7fa5586: Update API client with latest OpenAPI specification.
+
+## 0.118.0
+
+### Minor Changes
+
+- 9bdef53: Bump to add customization options: `depth` style and `circular` corner style option
+
+## 0.117.1
+
+### Patch Changes
+
+- a9192a5: Bump API version for resizable columns.
+
+## 0.117.0
+
+### Minor Changes
+
+- 3225e22: Update API with latest OpenAPI spec version.
+
+## 0.116.0
+
+### Minor Changes
+
+- 464a113: Increment API minor version
+
+## 0.115.0
+
+### Minor Changes
+
+- 6d36fa0: Bump API client to latest spec version
+
 ## 0.114.0
 
 ### Minor Changes

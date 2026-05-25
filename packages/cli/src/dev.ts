@@ -1,19 +1,33 @@
 import chokidar from 'chokidar';
 import getPort from 'get-port';
-import { Log, LogLevel, Miniflare } from 'miniflare';
+import { Log, LogLevel, Miniflare, MiniflareOptions } from 'miniflare';
 import ora from 'ora';
 import * as path from 'path';
 
 import { buildScriptFromManifest } from './build';
-import { getDefaultManifestPath, resolveFile, resolveIntegrationManifestPath } from './manifest';
+import { resolveFile } from './manifest';
 import { getAPIClient } from './remote';
 import { createDevTunnel } from './tunnel';
+
+/**
+ * Get the global miniflare options for an integration.
+ */
+export function getMiniflareOptions(scriptPath: string): MiniflareOptions {
+    return {
+        scriptPath,
+        modules: true,
+        modulesRoot: path.dirname(scriptPath),
+        compatibilityDate: '2025-05-25',
+        compatibilityFlags: ['nodejs_compat'],
+    };
+}
 
 /**
  * Start the integrations dev server on a random available port.
  * The dev server will automatically reload changes to the integration script.
  */
 export async function startIntegrationsDevServer(
+    manifestSpecPath: string,
     options: {
         all?: boolean;
     } = {},
@@ -26,7 +40,6 @@ export async function startIntegrationsDevServer(
      * it can be served by the dev server.
      */
     spinner.start('Building integration script...');
-    const manifestSpecPath = await resolveIntegrationManifestPath(getDefaultManifestPath());
     const { path: scriptPath, manifest } = await buildScriptFromManifest(manifestSpecPath, {
         mode: 'development',
     });
@@ -49,15 +62,16 @@ export async function startIntegrationsDevServer(
      * when it detects a change with watch mode
      */
     spinner.start('Starting dev server...');
-    const mermaidOptions = {
-        scriptPath,
+    console.log(scriptPath);
+    const miniflareOptions: MiniflareOptions = {
+        ...getMiniflareOptions(scriptPath),
         port,
         verbose: true,
         log: new Log(LogLevel.DEBUG, {
             prefix: manifest.name,
         }),
     };
-    const mf = new Miniflare(mermaidOptions);
+    const mf = new Miniflare(miniflareOptions);
     await mf.ready;
     spinner.succeed(`Dev server started`);
 
@@ -90,7 +104,7 @@ export async function startIntegrationsDevServer(
             spinner.start('🛠  Detected changes, rebuilding...');
             try {
                 await buildScriptFromManifest(manifestSpecPath, { mode: 'development' });
-                await mf.setOptions(mermaidOptions);
+                await mf.setOptions(miniflareOptions);
                 spinner.succeed(`📦 Rebuilt in ${((performance.now() - p1) / 1000).toFixed(2)}s`);
             } catch (error) {
                 spinner.fail((error as Error).message);

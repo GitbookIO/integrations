@@ -1,6 +1,6 @@
 import { Router } from 'itty-router';
 
-import { RequestUpdateIntegrationInstallation } from '@gitbook/api';
+import { ContentKitIcon, RequestUpdateIntegrationInstallation } from '@gitbook/api';
 import {
     createIntegration,
     createComponent,
@@ -14,7 +14,7 @@ import { GithubRuntimeContext } from './types';
 import { getFileExtension } from './utils';
 
 const embedBlock = createComponent<
-    { url?: string },
+    { url?: string; visible?: boolean },
     { visible: boolean },
     {
         action: 'show' | 'hide';
@@ -22,10 +22,11 @@ const embedBlock = createComponent<
     GithubRuntimeContext
 >({
     componentId: 'github-code-block',
-    initialState: {
-        visible: true,
+    initialState: (props) => {
+        return {
+            visible: props.visible ?? true,
+        };
     },
-
     async action(element, action) {
         switch (action.action) {
             case '@link.unfurl': {
@@ -38,10 +39,21 @@ const embedBlock = createComponent<
                 };
             }
             case 'show': {
-                return { state: { visible: true } };
+                return {
+                    ...element,
+                    state: { visible: true },
+                    props: {
+                        ...element.props,
+                        visible: true,
+                    },
+                };
             }
             case 'hide': {
-                return { state: { visible: false } };
+                return {
+                    ...element,
+                    state: { visible: false },
+                    props: { ...element.props, visible: false },
+                };
             }
         }
 
@@ -82,18 +94,21 @@ const embedBlock = createComponent<
         return (
             <block
                 controls={[
-                    {
-                        label: 'Show title & link',
-                        onPress: {
-                            action: 'show',
-                        },
-                    },
-                    {
-                        label: 'Hide title & link',
-                        onPress: {
-                            action: 'hide',
-                        },
-                    },
+                    element.state.visible
+                        ? {
+                              label: 'Hide title & link',
+                              icon: ContentKitIcon.EyeOff,
+                              onPress: {
+                                  action: 'hide',
+                              },
+                          }
+                        : {
+                              label: 'Show title & link',
+                              icon: ContentKitIcon.Eye,
+                              onPress: {
+                                  action: 'show',
+                              },
+                          },
                 ]}
             >
                 <card

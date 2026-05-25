@@ -8,8 +8,8 @@ import {
 import script from './marketoMunchkin.raw.js';
 import { marketoFormBlock, settingsModal } from './form';
 import { MarketoRuntimeContext } from './types';
-import { webFrameHTML } from './webframe.js';
-import { getWebframeCacheControl } from './cache.js';
+import { webFrameHTML } from './webframe';
+import { getWebframeCacheControl } from './cache';
 
 export const handleFetchScriptEvent: FetchPublishScriptEventCallback = async (
     event,
@@ -49,7 +49,7 @@ const handleFetchEvent: FetchEventCallback<MarketoRuntimeContext> = async (reque
     const cacheControl = getWebframeCacheControl();
     router.get(
         '/webframe',
-        async (request) =>
+        async (_request) =>
             new Response(webFrameHTML, {
                 headers: {
                     'Content-Type': 'text/html',

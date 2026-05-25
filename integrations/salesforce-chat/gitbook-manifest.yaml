@@ -1,0 +1,74 @@
+name: salesforce-chat
+title: Salesforce Service Cloud Chat
+organization: gitbook
+description: Add Salesforce Service Cloud Chat to your published GitBook content
+visibility: public
+script: ./src/index.ts
+icon: ./assets/salesforce-icon.png
+previewImages:
+    - ./assets/salesforce-visual.png
+externalLinks:
+    - label: Documentation
+      url: https://help.salesforce.com/s/articleView?id=service.miaw_intro_landing.htm&type=5
+scopes:
+    - site:script:inject
+    - site:script:cookies
+contentSecurityPolicy:
+    script-src: |
+        https://service.force.com
+        https://*.force.com
+        https://*.salesforce.com
+        https://*.salesforce-scrt.com;
+    connect-src: |
+        https://*.force.com
+        https://*.salesforce.com
+        https://*.salesforce-scrt.com
+        wss://*.salesforce.com
+        wss://*.salesforce-scrt.com;
+    img-src: |
+        data:
+        blob:
+        https://*.force.com
+        https://*.salesforce.com
+        https://*.salesforce-scrt.com;
+    frame-src: |
+        https://*.force.com
+        https://*.salesforce.com
+        https://*.salesforce-scrt.com;
+    style-src: |
+        'unsafe-inline';
+summary: |
+    # Overview
+
+    This integration injects Salesforce Service Cloud Chat into your published GitBook site, enabling a Salesforce support chat for your users.
+
+    # Configure
+
+    Provide the required Salesforce identifiers and URLs from your Embedded Service deployment in Salesforce Setup.
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            org_id:
+                type: string
+                title: Salesforce Org ID
+                description: The Salesforce Org ID (e.g., 00DxxxxxxxxxxxxXXX)
+            messaging_deployment_name:
+                type: string
+                title: Deployment Name
+                description: Name of your Messaging Deployment
+            embedded_service_site_url:
+                type: string
+                title: Embedded Service Site URL
+                description: Your Embedded Service site URL (e.g., https://yourdomain.my.site.com/SiteServiceMessagingforWebXXXX)
+            scrt2_url:
+                type: string
+                title: SCRT2 URL
+                description: Secure chat resource URL (e.g., https://yourdomain.my.salesforce-scrt.com)
+        required:
+            - org_id
+            - messaging_deployment_name
+            - embedded_service_site_url
+            - scrt2_url
+target: site

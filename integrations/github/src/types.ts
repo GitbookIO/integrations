@@ -11,7 +11,7 @@ export type GitHubSpaceConfiguration = {
 } & SpaceInstallationConfiguration;
 
 export type GithubRuntimeEnvironment = RuntimeEnvironment<{}, GitHubSpaceConfiguration>;
-export type GithubRuntimeContext = RuntimeContext<GithubRuntimeEnvironment>;
+export type GithubRuntimeContext = RuntimeContext<GithubRuntimeEnvironment, IntegrationTask>;
 
 export type GithubConfigureAction =
     | { action: 'select.installation'; installation: string }

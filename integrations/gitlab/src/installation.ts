@@ -45,7 +45,7 @@ export async function saveSpaceConfiguration(
     const externalIds: string[] = [];
     externalIds.push(computeConfigQueryKey(projectId, state.branch));
 
-    const glProject = await fetchProject(spaceInstallation.configuration, projectId);
+    const glProject = await fetchProject(context, spaceInstallation.configuration, projectId);
 
     const configurationBody: GitLabSpaceConfiguration = {
         ...spaceInstallation.configuration,
@@ -100,6 +100,7 @@ export async function saveSpaceConfiguration(
             environment.signingSecrets.integration,
         );
         await installWebhook(
+            context,
             updatedSpaceInstallation,
             createGitLabWebhookURL(context),
             webhookToken,

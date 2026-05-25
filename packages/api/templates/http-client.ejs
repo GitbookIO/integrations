@@ -238,7 +238,7 @@ export class HttpClient<SecurityDataType = unknown> {
         baseUrl,
         cancelToken,
         secure,
-        ...params,
+        ...params
     }: FullRequestParams) => {
         return new EventIterator<T>(
             (queue) => {

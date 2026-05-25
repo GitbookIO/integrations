@@ -1,5 +1,35 @@
 # @gitbook/integration-figma
 
+## 0.5.1
+
+### Patch Changes
+
+- cdef5e9: Migrate Figma authorize URL to new version
+
+## 0.5.0
+
+### Minor Changes
+
+- c395dbe: Update production publishing
+
+## 0.4.0
+
+### Minor Changes
+
+- 8214715: Move Figma integration secrets to 1Password
+
+## 0.3.0
+
+### Minor Changes
+
+- 1d4e22b: Figma and slack exposable error
+
+## 0.2.3
+
+### Patch Changes
+
+- 02e9cbf: Fix Figma integration OAuth token endpoint
+
 ## 0.2.2
 
 ### Patch Changes

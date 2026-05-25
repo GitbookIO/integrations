@@ -1,0 +1,52 @@
+name: freshdesk
+title: Freshdesk
+icon: ./assets/freshworks-icon.png
+previewImages:
+    - ./assets/freshworks-visual.png
+description: Add the Freshdesk chat widget to your published GitBook content.
+externalLinks:
+    - label: Website
+      url: https://freshdesk.com/
+    - label: Documentation
+      url: https://support.freshdesk.com/support/solutions/articles/239273-set-up-your-help-widget
+visibility: public
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+organization: gitbook
+contentSecurityPolicy:
+    font-src: |
+        freshdesk.com
+        *.freshworks.com;
+    script-src: |
+        *.freshworks.com;
+    style-src: |
+        freshdesk.com
+        *.freshworks.com;
+summary: |
+    # Overview
+
+    The Freshdesk integration for GitBook allows you to display the Freshdesk chat widget on your public documentation to connect and interact with your readers.
+
+    # How it works
+
+    Automatic chat widget on your documentation: Each of your connected GitBook sites will fetch the Freshdesk chat widget script and inject it in your published content.
+
+    # Configure
+
+    You can configure the integration on single or multiple public sites by navigating to the integrations in sub-navigation or org settings. You will then have to provide the full Freshdesk widget URL to finish the configuration. You can find this in your Freshworks account from the Embed Widget option.
+
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            widget_id:
+                type: string
+                title: Widget URL
+                description: Paste either your Freshdesk widget ID or the full widget URL from Freshworks Embed Widget.
+        required:
+            - widget_id
+target: site

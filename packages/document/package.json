@@ -2,7 +2,7 @@
     "name": "@gitbook/document",
     "description": "Utility to create GitBook documents",
     "type": "module",
-    "version": "0.1.1",
+    "version": "0.1.3",
     "sideEffects": false,
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -26,5 +26,14 @@
             "import": "./dist/index.js",
             "types": "./dist/index.d.ts"
         }
+    },
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/GitbookIO/integrations.git",
+        "directory": "packages/document"
     }
 }

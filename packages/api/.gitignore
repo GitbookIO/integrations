@@ -1,3 +1,4 @@
 dist/
 spec/
 src/client.ts
+src/constants.ts

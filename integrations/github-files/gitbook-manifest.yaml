@@ -30,7 +30,7 @@ blocks:
       title: GitHub Files
       description: Insert a GitHub file as a code block
       urlUnfurl:
-          - https://github.com/**
+          - https://github.com/*/*/blob/**
 configurations:
     account:
         properties:

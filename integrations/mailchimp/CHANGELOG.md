@@ -1,5 +1,23 @@
 # @gitbook/integration-mailchimp
 
+## 1.3.1
+
+### Patch Changes
+
+- e3d6914: Fix audience selection in MailChimp integration
+
+## 1.3.0
+
+### Minor Changes
+
+- df7c081: Add GDPR disclaimer to mailchimp block
+
+## 1.2.0
+
+### Minor Changes
+
+- 7688fa2: Updates check to look for listID as function returns out before it can find a list to subscribe to
+
 ## 1.1.2
 
 ### Patch Changes

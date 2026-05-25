@@ -10,7 +10,7 @@ previewImages:
     - ./assets/gitbook-copilot-preview3.png
 externalLinks:
     - label: Documentation
-      url: https://docs.gitbook.com/integrations/github-copilot
+      url: https://gitbook.com/docs/integrations/github-copilot
 categories:
     - collaboration
 summary: |

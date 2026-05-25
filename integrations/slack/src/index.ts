@@ -4,7 +4,8 @@ import { createIntegration, EventCallback } from '@gitbook/runtime';
 import { SlackRuntimeContext } from './configuration';
 import { handleFetchEvent } from './router';
 import { slackAPI } from './slack';
-import { Spacer } from './ui';
+import { SlackBlock, SlackButtonElement } from './types';
+import { handleAskAITask } from './actions';
 
 /*
  * Handle content being updated: send a notification on Slack.
@@ -40,23 +41,6 @@ const handleSpaceContentUpdated: EventCallback<
         // No changes to notify about
         return;
     }
-
-    /*
-     * Build a notification that looks something like this:
-     *
-     *    Content of *Space* has been updated.
-     *
-     *    Summary of changes:
-     *    • New pages: Page1, Page2
-     *    • Modified pages: Page3
-     *    • Deleted pages: Page4, Page5
-     *    • Moved pages: Page6
-     *    • New files: File1, File2
-     *    • Modified files: File3
-     *    • Deleted files: File4
-     *
-     *    And another X changes not listed here.
-     */
 
     const createdPages: ChangedRevisionPage[] = [];
     const editedPages: ChangedRevisionPage[] = [];
@@ -94,78 +78,182 @@ const handleSpaceContentUpdated: EventCallback<
         }
     });
 
-    let notificationText = `Content of *<${space.urls.app}|${
-        space.title || 'Space'
-    }>* has been updated.`;
+    const MAX_ITEMS_TO_SHOW = 5;
 
-    const renderList = (list: string[]) => {
-        return list.map((item) => `• ${item}\n`).join('');
+    const createChangeSection = (
+        title: string,
+        items: string[] | ChangedRevisionPage[],
+        emoji: string,
+    ): SlackBlock[] => {
+        if (items.length === 0) return [];
+
+        const displayItems = items.slice(0, MAX_ITEMS_TO_SHOW);
+        const remainingCount = items.length - displayItems.length;
+
+        let text = `${emoji} *${title}*\n`;
+        displayItems.forEach((item) => {
+            if (typeof item === 'string') {
+                text += `• ${item}\n`;
+            } else {
+                // Page object with URL
+                const pageUrl = `${space.urls.published || space.urls.app}${item.path || ''}`;
+                text += `• <${pageUrl}|${item.title}>\n`;
+            }
+        });
+
+        if (remainingCount > 0) {
+            text += `_and ${remainingCount} more..._`;
+        }
+
+        return [
+            {
+                type: 'section',
+                text: {
+                    type: 'mrkdwn',
+                    text: text.trim(),
+                },
+            },
+        ];
     };
 
-    const renderPageList = (list: ChangedRevisionPage[]) => {
-        return list.map((item) => `• <${space.urls.app}${item.path}|${item.title}>\n`).join('');
+    const getEmojiFromUnicode = (unicodeHex: string) => {
+        if (!unicodeHex) return '✨';
+        try {
+            // Convert hex string to actual emoji
+            const codePoint = parseInt(unicodeHex, 16);
+            return String.fromCodePoint(codePoint);
+        } catch {
+            return '✨';
+        }
     };
 
-    if (
-        createdPages.length > 0 ||
-        editedPages.length > 0 ||
-        deletedPages.length > 0 ||
-        movedPages.length > 0 ||
-        createdFiles.length > 0 ||
-        editedFiles.length > 0 ||
-        deletedFiles.length > 0
-    ) {
-        if (createdPages.length > 0) {
-            notificationText += `\n*New pages:*\n${renderPageList(createdPages)}\n\n`;
-        }
-        if (editedPages.length > 0) {
-            notificationText += `\n*Modified pages:*\n${renderPageList(editedPages)}\n\n`;
-        }
-        if (deletedPages.length > 0) {
-            notificationText += `\n*Deleted pages:*\n${renderPageList(deletedPages)}\n\n`;
-        }
-        if (movedPages.length > 0) {
-            notificationText += `\n*Moved pages:*\n${renderPageList(movedPages)}\n\n`;
-        }
-        if (createdFiles.length > 0) {
-            notificationText += `\n*New files:*\n${renderList(createdFiles)}\n\n`;
-        }
-        if (editedFiles.length > 0) {
-            notificationText += `\n*Modified files:*\n${renderList(editedFiles)}\n\n`;
-        }
-        if (deletedFiles.length > 0) {
-            notificationText += `\n*Deleted files:*\n${renderList(deletedFiles)}\n\n`;
-        }
+    const spaceEmoji = space.emoji ? getEmojiFromUnicode(space.emoji) : '✨';
 
-        if (semanticChanges.more && semanticChanges.more > 0) {
-            notificationText += `\n\nAnd another ${semanticChanges.more} changes not listed here.\n`;
-        }
+    const blocks: SlackBlock[] = [
+        {
+            type: 'header',
+            text: {
+                type: 'plain_text',
+                text: `${spaceEmoji} ${space.title || 'Space'} Updated`,
+                emoji: true,
+            },
+        },
+    ];
+
+    let changeRequest;
+    if (semanticChanges.mergedFrom) {
+        changeRequest = semanticChanges.mergedFrom;
+        blocks.push({
+            type: 'context',
+            elements: [
+                {
+                    type: 'mrkdwn',
+                    text: `🔀 Changes were merged from change request: <${changeRequest.urls.app}|#${changeRequest.number}${changeRequest.subject ? ` - ${changeRequest.subject}` : ''}>`,
+                },
+            ],
+        });
     }
+
+    blocks.push({
+        type: 'section',
+        text: {
+            type: 'mrkdwn',
+            text: '*Summary of Changes:*',
+        },
+    });
+
+    blocks.push(...createChangeSection('New pages', createdPages, '🆕'));
+    blocks.push(...createChangeSection('Modified pages', editedPages, '📝'));
+    blocks.push(...createChangeSection('Deleted pages', deletedPages, '🗑️'));
+    blocks.push(...createChangeSection('Moved pages', movedPages, '📁'));
+    blocks.push(...createChangeSection('New files', createdFiles, '📄'));
+    blocks.push(...createChangeSection('Modified files', editedFiles, '📝'));
+    blocks.push(...createChangeSection('Deleted files', deletedFiles, '🗂️'));
+
+    if (semanticChanges.more && semanticChanges.more > 0) {
+        blocks.push({
+            type: 'context',
+            elements: [
+                {
+                    type: 'mrkdwn',
+                    text: `➕ _And ${semanticChanges.more} additional changes not listed here_`,
+                },
+            ],
+        });
+    }
+
+    const actionButtons: SlackButtonElement[] = [
+        {
+            type: 'button',
+            text: {
+                type: 'plain_text',
+                text: '🏠 View Main Space',
+                emoji: true,
+            },
+            url: space.urls.app,
+            action_id: 'view_main_space',
+            style: 'primary',
+        },
+    ];
+
+    if (space.urls.published) {
+        actionButtons.push({
+            type: 'button',
+            text: {
+                type: 'plain_text',
+                text: '🌐 View Docs Site',
+                emoji: true,
+            },
+            url: space.urls.published,
+            action_id: 'view_docs_site',
+        });
+    }
+
+    blocks.push({ type: 'divider' });
+
+    // Add a nice footer section
+    const totalChanges =
+        createdPages.length +
+        editedPages.length +
+        deletedPages.length +
+        movedPages.length +
+        createdFiles.length +
+        editedFiles.length +
+        deletedFiles.length +
+        (semanticChanges.more || 0);
+
+    blocks.push({
+        type: 'context',
+        elements: [
+            {
+                type: 'mrkdwn',
+                text: `📊 *${totalChanges} total changes* • Updated just now`,
+            },
+        ],
+    });
+
+    blocks.push({
+        type: 'actions',
+        elements: actionButtons,
+    });
 
     await slackAPI(context, {
         method: 'POST',
         path: 'chat.postMessage',
         payload: {
             channel,
-            blocks: [
-                Spacer,
-                {
-                    type: 'section',
-                    text: {
-                        type: 'mrkdwn',
-                        text: notificationText,
-                    },
-                },
-                Spacer,
-            ],
+            blocks,
+            unfurl_links: false,
+            unfurl_media: false,
         },
     });
 };
 
 export default createIntegration({
     fetch: handleFetchEvent,
-
     events: {
         space_content_updated: handleSpaceContentUpdated,
     },
+    // @ts-ignore
+    task: handleAskAITask,
 });

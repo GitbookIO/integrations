@@ -17,6 +17,7 @@ const logger = Logger('gitlab:provider');
  * project
  */
 export async function installWebhook(
+    context: GitLabRuntimeContext,
     spaceInstallation: IntegrationSpaceInstallation,
     webhookUrl: string,
     webhookToken: string,
@@ -26,7 +27,7 @@ export async function installWebhook(
     assertIsDefined(config.project, { label: 'config.project', statusCode: 400 });
 
     const projectId = config.project;
-    const id = await addProjectWebhook(config, config.project, webhookUrl, webhookToken);
+    const id = await addProjectWebhook(context, config, config.project, webhookUrl, webhookToken);
 
     logger.info(`Webhook ${id} installed on GitLab project ${projectId}`);
 
@@ -37,14 +38,17 @@ export async function installWebhook(
  * Remove the GitLab webhook for the currently configured space installation
  * project.
  */
-export async function uninstallWebhook(config: GitLabSpaceConfiguration) {
+export async function uninstallWebhook(
+    context: GitLabRuntimeContext,
+    config: GitLabSpaceConfiguration,
+) {
     assertIsDefined(config.project, { label: 'config.project', statusCode: 400 });
     assertIsDefined(config.webhookId, { label: 'config.webhookId', statusCode: 400 });
 
     const projectId = config.project;
     const webhookId = config.webhookId;
 
-    await deleteProjectWebhook(config, projectId, webhookId);
+    await deleteProjectWebhook(context, config, projectId, webhookId);
 
     logger.info(`Webhook ${config.webhookId} uninstalled from GitLab project ${projectId}`);
 }
@@ -53,6 +57,7 @@ export async function uninstallWebhook(config: GitLabSpaceConfiguration) {
  * Update the commit status
  */
 export async function updateCommitStatus(
+    context: GitLabRuntimeContext,
     config: GitLabSpaceConfiguration,
     commitSha: string,
     update: {
@@ -66,7 +71,7 @@ export async function updateCommitStatus(
 
     const projectId = config.project;
 
-    await editCommitStatus(config, projectId, commitSha, {
+    await editCommitStatus(context, config, projectId, commitSha, {
         name: update.context || 'GitBook',
         state: update.state === 'failure' ? 'failed' : update.state,
         target_url: update.url,

@@ -12,7 +12,7 @@ Let’s dive in!
 
 ### Collections
 
-In order to translate your site, you’ll need to have some well-organized content. GitBook provides the perfect solution to structure sites available in multiple languages: [collections](https://docs.gitbook.com/content-creation/content-structure/what-is-a-collection).
+In order to translate your site, you’ll need to have some well-organized content. GitBook provides the perfect solution to structure sites available in multiple languages: [collections](https://gitbook.com/docs/content-creation/content-structure/what-is-a-collection).
 
 Collections provide a way to group related spaces together. In the context of i18n, we will use one space for each language, with a space designated to hold the content in the primary language. You can think of this space as your “main” content.
 
@@ -30,7 +30,7 @@ After you’ve set up the collection, you can use Git Sync to enable programmati
 
 ### GitSync
 
-[GitSync](https://docs.gitbook.com/product-tour/git-sync) is a feature in GitBook that allows you to connect a space to a remote repository hosted on either GitHub or GitLab (_starting to Git the hang of it?_).
+[GitSync](https://gitbook.com/docs/product-tour/git-sync) is a feature in GitBook that allows you to connect a space to a remote repository hosted on either GitHub or GitLab (_starting to Git the hang of it?_).
 
 You can check [out our setup video](https://www.youtube.com/watch?v=Fm5hYBsRSXo) to learn more about configuring GitSync in your Space.
 
@@ -38,7 +38,7 @@ You can check [out our setup video](https://www.youtube.com/watch?v=Fm5hYBsRSXo)
 **Important:** While your collection will include a space for each language in GitBook, you’ll need to connect each one to your remote repository separately.
 {% endhint %}
 
-Use the [Monorepo feature](https://docs.gitbook.com/product-tour/git-sync/monorepos) if you need to configure each space to a specific folder in your remote repository.
+Use the [Monorepo feature](https://gitbook.com/docs/product-tour/git-sync/monorepos) if you need to configure each space to a specific folder in your remote repository.
 
 Once you’ve connected your GitBook spaces to a remote repository, we’ll run through how to add workflows on top of your content.
 
@@ -73,7 +73,7 @@ jobs:
       - uses: actions/checkout@v3
 </code></pre>
 
-The example action above will run every time someone merges an update to the `main` branch — which means whenever someone merges a [change request](https://docs.gitbook.com/collaboration/collaboration/change-requests) in GitBook.&#x20;
+The example action above will run every time someone merges an update to the `main` branch — which means whenever someone merges a [change request](https://gitbook.com/docs/collaboration/collaboration/change-requests) in GitBook.&#x20;
 
 Because this workflow runs after the content is merged, it will contain up-to-date information about the request, including the latest version of the content.&#x20;
 

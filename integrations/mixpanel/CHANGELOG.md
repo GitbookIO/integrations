@@ -1,5 +1,28 @@
 # @gitbook/integration-mixpanel
 
+## 0.7.0
+
+### Minor Changes
+
+- 3875e38: Add server region to mixpanel configuration
+
+## 0.6.0
+
+### Minor Changes
+
+- 125bcb2: Add cookie banner to tracking integrations
+
+## 0.5.0
+
+### Minor Changes
+
+- aac3f54: Add check to see if cookies should be disabled or not
+
+### Patch Changes
+
+- Updated dependencies [b72b44b]
+    - @gitbook/api@0.131.0
+
 ## 0.4.2
 
 ### Patch Changes

@@ -23,10 +23,14 @@ else
 fi
 
 # First we build the API client from the OpenAPI definition
-swagger-typescript-api --path ./spec/openapi.yaml --output ./src/ --name client.ts --silent --templates ./templates
+swagger-typescript-api generate --path ./spec/openapi.yaml --output ./src/ --name client.ts --silent --templates ./templates
 
 # Then we bundle into an importable JSON module
 swagger-cli bundle ./spec/openapi.yaml --outfile ./spec/openapi.json --type json
+
+# Then we extract the API constants
+echo "Extracting API constants..."
+bun ./scripts/extract-constants.ts
 
 # Then we build the JS files
 echo "Bundling CJS format from code..."

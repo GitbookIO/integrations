@@ -62,12 +62,15 @@ export async function handlePushEvent(
 
         const queryKey = computeConfigQueryKey(githubInstallationId, githubRepositoryId, githubRef);
 
-        const total = await handleImportDispatchForSpaces(context, {
-            configQuery: queryKey,
-            eventTimestamp: payload.head_commit?.timestamp
-                ? new Date(payload.head_commit.timestamp)
-                : undefined,
-        });
+        const total = await handleImportDispatchForSpaces(
+            {
+                configQuery: queryKey,
+                eventTimestamp: payload.head_commit?.timestamp
+                    ? new Date(payload.head_commit.timestamp)
+                    : undefined,
+            },
+            context,
+        );
 
         logger.debug(`${total} space configurations are affected`);
     }
@@ -101,10 +104,13 @@ export async function handlePullRequestEvents(
             isPRFromFork ? true : undefined,
         );
 
-        const total = await handleImportDispatchForSpaces(context, {
-            configQuery: queryKey,
-            standaloneRef: headRef,
-        });
+        const total = await handleImportDispatchForSpaces(
+            {
+                configQuery: queryKey,
+                standaloneRef: headRef,
+            },
+            context,
+        );
 
         logger.debug(`${total} space configurations are affected`);
     }

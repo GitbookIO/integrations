@@ -1,8 +1,6 @@
 import { sha256 } from 'js-sha256';
 
 import { SlackRuntimeContext } from './configuration';
-import { slackAPI } from './slack';
-import { stripMarkdown } from './utils';
 
 /**
  * Verify the authenticity of a Slack request.

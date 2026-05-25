@@ -1,5 +1,91 @@
 # @gitbook/integration-slack
 
+## 2.6.2
+
+### Patch Changes
+
+- 2cc438c: Copy changes to the Slack integration
+
+## 2.6.1
+
+### Patch Changes
+
+- d7fa48f: Replace custom code for tasks to leverage the new runtime API.
+- Updated dependencies [d7fa48f]
+    - @gitbook/runtime@0.23.0
+
+## 2.6.0
+
+### Minor Changes
+
+- 3cc38b8: Add support for Docs agents ingestion to Slack integration app mentions
+- 3cc38b8: Add support for ingesting conversation to Docs Agents in Slack integration
+
+## 2.5.3
+
+### Patch Changes
+
+- 75d605c: Fix AI queries timing out after 30s
+- Updated dependencies [75d605c]
+    - @gitbook/runtime@0.22.0
+
+## 2.5.2
+
+### Patch Changes
+
+- 5f655cd: Add more logs to the slack integration
+
+## 2.5.1
+
+### Patch Changes
+
+- beb9868: Add logs while querying askAI in slack
+
+## 2.5.0
+
+### Minor Changes
+
+- 42efb2a: Improved slack notifications
+
+## 2.4.0
+
+### Minor Changes
+
+- 650e909: Update slack cache header
+
+## 2.3.0
+
+### Minor Changes
+
+- f531be5: Don't cache slack channels request
+
+## 2.2.0
+
+### Minor Changes
+
+- 1d4e22b: Figma and slack exposable error
+- 1d4e22b: Throw exposable error when slack is not configured
+
+## 2.1.0
+
+### Minor Changes
+
+- 8876593: Try to fix missing channels in Slack's configuration
+
+## 2.0.4
+
+### Patch Changes
+
+- 6bdd531: Add section to slack notifications when revision was merged from change request
+- Updated dependencies [b67367a]
+    - @gitbook/api@0.123.0
+
+## 2.0.3
+
+### Patch Changes
+
+- a1c3335: Update documentation links
+
 ## 2.0.2
 
 ### Patch Changes

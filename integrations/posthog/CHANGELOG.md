@@ -1,5 +1,45 @@
 # @gitbook/integration-posthog
 
+## 1.3.0
+
+### Minor Changes
+
+- 552014d: Add support for a reverse proxy
+
+### Patch Changes
+
+- Updated dependencies [16379b1]
+    - @gitbook/api@0.174.0
+
+## 1.2.1
+
+### Patch Changes
+
+- 294ecd7: Move posthog init to main function call
+
+## 1.2.0
+
+### Minor Changes
+
+- 125bcb2: Add cookie banner to tracking integrations
+
+## 1.1.0
+
+### Minor Changes
+
+- aac3f54: Add check to see if cookies should be disabled or not
+
+### Patch Changes
+
+- Updated dependencies [b72b44b]
+    - @gitbook/api@0.131.0
+
+## 1.0.0
+
+### Major Changes
+
+- a3b4646: Update Posthog endpoints with the recommended ones
+
 ## 0.4.2
 
 ### Patch Changes

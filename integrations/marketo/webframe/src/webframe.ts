@@ -1,7 +1,8 @@
-const gitbookWebFrame = window.top;
+const gitbookWebFrame = window.parent;
 const params = new URLSearchParams(window.location.search);
 const formId = params.get('formId');
 const munchkinId = params.get('munchkinId');
+const message = params.get('message');
 
 let cachedSize: { height: number } | undefined;
 
@@ -32,7 +33,12 @@ function recalculateSize() {
         throw new Error("missing element with id '" + elId + "'");
     }
 
-    const size = { height: el.offsetHeight };
+    const offsetHeight = el.offsetHeight;
+
+    // Add a 2px buffer to the height to account for iframe chrome.
+    const size = {
+        height: typeof el.offsetHeight === 'number' ? el.offsetHeight + 2 : el.offsetHeight,
+    };
 
     if (cachedSize && cachedSize.height === size.height) {
         // Don't send a resize if no change.
@@ -55,11 +61,21 @@ if (!form) {
 
 form.id = elId;
 
-window.MktoForms2.loadForm('//app-sj15.marketo.com', munchkinId, formId, () => {
+window.MktoForms2.loadForm('//app-sj15.marketo.com', munchkinId, formId, (mktoForm) => {
     console.info('marketo-embed: form loaded');
     sendAction({
         action: '@webframe.ready',
     });
+
+    if (message) {
+        mktoForm.onSuccess(() => {
+            form.innerHTML =
+                '<div class="mktoFormRow"><h3 class="mktoHtmlText">' +
+                decodeURIComponent(message) +
+                '</h3></div>';
+            return false; // Prevent the default form submission behavior
+        });
+    }
 
     recalculateSize();
 

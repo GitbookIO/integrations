@@ -1,5 +1,17 @@
 # @gitbook/integration-gitlab-files
 
+## 0.2.4
+
+### Patch Changes
+
+- 5580f32: Restrict URL pattern for unfurling block
+
+## 0.2.3
+
+### Patch Changes
+
+- 8ac0f8d: Fix GitHub & GitLab files embed hide/show action
+
 ## 0.2.2
 
 ### Patch Changes

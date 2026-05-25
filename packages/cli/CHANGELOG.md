@@ -1,5 +1,78 @@
 # @gitbook/cli
 
+## 0.27.2
+
+### Patch Changes
+
+- ce9b4c3: Fix NPM trusted publishing by defining repository in the package.json
+
+## 0.27.1
+
+### Patch Changes
+
+- 25d0e77: Use NPM trusted publishing for publishing the package.
+- Updated dependencies [25d0e77]
+    - @gitbook/api@0.160.1
+
+## 0.27.0
+
+### Minor Changes
+
+- bea08c8: Use new property limits in manifest
+
+## 0.26.3
+
+### Patch Changes
+
+- 67d2581: Log the environment currently used when executing a command.
+
+## 0.26.2
+
+### Patch Changes
+
+- 2d9dc8b: Bump CLI to use new OpenAPI slug pattern
+
+## 0.26.1
+
+### Patch Changes
+
+- 9275222: Validate OpenAPI slug with pattern
+
+## 0.26.0
+
+### Minor Changes
+
+- 7a8ee22: Introduce the Webhook integration and bumps api and cli to latest openapi spec.
+
+### Patch Changes
+
+- Updated dependencies [7a8ee22]
+    - @gitbook/api@0.143.0
+
+## 0.25.1
+
+### Patch Changes
+
+- b48b226: Remove outdated scopes references from CLI
+
+## 0.25.0
+
+### Minor Changes
+
+- 81ffafe: Bump @gitbook/cli with runtime support in the manifest
+
+## 0.24.0
+
+### Minor Changes
+
+- e730d23: Add support for developing an integration over multiple environments using `envs` in the manifest file and the `--env` CLI arguments for all commands.
+- 507b491: Add support for referencing secrets from 1Password using ${{ op://... }}.
+
+### Patch Changes
+
+- Updated dependencies [a9192a5]
+    - @gitbook/api@0.117.1
+
 ## 0.23.0
 
 ### Minor Changes

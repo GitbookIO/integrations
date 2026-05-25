@@ -1,5 +1,44 @@
 # @gitbook/runtime
 
+## 0.23.3
+
+### Patch Changes
+
+- ce9b4c3: Fix NPM trusted publishing by defining repository in the package.json
+
+## 0.23.2
+
+### Patch Changes
+
+- 25d0e77: Use NPM trusted publishing for publishing the package.
+- Updated dependencies [25d0e77]
+    - @gitbook/api@0.160.1
+
+## 0.23.1
+
+### Patch Changes
+
+- aab7f96: Improve the typing of OAuth functions.
+- 84ea77c: Fix TS error with latest API spec.
+
+## 0.23.0
+
+### Minor Changes
+
+- d7fa48f: Provide core runtime API to handle and dispatch tasks
+
+## 0.22.0
+
+### Minor Changes
+
+- 75d605c: Export `verifyIntegrationRequestSignature` utility method
+
+## 0.21.0
+
+### Minor Changes
+
+- 5b37e83: New way to export fetch functions as esm
+
 ## 0.20.0
 
 ### Minor Changes

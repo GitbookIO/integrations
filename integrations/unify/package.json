@@ -1,0 +1,19 @@
+{
+    "name": "@gitbook/integration-unify",
+    "version": "0.1.1",
+    "private": true,
+    "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "publish-integrations-staging": "gitbook publish .",
+        "check": "gitbook check",
+        "publish-integrations": "gitbook publish ."
+    }
+}

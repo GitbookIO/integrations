@@ -1,5 +1,6 @@
-import { sign } from '@tsndr/cloudflare-worker-jwt';
+import * as jwt from '@tsndr/cloudflare-worker-jwt';
 import { Router } from 'itty-router';
+import { getDomain } from 'tldts';
 
 import { IntegrationInstallationConfiguration } from '@gitbook/api';
 import {
@@ -39,8 +40,16 @@ type OIDCProps = {
 
 export type OIDCAction = { action: 'save.config' };
 
+type OIDCTokenResponseData = {
+    access_token?: string;
+    id_token?: string;
+    refresh_token?: string;
+    token_type: 'Bearer';
+    expires_in: number;
+};
+
 const getDomainWithHttps = (url: string): string => {
-    const sanitizedURL = url.trim().toLowerCase();
+    const sanitizedURL = url.trim();
     if (sanitizedURL.startsWith('https://')) {
         return sanitizedURL;
     } else if (sanitizedURL.startsWith('http://')) {
@@ -49,6 +58,8 @@ const getDomainWithHttps = (url: string): string => {
         return `https://${sanitizedURL}`;
     }
 };
+
+const GITBOOK_OIDC_USER_AGENT = 'GitBook-OIDC-Integration';
 
 const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntimeContext>({
     componentId: 'config',
@@ -79,7 +90,7 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                     access_token_endpoint: getDomainWithHttps(
                         element.state.access_token_endpoint ?? '',
                     ),
-                    scope: element.state.scope,
+                    scope: element.state.scope ? normalizeScopes(element.state.scope) : undefined,
                 };
                 await api.integrations.updateIntegrationSiteInstallation(
                     siteInstallation.integration,
@@ -183,10 +194,11 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                 />
 
                 <input
-                    label="OAuth Scope"
+                    label="OAuth Scopes"
                     hint={
                         <text>
-                            The scope to be granted to the access token. Enter oidc if not sure
+                            The list of scopes to be granted to the ID token. Enter openid if not
+                            sure
                             <link
                                 target={{
                                     url: 'https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest',
@@ -197,7 +209,7 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                             </link>
                         </text>
                     }
-                    element={<textinput state="scope" placeholder="Scope" />}
+                    element={<textinput state="scope" placeholder="Scopes" />}
                 />
                 <divider size="medium" />
                 <hint>
@@ -226,6 +238,16 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
         );
     },
 });
+
+/**
+ * Normalize a user-provided scopes string into a space seperated list as
+ * expected by OIDC/OAuth when making the auth request.
+ *
+ * Spec: https://datatracker.ietf.org/doc/html/rfc6749#section-3.3
+ */
+function normalizeScopes(input: string): string {
+    return input.replace(/,/g, ' ').replace(/\s+/g, ' ').trim();
+}
 
 /**
  * Get the published content related urls.
@@ -259,6 +281,100 @@ function assertOrgId(environment: OIDCRuntimeEnvironment) {
     return orgId;
 }
 
+/**
+ * Validates that the configured access token endpoint is not pointing back to this integration.
+ * Prevents misconfiguration where the token endpoint is set to the integration handler URL.
+ */
+function validateAccessTokenEndpoint(tokenEndpoint: string, installationURL: string) {
+    let tokenUrl: URL;
+    let installUrl: URL;
+
+    try {
+        tokenUrl = new URL(tokenEndpoint);
+    } catch {
+        throw new Error(`Invalid access token endpoint URL: "${tokenEndpoint}"`);
+    }
+
+    try {
+        installUrl = new URL(installationURL);
+    } catch {
+        throw new Error(`Invalid installation URL: "${installationURL}"`);
+    }
+
+    if (tokenUrl.protocol !== 'https:') {
+        throw new Error('Access token endpoint must use https');
+    }
+
+    if (tokenUrl.host === installUrl.host) {
+        throw new Error('Invalid access token endpoint URL.');
+    }
+}
+
+/**
+ * Fetch a token from the configured upstream auth token endpoint.
+ * Allows a single 307/308 redirect only when the redirected endpoint stays on the same base domain.
+ */
+async function fetchTokenFromUpstreamAuth(
+    accessTokenEndpoint: string,
+    searchParams: URLSearchParams,
+): Promise<Response> {
+    const baseEndpoint = new URL(accessTokenEndpoint);
+    const response = await fetch(baseEndpoint.toString(), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': GITBOOK_OIDC_USER_AGENT,
+        },
+        body: searchParams.toString(),
+        // We handle redirects manually to prevent forwarding credentials across trust boundaries.
+        redirect: 'manual',
+    });
+
+    if (response.status !== 307 && response.status !== 308) {
+        return response;
+    }
+
+    const location = response.headers.get('location');
+    if (!location) {
+        logger.error('Token endpoint redirect missing location header');
+        return response;
+    }
+
+    let nextUrl: URL;
+    try {
+        nextUrl = new URL(location, baseEndpoint);
+    } catch {
+        logger.error(`Token endpoint redirect location is invalid: ${location}`);
+        return response;
+    }
+
+    if (nextUrl.protocol !== 'https:') {
+        logger.error(`Token endpoint redirect rejected due to non-https target: ${nextUrl}`);
+        return response;
+    }
+
+    const baseDomain = getDomain(baseEndpoint.toString()) ?? baseEndpoint.hostname;
+    const nextDomain = getDomain(nextUrl.toString()) ?? nextUrl.hostname;
+    if (nextDomain !== baseDomain) {
+        logger.error(
+            `Token endpoint redirect rejected due to cross-domain target: ${baseDomain} -> ${nextDomain}`,
+        );
+        return response;
+    }
+
+    logger.info(`Following token endpoint redirect to: ${nextUrl.toString()}`);
+
+    return fetch(nextUrl.toString(), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': GITBOOK_OIDC_USER_AGENT,
+        },
+        body: searchParams.toString(),
+        redirect: 'manual',
+    });
+}
+
 const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request, context) => {
     const { environment } = context;
     const siteInstallation = assertSiteInstallation(environment);
@@ -271,11 +387,106 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
         router.get('/visitor-auth/response', async (request) => {
             if ('site' in siteInstallation && siteInstallation.site) {
                 const publishedContentUrls = await getPublishedContentUrls(context);
-                const privateKey = context.environment.signingSecrets.siteInstallation!;
-                let token;
+
+                const accessTokenEndpoint = siteInstallation.configuration.access_token_endpoint;
+                const clientId = siteInstallation.configuration.client_id;
+                const clientSecret = siteInstallation.configuration.client_secret;
+
+                if (!clientId || !clientSecret || !accessTokenEndpoint) {
+                    return new Response(
+                        'Error: Either client id, client secret or access token endpoint is missing in configuration',
+                        {
+                            status: 400,
+                        },
+                    );
+                }
+
                 try {
-                    token = await sign(
-                        { exp: Math.floor(Date.now() / 1000) + 1 * (60 * 60) },
+                    validateAccessTokenEndpoint(accessTokenEndpoint, installationURL);
+                } catch (e) {
+                    const message =
+                        e instanceof Error ? e.message : 'Invalid access token endpoint';
+                    logger.error(`Access token endpoint validation failed: ${message}`);
+                    return new Response(`Error: ${message}`, { status: 400 });
+                }
+
+                if (!request.query.code) {
+                    `Error: authorization response from upstream provider doesn't include the auth code.` +
+                        (request.query.error
+                            ? ` (error: ${request.query.error.toString()} - ${request.query.error_description?.toString()})`
+                            : '');
+                    return new Response(`Error: received request without authorization code`, {
+                        status: 401,
+                    });
+                }
+
+                const searchParams = new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    client_id: clientId,
+                    client_secret: clientSecret,
+                    code: `${request.query.code}`,
+                    redirect_uri: `${installationURL}/visitor-auth/response`,
+                });
+
+                const tokenResp = await fetchTokenFromUpstreamAuth(
+                    accessTokenEndpoint,
+                    searchParams,
+                );
+
+                if (!tokenResp.ok) {
+                    const errorText = await tokenResp.text();
+                    logger.error(
+                        `Error while fetching token from auth provider (status: ${tokenResp.status}): `,
+                        errorText,
+                    );
+
+                    return new Response(
+                        'Error: Could not fetch ID token from your authentication provider',
+                        {
+                            status: 401,
+                        },
+                    );
+                }
+
+                const tokenRespData = await tokenResp.json<OIDCTokenResponseData>();
+                if (!tokenRespData.id_token) {
+                    logger.error(JSON.stringify(tokenResp));
+                    logger.error(
+                        `Did not receive access token. Error: ${tokenResp && 'error' in tokenResp ? tokenResp.error : ''} ${
+                            tokenResp && 'error_description' in tokenResp
+                                ? tokenResp.error_description
+                                : ''
+                        }`,
+                    );
+                    return new Response(
+                        'Error: No access token found in response from your authentication provider',
+                        {
+                            status: 401,
+                        },
+                    );
+                }
+
+                // TODO: verify token using JWKS and check audience (aud) claims
+                const decodedIdToken = await jwt.decode(tokenRespData.id_token);
+                const privateKey = context.environment.signingSecrets.siteInstallation;
+                if (!privateKey) {
+                    return new Response('Error: Missing private key from site installation', {
+                        status: 400,
+                    });
+                }
+
+                let jwtToken: string | undefined;
+                try {
+                    const minimumExp = Math.floor(Date.now() / 1000) + 60 * 60;
+                    const upstreamTokenExp =
+                        typeof decodedIdToken?.payload?.exp === 'number'
+                            ? decodedIdToken.payload.exp
+                            : undefined;
+                    jwtToken = await jwt.sign(
+                        {
+                            ...(decodedIdToken.payload ?? {}),
+                            exp: Math.max(minimumExp, upstreamTokenExp ?? 0),
+                        },
                         privateKey,
                     );
                 } catch (e) {
@@ -284,86 +495,48 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                     });
                 }
 
-                const accessTokenEndpoint = siteInstallation.configuration.access_token_endpoint;
-                const clientId = siteInstallation.configuration.client_id;
-                const clientSecret = siteInstallation.configuration.client_secret;
-                if (clientId && clientSecret && accessTokenEndpoint) {
-                    const searchParams = new URLSearchParams({
-                        grant_type: 'authorization_code',
-                        client_id: clientId,
-                        client_secret: clientSecret,
-                        code: `${request.query.code}`,
-                        redirect_uri: `${installationURL}/visitor-auth/response`,
-                    });
-
-                    const resp: any = await fetch(accessTokenEndpoint, {
-                        method: 'POST',
-                        headers: { 'content-type': 'application/x-www-form-urlencoded' },
-                        body: searchParams,
-                    })
-                        .then((response) => response.json())
-                        .catch((err) => {
-                            return new Response(
-                                'Error: Could not fetch access token from your authentication provider',
-                                {
-                                    status: 401,
-                                },
-                            );
-                        });
-
-                    if ('access_token' in resp) {
-                        let url;
-                        const state = request.query.state!.toString();
-                        const location = state.substring(state.indexOf('-') + 1);
-                        if (location) {
-                            url = new URL(`${publishedContentUrls?.published}${location}`);
-                            url.searchParams.append('jwt_token', token);
-                        } else {
-                            url = new URL(publishedContentUrls?.published!);
-                            url.searchParams.append('jwt_token', token);
-                        }
-                        if (publishedContentUrls?.published && token) {
-                            return Response.redirect(url.toString());
-                        } else {
-                            return new Response(
-                                "Error: Either JWT token or space's published URL is missing",
-                                {
-                                    status: 500,
-                                },
-                            );
-                        }
-                    } else {
-                        logger.debug(JSON.stringify(resp, null, 2));
-                        logger.debug(
-                            `Did not receive access token. Error: ${(resp && resp.error) || ''} ${
-                                (resp && resp.error_description) || ''
-                            }`,
-                        );
-                        return new Response(
-                            'Error: No Access Token found in response from your OIDC provider',
-                            {
-                                status: 401,
-                            },
-                        );
-                    }
-                } else {
+                const publishedContentUrl = publishedContentUrls?.published;
+                if (!publishedContentUrl || !jwtToken) {
                     return new Response(
-                        'Error: Either ClientId or Client Secret or Access Token Endpoint is missing',
+                        "Error: Either JWT token or site's published URL is missing",
                         {
-                            status: 400,
+                            status: 500,
                         },
                     );
                 }
+
+                const state = request.query.state?.toString();
+                let location = state ? state.substring(state.indexOf('-') + 1) : '';
+                location = location.startsWith('/') ? location.slice(1) : location;
+                const url = new URL(
+                    `${
+                        publishedContentUrl.endsWith('/')
+                            ? publishedContentUrl
+                            : `${publishedContentUrl}/`
+                    }${location || ''}`,
+                );
+                url.searchParams.append('jwt_token', jwtToken);
+
+                return Response.redirect(url.toString());
             }
         });
 
         let response;
         try {
             response = await router.handle(request, context);
-        } catch (error: any) {
-            logger.error('error handling request', error);
-            return new Response(error.message, {
-                status: error.status || 500,
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                logger.error(
+                    'error handling request:',
+                    `${error}${error.stack ? `\n${error.stack}` : ''}`,
+                );
+                return new Response(error.message, {
+                    status: 500,
+                });
+            }
+
+            return new Response('Unexpected error when handling request', {
+                status: 500,
             });
         }
 

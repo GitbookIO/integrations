@@ -7,7 +7,7 @@ export type GitLabSpaceConfiguration = {
 } & SpaceInstallationConfiguration;
 
 export type GitLabRuntimeEnvironment = RuntimeEnvironment<{}, GitLabSpaceConfiguration>;
-export type GitLabRuntimeContext = RuntimeContext<GitLabRuntimeEnvironment>;
+export type GitLabRuntimeContext = RuntimeContext<GitLabRuntimeEnvironment, IntegrationTask>;
 
 export type GitlabConfigureAction =
     | { action: 'save.token'; token: string; customInstanceUrl?: string }

@@ -6,12 +6,12 @@ import { version } from '../package.json';
  * Generate the event to track in Segment for an actual GitBook event.
  */
 export function generateSegmentTrackEvent(event: api.SiteViewEvent) {
-    const { visitor, referrer, url, spaceId, pageId, siteId } = event;
+    const { visitor, referrer, url, siteId } = event;
 
     const anonymousId = getAnonymousId(event);
     const visitedURL = new URL(url);
     return {
-        event: '[GitBook] space_view',
+        event: '[GitBook] site_view',
         anonymousId,
         context: {
             library: {
@@ -29,8 +29,6 @@ export function generateSegmentTrackEvent(event: api.SiteViewEvent) {
         },
         properties: {
             siteId,
-            spaceId,
-            pageId,
         },
     };
 }

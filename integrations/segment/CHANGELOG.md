@@ -1,5 +1,29 @@
 # @gitbook/integration-segment
 
+## 2.3.0
+
+### Minor Changes
+
+- 35be82b: Add optional configuration to fix tracking data in EU
+
+### Patch Changes
+
+- 35be82b: Fix description length
+- 35be82b: Update description
+
+## 2.2.0
+
+### Minor Changes
+
+- 772a6b3: Only use site_view tracking
+- 772a6b3: Add cookies to plausible
+
+## 2.1.3
+
+### Patch Changes
+
+- a1c3335: Update documentation links
+
 ## 2.1.2
 
 ### Patch Changes
