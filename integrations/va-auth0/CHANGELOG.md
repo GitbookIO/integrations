@@ -1,5 +1,11 @@
 # @gitbook/integration-va-auth0
 
+## 0.5.0
+
+### Minor Changes
+
+- d7cf3b5: Add support for Auth0 invitation flow to integration
+
 ## 0.4.0
 
 ### Minor Changes
