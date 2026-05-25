@@ -1,14 +1,11 @@
-name: hubspot
+name: gitbook-hubspot
 title: HubSpot
 icon: ./assets/icon.png
-description: Plug your GitBook site to your HubSpot installation.
+description: Add the HubSpot tracking code to your published GitBook site.
 previewImages:
     - ./assets/hubspot-preview.png
-externalLinks:
-    - label: Documentation
-      url: https://www.gitbook.com/integrations/hubspot
 visibility: public
-organization: d8f63b60-89ae-11e7-8574-5927d48c4877
+organization: gitbook
 script: ./src/index.ts
 # The following scope(s) are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
