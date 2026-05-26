@@ -1,6 +1,5 @@
 {
   "lockfileVersion": 1,
-  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@gitbook/integrations",
@@ -301,6 +300,18 @@
     "integrations/hotjar": {
       "name": "@gitbook/integration-hotjar",
       "version": "0.7.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
+    "integrations/hubspot": {
+      "name": "@gitbook/integration-hubspot",
+      "version": "1.0.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -1130,6 +1141,8 @@
     "@gitbook/integration-helpscout": ["@gitbook/integration-helpscout@workspace:integrations/helpscout"],
 
     "@gitbook/integration-hotjar": ["@gitbook/integration-hotjar@workspace:integrations/hotjar"],
+
+    "@gitbook/integration-hubspot": ["@gitbook/integration-hubspot@workspace:integrations/hubspot"],
 
     "@gitbook/integration-intercom": ["@gitbook/integration-intercom@workspace:integrations/intercom"],
 
