@@ -1,0 +1,40 @@
+name: gitbook-hubspot
+title: HubSpot
+icon: ./assets/icon.png
+description: Add the HubSpot tracking code to your published GitBook site.
+previewImages:
+    - ./assets/hubspot-preview.png
+visibility: public
+organization: gitbook
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+contentSecurityPolicy:
+    script-src: hsadspixel.net hs-banner.com hs-analytics.net hs-scripts.com;
+summary: |
+    # Overview
+    This integration allows you to add the HubSpot tracking code to your published GitBook site.
+
+    # How it works
+    The integration injects the HubSpot script on your page using the configured tracking ID,
+    so that you can get analytics information from your GitBook site directly inside HubSpot.
+
+    # Configure
+    Install the integration on the GitBook site of your choice.
+    Locate the HubSpot tracking ID you want to use, which is available in HubSpot's Reports & Analytics Tracking section.
+
+    The ID should be just the numeric ID from the script URL "//js.hs-scripts.com/{hubspot_id}.js" (i.e. only paste what you see in hubspot_id).
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            hubspot_id:
+                type: string
+                title: HubSpot Tracking ID
+                description: The numeric ID from your HubSpot script URL (//js.hs-scripts.com/{hubspot_id}.js)
+        required:
+            - hubspot_id
+target: site
