@@ -644,7 +644,7 @@
     },
     "integrations/va-auth0": {
       "name": "@gitbook/integration-va-auth0",
-      "version": "0.5.0",
+      "version": "0.4.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
