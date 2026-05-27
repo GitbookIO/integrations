@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.182.0
+
+### Minor Changes
+
+- 17a85eb: Add support for icons in tab items
+
 ## 0.181.0
 
 ### Minor Changes
