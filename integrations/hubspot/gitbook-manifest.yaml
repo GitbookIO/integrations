@@ -11,6 +11,7 @@ script: ./src/index.ts
 # See https://developer.gitbook.com/integrations/configurations#scopes
 scopes:
     - site:script:inject
+    - site:script:cookies
 contentSecurityPolicy:
     script-src: hsadspixel.net hs-banner.com hs-analytics.net hs-scripts.com;
 summary: |
