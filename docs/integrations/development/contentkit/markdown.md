@@ -4,7 +4,7 @@ description: Learn about using custom blocks in Markdown when using Git Sync
 
 # Markdown
 
-In some cases (ex: with our official [Mermaid](../../../../integrations/mermaid/gitbook-manifest.yaml#L25-L31) block), you might want to format custom blocks as code-blocks in Markdown.
+In some cases, you might want to format custom blocks as code-blocks in Markdown.
 
 In your `gitbook-manifest.yaml`, define the `markdown` property for the a block:
 
@@ -31,3 +31,7 @@ In the scenario where the block also has other properties, those will be set on 
 something
 ```
 ````
+
+{% hint style="info" %}
+The native Mermaid block uses this pattern. If your content still uses older Mermaid code-blocks from the previous integration, GitBook converts them automatically when you edit the page.
+{% endhint %}
