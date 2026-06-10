@@ -1,5 +1,11 @@
 # @gitbook/integration-slack
 
+## 2.7.0
+
+### Minor Changes
+
+- 1d1284f: Include the authors of the content update in space update notifications
+
 ## 2.6.2
 
 ### Patch Changes
