@@ -42,6 +42,8 @@ const handleSpaceContentUpdated: EventCallback<
         return;
     }
 
+    const authors = (event.updatedBy ?? []).map((user) => user.displayName).filter(Boolean);
+
     const createdPages: ChangedRevisionPage[] = [];
     const editedPages: ChangedRevisionPage[] = [];
     const deletedPages: ChangedRevisionPage[] = [];
@@ -227,7 +229,7 @@ const handleSpaceContentUpdated: EventCallback<
         elements: [
             {
                 type: 'mrkdwn',
-                text: `📊 *${totalChanges} total changes* • Updated just now`,
+                text: `📊 *${totalChanges} total changes* • Updated just now${authors.length > 0 ? ` by ${authors.join(', ')}` : ''}`,
             },
         ],
     });
