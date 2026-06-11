@@ -1,7 +1,7 @@
 name: visitor-claims-webframe-demo
 title: Visitor Claims Webframe Demo
 icon: ./assets/icon.png
-organization: 7RDn7qEEPSHhRACRvwrt
+organization: QkobkeMSkvQjA19eKq3n
 description: Dev/test integration for inspecting ContentKit webframe visitor context.
 summary: |
     # Overview
@@ -13,7 +13,7 @@ summary: |
     Add the Visitor Claims Webframe Demo block to a space page. The webframe displays regular ContentKit webframe data alongside any visitor context injected by GitBook, including `visitor.claims` and `visitor.isSet`.
 visibility: private
 script: ./src/index.tsx
-scopes: []
+scopes: ['site:visitor:claims']
 blocks:
     - id: visitorClaimsWebframeDemo
       title: Visitor Claims Demo
