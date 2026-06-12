@@ -1,5 +1,5 @@
 import { ContentKitIcon } from '@gitbook/api';
-import { createComponent, getIntegrationContentURL } from '@gitbook/runtime';
+import { createComponent } from '@gitbook/runtime';
 import { MarketoRuntimeContext } from './types';
 import { getWebframeCacheKey } from './cache';
 
@@ -42,7 +42,7 @@ export const marketoFormBlock = createComponent<
 
         const cacheKey = getWebframeCacheKey();
         const webframeURL = new URL(
-            getIntegrationContentURL(environment.integration.urls, '/webframe'),
+            `${environment.integration.urls.publicContentEndpoint}/webframe`,
         );
         webframeURL.searchParams.set('formId', formId || '');
         webframeURL.searchParams.set('munchkinId', accountId || '');

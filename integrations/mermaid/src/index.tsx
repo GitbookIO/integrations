@@ -1,4 +1,4 @@
-import { createIntegration, createComponent, getIntegrationContentURL } from '@gitbook/runtime';
+import { createIntegration, createComponent } from '@gitbook/runtime';
 
 const defaultContent = `graph TD
   Mermaid --> Diagram`;
@@ -28,12 +28,8 @@ const diagramBlock = createComponent<
             maxAge: 86400,
         });
 
-        const url = new URL(
-            getIntegrationContentURL(
-                environment.integration.urls,
-                `/?v=${environment.integration.version}`,
-            ),
-        );
+        const url = new URL(environment.integration.urls.publicContentEndpoint);
+        url.searchParams.set('v', String(environment.integration.version));
 
         const output = (
             <webframe
