@@ -5,6 +5,7 @@ import {
     createComponent,
     FetchEventCallback,
     ExposableError,
+    getIntegrationContentURL,
 } from '@gitbook/runtime';
 
 const defaultContent = '';
@@ -46,7 +47,9 @@ const LucidComponent = createComponent<{
         const urlObject = new URL(url);
         const documentId = urlObject.pathname.split('/')[2];
 
-        const frameUrl = new URL(context.environment.spaceInstallation?.urls?.publicEndpoint!);
+        const frameUrl = new URL(
+            getIntegrationContentURL(context.environment.spaceInstallation?.urls!, '/'),
+        );
         frameUrl.searchParams.set('document', documentId);
 
         const output = (

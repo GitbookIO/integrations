@@ -6,6 +6,7 @@ import {
     RuntimeContext,
     FetchEventCallback,
     ExposableError,
+    getIntegrationContentURL,
 } from '@gitbook/runtime';
 
 import { getWebframeCacheControl, getWebframeCacheKey } from './cache';
@@ -60,8 +61,9 @@ const embedBlock = createComponent<EmbedBlockProps, EmbedBlockState>({
         const { environment } = context;
 
         const cacheKey = getWebframeCacheKey();
-        const webframeURL = new URL(`${environment.integration.urls.publicEndpoint}/webframe`);
-        webframeURL.search = cacheKey;
+        const webframeURL = new URL(
+            getIntegrationContentURL(environment.integration.urls, '/webframe') + cacheKey,
+        );
 
         return (
             <block>
