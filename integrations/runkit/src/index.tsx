@@ -60,7 +60,9 @@ const embedBlock = createComponent<EmbedBlockProps, EmbedBlockState>({
         const { environment } = context;
 
         const cacheKey = getWebframeCacheKey();
-        const webframeURL = new URL(`${environment.integration.urls.publicEndpoint}/webframe`);
+        const webframeURL = new URL(
+            `${environment.integration.urls.publicContentEndpoint}/webframe`,
+        );
         webframeURL.search = cacheKey;
 
         return (

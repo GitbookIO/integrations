@@ -29,7 +29,7 @@ const diagramBlock = createComponent<
             maxAge: 86400,
         });
 
-        const url = new URL(environment.integration.urls.publicEndpoint);
+        const url = new URL(environment.integration.urls.publicContentEndpoint);
         url.searchParams.set('v', String(environment.integration.version));
 
         const output = (
