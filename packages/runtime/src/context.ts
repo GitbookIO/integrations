@@ -104,7 +104,10 @@ export function createContext(
             queueTask: async (input) => {
                 await integrationAPI.integrations.queueIntegrationTask(
                     environment.integration.name,
-                    input,
+                    {
+                        task: input.task as Record<string, string>,
+                        schedule: input.schedule,
+                    },
                 );
             },
         },
