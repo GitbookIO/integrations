@@ -1,5 +1,11 @@
 # @gitbook/integration-mermaid
 
+## 0.0.3
+
+### Patch Changes
+
+- 76694da: Use publicContentEndpoint for WebFrame rendering on cookieless origin
+
 ## 0.0.2
 
 ### Patch Changes
