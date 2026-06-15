@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.183.1
+
+### Patch Changes
+
+- 48ed708: Update API
+
 ## 0.183.0
 
 ### Minor Changes
