@@ -29,10 +29,7 @@ import { withEnvironment } from './environments';
 import { registerGeneratedCommands, COMPLETIONS } from './generated-commands';
 import { registerCustomCommands } from './api-commands';
 
-program
-    .name('gitbook2')
-    .description('GitBook API testing CLI')
-    .version(packageJSON.version);
+program.name('gitbook2').description('GitBook API testing CLI').version(packageJSON.version);
 
 program
     .command('auth')

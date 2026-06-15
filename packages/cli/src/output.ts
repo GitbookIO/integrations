@@ -57,7 +57,17 @@ export function formatPretty(data: unknown, indent = 0): string {
 
 // Ordered, generic identifying fields — earliest = most identifying. No
 // per-resource hardcoding; we keep whichever are present as scalars.
-const SUMMARY_FIELDS = ['id', 'title', 'name', 'label', 'key', 'slug', 'path', 'visibility', 'emoji'] as const;
+const SUMMARY_FIELDS = [
+    'id',
+    'title',
+    'name',
+    'label',
+    'key',
+    'slug',
+    'path',
+    'visibility',
+    'emoji',
+] as const;
 const MAX_CELL_LEN = 60;
 
 export function isPlainObject(v: unknown): v is Record<string, unknown> {
@@ -66,7 +76,9 @@ export function isPlainObject(v: unknown): v is Record<string, unknown> {
 
 // A GitBook list response is an envelope { items, next?, count? }; we also
 // accept a bare top-level array. Returns null for anything else.
-export function asCollection(data: unknown): { items: unknown[]; next?: unknown; count?: unknown } | null {
+export function asCollection(
+    data: unknown,
+): { items: unknown[]; next?: unknown; count?: unknown } | null {
     if (Array.isArray(data)) return { items: data };
     if (isPlainObject(data) && Array.isArray(data.items)) {
         return { items: data.items, next: data.next, count: data.count };
@@ -97,11 +109,18 @@ function pluralizeType(t: string): string {
 // One line per item: id + human label + a couple of disambiguators. When every
 // item shares one `object` type the per-line type is dropped and named in the
 // footer; otherwise each line is tagged with its type.
-export function formatCollection(coll: { items: unknown[]; next?: unknown; count?: unknown }): string {
+export function formatCollection(coll: {
+    items: unknown[];
+    next?: unknown;
+    count?: unknown;
+}): string {
     const { items, next, count } = coll;
 
     const types = new Set(
-        items.filter(isPlainObject).map((o) => o.object).filter((v): v is string => typeof v === 'string'),
+        items
+            .filter(isPlainObject)
+            .map((o) => o.object)
+            .filter((v): v is string => typeof v === 'string'),
     );
     const uniformType = types.size === 1 ? [...types][0] : null;
 
@@ -110,7 +129,9 @@ export function formatCollection(coll: { items: unknown[]; next?: unknown; count
         const cells: string[] = [];
         const id = summaryCell(item.id);
         if (id) cells.push(id);
-        const labelField = ['title', 'name', 'label', 'key', 'slug'].find((f) => summaryCell(item[f]) !== null);
+        const labelField = ['title', 'name', 'label', 'key', 'slug'].find(
+            (f) => summaryCell(item[f]) !== null,
+        );
         if (labelField) cells.push(summaryCell(item[labelField])!);
         for (const f of ['visibility', 'path']) {
             const c = summaryCell(item[f]);
@@ -121,7 +142,9 @@ export function formatCollection(coll: { items: unknown[]; next?: unknown; count
     });
 
     const footerParts: string[] = [];
-    footerParts.push(uniformType ? `${items.length} ${pluralizeType(uniformType)}` : `${items.length} items`);
+    footerParts.push(
+        uniformType ? `${items.length} ${pluralizeType(uniformType)}` : `${items.length} items`,
+    );
     if (typeof count === 'number') footerParts.push(`${count} total`);
     const page = isPlainObject(next) ? next.page : undefined;
     if (page !== undefined && page !== null) footerParts.push(`next page: --page ${String(page)}`);

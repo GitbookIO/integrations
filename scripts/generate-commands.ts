@@ -130,11 +130,7 @@ interface SchemaObject {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const RESTRICTED_SCHEMES = new Set([
-    'user-internal',
-    'user-staff',
-    'user-internal-or-staff',
-]);
+const RESTRICTED_SCHEMES = new Set(['user-internal', 'user-staff', 'user-internal-or-staff']);
 
 const HTTP_VERBS = ['get', 'post', 'put', 'patch', 'delete'] as const;
 
@@ -235,7 +231,10 @@ function resolveSchema(schema: SchemaObject, spec: OpenAPISpec, depth = 0): Sche
     return schema;
 }
 
-function resolveParameter(param: ParameterObject | RefObject, spec: OpenAPISpec): ParameterObject | null {
+function resolveParameter(
+    param: ParameterObject | RefObject,
+    spec: OpenAPISpec,
+): ParameterObject | null {
     if ('$ref' in param) {
         return resolveRef(param.$ref, spec) as ParameterObject | null;
     }
@@ -269,8 +268,7 @@ function parsePath(apiPath: string): Seg[] {
         );
 }
 
-const singular = (s: string): string =>
-    SINGULAR[s] ?? (s.endsWith('s') ? s.slice(0, -1) : s);
+const singular = (s: string): string => SINGULAR[s] ?? (s.endsWith('s') ? s.slice(0, -1) : s);
 
 // Literal segments that are ever immediately followed by an {id} anywhere in the
 // spec — i.e. genuine collections (as opposed to singletons or action segments).
@@ -411,7 +409,8 @@ function extractBodyFlags(schema: SchemaObject, spec: OpenAPISpec): BodyFlag[] |
     const resolved = resolveSchema(schema, spec);
     if (resolved.oneOf || resolved.anyOf) return null;
     if (resolved.allOf) return mergeAllOfFlags(resolved.allOf, spec);
-    if (resolved.type === 'object' || resolved.properties) return flattenObjectFlags(resolved, spec);
+    if (resolved.type === 'object' || resolved.properties)
+        return flattenObjectFlags(resolved, spec);
     return null;
 }
 
@@ -535,7 +534,13 @@ function buildRoutes(spec: OpenAPISpec): Route[] {
                 queryParams,
                 bodyFlags,
                 hasBody,
-                naming: computeNaming(upper, apiPath, operation.operationId, collections, namespaces),
+                naming: computeNaming(
+                    upper,
+                    apiPath,
+                    operation.operationId,
+                    collections,
+                    namespaces,
+                ),
             });
         }
     }
@@ -566,7 +571,10 @@ function buildCommands(routes: Route[]): Command[] {
             (group.every((r) => r.naming.verb === 'list') ||
                 group.every((r) => r.naming.verb === 'create'));
         const scopeKeys = group.map((r) =>
-            r.naming.scope.map((s) => s.flag).sort().join(','),
+            r.naming.scope
+                .map((s) => s.flag)
+                .sort()
+                .join(','),
         );
         const distinctScopes = new Set(scopeKeys).size === scopeKeys.length;
 
@@ -665,7 +673,10 @@ function emitOutputFlags(I: string): string[] {
     ];
 }
 
-function emitRequest(I: string, opts: { method: string; hasQuery: boolean; hasBody: boolean }): string[] {
+function emitRequest(
+    I: string,
+    opts: { method: string; hasQuery: boolean; hasBody: boolean },
+): string[] {
     const lines: string[] = [];
     lines.push(`${I}        try {`);
     lines.push(`${I}            const response = await api.request({`);
@@ -674,7 +685,9 @@ function emitRequest(I: string, opts: { method: string; hasQuery: boolean; hasBo
     lines.push(`${I}                secure: true,`);
     if (opts.hasQuery) lines.push(`${I}                query,`);
     if (opts.hasBody) {
-        lines.push(`${I}                ...(body !== undefined ? { body, type: ContentType.Json } : {}),`);
+        lines.push(
+            `${I}                ...(body !== undefined ? { body, type: ContentType.Json } : {}),`,
+        );
     }
     lines.push(`${I}            });`);
     lines.push(`${I}            if (response.status !== 204) {`);
@@ -695,7 +708,11 @@ function emitBodyOption(f: BodyFlag, I: string): string {
     return `${I}    .option('${flagStr}', '${desc}')`;
 }
 
-function emitSimpleCommand(cmd: Extract<Command, { kind: 'simple' }>, parentVar: string, I: string): string {
+function emitSimpleCommand(
+    cmd: Extract<Command, { kind: 'simple' }>,
+    parentVar: string,
+    I: string,
+): string {
     const { route, verb } = cmd;
     const lines: string[] = [];
     const argStr = route.pathParams.map((p) => `<${p.name}>`).join(' ');
@@ -707,7 +724,9 @@ function emitSimpleCommand(cmd: Extract<Command, { kind: 'simple' }>, parentVar:
 
     for (const qp of route.queryParams) {
         const bracket = qp.required ? `<${qp.name}>` : `[${qp.name}]`;
-        lines.push(`${I}    .option('--${qp.name} ${bracket}', '${escapeStr(qp.description ?? '')}')`);
+        lines.push(
+            `${I}    .option('--${qp.name} ${bracket}', '${escapeStr(qp.description ?? '')}')`,
+        );
     }
     if (route.hasBody) {
         if (route.bodyFlags && route.bodyFlags.length > 0) {
@@ -745,7 +764,9 @@ function emitSimpleCommand(cmd: Extract<Command, { kind: 'simple' }>, parentVar:
                 );
             }
         } else {
-            lines.push(`${I}        const body = options.body ? JSON.parse(options.body) : undefined;`);
+            lines.push(
+                `${I}        const body = options.body ? JSON.parse(options.body) : undefined;`,
+            );
         }
     }
 
@@ -761,7 +782,11 @@ function emitSimpleCommand(cmd: Extract<Command, { kind: 'simple' }>, parentVar:
     return lines.join('\n');
 }
 
-function emitMergedCommand(cmd: Extract<Command, { kind: 'merged' }>, parentVar: string, I: string): string {
+function emitMergedCommand(
+    cmd: Extract<Command, { kind: 'merged' }>,
+    parentVar: string,
+    I: string,
+): string {
     const lines: string[] = [];
     // All scope flags across variants, deduped, in stable order.
     const scopeFlags: { flag: string; idParam: string }[] = [];
@@ -783,14 +808,18 @@ function emitMergedCommand(cmd: Extract<Command, { kind: 'merged' }>, parentVar:
     }
     for (const qp of cmd.queryParams) {
         const bracket = qp.required ? `<${qp.name}>` : `[${qp.name}]`;
-        lines.push(`${I}    .option('--${qp.name} ${bracket}', '${escapeStr(qp.description ?? '')}')`);
+        lines.push(
+            `${I}    .option('--${qp.name} ${bracket}', '${escapeStr(qp.description ?? '')}')`,
+        );
     }
     lines.push(...emitOutputFlags(I));
 
     lines.push(`${I}    .action(async (options) => {`);
     lines.push(`${I}        const api = await getAPIClient(true);`);
     // Determine which variant the supplied scope flags select.
-    lines.push(`${I}        const scopeFlags = [${scopeFlags.map((s) => `'${s.flag}'`).join(', ')}];`);
+    lines.push(
+        `${I}        const scopeFlags = [${scopeFlags.map((s) => `'${s.flag}'`).join(', ')}];`,
+    );
     lines.push(
         `${I}        const provided = scopeFlags.filter((f) => (options as Record<string, unknown>)[f] !== undefined).sort().join(',');`,
     );
@@ -891,7 +920,9 @@ function emitFile(tree: GroupNode, completions: Record<string, string>): string 
     lines.push(`}`);
     lines.push(``);
     lines.push(`// Shell completion scripts, generated from the command tree.`);
-    lines.push(`export const COMPLETIONS: Record<string, string> = ${JSON.stringify(completions, null, 4)};`);
+    lines.push(
+        `export const COMPLETIONS: Record<string, string> = ${JSON.stringify(completions, null, 4)};`,
+    );
     lines.push(``);
     return lines.join('\n');
 }
