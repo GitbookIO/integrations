@@ -189,7 +189,7 @@ export async function updateCommitWithPreviewLinks(
 
     const mainStatus = updateCommitStatus(runtime, config, commitSha, {
         state,
-        description: getGitSyncStateDescription(state, Boolean(publicUrl)),
+        description: getGitSyncStateDescription(state, false),
         url: `${space.urls.app}~/diff/~/revisions/${revisionId}/`,
         context,
     });
@@ -199,7 +199,7 @@ export async function updateCommitWithPreviewLinks(
     if (publicUrl) {
         publicStatus = updateCommitStatus(runtime, config, commitSha, {
             state,
-            description: getGitSyncStateDescription(state, Boolean(publicUrl)),
+            description: getGitSyncStateDescription(state, true),
             url: `${publicUrl}~/revisions/${revisionId}/`,
             context: `${context} - ${new URL(publicUrl).hostname}`,
         });
