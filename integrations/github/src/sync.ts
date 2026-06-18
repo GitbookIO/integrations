@@ -197,11 +197,13 @@ export async function updateCommitWithPreviewLinks(
     let publicStatus: Promise<any> | undefined;
 
     if (publicUrl) {
+        const publicURL = new URL(publicUrl);
+        const publicURLContext = publicURL.href.slice(publicURL.protocol.length + 2);
         publicStatus = updateCommitStatus(runtime, config, commitSha, {
             state,
             description: getGitSyncStateDescription(state, true),
             url: `${publicUrl}~/revisions/${revisionId}/`,
-            context: `${context} - ${new URL(publicUrl).hostname}`,
+            context: `${context} - ${publicURLContext}`,
         });
     }
 
