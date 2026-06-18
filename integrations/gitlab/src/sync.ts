@@ -178,25 +178,25 @@ export async function updateCommitWithPreviewLinks(
     const { data: space } = await runtime.api.spaces.getSpaceById(spaceId);
 
     const context = `GitBook${config.projectDirectory ? ` (${config.projectDirectory})` : ''}`;
+    const publicUrl = space.visibility === ContentVisibility.Public ? space.urls.public : undefined;
 
     const mainStatus = updateCommitStatus(runtime, config, commitSha, {
         state,
-        description: getGitSyncStateDescription(state),
-        url: `${space.urls.app}~/revisions/${revisionId}/`,
+        description: getGitSyncStateDescription(state, false),
+        url: `${space.urls.app}~/diff/~/revisions/${revisionId}/`,
         context,
     });
 
     let publicStatus: Promise<any> | undefined;
-    if (space.visibility === ContentVisibility.Public) {
-        const publicUrl = space.urls.public;
-        if (publicUrl) {
-            publicStatus = updateCommitStatus(runtime, config, commitSha, {
-                state,
-                description: getGitSyncStateDescription(state),
-                url: `${publicUrl}~/revisions/${revisionId}/`,
-                context: `${context} - ${new URL(publicUrl).hostname}`,
-            });
-        }
+    if (publicUrl) {
+        const publicURL = new URL(publicUrl);
+        const publicURLContext = publicURL.href.slice(publicURL.protocol.length + 2);
+        publicStatus = updateCommitStatus(runtime, config, commitSha, {
+            state,
+            description: getGitSyncStateDescription(state, true),
+            url: `${publicUrl}~/revisions/${revisionId}/`,
+            context: `${context} - ${publicURLContext}`,
+        });
     }
 
     await Promise.all([mainStatus, publicStatus]);
