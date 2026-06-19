@@ -1,5 +1,14 @@
 # @gitbook/integration-gitlab
 
+## 0.6.8
+
+### Patch Changes
+
+- cf6d2ea: - Open the changes in GitBook in diff mode by default
+    - Updated the commit status description to be more informative about the target
+- Updated dependencies [651e18d]
+    - @gitbook/api@0.185.0
+
 ## 0.6.7
 
 ### Patch Changes
