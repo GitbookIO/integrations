@@ -1,18 +1,35 @@
 /**
- * Returns all available mailing lists
+ * Returns all available mailing lists (audiences), fetching all pages.
  */
 export async function getMailingLists(
     apiEndpoint: string,
     accessToken: string,
 ): Promise<MailchimpListItem[]> {
-    const resp = await fetch(`${apiEndpoint}/3.0/lists`, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
+    const allLists: MailchimpListItem[] = [];
+    const count = 100;
+    let offset = 0;
 
-    const { lists = [] } = (await resp.json()) as MailchimpListsResponse;
-    return lists;
+    while (true) {
+        const resp = await fetch(
+            `${apiEndpoint}/3.0/lists?count=${count}&offset=${offset}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            },
+        );
+
+        const { lists = [], total_items = 0 } = (await resp.json()) as MailchimpListsResponse;
+        allLists.push(...lists);
+
+        if (allLists.length >= total_items || lists.length === 0) {
+            break;
+        }
+
+        offset += count;
+    }
+
+    return allLists;
 }
 
 /**
@@ -52,7 +69,8 @@ export async function subscribeUserToList(
     });
 
     if (!resp.ok) {
-        throw new Error(`Mailchimp API error: ${resp.status} ${resp.statusText}`);
+        const body = await resp.text();
+        throw new Error(`Mailchimp API error: ${resp.status} ${resp.statusText} - ${body}`);
     }
 }
 
