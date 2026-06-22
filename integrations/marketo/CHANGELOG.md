@@ -1,5 +1,11 @@
 # @gitbook/integration-marketo
 
+## 0.3.1
+
+### Patch Changes
+
+- 76694da: Use publicContentEndpoint for WebFrame rendering on cookieless origin
+
 ## 0.3.0
 
 ### Minor Changes

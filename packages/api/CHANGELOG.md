@@ -1,5 +1,29 @@
 # @gitbook/api
 
+## 0.185.0
+
+### Minor Changes
+
+- 651e18d: Bump API version
+
+## 0.184.0
+
+### Minor Changes
+
+- 3655d93: Bump API
+
+## 0.183.1
+
+### Patch Changes
+
+- 48ed708: Update API
+
+## 0.183.0
+
+### Minor Changes
+
+- 7a19945: Bump API version for renderIntegrationUI spec changes
+
 ## 0.182.0
 
 ### Minor Changes

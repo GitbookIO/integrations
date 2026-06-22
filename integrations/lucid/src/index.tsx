@@ -46,7 +46,12 @@ const LucidComponent = createComponent<{
         const urlObject = new URL(url);
         const documentId = urlObject.pathname.split('/')[2];
 
-        const frameUrl = new URL(context.environment.spaceInstallation?.urls?.publicEndpoint!);
+        const { spaceInstallation } = context.environment;
+        if (!spaceInstallation) {
+            throw new ExposableError('Missing space installation');
+        }
+
+        const frameUrl = new URL(spaceInstallation.urls.publicContentEndpoint);
         frameUrl.searchParams.set('document', documentId);
 
         const output = (

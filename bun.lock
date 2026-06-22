@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@gitbook/integrations",
@@ -311,7 +312,7 @@
     },
     "integrations/hubspot": {
       "name": "@gitbook/integration-hubspot",
-      "version": "1.0.0",
+      "version": "2.1.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -613,7 +614,7 @@
     },
     "integrations/slack": {
       "name": "@gitbook/integration-slack",
-      "version": "2.6.2",
+      "version": "2.7.0",
       "dependencies": {
         "@ai-sdk/openai": "^2.0.62",
         "@gitbook/api": "*",
@@ -655,7 +656,7 @@
     },
     "integrations/va-auth0": {
       "name": "@gitbook/integration-va-auth0",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -749,7 +750,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.181.0",
+      "version": "0.183.1",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -764,7 +765,7 @@
     },
     "packages/cli": {
       "name": "@gitbook/cli",
-      "version": "0.27.2",
+      "version": "0.28.0",
       "bin": {
         "gitbook": "./cli.js",
       },

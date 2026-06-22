@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.28.0
+
+### Minor Changes
+
+- 147f70b: Add support for publishing integration with site:visitor:claims scope
+
 ## 0.27.2
 
 ### Patch Changes
