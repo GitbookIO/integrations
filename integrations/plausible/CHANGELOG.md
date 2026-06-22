@@ -1,5 +1,11 @@
 # @gitbook/integration-plausible
 
+## 0.10.0
+
+### Minor Changes
+
+- af33582: Fix CSP for plausible integration
+
 ## 0.9.0
 
 ### Minor Changes
