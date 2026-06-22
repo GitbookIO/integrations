@@ -19,6 +19,11 @@ export async function getMailingLists(
             },
         );
 
+        if (!resp.ok) {
+            const body = await resp.text();
+            throw new Error(`Mailchimp API error: ${resp.status} ${resp.statusText} - ${body}`);
+        }
+
         const { lists = [], total_items = 0 } = (await resp.json()) as MailchimpListsResponse;
         allLists.push(...lists);
 
