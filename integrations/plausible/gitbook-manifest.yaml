@@ -15,11 +15,8 @@ script: ./src/index.ts
 scopes:
     - site:script:inject
 contentSecurityPolicy:
-    script-src: |
-        https://plausible.io;
-    connect-src: |
-        plausible.io
-        *;
+    script-src: https://plausible.io
+    connect-src: https://plausible.io *
 summary: |
     # Overview
 
