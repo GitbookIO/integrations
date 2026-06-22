@@ -10,14 +10,11 @@ export async function getMailingLists(
     let offset = 0;
 
     while (true) {
-        const resp = await fetch(
-            `${apiEndpoint}/3.0/lists?count=${count}&offset=${offset}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
+        const resp = await fetch(`${apiEndpoint}/3.0/lists?count=${count}&offset=${offset}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
             },
-        );
+        });
 
         if (!resp.ok) {
             const body = await resp.text();

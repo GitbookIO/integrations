@@ -36,7 +36,12 @@ type MailchimpBlockState = {
 
 type MailchimpAction =
     | { action: 'subscribe'; email: string }
-    | { action: '@ui.modal.close'; listId: string | undefined; defaultListId: string | undefined; cta: string };
+    | {
+          action: '@ui.modal.close';
+          listId: string | undefined;
+          defaultListId: string | undefined;
+          cta: string;
+      };
 
 const DEFAULT_CTA = 'Sign up to our mailing list to receive updates!';
 const DEFAULT_DISCLAIMER =
