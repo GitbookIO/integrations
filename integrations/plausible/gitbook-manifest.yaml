@@ -37,11 +37,11 @@ configurations:
             scriptKey:
                 type: string
                 title: Script key
-                description: The script key from your Plausible snippet (the "pa-XXXX" filename in the script src URL, e.g. "pa-W5AL4qmg42q0QIrC2P57z").
+                description: The "pa-XXXX" key from your Plausible snippet URL.
             selfHostedUrl:
                 type: string
                 title: Self-hosted URL
-                description: When self-hosting Plausible, set the base URL of your instance (e.g. "https://plausible.example.com"). Leave empty when using plausible.io.
+                description: Base URL of your self-hosted Plausible instance. Leave empty for plausible.io.
         required:
             - scriptKey
 target: site
