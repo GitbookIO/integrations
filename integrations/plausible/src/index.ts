@@ -11,8 +11,8 @@ type PlausibleRuntimeContext = RuntimeContext<
     RuntimeEnvironment<
         {},
         {
-            domain?: string;
-            api?: string;
+            scriptKey?: string;
+            selfHostedUrl?: string;
         }
     >
 >;
@@ -21,13 +21,16 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     event,
     { environment }: PlausibleRuntimeContext,
 ) => {
-    const domain = environment.siteInstallation?.configuration?.domain;
-    const api = environment.siteInstallation?.configuration?.api || '';
-    if (!domain) {
+    const scriptKey = environment.siteInstallation?.configuration?.scriptKey;
+    const selfHostedUrl = environment.siteInstallation?.configuration?.selfHostedUrl || '';
+    if (!scriptKey) {
         return;
     }
 
-    return new Response((script as string).replace('<domain>', domain).replace('<api>', api), {
+    const baseUrl = selfHostedUrl || 'https://plausible.io';
+    const scriptSrc = `${baseUrl}/js/${scriptKey}.js`;
+
+    return new Response((script as string).replace('<scriptSrc>', scriptSrc), {
         headers: {
             'Content-Type': 'application/javascript',
             'Cache-Control': 'max-age=604800',
