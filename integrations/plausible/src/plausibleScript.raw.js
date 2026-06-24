@@ -1,4 +1,14 @@
-(function () {
+(function (doc) {
+    var js = doc.createElement('script');
+    js.async = true;
+    js.src = '<scriptSrc>';
+    var first = doc.getElementsByTagName('script')[0];
+    if (first && first.parentNode) {
+        first.parentNode.insertBefore(js, first);
+    } else {
+        (doc.head || doc.documentElement).appendChild(js);
+    }
+
     window.plausible =
         window.plausible ||
         function () {
@@ -10,9 +20,4 @@
             plausible.o = i || {};
         };
     plausible.init();
-
-    var s = document.createElement('script');
-    s.async = true;
-    s.src = '<scriptSrc>';
-    document.head.appendChild(s);
-})();
+})(document);

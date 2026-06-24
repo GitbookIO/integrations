@@ -22,13 +22,14 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     { environment }: PlausibleRuntimeContext,
 ) => {
     const scriptKey = environment.siteInstallation?.configuration?.scriptKey;
-    const selfHostedUrl = environment.siteInstallation?.configuration?.selfHostedUrl || '';
+    const selfHostedUrl = environment.siteInstallation?.configuration?.selfHostedUrl;
     if (!scriptKey) {
         return;
     }
 
-    const baseUrl = selfHostedUrl || 'https://plausible.io';
-    const scriptSrc = `${baseUrl}/js/${scriptKey}.js`;
+    const normalizedKey = scriptKey.startsWith('pa-') ? scriptKey : `pa-${scriptKey}`;
+    const baseUrl = (selfHostedUrl || 'https://plausible.io').replace(/\/+$/, '');
+    const scriptSrc = `${baseUrl}/js/${normalizedKey}.js`;
 
     return new Response((script as string).replace('<scriptSrc>', scriptSrc), {
         headers: {
