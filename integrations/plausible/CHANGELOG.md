@@ -1,5 +1,11 @@
 # @gitbook/integration-plausible
 
+## 1.0.1
+
+### Patch Changes
+
+- cbae79a: Change to patch
+
 ## 1.0.0
 
 ### Major Changes
