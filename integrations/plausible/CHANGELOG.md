@@ -1,5 +1,11 @@
 # @gitbook/integration-plausible
 
+## 1.0.0
+
+### Major Changes
+
+- da7ad52: Update Plausible integration to use script instead of API
+
 ## 0.10.0
 
 ### Minor Changes
