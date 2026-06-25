@@ -15,7 +15,7 @@ script: ./src/index.ts
 scopes:
     - site:script:inject
 contentSecurityPolicy:
-    script-src: https://plausible.io
+    script-src: https://plausible.io *
     connect-src: https://plausible.io *
 summary: |
     # Overview
@@ -34,14 +34,14 @@ categories:
 configurations:
     site:
         properties:
-            domain:
+            scriptKey:
                 type: string
-                title: Domain
-                description: The domain URL you configured for this Plausible website.
-            api:
+                title: Script key
+                description: The "pa-XXXX" key from your Plausible snippet URL.
+            selfHostedUrl:
                 type: string
-                title: Self-hosted API
-                description: When self-hosting, configure the url of the instance API (empty when using plausible.io).
+                title: Self-hosted URL
+                description: Base URL of your self-hosted Plausible instance. Leave empty for plausible.io.
         required:
-            - domain
+            - scriptKey
 target: site
