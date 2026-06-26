@@ -172,14 +172,16 @@ export const configBlock = createComponent<
                                 label="Select account"
                                 hint={
                                     <text>
-                                        Choose the GitHub installation, user or organization.{' '}
+                                        Select the GitHub user or organization you want to connect.
+                                        To make more accounts available,{' '}
                                         <link
                                             target={{
                                                 url: context.environment.secrets.APP_INSTALL_URL,
                                             }}
                                         >
-                                            Install the GitHub app.
-                                        </link>
+                                            install or manage the GitHub app
+                                        </link>{' '}
+                                        and reconnect GitHub.
                                     </text>
                                 }
                                 element={
