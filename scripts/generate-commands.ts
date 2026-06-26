@@ -749,8 +749,9 @@ function emitSimpleCommand(
     if (route.queryParams.length > 0) {
         lines.push(`${I}        const query: Record<string, string> = {};`);
         for (const qp of route.queryParams) {
+            const accessor = `options[${JSON.stringify(camelize(qp.name))}]`;
             lines.push(
-                `${I}        if (options.${camelize(qp.name)} !== undefined) query['${qp.name}'] = String(options.${camelize(qp.name)});`,
+                `${I}        if (${accessor} !== undefined) query['${qp.name}'] = String(${accessor});`,
             );
         }
     }
@@ -850,8 +851,9 @@ function emitMergedCommand(
     if (cmd.queryParams.length > 0) {
         lines.push(`${I}        const query: Record<string, string> = {};`);
         for (const qp of cmd.queryParams) {
+            const accessor = `options[${JSON.stringify(camelize(qp.name))}]`;
             lines.push(
-                `${I}        if (options.${camelize(qp.name)} !== undefined) query['${qp.name}'] = String(options.${camelize(qp.name)});`,
+                `${I}        if (${accessor} !== undefined) query['${qp.name}'] = String(${accessor});`,
             );
         }
     }

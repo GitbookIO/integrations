@@ -151,7 +151,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}`;
             const query: Record<string, string> = {};
-            if (options.shareKey !== undefined) query['shareKey'] = String(options.shareKey);
+            if (options["shareKey"] !== undefined) query['shareKey'] = String(options["shareKey"]);
             try {
                 const response = await api.request({
                     path,
@@ -320,9 +320,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/search`;
             const query: Record<string, string> = {};
-            if (options.query !== undefined) query['query'] = String(options.query);
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["query"] !== undefined) query['query'] = String(options["query"]);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -382,11 +382,11 @@ export function registerGeneratedCommands(program: Command): void {
                 process.exit(1);
             }
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.externalId !== undefined) query['externalId'] = String(options.externalId);
-            if (options.extended !== undefined) query['extended'] = String(options.extended);
-            if (options.order !== undefined) query['order'] = String(options.order);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["externalId"] !== undefined) query['externalId'] = String(options["externalId"]);
+            if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
+            if (options["order"] !== undefined) query['order'] = String(options["order"]);
             try {
                 const response = await api.request({
                     path,
@@ -449,7 +449,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/embed`;
             const query: Record<string, string> = {};
-            if (options.url !== undefined) query['url'] = String(options.url);
+            if (options["url"] !== undefined) query['url'] = String(options["url"]);
             try {
                 const response = await api.request({
                     path,
@@ -694,8 +694,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/permissions/teams`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -730,8 +730,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/permissions/users`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -822,9 +822,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/permissions/aggregate`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.role !== undefined) query['role'] = String(options.role);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["role"] !== undefined) query['role'] = String(options["role"]);
             try {
                 const response = await api.request({
                     path,
@@ -859,8 +859,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/content`;
             const query: Record<string, string> = {};
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
@@ -931,8 +931,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/content/pages`;
             const query: Record<string, string> = {};
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
@@ -969,10 +969,10 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/content/files`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
@@ -1003,8 +1003,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/content/files/${fileId}`;
             const query: Record<string, string> = {};
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
@@ -1039,8 +1039,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/content/files/${fileId}/backlinks`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -1079,12 +1079,12 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/content/page/${pageId}`;
             const query: Record<string, string> = {};
-            if (options.format !== undefined) query['format'] = String(options.format);
-            if (options.format.markdown.refs !== undefined) query['format.markdown.refs'] = String(options.format.markdown.refs);
-            if (options.evaluated !== undefined) query['evaluated'] = String(options.evaluated);
-            if (options.dereferenced !== undefined) query['dereferenced'] = String(options.dereferenced);
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["format"] !== undefined) query['format'] = String(options["format"]);
+            if (options["format.markdown.refs"] !== undefined) query['format.markdown.refs'] = String(options["format.markdown.refs"]);
+            if (options["evaluated"] !== undefined) query['evaluated'] = String(options["evaluated"]);
+            if (options["dereferenced"] !== undefined) query['dereferenced'] = String(options["dereferenced"]);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
@@ -1120,9 +1120,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/content/page/${pageId}/links`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.status !== undefined) query['status'] = String(options.status);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["status"] !== undefined) query['status'] = String(options["status"]);
             try {
                 const response = await api.request({
                     path,
@@ -1157,8 +1157,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/content/page/${pageId}/backlinks`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -1227,12 +1227,12 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/content/path/${pagePath}`;
             const query: Record<string, string> = {};
-            if (options.format !== undefined) query['format'] = String(options.format);
-            if (options.format.markdown.refs !== undefined) query['format.markdown.refs'] = String(options.format.markdown.refs);
-            if (options.evaluated !== undefined) query['evaluated'] = String(options.evaluated);
-            if (options.dereferenced !== undefined) query['dereferenced'] = String(options.dereferenced);
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["format"] !== undefined) query['format'] = String(options["format"]);
+            if (options["format.markdown.refs"] !== undefined) query['format.markdown.refs'] = String(options["format.markdown.refs"]);
+            if (options["evaluated"] !== undefined) query['evaluated'] = String(options["evaluated"]);
+            if (options["dereferenced"] !== undefined) query['dereferenced'] = String(options["dereferenced"]);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
@@ -1267,8 +1267,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/content/reusable-contents/${reusableContentId}`;
             const query: Record<string, string> = {};
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
@@ -1307,7 +1307,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/content/computed/document`;
             const query: Record<string, string> = {};
-            if (options.schema !== undefined) query['schema'] = String(options.schema);
+            if (options["schema"] !== undefined) query['schema'] = String(options["schema"]);
             const body: Record<string, unknown> = {};
             if (options.seed !== undefined) body['seed'] = options.seed;
             try {
@@ -1378,7 +1378,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/documents/${documentId}`;
             const query: Record<string, string> = {};
-            if (options.schema !== undefined) query['schema'] = String(options.schema);
+            if (options["schema"] !== undefined) query['schema'] = String(options["schema"]);
             try {
                 const response = await api.request({
                     path,
@@ -1419,14 +1419,14 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.status !== undefined) query['status'] = String(options.status);
-            if (options.creator !== undefined) query['creator'] = String(options.creator);
-            if (options.contributor !== undefined) query['contributor'] = String(options.contributor);
-            if (options.requestedReviewer !== undefined) query['requestedReviewer'] = String(options.requestedReviewer);
-            if (options.topic !== undefined) query['topic'] = String(options.topic);
-            if (options.orderBy !== undefined) query['orderBy'] = String(options.orderBy);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["status"] !== undefined) query['status'] = String(options["status"]);
+            if (options["creator"] !== undefined) query['creator'] = String(options["creator"]);
+            if (options["contributor"] !== undefined) query['contributor'] = String(options["contributor"]);
+            if (options["requestedReviewer"] !== undefined) query['requestedReviewer'] = String(options["requestedReviewer"]);
+            if (options["topic"] !== undefined) query['topic'] = String(options["topic"]);
+            if (options["orderBy"] !== undefined) query['orderBy'] = String(options["orderBy"]);
             try {
                 const response = await api.request({
                     path,
@@ -1605,10 +1605,10 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/reviews`;
             const query: Record<string, string> = {};
-            if (options.format !== undefined) query['format'] = String(options.format);
-            if (options.outdated !== undefined) query['outdated'] = String(options.outdated);
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["format"] !== undefined) query['format'] = String(options["format"]);
+            if (options["outdated"] !== undefined) query['outdated'] = String(options["outdated"]);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -1668,7 +1668,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/reviews/${reviewId}`;
             const query: Record<string, string> = {};
-            if (options.format !== undefined) query['format'] = String(options.format);
+            if (options["format"] !== undefined) query['format'] = String(options["format"]);
             try {
                 const response = await api.request({
                     path,
@@ -1703,8 +1703,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/requested-reviewers`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -1780,6 +1780,98 @@ export function registerGeneratedCommands(program: Command): void {
             }
         });
 
+    const spaces_changeRequests_conversationsCmd = spaces_changeRequestsCmd
+        .command('conversations')
+        .description('Manage spaces change-requests conversations');
+
+    spaces_changeRequests_conversationsCmd
+        .command('list <spaceId> <changeRequestId>')
+        .description('List the agent conversations of a change request')
+        .option('--page [page]', 'Identifier of the page results to fetch.')
+        .option('--limit [limit]', 'The number of results per page')
+        .option('--json', 'Output as JSON (machine-readable)')
+        .option('--yaml', 'Output as YAML (machine-readable)')
+        .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
+        .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
+        .action(async (spaceId, changeRequestId, options) => {
+            const api = await getAPIClient(true);
+            const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/conversations`;
+            const query: Record<string, string> = {};
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            try {
+                const response = await api.request({
+                    path,
+                    method: 'GET',
+                    secure: true,
+                    query,
+                });
+                if (response.status !== 204) {
+                    const data = await response.json();
+                    printResult(data, options);
+                }
+            } catch (error) {
+                console.error((error as Error).message);
+                process.exit(1);
+            }
+        });
+
+    spaces_changeRequests_conversationsCmd
+        .command('update <spaceId> <changeRequestId> <conversationId>')
+        .description('Update an agent conversation')
+        .option('--title <value>', 'The new title of the conversation. (required)')
+        .option('--json', 'Output as JSON (machine-readable)')
+        .option('--yaml', 'Output as YAML (machine-readable)')
+        .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
+        .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
+        .action(async (spaceId, changeRequestId, conversationId, options) => {
+            const api = await getAPIClient(true);
+            const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/conversations/${conversationId}`;
+            const body: Record<string, unknown> = {};
+            if (options.title !== undefined) body['title'] = options.title;
+            try {
+                const response = await api.request({
+                    path,
+                    method: 'PATCH',
+                    secure: true,
+                    ...(body !== undefined ? { body, type: ContentType.Json } : {}),
+                });
+                if (response.status !== 204) {
+                    const data = await response.json();
+                    printResult(data, options);
+                }
+            } catch (error) {
+                console.error((error as Error).message);
+                process.exit(1);
+            }
+        });
+
+    spaces_changeRequests_conversationsCmd
+        .command('delete <spaceId> <changeRequestId> <conversationId>')
+        .description('Delete an agent conversation')
+        .option('--json', 'Output as JSON (machine-readable)')
+        .option('--yaml', 'Output as YAML (machine-readable)')
+        .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
+        .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
+        .action(async (spaceId, changeRequestId, conversationId, options) => {
+            const api = await getAPIClient(true);
+            const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/conversations/${conversationId}`;
+            try {
+                const response = await api.request({
+                    path,
+                    method: 'DELETE',
+                    secure: true,
+                });
+                if (response.status !== 204) {
+                    const data = await response.json();
+                    printResult(data, options);
+                }
+            } catch (error) {
+                console.error((error as Error).message);
+                process.exit(1);
+            }
+        });
+
     const spaces_changeRequests_linksCmd = spaces_changeRequestsCmd
         .command('links')
         .description('Manage spaces change-requests links');
@@ -1799,10 +1891,10 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/links`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.status !== undefined) query['status'] = String(options.status);
-            if (options.brokenContext !== undefined) query['brokenContext'] = String(options.brokenContext);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["status"] !== undefined) query['status'] = String(options["status"]);
+            if (options["brokenContext"] !== undefined) query['brokenContext'] = String(options["brokenContext"]);
             try {
                 const response = await api.request({
                     path,
@@ -1842,13 +1934,13 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.order !== undefined) query['order'] = String(options.order);
-            if (options.format !== undefined) query['format'] = String(options.format);
-            if (options.status !== undefined) query['status'] = String(options.status);
-            if (options.targetPage !== undefined) query['targetPage'] = String(options.targetPage);
-            if (options.authors !== undefined) query['authors'] = String(options.authors);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["order"] !== undefined) query['order'] = String(options["order"]);
+            if (options["format"] !== undefined) query['format'] = String(options["format"]);
+            if (options["status"] !== undefined) query['status'] = String(options["status"]);
+            if (options["targetPage"] !== undefined) query['targetPage'] = String(options["targetPage"]);
+            if (options["authors"] !== undefined) query['authors'] = String(options["authors"]);
             try {
                 const response = await api.request({
                     path,
@@ -1910,7 +2002,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments/${commentId}`;
             const query: Record<string, string> = {};
-            if (options.format !== undefined) query['format'] = String(options.format);
+            if (options["format"] !== undefined) query['format'] = String(options["format"]);
             try {
                 const response = await api.request({
                     path,
@@ -2006,9 +2098,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments/${commentId}/replies`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.format !== undefined) query['format'] = String(options.format);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["format"] !== undefined) query['format'] = String(options["format"]);
             try {
                 const response = await api.request({
                     path,
@@ -2039,7 +2131,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments/${commentId}/replies`;
             const query: Record<string, string> = {};
-            if (options.format !== undefined) query['format'] = String(options.format);
+            if (options["format"] !== undefined) query['format'] = String(options["format"]);
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
                 const response = await api.request({
@@ -2071,7 +2163,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments/${commentId}/replies/${commentReplyId}`;
             const query: Record<string, string> = {};
-            if (options.format !== undefined) query['format'] = String(options.format);
+            if (options["format"] !== undefined) query['format'] = String(options["format"]);
             try {
                 const response = await api.request({
                     path,
@@ -2196,14 +2288,44 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content`;
             const query: Record<string, string> = {};
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
                     method: 'GET',
                     secure: true,
                     query,
+                });
+                if (response.status !== 204) {
+                    const data = await response.json();
+                    printResult(data, options);
+                }
+            } catch (error) {
+                console.error((error as Error).message);
+                process.exit(1);
+            }
+        });
+
+    spaces_changeRequests_contentCmd
+        .command('update <spaceId> <changeRequestId>')
+        .description('Update the content of a change request')
+        .option('--changes <value>', '(required)')
+        .option('--json', 'Output as JSON (machine-readable)')
+        .option('--yaml', 'Output as YAML (machine-readable)')
+        .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
+        .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
+        .action(async (spaceId, changeRequestId, options) => {
+            const api = await getAPIClient(true);
+            const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content`;
+            const body: Record<string, unknown> = {};
+            if (options.changes !== undefined) body['changes'] = options.changes;
+            try {
+                const response = await api.request({
+                    path,
+                    method: 'POST',
+                    secure: true,
+                    ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
                 if (response.status !== 204) {
                     const data = await response.json();
@@ -2232,8 +2354,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/pages`;
             const query: Record<string, string> = {};
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
@@ -2270,10 +2392,10 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/files`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
@@ -2304,8 +2426,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/files/${fileId}`;
             const query: Record<string, string> = {};
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
@@ -2340,8 +2462,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/files/${fileId}/backlinks`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -2380,12 +2502,12 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/page/${pageId}`;
             const query: Record<string, string> = {};
-            if (options.format !== undefined) query['format'] = String(options.format);
-            if (options.format.markdown.refs !== undefined) query['format.markdown.refs'] = String(options.format.markdown.refs);
-            if (options.evaluated !== undefined) query['evaluated'] = String(options.evaluated);
-            if (options.dereferenced !== undefined) query['dereferenced'] = String(options.dereferenced);
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["format"] !== undefined) query['format'] = String(options["format"]);
+            if (options["format.markdown.refs"] !== undefined) query['format.markdown.refs'] = String(options["format.markdown.refs"]);
+            if (options["evaluated"] !== undefined) query['evaluated'] = String(options["evaluated"]);
+            if (options["dereferenced"] !== undefined) query['dereferenced'] = String(options["dereferenced"]);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
@@ -2420,8 +2542,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/page/${pageId}/links`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -2456,8 +2578,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/page/${pageId}/backlinks`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -2522,8 +2644,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/reusable-contents/${reusableContentId}`;
             const query: Record<string, string> = {};
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
@@ -2562,12 +2684,12 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/path/${pagePath}`;
             const query: Record<string, string> = {};
-            if (options.format !== undefined) query['format'] = String(options.format);
-            if (options.format.markdown.refs !== undefined) query['format.markdown.refs'] = String(options.format.markdown.refs);
-            if (options.evaluated !== undefined) query['evaluated'] = String(options.evaluated);
-            if (options.dereferenced !== undefined) query['dereferenced'] = String(options.dereferenced);
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["format"] !== undefined) query['format'] = String(options["format"]);
+            if (options["format.markdown.refs"] !== undefined) query['format.markdown.refs'] = String(options["format.markdown.refs"]);
+            if (options["evaluated"] !== undefined) query['evaluated'] = String(options["evaluated"]);
+            if (options["dereferenced"] !== undefined) query['dereferenced'] = String(options["dereferenced"]);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
@@ -2601,7 +2723,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/changes`;
             const query: Record<string, string> = {};
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -2636,8 +2758,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/pdf`;
             const query: Record<string, string> = {};
-            if (options.only !== undefined) query['only'] = String(options.only);
-            if (options.page !== undefined) query['page'] = String(options.page);
+            if (options["only"] !== undefined) query['only'] = String(options["only"]);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
             try {
                 const response = await api.request({
                     path,
@@ -2672,8 +2794,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/commenters`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -2708,8 +2830,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/revisions/${revisionId}`;
             const query: Record<string, string> = {};
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
@@ -2745,9 +2867,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/revisions/${revisionId}/changes`;
             const query: Record<string, string> = {};
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -2782,8 +2904,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/revisions/${revisionId}/pages`;
             const query: Record<string, string> = {};
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
@@ -2820,10 +2942,10 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/revisions/${revisionId}/files`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
@@ -2854,8 +2976,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/revisions/${revisionId}/files/${fileId}`;
             const query: Record<string, string> = {};
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
@@ -2894,12 +3016,12 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/revisions/${revisionId}/page/${pageId}`;
             const query: Record<string, string> = {};
-            if (options.format !== undefined) query['format'] = String(options.format);
-            if (options.format.markdown.refs !== undefined) query['format.markdown.refs'] = String(options.format.markdown.refs);
-            if (options.evaluated !== undefined) query['evaluated'] = String(options.evaluated);
-            if (options.dereferenced !== undefined) query['dereferenced'] = String(options.dereferenced);
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["format"] !== undefined) query['format'] = String(options["format"]);
+            if (options["format.markdown.refs"] !== undefined) query['format.markdown.refs'] = String(options["format.markdown.refs"]);
+            if (options["evaluated"] !== undefined) query['evaluated'] = String(options["evaluated"]);
+            if (options["dereferenced"] !== undefined) query['dereferenced'] = String(options["dereferenced"]);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
@@ -2934,8 +3056,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/revisions/${revisionId}/page/${pageId}/document`;
             const query: Record<string, string> = {};
-            if (options.evaluated !== undefined) query['evaluated'] = String(options.evaluated);
-            if (options.dereferenced !== undefined) query['dereferenced'] = String(options.dereferenced);
+            if (options["evaluated"] !== undefined) query['evaluated'] = String(options["evaluated"]);
+            if (options["dereferenced"] !== undefined) query['dereferenced'] = String(options["dereferenced"]);
             try {
                 const response = await api.request({
                     path,
@@ -3004,12 +3126,12 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/revisions/${revisionId}/path/${pagePath}`;
             const query: Record<string, string> = {};
-            if (options.format !== undefined) query['format'] = String(options.format);
-            if (options.format.markdown.refs !== undefined) query['format.markdown.refs'] = String(options.format.markdown.refs);
-            if (options.evaluated !== undefined) query['evaluated'] = String(options.evaluated);
-            if (options.dereferenced !== undefined) query['dereferenced'] = String(options.dereferenced);
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["format"] !== undefined) query['format'] = String(options["format"]);
+            if (options["format.markdown.refs"] !== undefined) query['format.markdown.refs'] = String(options["format.markdown.refs"]);
+            if (options["evaluated"] !== undefined) query['evaluated'] = String(options["evaluated"]);
+            if (options["dereferenced"] !== undefined) query['dereferenced'] = String(options["dereferenced"]);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
@@ -3044,8 +3166,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/revisions/${revisionId}/reusable-contents/${reusableContentId}`;
             const query: Record<string, string> = {};
-            if (options.metadata !== undefined) query['metadata'] = String(options.metadata);
-            if (options.computed !== undefined) query['computed'] = String(options.computed);
+            if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
+            if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
                 const response = await api.request({
                     path,
@@ -3080,8 +3202,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/revisions/${revisionId}/reusable-contents/${reusableContentId}/document`;
             const query: Record<string, string> = {};
-            if (options.evaluated !== undefined) query['evaluated'] = String(options.evaluated);
-            if (options.dereferenced !== undefined) query['dereferenced'] = String(options.dereferenced);
+            if (options["evaluated"] !== undefined) query['evaluated'] = String(options["evaluated"]);
+            if (options["dereferenced"] !== undefined) query['dereferenced'] = String(options["dereferenced"]);
             try {
                 const response = await api.request({
                     path,
@@ -3121,13 +3243,13 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/comments`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.order !== undefined) query['order'] = String(options.order);
-            if (options.status !== undefined) query['status'] = String(options.status);
-            if (options.format !== undefined) query['format'] = String(options.format);
-            if (options.targetPage !== undefined) query['targetPage'] = String(options.targetPage);
-            if (options.authors !== undefined) query['authors'] = String(options.authors);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["order"] !== undefined) query['order'] = String(options["order"]);
+            if (options["status"] !== undefined) query['status'] = String(options["status"]);
+            if (options["format"] !== undefined) query['format'] = String(options["format"]);
+            if (options["targetPage"] !== undefined) query['targetPage'] = String(options["targetPage"]);
+            if (options["authors"] !== undefined) query['authors'] = String(options["authors"]);
             try {
                 const response = await api.request({
                     path,
@@ -3189,7 +3311,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/comments/${commentId}`;
             const query: Record<string, string> = {};
-            if (options.format !== undefined) query['format'] = String(options.format);
+            if (options["format"] !== undefined) query['format'] = String(options["format"]);
             try {
                 const response = await api.request({
                     path,
@@ -3285,9 +3407,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/comments/${commentId}/replies`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.format !== undefined) query['format'] = String(options.format);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["format"] !== undefined) query['format'] = String(options["format"]);
             try {
                 const response = await api.request({
                     path,
@@ -3346,7 +3468,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/comments/${commentId}/replies/${commentReplyId}`;
             const query: Record<string, string> = {};
-            if (options.format !== undefined) query['format'] = String(options.format);
+            if (options["format"] !== undefined) query['format'] = String(options["format"]);
             try {
                 const response = await api.request({
                     path,
@@ -3439,8 +3561,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/commenters`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -3505,8 +3627,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/pdf`;
             const query: Record<string, string> = {};
-            if (options.only !== undefined) query['only'] = String(options.only);
-            if (options.page !== undefined) query['page'] = String(options.page);
+            if (options["only"] !== undefined) query['only'] = String(options["only"]);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
             try {
                 const response = await api.request({
                     path,
@@ -3542,9 +3664,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/links`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.status !== undefined) query['status'] = String(options.status);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["status"] !== undefined) query['status'] = String(options["status"]);
             try {
                 const response = await api.request({
                     path,
@@ -3608,16 +3730,16 @@ export function registerGeneratedCommands(program: Command): void {
                 process.exit(1);
             }
             const query: Record<string, string> = {};
-            if (options.search !== undefined) query['search'] = String(options.search);
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.category !== undefined) query['category'] = String(options.category);
-            if (options.blockDomain !== undefined) query['blockDomain'] = String(options.blockDomain);
-            if (options.blocks !== undefined) query['blocks'] = String(options.blocks);
-            if (options.contentSources !== undefined) query['contentSources'] = String(options.contentSources);
-            if (options.owner !== undefined) query['owner'] = String(options.owner);
-            if (options.scope !== undefined) query['scope'] = String(options.scope);
-            if (options.target !== undefined) query['target'] = String(options.target);
+            if (options["search"] !== undefined) query['search'] = String(options["search"]);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["category"] !== undefined) query['category'] = String(options["category"]);
+            if (options["blockDomain"] !== undefined) query['blockDomain'] = String(options["blockDomain"]);
+            if (options["blocks"] !== undefined) query['blocks'] = String(options["blocks"]);
+            if (options["contentSources"] !== undefined) query['contentSources'] = String(options["contentSources"]);
+            if (options["owner"] !== undefined) query['owner'] = String(options["owner"]);
+            if (options["scope"] !== undefined) query['scope'] = String(options["scope"]);
+            if (options["target"] !== undefined) query['target'] = String(options["target"]);
             try {
                 const response = await api.request({
                     path,
@@ -3763,9 +3885,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/integrations/${integrationName}/installations`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.externalId !== undefined) query['externalId'] = String(options.externalId);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["externalId"] !== undefined) query['externalId'] = String(options["externalId"]);
             try {
                 const response = await api.request({
                     path,
@@ -3946,7 +4068,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/integrations/${integrationName}/installations/${installationId}/spaces`;
             const query: Record<string, string> = {};
-            if (options.extended !== undefined) query['extended'] = String(options.extended);
+            if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
             const body: Record<string, unknown> = {};
             if (options.space !== undefined) body['space'] = options.space;
             try {
@@ -3979,7 +4101,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/integrations/${integrationName}/installations/${installationId}/spaces/${spaceId}`;
             const query: Record<string, string> = {};
-            if (options.extended !== undefined) query['extended'] = String(options.extended);
+            if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
             try {
                 const response = await api.request({
                     path,
@@ -4010,7 +4132,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/integrations/${integrationName}/installations/${installationId}/spaces/${spaceId}`;
             const query: Record<string, string> = {};
-            if (options.extended !== undefined) query['extended'] = String(options.extended);
+            if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
             const body: Record<string, unknown> = {};
             if (options.externalIds !== undefined) body['externalIds'] = options.externalIds;
             try {
@@ -4075,9 +4197,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/integrations/${integrationName}/installations/${installationId}/sites`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.extended !== undefined) query['extended'] = String(options.extended);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
             try {
                 const response = await api.request({
                     path,
@@ -4108,7 +4230,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/integrations/${integrationName}/installations/${installationId}/sites`;
             const query: Record<string, string> = {};
-            if (options.extended !== undefined) query['extended'] = String(options.extended);
+            if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
             const body: Record<string, unknown> = {};
             if (options.siteId !== undefined) body['siteId'] = options.siteId;
             try {
@@ -4141,7 +4263,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/integrations/${integrationName}/installations/${installationId}/sites/${siteId}`;
             const query: Record<string, string> = {};
-            if (options.extended !== undefined) query['extended'] = String(options.extended);
+            if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
             try {
                 const response = await api.request({
                     path,
@@ -4172,7 +4294,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/integrations/${integrationName}/installations/${installationId}/sites/${siteId}`;
             const query: Record<string, string> = {};
-            if (options.extended !== undefined) query['extended'] = String(options.extended);
+            if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
             const body: Record<string, unknown> = {};
             if (options.externalIds !== undefined) body['externalIds'] = options.externalIds;
             try {
@@ -4236,8 +4358,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/integrations/${integrationName}/events`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -4300,10 +4422,10 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/integrations/${integrationName}/sites`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.externalId !== undefined) query['externalId'] = String(options.externalId);
-            if (options.extended !== undefined) query['extended'] = String(options.extended);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["externalId"] !== undefined) query['externalId'] = String(options["externalId"]);
+            if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
             try {
                 const response = await api.request({
                     path,
@@ -4579,9 +4701,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/collections`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.nested !== undefined) query['nested'] = String(options.nested);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["nested"] !== undefined) query['nested'] = String(options["nested"]);
             try {
                 const response = await api.request({
                     path,
@@ -4681,8 +4803,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/collections/${collectionId}/permissions/teams`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -4772,8 +4894,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/collections/${collectionId}/permissions/users`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -4864,9 +4986,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/collections/${collectionId}/permissions/aggregate`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.role !== undefined) query['role'] = String(options.role);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["role"] !== undefined) query['role'] = String(options["role"]);
             try {
                 const response = await api.request({
                     path,
@@ -4901,8 +5023,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = '/orgs';
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -5026,9 +5148,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/search`;
             const query: Record<string, string> = {};
-            if (options.query !== undefined) query['query'] = String(options.query);
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["query"] !== undefined) query['query'] = String(options["query"]);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -5056,9 +5178,9 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
         .option('--order [order]', 'An order for the items in the list')
-        .option('--role [role]', 'The Role to filter the member list by')
-        .option('--search [search]', 'A query to filter the member list (displayName and email)')
-        .option('--sort [sort]', 'The property to sort the results by. When sorting by lastSeenAt, only active members will be listed.')
+        .option('--role [role]', 'The role to filter the list by')
+        .option('--search [search]', 'A query to filter the list by display name and email')
+        .option('--sort [sort]', 'The property to sort the list by')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -5067,12 +5189,12 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/members`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.order !== undefined) query['order'] = String(options.order);
-            if (options.role !== undefined) query['role'] = String(options.role);
-            if (options.search !== undefined) query['search'] = String(options.search);
-            if (options.sort !== undefined) query['sort'] = String(options.sort);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["order"] !== undefined) query['order'] = String(options["order"]);
+            if (options["role"] !== undefined) query['role'] = String(options["role"]);
+            if (options["search"] !== undefined) query['search'] = String(options["search"]);
+            if (options["sort"] !== undefined) query['sort'] = String(options["sort"]);
             try {
                 const response = await api.request({
                     path,
@@ -5219,9 +5341,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/members/${userId}/teams`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.title !== undefined) query['title'] = String(options.title);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["title"] !== undefined) query['title'] = String(options["title"]);
             try {
                 const response = await api.request({
                     path,
@@ -5288,10 +5410,10 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/teams`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.owner !== undefined) query['owner'] = String(options.owner);
-            if (options.title !== undefined) query['title'] = String(options.title);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["owner"] !== undefined) query['owner'] = String(options["owner"]);
+            if (options["title"] !== undefined) query['title'] = String(options["title"]);
             try {
                 const response = await api.request({
                     path,
@@ -5440,8 +5562,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/teams/${teamId}/members`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -5626,8 +5748,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/link-invites`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -5771,6 +5893,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--site [site]', 'If defined, only change requests linked to this site will be returned.')
         .option('--space [space]', 'If defined, only change requests from this space will be returned.')
         .option('--topic [topic]', 'If defined, only change requests linked to this site topic will be returned.')
+        .option('--finding [finding]', 'Controls whether change requests from triage are included. Pass `none` to exclude change requests from triage, or `all` to include them. Default is `none`.')
         .option('--orderBy [orderBy]', '')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
@@ -5780,16 +5903,17 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/change-requests`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.status !== undefined) query['status'] = String(options.status);
-            if (options.creator !== undefined) query['creator'] = String(options.creator);
-            if (options.contributor !== undefined) query['contributor'] = String(options.contributor);
-            if (options.requestedReviewer !== undefined) query['requestedReviewer'] = String(options.requestedReviewer);
-            if (options.site !== undefined) query['site'] = String(options.site);
-            if (options.space !== undefined) query['space'] = String(options.space);
-            if (options.topic !== undefined) query['topic'] = String(options.topic);
-            if (options.orderBy !== undefined) query['orderBy'] = String(options.orderBy);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["status"] !== undefined) query['status'] = String(options["status"]);
+            if (options["creator"] !== undefined) query['creator'] = String(options["creator"]);
+            if (options["contributor"] !== undefined) query['contributor'] = String(options["contributor"]);
+            if (options["requestedReviewer"] !== undefined) query['requestedReviewer'] = String(options["requestedReviewer"]);
+            if (options["site"] !== undefined) query['site'] = String(options["site"]);
+            if (options["space"] !== undefined) query['space'] = String(options["space"]);
+            if (options["topic"] !== undefined) query['topic'] = String(options["topic"]);
+            if (options["finding"] !== undefined) query['finding'] = String(options["finding"]);
+            if (options["orderBy"] !== undefined) query['orderBy'] = String(options["orderBy"]);
             try {
                 const response = await api.request({
                     path,
@@ -5859,9 +5983,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/integrations/installations-status`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.target !== undefined) query['target'] = String(options.target);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["target"] !== undefined) query['target'] = String(options["target"]);
             try {
                 const response = await api.request({
                     path,
@@ -5897,9 +6021,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/installations`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.search !== undefined) query['search'] = String(options.search);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["search"] !== undefined) query['search'] = String(options["search"]);
             try {
                 const response = await api.request({
                     path,
@@ -5934,8 +6058,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/saml`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -6129,8 +6253,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/ask`;
             const query: Record<string, string> = {};
-            if (options.format !== undefined) query['format'] = String(options.format);
-            if (options.details !== undefined) query['details'] = String(options.details);
+            if (options["format"] !== undefined) query['format'] = String(options["format"]);
+            if (options["details"] !== undefined) query['details'] = String(options["details"]);
             const body: Record<string, unknown> = {};
             if (options.query !== undefined) body['query'] = options.query;
             try {
@@ -6165,9 +6289,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/ask/stream`;
             const query: Record<string, string> = {};
-            if (options.query !== undefined) query['query'] = String(options.query);
-            if (options.format !== undefined) query['format'] = String(options.format);
-            if (options.details !== undefined) query['details'] = String(options.details);
+            if (options["query"] !== undefined) query['query'] = String(options["query"]);
+            if (options["format"] !== undefined) query['format'] = String(options["format"]);
+            if (options["details"] !== undefined) query['details'] = String(options["details"]);
             try {
                 const response = await api.request({
                     path,
@@ -6258,8 +6382,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/openapi`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -6435,8 +6559,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/openapi/${specSlug}/versions`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -6646,8 +6770,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/translations`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -6820,9 +6944,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/translations-glossary`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.orderBy !== undefined) query['orderBy'] = String(options.orderBy);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["orderBy"] !== undefined) query['orderBy'] = String(options["orderBy"]);
             try {
                 const response = await api.request({
                     path,
@@ -6977,12 +7101,12 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.space !== undefined) query['space'] = String(options.space);
-            if (options.title !== undefined) query['title'] = String(options.title);
-            if (options.published !== undefined) query['published'] = String(options.published);
-            if (options.type !== undefined) query['type'] = String(options.type);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["space"] !== undefined) query['space'] = String(options["space"]);
+            if (options["title"] !== undefined) query['title'] = String(options["title"]);
+            if (options["published"] !== undefined) query['published'] = String(options["published"]);
+            if (options["type"] !== undefined) query['type'] = String(options["type"]);
             try {
                 const response = await api.request({
                     path,
@@ -7194,8 +7318,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/search`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
                 const response = await api.request({
@@ -7204,6 +7328,44 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
+                });
+                if (response.status !== 204) {
+                    const data = await response.json();
+                    printResult(data, options);
+                }
+            } catch (error) {
+                console.error((error as Error).message);
+                process.exit(1);
+            }
+        });
+
+    const organizations_sites_spacesCmd = organizations_sitesCmd
+        .command('spaces')
+        .description('Manage organizations sites spaces');
+
+    const organizations_sites_spaces_gitCmd = organizations_sites_spacesCmd
+        .command('git')
+        .description('Manage organizations sites spaces git');
+
+    const organizations_sites_spaces_git_installationsCmd = organizations_sites_spaces_gitCmd
+        .command('installations')
+        .description('Manage organizations sites spaces git installations');
+
+    organizations_sites_spaces_git_installationsCmd
+        .command('list <organizationId> <siteId>')
+        .description('List the Git Sync installations for a site and its spaces')
+        .option('--json', 'Output as JSON (machine-readable)')
+        .option('--yaml', 'Output as YAML (machine-readable)')
+        .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
+        .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
+        .action(async (organizationId, siteId, options) => {
+            const api = await getAPIClient(true);
+            const path = `/orgs/${organizationId}/sites/${siteId}/spaces/git/installations`;
+            try {
+                const response = await api.request({
+                    path,
+                    method: 'GET',
+                    secure: true,
                 });
                 if (response.status !== 204) {
                     const data = await response.json();
@@ -7320,7 +7482,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/published`;
             const query: Record<string, string> = {};
-            if (options.shareKey !== undefined) query['shareKey'] = String(options.shareKey);
+            if (options["shareKey"] !== undefined) query['shareKey'] = String(options["shareKey"]);
             try {
                 const response = await api.request({
                     path,
@@ -7356,9 +7518,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/share-links`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.search !== undefined) query['search'] = String(options.search);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["search"] !== undefined) query['search'] = String(options["search"]);
             try {
                 const response = await api.request({
                     path,
@@ -7480,7 +7642,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/structure`;
             const query: Record<string, string> = {};
-            if (options.shareKey !== undefined) query['shareKey'] = String(options.shareKey);
+            if (options["shareKey"] !== undefined) query['shareKey'] = String(options["shareKey"]);
             try {
                 const response = await api.request({
                     path,
@@ -7635,10 +7797,10 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/publishing/preview`;
             const query: Record<string, string> = {};
-            if (options.siteSpace !== undefined) query['siteSpace'] = String(options.siteSpace);
-            if (options.claims !== undefined) query['claims'] = String(options.claims);
-            if (options.draft !== undefined) query['draft'] = String(options.draft);
-            if (options.target !== undefined) query['target'] = String(options.target);
+            if (options["siteSpace"] !== undefined) query['siteSpace'] = String(options["siteSpace"]);
+            if (options["claims"] !== undefined) query['claims'] = String(options["claims"]);
+            if (options["draft"] !== undefined) query['draft'] = String(options["draft"]);
+            if (options["target"] !== undefined) query['target'] = String(options["target"]);
             try {
                 const response = await api.request({
                     path,
@@ -7672,7 +7834,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/customization`;
             const query: Record<string, string> = {};
-            if (options.unmasked !== undefined) query['unmasked'] = String(options.unmasked);
+            if (options["unmasked"] !== undefined) query['unmasked'] = String(options["unmasked"]);
             try {
                 const response = await api.request({
                     path,
@@ -7771,10 +7933,10 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/site-spaces`;
             const query: Record<string, string> = {};
-            if (options.shareKey !== undefined) query['shareKey'] = String(options.shareKey);
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.default !== undefined) query['default'] = String(options.default);
+            if (options["shareKey"] !== undefined) query['shareKey'] = String(options["shareKey"]);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["default"] !== undefined) query['default'] = String(options["default"]);
             try {
                 const response = await api.request({
                     path,
@@ -7832,7 +7994,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--path <value>', 'Path to the space on the site')
         .option('--spaceId <value>', 'The content that this site space points to. If not set, the space will remain unchanged.')
         .option('--hidden', 'Whether the site space is hidden. If true, the site space will not be shown in the site\'s navigation. If not set, the hidden state will remain unchanged. If set to false, the site space will be shown in site navigation.')
-        .option('--draft', 'Whether the site space should be kept in draft mode. Setting it to false makes the site space live.')
+        .option('--draft', 'Whether the site space should be kept in draft mode. Setting it to true makes the site space draft. Setting it to false makes the site space live.')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -7933,7 +8095,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/site-spaces/${siteSpaceId}/customization`;
             const query: Record<string, string> = {};
-            if (options.unmasked !== undefined) query['unmasked'] = String(options.unmasked);
+            if (options["unmasked"] !== undefined) query['unmasked'] = String(options["unmasked"]);
             try {
                 const response = await api.request({
                     path,
@@ -8023,8 +8185,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/section-groups`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -8082,7 +8244,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('update <organizationId> <siteId> <siteSectionGroupId>')
         .description('Update a site section group')
         .option('--title <value>', 'Title of the site section group')
-        .option('--draft', 'Whether the site section group is draft and not live.')
+        .option('--draft', 'Whether the site section group should be kept in draft mode. Setting it to true makes the site section group draft. Setting it to false makes the site section group live.')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -8183,9 +8345,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/sections`;
             const query: Record<string, string> = {};
-            if (options.shareKey !== undefined) query['shareKey'] = String(options.shareKey);
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["shareKey"] !== undefined) query['shareKey'] = String(options["shareKey"]);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -8243,7 +8405,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--title <value>', 'Title of the site section')
         .option('--path <value>', 'Path to the section on the site')
         .option('--defaultSiteSpace <value>', 'ID of the site-space to be used as the default in this section.')
-        .option('--draft', 'Whether the site section is draft and not live.')
+        .option('--draft', 'Whether the site section should be kept in draft mode. Setting it to true makes the site section draft. Setting it to false makes the site section live.')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -8345,7 +8507,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/ask`;
             const query: Record<string, string> = {};
-            if (options.format !== undefined) query['format'] = String(options.format);
+            if (options["format"] !== undefined) query['format'] = String(options["format"]);
             const body: Record<string, unknown> = {};
             if (options.question !== undefined) body['question'] = options.question;
             try {
@@ -8383,8 +8545,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/ask/questions`;
             const query: Record<string, string> = {};
-            if (options.siteSpaceId !== undefined) query['siteSpaceId'] = String(options.siteSpaceId);
-            if (options.spaceId !== undefined) query['spaceId'] = String(options.spaceId);
+            if (options["siteSpaceId"] !== undefined) query['siteSpaceId'] = String(options["siteSpaceId"]);
+            if (options["spaceId"] !== undefined) query['spaceId'] = String(options["spaceId"]);
             try {
                 const response = await api.request({
                     path,
@@ -8423,12 +8585,12 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/context-records`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.type !== undefined) query['type'] = String(options.type);
-            if (options.connector !== undefined) query['connector'] = String(options.connector);
-            if (options.connection !== undefined) query['connection'] = String(options.connection);
-            if (options.topic !== undefined) query['topic'] = String(options.topic);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["type"] !== undefined) query['type'] = String(options["type"]);
+            if (options["connector"] !== undefined) query['connector'] = String(options["connector"]);
+            if (options["connection"] !== undefined) query['connection'] = String(options["connection"]);
+            if (options["topic"] !== undefined) query['topic'] = String(options["topic"]);
             try {
                 const response = await api.request({
                     path,
@@ -8520,10 +8682,10 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/scans`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.topic !== undefined) query['topic'] = String(options.topic);
-            if (options.status !== undefined) query['status'] = String(options.status);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["topic"] !== undefined) query['topic'] = String(options["topic"]);
+            if (options["status"] !== undefined) query['status'] = String(options["status"]);
             try {
                 const response = await api.request({
                     path,
@@ -8610,6 +8772,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--status [status]', 'Filter findings by status.')
         .option('--type [type]', 'Filter findings by type.')
         .option('--severity [severity]', 'Filter findings by estimated severity.')
+        .option('--hasChangeRequests [hasChangeRequests]', 'Filter findings that have at least one associated change request.')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -8618,12 +8781,13 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/findings`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.topic !== undefined) query['topic'] = String(options.topic);
-            if (options.status !== undefined) query['status'] = String(options.status);
-            if (options.type !== undefined) query['type'] = String(options.type);
-            if (options.severity !== undefined) query['severity'] = String(options.severity);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["topic"] !== undefined) query['topic'] = String(options["topic"]);
+            if (options["status"] !== undefined) query['status'] = String(options["status"]);
+            if (options["type"] !== undefined) query['type'] = String(options["type"]);
+            if (options["severity"] !== undefined) query['severity'] = String(options["severity"]);
+            if (options["hasChangeRequests"] !== undefined) query['hasChangeRequests'] = String(options["hasChangeRequests"]);
             try {
                 const response = await api.request({
                     path,
@@ -8714,8 +8878,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/findings/${siteFindingId}/change-requests`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -8776,8 +8940,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/findings/${siteFindingId}/pages`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -8812,8 +8976,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/findings/${siteFindingId}/questions`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -8848,8 +9012,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/findings/${siteFindingId}/records`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -8884,8 +9048,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/context-connections`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -9056,8 +9220,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/topics`;
             const query: Record<string, string> = {};
-            if (options.from !== undefined) query['from'] = String(options.from);
-            if (options.to !== undefined) query['to'] = String(options.to);
+            if (options["from"] !== undefined) query['from'] = String(options["from"]);
+            if (options["to"] !== undefined) query['to'] = String(options["to"]);
             try {
                 const response = await api.request({
                     path,
@@ -9186,17 +9350,17 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/questions`;
             const query: Record<string, string> = {};
-            if (options.from !== undefined) query['from'] = String(options.from);
-            if (options.to !== undefined) query['to'] = String(options.to);
-            if (options.type !== undefined) query['type'] = String(options.type);
-            if (options.relevance !== undefined) query['relevance'] = String(options.relevance);
-            if (options.channelType !== undefined) query['channelType'] = String(options.channelType);
-            if (options.answered !== undefined) query['answered'] = String(options.answered);
-            if (options.topic !== undefined) query['topic'] = String(options.topic);
-            if (options.order !== undefined) query['order'] = String(options.order);
-            if (options.sort !== undefined) query['sort'] = String(options.sort);
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["from"] !== undefined) query['from'] = String(options["from"]);
+            if (options["to"] !== undefined) query['to'] = String(options["to"]);
+            if (options["type"] !== undefined) query['type'] = String(options["type"]);
+            if (options["relevance"] !== undefined) query['relevance'] = String(options["relevance"]);
+            if (options["channelType"] !== undefined) query['channelType'] = String(options["channelType"]);
+            if (options["answered"] !== undefined) query['answered'] = String(options["answered"]);
+            if (options["topic"] !== undefined) query['topic'] = String(options["topic"]);
+            if (options["order"] !== undefined) query['order'] = String(options["order"]);
+            if (options["sort"] !== undefined) query['sort'] = String(options["sort"]);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -9230,11 +9394,11 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/questions/${siteQuestionId}`;
             const query: Record<string, string> = {};
-            if (options.from !== undefined) query['from'] = String(options.from);
-            if (options.to !== undefined) query['to'] = String(options.to);
-            if (options.relevance !== undefined) query['relevance'] = String(options.relevance);
-            if (options.channelType !== undefined) query['channelType'] = String(options.channelType);
-            if (options.answered !== undefined) query['answered'] = String(options.answered);
+            if (options["from"] !== undefined) query['from'] = String(options["from"]);
+            if (options["to"] !== undefined) query['to'] = String(options["to"]);
+            if (options["relevance"] !== undefined) query['relevance'] = String(options["relevance"]);
+            if (options["channelType"] !== undefined) query['channelType'] = String(options["channelType"]);
+            if (options["answered"] !== undefined) query['answered'] = String(options["answered"]);
             try {
                 const response = await api.request({
                     path,
@@ -9274,13 +9438,13 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/questions/${siteQuestionId}/sources`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.from !== undefined) query['from'] = String(options.from);
-            if (options.to !== undefined) query['to'] = String(options.to);
-            if (options.relevance !== undefined) query['relevance'] = String(options.relevance);
-            if (options.channelType !== undefined) query['channelType'] = String(options.channelType);
-            if (options.answered !== undefined) query['answered'] = String(options.answered);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["from"] !== undefined) query['from'] = String(options["from"]);
+            if (options["to"] !== undefined) query['to'] = String(options["to"]);
+            if (options["relevance"] !== undefined) query['relevance'] = String(options["relevance"]);
+            if (options["channelType"] !== undefined) query['channelType'] = String(options["channelType"]);
+            if (options["answered"] !== undefined) query['answered'] = String(options["answered"]);
             try {
                 const response = await api.request({
                     path,
@@ -9319,12 +9483,12 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/question-stats`;
             const query: Record<string, string> = {};
-            if (options.from !== undefined) query['from'] = String(options.from);
-            if (options.to !== undefined) query['to'] = String(options.to);
-            if (options.topic !== undefined) query['topic'] = String(options.topic);
-            if (options.relevance !== undefined) query['relevance'] = String(options.relevance);
-            if (options.channelType !== undefined) query['channelType'] = String(options.channelType);
-            if (options.answered !== undefined) query['answered'] = String(options.answered);
+            if (options["from"] !== undefined) query['from'] = String(options["from"]);
+            if (options["to"] !== undefined) query['to'] = String(options["to"]);
+            if (options["topic"] !== undefined) query['topic'] = String(options["topic"]);
+            if (options["relevance"] !== undefined) query['relevance'] = String(options["relevance"]);
+            if (options["channelType"] !== undefined) query['channelType'] = String(options["channelType"]);
+            if (options["answered"] !== undefined) query['answered'] = String(options["answered"]);
             try {
                 const response = await api.request({
                     path,
@@ -9370,19 +9534,19 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/answers`;
             const query: Record<string, string> = {};
-            if (options.question !== undefined) query['question'] = String(options.question);
-            if (options.from !== undefined) query['from'] = String(options.from);
-            if (options.to !== undefined) query['to'] = String(options.to);
-            if (options.language !== undefined) query['language'] = String(options.language);
-            if (options.answered !== undefined) query['answered'] = String(options.answered);
-            if (options.helpfulness !== undefined) query['helpfulness'] = String(options.helpfulness);
-            if (options.relevance !== undefined) query['relevance'] = String(options.relevance);
-            if (options.channelType !== undefined) query['channelType'] = String(options.channelType);
-            if (options.question.type !== undefined) query['question.type'] = String(options.question.type);
-            if (options.topic !== undefined) query['topic'] = String(options.topic);
-            if (options.thread !== undefined) query['thread'] = String(options.thread);
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["question"] !== undefined) query['question'] = String(options["question"]);
+            if (options["from"] !== undefined) query['from'] = String(options["from"]);
+            if (options["to"] !== undefined) query['to'] = String(options["to"]);
+            if (options["language"] !== undefined) query['language'] = String(options["language"]);
+            if (options["answered"] !== undefined) query['answered'] = String(options["answered"]);
+            if (options["helpfulness"] !== undefined) query['helpfulness'] = String(options["helpfulness"]);
+            if (options["relevance"] !== undefined) query['relevance'] = String(options["relevance"]);
+            if (options["channelType"] !== undefined) query['channelType'] = String(options["channelType"]);
+            if (options["question.type"] !== undefined) query['question.type'] = String(options["question.type"]);
+            if (options["topic"] !== undefined) query['topic'] = String(options["topic"]);
+            if (options["thread"] !== undefined) query['thread'] = String(options["thread"]);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -9473,8 +9637,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/answers/${siteQuestionAnswerId}/sources`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -9534,6 +9698,10 @@ export function registerGeneratedCommands(program: Command): void {
         .description('List all sites users permissions')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
+        .option('--order [order]', 'An order for the items in the list')
+        .option('--role [role]', 'The role to filter the list by')
+        .option('--search [search]', 'A query to filter the list by display name and email')
+        .option('--sort [sort]', 'The property to sort the list by')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -9542,8 +9710,12 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/permissions/aggregate`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["order"] !== undefined) query['order'] = String(options["order"]);
+            if (options["role"] !== undefined) query['role'] = String(options["role"]);
+            if (options["search"] !== undefined) query['search'] = String(options["search"]);
+            if (options["sort"] !== undefined) query['sort'] = String(options["sort"]);
             try {
                 const response = await api.request({
                     path,
@@ -9578,8 +9750,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/permissions/users`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -9670,8 +9842,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/permissions/teams`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -10063,10 +10235,10 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/redirects`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.search !== undefined) query['search'] = String(options.search);
-            if (options.draft !== undefined) query['draft'] = String(options.draft);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["search"] !== undefined) query['search'] = String(options["search"]);
+            if (options["draft"] !== undefined) query['draft'] = String(options["draft"]);
             try {
                 const response = await api.request({
                     path,
@@ -10225,8 +10397,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/redirect`;
             const query: Record<string, string> = {};
-            if (options.shareKey !== undefined) query['shareKey'] = String(options.shareKey);
-            if (options.source !== undefined) query['source'] = String(options.source);
+            if (options["shareKey"] !== undefined) query['shareKey'] = String(options["shareKey"]);
+            if (options["source"] !== undefined) query['source'] = String(options["source"]);
             try {
                 const response = await api.request({
                     path,
@@ -10261,8 +10433,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/mcp-servers`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -10417,8 +10589,8 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/channels`;
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
                     path,
@@ -10598,9 +10770,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = '/ads/sites';
             const query: Record<string, string> = {};
-            if (options.page !== undefined) query['page'] = String(options.page);
-            if (options.limit !== undefined) query['limit'] = String(options.limit);
-            if (options.status !== undefined) query['status'] = String(options.status);
+            if (options["page"] !== undefined) query['page'] = String(options["page"]);
+            if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
+            if (options["status"] !== undefined) query['status'] = String(options["status"]);
             try {
                 const response = await api.request({
                     path,
@@ -10667,7 +10839,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = '/urls/content';
             const query: Record<string, string> = {};
-            if (options.url !== undefined) query['url'] = String(options.url);
+            if (options["url"] !== undefined) query['url'] = String(options["url"]);
             try {
                 const response = await api.request({
                     path,
@@ -10701,7 +10873,7 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = '/urls/embed';
             const query: Record<string, string> = {};
-            if (options.url !== undefined) query['url'] = String(options.url);
+            if (options["url"] !== undefined) query['url'] = String(options["url"]);
             try {
                 const response = await api.request({
                     path,
@@ -10737,9 +10909,9 @@ export function registerGeneratedCommands(program: Command): void {
             const api = await getAPIClient(true);
             const path = '/urls/published';
             const query: Record<string, string> = {};
-            if (options.url !== undefined) query['url'] = String(options.url);
-            if (options.visitorAuthToken !== undefined) query['visitorAuthToken'] = String(options.visitorAuthToken);
-            if (options.redirectOnError !== undefined) query['redirectOnError'] = String(options.redirectOnError);
+            if (options["url"] !== undefined) query['url'] = String(options["url"]);
+            if (options["visitorAuthToken"] !== undefined) query['visitorAuthToken'] = String(options["visitorAuthToken"]);
+            if (options["redirectOnError"] !== undefined) query['redirectOnError'] = String(options["redirectOnError"]);
             try {
                 const response = await api.request({
                     path,
@@ -11040,7 +11212,7 @@ export function registerGeneratedCommands(program: Command): void {
 
 // Shell completion scripts, generated from the command tree.
 export const COMPLETIONS: Record<string, string> = {
-    "bash": "# gitbook2 bash completion. Install: gitbook2 completion bash >> ~/.bashrc\n_gb2_children() {\n  case \"$1\" in\n    '/') echo 'system users spaces integrations collections organizations subdomains ads urls git auth whoami completion help' ;;\n    'system') echo 'info' ;;\n    'users') echo 'whoami get update' ;;\n    'spaces') echo 'get update delete duplicate restore move embed search git permissions content documents change-requests revisions comments commenters integration-blocks pdf links list create' ;;\n    'spaces embed') echo 'get' ;;\n    'spaces git') echo 'import export info' ;;\n    'spaces git info') echo 'get' ;;\n    'spaces permissions') echo 'invite teams users aggregate' ;;\n    'spaces permissions teams') echo 'update remove list' ;;\n    'spaces permissions users') echo 'list update remove' ;;\n    'spaces content') echo 'get template pages files page path reusable-contents computed' ;;\n    'spaces content template') echo 'apply' ;;\n    'spaces content pages') echo 'list' ;;\n    'spaces content files') echo 'list get backlinks' ;;\n    'spaces content files backlinks') echo 'list' ;;\n    'spaces content page') echo 'get links backlinks meta-links' ;;\n    'spaces content page links') echo 'list' ;;\n    'spaces content page backlinks') echo 'list' ;;\n    'spaces content page meta-links') echo 'list' ;;\n    'spaces content path') echo 'get' ;;\n    'spaces content reusable-contents') echo 'get' ;;\n    'spaces content computed') echo 'document revision' ;;\n    'spaces content computed document') echo 'get' ;;\n    'spaces content computed revision') echo 'get' ;;\n    'spaces documents') echo 'get' ;;\n    'spaces change-requests') echo 'list create get update merge pull-content reviews requested-reviewers links comments contributors content changes pdf commenters' ;;\n    'spaces change-requests reviews') echo 'list submit get' ;;\n    'spaces change-requests requested-reviewers') echo 'list request remove' ;;\n    'spaces change-requests links') echo 'list' ;;\n    'spaces change-requests comments') echo 'list post get update delete replies' ;;\n    'spaces change-requests comments replies') echo 'list post get update delete' ;;\n    'spaces change-requests contributors') echo 'get' ;;\n    'spaces change-requests content') echo 'get pages files page reusable-contents path' ;;\n    'spaces change-requests content pages') echo 'list' ;;\n    'spaces change-requests content files') echo 'list get backlinks' ;;\n    'spaces change-requests content files backlinks') echo 'list' ;;\n    'spaces change-requests content page') echo 'get links backlinks meta-links' ;;\n    'spaces change-requests content page links') echo 'list' ;;\n    'spaces change-requests content page backlinks') echo 'list' ;;\n    'spaces change-requests content page meta-links') echo 'list' ;;\n    'spaces change-requests content reusable-contents') echo 'get' ;;\n    'spaces change-requests changes') echo 'get' ;;\n    'spaces change-requests pdf') echo 'get' ;;\n    'spaces revisions') echo 'get changes pages files page path reusable-contents' ;;\n    'spaces revisions changes') echo 'get' ;;\n    'spaces revisions pages') echo 'list' ;;\n    'spaces revisions files') echo 'list get' ;;\n    'spaces revisions page') echo 'get document meta-links' ;;\n    'spaces revisions page document') echo 'get' ;;\n    'spaces revisions path') echo 'get' ;;\n    'spaces revisions page meta-links') echo 'list' ;;\n    'spaces change-requests content path') echo 'get' ;;\n    'spaces revisions reusable-contents') echo 'get document' ;;\n    'spaces revisions reusable-contents document') echo 'get' ;;\n    'spaces comments') echo 'list post get update delete replies' ;;\n    'spaces comments replies') echo 'list post get update delete' ;;\n    'spaces commenters') echo 'list' ;;\n    'spaces change-requests commenters') echo 'list' ;;\n    'spaces permissions aggregate') echo 'list' ;;\n    'integrations') echo 'list get publish unpublish installations events sites dev tasks' ;;\n    'spaces integration-blocks') echo 'list' ;;\n    'spaces pdf') echo 'get' ;;\n    'spaces links') echo 'list' ;;\n    'collections') echo 'get update delete move transfer permissions list create' ;;\n    'collections permissions') echo 'invite teams users aggregate' ;;\n    'collections permissions teams') echo 'list update remove' ;;\n    'collections permissions users') echo 'list update remove' ;;\n    'collections permissions aggregate') echo 'list' ;;\n    'integrations installations') echo 'list install get update uninstall tokens spaces sites' ;;\n    'integrations events') echo 'list get' ;;\n    'integrations sites') echo 'list' ;;\n    'integrations dev') echo 'set disable' ;;\n    'integrations tasks') echo 'queue' ;;\n    'integrations installations tokens') echo 'create' ;;\n    'integrations installations spaces') echo 'install get update uninstall' ;;\n    'integrations installations sites') echo 'list install get update uninstall' ;;\n    'organizations') echo 'list get update members ping teams invites link-invites join search change-requests integrations installations saml sso ask openapi agent-instructions translations translations-glossary imports sites' ;;\n    'organizations members') echo 'list get update remove sso teams' ;;\n    'organizations ping') echo 'update' ;;\n    'organizations members sso') echo 'set' ;;\n    'organizations members teams') echo 'list' ;;\n    'organizations teams') echo 'list create get update remove members' ;;\n    'organizations teams members') echo 'list update add delete' ;;\n    'organizations invites') echo 'invite join' ;;\n    'organizations link-invites') echo 'list create get update delete' ;;\n    'organizations change-requests') echo 'list' ;;\n    'organizations integrations') echo 'installation_status installations-status' ;;\n    'organizations integrations installation_status') echo 'get' ;;\n    'organizations installations') echo 'list' ;;\n    'organizations integrations installations-status') echo 'list' ;;\n    'organizations saml') echo 'list create get update delete' ;;\n    'organizations sso') echo 'list' ;;\n    'organizations ask') echo 'create questions stream' ;;\n    'organizations ask questions') echo 'list stream' ;;\n    'organizations openapi') echo 'list create get set update delete versions' ;;\n    'organizations openapi versions') echo 'list latest get content' ;;\n    'organizations openapi versions latest') echo 'get content' ;;\n    'organizations openapi versions latest content') echo 'get' ;;\n    'organizations openapi versions content') echo 'get' ;;\n    'organizations agent-instructions') echo 'get update' ;;\n    'organizations translations') echo 'list create get update delete run' ;;\n    'organizations translations-glossary') echo 'list update get' ;;\n    'organizations imports') echo 'start cancel' ;;\n    'organizations sites') echo 'list create get update delete adaptive-schema published publish unpublish share-links structure publishing customization integration-scripts site-spaces section-groups sections search ask context-records scans findings context-connections topics questions question-stats answers permissions ai agent-settings styleguide insights ads redirects redirect mcp-servers channels' ;;\n    'organizations sites adaptive-schema') echo 'get update template-conditions' ;;\n    'organizations sites adaptive-schema template-conditions') echo 'list' ;;\n    'organizations sites published') echo 'get' ;;\n    'organizations sites share-links') echo 'list create update delete' ;;\n    'organizations sites structure') echo 'get sort' ;;\n    'organizations sites publishing') echo 'auth preview' ;;\n    'organizations sites publishing auth') echo 'get update regenerate' ;;\n    'organizations sites publishing preview') echo 'get' ;;\n    'organizations sites customization') echo 'get update' ;;\n    'organizations sites integration-scripts') echo 'list' ;;\n    'organizations sites site-spaces') echo 'list add update delete customization move' ;;\n    'organizations sites section-groups') echo 'list add update delete move' ;;\n    'organizations sites sections') echo 'list add update delete move' ;;\n    'organizations sites ask') echo 'stream questions' ;;\n    'organizations sites ask questions') echo 'stream' ;;\n    'organizations sites context-records') echo 'list upsert get' ;;\n    'organizations sites scans') echo 'list create get' ;;\n    'organizations sites findings') echo 'list get update change-requests pages questions records' ;;\n    'organizations sites findings change-requests') echo 'list trigger' ;;\n    'organizations sites findings pages') echo 'list' ;;\n    'organizations sites findings questions') echo 'list' ;;\n    'organizations sites findings records') echo 'list' ;;\n    'organizations sites context-connections') echo 'list create get update delete sync' ;;\n    'organizations sites topics') echo 'list get update findings' ;;\n    'organizations sites topics findings') echo 'delete' ;;\n    'organizations sites questions') echo 'list get sources' ;;\n    'organizations sites questions sources') echo 'list' ;;\n    'organizations sites question-stats') echo 'get' ;;\n    'organizations sites answers') echo 'list get thread sources' ;;\n    'organizations sites answers thread') echo 'get' ;;\n    'organizations sites answers sources') echo 'list' ;;\n    'organizations sites site-spaces customization') echo 'get override delete' ;;\n    'organizations sites permissions') echo 'invite aggregate users teams' ;;\n    'organizations sites permissions aggregate') echo 'list' ;;\n    'organizations sites permissions users') echo 'list update remove' ;;\n    'organizations sites permissions teams') echo 'list update remove' ;;\n    'organizations sites ai') echo 'response' ;;\n    'organizations sites ai response') echo 'stream' ;;\n    'organizations sites agent-settings') echo 'get update' ;;\n    'organizations sites styleguide') echo 'create delete' ;;\n    'organizations sites insights') echo 'events visitor-segments' ;;\n    'organizations sites insights events') echo 'track aggregate' ;;\n    'organizations sites insights visitor-segments') echo 'list' ;;\n    'organizations sites ads') echo 'update' ;;\n    'organizations sites redirects') echo 'list create replace update delete' ;;\n    'organizations sites redirect') echo 'get' ;;\n    'organizations sites mcp-servers') echo 'list create get update delete' ;;\n    'organizations sites channels') echo 'list create get update delete' ;;\n    'subdomains') echo 'get' ;;\n    'ads') echo 'sites' ;;\n    'ads sites') echo 'list update' ;;\n    'urls') echo 'content embed published' ;;\n    'urls content') echo 'get' ;;\n    'urls embed') echo 'get' ;;\n    'urls published') echo 'get resolve' ;;\n    'git') echo 'installations' ;;\n    'git installations') echo 'install get update uninstall github gitlab' ;;\n    'git installations github') echo 'repos' ;;\n    'git installations github repos') echo 'list branches' ;;\n    'git installations github repos branches') echo 'list' ;;\n    'git installations gitlab') echo 'projects' ;;\n    'git installations gitlab projects') echo 'list branches' ;;\n    'git installations gitlab projects branches') echo 'list' ;;\n    *) echo '' ;;\n  esac\n}\n_gitbook2_complete() {\n  local cur key next i token\n  key=\"/\"\n  for ((i=1; i<COMP_CWORD; i++)); do\n    token=\"${COMP_WORDS[i]}\"\n    [[ \"$token\" == -* ]] && continue\n    if [[ \"$key\" == \"/\" ]]; then next=\"$token\"; else next=\"$key $token\"; fi\n    if [[ -n \"$(_gb2_children \"$next\")\" ]]; then key=\"$next\"; fi\n  done\n  cur=\"${COMP_WORDS[COMP_CWORD]}\"\n  COMPREPLY=( $(compgen -W \"$(_gb2_children \"$key\")\" -- \"$cur\") )\n}\ncomplete -F _gitbook2_complete gitbook2\n",
-    "zsh": "# gitbook2 zsh completion. Install: gitbook2 completion zsh >> ~/.zshrc\n# Initialise the completion system if the host shell hasn't already.\nif ! whence compdef >/dev/null 2>&1; then autoload -Uz compinit && compinit; fi\nautoload -U +X bashcompinit && bashcompinit\n# gitbook2 bash completion. Install: gitbook2 completion bash >> ~/.bashrc\n_gb2_children() {\n  case \"$1\" in\n    '/') echo 'system users spaces integrations collections organizations subdomains ads urls git auth whoami completion help' ;;\n    'system') echo 'info' ;;\n    'users') echo 'whoami get update' ;;\n    'spaces') echo 'get update delete duplicate restore move embed search git permissions content documents change-requests revisions comments commenters integration-blocks pdf links list create' ;;\n    'spaces embed') echo 'get' ;;\n    'spaces git') echo 'import export info' ;;\n    'spaces git info') echo 'get' ;;\n    'spaces permissions') echo 'invite teams users aggregate' ;;\n    'spaces permissions teams') echo 'update remove list' ;;\n    'spaces permissions users') echo 'list update remove' ;;\n    'spaces content') echo 'get template pages files page path reusable-contents computed' ;;\n    'spaces content template') echo 'apply' ;;\n    'spaces content pages') echo 'list' ;;\n    'spaces content files') echo 'list get backlinks' ;;\n    'spaces content files backlinks') echo 'list' ;;\n    'spaces content page') echo 'get links backlinks meta-links' ;;\n    'spaces content page links') echo 'list' ;;\n    'spaces content page backlinks') echo 'list' ;;\n    'spaces content page meta-links') echo 'list' ;;\n    'spaces content path') echo 'get' ;;\n    'spaces content reusable-contents') echo 'get' ;;\n    'spaces content computed') echo 'document revision' ;;\n    'spaces content computed document') echo 'get' ;;\n    'spaces content computed revision') echo 'get' ;;\n    'spaces documents') echo 'get' ;;\n    'spaces change-requests') echo 'list create get update merge pull-content reviews requested-reviewers links comments contributors content changes pdf commenters' ;;\n    'spaces change-requests reviews') echo 'list submit get' ;;\n    'spaces change-requests requested-reviewers') echo 'list request remove' ;;\n    'spaces change-requests links') echo 'list' ;;\n    'spaces change-requests comments') echo 'list post get update delete replies' ;;\n    'spaces change-requests comments replies') echo 'list post get update delete' ;;\n    'spaces change-requests contributors') echo 'get' ;;\n    'spaces change-requests content') echo 'get pages files page reusable-contents path' ;;\n    'spaces change-requests content pages') echo 'list' ;;\n    'spaces change-requests content files') echo 'list get backlinks' ;;\n    'spaces change-requests content files backlinks') echo 'list' ;;\n    'spaces change-requests content page') echo 'get links backlinks meta-links' ;;\n    'spaces change-requests content page links') echo 'list' ;;\n    'spaces change-requests content page backlinks') echo 'list' ;;\n    'spaces change-requests content page meta-links') echo 'list' ;;\n    'spaces change-requests content reusable-contents') echo 'get' ;;\n    'spaces change-requests changes') echo 'get' ;;\n    'spaces change-requests pdf') echo 'get' ;;\n    'spaces revisions') echo 'get changes pages files page path reusable-contents' ;;\n    'spaces revisions changes') echo 'get' ;;\n    'spaces revisions pages') echo 'list' ;;\n    'spaces revisions files') echo 'list get' ;;\n    'spaces revisions page') echo 'get document meta-links' ;;\n    'spaces revisions page document') echo 'get' ;;\n    'spaces revisions path') echo 'get' ;;\n    'spaces revisions page meta-links') echo 'list' ;;\n    'spaces change-requests content path') echo 'get' ;;\n    'spaces revisions reusable-contents') echo 'get document' ;;\n    'spaces revisions reusable-contents document') echo 'get' ;;\n    'spaces comments') echo 'list post get update delete replies' ;;\n    'spaces comments replies') echo 'list post get update delete' ;;\n    'spaces commenters') echo 'list' ;;\n    'spaces change-requests commenters') echo 'list' ;;\n    'spaces permissions aggregate') echo 'list' ;;\n    'integrations') echo 'list get publish unpublish installations events sites dev tasks' ;;\n    'spaces integration-blocks') echo 'list' ;;\n    'spaces pdf') echo 'get' ;;\n    'spaces links') echo 'list' ;;\n    'collections') echo 'get update delete move transfer permissions list create' ;;\n    'collections permissions') echo 'invite teams users aggregate' ;;\n    'collections permissions teams') echo 'list update remove' ;;\n    'collections permissions users') echo 'list update remove' ;;\n    'collections permissions aggregate') echo 'list' ;;\n    'integrations installations') echo 'list install get update uninstall tokens spaces sites' ;;\n    'integrations events') echo 'list get' ;;\n    'integrations sites') echo 'list' ;;\n    'integrations dev') echo 'set disable' ;;\n    'integrations tasks') echo 'queue' ;;\n    'integrations installations tokens') echo 'create' ;;\n    'integrations installations spaces') echo 'install get update uninstall' ;;\n    'integrations installations sites') echo 'list install get update uninstall' ;;\n    'organizations') echo 'list get update members ping teams invites link-invites join search change-requests integrations installations saml sso ask openapi agent-instructions translations translations-glossary imports sites' ;;\n    'organizations members') echo 'list get update remove sso teams' ;;\n    'organizations ping') echo 'update' ;;\n    'organizations members sso') echo 'set' ;;\n    'organizations members teams') echo 'list' ;;\n    'organizations teams') echo 'list create get update remove members' ;;\n    'organizations teams members') echo 'list update add delete' ;;\n    'organizations invites') echo 'invite join' ;;\n    'organizations link-invites') echo 'list create get update delete' ;;\n    'organizations change-requests') echo 'list' ;;\n    'organizations integrations') echo 'installation_status installations-status' ;;\n    'organizations integrations installation_status') echo 'get' ;;\n    'organizations installations') echo 'list' ;;\n    'organizations integrations installations-status') echo 'list' ;;\n    'organizations saml') echo 'list create get update delete' ;;\n    'organizations sso') echo 'list' ;;\n    'organizations ask') echo 'create questions stream' ;;\n    'organizations ask questions') echo 'list stream' ;;\n    'organizations openapi') echo 'list create get set update delete versions' ;;\n    'organizations openapi versions') echo 'list latest get content' ;;\n    'organizations openapi versions latest') echo 'get content' ;;\n    'organizations openapi versions latest content') echo 'get' ;;\n    'organizations openapi versions content') echo 'get' ;;\n    'organizations agent-instructions') echo 'get update' ;;\n    'organizations translations') echo 'list create get update delete run' ;;\n    'organizations translations-glossary') echo 'list update get' ;;\n    'organizations imports') echo 'start cancel' ;;\n    'organizations sites') echo 'list create get update delete adaptive-schema published publish unpublish share-links structure publishing customization integration-scripts site-spaces section-groups sections search ask context-records scans findings context-connections topics questions question-stats answers permissions ai agent-settings styleguide insights ads redirects redirect mcp-servers channels' ;;\n    'organizations sites adaptive-schema') echo 'get update template-conditions' ;;\n    'organizations sites adaptive-schema template-conditions') echo 'list' ;;\n    'organizations sites published') echo 'get' ;;\n    'organizations sites share-links') echo 'list create update delete' ;;\n    'organizations sites structure') echo 'get sort' ;;\n    'organizations sites publishing') echo 'auth preview' ;;\n    'organizations sites publishing auth') echo 'get update regenerate' ;;\n    'organizations sites publishing preview') echo 'get' ;;\n    'organizations sites customization') echo 'get update' ;;\n    'organizations sites integration-scripts') echo 'list' ;;\n    'organizations sites site-spaces') echo 'list add update delete customization move' ;;\n    'organizations sites section-groups') echo 'list add update delete move' ;;\n    'organizations sites sections') echo 'list add update delete move' ;;\n    'organizations sites ask') echo 'stream questions' ;;\n    'organizations sites ask questions') echo 'stream' ;;\n    'organizations sites context-records') echo 'list upsert get' ;;\n    'organizations sites scans') echo 'list create get' ;;\n    'organizations sites findings') echo 'list get update change-requests pages questions records' ;;\n    'organizations sites findings change-requests') echo 'list trigger' ;;\n    'organizations sites findings pages') echo 'list' ;;\n    'organizations sites findings questions') echo 'list' ;;\n    'organizations sites findings records') echo 'list' ;;\n    'organizations sites context-connections') echo 'list create get update delete sync' ;;\n    'organizations sites topics') echo 'list get update findings' ;;\n    'organizations sites topics findings') echo 'delete' ;;\n    'organizations sites questions') echo 'list get sources' ;;\n    'organizations sites questions sources') echo 'list' ;;\n    'organizations sites question-stats') echo 'get' ;;\n    'organizations sites answers') echo 'list get thread sources' ;;\n    'organizations sites answers thread') echo 'get' ;;\n    'organizations sites answers sources') echo 'list' ;;\n    'organizations sites site-spaces customization') echo 'get override delete' ;;\n    'organizations sites permissions') echo 'invite aggregate users teams' ;;\n    'organizations sites permissions aggregate') echo 'list' ;;\n    'organizations sites permissions users') echo 'list update remove' ;;\n    'organizations sites permissions teams') echo 'list update remove' ;;\n    'organizations sites ai') echo 'response' ;;\n    'organizations sites ai response') echo 'stream' ;;\n    'organizations sites agent-settings') echo 'get update' ;;\n    'organizations sites styleguide') echo 'create delete' ;;\n    'organizations sites insights') echo 'events visitor-segments' ;;\n    'organizations sites insights events') echo 'track aggregate' ;;\n    'organizations sites insights visitor-segments') echo 'list' ;;\n    'organizations sites ads') echo 'update' ;;\n    'organizations sites redirects') echo 'list create replace update delete' ;;\n    'organizations sites redirect') echo 'get' ;;\n    'organizations sites mcp-servers') echo 'list create get update delete' ;;\n    'organizations sites channels') echo 'list create get update delete' ;;\n    'subdomains') echo 'get' ;;\n    'ads') echo 'sites' ;;\n    'ads sites') echo 'list update' ;;\n    'urls') echo 'content embed published' ;;\n    'urls content') echo 'get' ;;\n    'urls embed') echo 'get' ;;\n    'urls published') echo 'get resolve' ;;\n    'git') echo 'installations' ;;\n    'git installations') echo 'install get update uninstall github gitlab' ;;\n    'git installations github') echo 'repos' ;;\n    'git installations github repos') echo 'list branches' ;;\n    'git installations github repos branches') echo 'list' ;;\n    'git installations gitlab') echo 'projects' ;;\n    'git installations gitlab projects') echo 'list branches' ;;\n    'git installations gitlab projects branches') echo 'list' ;;\n    *) echo '' ;;\n  esac\n}\n_gitbook2_complete() {\n  local cur key next i token\n  key=\"/\"\n  for ((i=1; i<COMP_CWORD; i++)); do\n    token=\"${COMP_WORDS[i]}\"\n    [[ \"$token\" == -* ]] && continue\n    if [[ \"$key\" == \"/\" ]]; then next=\"$token\"; else next=\"$key $token\"; fi\n    if [[ -n \"$(_gb2_children \"$next\")\" ]]; then key=\"$next\"; fi\n  done\n  cur=\"${COMP_WORDS[COMP_CWORD]}\"\n  COMPREPLY=( $(compgen -W \"$(_gb2_children \"$key\")\" -- \"$cur\") )\n}\ncomplete -F _gitbook2_complete gitbook2\n",
-    "fish": "# gitbook2 fish completion. Install: gitbook2 completion fish > ~/.config/fish/completions/gitbook2.fish\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'system'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'users'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'spaces'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'integrations'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'collections'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'organizations'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'subdomains'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'ads'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'urls'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'git'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'auth'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'whoami'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'completion'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'help'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from system' -f -a 'info'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from users' -f -a 'whoami'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from users' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from users' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'duplicate'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'restore'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'move'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'embed'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'search'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'git'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'permissions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'content'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'documents'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'change-requests'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'revisions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'comments'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'commenters'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'integration-blocks'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'pdf'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'links'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces embed' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces git' -f -a 'import'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces git' -f -a 'export'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces git' -f -a 'info'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces git info' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions' -f -a 'invite'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions' -f -a 'teams'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions' -f -a 'users'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions' -f -a 'aggregate'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions teams' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions teams' -f -a 'remove'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions teams' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions users' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions users' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions users' -f -a 'remove'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content' -f -a 'template'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content' -f -a 'pages'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content' -f -a 'files'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content' -f -a 'page'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content' -f -a 'path'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content' -f -a 'reusable-contents'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content' -f -a 'computed'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content template' -f -a 'apply'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content pages' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content files' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content files' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content files' -f -a 'backlinks'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content files backlinks' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content page' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content page' -f -a 'links'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content page' -f -a 'backlinks'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content page' -f -a 'meta-links'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content page links' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content page backlinks' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content page meta-links' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content path' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content reusable-contents' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content computed' -f -a 'document'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content computed' -f -a 'revision'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content computed document' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content computed revision' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces documents' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'merge'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'pull-content'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'reviews'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'requested-reviewers'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'links'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'comments'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'contributors'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'content'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'changes'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'pdf'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'commenters'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests reviews' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests reviews' -f -a 'submit'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests reviews' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests requested-reviewers' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests requested-reviewers' -f -a 'request'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests requested-reviewers' -f -a 'remove'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests links' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments' -f -a 'post'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments' -f -a 'replies'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments replies' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments replies' -f -a 'post'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments replies' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments replies' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments replies' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests contributors' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content' -f -a 'pages'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content' -f -a 'files'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content' -f -a 'page'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content' -f -a 'reusable-contents'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content' -f -a 'path'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content pages' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content files' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content files' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content files' -f -a 'backlinks'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content files backlinks' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content page' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content page' -f -a 'links'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content page' -f -a 'backlinks'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content page' -f -a 'meta-links'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content page links' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content page backlinks' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content page meta-links' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content reusable-contents' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests changes' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests pdf' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions' -f -a 'changes'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions' -f -a 'pages'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions' -f -a 'files'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions' -f -a 'page'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions' -f -a 'path'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions' -f -a 'reusable-contents'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions changes' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions pages' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions files' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions files' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions page' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions page' -f -a 'document'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions page' -f -a 'meta-links'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions page document' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions path' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions page meta-links' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content path' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions reusable-contents' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions reusable-contents' -f -a 'document'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions reusable-contents document' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments' -f -a 'post'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments' -f -a 'replies'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments replies' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments replies' -f -a 'post'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments replies' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments replies' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments replies' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces commenters' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests commenters' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions aggregate' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations' -f -a 'publish'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations' -f -a 'unpublish'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations' -f -a 'installations'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations' -f -a 'events'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations' -f -a 'sites'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations' -f -a 'dev'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations' -f -a 'tasks'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces integration-blocks' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces pdf' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces links' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections' -f -a 'move'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections' -f -a 'transfer'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections' -f -a 'permissions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions' -f -a 'invite'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions' -f -a 'teams'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions' -f -a 'users'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions' -f -a 'aggregate'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions teams' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions teams' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions teams' -f -a 'remove'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions users' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions users' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions users' -f -a 'remove'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions aggregate' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations' -f -a 'install'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations' -f -a 'uninstall'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations' -f -a 'tokens'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations' -f -a 'spaces'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations' -f -a 'sites'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations events' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations events' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations sites' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations dev' -f -a 'set'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations dev' -f -a 'disable'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations tasks' -f -a 'queue'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations tokens' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations spaces' -f -a 'install'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations spaces' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations spaces' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations spaces' -f -a 'uninstall'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations sites' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations sites' -f -a 'install'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations sites' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations sites' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations sites' -f -a 'uninstall'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'members'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'ping'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'teams'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'invites'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'link-invites'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'join'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'search'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'change-requests'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'integrations'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'installations'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'saml'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'sso'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'ask'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'openapi'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'agent-instructions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'translations'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'translations-glossary'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'imports'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'sites'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations members' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations members' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations members' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations members' -f -a 'remove'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations members' -f -a 'sso'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations members' -f -a 'teams'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations ping' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations members sso' -f -a 'set'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations members teams' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations teams' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations teams' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations teams' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations teams' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations teams' -f -a 'remove'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations teams' -f -a 'members'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations teams members' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations teams members' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations teams members' -f -a 'add'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations teams members' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations invites' -f -a 'invite'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations invites' -f -a 'join'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations link-invites' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations link-invites' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations link-invites' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations link-invites' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations link-invites' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations change-requests' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations integrations' -f -a 'installation_status'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations integrations' -f -a 'installations-status'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations integrations installation_status' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations installations' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations integrations installations-status' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations saml' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations saml' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations saml' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations saml' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations saml' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sso' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations ask' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations ask' -f -a 'questions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations ask' -f -a 'stream'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations ask questions' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations ask questions' -f -a 'stream'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi' -f -a 'set'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi' -f -a 'versions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi versions' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi versions' -f -a 'latest'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi versions' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi versions' -f -a 'content'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi versions latest' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi versions latest' -f -a 'content'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi versions latest content' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi versions content' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations agent-instructions' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations agent-instructions' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations translations' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations translations' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations translations' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations translations' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations translations' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations translations' -f -a 'run'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations translations-glossary' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations translations-glossary' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations translations-glossary' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations imports' -f -a 'start'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations imports' -f -a 'cancel'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'adaptive-schema'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'published'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'publish'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'unpublish'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'share-links'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'structure'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'publishing'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'customization'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'integration-scripts'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'site-spaces'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'section-groups'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'sections'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'search'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'ask'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'context-records'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'scans'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'findings'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'context-connections'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'topics'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'questions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'question-stats'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'answers'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'permissions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'ai'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'agent-settings'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'styleguide'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'insights'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'ads'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'redirects'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'redirect'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'mcp-servers'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'channels'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites adaptive-schema' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites adaptive-schema' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites adaptive-schema' -f -a 'template-conditions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites adaptive-schema template-conditions' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites published' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites share-links' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites share-links' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites share-links' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites share-links' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites structure' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites structure' -f -a 'sort'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites publishing' -f -a 'auth'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites publishing' -f -a 'preview'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites publishing auth' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites publishing auth' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites publishing auth' -f -a 'regenerate'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites publishing preview' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites customization' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites customization' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites integration-scripts' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites site-spaces' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites site-spaces' -f -a 'add'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites site-spaces' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites site-spaces' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites site-spaces' -f -a 'customization'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites site-spaces' -f -a 'move'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites section-groups' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites section-groups' -f -a 'add'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites section-groups' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites section-groups' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites section-groups' -f -a 'move'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites sections' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites sections' -f -a 'add'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites sections' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites sections' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites sections' -f -a 'move'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites ask' -f -a 'stream'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites ask' -f -a 'questions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites ask questions' -f -a 'stream'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites context-records' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites context-records' -f -a 'upsert'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites context-records' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites scans' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites scans' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites scans' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings' -f -a 'change-requests'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings' -f -a 'pages'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings' -f -a 'questions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings' -f -a 'records'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings change-requests' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings change-requests' -f -a 'trigger'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings pages' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings questions' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings records' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites context-connections' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites context-connections' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites context-connections' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites context-connections' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites context-connections' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites context-connections' -f -a 'sync'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites topics' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites topics' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites topics' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites topics' -f -a 'findings'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites topics findings' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites questions' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites questions' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites questions' -f -a 'sources'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites questions sources' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites question-stats' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites answers' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites answers' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites answers' -f -a 'thread'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites answers' -f -a 'sources'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites answers thread' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites answers sources' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites site-spaces customization' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites site-spaces customization' -f -a 'override'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites site-spaces customization' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions' -f -a 'invite'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions' -f -a 'aggregate'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions' -f -a 'users'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions' -f -a 'teams'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions aggregate' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions users' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions users' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions users' -f -a 'remove'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions teams' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions teams' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions teams' -f -a 'remove'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites ai' -f -a 'response'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites ai response' -f -a 'stream'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites agent-settings' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites agent-settings' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites styleguide' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites styleguide' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites insights' -f -a 'events'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites insights' -f -a 'visitor-segments'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites insights events' -f -a 'track'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites insights events' -f -a 'aggregate'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites insights visitor-segments' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites ads' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites redirects' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites redirects' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites redirects' -f -a 'replace'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites redirects' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites redirects' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites redirect' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites mcp-servers' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites mcp-servers' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites mcp-servers' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites mcp-servers' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites mcp-servers' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites channels' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites channels' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites channels' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites channels' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites channels' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from subdomains' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from ads' -f -a 'sites'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from ads sites' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from ads sites' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from urls' -f -a 'content'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from urls' -f -a 'embed'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from urls' -f -a 'published'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from urls content' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from urls embed' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from urls published' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from urls published' -f -a 'resolve'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git' -f -a 'installations'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations' -f -a 'install'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations' -f -a 'uninstall'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations' -f -a 'github'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations' -f -a 'gitlab'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations github' -f -a 'repos'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations github repos' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations github repos' -f -a 'branches'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations github repos branches' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations gitlab' -f -a 'projects'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations gitlab projects' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations gitlab projects' -f -a 'branches'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations gitlab projects branches' -f -a 'list'\n"
+    "bash": "# gitbook2 bash completion. Install: gitbook2 completion bash >> ~/.bashrc\n_gb2_children() {\n  case \"$1\" in\n    '/') echo 'system users spaces integrations collections organizations subdomains ads urls git auth whoami completion help' ;;\n    'system') echo 'info' ;;\n    'users') echo 'whoami get update' ;;\n    'spaces') echo 'get update delete duplicate restore move embed search git permissions content documents change-requests revisions comments commenters integration-blocks pdf links list create' ;;\n    'spaces embed') echo 'get' ;;\n    'spaces git') echo 'import export info' ;;\n    'spaces git info') echo 'get' ;;\n    'spaces permissions') echo 'invite teams users aggregate' ;;\n    'spaces permissions teams') echo 'update remove list' ;;\n    'spaces permissions users') echo 'list update remove' ;;\n    'spaces content') echo 'get template pages files page path reusable-contents computed' ;;\n    'spaces content template') echo 'apply' ;;\n    'spaces content pages') echo 'list' ;;\n    'spaces content files') echo 'list get backlinks' ;;\n    'spaces content files backlinks') echo 'list' ;;\n    'spaces content page') echo 'get links backlinks meta-links' ;;\n    'spaces content page links') echo 'list' ;;\n    'spaces content page backlinks') echo 'list' ;;\n    'spaces content page meta-links') echo 'list' ;;\n    'spaces content path') echo 'get' ;;\n    'spaces content reusable-contents') echo 'get' ;;\n    'spaces content computed') echo 'document revision' ;;\n    'spaces content computed document') echo 'get' ;;\n    'spaces content computed revision') echo 'get' ;;\n    'spaces documents') echo 'get' ;;\n    'spaces change-requests') echo 'list create get update merge pull-content reviews requested-reviewers conversations links comments contributors content changes pdf commenters' ;;\n    'spaces change-requests reviews') echo 'list submit get' ;;\n    'spaces change-requests requested-reviewers') echo 'list request remove' ;;\n    'spaces change-requests conversations') echo 'list update delete' ;;\n    'spaces change-requests links') echo 'list' ;;\n    'spaces change-requests comments') echo 'list post get update delete replies' ;;\n    'spaces change-requests comments replies') echo 'list post get update delete' ;;\n    'spaces change-requests contributors') echo 'get' ;;\n    'spaces change-requests content') echo 'get update pages files page reusable-contents path' ;;\n    'spaces change-requests content pages') echo 'list' ;;\n    'spaces change-requests content files') echo 'list get backlinks' ;;\n    'spaces change-requests content files backlinks') echo 'list' ;;\n    'spaces change-requests content page') echo 'get links backlinks meta-links' ;;\n    'spaces change-requests content page links') echo 'list' ;;\n    'spaces change-requests content page backlinks') echo 'list' ;;\n    'spaces change-requests content page meta-links') echo 'list' ;;\n    'spaces change-requests content reusable-contents') echo 'get' ;;\n    'spaces change-requests changes') echo 'get' ;;\n    'spaces change-requests pdf') echo 'get' ;;\n    'spaces revisions') echo 'get changes pages files page path reusable-contents' ;;\n    'spaces revisions changes') echo 'get' ;;\n    'spaces revisions pages') echo 'list' ;;\n    'spaces revisions files') echo 'list get' ;;\n    'spaces revisions page') echo 'get document meta-links' ;;\n    'spaces revisions page document') echo 'get' ;;\n    'spaces revisions path') echo 'get' ;;\n    'spaces revisions page meta-links') echo 'list' ;;\n    'spaces change-requests content path') echo 'get' ;;\n    'spaces revisions reusable-contents') echo 'get document' ;;\n    'spaces revisions reusable-contents document') echo 'get' ;;\n    'spaces comments') echo 'list post get update delete replies' ;;\n    'spaces comments replies') echo 'list post get update delete' ;;\n    'spaces commenters') echo 'list' ;;\n    'spaces change-requests commenters') echo 'list' ;;\n    'spaces permissions aggregate') echo 'list' ;;\n    'integrations') echo 'list get publish unpublish installations events sites dev tasks' ;;\n    'spaces integration-blocks') echo 'list' ;;\n    'spaces pdf') echo 'get' ;;\n    'spaces links') echo 'list' ;;\n    'collections') echo 'get update delete move transfer permissions list create' ;;\n    'collections permissions') echo 'invite teams users aggregate' ;;\n    'collections permissions teams') echo 'list update remove' ;;\n    'collections permissions users') echo 'list update remove' ;;\n    'collections permissions aggregate') echo 'list' ;;\n    'integrations installations') echo 'list install get update uninstall tokens spaces sites' ;;\n    'integrations events') echo 'list get' ;;\n    'integrations sites') echo 'list' ;;\n    'integrations dev') echo 'set disable' ;;\n    'integrations tasks') echo 'queue' ;;\n    'integrations installations tokens') echo 'create' ;;\n    'integrations installations spaces') echo 'install get update uninstall' ;;\n    'integrations installations sites') echo 'list install get update uninstall' ;;\n    'organizations') echo 'list get update members ping teams invites link-invites join search change-requests integrations installations saml sso ask openapi agent-instructions translations translations-glossary imports sites' ;;\n    'organizations members') echo 'list get update remove sso teams' ;;\n    'organizations ping') echo 'update' ;;\n    'organizations members sso') echo 'set' ;;\n    'organizations members teams') echo 'list' ;;\n    'organizations teams') echo 'list create get update remove members' ;;\n    'organizations teams members') echo 'list update add delete' ;;\n    'organizations invites') echo 'invite join' ;;\n    'organizations link-invites') echo 'list create get update delete' ;;\n    'organizations change-requests') echo 'list' ;;\n    'organizations integrations') echo 'installation_status installations-status' ;;\n    'organizations integrations installation_status') echo 'get' ;;\n    'organizations installations') echo 'list' ;;\n    'organizations integrations installations-status') echo 'list' ;;\n    'organizations saml') echo 'list create get update delete' ;;\n    'organizations sso') echo 'list' ;;\n    'organizations ask') echo 'create questions stream' ;;\n    'organizations ask questions') echo 'list stream' ;;\n    'organizations openapi') echo 'list create get set update delete versions' ;;\n    'organizations openapi versions') echo 'list latest get content' ;;\n    'organizations openapi versions latest') echo 'get content' ;;\n    'organizations openapi versions latest content') echo 'get' ;;\n    'organizations openapi versions content') echo 'get' ;;\n    'organizations agent-instructions') echo 'get update' ;;\n    'organizations translations') echo 'list create get update delete run' ;;\n    'organizations translations-glossary') echo 'list update get' ;;\n    'organizations imports') echo 'start cancel' ;;\n    'organizations sites') echo 'list create get update delete spaces adaptive-schema published publish unpublish share-links structure publishing customization integration-scripts site-spaces section-groups sections search ask context-records scans findings context-connections topics questions question-stats answers permissions ai agent-settings styleguide insights ads redirects redirect mcp-servers channels' ;;\n    'organizations sites spaces') echo 'git' ;;\n    'organizations sites spaces git') echo 'installations' ;;\n    'organizations sites spaces git installations') echo 'list' ;;\n    'organizations sites adaptive-schema') echo 'get update template-conditions' ;;\n    'organizations sites adaptive-schema template-conditions') echo 'list' ;;\n    'organizations sites published') echo 'get' ;;\n    'organizations sites share-links') echo 'list create update delete' ;;\n    'organizations sites structure') echo 'get sort' ;;\n    'organizations sites publishing') echo 'auth preview' ;;\n    'organizations sites publishing auth') echo 'get update regenerate' ;;\n    'organizations sites publishing preview') echo 'get' ;;\n    'organizations sites customization') echo 'get update' ;;\n    'organizations sites integration-scripts') echo 'list' ;;\n    'organizations sites site-spaces') echo 'list add update delete customization move' ;;\n    'organizations sites section-groups') echo 'list add update delete move' ;;\n    'organizations sites sections') echo 'list add update delete move' ;;\n    'organizations sites ask') echo 'stream questions' ;;\n    'organizations sites ask questions') echo 'stream' ;;\n    'organizations sites context-records') echo 'list upsert get' ;;\n    'organizations sites scans') echo 'list create get' ;;\n    'organizations sites findings') echo 'list get update change-requests pages questions records' ;;\n    'organizations sites findings change-requests') echo 'list trigger' ;;\n    'organizations sites findings pages') echo 'list' ;;\n    'organizations sites findings questions') echo 'list' ;;\n    'organizations sites findings records') echo 'list' ;;\n    'organizations sites context-connections') echo 'list create get update delete sync' ;;\n    'organizations sites topics') echo 'list get update findings' ;;\n    'organizations sites topics findings') echo 'delete' ;;\n    'organizations sites questions') echo 'list get sources' ;;\n    'organizations sites questions sources') echo 'list' ;;\n    'organizations sites question-stats') echo 'get' ;;\n    'organizations sites answers') echo 'list get thread sources' ;;\n    'organizations sites answers thread') echo 'get' ;;\n    'organizations sites answers sources') echo 'list' ;;\n    'organizations sites site-spaces customization') echo 'get override delete' ;;\n    'organizations sites permissions') echo 'invite aggregate users teams' ;;\n    'organizations sites permissions aggregate') echo 'list' ;;\n    'organizations sites permissions users') echo 'list update remove' ;;\n    'organizations sites permissions teams') echo 'list update remove' ;;\n    'organizations sites ai') echo 'response' ;;\n    'organizations sites ai response') echo 'stream' ;;\n    'organizations sites agent-settings') echo 'get update' ;;\n    'organizations sites styleguide') echo 'create delete' ;;\n    'organizations sites insights') echo 'events visitor-segments' ;;\n    'organizations sites insights events') echo 'track aggregate' ;;\n    'organizations sites insights visitor-segments') echo 'list' ;;\n    'organizations sites ads') echo 'update' ;;\n    'organizations sites redirects') echo 'list create replace update delete' ;;\n    'organizations sites redirect') echo 'get' ;;\n    'organizations sites mcp-servers') echo 'list create get update delete' ;;\n    'organizations sites channels') echo 'list create get update delete' ;;\n    'subdomains') echo 'get' ;;\n    'ads') echo 'sites' ;;\n    'ads sites') echo 'list update' ;;\n    'urls') echo 'content embed published' ;;\n    'urls content') echo 'get' ;;\n    'urls embed') echo 'get' ;;\n    'urls published') echo 'get resolve' ;;\n    'git') echo 'installations' ;;\n    'git installations') echo 'install get update uninstall github gitlab' ;;\n    'git installations github') echo 'repos' ;;\n    'git installations github repos') echo 'list branches' ;;\n    'git installations github repos branches') echo 'list' ;;\n    'git installations gitlab') echo 'projects' ;;\n    'git installations gitlab projects') echo 'list branches' ;;\n    'git installations gitlab projects branches') echo 'list' ;;\n    *) echo '' ;;\n  esac\n}\n_gitbook2_complete() {\n  local cur key next i token\n  key=\"/\"\n  for ((i=1; i<COMP_CWORD; i++)); do\n    token=\"${COMP_WORDS[i]}\"\n    [[ \"$token\" == -* ]] && continue\n    if [[ \"$key\" == \"/\" ]]; then next=\"$token\"; else next=\"$key $token\"; fi\n    if [[ -n \"$(_gb2_children \"$next\")\" ]]; then key=\"$next\"; fi\n  done\n  cur=\"${COMP_WORDS[COMP_CWORD]}\"\n  COMPREPLY=( $(compgen -W \"$(_gb2_children \"$key\")\" -- \"$cur\") )\n}\ncomplete -F _gitbook2_complete gitbook2\n",
+    "zsh": "# gitbook2 zsh completion. Install: gitbook2 completion zsh >> ~/.zshrc\n# Initialise the completion system if the host shell hasn't already.\nif ! whence compdef >/dev/null 2>&1; then autoload -Uz compinit && compinit; fi\nautoload -U +X bashcompinit && bashcompinit\n# gitbook2 bash completion. Install: gitbook2 completion bash >> ~/.bashrc\n_gb2_children() {\n  case \"$1\" in\n    '/') echo 'system users spaces integrations collections organizations subdomains ads urls git auth whoami completion help' ;;\n    'system') echo 'info' ;;\n    'users') echo 'whoami get update' ;;\n    'spaces') echo 'get update delete duplicate restore move embed search git permissions content documents change-requests revisions comments commenters integration-blocks pdf links list create' ;;\n    'spaces embed') echo 'get' ;;\n    'spaces git') echo 'import export info' ;;\n    'spaces git info') echo 'get' ;;\n    'spaces permissions') echo 'invite teams users aggregate' ;;\n    'spaces permissions teams') echo 'update remove list' ;;\n    'spaces permissions users') echo 'list update remove' ;;\n    'spaces content') echo 'get template pages files page path reusable-contents computed' ;;\n    'spaces content template') echo 'apply' ;;\n    'spaces content pages') echo 'list' ;;\n    'spaces content files') echo 'list get backlinks' ;;\n    'spaces content files backlinks') echo 'list' ;;\n    'spaces content page') echo 'get links backlinks meta-links' ;;\n    'spaces content page links') echo 'list' ;;\n    'spaces content page backlinks') echo 'list' ;;\n    'spaces content page meta-links') echo 'list' ;;\n    'spaces content path') echo 'get' ;;\n    'spaces content reusable-contents') echo 'get' ;;\n    'spaces content computed') echo 'document revision' ;;\n    'spaces content computed document') echo 'get' ;;\n    'spaces content computed revision') echo 'get' ;;\n    'spaces documents') echo 'get' ;;\n    'spaces change-requests') echo 'list create get update merge pull-content reviews requested-reviewers conversations links comments contributors content changes pdf commenters' ;;\n    'spaces change-requests reviews') echo 'list submit get' ;;\n    'spaces change-requests requested-reviewers') echo 'list request remove' ;;\n    'spaces change-requests conversations') echo 'list update delete' ;;\n    'spaces change-requests links') echo 'list' ;;\n    'spaces change-requests comments') echo 'list post get update delete replies' ;;\n    'spaces change-requests comments replies') echo 'list post get update delete' ;;\n    'spaces change-requests contributors') echo 'get' ;;\n    'spaces change-requests content') echo 'get update pages files page reusable-contents path' ;;\n    'spaces change-requests content pages') echo 'list' ;;\n    'spaces change-requests content files') echo 'list get backlinks' ;;\n    'spaces change-requests content files backlinks') echo 'list' ;;\n    'spaces change-requests content page') echo 'get links backlinks meta-links' ;;\n    'spaces change-requests content page links') echo 'list' ;;\n    'spaces change-requests content page backlinks') echo 'list' ;;\n    'spaces change-requests content page meta-links') echo 'list' ;;\n    'spaces change-requests content reusable-contents') echo 'get' ;;\n    'spaces change-requests changes') echo 'get' ;;\n    'spaces change-requests pdf') echo 'get' ;;\n    'spaces revisions') echo 'get changes pages files page path reusable-contents' ;;\n    'spaces revisions changes') echo 'get' ;;\n    'spaces revisions pages') echo 'list' ;;\n    'spaces revisions files') echo 'list get' ;;\n    'spaces revisions page') echo 'get document meta-links' ;;\n    'spaces revisions page document') echo 'get' ;;\n    'spaces revisions path') echo 'get' ;;\n    'spaces revisions page meta-links') echo 'list' ;;\n    'spaces change-requests content path') echo 'get' ;;\n    'spaces revisions reusable-contents') echo 'get document' ;;\n    'spaces revisions reusable-contents document') echo 'get' ;;\n    'spaces comments') echo 'list post get update delete replies' ;;\n    'spaces comments replies') echo 'list post get update delete' ;;\n    'spaces commenters') echo 'list' ;;\n    'spaces change-requests commenters') echo 'list' ;;\n    'spaces permissions aggregate') echo 'list' ;;\n    'integrations') echo 'list get publish unpublish installations events sites dev tasks' ;;\n    'spaces integration-blocks') echo 'list' ;;\n    'spaces pdf') echo 'get' ;;\n    'spaces links') echo 'list' ;;\n    'collections') echo 'get update delete move transfer permissions list create' ;;\n    'collections permissions') echo 'invite teams users aggregate' ;;\n    'collections permissions teams') echo 'list update remove' ;;\n    'collections permissions users') echo 'list update remove' ;;\n    'collections permissions aggregate') echo 'list' ;;\n    'integrations installations') echo 'list install get update uninstall tokens spaces sites' ;;\n    'integrations events') echo 'list get' ;;\n    'integrations sites') echo 'list' ;;\n    'integrations dev') echo 'set disable' ;;\n    'integrations tasks') echo 'queue' ;;\n    'integrations installations tokens') echo 'create' ;;\n    'integrations installations spaces') echo 'install get update uninstall' ;;\n    'integrations installations sites') echo 'list install get update uninstall' ;;\n    'organizations') echo 'list get update members ping teams invites link-invites join search change-requests integrations installations saml sso ask openapi agent-instructions translations translations-glossary imports sites' ;;\n    'organizations members') echo 'list get update remove sso teams' ;;\n    'organizations ping') echo 'update' ;;\n    'organizations members sso') echo 'set' ;;\n    'organizations members teams') echo 'list' ;;\n    'organizations teams') echo 'list create get update remove members' ;;\n    'organizations teams members') echo 'list update add delete' ;;\n    'organizations invites') echo 'invite join' ;;\n    'organizations link-invites') echo 'list create get update delete' ;;\n    'organizations change-requests') echo 'list' ;;\n    'organizations integrations') echo 'installation_status installations-status' ;;\n    'organizations integrations installation_status') echo 'get' ;;\n    'organizations installations') echo 'list' ;;\n    'organizations integrations installations-status') echo 'list' ;;\n    'organizations saml') echo 'list create get update delete' ;;\n    'organizations sso') echo 'list' ;;\n    'organizations ask') echo 'create questions stream' ;;\n    'organizations ask questions') echo 'list stream' ;;\n    'organizations openapi') echo 'list create get set update delete versions' ;;\n    'organizations openapi versions') echo 'list latest get content' ;;\n    'organizations openapi versions latest') echo 'get content' ;;\n    'organizations openapi versions latest content') echo 'get' ;;\n    'organizations openapi versions content') echo 'get' ;;\n    'organizations agent-instructions') echo 'get update' ;;\n    'organizations translations') echo 'list create get update delete run' ;;\n    'organizations translations-glossary') echo 'list update get' ;;\n    'organizations imports') echo 'start cancel' ;;\n    'organizations sites') echo 'list create get update delete spaces adaptive-schema published publish unpublish share-links structure publishing customization integration-scripts site-spaces section-groups sections search ask context-records scans findings context-connections topics questions question-stats answers permissions ai agent-settings styleguide insights ads redirects redirect mcp-servers channels' ;;\n    'organizations sites spaces') echo 'git' ;;\n    'organizations sites spaces git') echo 'installations' ;;\n    'organizations sites spaces git installations') echo 'list' ;;\n    'organizations sites adaptive-schema') echo 'get update template-conditions' ;;\n    'organizations sites adaptive-schema template-conditions') echo 'list' ;;\n    'organizations sites published') echo 'get' ;;\n    'organizations sites share-links') echo 'list create update delete' ;;\n    'organizations sites structure') echo 'get sort' ;;\n    'organizations sites publishing') echo 'auth preview' ;;\n    'organizations sites publishing auth') echo 'get update regenerate' ;;\n    'organizations sites publishing preview') echo 'get' ;;\n    'organizations sites customization') echo 'get update' ;;\n    'organizations sites integration-scripts') echo 'list' ;;\n    'organizations sites site-spaces') echo 'list add update delete customization move' ;;\n    'organizations sites section-groups') echo 'list add update delete move' ;;\n    'organizations sites sections') echo 'list add update delete move' ;;\n    'organizations sites ask') echo 'stream questions' ;;\n    'organizations sites ask questions') echo 'stream' ;;\n    'organizations sites context-records') echo 'list upsert get' ;;\n    'organizations sites scans') echo 'list create get' ;;\n    'organizations sites findings') echo 'list get update change-requests pages questions records' ;;\n    'organizations sites findings change-requests') echo 'list trigger' ;;\n    'organizations sites findings pages') echo 'list' ;;\n    'organizations sites findings questions') echo 'list' ;;\n    'organizations sites findings records') echo 'list' ;;\n    'organizations sites context-connections') echo 'list create get update delete sync' ;;\n    'organizations sites topics') echo 'list get update findings' ;;\n    'organizations sites topics findings') echo 'delete' ;;\n    'organizations sites questions') echo 'list get sources' ;;\n    'organizations sites questions sources') echo 'list' ;;\n    'organizations sites question-stats') echo 'get' ;;\n    'organizations sites answers') echo 'list get thread sources' ;;\n    'organizations sites answers thread') echo 'get' ;;\n    'organizations sites answers sources') echo 'list' ;;\n    'organizations sites site-spaces customization') echo 'get override delete' ;;\n    'organizations sites permissions') echo 'invite aggregate users teams' ;;\n    'organizations sites permissions aggregate') echo 'list' ;;\n    'organizations sites permissions users') echo 'list update remove' ;;\n    'organizations sites permissions teams') echo 'list update remove' ;;\n    'organizations sites ai') echo 'response' ;;\n    'organizations sites ai response') echo 'stream' ;;\n    'organizations sites agent-settings') echo 'get update' ;;\n    'organizations sites styleguide') echo 'create delete' ;;\n    'organizations sites insights') echo 'events visitor-segments' ;;\n    'organizations sites insights events') echo 'track aggregate' ;;\n    'organizations sites insights visitor-segments') echo 'list' ;;\n    'organizations sites ads') echo 'update' ;;\n    'organizations sites redirects') echo 'list create replace update delete' ;;\n    'organizations sites redirect') echo 'get' ;;\n    'organizations sites mcp-servers') echo 'list create get update delete' ;;\n    'organizations sites channels') echo 'list create get update delete' ;;\n    'subdomains') echo 'get' ;;\n    'ads') echo 'sites' ;;\n    'ads sites') echo 'list update' ;;\n    'urls') echo 'content embed published' ;;\n    'urls content') echo 'get' ;;\n    'urls embed') echo 'get' ;;\n    'urls published') echo 'get resolve' ;;\n    'git') echo 'installations' ;;\n    'git installations') echo 'install get update uninstall github gitlab' ;;\n    'git installations github') echo 'repos' ;;\n    'git installations github repos') echo 'list branches' ;;\n    'git installations github repos branches') echo 'list' ;;\n    'git installations gitlab') echo 'projects' ;;\n    'git installations gitlab projects') echo 'list branches' ;;\n    'git installations gitlab projects branches') echo 'list' ;;\n    *) echo '' ;;\n  esac\n}\n_gitbook2_complete() {\n  local cur key next i token\n  key=\"/\"\n  for ((i=1; i<COMP_CWORD; i++)); do\n    token=\"${COMP_WORDS[i]}\"\n    [[ \"$token\" == -* ]] && continue\n    if [[ \"$key\" == \"/\" ]]; then next=\"$token\"; else next=\"$key $token\"; fi\n    if [[ -n \"$(_gb2_children \"$next\")\" ]]; then key=\"$next\"; fi\n  done\n  cur=\"${COMP_WORDS[COMP_CWORD]}\"\n  COMPREPLY=( $(compgen -W \"$(_gb2_children \"$key\")\" -- \"$cur\") )\n}\ncomplete -F _gitbook2_complete gitbook2\n",
+    "fish": "# gitbook2 fish completion. Install: gitbook2 completion fish > ~/.config/fish/completions/gitbook2.fish\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'system'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'users'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'spaces'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'integrations'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'collections'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'organizations'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'subdomains'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'ads'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'urls'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'git'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'auth'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'whoami'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'completion'\ncomplete -c gitbook2 -n 'test (count (commandline -opc)) -eq 1' -f -a 'help'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from system' -f -a 'info'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from users' -f -a 'whoami'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from users' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from users' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'duplicate'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'restore'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'move'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'embed'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'search'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'git'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'permissions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'content'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'documents'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'change-requests'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'revisions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'comments'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'commenters'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'integration-blocks'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'pdf'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'links'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces embed' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces git' -f -a 'import'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces git' -f -a 'export'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces git' -f -a 'info'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces git info' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions' -f -a 'invite'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions' -f -a 'teams'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions' -f -a 'users'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions' -f -a 'aggregate'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions teams' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions teams' -f -a 'remove'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions teams' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions users' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions users' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions users' -f -a 'remove'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content' -f -a 'template'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content' -f -a 'pages'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content' -f -a 'files'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content' -f -a 'page'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content' -f -a 'path'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content' -f -a 'reusable-contents'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content' -f -a 'computed'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content template' -f -a 'apply'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content pages' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content files' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content files' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content files' -f -a 'backlinks'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content files backlinks' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content page' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content page' -f -a 'links'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content page' -f -a 'backlinks'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content page' -f -a 'meta-links'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content page links' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content page backlinks' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content page meta-links' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content path' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content reusable-contents' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content computed' -f -a 'document'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content computed' -f -a 'revision'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content computed document' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces content computed revision' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces documents' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'merge'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'pull-content'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'reviews'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'requested-reviewers'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'conversations'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'links'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'comments'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'contributors'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'content'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'changes'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'pdf'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests' -f -a 'commenters'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests reviews' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests reviews' -f -a 'submit'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests reviews' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests requested-reviewers' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests requested-reviewers' -f -a 'request'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests requested-reviewers' -f -a 'remove'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests conversations' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests conversations' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests conversations' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests links' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments' -f -a 'post'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments' -f -a 'replies'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments replies' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments replies' -f -a 'post'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments replies' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments replies' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests comments replies' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests contributors' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content' -f -a 'pages'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content' -f -a 'files'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content' -f -a 'page'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content' -f -a 'reusable-contents'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content' -f -a 'path'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content pages' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content files' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content files' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content files' -f -a 'backlinks'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content files backlinks' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content page' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content page' -f -a 'links'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content page' -f -a 'backlinks'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content page' -f -a 'meta-links'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content page links' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content page backlinks' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content page meta-links' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content reusable-contents' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests changes' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests pdf' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions' -f -a 'changes'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions' -f -a 'pages'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions' -f -a 'files'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions' -f -a 'page'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions' -f -a 'path'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions' -f -a 'reusable-contents'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions changes' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions pages' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions files' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions files' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions page' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions page' -f -a 'document'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions page' -f -a 'meta-links'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions page document' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions path' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions page meta-links' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests content path' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions reusable-contents' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions reusable-contents' -f -a 'document'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces revisions reusable-contents document' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments' -f -a 'post'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments' -f -a 'replies'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments replies' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments replies' -f -a 'post'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments replies' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments replies' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces comments replies' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces commenters' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces change-requests commenters' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces permissions aggregate' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations' -f -a 'publish'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations' -f -a 'unpublish'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations' -f -a 'installations'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations' -f -a 'events'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations' -f -a 'sites'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations' -f -a 'dev'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations' -f -a 'tasks'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces integration-blocks' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces pdf' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from spaces links' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections' -f -a 'move'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections' -f -a 'transfer'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections' -f -a 'permissions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions' -f -a 'invite'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions' -f -a 'teams'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions' -f -a 'users'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions' -f -a 'aggregate'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions teams' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions teams' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions teams' -f -a 'remove'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions users' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions users' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions users' -f -a 'remove'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from collections permissions aggregate' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations' -f -a 'install'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations' -f -a 'uninstall'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations' -f -a 'tokens'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations' -f -a 'spaces'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations' -f -a 'sites'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations events' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations events' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations sites' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations dev' -f -a 'set'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations dev' -f -a 'disable'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations tasks' -f -a 'queue'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations tokens' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations spaces' -f -a 'install'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations spaces' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations spaces' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations spaces' -f -a 'uninstall'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations sites' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations sites' -f -a 'install'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations sites' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations sites' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from integrations installations sites' -f -a 'uninstall'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'members'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'ping'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'teams'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'invites'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'link-invites'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'join'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'search'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'change-requests'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'integrations'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'installations'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'saml'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'sso'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'ask'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'openapi'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'agent-instructions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'translations'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'translations-glossary'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'imports'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations' -f -a 'sites'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations members' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations members' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations members' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations members' -f -a 'remove'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations members' -f -a 'sso'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations members' -f -a 'teams'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations ping' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations members sso' -f -a 'set'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations members teams' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations teams' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations teams' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations teams' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations teams' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations teams' -f -a 'remove'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations teams' -f -a 'members'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations teams members' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations teams members' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations teams members' -f -a 'add'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations teams members' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations invites' -f -a 'invite'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations invites' -f -a 'join'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations link-invites' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations link-invites' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations link-invites' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations link-invites' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations link-invites' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations change-requests' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations integrations' -f -a 'installation_status'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations integrations' -f -a 'installations-status'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations integrations installation_status' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations installations' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations integrations installations-status' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations saml' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations saml' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations saml' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations saml' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations saml' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sso' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations ask' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations ask' -f -a 'questions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations ask' -f -a 'stream'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations ask questions' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations ask questions' -f -a 'stream'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi' -f -a 'set'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi' -f -a 'versions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi versions' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi versions' -f -a 'latest'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi versions' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi versions' -f -a 'content'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi versions latest' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi versions latest' -f -a 'content'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi versions latest content' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations openapi versions content' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations agent-instructions' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations agent-instructions' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations translations' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations translations' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations translations' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations translations' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations translations' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations translations' -f -a 'run'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations translations-glossary' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations translations-glossary' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations translations-glossary' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations imports' -f -a 'start'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations imports' -f -a 'cancel'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'spaces'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'adaptive-schema'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'published'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'publish'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'unpublish'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'share-links'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'structure'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'publishing'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'customization'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'integration-scripts'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'site-spaces'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'section-groups'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'sections'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'search'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'ask'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'context-records'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'scans'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'findings'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'context-connections'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'topics'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'questions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'question-stats'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'answers'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'permissions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'ai'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'agent-settings'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'styleguide'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'insights'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'ads'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'redirects'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'redirect'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'mcp-servers'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites' -f -a 'channels'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites spaces' -f -a 'git'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites spaces git' -f -a 'installations'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites spaces git installations' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites adaptive-schema' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites adaptive-schema' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites adaptive-schema' -f -a 'template-conditions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites adaptive-schema template-conditions' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites published' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites share-links' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites share-links' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites share-links' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites share-links' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites structure' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites structure' -f -a 'sort'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites publishing' -f -a 'auth'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites publishing' -f -a 'preview'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites publishing auth' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites publishing auth' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites publishing auth' -f -a 'regenerate'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites publishing preview' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites customization' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites customization' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites integration-scripts' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites site-spaces' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites site-spaces' -f -a 'add'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites site-spaces' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites site-spaces' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites site-spaces' -f -a 'customization'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites site-spaces' -f -a 'move'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites section-groups' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites section-groups' -f -a 'add'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites section-groups' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites section-groups' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites section-groups' -f -a 'move'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites sections' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites sections' -f -a 'add'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites sections' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites sections' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites sections' -f -a 'move'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites ask' -f -a 'stream'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites ask' -f -a 'questions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites ask questions' -f -a 'stream'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites context-records' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites context-records' -f -a 'upsert'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites context-records' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites scans' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites scans' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites scans' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings' -f -a 'change-requests'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings' -f -a 'pages'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings' -f -a 'questions'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings' -f -a 'records'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings change-requests' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings change-requests' -f -a 'trigger'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings pages' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings questions' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites findings records' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites context-connections' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites context-connections' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites context-connections' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites context-connections' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites context-connections' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites context-connections' -f -a 'sync'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites topics' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites topics' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites topics' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites topics' -f -a 'findings'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites topics findings' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites questions' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites questions' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites questions' -f -a 'sources'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites questions sources' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites question-stats' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites answers' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites answers' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites answers' -f -a 'thread'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites answers' -f -a 'sources'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites answers thread' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites answers sources' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites site-spaces customization' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites site-spaces customization' -f -a 'override'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites site-spaces customization' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions' -f -a 'invite'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions' -f -a 'aggregate'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions' -f -a 'users'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions' -f -a 'teams'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions aggregate' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions users' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions users' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions users' -f -a 'remove'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions teams' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions teams' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites permissions teams' -f -a 'remove'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites ai' -f -a 'response'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites ai response' -f -a 'stream'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites agent-settings' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites agent-settings' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites styleguide' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites styleguide' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites insights' -f -a 'events'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites insights' -f -a 'visitor-segments'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites insights events' -f -a 'track'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites insights events' -f -a 'aggregate'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites insights visitor-segments' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites ads' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites redirects' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites redirects' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites redirects' -f -a 'replace'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites redirects' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites redirects' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites redirect' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites mcp-servers' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites mcp-servers' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites mcp-servers' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites mcp-servers' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites mcp-servers' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites channels' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites channels' -f -a 'create'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites channels' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites channels' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from organizations sites channels' -f -a 'delete'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from subdomains' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from ads' -f -a 'sites'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from ads sites' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from ads sites' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from urls' -f -a 'content'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from urls' -f -a 'embed'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from urls' -f -a 'published'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from urls content' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from urls embed' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from urls published' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from urls published' -f -a 'resolve'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git' -f -a 'installations'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations' -f -a 'install'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations' -f -a 'get'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations' -f -a 'update'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations' -f -a 'uninstall'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations' -f -a 'github'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations' -f -a 'gitlab'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations github' -f -a 'repos'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations github repos' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations github repos' -f -a 'branches'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations github repos branches' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations gitlab' -f -a 'projects'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations gitlab projects' -f -a 'list'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations gitlab projects' -f -a 'branches'\ncomplete -c gitbook2 -n '__fish_seen_subcommand_from git installations gitlab projects branches' -f -a 'list'\n"
 };
