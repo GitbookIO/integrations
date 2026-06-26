@@ -41,7 +41,9 @@ export const marketoFormBlock = createComponent<
         const accountId = environment.installation?.configuration?.account;
 
         const cacheKey = getWebframeCacheKey();
-        const webframeURL = new URL(`${environment.integration.urls.publicEndpoint}/webframe`);
+        const webframeURL = new URL(
+            `${environment.integration.urls.publicContentEndpoint}/webframe`,
+        );
         webframeURL.searchParams.set('formId', formId || '');
         webframeURL.searchParams.set('munchkinId', accountId || '');
         webframeURL.searchParams.set('v', cacheKey);

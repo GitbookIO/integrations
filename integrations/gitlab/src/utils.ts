@@ -36,10 +36,15 @@ export function getGitSyncCommitMessage(
 /**
  * Get description for a Git Sync operationstate.
  */
-export function getGitSyncStateDescription(state: GitSyncOperationState): string {
+export function getGitSyncStateDescription(
+    state: GitSyncOperationState,
+    isPublic: boolean,
+): string {
     switch (state) {
         case 'success':
-            return 'Content is live on GitBook';
+            return isPublic
+                ? 'Check the live preview on your docs site.'
+                : 'Check the changes in the GitBook editor.';
         case 'failure':
             return 'Error while updating content, contact GitBook support';
         default:

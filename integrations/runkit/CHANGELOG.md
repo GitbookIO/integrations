@@ -1,5 +1,11 @@
 # @gitbook/integration-runkit
 
+## 0.2.6
+
+### Patch Changes
+
+- 76694da: Use publicContentEndpoint for WebFrame rendering on cookieless origin
+
 ## 0.2.5
 
 ### Patch Changes
