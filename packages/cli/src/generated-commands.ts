@@ -37,9 +37,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -67,9 +67,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -93,9 +93,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -125,9 +125,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -159,9 +159,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -188,9 +188,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -214,9 +214,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -240,9 +240,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'POST',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -266,9 +266,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'POST',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -296,9 +296,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -330,9 +330,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -394,9 +394,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -423,9 +423,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -457,9 +457,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -505,9 +505,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -549,9 +549,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -579,9 +579,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -612,9 +612,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -645,9 +645,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -671,9 +671,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -703,9 +703,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -739,9 +739,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -768,9 +768,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -794,9 +794,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -832,9 +832,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -868,9 +868,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -904,9 +904,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -940,9 +940,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -980,9 +980,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1012,9 +1012,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1048,9 +1048,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1092,9 +1092,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1130,9 +1130,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1166,9 +1166,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1196,9 +1196,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1240,9 +1240,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1276,9 +1276,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1318,9 +1318,9 @@ export function registerGeneratedCommands(program: Command): void {
                     query,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1352,9 +1352,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1386,9 +1386,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1434,9 +1434,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1464,9 +1464,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1490,9 +1490,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1524,9 +1524,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1550,9 +1550,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'POST',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1576,9 +1576,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'POST',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1616,9 +1616,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1646,9 +1646,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1676,9 +1676,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1712,9 +1712,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1744,9 +1744,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1770,9 +1770,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1806,9 +1806,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1836,9 +1836,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1862,9 +1862,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1902,9 +1902,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1948,9 +1948,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -1980,9 +1980,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2010,9 +2010,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2044,9 +2044,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2070,9 +2070,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2108,9 +2108,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2141,9 +2141,9 @@ export function registerGeneratedCommands(program: Command): void {
                     query,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2171,9 +2171,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2205,9 +2205,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2231,9 +2231,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2261,9 +2261,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2297,9 +2297,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2327,9 +2327,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2363,9 +2363,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2403,9 +2403,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2435,9 +2435,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2471,9 +2471,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2515,9 +2515,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2551,9 +2551,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2587,9 +2587,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2617,9 +2617,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2653,9 +2653,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2697,9 +2697,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2731,9 +2731,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2767,9 +2767,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2803,9 +2803,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2839,9 +2839,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2877,9 +2877,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2913,9 +2913,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2953,9 +2953,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -2985,9 +2985,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3029,9 +3029,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3065,9 +3065,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3095,9 +3095,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3139,9 +3139,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3175,9 +3175,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3211,9 +3211,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3257,9 +3257,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3289,9 +3289,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3319,9 +3319,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3353,9 +3353,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3379,9 +3379,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3417,9 +3417,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3446,9 +3446,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3476,9 +3476,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3508,9 +3508,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3534,9 +3534,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3570,9 +3570,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3600,9 +3600,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3636,9 +3636,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3674,9 +3674,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3747,9 +3747,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3773,9 +3773,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3831,9 +3831,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3857,9 +3857,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3895,9 +3895,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3925,9 +3925,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3951,9 +3951,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -3985,9 +3985,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4011,9 +4011,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4041,9 +4041,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'POST',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4079,9 +4079,9 @@ export function registerGeneratedCommands(program: Command): void {
                     query,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4109,9 +4109,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4143,9 +4143,9 @@ export function registerGeneratedCommands(program: Command): void {
                     query,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4169,9 +4169,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4207,9 +4207,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4241,9 +4241,9 @@ export function registerGeneratedCommands(program: Command): void {
                     query,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4271,9 +4271,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4305,9 +4305,9 @@ export function registerGeneratedCommands(program: Command): void {
                     query,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4331,9 +4331,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4367,9 +4367,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4393,9 +4393,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4433,9 +4433,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4469,9 +4469,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4495,9 +4495,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4529,9 +4529,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4559,9 +4559,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4591,9 +4591,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4617,9 +4617,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4647,9 +4647,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4677,9 +4677,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4711,9 +4711,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4743,9 +4743,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4776,9 +4776,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4812,9 +4812,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4841,9 +4841,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4867,9 +4867,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4903,9 +4903,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4932,9 +4932,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4958,9 +4958,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -4996,9 +4996,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5032,9 +5032,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5058,9 +5058,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5098,9 +5098,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5124,9 +5124,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'POST',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5158,9 +5158,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5202,9 +5202,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5228,9 +5228,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5257,9 +5257,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5283,9 +5283,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5313,9 +5313,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'POST',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5351,9 +5351,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5381,9 +5381,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'POST',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5421,9 +5421,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5453,9 +5453,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5479,9 +5479,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5509,9 +5509,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5535,9 +5535,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5571,9 +5571,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5603,9 +5603,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5633,9 +5633,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5659,9 +5659,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5695,9 +5695,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5721,9 +5721,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'POST',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5757,9 +5757,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5786,9 +5786,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5812,9 +5812,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5841,9 +5841,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5867,9 +5867,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5921,9 +5921,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5955,9 +5955,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -5993,9 +5993,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6031,9 +6031,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6067,9 +6067,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6105,9 +6105,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6131,9 +6131,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6169,9 +6169,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6195,9 +6195,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6225,9 +6225,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6265,9 +6265,9 @@ export function registerGeneratedCommands(program: Command): void {
                     query,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6299,9 +6299,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6329,9 +6329,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6355,9 +6355,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6391,9 +6391,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6421,9 +6421,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6447,9 +6447,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6476,9 +6476,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6506,9 +6506,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6532,9 +6532,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6568,9 +6568,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6594,9 +6594,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6624,9 +6624,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6654,9 +6654,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6684,9 +6684,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6714,9 +6714,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6743,9 +6743,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6779,9 +6779,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6809,9 +6809,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6835,9 +6835,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6864,9 +6864,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6890,9 +6890,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6916,9 +6916,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'POST',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6954,9 +6954,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -6984,9 +6984,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7010,9 +7010,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7044,9 +7044,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7070,9 +7070,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'POST',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7114,9 +7114,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7150,9 +7150,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7176,9 +7176,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7216,9 +7216,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7242,9 +7242,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7268,9 +7268,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'POST',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7294,9 +7294,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'POST',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7329,9 +7329,9 @@ export function registerGeneratedCommands(program: Command): void {
                     query,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7367,9 +7367,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7397,9 +7397,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7426,9 +7426,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7456,9 +7456,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7490,9 +7490,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7528,9 +7528,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7558,9 +7558,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7590,9 +7590,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7616,9 +7616,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7650,9 +7650,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7679,9 +7679,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7713,9 +7713,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7742,9 +7742,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7768,9 +7768,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'POST',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7808,9 +7808,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7842,9 +7842,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7874,9 +7874,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7904,9 +7904,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7944,9 +7944,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -7978,9 +7978,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8014,9 +8014,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8040,9 +8040,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8069,9 +8069,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8103,9 +8103,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8132,9 +8132,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8158,9 +8158,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8194,9 +8194,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8230,9 +8230,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8262,9 +8262,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8288,9 +8288,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8317,9 +8317,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8355,9 +8355,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8389,9 +8389,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8425,9 +8425,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8451,9 +8451,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8480,9 +8480,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8518,9 +8518,9 @@ export function registerGeneratedCommands(program: Command): void {
                     query,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8554,9 +8554,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8598,9 +8598,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8627,9 +8627,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8653,9 +8653,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8693,9 +8693,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8723,9 +8723,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8749,9 +8749,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8795,9 +8795,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8821,9 +8821,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8851,9 +8851,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8887,9 +8887,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8913,9 +8913,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'POST',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8949,9 +8949,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -8985,9 +8985,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9021,9 +9021,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9057,9 +9057,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9086,9 +9086,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9112,9 +9112,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9141,9 +9141,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9167,9 +9167,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9193,9 +9193,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'POST',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9229,9 +9229,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9255,9 +9255,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9284,9 +9284,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9314,9 +9314,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9368,9 +9368,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9406,9 +9406,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9452,9 +9452,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9496,9 +9496,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9554,9 +9554,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9580,9 +9580,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9610,9 +9610,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9646,9 +9646,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9679,9 +9679,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9723,9 +9723,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9759,9 +9759,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9789,9 +9789,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9815,9 +9815,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9851,9 +9851,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9881,9 +9881,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9907,9 +9907,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9951,9 +9951,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -9981,9 +9981,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10010,9 +10010,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10040,9 +10040,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'POST',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10066,9 +10066,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10104,9 +10104,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10140,9 +10140,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10170,9 +10170,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10206,9 +10206,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10246,9 +10246,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10280,9 +10280,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10310,9 +10310,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10344,9 +10344,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10370,9 +10370,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10406,9 +10406,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10442,9 +10442,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10476,9 +10476,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10502,9 +10502,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10536,9 +10536,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10562,9 +10562,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10598,9 +10598,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10627,9 +10627,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10653,9 +10653,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10682,9 +10682,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10708,9 +10708,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10738,9 +10738,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10780,9 +10780,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10809,9 +10809,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10847,9 +10847,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10881,9 +10881,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10919,9 +10919,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     query,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10951,9 +10951,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -10989,9 +10989,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -11015,9 +11015,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -11044,9 +11044,9 @@ export function registerGeneratedCommands(program: Command): void {
                     secure: true,
                     ...(body !== undefined ? { body, type: ContentType.Json } : {}),
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -11070,9 +11070,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'DELETE',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -11104,9 +11104,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -11134,9 +11134,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -11168,9 +11168,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);
@@ -11198,9 +11198,9 @@ export function registerGeneratedCommands(program: Command): void {
                     method: 'GET',
                     secure: true,
                 });
-                if (response.status !== 204) {
-                    const data = await response.json();
-                    printResult(data, options);
+                const text = await response.text();
+                if (text) {
+                    printResult(JSON.parse(text), options);
                 }
             } catch (error) {
                 console.error((error as Error).message);

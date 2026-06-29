@@ -690,9 +690,12 @@ function emitRequest(
         );
     }
     lines.push(`${I}            });`);
-    lines.push(`${I}            if (response.status !== 204) {`);
-    lines.push(`${I}                const data = await response.json();`);
-    lines.push(`${I}                printResult(data, options);`);
+    // Some successful responses carry no body (e.g. 204 No Content, 205 Reset
+    // Content for deletions). Keying off the body rather than a specific status
+    // avoids "Unexpected end of JSON input" when the status isn't 204.
+    lines.push(`${I}            const text = await response.text();`);
+    lines.push(`${I}            if (text) {`);
+    lines.push(`${I}                printResult(JSON.parse(text), options);`);
     lines.push(`${I}            }`);
     lines.push(`${I}        } catch (error) {`);
     lines.push(`${I}            console.error((error as Error).message);`);
