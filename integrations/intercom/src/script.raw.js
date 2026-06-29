@@ -1,8 +1,10 @@
 (function () {
     const APP_ID = '<TO_REPLACE>';
+    const API_BASE = '<API_BASE>';
 
     window.intercomSettings = {
         app_id: APP_ID,
+        api_base: API_BASE,
     };
 
     var w = window;
