@@ -10,7 +10,11 @@
 // level here (no `api` wrapper), so e.g. `gitbook2 organizations list`.
 //
 // It shares auth/config/build with the main CLI — `auth` and `whoami` are
-// re-exposed so the binary is self-contained.
+// re-exposed so the binary is self-contained, and the integration lifecycle
+// commands from the main CLI are ported here too: the `integration` group
+// (new/dev/publish/unpublish/tail/check) and `openapi publish`, registered via
+// registerCustomCommands. The `integration` group is singular to stay distinct
+// from the spec-generated `integrations` group (raw integration API ops).
 // ─────────────────────────────────────────────────────────────────────────────
 
 import * as fs from 'fs';
@@ -137,6 +141,12 @@ checkNodeVersion({ node: '>= 18' }, (error, result) => {
 
     program.parseAsync().then(
         () => {
+            // `integration dev` starts a long-running dev server; exiting here
+            // would tear it down immediately, so leave the process running.
+            if (program.args[0] === 'integration' && program.args[1] === 'dev') {
+                return;
+            }
+
             process.exit(0);
         },
         (error) => {
