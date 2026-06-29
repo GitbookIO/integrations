@@ -185,7 +185,7 @@
     },
     "integrations/github": {
       "name": "@gitbook/integration-github",
-      "version": "0.6.8",
+      "version": "0.6.9",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -235,7 +235,7 @@
     },
     "integrations/gitlab": {
       "name": "@gitbook/integration-gitlab",
-      "version": "0.6.7",
+      "version": "0.6.8",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -390,7 +390,7 @@
     },
     "integrations/lucid": {
       "name": "@gitbook/integration-lucid",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "dependencies": {
         "@gitbook/runtime": "*",
         "itty-router": "^4.0.27",
@@ -414,7 +414,7 @@
     },
     "integrations/marketo": {
       "name": "@gitbook/integration-marketo",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -428,7 +428,7 @@
     },
     "integrations/mermaid": {
       "name": "@gitbook/integration-mermaid",
-      "version": "0.4.2",
+      "version": "0.4.3",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -492,7 +492,7 @@
     },
     "integrations/plantuml": {
       "name": "@gitbook/integration-plantuml",
-      "version": "0.0.2",
+      "version": "0.0.3",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -504,7 +504,7 @@
     },
     "integrations/plausible": {
       "name": "@gitbook/integration-plausible",
-      "version": "0.9.0",
+      "version": "1.0.1",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -540,7 +540,7 @@
     },
     "integrations/runkit": {
       "name": "@gitbook/integration-runkit",
-      "version": "0.2.5",
+      "version": "0.2.6",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -750,7 +750,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.183.1",
+      "version": "0.186.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
