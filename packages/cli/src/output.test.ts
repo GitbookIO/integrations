@@ -2,6 +2,7 @@ import { describe, it, expect } from 'bun:test';
 
 import {
     asCollection,
+    coerceBodyFlag,
     formatCollection,
     formatObjectSummary,
     isPlainObject,
@@ -9,6 +10,41 @@ import {
     resolveFormat,
     summaryCell,
 } from './output';
+
+describe('coerceBodyFlag', () => {
+    it('parses an array flag string into a real array', () => {
+        const result = coerceBodyFlag('[{"op":"add"}]', 'array');
+        expect(Array.isArray(result)).toBe(true);
+        expect(result).toEqual([{ op: 'add' }]);
+    });
+
+    it('parses an array of strings (e.g. --users)', () => {
+        expect(coerceBodyFlag('["user_x","user_y"]', 'array')).toEqual(['user_x', 'user_y']);
+    });
+
+    it('throws a legible error when an array flag is not valid JSON', () => {
+        expect(() => coerceBodyFlag('not json', 'array')).toThrow(/not valid JSON/);
+    });
+
+    it('throws when a JSON value parses but is not an array', () => {
+        expect(() => coerceBodyFlag('{"a":1}', 'array')).toThrow(/parsed a object/);
+    });
+
+    it('coerces a number flag string into a number', () => {
+        expect(coerceBodyFlag('42', 'number')).toBe(42);
+        expect(coerceBodyFlag('3.14', 'number')).toBe(3.14);
+    });
+
+    it('throws when a number flag is not numeric', () => {
+        expect(() => coerceBodyFlag('abc', 'number')).toThrow(/Expected a number/);
+        expect(() => coerceBodyFlag('', 'number')).toThrow(/Expected a number/);
+    });
+
+    it('passes string and boolean values through untouched', () => {
+        expect(coerceBodyFlag('hello', 'string')).toBe('hello');
+        expect(coerceBodyFlag(true, 'boolean')).toBe(true);
+    });
+});
 
 describe('asCollection', () => {
     it('treats a { items } envelope as a collection', () => {

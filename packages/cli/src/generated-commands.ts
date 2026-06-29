@@ -14,7 +14,7 @@ import { ContentType } from '@gitbook/api';
 import { getAPIClient } from './remote';
 // Output formatting lives in ./output (a real, unit-tested module) rather than
 // being inlined here, so the rendering logic has a single source of truth.
-import { printResult } from './output';
+import { printResult, coerceBodyFlag } from './output';
 
 export function registerGeneratedCommands(program: Command): void {
     const systemCmd = program
@@ -108,6 +108,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('Update a user by its ID')
         .option('--displayName <value>', 'Full name for the user')
         .option('--photoURL <value>', '')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -115,7 +116,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (userId, options) => {
             const api = await getAPIClient(true);
             const path = `/users/${userId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.displayName !== undefined) body['displayName'] = options.displayName;
             if (options.photoURL !== undefined) body['photoURL'] = options.photoURL;
             try {
@@ -280,6 +281,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('move <spaceId>')
         .description('Move a space to a new position')
         .option('--parent <value>', 'The unique id of the parent collection')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -287,7 +289,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/move`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.parent !== undefined) body['parent'] = options.parent;
             try {
                 const response = await api.request({
@@ -482,6 +484,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--timestamp <value>', '')
         .option('--force', '')
         .option('--standalone', 'If true, the import will generate a revision without updating the space primary content.')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -489,7 +492,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/git/import`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.url !== undefined) body['url'] = options.url;
             if (options.ref !== undefined) body['ref'] = options.ref;
             if (options.repoTreeURL !== undefined) body['repoTreeURL'] = options.repoTreeURL;
@@ -526,6 +529,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--repoProjectDirectory <value>', 'Path to a root directory for the project in the repository.')
         .option('--timestamp <value>', '')
         .option('--force', '')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -533,7 +537,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/git/export`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.url !== undefined) body['url'] = options.url;
             if (options.ref !== undefined) body['ref'] = options.ref;
             if (options.commitMessage !== undefined) body['commitMessage'] = options.commitMessage;
@@ -887,6 +891,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('Apply a template to a space.')
         .option('--id <value>', 'The ID of the template to use for the space (required)')
         .option('--changeRequestId <value>', 'The ID of the change request to apply the template to. If not provided, the template is applied to the main content.')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -894,7 +899,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/content/template`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.id !== undefined) body['id'] = options.id;
             if (options.changeRequestId !== undefined) body['changeRequestId'] = options.changeRequestId;
             try {
@@ -1299,6 +1304,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('Get a space computed document')
         .option('--schema [schema]', 'Version of the schema used for the document.')
         .option('--seed <value>', 'Seed to use for the generation of IDs. (required)')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -1308,7 +1314,7 @@ export function registerGeneratedCommands(program: Command): void {
             const path = `/spaces/${spaceId}/content/computed/document`;
             const query: Record<string, string> = {};
             if (options["schema"] !== undefined) query['schema'] = String(options["schema"]);
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.seed !== undefined) body['seed'] = options.seed;
             try {
                 const response = await api.request({
@@ -1336,6 +1342,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('get <spaceId>')
         .description('Get a space computed revision')
         .option('--seed <value>', 'Seed to use for the generation of IDs. (required)')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -1343,7 +1350,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/content/computed/revision`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.seed !== undefined) body['seed'] = options.seed;
             try {
                 const response = await api.request({
@@ -1448,6 +1455,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('create <spaceId>')
         .description('Create a change request')
         .option('--subject <value>', 'Subject of the change-request')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -1455,7 +1463,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.subject !== undefined) body['subject'] = options.subject;
             try {
                 const response = await api.request({
@@ -1504,8 +1512,9 @@ export function registerGeneratedCommands(program: Command): void {
         .command('update <spaceId> <changeRequestId>')
         .description('Update a change request')
         .option('--subject <value>', 'Subject of the change request')
-        .option('--links <value>', 'External links associated with the change request.')
+        .option('--links <json>', 'External links associated with the change request. [JSON array]')
         .option('--status <value>', '')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -1513,9 +1522,9 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, options) => {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.subject !== undefined) body['subject'] = options.subject;
-            if (options.links !== undefined) body['links'] = options.links;
+            if (options.links !== undefined) body['links'] = coerceBodyFlag(options.links, 'array');
             if (options.status !== undefined) body['status'] = options.status;
             try {
                 const response = await api.request({
@@ -1630,6 +1639,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('submit <spaceId> <changeRequestId>')
         .description('Submit a change request review')
         .option('--status <value>', 'Status of a change request review. (required)')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -1637,7 +1647,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, options) => {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/reviews`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.status !== undefined) body['status'] = options.status;
             try {
                 const response = await api.request({
@@ -1725,8 +1735,9 @@ export function registerGeneratedCommands(program: Command): void {
     spaces_changeRequests_requestedReviewersCmd
         .command('request <spaceId> <changeRequestId>')
         .description('Request change request reviewers')
-        .option('--users <value>', 'An array of user ids that will be requested. (required)')
+        .option('--users <json>', 'An array of user ids that will be requested. (required) [JSON array]')
         .option('--subject <value>', 'Optionally, update the subject of the change request when requesting reviewers.')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -1734,8 +1745,8 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, options) => {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/requested-reviewers`;
-            const body: Record<string, unknown> = {};
-            if (options.users !== undefined) body['users'] = options.users;
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
+            if (options.users !== undefined) body['users'] = coerceBodyFlag(options.users, 'array');
             if (options.subject !== undefined) body['subject'] = options.subject;
             try {
                 const response = await api.request({
@@ -1820,6 +1831,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('update <spaceId> <changeRequestId> <conversationId>')
         .description('Update an agent conversation')
         .option('--title <value>', 'The new title of the conversation. (required)')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -1827,7 +1839,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, conversationId, options) => {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/conversations/${conversationId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
             try {
                 const response = await api.request({
@@ -1963,6 +1975,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('Create a change request comment')
         .option('--node <value>', 'The node to which the comment is posted, if any.')
         .option('--page <value>', 'The page to which the comment is posted, if any.')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -1970,7 +1983,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, options) => {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.node !== undefined) body['node'] = options.node;
             if (options.page !== undefined) body['page'] = options.page;
             try {
@@ -2024,8 +2037,9 @@ export function registerGeneratedCommands(program: Command): void {
         .command('update <spaceId> <changeRequestId> <commentId>')
         .description('Update a change request comment')
         .option('--resolved', 'Whether the comment is resolved or not.')
-        .option('--addedReactions <value>', 'Reactions to add to the comment.')
-        .option('--removedReactions <value>', 'Reactions to remove from the comment.')
+        .option('--addedReactions <json>', 'Reactions to add to the comment. [JSON array]')
+        .option('--removedReactions <json>', 'Reactions to remove from the comment. [JSON array]')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -2033,10 +2047,10 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, commentId, options) => {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments/${commentId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.resolved !== undefined) body['resolved'] = options.resolved;
-            if (options.addedReactions !== undefined) body['addedReactions'] = options.addedReactions;
-            if (options.removedReactions !== undefined) body['removedReactions'] = options.removedReactions;
+            if (options.addedReactions !== undefined) body['addedReactions'] = coerceBodyFlag(options.addedReactions, 'array');
+            if (options.removedReactions !== undefined) body['removedReactions'] = coerceBodyFlag(options.removedReactions, 'array');
             try {
                 const response = await api.request({
                     path,
@@ -2185,8 +2199,9 @@ export function registerGeneratedCommands(program: Command): void {
         .command('update <spaceId> <changeRequestId> <commentId> <commentReplyId>')
         .description('Update a change request comment reply')
         .option('--resolved', 'Whether the comment is resolved or not.')
-        .option('--addedReactions <value>', 'Reactions to add to the comment.')
-        .option('--removedReactions <value>', 'Reactions to remove from the comment.')
+        .option('--addedReactions <json>', 'Reactions to add to the comment. [JSON array]')
+        .option('--removedReactions <json>', 'Reactions to remove from the comment. [JSON array]')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -2194,10 +2209,10 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, commentId, commentReplyId, options) => {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments/${commentId}/replies/${commentReplyId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.resolved !== undefined) body['resolved'] = options.resolved;
-            if (options.addedReactions !== undefined) body['addedReactions'] = options.addedReactions;
-            if (options.removedReactions !== undefined) body['removedReactions'] = options.removedReactions;
+            if (options.addedReactions !== undefined) body['addedReactions'] = coerceBodyFlag(options.addedReactions, 'array');
+            if (options.removedReactions !== undefined) body['removedReactions'] = coerceBodyFlag(options.removedReactions, 'array');
             try {
                 const response = await api.request({
                     path,
@@ -2310,7 +2325,8 @@ export function registerGeneratedCommands(program: Command): void {
     spaces_changeRequests_contentCmd
         .command('update <spaceId> <changeRequestId>')
         .description('Update the content of a change request')
-        .option('--changes <value>', '(required)')
+        .option('--changes <json>', '(required) [JSON array]')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -2318,8 +2334,8 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, options) => {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content`;
-            const body: Record<string, unknown> = {};
-            if (options.changes !== undefined) body['changes'] = options.changes;
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
+            if (options.changes !== undefined) body['changes'] = coerceBodyFlag(options.changes, 'array');
             try {
                 const response = await api.request({
                     path,
@@ -3272,6 +3288,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('Create a space comment')
         .option('--node <value>', 'The node to which the comment is posted, if any.')
         .option('--page <value>', 'The page to which the comment is posted, if any.')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -3279,7 +3296,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/comments`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.node !== undefined) body['node'] = options.node;
             if (options.page !== undefined) body['page'] = options.page;
             try {
@@ -3333,8 +3350,9 @@ export function registerGeneratedCommands(program: Command): void {
         .command('update <spaceId> <commentId>')
         .description('Update a space comment')
         .option('--resolved', 'Whether the comment is resolved or not.')
-        .option('--addedReactions <value>', 'Reactions to add to the comment.')
-        .option('--removedReactions <value>', 'Reactions to remove from the comment.')
+        .option('--addedReactions <json>', 'Reactions to add to the comment. [JSON array]')
+        .option('--removedReactions <json>', 'Reactions to remove from the comment. [JSON array]')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -3342,10 +3360,10 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, commentId, options) => {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/comments/${commentId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.resolved !== undefined) body['resolved'] = options.resolved;
-            if (options.addedReactions !== undefined) body['addedReactions'] = options.addedReactions;
-            if (options.removedReactions !== undefined) body['removedReactions'] = options.removedReactions;
+            if (options.addedReactions !== undefined) body['addedReactions'] = coerceBodyFlag(options.addedReactions, 'array');
+            if (options.removedReactions !== undefined) body['removedReactions'] = coerceBodyFlag(options.removedReactions, 'array');
             try {
                 const response = await api.request({
                     path,
@@ -3489,8 +3507,9 @@ export function registerGeneratedCommands(program: Command): void {
     spaces_comments_repliesCmd
         .command('update <spaceId> <commentId> <commentReplyId>')
         .description('Update a space comment reply')
-        .option('--addedReactions <value>', 'Reactions to add to the comment.')
-        .option('--removedReactions <value>', 'Reactions to remove from the comment.')
+        .option('--addedReactions <json>', 'Reactions to add to the comment. [JSON array]')
+        .option('--removedReactions <json>', 'Reactions to remove from the comment. [JSON array]')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -3498,9 +3517,9 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, commentId, commentReplyId, options) => {
             const api = await getAPIClient(true);
             const path = `/spaces/${spaceId}/comments/${commentId}/replies/${commentReplyId}`;
-            const body: Record<string, unknown> = {};
-            if (options.addedReactions !== undefined) body['addedReactions'] = options.addedReactions;
-            if (options.removedReactions !== undefined) body['removedReactions'] = options.removedReactions;
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
+            if (options.addedReactions !== undefined) body['addedReactions'] = coerceBodyFlag(options.addedReactions, 'array');
+            if (options.removedReactions !== undefined) body['removedReactions'] = coerceBodyFlag(options.removedReactions, 'array');
             try {
                 const response = await api.request({
                     path,
@@ -3791,16 +3810,17 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--title <value>', 'Title of the integration (required)')
         .option('--description <value>', 'Description of the integration (required)')
         .option('--summary <value>', 'Long form markdown summary of the integration')
-        .option('--previewImages <value>', '')
+        .option('--previewImages <json>', '[JSON array]')
         .option('--visibility <value>', '')
         .option('--target <value>', 'The target on which the integration can operate and needs to be configured for')
-        .option('--scopes <value>', 'Permissions that should be granted to the integration (required)')
-        .option('--categories <value>', 'Categories for which the integration is listed in the marketplace')
-        .option('--blocks <value>', 'Custom blocks defined by this integration.')
-        .option('--contentSources <value>', '')
-        .option('--externalLinks <value>', 'External urls configured by the developer of the integration')
+        .option('--scopes <json>', 'Permissions that should be granted to the integration (required) [JSON array]')
+        .option('--categories <json>', 'Categories for which the integration is listed in the marketplace [JSON array]')
+        .option('--blocks <json>', 'Custom blocks defined by this integration. [JSON array]')
+        .option('--contentSources <json>', '[JSON array]')
+        .option('--externalLinks <json>', 'External urls configured by the developer of the integration [JSON array]')
         .option('--script <value>', 'Content of the script to use (required)')
         .option('--organization <value>', 'The ID or subdomain of the organization under which the integration should be published (required)')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -3808,20 +3828,20 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (integrationName, options) => {
             const api = await getAPIClient(true);
             const path = `/integrations/${integrationName}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.runtime !== undefined) body['runtime'] = options.runtime;
             if (options.icon !== undefined) body['icon'] = options.icon;
             if (options.title !== undefined) body['title'] = options.title;
             if (options.description !== undefined) body['description'] = options.description;
             if (options.summary !== undefined) body['summary'] = options.summary;
-            if (options.previewImages !== undefined) body['previewImages'] = options.previewImages;
+            if (options.previewImages !== undefined) body['previewImages'] = coerceBodyFlag(options.previewImages, 'array');
             if (options.visibility !== undefined) body['visibility'] = options.visibility;
             if (options.target !== undefined) body['target'] = options.target;
-            if (options.scopes !== undefined) body['scopes'] = options.scopes;
-            if (options.categories !== undefined) body['categories'] = options.categories;
-            if (options.blocks !== undefined) body['blocks'] = options.blocks;
-            if (options.contentSources !== undefined) body['contentSources'] = options.contentSources;
-            if (options.externalLinks !== undefined) body['externalLinks'] = options.externalLinks;
+            if (options.scopes !== undefined) body['scopes'] = coerceBodyFlag(options.scopes, 'array');
+            if (options.categories !== undefined) body['categories'] = coerceBodyFlag(options.categories, 'array');
+            if (options.blocks !== undefined) body['blocks'] = coerceBodyFlag(options.blocks, 'array');
+            if (options.contentSources !== undefined) body['contentSources'] = coerceBodyFlag(options.contentSources, 'array');
+            if (options.externalLinks !== undefined) body['externalLinks'] = coerceBodyFlag(options.externalLinks, 'array');
             if (options.script !== undefined) body['script'] = options.script;
             if (options.organization !== undefined) body['organization'] = options.organization;
             try {
@@ -3909,6 +3929,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('install <integrationName>')
         .description('Install an integration')
         .option('--organization <value>', '(required)')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -3916,7 +3937,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (integrationName, options) => {
             const api = await getAPIClient(true);
             const path = `/integrations/${integrationName}/installations`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.organization !== undefined) body['organization'] = options.organization;
             try {
                 const response = await api.request({
@@ -3964,9 +3985,10 @@ export function registerGeneratedCommands(program: Command): void {
     integrations_installationsCmd
         .command('update <integrationName> <installationId>')
         .description('Update an integration installation')
-        .option('--externalIds <value>', 'External IDs assigned by the integration.')
+        .option('--externalIds <json>', 'External IDs assigned by the integration. [JSON array]')
         .option('--space_selection <value>', 'Describe whether all spaces have been selected or there\'s a selection involved')
         .option('--site_selection <value>', 'Describe whether all sites have been selected or there\'s a selection involved')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -3974,8 +3996,8 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (integrationName, installationId, options) => {
             const api = await getAPIClient(true);
             const path = `/integrations/${integrationName}/installations/${installationId}`;
-            const body: Record<string, unknown> = {};
-            if (options.externalIds !== undefined) body['externalIds'] = options.externalIds;
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
+            if (options.externalIds !== undefined) body['externalIds'] = coerceBodyFlag(options.externalIds, 'array');
             if (options.space_selection !== undefined) body['space_selection'] = options.space_selection;
             if (options.site_selection !== undefined) body['site_selection'] = options.site_selection;
             try {
@@ -4060,6 +4082,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('Install an integration on a space')
         .option('--extended [extended]', 'If true, returns the space object in each items. If false, returns the space ID in each items.')
         .option('--space <value>', 'ID of the space to install the integration on (required)')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -4069,7 +4092,7 @@ export function registerGeneratedCommands(program: Command): void {
             const path = `/integrations/${integrationName}/installations/${installationId}/spaces`;
             const query: Record<string, string> = {};
             if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.space !== undefined) body['space'] = options.space;
             try {
                 const response = await api.request({
@@ -4123,7 +4146,8 @@ export function registerGeneratedCommands(program: Command): void {
         .command('update <integrationName> <installationId> <spaceId>')
         .description('Update an integration space installation')
         .option('--extended [extended]', 'If true, returns the space object in each items. If false, returns the space ID in each items.')
-        .option('--externalIds <value>', 'External IDs assigned by the integration.')
+        .option('--externalIds <json>', 'External IDs assigned by the integration. [JSON array]')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -4133,8 +4157,8 @@ export function registerGeneratedCommands(program: Command): void {
             const path = `/integrations/${integrationName}/installations/${installationId}/spaces/${spaceId}`;
             const query: Record<string, string> = {};
             if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
-            const body: Record<string, unknown> = {};
-            if (options.externalIds !== undefined) body['externalIds'] = options.externalIds;
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
+            if (options.externalIds !== undefined) body['externalIds'] = coerceBodyFlag(options.externalIds, 'array');
             try {
                 const response = await api.request({
                     path,
@@ -4222,6 +4246,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('Install an integration on a site')
         .option('--extended [extended]', 'If true, returns the site object in each items. If false, returns the site ID in each items.')
         .option('--siteId <value>', 'ID of the site to install the integration on (required)')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -4231,7 +4256,7 @@ export function registerGeneratedCommands(program: Command): void {
             const path = `/integrations/${integrationName}/installations/${installationId}/sites`;
             const query: Record<string, string> = {};
             if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.siteId !== undefined) body['siteId'] = options.siteId;
             try {
                 const response = await api.request({
@@ -4285,7 +4310,8 @@ export function registerGeneratedCommands(program: Command): void {
         .command('update <integrationName> <installationId> <siteId>')
         .description('Update an integration site installation')
         .option('--extended [extended]', 'If true, returns the site object in each items. If false, returns the site ID in each items.')
-        .option('--externalIds <value>', 'External IDs assigned by the integration.')
+        .option('--externalIds <json>', 'External IDs assigned by the integration. [JSON array]')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -4295,8 +4321,8 @@ export function registerGeneratedCommands(program: Command): void {
             const path = `/integrations/${integrationName}/installations/${installationId}/sites/${siteId}`;
             const query: Record<string, string> = {};
             if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
-            const body: Record<string, unknown> = {};
-            if (options.externalIds !== undefined) body['externalIds'] = options.externalIds;
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
+            if (options.externalIds !== undefined) body['externalIds'] = coerceBodyFlag(options.externalIds, 'array');
             try {
                 const response = await api.request({
                     path,
@@ -4452,6 +4478,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('Enable integration dev mode')
         .option('--tunnelUrl <value>', 'URL of the tunnel to dispatch integration events to (required)')
         .option('--all', 'If set to true, all requests will be forwarded to the tunnel, not just from the owning organization.')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -4459,7 +4486,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (integrationName, options) => {
             const api = await getAPIClient(true);
             const path = `/integrations/${integrationName}/dev`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.tunnelUrl !== undefined) body['tunnelUrl'] = options.tunnelUrl;
             if (options.all !== undefined) body['all'] = options.all;
             try {
@@ -4512,7 +4539,8 @@ export function registerGeneratedCommands(program: Command): void {
     integrations_tasksCmd
         .command('queue <integrationName>')
         .description('Queue an integration task')
-        .option('--schedule <value>', 'Number of seconds to wait before executing the task, defaults to 0')
+        .option('--schedule <number>', 'Number of seconds to wait before executing the task, defaults to 0')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -4520,8 +4548,8 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (integrationName, options) => {
             const api = await getAPIClient(true);
             const path = `/integrations/${integrationName}/tasks`;
-            const body: Record<string, unknown> = {};
-            if (options.schedule !== undefined) body['schedule'] = options.schedule;
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
+            if (options.schedule !== undefined) body['schedule'] = coerceBodyFlag(options.schedule, 'number');
             try {
                 const response = await api.request({
                     path,
@@ -4574,6 +4602,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('Update a collection')
         .option('--title <value>', 'Title of the collection')
         .option('--description <value>', 'Description of the collection')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -4581,7 +4610,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (collectionId, options) => {
             const api = await getAPIClient(true);
             const path = `/collections/${collectionId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
             if (options.description !== undefined) body['description'] = options.description;
             try {
@@ -4631,6 +4660,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('move <collectionId>')
         .description('Move a collection to a new position.')
         .option('--parent <value>', 'The unique id of the parent collection')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -4638,7 +4668,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (collectionId, options) => {
             const api = await getAPIClient(true);
             const path = `/collections/${collectionId}/move`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.parent !== undefined) body['parent'] = options.parent;
             try {
                 const response = await api.request({
@@ -4661,6 +4691,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('transfer <collectionId>')
         .description('Transfer a collection')
         .option('--organization <value>', 'The unique id of the target organization (required)')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -4668,7 +4699,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (collectionId, options) => {
             const api = await getAPIClient(true);
             const path = `/collections/${collectionId}/transfer`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.organization !== undefined) body['organization'] = options.organization;
             try {
                 const response = await api.request({
@@ -4726,6 +4757,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('Create a collection')
         .option('--title <value>', '')
         .option('--parent <value>', 'ID of a parent collection')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -4733,7 +4765,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/collections`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
             if (options.parent !== undefined) body['parent'] = options.parent;
             try {
@@ -5072,11 +5104,12 @@ export function registerGeneratedCommands(program: Command): void {
         .command('update <organizationId>')
         .description('Update an organization')
         .option('--title <value>', 'Name of the organization')
-        .option('--emailDomains <value>', '')
+        .option('--emailDomains <json>', '[JSON array]')
         .option('--hostname <value>', 'Default hostname for the organization\'s public content, e.g. <org-hostname>.gitbook.io')
         .option('--sso', '')
         .option('--ai', '')
         .option('--inviteLinks', '')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -5084,9 +5117,9 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
-            if (options.emailDomains !== undefined) body['emailDomains'] = options.emailDomains;
+            if (options.emailDomains !== undefined) body['emailDomains'] = coerceBodyFlag(options.emailDomains, 'array');
             if (options.hostname !== undefined) body['hostname'] = options.hostname;
             if (options.sso !== undefined) body['sso'] = options.sso;
             if (options.ai !== undefined) body['ai'] = options.ai;
@@ -5435,7 +5468,8 @@ export function registerGeneratedCommands(program: Command): void {
         .command('create <organizationId>')
         .description('Create a team')
         .option('--title <value>', 'Title of the team (required)')
-        .option('--members <value>', 'A list of organization member identifiers')
+        .option('--members <json>', 'A list of organization member identifiers [JSON array]')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -5443,9 +5477,9 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/teams`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
-            if (options.members !== undefined) body['members'] = options.members;
+            if (options.members !== undefined) body['members'] = coerceBodyFlag(options.members, 'array');
             try {
                 const response = await api.request({
                     path,
@@ -5493,6 +5527,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('update <organizationId> <teamId>')
         .description('Update a team')
         .option('--title <value>', 'Title of the team (required)')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -5500,7 +5535,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, teamId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/teams/${teamId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
             try {
                 const response = await api.request({
@@ -5584,8 +5619,9 @@ export function registerGeneratedCommands(program: Command): void {
     organizations_teams_membersCmd
         .command('update <organizationId> <teamId>')
         .description('Updates members of a team')
-        .option('--add <value>', '')
-        .option('--remove <value>', '')
+        .option('--add <json>', '[JSON array]')
+        .option('--remove <json>', '[JSON array]')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -5593,9 +5629,9 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, teamId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/teams/${teamId}/members`;
-            const body: Record<string, unknown> = {};
-            if (options.add !== undefined) body['add'] = options.add;
-            if (options.remove !== undefined) body['remove'] = options.remove;
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
+            if (options.add !== undefined) body['add'] = coerceBodyFlag(options.add, 'array');
+            if (options.remove !== undefined) body['remove'] = coerceBodyFlag(options.remove, 'array');
             try {
                 const response = await api.request({
                     path,
@@ -5617,6 +5653,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('add <organizationId> <teamId> <userId>')
         .description('Add a team member')
         .option('--role <value>', '"The role of a team member. "owner": Can manage team members. "member": Is a member of the team.')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -5624,7 +5661,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, teamId, userId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/teams/${teamId}/members/${userId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.role !== undefined) body['role'] = options.role;
             try {
                 const response = await api.request({
@@ -5676,8 +5713,9 @@ export function registerGeneratedCommands(program: Command): void {
     organizations_invitesCmd
         .command('invite <organizationId>')
         .description('Invite users in an organization')
-        .option('--emails <value>', '(required)')
+        .option('--emails <json>', '(required) [JSON array]')
         .option('--sso', 'If true, invites the user as an SSO user of the organization. Defaults to false.')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -5685,8 +5723,8 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/invites`;
-            const body: Record<string, unknown> = {};
-            if (options.emails !== undefined) body['emails'] = options.emails;
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
+            if (options.emails !== undefined) body['emails'] = coerceBodyFlag(options.emails, 'array');
             if (options.sso !== undefined) body['sso'] = options.sso;
             try {
                 const response = await api.request({
@@ -6085,6 +6123,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--certificate <value>', '')
         .option('--ssoURL <value>', '')
         .option('--defaultTeam <value>', '')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -6092,7 +6131,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/saml`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.label !== undefined) body['label'] = options.label;
             if (options.entityID !== undefined) body['entityID'] = options.entityID;
             if (options.certificate !== undefined) body['certificate'] = options.certificate;
@@ -6149,6 +6188,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--certificate <value>', '')
         .option('--ssoURL <value>', '')
         .option('--defaultTeam <value>', '')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -6156,7 +6196,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, samlProviderId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/saml/${samlProviderId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.label !== undefined) body['label'] = options.label;
             if (options.entityID !== undefined) body['entityID'] = options.entityID;
             if (options.certificate !== undefined) body['certificate'] = options.certificate;
@@ -6245,6 +6285,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--format [format]', 'Output format for the content.')
         .option('--details [details]', 'Return query details in the result')
         .option('--query <value>', '(required)')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -6255,7 +6296,7 @@ export function registerGeneratedCommands(program: Command): void {
             const query: Record<string, string> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
             if (options["details"] !== undefined) query['details'] = String(options["details"]);
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.query !== undefined) body['query'] = options.query;
             try {
                 const response = await api.request({
@@ -6405,6 +6446,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('create <organizationId>')
         .description('Create an OpenAPI spec')
         .option('--slug <value>', 'Slug used as reference (required)')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -6412,7 +6454,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/openapi`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.slug !== undefined) body['slug'] = options.slug;
             try {
                 const response = await api.request({
@@ -6490,6 +6532,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('update <organizationId> <specSlug>')
         .description('Update OpenAPI spec visibility')
         .option('--visibility <value>', 'The visibility setting of the OpenAPI spec. * `private`: The spec is not publicly available. * `public`: The spec is available to anyone with a public link.  (required)')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -6497,7 +6540,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, specSlug, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/openapi/${specSlug}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.visibility !== undefined) body['visibility'] = options.visibility;
             try {
                 const response = await api.request({
@@ -6793,6 +6836,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('create <organizationId>')
         .description('Create a translation')
         .option('--language <value>', '(required)')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -6800,7 +6844,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/translations`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.language !== undefined) body['language'] = options.language;
             try {
                 const response = await api.request({
@@ -6967,7 +7011,8 @@ export function registerGeneratedCommands(program: Command): void {
     organizations_translationsGlossaryCmd
         .command('update <organizationId>')
         .description('Update glossary entries')
-        .option('--operations <value>', '(required)')
+        .option('--operations <json>', '(required) [JSON array]')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -6975,8 +7020,8 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/translations-glossary`;
-            const body: Record<string, unknown> = {};
-            if (options.operations !== undefined) body['operations'] = options.operations;
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
+            if (options.operations !== undefined) body['operations'] = coerceBodyFlag(options.operations, 'array');
             try {
                 const response = await api.request({
                     path,
@@ -7028,6 +7073,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('start <organizationId>')
         .description('Import content into a space from a website')
         .option('--enhance', 'Enhance the imported content with AI')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -7035,7 +7081,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true);
             const path = `/org/${organizationId}/imports`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.enhance !== undefined) body['enhance'] = options.enhance;
             try {
                 const response = await api.request({
@@ -7130,7 +7176,8 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--type <value>', 'The type of the site')
         .option('--title <value>', 'Title of the site')
         .option('--visibility <value>', 'The visibility setting of the site determines the audience of the site. * `public`: Anyone can access the site, and the site is indexed by search engines. * `unlisted`: Anyone can access the site, and the site is not indexed by search engines * `share-link`: Anyone with a secret token in the url can access the site. * `visitor-auth`: Anyone authenticated through a JWT token can access the site.')
-        .option('--spaces <value>', 'ID of spaces to be added to the site')
+        .option('--spaces <json>', 'ID of spaces to be added to the site [JSON array]')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -7138,11 +7185,11 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.type !== undefined) body['type'] = options.type;
             if (options.title !== undefined) body['title'] = options.title;
             if (options.visibility !== undefined) body['visibility'] = options.visibility;
-            if (options.spaces !== undefined) body['spaces'] = options.spaces;
+            if (options.spaces !== undefined) body['spaces'] = coerceBodyFlag(options.spaces, 'array');
             try {
                 const response = await api.request({
                     path,
@@ -7195,6 +7242,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--permissionsModel <value>', 'Permissions resolution mode for the site.')
         .option('--defaultSiteSpace <value>', 'ID of the site-space to be used as the default at the root level. If site has sections, this will mark the default site space in the site\'s default section.')
         .option('--defaultSiteSection <value>', 'ID of the site-section to be used as the default.')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -7202,7 +7250,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
             if (options.visibility !== undefined) body['visibility'] = options.visibility;
             if (options.basename !== undefined) body['basename'] = options.basename;
@@ -7542,6 +7590,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('create <organizationId> <siteId>')
         .description('Create a share link')
         .option('--name <value>', 'Name of the share link (required)')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -7549,7 +7598,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/share-links`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.name !== undefined) body['name'] = options.name;
             try {
                 const response = await api.request({
@@ -7573,6 +7622,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('Update a share link')
         .option('--active', '')
         .option('--name <value>', 'Name of the share link')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -7580,7 +7630,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, shareLinkId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/share-links/${shareLinkId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.active !== undefined) body['active'] = options.active;
             if (options.name !== undefined) body['name'] = options.name;
             try {
@@ -7856,7 +7906,8 @@ export function registerGeneratedCommands(program: Command): void {
         .command('update <organizationId> <siteId>')
         .description('Update a site customization settings')
         .option('--title <value>', 'Title of the site')
-        .option('--socialAccounts <value>', 'The social accounts of the site. (required)')
+        .option('--socialAccounts <json>', 'The social accounts of the site. (required) [JSON array]')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -7864,9 +7915,9 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/customization`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
-            if (options.socialAccounts !== undefined) body['socialAccounts'] = options.socialAccounts;
+            if (options.socialAccounts !== undefined) body['socialAccounts'] = coerceBodyFlag(options.socialAccounts, 'array');
             try {
                 const response = await api.request({
                     path,
@@ -7960,6 +8011,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--spaceId <value>', 'ID of the space (required)')
         .option('--sectionId <value>', 'ID of the section to add the space to. If not provided, the space will be added to the default section or at the root level if the site has no sections.')
         .option('--draft', 'Whether the site space should be created as draft. Defaults to false.')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -7967,7 +8019,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/site-spaces`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.spaceId !== undefined) body['spaceId'] = options.spaceId;
             if (options.sectionId !== undefined) body['sectionId'] = options.sectionId;
             if (options.draft !== undefined) body['draft'] = options.draft;
@@ -7995,6 +8047,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--spaceId <value>', 'The content that this site space points to. If not set, the space will remain unchanged.')
         .option('--hidden', 'Whether the site space is hidden. If true, the site space will not be shown in the site\'s navigation. If not set, the hidden state will remain unchanged. If set to false, the site space will be shown in site navigation.')
         .option('--draft', 'Whether the site space should be kept in draft mode. Setting it to true makes the site space draft. Setting it to false makes the site space live.')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -8002,7 +8055,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, siteSpaceId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/site-spaces/${siteSpaceId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.path !== undefined) body['path'] = options.path;
             if (options.spaceId !== undefined) body['spaceId'] = options.spaceId;
             if (options.hidden !== undefined) body['hidden'] = options.hidden;
@@ -8208,9 +8261,10 @@ export function registerGeneratedCommands(program: Command): void {
         .command('add <organizationId> <siteId>')
         .description('Add a section group to a site')
         .option('--title <value>', 'Title of the site section group (required)')
-        .option('--sections <value>', 'IDs of the sections to be added to the section group')
+        .option('--sections <json>', 'IDs of the sections to be added to the section group [JSON array]')
         .option('--parent <value>', 'ID of the parent section group to nest this group under. If not provided, the section group will be added at the root of the site.')
         .option('--draft', 'Whether the section group should be created in draft mode.')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -8218,9 +8272,9 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/section-groups`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
-            if (options.sections !== undefined) body['sections'] = options.sections;
+            if (options.sections !== undefined) body['sections'] = coerceBodyFlag(options.sections, 'array');
             if (options.parent !== undefined) body['parent'] = options.parent;
             if (options.draft !== undefined) body['draft'] = options.draft;
             try {
@@ -8245,6 +8299,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('Update a site section group')
         .option('--title <value>', 'Title of the site section group')
         .option('--draft', 'Whether the site section group should be kept in draft mode. Setting it to true makes the site section group draft. Setting it to false makes the site section group live.')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -8252,7 +8307,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, siteSectionGroupId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/section-groups/${siteSectionGroupId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
             if (options.draft !== undefined) body['draft'] = options.draft;
             try {
@@ -8371,6 +8426,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--spaceId <value>', 'ID of the space to be added to the section as a site space variant (required)')
         .option('--draft', 'Whether the section should be created in draft mode.')
         .option('--siteSectionGroupId <value>', 'ID of the section group to create the section in')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -8378,7 +8434,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/sections`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.spaceId !== undefined) body['spaceId'] = options.spaceId;
             if (options.draft !== undefined) body['draft'] = options.draft;
             if (options.siteSectionGroupId !== undefined) body['siteSectionGroupId'] = options.siteSectionGroupId;
@@ -8406,6 +8462,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--path <value>', 'Path to the section on the site')
         .option('--defaultSiteSpace <value>', 'ID of the site-space to be used as the default in this section.')
         .option('--draft', 'Whether the site section should be kept in draft mode. Setting it to true makes the site section draft. Setting it to false makes the site section live.')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -8413,7 +8470,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, siteSectionId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/sections/${siteSectionId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
             if (options.path !== undefined) body['path'] = options.path;
             if (options.defaultSiteSpace !== undefined) body['defaultSiteSpace'] = options.defaultSiteSpace;
@@ -8499,6 +8556,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('Ask a question in a site')
         .option('--format [format]', 'Output format for the content.')
         .option('--question <value>', '(required)')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -8508,7 +8566,7 @@ export function registerGeneratedCommands(program: Command): void {
             const path = `/orgs/${organizationId}/sites/${siteId}/ask`;
             const query: Record<string, string> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.question !== undefined) body['question'] = options.question;
             try {
                 const response = await api.request({
@@ -8707,6 +8765,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('create <organizationId> <siteId>')
         .description('Enqueue a new site scan')
         .option('--topic <value>', 'The site topic ID to scan. (required)')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -8714,7 +8773,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/scans`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.topic !== undefined) body['topic'] = options.topic;
             try {
                 const response = await api.request({
@@ -8835,6 +8894,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('update <organizationId> <siteId> <siteFindingId>')
         .description('Update a site finding')
         .option('--status <value>', '(required)')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -8842,7 +8902,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, siteFindingId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/findings/${siteFindingId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.status !== undefined) body['status'] = options.status;
             try {
                 const response = await api.request({
@@ -9773,6 +9833,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('update <organizationId> <siteId> <userId>')
         .description('Update site user permissions')
         .option('--role <value>', '"The role of a member in an organization. "admin": Can administrate the content: create, delete spaces, ... "create": Can create content. "review": Can review content. "edit": Can edit the content (live or change requests). "comment": Can access the content and its discussions. "read": Can access the content, but cannot update it in any way.')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -9780,7 +9841,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, userId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/permissions/users/${userId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.role !== undefined) body['role'] = options.role;
             try {
                 const response = await api.request({
@@ -9865,6 +9926,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('update <organizationId> <siteId> <teamId>')
         .description('Update an org team\'s permission in a site')
         .option('--role <value>', '"The role of a member in an organization. "admin": Can administrate the content: create, delete spaces, ... "create": Can create content. "review": Can review content. "edit": Can edit the content (live or change requests). "comment": Can access the content and its discussions. "read": Can access the content, but cannot update it in any way.')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -9872,7 +9934,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, teamId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/permissions/teams/${teamId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.role !== undefined) body['role'] = options.role;
             try {
                 const response = await api.request({
@@ -9929,9 +9991,10 @@ export function registerGeneratedCommands(program: Command): void {
         .command('stream <organizationId> <siteId>')
         .description('Generate an AI response in a site')
         .option('--previousResponseId <value>', 'The ID of the previous response to continue from')
-        .option('--input <value>', 'The messages to send to the AI agent. (required)')
+        .option('--input <json>', 'The messages to send to the AI agent. (required) [JSON array]')
         .option('--model <value>', '')
-        .option('--tools <value>', 'Custom tools to provide to the AI agent.')
+        .option('--tools <json>', 'Custom tools to provide to the AI agent. [JSON array]')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -9939,11 +10002,11 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/ai/response`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.previousResponseId !== undefined) body['previousResponseId'] = options.previousResponseId;
-            if (options.input !== undefined) body['input'] = options.input;
+            if (options.input !== undefined) body['input'] = coerceBodyFlag(options.input, 'array');
             if (options.model !== undefined) body['model'] = options.model;
-            if (options.tools !== undefined) body['tools'] = options.tools;
+            if (options.tools !== undefined) body['tools'] = coerceBodyFlag(options.tools, 'array');
             try {
                 const response = await api.request({
                     path,
@@ -10087,7 +10150,8 @@ export function registerGeneratedCommands(program: Command): void {
     organizations_sites_insights_eventsCmd
         .command('track <organizationId> <siteId>')
         .description('Track site events')
-        .option('--events <value>', '(required)')
+        .option('--events <json>', '(required) [JSON array]')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -10095,8 +10159,8 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/insights/events`;
-            const body: Record<string, unknown> = {};
-            if (options.events !== undefined) body['events'] = options.events;
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
+            if (options.events !== undefined) body['events'] = coerceBodyFlag(options.events, 'array');
             try {
                 const response = await api.request({
                     path,
@@ -10117,10 +10181,11 @@ export function registerGeneratedCommands(program: Command): void {
     organizations_sites_insights_eventsCmd
         .command('aggregate <organizationId> <siteId>')
         .description('Query site events')
-        .option('--select <value>', '')
-        .option('--where <value>', '')
-        .option('--groupBy <value>', '')
-        .option('--limit <value>', '')
+        .option('--select <json>', '[JSON array]')
+        .option('--where <json>', '[JSON array]')
+        .option('--groupBy <json>', '[JSON array]')
+        .option('--limit <number>', '')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -10128,11 +10193,11 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/insights/events/aggregate`;
-            const body: Record<string, unknown> = {};
-            if (options.select !== undefined) body['select'] = options.select;
-            if (options.where !== undefined) body['where'] = options.where;
-            if (options.groupBy !== undefined) body['groupBy'] = options.groupBy;
-            if (options.limit !== undefined) body['limit'] = options.limit;
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
+            if (options.select !== undefined) body['select'] = coerceBodyFlag(options.select, 'array');
+            if (options.where !== undefined) body['where'] = coerceBodyFlag(options.where, 'array');
+            if (options.groupBy !== undefined) body['groupBy'] = coerceBodyFlag(options.groupBy, 'array');
+            if (options.limit !== undefined) body['limit'] = coerceBodyFlag(options.limit, 'number');
             try {
                 const response = await api.request({
                     path,
@@ -10189,6 +10254,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('Update a site ads settings')
         .option('--status <value>', '')
         .option('--topic <value>', 'Topic of the content')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -10196,7 +10262,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/ads`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.status !== undefined) body['status'] = options.status;
             if (options.topic !== undefined) body['topic'] = options.topic;
             try {
@@ -10262,6 +10328,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--source <value>', 'The source path to redirect from. (required)')
         .option('--captureWildcard', 'Capture and append the wildcard-matched suffix to the destination URL.')
         .option('--draft', 'Whether the redirect is draft and not live.')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -10269,7 +10336,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/redirects`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.source !== undefined) body['source'] = options.source;
             if (options.captureWildcard !== undefined) body['captureWildcard'] = options.captureWildcard;
             if (options.draft !== undefined) body['draft'] = options.draft;
@@ -10293,7 +10360,8 @@ export function registerGeneratedCommands(program: Command): void {
     organizations_sites_redirectsCmd
         .command('replace <organizationId> <siteId>')
         .description('Create or update site redirects in bulk')
-        .option('--redirects <value>', '(required)')
+        .option('--redirects <json>', '(required) [JSON array]')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -10301,8 +10369,8 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/redirects`;
-            const body: Record<string, unknown> = {};
-            if (options.redirects !== undefined) body['redirects'] = options.redirects;
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
+            if (options.redirects !== undefined) body['redirects'] = coerceBodyFlag(options.redirects, 'array');
             try {
                 const response = await api.request({
                     path,
@@ -10326,6 +10394,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--source <value>', 'The source path to redirect from.')
         .option('--captureWildcard', 'Capture and append the wildcard-matched suffix to the destination URL.')
         .option('--draft', 'When true, it can be used to promote a draft redirect to live.')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -10333,7 +10402,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, siteRedirectId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/redirects/${siteRedirectId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.source !== undefined) body['source'] = options.source;
             if (options.captureWildcard !== undefined) body['captureWildcard'] = options.captureWildcard;
             if (options.draft !== undefined) body['draft'] = options.draft;
@@ -10458,6 +10527,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--name <value>', 'Name of the MCP server (required)')
         .option('--url <value>', '(required)')
         .option('--transport <value>', 'Transport protocol used to connect to the MCP server')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -10465,7 +10535,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/mcp-servers`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.name !== undefined) body['name'] = options.name;
             if (options.url !== undefined) body['url'] = options.url;
             if (options.transport !== undefined) body['transport'] = options.transport;
@@ -10518,6 +10588,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--name <value>', 'Name of the MCP server')
         .option('--url <value>', '')
         .option('--transport <value>', 'Transport protocol used to connect to the MCP server')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -10525,7 +10596,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, siteMcpServerId, options) => {
             const api = await getAPIClient(true);
             const path = `/orgs/${organizationId}/sites/${siteId}/mcp-servers/${siteMcpServerId}`;
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.name !== undefined) body['name'] = options.name;
             if (options.url !== undefined) body['url'] = options.url;
             if (options.transport !== undefined) body['transport'] = options.transport;
@@ -10934,6 +11005,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('Resolve a URL of a published content.')
         .option('--url <value>', '(required)')
         .option('--redirectOnError', 'When true redirects the user to the authentication/fallback URL if the access token is invalid')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -10941,7 +11013,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (options) => {
             const api = await getAPIClient(true);
             const path = '/urls/published';
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.url !== undefined) body['url'] = options.url;
             if (options.redirectOnError !== undefined) body['redirectOnError'] = options.redirectOnError;
             try {
@@ -10973,6 +11045,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('install')
         .description('Install a Git Sync provider on a target')
         .option('--provider <value>', 'The provider of the Git Sync installation. (required)')
+        .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -10980,7 +11053,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (options) => {
             const api = await getAPIClient(true);
             const path = '/git/installations';
-            const body: Record<string, unknown> = {};
+            const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.provider !== undefined) body['provider'] = options.provider;
             try {
                 const response = await api.request({

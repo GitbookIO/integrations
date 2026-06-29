@@ -21,6 +21,44 @@ export function resolveFormat(options: OutputOptions): 'json' | 'yaml' | 'pretty
     return process.stdout.isTTY ? 'pretty' : 'yaml';
 }
 
+// ─── Request body flag coercion ────────────────────────────────────────────────
+
+// Commander hands every `--flag <value>` option to us as a string, but the
+// OpenAPI schema says what the request body field actually expects. The
+// generated commands route array- and number-typed body flags through this
+// helper so e.g. `--changes '[{...}]'` ships a real JSON array (not the literal
+// string "[{...}]", which the API would reject). String and boolean flags pass
+// through untouched — booleans arrive from commander already as real booleans.
+// Throws a legible Error (surfaced by the CLI's top-level handler) when an
+// array flag isn't valid JSON or a number flag isn't numeric.
+export function coerceBodyFlag(
+    value: unknown,
+    type: 'string' | 'number' | 'boolean' | 'array',
+): unknown {
+    if (type === 'array') {
+        if (typeof value !== 'string') return value;
+        let parsed: unknown;
+        try {
+            parsed = JSON.parse(value);
+        } catch {
+            throw new Error(`Expected a JSON array but the value is not valid JSON: ${value}`);
+        }
+        if (!Array.isArray(parsed)) {
+            throw new Error(`Expected a JSON array but parsed a ${typeof parsed}: ${value}`);
+        }
+        return parsed;
+    }
+    if (type === 'number') {
+        if (typeof value !== 'string') return value;
+        const n = Number(value);
+        if (value.trim() === '' || Number.isNaN(n)) {
+            throw new Error(`Expected a number but got: ${value}`);
+        }
+        return n;
+    }
+    return value;
+}
+
 export function formatScalar(value: unknown): string {
     if (value === null || value === undefined) return '—';
     return String(value);

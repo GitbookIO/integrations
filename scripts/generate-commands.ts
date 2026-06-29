@@ -706,9 +706,31 @@ function emitRequest(
 
 function emitBodyOption(f: BodyFlag, I: string): string {
     const notes = f.required ? ' (required)' : '';
-    const desc = escapeStr((f.description + notes).trim());
-    const flagStr = f.type === 'boolean' ? `--${f.name}` : `--${f.name} <value>`;
+    // Array fields take a JSON string on the command line (e.g. --changes
+    // '[{...}]'); signal that in both the placeholder and the description so the
+    // help text doesn't suggest a bare scalar.
+    let placeholder = '<value>';
+    let typeHint = '';
+    if (f.type === 'array') {
+        placeholder = '<json>';
+        typeHint = ' [JSON array]';
+    } else if (f.type === 'number') {
+        placeholder = '<number>';
+    }
+    const desc = escapeStr((f.description + notes + typeHint).trim());
+    const flagStr = f.type === 'boolean' ? `--${f.name}` : `--${f.name} ${placeholder}`;
     return `${I}    .option('${flagStr}', '${desc}')`;
+}
+
+// RHS expression for assigning a body flag, with type-aware coercion. Commander
+// gives us strings; array/number fields are coerced via coerceBodyFlag so the
+// JSON body carries the right type. String/boolean pass through untouched.
+function bodyFlagExpr(f: BodyFlag): string {
+    const opt = `options.${camelize(f.name)}`;
+    if (f.type === 'array' || f.type === 'number') {
+        return `coerceBodyFlag(${opt}, '${f.type}')`;
+    }
+    return opt;
 }
 
 function emitSimpleCommand(
@@ -732,10 +754,19 @@ function emitSimpleCommand(
         );
     }
     if (route.hasBody) {
-        if (route.bodyFlags && route.bodyFlags.length > 0) {
-            for (const f of route.bodyFlags) {
-                if (f.deprecated) continue;
+        const liveFlags = (route.bodyFlags ?? []).filter((f) => !f.deprecated);
+        if (liveFlags.length > 0) {
+            for (const f of liveFlags) {
                 lines.push(emitBodyOption(f, I));
+            }
+            // Escape hatch: a field named 'body' would collide with this flag,
+            // so only offer it otherwise. --body lets callers reach fields the
+            // generator can't model as flags (object-typed properties are
+            // dropped in flattenObjectFlags); typed flags merge on top of it.
+            if (!liveFlags.some((f) => camelize(f.name) === 'body')) {
+                lines.push(
+                    `${I}    .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')`,
+                );
             }
         } else {
             lines.push(`${I}    .option('--body <json>', 'Request body as a JSON string')`);
@@ -759,12 +790,20 @@ function emitSimpleCommand(
         }
     }
     if (route.hasBody) {
-        if (route.bodyFlags && route.bodyFlags.length > 0) {
-            lines.push(`${I}        const body: Record<string, unknown> = {};`);
-            for (const f of route.bodyFlags) {
-                if (f.deprecated) continue;
+        const liveFlags = (route.bodyFlags ?? []).filter((f) => !f.deprecated);
+        if (liveFlags.length > 0) {
+            // Seed from --body (the escape hatch) when offered, then let typed
+            // flags override; otherwise start empty.
+            if (liveFlags.some((f) => camelize(f.name) === 'body')) {
+                lines.push(`${I}        const body: Record<string, unknown> = {};`);
+            } else {
                 lines.push(
-                    `${I}        if (options.${camelize(f.name)} !== undefined) body['${f.name}'] = options.${camelize(f.name)};`,
+                    `${I}        const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};`,
+                );
+            }
+            for (const f of liveFlags) {
+                lines.push(
+                    `${I}        if (options.${camelize(f.name)} !== undefined) body['${f.name}'] = ${bodyFlagExpr(f)};`,
                 );
             }
         } else {
@@ -916,7 +955,7 @@ function emitFile(tree: GroupNode, completions: Record<string, string>): string 
     lines.push(`import { getAPIClient } from './remote';`);
     lines.push(`// Output formatting lives in ./output (a real, unit-tested module) rather than`);
     lines.push(`// being inlined here, so the rendering logic has a single source of truth.`);
-    lines.push(`import { printResult } from './output';`);
+    lines.push(`import { printResult, coerceBodyFlag } from './output';`);
     lines.push(``);
     lines.push(`export function registerGeneratedCommands(program: Command): void {`);
 
