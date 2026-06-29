@@ -1,5 +1,11 @@
 # @gitbook/integration-mailchimp
 
+## 1.3.2
+
+### Patch Changes
+
+- 7236124: Fix Mailchimp audience selection for accounts with multiple audiences
+
 ## 1.3.1
 
 ### Patch Changes
