@@ -36,16 +36,16 @@ type MailchimpBlockState = {
 
 type MailchimpAction =
     | { action: 'subscribe'; email: string }
-    | { action: '@ui.modal.close'; listIndex: string | undefined; cta: string; listIds: string[] };
+    | {
+          action: '@ui.modal.close';
+          listId: string | undefined;
+          defaultListId: string | undefined;
+          cta: string;
+      };
 
 const DEFAULT_CTA = 'Sign up to our mailing list to receive updates!';
 const DEFAULT_DISCLAIMER =
     'By clicking Subscribe, you agree to the processing of your email address in accordance with our privacy policy.';
-
-function parsePositiveInteger(value: string): number | null {
-    const num = parseInt(value, 10);
-    return num >= 0 && !isNaN(num) ? num : null;
-}
 
 /**
  * A Block to subscribe to a Mailchimp mailing list.
@@ -107,28 +107,12 @@ const mailchimpSubscribe = createComponent<
                 }
             }
             case '@ui.modal.close': {
-                if (!('listIndex' in action) || !('listIds' in action) || !('cta' in action)) {
+                if (!('cta' in action)) {
                     throw new ExposableError('Invalid @ui.modal.close action payload');
                 }
-                const listIndex = (() => {
-                    if (!action.listIndex) {
-                        return null;
-                    }
-                    const listIndex = parsePositiveInteger(action.listIndex);
-                    if (listIndex === null) {
-                        throw new ExposableError(
-                            `Invalid @ui.modal.close listIndex value: ${action.listIndex}`,
-                        );
-                    }
-                    return listIndex;
-                })();
-                const listId =
-                    listIndex !== null && listIndex < action.listIds.length
-                        ? action.listIds[listIndex]
-                        : null;
                 return {
                     props: {
-                        listId: listId ?? element.props.listId,
+                        listId: action.listId ?? action.defaultListId ?? element.props.listId,
                         cta: action.cta,
                     },
                 };
@@ -210,7 +194,7 @@ async function resolveMailingListId(
  */
 const settingsModal = createComponent<
     { listId: string | undefined; cta: string },
-    { cta: string; listIndex: string | undefined },
+    { cta: string; listId: string | undefined },
     {},
     MailchimpRuntimeContext
 >({
@@ -218,9 +202,7 @@ const settingsModal = createComponent<
 
     initialState: (props) => ({
         cta: props.cta,
-
-        // Store an index instead of an id so we can pre-select something
-        listIndex: undefined,
+        listId: props.listId,
     }),
 
     async render(element, context) {
@@ -237,12 +219,9 @@ const settingsModal = createComponent<
 
         const { listId } = element.props;
         const lists = await getMailingLists(configuration.api_endpoint, accessToken);
-        const initialListIndex = listId
-            ? (() => {
-                  const index = lists.findIndex((list) => list.id === element.props.listId);
-                  return index === -1 ? undefined : index;
-              })()
-            : undefined;
+        const defaultListId = lists[0]?.id;
+        const selectedListId =
+            listId && lists.some((list) => list.id === listId) ? listId : defaultListId;
 
         return (
             <modal
@@ -253,8 +232,8 @@ const settingsModal = createComponent<
                         label="Save"
                         onPress={{
                             action: '@ui.modal.close',
-                            listIds: lists.map((list) => list.id),
-                            listIndex: element.dynamicState('listIndex'),
+                            listId: element.dynamicState('listId'),
+                            defaultListId,
                             cta: element.dynamicState('cta'),
                         }}
                     />
@@ -269,18 +248,12 @@ const settingsModal = createComponent<
                         <text>Audience</text>
                         {lists.length > 0 ? (
                             <select
-                                state="listIndex"
-                                initialValue={
-                                    initialListIndex !== undefined
-                                        ? String(initialListIndex)
-                                        : undefined
-                                }
-                                options={lists.map((list, index) => {
-                                    return {
-                                        label: list.name,
-                                        id: String(index),
-                                    };
-                                })}
+                                state="listId"
+                                initialValue={selectedListId}
+                                options={lists.map((list) => ({
+                                    label: list.name,
+                                    id: list.id,
+                                }))}
                             />
                         ) : (
                             <text>
