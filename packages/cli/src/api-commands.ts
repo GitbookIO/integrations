@@ -29,28 +29,44 @@ import { withEnvironment } from './environments';
  * These are the integration build/publish lifecycle commands ported from the
  * original `gitbook` CLI. They are grouped under `integration` (singular) to
  * keep them distinct from the spec-generated `integrations` group, which
- * exposes the raw integration API operations.
+ * exposes the raw integration API operations. Each is also exposed as a hidden
+ * top-level alias (e.g. `new`, `publish`) so the historical `gitbook <verb>`
+ * spelling keeps working with a deprecation warning while users migrate.
  */
-export function registerCustomCommands(program: Command): void {
-    const integration = program
-        .command('integration')
-        .description('build, run, and publish a GitBook integration');
 
-    integration
-        .command('new')
-        .argument('[dir]', 'directory to initialize project in', undefined)
-        .description('initialize a new project')
-        .action(async (dirPath) => {
+interface LifecycleCommand {
+    name: string;
+    description: string;
+    /**
+     * Wire arguments + options onto a command. Called once per mount (canonical
+     * + alias) so both spellings accept exactly the same input.
+     */
+    configure: (cmd: Command) => Command;
+    /**
+     * Shared action handler. The signature matches what commander passes
+     * (...operands, options, command); extra trailing args are ignored.
+     */
+    action: (...args: any[]) => void | Promise<void>;
+}
+
+const LIFECYCLE_COMMANDS: LifecycleCommand[] = [
+    {
+        name: 'new',
+        description: 'initialize a new project',
+        configure: (cmd) => cmd.argument('[dir]', 'directory to initialize project in', undefined),
+        action: async (dirPath: string) => {
             await promptNewIntegration(dirPath);
-        });
-
-    integration
-        .command('dev')
-        .argument('[file]', 'integration definition file', DEFAULT_MANIFEST_FILE)
-        .description('run the integrations dev server')
-        .option('-a, --all', 'Proxy all events from all installations')
-        .option('--env <env>', 'environment to use')
-        .action(async (filePath, options) => {
+        },
+    },
+    {
+        name: 'dev',
+        description: 'run the integrations dev server',
+        configure: (cmd) =>
+            cmd
+                .argument('[file]', 'integration definition file', DEFAULT_MANIFEST_FILE)
+                .option('-a, --all', 'Proxy all events from all installations')
+                .option('--env <env>', 'environment to use'),
+        action: async (filePath: string, options: { all?: boolean; env?: string }) => {
             return withEnvironment(options.env, async () => {
                 await startIntegrationsDevServer(
                     await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath)),
@@ -59,19 +75,21 @@ export function registerCustomCommands(program: Command): void {
                     },
                 );
             });
-        });
-
-    integration
-        .command('publish')
-        .argument('[file]', 'integration definition file', DEFAULT_MANIFEST_FILE)
-        .option('--env <env>', 'environment to use')
-        .option(
-            '-o, --organization <organization>',
-            'organization to publish to',
-            process.env.GITBOOK_ORGANIZATION,
-        )
-        .description('publish a new version of the integration')
-        .action(async (filePath, options) => {
+        },
+    },
+    {
+        name: 'publish',
+        description: 'publish a new version of the integration',
+        configure: (cmd) =>
+            cmd
+                .argument('[file]', 'integration definition file', DEFAULT_MANIFEST_FILE)
+                .option('--env <env>', 'environment to use')
+                .option(
+                    '-o, --organization <organization>',
+                    'organization to publish to',
+                    process.env.GITBOOK_ORGANIZATION,
+                ),
+        action: async (filePath: string, options: { env?: string; organization?: string }) => {
             return withEnvironment(options.env, async () => {
                 await publishIntegration(
                     await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath)),
@@ -80,14 +98,16 @@ export function registerCustomCommands(program: Command): void {
                     },
                 );
             });
-        });
-
-    integration
-        .command('unpublish')
-        .argument('[integration]', 'Name of the integration to unpublish')
-        .option('--env <env>', 'environment to use')
-        .description('unpublish an integration')
-        .action(async (name, options) => {
+        },
+    },
+    {
+        name: 'unpublish',
+        description: 'unpublish an integration',
+        configure: (cmd) =>
+            cmd
+                .argument('[integration]', 'Name of the integration to unpublish')
+                .option('--env <env>', 'environment to use'),
+        action: async (name: string, options: { env?: string }) => {
             const response = await prompts({
                 type: 'confirm',
                 name: 'confirm',
@@ -100,30 +120,64 @@ export function registerCustomCommands(program: Command): void {
                     await unpublishIntegration(name);
                 });
             }
-        });
-
-    integration
-        .command('tail')
-        .description('fetch and print the execution logs of the integration')
-        .option('--env <env>', 'environment to use')
-        .action(async (options) => {
+        },
+    },
+    {
+        name: 'tail',
+        description: 'fetch and print the execution logs of the integration',
+        configure: (cmd) => cmd.option('--env <env>', 'environment to use'),
+        action: async (options: { env?: string }) => {
             return withEnvironment(options.env, async () => {
                 await tailLogs();
             });
-        });
-
-    integration
-        .command('check')
-        .argument('[file]', 'integration definition file', DEFAULT_MANIFEST_FILE)
-        .description('check the integration build')
-        .action(async (filePath) => {
+        },
+    },
+    {
+        name: 'check',
+        description: 'check the integration build',
+        configure: (cmd) =>
+            cmd.argument('[file]', 'integration definition file', DEFAULT_MANIFEST_FILE),
+        action: async (filePath: string) => {
             // We use a special env "test" to make it easy to configure the integration for testing.
             return withEnvironment('test', async () => {
                 await checkIntegrationBuild(
                     await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath)),
                 );
             });
+        },
+    },
+];
+
+export function registerCustomCommands(program: Command): void {
+    // Derive the binary name at runtime instead of hardcoding it. This CLI ships
+    // as `gitbook2` today but is intended to take over the `gitbook` name, so the
+    // deprecation messages below must follow the rename automatically.
+    const binName = program.name();
+
+    const integration = program
+        .command('integration')
+        .description('build, run, and publish a GitBook integration');
+
+    for (const def of LIFECYCLE_COMMANDS) {
+        // Canonical home: `<bin> integration <name>`.
+        def.configure(integration.command(def.name).description(def.description)).action(def.action);
+
+        // Backward-compat: the historical top-level spelling `<bin> <name>`,
+        // hidden from help and emitting a deprecation warning (to stderr, so it
+        // never pollutes machine-readable stdout) before delegating to the same
+        // handler. Keeps existing scripts and muscle memory working.
+        const alias = def.configure(
+            program
+                .command(def.name, { hidden: true })
+                .description(`(deprecated) ${def.description}`),
+        );
+        alias.action(async (...args: any[]) => {
+            console.error(
+                `⚠️  \`${binName} ${def.name}\` is deprecated; use \`${binName} integration ${def.name}\` instead.`,
+            );
+            return def.action(...args);
         });
+    }
 
     const openAPIProgram = program.command('openapi').description('manage OpenAPI specifications');
     openAPIProgram
