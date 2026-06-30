@@ -55,6 +55,8 @@ contentSecurityPolicy:
         uploads.intercomusercontent.com;
     form-action: |
         api-iam.intercom.io
+        api-iam.eu.intercom.io
+        api-iam.au.intercom.io
         intercom.help;
     media-src: |
         *.intercomcdn.com;
@@ -79,6 +81,15 @@ configurations:
                 type: string
                 title: Application ID
                 description: You can find it in your Intercom account, under the "Installation" section of the "Settings" page.
+            region:
+                type: string
+                title: Region
+                description: Region where your Intercom data is hosted. Leave as US unless on EU/Australia hosting.
+                enum:
+                    - US
+                    - EU
+                    - Australia
+                default: US
         required:
             - app_id
 target: site
