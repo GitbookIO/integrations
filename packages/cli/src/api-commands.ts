@@ -160,7 +160,9 @@ export function registerCustomCommands(program: Command): void {
 
     for (const def of LIFECYCLE_COMMANDS) {
         // Canonical home: `<bin> integration <name>`.
-        def.configure(integration.command(def.name).description(def.description)).action(def.action);
+        def.configure(integration.command(def.name).description(def.description)).action(
+            def.action,
+        );
 
         // Backward-compat: the historical top-level spelling `<bin> <name>`,
         // hidden from help and emitting a deprecation warning (to stderr, so it
