@@ -118,16 +118,16 @@ export const configurationComponent = createComponent<
                             label="Select accounts"
                             hint={
                                 <text>
-                                    Choose the GitHub installation, user or organization.{' '}
+                                    Select the GitHub users or organizations you want to connect. To
+                                    make more accounts available,{' '}
                                     <link
                                         target={{
                                             url: installURL.toString(),
                                         }}
                                     >
-                                        Install the GitHub app
-                                    </link>
-                                    . If your account is not listed, reauthenticate with GitHub to
-                                    refresh the list.
+                                        install or manage the GitHub app
+                                    </link>{' '}
+                                    and reconnect GitHub.
                                 </text>
                             }
                             element={
