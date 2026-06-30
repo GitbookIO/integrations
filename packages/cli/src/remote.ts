@@ -1,15 +1,31 @@
 import { GitBookAPI } from '@gitbook/api';
 
-import { name, version } from '../package.json';
+import { version } from '../package.json';
 import { getAuthConfig, saveAuthConfig } from './config';
 import { DEFAULT_ENV, getEnvironment } from './environments';
 
-const userAgent = `${name}/${version}`;
+const BASE_USER_AGENT = `GitBook-CLI/${version}`;
 
 /**
- * Get an authenticated API client.
+ * Build the User-Agent sent to the API.
+ *
+ * `command` is the dotted command path the user invoked (e.g.
+ * "spaces.change-requests.content.update"). Including it lets requests be
+ * attributed to a specific command in the API logs / the GCP per-endpoint
+ * dashboard, without per-request plumbing. Omitted → just the surface token.
  */
-export async function getAPIClient(requireAuth: boolean = true): Promise<GitBookAPI> {
+function buildUserAgent(command?: string): string {
+    return command ? `${BASE_USER_AGENT} (${command})` : BASE_USER_AGENT;
+}
+
+/**
+ * Get an authenticated API client. `command` is the invoked command path, folded
+ * into the User-Agent for usage attribution (see buildUserAgent).
+ */
+export async function getAPIClient(
+    requireAuth: boolean = true,
+    command?: string,
+): Promise<GitBookAPI> {
     const authConfig = getAuthConfig();
     if (!authConfig.token && requireAuth) {
         throw new Error(
@@ -18,7 +34,7 @@ export async function getAPIClient(requireAuth: boolean = true): Promise<GitBook
     }
 
     return new GitBookAPI({
-        userAgent,
+        userAgent: buildUserAgent(command),
         endpoint: authConfig.endpoint,
         authToken: authConfig.token,
     });
@@ -43,7 +59,7 @@ export async function authenticate({
     console.log(`Authenticating with ${endpoint}...`);
 
     const api = new GitBookAPI({
-        userAgent,
+        userAgent: buildUserAgent('auth'),
         endpoint,
         authToken,
     });
@@ -63,7 +79,7 @@ export async function authenticate({
  */
 export async function whoami(): Promise<void> {
     const env = getEnvironment();
-    const api = await getAPIClient();
+    const api = await getAPIClient(true, 'whoami');
 
     if (api.authToken) {
         const { data: user } = await api.user.getAuthenticatedUser();

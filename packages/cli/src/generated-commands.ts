@@ -29,7 +29,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'system.info');
             const path = '/';
             try {
                 const response = await api.request({
@@ -59,7 +59,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'users.whoami');
             const path = '/user';
             try {
                 const response = await api.request({
@@ -85,7 +85,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (userId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'users.get');
             const path = `/users/${userId}`;
             try {
                 const response = await api.request({
@@ -114,7 +114,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (userId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'users.update');
             const path = `/users/${userId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.displayName !== undefined) body['displayName'] = options.displayName;
@@ -149,7 +149,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.get');
             const path = `/spaces/${spaceId}`;
             const query: Record<string, string> = {};
             if (options["shareKey"] !== undefined) query['shareKey'] = String(options["shareKey"]);
@@ -179,7 +179,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.update');
             const path = `/spaces/${spaceId}`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -207,7 +207,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.delete');
             const path = `/spaces/${spaceId}`;
             try {
                 const response = await api.request({
@@ -233,7 +233,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.duplicate');
             const path = `/spaces/${spaceId}/duplicate`;
             try {
                 const response = await api.request({
@@ -259,7 +259,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.restore');
             const path = `/spaces/${spaceId}/restore`;
             try {
                 const response = await api.request({
@@ -287,7 +287,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.move');
             const path = `/spaces/${spaceId}/move`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.parent !== undefined) body['parent'] = options.parent;
@@ -319,7 +319,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.search');
             const path = `/spaces/${spaceId}/search`;
             const query: Record<string, string> = {};
             if (options["query"] !== undefined) query['query'] = String(options["query"]);
@@ -360,7 +360,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.list');
             const scopeFlags = ['collection', 'integration', 'installation', 'organization', 'member'];
             const provided = scopeFlags.filter((f) => (options as Record<string, unknown>)[f] !== undefined).sort().join(',');
             let path: string;
@@ -415,7 +415,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.create');
             const path = `/orgs/${organizationId}/spaces`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -448,7 +448,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.embed.get');
             const path = `/spaces/${spaceId}/embed`;
             const query: Record<string, string> = {};
             if (options["url"] !== undefined) query['url'] = String(options["url"]);
@@ -490,7 +490,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.git.import');
             const path = `/spaces/${spaceId}/git/import`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.url !== undefined) body['url'] = options.url;
@@ -535,7 +535,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.git.export');
             const path = `/spaces/${spaceId}/git/export`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.url !== undefined) body['url'] = options.url;
@@ -575,7 +575,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.git.info.get');
             const path = `/spaces/${spaceId}/git/info`;
             try {
                 const response = await api.request({
@@ -606,7 +606,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.permissions.invite');
             const path = `/spaces/${spaceId}/permissions`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -639,7 +639,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, teamId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.permissions.teams.update');
             const path = `/spaces/${spaceId}/permissions/teams/${teamId}`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -667,7 +667,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, teamId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.permissions.teams.remove');
             const path = `/spaces/${spaceId}/permissions/teams/${teamId}`;
             try {
                 const response = await api.request({
@@ -695,7 +695,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.permissions.teams.list');
             const path = `/spaces/${spaceId}/permissions/teams`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -731,7 +731,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.permissions.users.list');
             const path = `/spaces/${spaceId}/permissions/users`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -762,7 +762,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, userId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.permissions.users.update');
             const path = `/spaces/${spaceId}/permissions/users/${userId}`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -790,7 +790,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, userId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.permissions.users.remove');
             const path = `/spaces/${spaceId}/permissions/users/${userId}`;
             try {
                 const response = await api.request({
@@ -823,7 +823,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.permissions.aggregate.list');
             const path = `/spaces/${spaceId}/permissions/aggregate`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -860,7 +860,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.content.get');
             const path = `/spaces/${spaceId}/content`;
             const query: Record<string, string> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
@@ -897,7 +897,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.content.template.apply');
             const path = `/spaces/${spaceId}/content/template`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.id !== undefined) body['id'] = options.id;
@@ -933,7 +933,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.content.pages.list');
             const path = `/spaces/${spaceId}/content/pages`;
             const query: Record<string, string> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
@@ -971,7 +971,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.content.files.list');
             const path = `/spaces/${spaceId}/content/files`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -1005,7 +1005,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, fileId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.content.files.get');
             const path = `/spaces/${spaceId}/content/files/${fileId}`;
             const query: Record<string, string> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
@@ -1041,7 +1041,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, fileId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.content.files.backlinks.list');
             const path = `/spaces/${spaceId}/content/files/${fileId}/backlinks`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -1081,7 +1081,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, pageId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.content.page.get');
             const path = `/spaces/${spaceId}/content/page/${pageId}`;
             const query: Record<string, string> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
@@ -1122,7 +1122,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, pageId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.content.page.links.list');
             const path = `/spaces/${spaceId}/content/page/${pageId}/links`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -1159,7 +1159,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, pageId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.content.page.backlinks.list');
             const path = `/spaces/${spaceId}/content/page/${pageId}/backlinks`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -1193,7 +1193,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, pageId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.content.page.meta-links.list');
             const path = `/spaces/${spaceId}/content/page/${pageId}/meta-links`;
             try {
                 const response = await api.request({
@@ -1229,7 +1229,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, pagePath, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.content.path.get');
             const path = `/spaces/${spaceId}/content/path/${pagePath}`;
             const query: Record<string, string> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
@@ -1269,7 +1269,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, reusableContentId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.content.reusable-contents.get');
             const path = `/spaces/${spaceId}/content/reusable-contents/${reusableContentId}`;
             const query: Record<string, string> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
@@ -1310,7 +1310,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.content.computed.document.get');
             const path = `/spaces/${spaceId}/content/computed/document`;
             const query: Record<string, string> = {};
             if (options["schema"] !== undefined) query['schema'] = String(options["schema"]);
@@ -1348,7 +1348,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.content.computed.revision.get');
             const path = `/spaces/${spaceId}/content/computed/revision`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.seed !== undefined) body['seed'] = options.seed;
@@ -1382,7 +1382,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, documentId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.documents.get');
             const path = `/spaces/${spaceId}/documents/${documentId}`;
             const query: Record<string, string> = {};
             if (options["schema"] !== undefined) query['schema'] = String(options["schema"]);
@@ -1423,7 +1423,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.list');
             const path = `/spaces/${spaceId}/change-requests`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -1461,7 +1461,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.create');
             const path = `/spaces/${spaceId}/change-requests`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.subject !== undefined) body['subject'] = options.subject;
@@ -1490,7 +1490,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}`;
             try {
                 const response = await api.request({
@@ -1520,7 +1520,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.update');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.subject !== undefined) body['subject'] = options.subject;
@@ -1551,7 +1551,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.merge');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/merge`;
             try {
                 const response = await api.request({
@@ -1577,7 +1577,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.pull-content');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/update`;
             try {
                 const response = await api.request({
@@ -1611,7 +1611,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.reviews.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/reviews`;
             const query: Record<string, string> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
@@ -1645,7 +1645,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.reviews.submit');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/reviews`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.status !== undefined) body['status'] = options.status;
@@ -1675,7 +1675,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, reviewId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.reviews.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/reviews/${reviewId}`;
             const query: Record<string, string> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
@@ -1710,7 +1710,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.requested-reviewers.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/requested-reviewers`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -1743,7 +1743,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.requested-reviewers.request');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/requested-reviewers`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.users !== undefined) body['users'] = coerceBodyFlag(options.users, 'array');
@@ -1773,7 +1773,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, userId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.requested-reviewers.remove');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/requested-reviewers/${userId}`;
             try {
                 const response = await api.request({
@@ -1805,7 +1805,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.conversations.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/conversations`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -1837,7 +1837,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, conversationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.conversations.update');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/conversations/${conversationId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
@@ -1866,7 +1866,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, conversationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.conversations.delete');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/conversations/${conversationId}`;
             try {
                 const response = await api.request({
@@ -1900,7 +1900,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.links.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/links`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -1943,7 +1943,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.comments.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -1981,7 +1981,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.comments.post');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.node !== undefined) body['node'] = options.node;
@@ -2012,7 +2012,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, commentId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.comments.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments/${commentId}`;
             const query: Record<string, string> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
@@ -2045,7 +2045,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, commentId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.comments.update');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments/${commentId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.resolved !== undefined) body['resolved'] = options.resolved;
@@ -2076,7 +2076,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, commentId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.comments.delete');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments/${commentId}`;
             try {
                 const response = await api.request({
@@ -2109,7 +2109,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, commentId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.comments.replies.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments/${commentId}/replies`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -2142,7 +2142,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, commentId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.comments.replies.post');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments/${commentId}/replies`;
             const query: Record<string, string> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
@@ -2174,7 +2174,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, commentId, commentReplyId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.comments.replies.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments/${commentId}/replies/${commentReplyId}`;
             const query: Record<string, string> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
@@ -2207,7 +2207,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, commentId, commentReplyId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.comments.replies.update');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments/${commentId}/replies/${commentReplyId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.resolved !== undefined) body['resolved'] = options.resolved;
@@ -2238,7 +2238,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, commentId, commentReplyId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.comments.replies.delete');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments/${commentId}/replies/${commentReplyId}`;
             try {
                 const response = await api.request({
@@ -2268,7 +2268,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.contributors.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/contributors`;
             try {
                 const response = await api.request({
@@ -2300,7 +2300,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.content.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content`;
             const query: Record<string, string> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
@@ -2332,7 +2332,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.content.update');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.changes !== undefined) body['changes'] = coerceBodyFlag(options.changes, 'array');
@@ -2367,7 +2367,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.content.pages.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/pages`;
             const query: Record<string, string> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
@@ -2405,7 +2405,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.content.files.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/files`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -2439,7 +2439,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, fileId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.content.files.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/files/${fileId}`;
             const query: Record<string, string> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
@@ -2475,7 +2475,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, fileId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.content.files.backlinks.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/files/${fileId}/backlinks`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -2515,7 +2515,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, pageId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.content.page.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/page/${pageId}`;
             const query: Record<string, string> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
@@ -2555,7 +2555,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, pageId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.content.page.links.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/page/${pageId}/links`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -2591,7 +2591,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, pageId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.content.page.backlinks.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/page/${pageId}/backlinks`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -2625,7 +2625,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, pageId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.content.page.meta-links.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/page/${pageId}/meta-links`;
             try {
                 const response = await api.request({
@@ -2657,7 +2657,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, reusableContentId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.content.reusable-contents.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/reusable-contents/${reusableContentId}`;
             const query: Record<string, string> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
@@ -2697,7 +2697,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, pagePath, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.content.path.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/path/${pagePath}`;
             const query: Record<string, string> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
@@ -2736,7 +2736,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.changes.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/changes`;
             const query: Record<string, string> = {};
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
@@ -2771,7 +2771,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.pdf.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/pdf`;
             const query: Record<string, string> = {};
             if (options["only"] !== undefined) query['only'] = String(options["only"]);
@@ -2807,7 +2807,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, changeRequestId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.change-requests.commenters.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/commenters`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -2843,7 +2843,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, revisionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.revisions.get');
             const path = `/spaces/${spaceId}/revisions/${revisionId}`;
             const query: Record<string, string> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
@@ -2880,7 +2880,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, revisionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.revisions.changes.get');
             const path = `/spaces/${spaceId}/revisions/${revisionId}/changes`;
             const query: Record<string, string> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
@@ -2917,7 +2917,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, revisionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.revisions.pages.list');
             const path = `/spaces/${spaceId}/revisions/${revisionId}/pages`;
             const query: Record<string, string> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
@@ -2955,7 +2955,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, revisionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.revisions.files.list');
             const path = `/spaces/${spaceId}/revisions/${revisionId}/files`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -2989,7 +2989,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, revisionId, fileId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.revisions.files.get');
             const path = `/spaces/${spaceId}/revisions/${revisionId}/files/${fileId}`;
             const query: Record<string, string> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
@@ -3029,7 +3029,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, revisionId, pageId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.revisions.page.get');
             const path = `/spaces/${spaceId}/revisions/${revisionId}/page/${pageId}`;
             const query: Record<string, string> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
@@ -3069,7 +3069,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, revisionId, pageId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.revisions.page.document.get');
             const path = `/spaces/${spaceId}/revisions/${revisionId}/page/${pageId}/document`;
             const query: Record<string, string> = {};
             if (options["evaluated"] !== undefined) query['evaluated'] = String(options["evaluated"]);
@@ -3103,7 +3103,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, revisionId, pageId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.revisions.page.meta-links.list');
             const path = `/spaces/${spaceId}/revisions/${revisionId}/page/${pageId}/meta-links`;
             try {
                 const response = await api.request({
@@ -3139,7 +3139,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, revisionId, pagePath, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.revisions.path.get');
             const path = `/spaces/${spaceId}/revisions/${revisionId}/path/${pagePath}`;
             const query: Record<string, string> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
@@ -3179,7 +3179,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, revisionId, reusableContentId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.revisions.reusable-contents.get');
             const path = `/spaces/${spaceId}/revisions/${revisionId}/reusable-contents/${reusableContentId}`;
             const query: Record<string, string> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
@@ -3215,7 +3215,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, revisionId, reusableContentId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.revisions.reusable-contents.document.get');
             const path = `/spaces/${spaceId}/revisions/${revisionId}/reusable-contents/${reusableContentId}/document`;
             const query: Record<string, string> = {};
             if (options["evaluated"] !== undefined) query['evaluated'] = String(options["evaluated"]);
@@ -3256,7 +3256,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.comments.list');
             const path = `/spaces/${spaceId}/comments`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -3294,7 +3294,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.comments.post');
             const path = `/spaces/${spaceId}/comments`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.node !== undefined) body['node'] = options.node;
@@ -3325,7 +3325,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, commentId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.comments.get');
             const path = `/spaces/${spaceId}/comments/${commentId}`;
             const query: Record<string, string> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
@@ -3358,7 +3358,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, commentId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.comments.update');
             const path = `/spaces/${spaceId}/comments/${commentId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.resolved !== undefined) body['resolved'] = options.resolved;
@@ -3389,7 +3389,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, commentId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.comments.delete');
             const path = `/spaces/${spaceId}/comments/${commentId}`;
             try {
                 const response = await api.request({
@@ -3422,7 +3422,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, commentId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.comments.replies.list');
             const path = `/spaces/${spaceId}/comments/${commentId}/replies`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -3454,7 +3454,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, commentId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.comments.replies.post');
             const path = `/spaces/${spaceId}/comments/${commentId}/replies`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -3483,7 +3483,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, commentId, commentReplyId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.comments.replies.get');
             const path = `/spaces/${spaceId}/comments/${commentId}/replies/${commentReplyId}`;
             const query: Record<string, string> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
@@ -3515,7 +3515,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, commentId, commentReplyId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.comments.replies.update');
             const path = `/spaces/${spaceId}/comments/${commentId}/replies/${commentReplyId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.addedReactions !== undefined) body['addedReactions'] = coerceBodyFlag(options.addedReactions, 'array');
@@ -3545,7 +3545,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, commentId, commentReplyId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.comments.replies.delete');
             const path = `/spaces/${spaceId}/comments/${commentId}/replies/${commentReplyId}`;
             try {
                 const response = await api.request({
@@ -3577,7 +3577,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.commenters.list');
             const path = `/spaces/${spaceId}/commenters`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -3611,7 +3611,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.integration-blocks.list');
             const path = `/spaces/${spaceId}/integration-blocks`;
             try {
                 const response = await api.request({
@@ -3643,7 +3643,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.pdf.get');
             const path = `/spaces/${spaceId}/pdf`;
             const query: Record<string, string> = {};
             if (options["only"] !== undefined) query['only'] = String(options["only"]);
@@ -3680,7 +3680,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'spaces.links.list');
             const path = `/spaces/${spaceId}/links`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -3728,7 +3728,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.list');
             const scopeFlags = ['space', 'organization', 'site'];
             const provided = scopeFlags.filter((f) => (options as Record<string, unknown>)[f] !== undefined).sort().join(',');
             let path: string;
@@ -3784,7 +3784,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.get');
             const path = `/integrations/${integrationName}`;
             try {
                 const response = await api.request({
@@ -3826,7 +3826,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.publish');
             const path = `/integrations/${integrationName}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.runtime !== undefined) body['runtime'] = options.runtime;
@@ -3869,7 +3869,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.unpublish');
             const path = `/integrations/${integrationName}`;
             try {
                 const response = await api.request({
@@ -3902,7 +3902,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.installations.list');
             const path = `/integrations/${integrationName}/installations`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -3935,7 +3935,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.installations.install');
             const path = `/integrations/${integrationName}/installations`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.organization !== undefined) body['organization'] = options.organization;
@@ -3964,7 +3964,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, installationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.installations.get');
             const path = `/integrations/${integrationName}/installations/${installationId}`;
             try {
                 const response = await api.request({
@@ -3994,7 +3994,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, installationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.installations.update');
             const path = `/integrations/${integrationName}/installations/${installationId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.externalIds !== undefined) body['externalIds'] = coerceBodyFlag(options.externalIds, 'array');
@@ -4025,7 +4025,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, installationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.installations.uninstall');
             const path = `/integrations/${integrationName}/installations/${installationId}`;
             try {
                 const response = await api.request({
@@ -4055,7 +4055,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, installationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.installations.tokens.create');
             const path = `/integrations/${integrationName}/installations/${installationId}/tokens`;
             try {
                 const response = await api.request({
@@ -4088,7 +4088,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, installationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.installations.spaces.install');
             const path = `/integrations/${integrationName}/installations/${installationId}/spaces`;
             const query: Record<string, string> = {};
             if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
@@ -4121,7 +4121,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, installationId, spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.installations.spaces.get');
             const path = `/integrations/${integrationName}/installations/${installationId}/spaces/${spaceId}`;
             const query: Record<string, string> = {};
             if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
@@ -4153,7 +4153,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, installationId, spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.installations.spaces.update');
             const path = `/integrations/${integrationName}/installations/${installationId}/spaces/${spaceId}`;
             const query: Record<string, string> = {};
             if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
@@ -4185,7 +4185,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, installationId, spaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.installations.spaces.uninstall');
             const path = `/integrations/${integrationName}/installations/${installationId}/spaces/${spaceId}`;
             try {
                 const response = await api.request({
@@ -4218,7 +4218,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, installationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.installations.sites.list');
             const path = `/integrations/${integrationName}/installations/${installationId}/sites`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -4252,7 +4252,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, installationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.installations.sites.install');
             const path = `/integrations/${integrationName}/installations/${installationId}/sites`;
             const query: Record<string, string> = {};
             if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
@@ -4285,7 +4285,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, installationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.installations.sites.get');
             const path = `/integrations/${integrationName}/installations/${installationId}/sites/${siteId}`;
             const query: Record<string, string> = {};
             if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
@@ -4317,7 +4317,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, installationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.installations.sites.update');
             const path = `/integrations/${integrationName}/installations/${installationId}/sites/${siteId}`;
             const query: Record<string, string> = {};
             if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
@@ -4349,7 +4349,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, installationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.installations.sites.uninstall');
             const path = `/integrations/${integrationName}/installations/${installationId}/sites/${siteId}`;
             try {
                 const response = await api.request({
@@ -4381,7 +4381,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.events.list');
             const path = `/integrations/${integrationName}/events`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -4411,7 +4411,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, eventId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.events.get');
             const path = `/integrations/${integrationName}/events/${eventId}`;
             try {
                 const response = await api.request({
@@ -4445,7 +4445,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.sites.list');
             const path = `/integrations/${integrationName}/sites`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -4484,7 +4484,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.dev.set');
             const path = `/integrations/${integrationName}/dev`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.tunnelUrl !== undefined) body['tunnelUrl'] = options.tunnelUrl;
@@ -4514,7 +4514,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.dev.disable');
             const path = `/integrations/${integrationName}/dev`;
             try {
                 const response = await api.request({
@@ -4546,7 +4546,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (integrationName, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'integrations.tasks.queue');
             const path = `/integrations/${integrationName}/tasks`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.schedule !== undefined) body['schedule'] = coerceBodyFlag(options.schedule, 'number');
@@ -4579,7 +4579,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (collectionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'collections.get');
             const path = `/collections/${collectionId}`;
             try {
                 const response = await api.request({
@@ -4608,7 +4608,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (collectionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'collections.update');
             const path = `/collections/${collectionId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
@@ -4638,7 +4638,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (collectionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'collections.delete');
             const path = `/collections/${collectionId}`;
             try {
                 const response = await api.request({
@@ -4666,7 +4666,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (collectionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'collections.move');
             const path = `/collections/${collectionId}/move`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.parent !== undefined) body['parent'] = options.parent;
@@ -4697,7 +4697,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (collectionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'collections.transfer');
             const path = `/collections/${collectionId}/transfer`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.organization !== undefined) body['organization'] = options.organization;
@@ -4729,7 +4729,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'collections.list');
             const path = `/orgs/${organizationId}/collections`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -4763,7 +4763,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'collections.create');
             const path = `/orgs/${organizationId}/collections`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
@@ -4798,7 +4798,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (collectionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'collections.permissions.invite');
             const path = `/collections/${collectionId}/permissions`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -4832,7 +4832,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (collectionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'collections.permissions.teams.list');
             const path = `/collections/${collectionId}/permissions/teams`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -4863,7 +4863,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (collectionId, teamId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'collections.permissions.teams.update');
             const path = `/collections/${collectionId}/permissions/teams/${teamId}`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -4891,7 +4891,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (collectionId, teamId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'collections.permissions.teams.remove');
             const path = `/collections/${collectionId}/permissions/teams/${teamId}`;
             try {
                 const response = await api.request({
@@ -4923,7 +4923,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (collectionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'collections.permissions.users.list');
             const path = `/collections/${collectionId}/permissions/users`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -4954,7 +4954,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (collectionId, userId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'collections.permissions.users.update');
             const path = `/collections/${collectionId}/permissions/users/${userId}`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -4982,7 +4982,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (collectionId, userId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'collections.permissions.users.remove');
             const path = `/collections/${collectionId}/permissions/users/${userId}`;
             try {
                 const response = await api.request({
@@ -5015,7 +5015,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (collectionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'collections.permissions.aggregate.list');
             const path = `/collections/${collectionId}/permissions/aggregate`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -5052,7 +5052,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.list');
             const path = '/orgs';
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -5082,7 +5082,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.get');
             const path = `/orgs/${organizationId}`;
             try {
                 const response = await api.request({
@@ -5115,7 +5115,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.update');
             const path = `/orgs/${organizationId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
@@ -5149,7 +5149,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.join');
             const path = `/orgs/${organizationId}/join`;
             try {
                 const response = await api.request({
@@ -5178,7 +5178,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.search');
             const path = `/orgs/${organizationId}/search`;
             const query: Record<string, string> = {};
             if (options["query"] !== undefined) query['query'] = String(options["query"]);
@@ -5219,7 +5219,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.members.list');
             const path = `/orgs/${organizationId}/members`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -5253,7 +5253,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, userId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.members.get');
             const path = `/orgs/${organizationId}/members/${userId}`;
             try {
                 const response = await api.request({
@@ -5280,7 +5280,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, userId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.members.update');
             const path = `/orgs/${organizationId}/members/${userId}`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -5308,7 +5308,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, userId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.members.remove');
             const path = `/orgs/${organizationId}/members/${userId}`;
             try {
                 const response = await api.request({
@@ -5338,7 +5338,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, userId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.members.sso.set');
             const path = `/orgs/${organizationId}/members/${userId}/sso`;
             try {
                 const response = await api.request({
@@ -5371,7 +5371,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, userId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.members.teams.list');
             const path = `/orgs/${organizationId}/members/${userId}/teams`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -5406,7 +5406,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.ping.update');
             const path = `/orgs/${organizationId}/ping`;
             try {
                 const response = await api.request({
@@ -5440,7 +5440,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.teams.list');
             const path = `/orgs/${organizationId}/teams`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -5475,7 +5475,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.teams.create');
             const path = `/orgs/${organizationId}/teams`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
@@ -5505,7 +5505,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, teamId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.teams.get');
             const path = `/orgs/${organizationId}/teams/${teamId}`;
             try {
                 const response = await api.request({
@@ -5533,7 +5533,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, teamId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.teams.update');
             const path = `/orgs/${organizationId}/teams/${teamId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
@@ -5562,7 +5562,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, teamId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.teams.remove');
             const path = `/orgs/${organizationId}/teams/${teamId}`;
             try {
                 const response = await api.request({
@@ -5594,7 +5594,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, teamId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.teams.members.list');
             const path = `/orgs/${organizationId}/teams/${teamId}/members`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -5627,7 +5627,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, teamId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.teams.members.update');
             const path = `/orgs/${organizationId}/teams/${teamId}/members`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.add !== undefined) body['add'] = coerceBodyFlag(options.add, 'array');
@@ -5659,7 +5659,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, teamId, userId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.teams.members.add');
             const path = `/orgs/${organizationId}/teams/${teamId}/members/${userId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.role !== undefined) body['role'] = options.role;
@@ -5688,7 +5688,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, teamId, userId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.teams.members.delete');
             const path = `/orgs/${organizationId}/teams/${teamId}/members/${userId}`;
             try {
                 const response = await api.request({
@@ -5721,7 +5721,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.invites.invite');
             const path = `/orgs/${organizationId}/invites`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.emails !== undefined) body['emails'] = coerceBodyFlag(options.emails, 'array');
@@ -5751,7 +5751,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, inviteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.invites.join');
             const path = `/orgs/${organizationId}/invites/${inviteId}`;
             try {
                 const response = await api.request({
@@ -5783,7 +5783,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.link-invites.list');
             const path = `/orgs/${organizationId}/link-invites`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -5814,7 +5814,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.link-invites.create');
             const path = `/orgs/${organizationId}/link-invites`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -5842,7 +5842,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, inviteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.link-invites.get');
             const path = `/orgs/${organizationId}/link-invites/${inviteId}`;
             try {
                 const response = await api.request({
@@ -5869,7 +5869,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, inviteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.link-invites.update');
             const path = `/orgs/${organizationId}/link-invites/${inviteId}`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -5897,7 +5897,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, inviteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.link-invites.delete');
             const path = `/orgs/${organizationId}/link-invites/${inviteId}`;
             try {
                 const response = await api.request({
@@ -5938,7 +5938,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.change-requests.list');
             const path = `/orgs/${organizationId}/change-requests`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -5985,7 +5985,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, integrationName, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.integrations.installation_status.get');
             const path = `/orgs/${organizationId}/integrations/${integrationName}/installation_status`;
             try {
                 const response = await api.request({
@@ -6018,7 +6018,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.integrations.installations-status.list');
             const path = `/orgs/${organizationId}/integrations/installations-status`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -6056,7 +6056,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.installations.list');
             const path = `/orgs/${organizationId}/installations`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -6093,7 +6093,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.saml.list');
             const path = `/orgs/${organizationId}/saml`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -6129,7 +6129,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.saml.create');
             const path = `/orgs/${organizationId}/saml`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.label !== undefined) body['label'] = options.label;
@@ -6162,7 +6162,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, samlProviderId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.saml.get');
             const path = `/orgs/${organizationId}/saml/${samlProviderId}`;
             try {
                 const response = await api.request({
@@ -6194,7 +6194,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, samlProviderId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.saml.update');
             const path = `/orgs/${organizationId}/saml/${samlProviderId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.label !== undefined) body['label'] = options.label;
@@ -6227,7 +6227,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, samlProviderId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.saml.delete');
             const path = `/orgs/${organizationId}/saml/${samlProviderId}`;
             try {
                 const response = await api.request({
@@ -6257,7 +6257,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sso.list');
             const path = `/orgs/${organizationId}/sso`;
             try {
                 const response = await api.request({
@@ -6291,7 +6291,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.ask.create');
             const path = `/orgs/${organizationId}/ask`;
             const query: Record<string, string> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
@@ -6327,7 +6327,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.ask.stream');
             const path = `/orgs/${organizationId}/ask/stream`;
             const query: Record<string, string> = {};
             if (options["query"] !== undefined) query['query'] = String(options["query"]);
@@ -6362,7 +6362,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.ask.questions.list');
             const path = `/orgs/${organizationId}/ask/questions`;
             try {
                 const response = await api.request({
@@ -6388,7 +6388,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.ask.questions.stream');
             const path = `/orgs/${organizationId}/ask/questions/stream`;
             try {
                 const response = await api.request({
@@ -6420,7 +6420,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.openapi.list');
             const path = `/orgs/${organizationId}/openapi`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -6452,7 +6452,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.openapi.create');
             const path = `/orgs/${organizationId}/openapi`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.slug !== undefined) body['slug'] = options.slug;
@@ -6481,7 +6481,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, specSlug, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.openapi.get');
             const path = `/orgs/${organizationId}/openapi/${specSlug}`;
             try {
                 const response = await api.request({
@@ -6508,7 +6508,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, specSlug, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.openapi.set');
             const path = `/orgs/${organizationId}/openapi/${specSlug}`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -6538,7 +6538,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, specSlug, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.openapi.update');
             const path = `/orgs/${organizationId}/openapi/${specSlug}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.visibility !== undefined) body['visibility'] = options.visibility;
@@ -6567,7 +6567,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, specSlug, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.openapi.delete');
             const path = `/orgs/${organizationId}/openapi/${specSlug}`;
             try {
                 const response = await api.request({
@@ -6599,7 +6599,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, specSlug, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.openapi.versions.list');
             const path = `/orgs/${organizationId}/openapi/${specSlug}/versions`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -6629,7 +6629,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, specSlug, versionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.openapi.versions.get');
             const path = `/orgs/${organizationId}/openapi/${specSlug}/versions/${versionId}`;
             try {
                 const response = await api.request({
@@ -6659,7 +6659,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, specSlug, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.openapi.versions.latest.get');
             const path = `/orgs/${organizationId}/openapi/${specSlug}/versions/latest`;
             try {
                 const response = await api.request({
@@ -6689,7 +6689,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, specSlug, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.openapi.versions.latest.content.get');
             const path = `/orgs/${organizationId}/openapi/${specSlug}/versions/latest/content`;
             try {
                 const response = await api.request({
@@ -6719,7 +6719,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, specSlug, versionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.openapi.versions.content.get');
             const path = `/orgs/${organizationId}/openapi/${specSlug}/versions/${versionId}/content`;
             try {
                 const response = await api.request({
@@ -6749,7 +6749,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.agent-instructions.get');
             const path = `/orgs/${organizationId}/agent-instructions`;
             try {
                 const response = await api.request({
@@ -6776,7 +6776,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.agent-instructions.update');
             const path = `/orgs/${organizationId}/agent-instructions`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -6810,7 +6810,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.translations.list');
             const path = `/orgs/${organizationId}/translations`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -6842,7 +6842,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.translations.create');
             const path = `/orgs/${organizationId}/translations`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.language !== undefined) body['language'] = options.language;
@@ -6871,7 +6871,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, translationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.translations.get');
             const path = `/orgs/${organizationId}/translations/${translationId}`;
             try {
                 const response = await api.request({
@@ -6898,7 +6898,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, translationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.translations.update');
             const path = `/orgs/${organizationId}/translations/${translationId}`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -6926,7 +6926,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, translationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.translations.delete');
             const path = `/orgs/${organizationId}/translations/${translationId}`;
             try {
                 const response = await api.request({
@@ -6952,7 +6952,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, translationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.translations.run');
             const path = `/orgs/${organizationId}/translations/${translationId}/run`;
             try {
                 const response = await api.request({
@@ -6985,7 +6985,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.translations-glossary.list');
             const path = `/orgs/${organizationId}/translations-glossary`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -7018,7 +7018,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.translations-glossary.update');
             const path = `/orgs/${organizationId}/translations-glossary`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.operations !== undefined) body['operations'] = coerceBodyFlag(options.operations, 'array');
@@ -7047,7 +7047,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, glossaryEntryId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.translations-glossary.get');
             const path = `/orgs/${organizationId}/translations-glossary/${glossaryEntryId}`;
             try {
                 const response = await api.request({
@@ -7079,7 +7079,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.imports.start');
             const path = `/org/${organizationId}/imports`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.enhance !== undefined) body['enhance'] = options.enhance;
@@ -7108,7 +7108,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, importRunId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.imports.cancel');
             const path = `/org/${organizationId}/imports/${importRunId}/cancel`;
             try {
                 const response = await api.request({
@@ -7144,7 +7144,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.list');
             const path = `/orgs/${organizationId}/sites`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -7183,7 +7183,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.create');
             const path = `/orgs/${organizationId}/sites`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.type !== undefined) body['type'] = options.type;
@@ -7215,7 +7215,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.get');
             const path = `/orgs/${organizationId}/sites/${siteId}`;
             try {
                 const response = await api.request({
@@ -7248,7 +7248,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.update');
             const path = `/orgs/${organizationId}/sites/${siteId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
@@ -7282,7 +7282,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.delete');
             const path = `/orgs/${organizationId}/sites/${siteId}`;
             try {
                 const response = await api.request({
@@ -7308,7 +7308,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.publish');
             const path = `/orgs/${organizationId}/sites/${siteId}/publish`;
             try {
                 const response = await api.request({
@@ -7334,7 +7334,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.unpublish');
             const path = `/orgs/${organizationId}/sites/${siteId}/unpublish`;
             try {
                 const response = await api.request({
@@ -7363,7 +7363,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.search');
             const path = `/orgs/${organizationId}/sites/${siteId}/search`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -7407,7 +7407,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.spaces.git.installations.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/spaces/git/installations`;
             try {
                 const response = await api.request({
@@ -7437,7 +7437,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.adaptive-schema.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/adaptive-schema`;
             try {
                 const response = await api.request({
@@ -7464,7 +7464,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.adaptive-schema.update');
             const path = `/orgs/${organizationId}/sites/${siteId}/adaptive-schema`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -7496,7 +7496,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.adaptive-schema.template-conditions.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/adaptive-schema/template-conditions`;
             try {
                 const response = await api.request({
@@ -7527,7 +7527,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.published.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/published`;
             const query: Record<string, string> = {};
             if (options["shareKey"] !== undefined) query['shareKey'] = String(options["shareKey"]);
@@ -7563,7 +7563,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.share-links.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/share-links`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -7596,7 +7596,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.share-links.create');
             const path = `/orgs/${organizationId}/sites/${siteId}/share-links`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.name !== undefined) body['name'] = options.name;
@@ -7628,7 +7628,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, shareLinkId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.share-links.update');
             const path = `/orgs/${organizationId}/sites/${siteId}/share-links/${shareLinkId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.active !== undefined) body['active'] = options.active;
@@ -7658,7 +7658,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, shareLinkId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.share-links.delete');
             const path = `/orgs/${organizationId}/sites/${siteId}/share-links/${shareLinkId}`;
             try {
                 const response = await api.request({
@@ -7689,7 +7689,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.structure.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/structure`;
             const query: Record<string, string> = {};
             if (options["shareKey"] !== undefined) query['shareKey'] = String(options["shareKey"]);
@@ -7719,7 +7719,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.structure.sort');
             const path = `/orgs/${organizationId}/sites/${siteId}/structure/sort`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -7755,7 +7755,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.publishing.auth.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/publishing/auth`;
             try {
                 const response = await api.request({
@@ -7782,7 +7782,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.publishing.auth.update');
             const path = `/orgs/${organizationId}/sites/${siteId}/publishing/auth`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -7810,7 +7810,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.publishing.auth.regenerate');
             const path = `/orgs/${organizationId}/sites/${siteId}/publishing/auth/regenerate`;
             try {
                 const response = await api.request({
@@ -7844,7 +7844,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.publishing.preview.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/publishing/preview`;
             const query: Record<string, string> = {};
             if (options["siteSpace"] !== undefined) query['siteSpace'] = String(options["siteSpace"]);
@@ -7881,7 +7881,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.customization.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/customization`;
             const query: Record<string, string> = {};
             if (options["unmasked"] !== undefined) query['unmasked'] = String(options["unmasked"]);
@@ -7913,7 +7913,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.customization.update');
             const path = `/orgs/${organizationId}/sites/${siteId}/customization`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
@@ -7947,7 +7947,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.integration-scripts.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/integration-scripts`;
             try {
                 const response = await api.request({
@@ -7981,7 +7981,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.site-spaces.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/site-spaces`;
             const query: Record<string, string> = {};
             if (options["shareKey"] !== undefined) query['shareKey'] = String(options["shareKey"]);
@@ -8017,7 +8017,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.site-spaces.add');
             const path = `/orgs/${organizationId}/sites/${siteId}/site-spaces`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.spaceId !== undefined) body['spaceId'] = options.spaceId;
@@ -8053,7 +8053,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteSpaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.site-spaces.update');
             const path = `/orgs/${organizationId}/sites/${siteId}/site-spaces/${siteSpaceId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.path !== undefined) body['path'] = options.path;
@@ -8085,7 +8085,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteSpaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.site-spaces.delete');
             const path = `/orgs/${organizationId}/sites/${siteId}/site-spaces/${siteSpaceId}`;
             try {
                 const response = await api.request({
@@ -8112,7 +8112,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteSpaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.site-spaces.move');
             const path = `/orgs/${organizationId}/sites/${siteId}/site-spaces/${siteSpaceId}/move`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -8145,7 +8145,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteSpaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.site-spaces.customization.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/site-spaces/${siteSpaceId}/customization`;
             const query: Record<string, string> = {};
             if (options["unmasked"] !== undefined) query['unmasked'] = String(options["unmasked"]);
@@ -8175,7 +8175,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteSpaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.site-spaces.customization.override');
             const path = `/orgs/${organizationId}/sites/${siteId}/site-spaces/${siteSpaceId}/customization`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -8203,7 +8203,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteSpaceId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.site-spaces.customization.delete');
             const path = `/orgs/${organizationId}/sites/${siteId}/site-spaces/${siteSpaceId}/customization`;
             try {
                 const response = await api.request({
@@ -8235,7 +8235,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.section-groups.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/section-groups`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -8270,7 +8270,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.section-groups.add');
             const path = `/orgs/${organizationId}/sites/${siteId}/section-groups`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
@@ -8305,7 +8305,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteSectionGroupId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.section-groups.update');
             const path = `/orgs/${organizationId}/sites/${siteId}/section-groups/${siteSectionGroupId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
@@ -8335,7 +8335,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteSectionGroupId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.section-groups.delete');
             const path = `/orgs/${organizationId}/sites/${siteId}/section-groups/${siteSectionGroupId}`;
             try {
                 const response = await api.request({
@@ -8362,7 +8362,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteSectionGroupId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.section-groups.move');
             const path = `/orgs/${organizationId}/sites/${siteId}/section-groups/${siteSectionGroupId}/move`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -8397,7 +8397,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.sections.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/sections`;
             const query: Record<string, string> = {};
             if (options["shareKey"] !== undefined) query['shareKey'] = String(options["shareKey"]);
@@ -8432,7 +8432,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.sections.add');
             const path = `/orgs/${organizationId}/sites/${siteId}/sections`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.spaceId !== undefined) body['spaceId'] = options.spaceId;
@@ -8468,7 +8468,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteSectionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.sections.update');
             const path = `/orgs/${organizationId}/sites/${siteId}/sections/${siteSectionId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.title !== undefined) body['title'] = options.title;
@@ -8500,7 +8500,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteSectionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.sections.delete');
             const path = `/orgs/${organizationId}/sites/${siteId}/sections/${siteSectionId}`;
             try {
                 const response = await api.request({
@@ -8527,7 +8527,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteSectionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.sections.move');
             const path = `/orgs/${organizationId}/sites/${siteId}/sections/${siteSectionId}/move`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -8562,7 +8562,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.ask.stream');
             const path = `/orgs/${organizationId}/sites/${siteId}/ask`;
             const query: Record<string, string> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
@@ -8600,7 +8600,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.ask.questions.stream');
             const path = `/orgs/${organizationId}/sites/${siteId}/ask/questions`;
             const query: Record<string, string> = {};
             if (options["siteSpaceId"] !== undefined) query['siteSpaceId'] = String(options["siteSpaceId"]);
@@ -8640,7 +8640,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.context-records.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/context-records`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -8675,7 +8675,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.context-records.upsert');
             const path = `/orgs/${organizationId}/sites/${siteId}/context-records`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -8703,7 +8703,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteContextRecordId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.context-records.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/context-records/${siteContextRecordId}`;
             try {
                 const response = await api.request({
@@ -8737,7 +8737,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.scans.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/scans`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -8771,7 +8771,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.scans.create');
             const path = `/orgs/${organizationId}/sites/${siteId}/scans`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.topic !== undefined) body['topic'] = options.topic;
@@ -8800,7 +8800,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteScanId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.scans.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/scans/${siteScanId}`;
             try {
                 const response = await api.request({
@@ -8837,7 +8837,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.findings.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/findings`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -8872,7 +8872,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteFindingId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.findings.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/findings/${siteFindingId}`;
             try {
                 const response = await api.request({
@@ -8900,7 +8900,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteFindingId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.findings.update');
             const path = `/orgs/${organizationId}/sites/${siteId}/findings/${siteFindingId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.status !== undefined) body['status'] = options.status;
@@ -8935,7 +8935,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteFindingId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.findings.change-requests.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/findings/${siteFindingId}/change-requests`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -8965,7 +8965,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteFindingId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.findings.change-requests.trigger');
             const path = `/orgs/${organizationId}/sites/${siteId}/findings/${siteFindingId}/change-requests`;
             try {
                 const response = await api.request({
@@ -8997,7 +8997,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteFindingId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.findings.pages.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/findings/${siteFindingId}/pages`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -9033,7 +9033,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteFindingId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.findings.questions.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/findings/${siteFindingId}/questions`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -9069,7 +9069,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteFindingId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.findings.records.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/findings/${siteFindingId}/records`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -9105,7 +9105,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.context-connections.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/context-connections`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -9136,7 +9136,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.context-connections.create');
             const path = `/orgs/${organizationId}/sites/${siteId}/context-connections`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -9164,7 +9164,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteContextConnectionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.context-connections.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/context-connections/${siteContextConnectionId}`;
             try {
                 const response = await api.request({
@@ -9191,7 +9191,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteContextConnectionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.context-connections.update');
             const path = `/orgs/${organizationId}/sites/${siteId}/context-connections/${siteContextConnectionId}`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -9219,7 +9219,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteContextConnectionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.context-connections.delete');
             const path = `/orgs/${organizationId}/sites/${siteId}/context-connections/${siteContextConnectionId}`;
             try {
                 const response = await api.request({
@@ -9245,7 +9245,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteContextConnectionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.context-connections.sync');
             const path = `/orgs/${organizationId}/sites/${siteId}/context-connections/${siteContextConnectionId}/sync`;
             try {
                 const response = await api.request({
@@ -9277,7 +9277,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.topics.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/topics`;
             const query: Record<string, string> = {};
             if (options["from"] !== undefined) query['from'] = String(options["from"]);
@@ -9307,7 +9307,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteTopicId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.topics.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/topics/${siteTopicId}`;
             try {
                 const response = await api.request({
@@ -9334,7 +9334,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteTopicId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.topics.update');
             const path = `/orgs/${organizationId}/sites/${siteId}/topics/${siteTopicId}`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -9366,7 +9366,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteTopicId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.topics.findings.delete');
             const path = `/orgs/${organizationId}/sites/${siteId}/topics/${siteTopicId}/findings`;
             try {
                 const response = await api.request({
@@ -9407,7 +9407,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.questions.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/questions`;
             const query: Record<string, string> = {};
             if (options["from"] !== undefined) query['from'] = String(options["from"]);
@@ -9451,7 +9451,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteQuestionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.questions.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/questions/${siteQuestionId}`;
             const query: Record<string, string> = {};
             if (options["from"] !== undefined) query['from'] = String(options["from"]);
@@ -9495,7 +9495,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteQuestionId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.questions.sources.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/questions/${siteQuestionId}/sources`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -9540,7 +9540,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.question-stats.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/question-stats`;
             const query: Record<string, string> = {};
             if (options["from"] !== undefined) query['from'] = String(options["from"]);
@@ -9591,7 +9591,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.answers.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/answers`;
             const query: Record<string, string> = {};
             if (options["question"] !== undefined) query['question'] = String(options["question"]);
@@ -9632,7 +9632,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteQuestionAnswerId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.answers.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/answers/${siteQuestionAnswerId}`;
             try {
                 const response = await api.request({
@@ -9662,7 +9662,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteQuestionAnswerId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.answers.thread.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/answers/${siteQuestionAnswerId}/thread`;
             try {
                 const response = await api.request({
@@ -9694,7 +9694,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteQuestionAnswerId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.answers.sources.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/answers/${siteQuestionAnswerId}/sources`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -9729,7 +9729,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.permissions.invite');
             const path = `/orgs/${organizationId}/sites/${siteId}/permissions`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -9767,7 +9767,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.permissions.aggregate.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/permissions/aggregate`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -9807,7 +9807,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.permissions.users.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/permissions/users`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -9839,7 +9839,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, userId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.permissions.users.update');
             const path = `/orgs/${organizationId}/sites/${siteId}/permissions/users/${userId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.role !== undefined) body['role'] = options.role;
@@ -9868,7 +9868,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, userId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.permissions.users.remove');
             const path = `/orgs/${organizationId}/sites/${siteId}/permissions/users/${userId}`;
             try {
                 const response = await api.request({
@@ -9900,7 +9900,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.permissions.teams.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/permissions/teams`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -9932,7 +9932,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, teamId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.permissions.teams.update');
             const path = `/orgs/${organizationId}/sites/${siteId}/permissions/teams/${teamId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.role !== undefined) body['role'] = options.role;
@@ -9961,7 +9961,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, teamId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.permissions.teams.remove');
             const path = `/orgs/${organizationId}/sites/${siteId}/permissions/teams/${teamId}`;
             try {
                 const response = await api.request({
@@ -10000,7 +10000,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.ai.response.stream');
             const path = `/orgs/${organizationId}/sites/${siteId}/ai/response`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.previousResponseId !== undefined) body['previousResponseId'] = options.previousResponseId;
@@ -10036,7 +10036,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.agent-settings.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/agent-settings`;
             try {
                 const response = await api.request({
@@ -10063,7 +10063,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.agent-settings.update');
             const path = `/orgs/${organizationId}/sites/${siteId}/agent-settings`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -10095,7 +10095,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.styleguide.create');
             const path = `/orgs/${organizationId}/sites/${siteId}/styleguide`;
             try {
                 const response = await api.request({
@@ -10121,7 +10121,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.styleguide.delete');
             const path = `/orgs/${organizationId}/sites/${siteId}/styleguide`;
             try {
                 const response = await api.request({
@@ -10157,7 +10157,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.insights.events.track');
             const path = `/orgs/${organizationId}/sites/${siteId}/insights/events`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.events !== undefined) body['events'] = coerceBodyFlag(options.events, 'array');
@@ -10191,7 +10191,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.insights.events.aggregate');
             const path = `/orgs/${organizationId}/sites/${siteId}/insights/events/aggregate`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.select !== undefined) body['select'] = coerceBodyFlag(options.select, 'array');
@@ -10227,7 +10227,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.insights.visitor-segments.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/insights/visitor-segments`;
             try {
                 const response = await api.request({
@@ -10260,7 +10260,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.ads.update');
             const path = `/orgs/${organizationId}/sites/${siteId}/ads`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.status !== undefined) body['status'] = options.status;
@@ -10298,7 +10298,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.redirects.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/redirects`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -10334,7 +10334,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.redirects.create');
             const path = `/orgs/${organizationId}/sites/${siteId}/redirects`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.source !== undefined) body['source'] = options.source;
@@ -10367,7 +10367,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.redirects.replace');
             const path = `/orgs/${organizationId}/sites/${siteId}/redirects`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.redirects !== undefined) body['redirects'] = coerceBodyFlag(options.redirects, 'array');
@@ -10400,7 +10400,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteRedirectId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.redirects.update');
             const path = `/orgs/${organizationId}/sites/${siteId}/redirects/${siteRedirectId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.source !== undefined) body['source'] = options.source;
@@ -10431,7 +10431,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteRedirectId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.redirects.delete');
             const path = `/orgs/${organizationId}/sites/${siteId}/redirects/${siteRedirectId}`;
             try {
                 const response = await api.request({
@@ -10463,7 +10463,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.redirect.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/redirect`;
             const query: Record<string, string> = {};
             if (options["shareKey"] !== undefined) query['shareKey'] = String(options["shareKey"]);
@@ -10499,7 +10499,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.mcp-servers.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/mcp-servers`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -10533,7 +10533,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.mcp-servers.create');
             const path = `/orgs/${organizationId}/sites/${siteId}/mcp-servers`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.name !== undefined) body['name'] = options.name;
@@ -10564,7 +10564,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteMcpServerId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.mcp-servers.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/mcp-servers/${siteMcpServerId}`;
             try {
                 const response = await api.request({
@@ -10594,7 +10594,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteMcpServerId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.mcp-servers.update');
             const path = `/orgs/${organizationId}/sites/${siteId}/mcp-servers/${siteMcpServerId}`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.name !== undefined) body['name'] = options.name;
@@ -10625,7 +10625,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteMcpServerId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.mcp-servers.delete');
             const path = `/orgs/${organizationId}/sites/${siteId}/mcp-servers/${siteMcpServerId}`;
             try {
                 const response = await api.request({
@@ -10657,7 +10657,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.channels.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/channels`;
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -10688,7 +10688,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.channels.create');
             const path = `/orgs/${organizationId}/sites/${siteId}/channels`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -10716,7 +10716,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteChannelId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.channels.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/channels/${siteChannelId}`;
             try {
                 const response = await api.request({
@@ -10743,7 +10743,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteChannelId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.channels.update');
             const path = `/orgs/${organizationId}/sites/${siteId}/channels/${siteChannelId}`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -10771,7 +10771,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (organizationId, siteId, siteChannelId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'organizations.sites.channels.delete');
             const path = `/orgs/${organizationId}/sites/${siteId}/channels/${siteChannelId}`;
             try {
                 const response = await api.request({
@@ -10801,7 +10801,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (subdomain, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'subdomains.get');
             const path = `/subdomains/${subdomain}`;
             try {
                 const response = await api.request({
@@ -10838,7 +10838,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'ads.sites.list');
             const path = '/ads/sites';
             const query: Record<string, string> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -10870,7 +10870,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (siteId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'ads.sites.update');
             const path = `/ads/sites/${siteId}`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -10907,7 +10907,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'urls.content.get');
             const path = '/urls/content';
             const query: Record<string, string> = {};
             if (options["url"] !== undefined) query['url'] = String(options["url"]);
@@ -10941,7 +10941,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'urls.embed.get');
             const path = '/urls/embed';
             const query: Record<string, string> = {};
             if (options["url"] !== undefined) query['url'] = String(options["url"]);
@@ -10977,7 +10977,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'urls.published.get');
             const path = '/urls/published';
             const query: Record<string, string> = {};
             if (options["url"] !== undefined) query['url'] = String(options["url"]);
@@ -11011,7 +11011,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'urls.published.resolve');
             const path = '/urls/published';
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.url !== undefined) body['url'] = options.url;
@@ -11051,7 +11051,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'git.installations.install');
             const path = '/git/installations';
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.provider !== undefined) body['provider'] = options.provider;
@@ -11080,7 +11080,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (installationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'git.installations.get');
             const path = `/git/installations/${installationId}`;
             try {
                 const response = await api.request({
@@ -11107,7 +11107,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (installationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'git.installations.update');
             const path = `/git/installations/${installationId}`;
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -11135,7 +11135,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (installationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'git.installations.uninstall');
             const path = `/git/installations/${installationId}`;
             try {
                 const response = await api.request({
@@ -11169,7 +11169,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (installationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'git.installations.github.repos.list');
             const path = `/git/installations/${installationId}/github/repos`;
             try {
                 const response = await api.request({
@@ -11199,7 +11199,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (installationId, accountName, repositoryName, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'git.installations.github.repos.branches.list');
             const path = `/git/installations/${installationId}/github/repos/${accountName}/${repositoryName}/branches`;
             try {
                 const response = await api.request({
@@ -11233,7 +11233,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (installationId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'git.installations.gitlab.projects.list');
             const path = `/git/installations/${installationId}/gitlab/projects`;
             try {
                 const response = await api.request({
@@ -11263,7 +11263,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
         .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
         .action(async (installationId, projectId, options) => {
-            const api = await getAPIClient(true);
+            const api = await getAPIClient(true, 'git.installations.gitlab.projects.branches.list');
             const path = `/git/installations/${installationId}/gitlab/projects/${projectId}/branches`;
             try {
                 const response = await api.request({

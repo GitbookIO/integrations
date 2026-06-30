@@ -742,6 +742,8 @@ function emitSimpleCommand(
     const lines: string[] = [];
     const argStr = route.pathParams.map((p) => `<${p.name}>`).join(' ');
     const fullCmd = argStr ? `${verb} ${argStr}` : verb;
+    // Dotted command path, folded into the User-Agent for usage attribution.
+    const commandPath = [...cmd.group, verb].join('.');
 
     lines.push(`${I}${parentVar}`);
     lines.push(`${I}    .command('${fullCmd}')`);
@@ -777,7 +779,7 @@ function emitSimpleCommand(
     const paramNames = route.pathParams.map((p) => camelize(p.name));
     const actionArgs = [...paramNames, 'options'].join(', ');
     lines.push(`${I}    .action(async (${actionArgs}) => {`);
-    lines.push(`${I}        const api = await getAPIClient(true);`);
+    lines.push(`${I}        const api = await getAPIClient(true, '${escapeStr(commandPath)}');`);
     lines.push(`${I}        const path = ${urlExpr(route.apiPath, route.pathParams)};`);
 
     if (route.queryParams.length > 0) {
@@ -858,7 +860,8 @@ function emitMergedCommand(
     lines.push(...emitOutputFlags(I));
 
     lines.push(`${I}    .action(async (options) => {`);
-    lines.push(`${I}        const api = await getAPIClient(true);`);
+    const commandPath = [...cmd.group, cmd.verb].join('.');
+    lines.push(`${I}        const api = await getAPIClient(true, '${escapeStr(commandPath)}');`);
     // Determine which variant the supplied scope flags select.
     lines.push(
         `${I}        const scopeFlags = [${scopeFlags.map((s) => `'${s.flag}'`).join(', ')}];`,
