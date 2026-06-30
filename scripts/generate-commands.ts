@@ -126,6 +126,8 @@ interface SchemaObject {
     deprecated?: boolean;
     items?: SchemaObject;
     enum?: unknown[];
+    default?: unknown;
+    discriminator?: { propertyName?: string; mapping?: Record<string, string> };
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -403,6 +405,13 @@ interface BodyFlag {
     required: boolean;
     description: string;
     deprecated: boolean;
+    // For array fields whose items are a discriminated oneOf (e.g. `changes`),
+    // the discriminator mapping keys — the accepted operation names. Surfaced in
+    // --help so callers know what operations exist without reading the spec.
+    arrayOps?: string[];
+    // True when those item variants carry a `document` (page content) — the
+    // commands that benefit from --normalize's markdown round-trip fixes.
+    hasMarkdownDoc?: boolean;
 }
 
 function extractBodyFlags(schema: SchemaObject, spec: OpenAPISpec): BodyFlag[] | null {
@@ -428,6 +437,17 @@ function mergeAllOfFlags(schemas: SchemaObject[], spec: OpenAPISpec): BodyFlag[]
     return merged;
 }
 
+// True when any variant of a (discriminated) oneOf item schema has a `document`
+// property — i.e. the array carries page content (update_page/insert_page). Used
+// to decide whether a command gets the --normalize markdown round-trip flag.
+function variantsCarryDocument(items: SchemaObject, spec: OpenAPISpec): boolean {
+    const variants = items.oneOf ?? items.anyOf ?? [items];
+    return variants.some((v) => {
+        const resolved = resolveSchema(v, spec);
+        return !!resolved.properties && 'document' in resolved.properties;
+    });
+}
+
 function flattenObjectFlags(schema: SchemaObject, spec: OpenAPISpec): BodyFlag[] | null {
     const props = schema.properties ?? {};
     const required = new Set(schema.required ?? []);
@@ -439,12 +459,25 @@ function flattenObjectFlags(schema: SchemaObject, spec: OpenAPISpec): BodyFlag[]
         if (resolved.type === 'integer' || resolved.type === 'number') type = 'number';
         else if (resolved.type === 'boolean') type = 'boolean';
         else if (resolved.type === 'array') type = 'array';
+        // Pull the accepted operation names off a discriminated-oneOf item schema
+        // (e.g. `changes` → update_page/insert_page/delete_page) for the help text,
+        // and note whether those operations carry a page `document` (→ --normalize).
+        let arrayOps: string[] | undefined;
+        let hasMarkdownDoc = false;
+        if (type === 'array' && resolved.items) {
+            const items = resolveSchema(resolved.items, spec);
+            const mapping = items.discriminator?.mapping;
+            if (mapping) arrayOps = Object.keys(mapping);
+            hasMarkdownDoc = variantsCarryDocument(items, spec);
+        }
         flags.push({
             name,
             type,
             required: required.has(name),
             description: resolved.description ?? '',
             deprecated: resolved.deprecated ?? false,
+            arrayOps,
+            hasMarkdownDoc,
         });
     }
     return flags;
@@ -519,7 +552,13 @@ function buildRoutes(spec: OpenAPISpec): Route[] {
                 // siteShareKey is an optional ambient param — not a real positional
                 (p) => p.in === 'path' && p.name !== 'siteShareKey',
             );
-            const queryParams = allParams.filter((p) => p.in === 'query');
+            // Resolve each query param's schema up front so the emitters can read
+            // its type/enum/default directly (orderBy et al. are $ref'd). Without
+            // this, array-typed params (e.g. comments `authors`) can't be told
+            // apart from scalars and get String()'d into a single value → API 500.
+            const queryParams = allParams
+                .filter((p) => p.in === 'query')
+                .map((p) => (p.schema ? { ...p, schema: resolveSchema(p.schema, spec) } : p));
 
             const bodySchema = operation.requestBody?.content?.['application/json']?.schema;
             const hasBody = !!bodySchema;
@@ -698,7 +737,7 @@ function emitRequest(
     lines.push(`${I}                printResult(JSON.parse(text), options);`);
     lines.push(`${I}            }`);
     lines.push(`${I}        } catch (error) {`);
-    lines.push(`${I}            console.error((error as Error).message);`);
+    lines.push(`${I}            console.error(explainApiError((error as Error).message));`);
     lines.push(`${I}            process.exit(1);`);
     lines.push(`${I}        }`);
     return lines;
@@ -714,6 +753,13 @@ function emitBodyOption(f: BodyFlag, I: string): string {
     if (f.type === 'array') {
         placeholder = '<json>';
         typeHint = ' [JSON array]';
+        // Name the accepted operations for a discriminated-oneOf array (e.g.
+        // `changes` → "set 'operation' to: update_page, insert_page, delete_page").
+        // The shape of each operation's fields stays in the API error path: a bad
+        // shape 422s with the field-level reason (see explainApiError).
+        if (f.arrayOps?.length) {
+            typeHint += ` — set "operation" to one of: ${f.arrayOps.join(', ')}`;
+        }
     } else if (f.type === 'number') {
         placeholder = '<number>';
     }
@@ -733,6 +779,41 @@ function bodyFlagExpr(f: BodyFlag): string {
     return opt;
 }
 
+const queryParamIsArray = (qp: ParameterObject): boolean => qp.schema?.type === 'array';
+
+// `.option(...)` line for a query param. Enriches the description with the
+// accepted enum values (e.g. --orderBy) and a repeatable-list hint for arrays,
+// both of which --help would otherwise omit.
+function emitQueryOption(qp: ParameterObject, I: string): string {
+    const bracket = qp.required ? `<${qp.name}>` : `[${qp.name}]`;
+    let desc = qp.description ?? '';
+    const append = (s: string) => {
+        desc = desc ? `${desc} ${s}` : s;
+    };
+    if (queryParamIsArray(qp)) {
+        // Array query params accept either a comma-separated list or a JSON array;
+        // see coerceArrayQueryParam. Each value ships as a repeated key.
+        append('[repeatable: comma-separated or a JSON array]');
+    }
+    const enumVals = (qp.schema?.enum ?? []).map((v) => String(v));
+    if (enumVals.length > 0) {
+        const def = qp.schema?.default !== undefined ? `, default ${String(qp.schema.default)}` : '';
+        append(`[one of: ${enumVals.join(', ')}${def}]`);
+    }
+    return `${I}    .option('--${qp.name} ${bracket}', '${escapeStr(desc)}')`;
+}
+
+// Assignment line that puts a query param onto the `query` object. Array-typed
+// params (the spec's `type: array`) are coerced to a real string[] so the API
+// client serializes them as repeated `key=v1&key=v2`; everything else is a
+// scalar String(). Plain String() on an array yielded a single comma-joined
+// value the API rejected with a 500.
+function emitQueryAssign(qp: ParameterObject, I: string): string {
+    const accessor = `options[${JSON.stringify(camelize(qp.name))}]`;
+    const rhs = queryParamIsArray(qp) ? `coerceArrayQueryParam(${accessor})` : `String(${accessor})`;
+    return `${I}        if (${accessor} !== undefined) query['${qp.name}'] = ${rhs};`;
+}
+
 function emitSimpleCommand(
     cmd: Extract<Command, { kind: 'simple' }>,
     parentVar: string,
@@ -750,10 +831,7 @@ function emitSimpleCommand(
     lines.push(`${I}    .description('${escapeStr(route.summary)}')`);
 
     for (const qp of route.queryParams) {
-        const bracket = qp.required ? `<${qp.name}>` : `[${qp.name}]`;
-        lines.push(
-            `${I}    .option('--${qp.name} ${bracket}', '${escapeStr(qp.description ?? '')}')`,
-        );
+        lines.push(emitQueryOption(qp, I));
     }
     if (route.hasBody) {
         const liveFlags = (route.bodyFlags ?? []).filter((f) => !f.deprecated);
@@ -773,6 +851,12 @@ function emitSimpleCommand(
         } else {
             lines.push(`${I}    .option('--body <json>', 'Request body as a JSON string')`);
         }
+        // Page-document operations only: offer the markdown round-trip fixups.
+        if ((route.bodyFlags ?? []).some((f) => f.hasMarkdownDoc)) {
+            lines.push(
+                `${I}    .option('--normalize', 'Make page-document markdown round-trip safe before sending: strip a duplicated leading H1 title and collapse multi-line {% ... %} blocks onto one line')`,
+            );
+        }
     }
     lines.push(...emitOutputFlags(I));
 
@@ -783,12 +867,9 @@ function emitSimpleCommand(
     lines.push(`${I}        const path = ${urlExpr(route.apiPath, route.pathParams)};`);
 
     if (route.queryParams.length > 0) {
-        lines.push(`${I}        const query: Record<string, string> = {};`);
+        lines.push(`${I}        const query: Record<string, string | string[]> = {};`);
         for (const qp of route.queryParams) {
-            const accessor = `options[${JSON.stringify(camelize(qp.name))}]`;
-            lines.push(
-                `${I}        if (${accessor} !== undefined) query['${qp.name}'] = String(${accessor});`,
-            );
+            lines.push(emitQueryAssign(qp, I));
         }
     }
     if (route.hasBody) {
@@ -806,6 +887,14 @@ function emitSimpleCommand(
             for (const f of liveFlags) {
                 lines.push(
                     `${I}        if (options.${camelize(f.name)} !== undefined) body['${f.name}'] = ${bodyFlagExpr(f)};`,
+                );
+            }
+            // Opt-in markdown round-trip fixups on the page-document array, after
+            // the body (incl. any --body seed) is fully assembled.
+            const docFlag = liveFlags.find((f) => f.hasMarkdownDoc);
+            if (docFlag) {
+                lines.push(
+                    `${I}        if (options.normalize) normalizeChangesMarkdown(body['${docFlag.name}']);`,
                 );
             }
         } else {
@@ -852,10 +941,7 @@ function emitMergedCommand(
         lines.push(`${I}    .option('--${s.flag} <value>', 'Scope: ${escapeStr(s.idParam)}')`);
     }
     for (const qp of cmd.queryParams) {
-        const bracket = qp.required ? `<${qp.name}>` : `[${qp.name}]`;
-        lines.push(
-            `${I}    .option('--${qp.name} ${bracket}', '${escapeStr(qp.description ?? '')}')`,
-        );
+        lines.push(emitQueryOption(qp, I));
     }
     lines.push(...emitOutputFlags(I));
 
@@ -894,12 +980,9 @@ function emitMergedCommand(
     lines.push(`${I}        }`);
 
     if (cmd.queryParams.length > 0) {
-        lines.push(`${I}        const query: Record<string, string> = {};`);
+        lines.push(`${I}        const query: Record<string, string | string[]> = {};`);
         for (const qp of cmd.queryParams) {
-            const accessor = `options[${JSON.stringify(camelize(qp.name))}]`;
-            lines.push(
-                `${I}        if (${accessor} !== undefined) query['${qp.name}'] = String(${accessor});`,
-            );
+            lines.push(emitQueryAssign(qp, I));
         }
     }
     lines.push(
@@ -958,7 +1041,9 @@ function emitFile(tree: GroupNode, completions: Record<string, string>): string 
     lines.push(`import { getAPIClient } from './remote';`);
     lines.push(`// Output formatting lives in ./output (a real, unit-tested module) rather than`);
     lines.push(`// being inlined here, so the rendering logic has a single source of truth.`);
-    lines.push(`import { printResult, coerceBodyFlag } from './output';`);
+    lines.push(
+        `import { printResult, coerceBodyFlag, coerceArrayQueryParam, explainApiError, normalizeChangesMarkdown } from './output';`,
+    );
     lines.push(``);
     lines.push(`export function registerGeneratedCommands(program: Command): void {`);
 

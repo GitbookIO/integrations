@@ -59,6 +59,105 @@ export function coerceBodyFlag(
     return value;
 }
 
+// Coerce a `type: array` query flag (e.g. `comments list --authors`) to a real
+// string[] so the API client serializes it as repeated `key=v1&key=v2`. Plain
+// String() flattened the array to one comma-joined value the API rejected (500).
+// Accepts either a comma-separated list (`a,b`) or a JSON array (`'["a","b"]'`);
+// a bare value becomes a one-element array. Query IDs are simple scalars, so the
+// comma form is friendlier than coerceBodyFlag's strict-JSON requirement.
+export function coerceArrayQueryParam(value: unknown): string[] {
+    if (Array.isArray(value)) return value.map(String);
+    if (typeof value !== 'string') return [String(value)];
+    const trimmed = value.trim();
+    if (trimmed.startsWith('[')) {
+        let parsed: unknown;
+        try {
+            parsed = JSON.parse(trimmed);
+        } catch {
+            throw new Error(`Expected a JSON array but the value is not valid JSON: ${value}`);
+        }
+        if (!Array.isArray(parsed)) {
+            throw new Error(`Expected a JSON array but parsed a ${typeof parsed}: ${value}`);
+        }
+        return parsed.map(String);
+    }
+    return trimmed
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+}
+
+// ─── API error explanation ─────────────────────────────────────────────────────
+
+// The API client already surfaces the server's error message (GitBookAPIError
+// carries `body.error.message`). This adds an actionable hint for the one error
+// whose raw text is famously unactionable: a schema-union validation failure
+// (e.g. pushing the node `document` tree to update_page, which only accepts
+// `{ "markdown": "…" }`). The server says only "expected to match … one"; we
+// name the accepted shape and point at --help for the operation list.
+export function explainApiError(message: string): string {
+    if (/expected to match (?:exactly )?one/i.test(message)) {
+        return (
+            `${message}\n` +
+            `Hint: a request field didn't match any accepted shape. For change operations, ` +
+            `update_page.document must be { "markdown": "…" } (the node tree from 'page get' ` +
+            `is not accepted), and insert_page.into is optional (omit = space root). ` +
+            `Run the command with --help to see the accepted operations.`
+        );
+    }
+    return message;
+}
+
+// ─── Markdown round-trip normalization ──────────────────────────────────────────
+
+// Make page-document markdown safe to push back via update_page/insert_page.
+// Two deterministic fixups, both surfaced via the --normalize flag:
+//   1. Strip a duplicated leading H1. `page get --format markdown` emits the page
+//      title as a leading `# …` line, but the operations store the title
+//      separately, so pushing that markdown back creates a second, in-body
+//      heading. We drop a single leading ATX H1 (and one trailing blank line).
+//   2. Collapse multi-line `{% … %}` integration blocks onto one physical line.
+//      A multi-line `content="…"` block re-escapes to literal text on push (it
+//      renders as text, not the integration); the single-line form round-trips.
+export function normalizeMarkdown(markdown: string): string {
+    return collapseMultilineBlocks(stripLeadingTitleHeading(markdown));
+}
+
+function stripLeadingTitleHeading(markdown: string): string {
+    const lines = markdown.split('\n');
+    let i = 0;
+    while (i < lines.length && lines[i].trim() === '') i++;
+    // Only an H1 (`# `), not `##`/`###`; require a non-space after the hash.
+    if (i < lines.length && /^#\s+\S/.test(lines[i])) {
+        lines.splice(0, i + 1);
+        if (lines.length > 0 && lines[0].trim() === '') lines.shift();
+        return lines.join('\n');
+    }
+    return markdown;
+}
+
+function collapseMultilineBlocks(markdown: string): string {
+    // Join any `{% … %}` span that straddles newlines into one line; newlines
+    // inside it become `\n` escapes so a quoted content="…" value survives.
+    return markdown.replace(/\{%[\s\S]*?%\}/g, (block) =>
+        block.includes('\n') ? block.replace(/\r?\n/g, '\\n') : block,
+    );
+}
+
+// Apply normalizeMarkdown to each operation's `document.markdown` in a `changes`
+// array (update_page/insert_page). Mutates in place; tolerant of an unknown —
+// non-conforming entries are skipped, so it is safe to call on a --body payload.
+export function normalizeChangesMarkdown(changes: unknown): void {
+    if (!Array.isArray(changes)) return;
+    for (const change of changes) {
+        if (!isPlainObject(change)) continue;
+        const doc = change.document;
+        if (isPlainObject(doc) && typeof doc.markdown === 'string') {
+            doc.markdown = normalizeMarkdown(doc.markdown);
+        }
+    }
+}
+
 export function formatScalar(value: unknown): string {
     if (value === null || value === undefined) return '—';
     return String(value);

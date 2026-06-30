@@ -14,7 +14,7 @@ import { ContentType } from '@gitbook/api';
 import { getAPIClient } from './remote';
 // Output formatting lives in ./output (a real, unit-tested module) rather than
 // being inlined here, so the rendering logic has a single source of truth.
-import { printResult, coerceBodyFlag } from './output';
+import { printResult, coerceBodyFlag, coerceArrayQueryParam, explainApiError, normalizeChangesMarkdown } from './output';
 
 export function registerGeneratedCommands(program: Command): void {
     const systemCmd = program
@@ -42,7 +42,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -72,7 +72,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -98,7 +98,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -131,7 +131,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -151,7 +151,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true, 'spaces.get');
             const path = `/spaces/${spaceId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["shareKey"] !== undefined) query['shareKey'] = String(options["shareKey"]);
             try {
                 const response = await api.request({
@@ -165,7 +165,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -194,7 +194,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -220,7 +220,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -246,7 +246,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -272,7 +272,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -303,7 +303,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -321,7 +321,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true, 'spaces.search');
             const path = `/spaces/${spaceId}/search`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["query"] !== undefined) query['query'] = String(options["query"]);
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
@@ -337,7 +337,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -354,7 +354,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--limit [limit]', 'The number of results per page')
         .option('--externalId [externalId]', 'External Id to filter by')
         .option('--extended [extended]', 'If true, returns the space object in each items. If false, returns the space ID in each items.')
-        .option('--order [order]', 'An order for the items in the list')
+        .option('--order [order]', 'An order for the items in the list [one of: asc, desc, default desc]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -383,7 +383,7 @@ export function registerGeneratedCommands(program: Command): void {
                 console.error('Specify a valid scope: --collection, --integration, --installation, --organization, --member. Some scopes require a combination (e.g. --integration with --installation).');
                 process.exit(1);
             }
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["externalId"] !== undefined) query['externalId'] = String(options["externalId"]);
@@ -401,7 +401,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -430,7 +430,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -450,7 +450,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true, 'spaces.embed.get');
             const path = `/spaces/${spaceId}/embed`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["url"] !== undefined) query['url'] = String(options["url"]);
             try {
                 const response = await api.request({
@@ -464,7 +464,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -513,7 +513,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -558,7 +558,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -588,7 +588,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -621,7 +621,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -654,7 +654,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -680,7 +680,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -697,7 +697,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true, 'spaces.permissions.teams.list');
             const path = `/spaces/${spaceId}/permissions/teams`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -712,7 +712,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -733,7 +733,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true, 'spaces.permissions.users.list');
             const path = `/spaces/${spaceId}/permissions/users`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -748,7 +748,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -777,7 +777,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -803,7 +803,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -817,7 +817,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('List all space users permissions')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
-        .option('--role [role]', 'If defined, only members with this role will be returned.')
+        .option('--role [role]', 'If defined, only members with this role will be returned. [one of: admin, create, edit, review, comment, read]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -825,7 +825,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true, 'spaces.permissions.aggregate.list');
             const path = `/spaces/${spaceId}/permissions/aggregate`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["role"] !== undefined) query['role'] = String(options["role"]);
@@ -841,7 +841,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -862,7 +862,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true, 'spaces.content.get');
             const path = `/spaces/${spaceId}/content`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
             if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
@@ -877,7 +877,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -914,7 +914,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -935,7 +935,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true, 'spaces.content.pages.list');
             const path = `/spaces/${spaceId}/content/pages`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
             if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
@@ -950,7 +950,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -973,7 +973,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true, 'spaces.content.files.list');
             const path = `/spaces/${spaceId}/content/files`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
@@ -990,7 +990,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1007,7 +1007,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, fileId, options) => {
             const api = await getAPIClient(true, 'spaces.content.files.get');
             const path = `/spaces/${spaceId}/content/files/${fileId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
             if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
@@ -1022,7 +1022,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1043,7 +1043,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, fileId, options) => {
             const api = await getAPIClient(true, 'spaces.content.files.backlinks.list');
             const path = `/spaces/${spaceId}/content/files/${fileId}/backlinks`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -1058,7 +1058,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1070,8 +1070,8 @@ export function registerGeneratedCommands(program: Command): void {
     spaces_content_pageCmd
         .command('get <spaceId> <pageId>')
         .description('Get a space page by its ID')
-        .option('--format [format]', 'Output format for the content.')
-        .option('--format.markdown.refs [format.markdown.refs]', 'Controls how content references are formatted in markdown output. Ignored unless `format=markdown`.  - `relative`: Format page references as relative links from the current page. Other references might not be handled. - `stable`: Format content references as stable idempotent refs containing their identifiers.')
+        .option('--format [format]', 'Output format for the content. [one of: document, markdown]')
+        .option('--format.markdown.refs [format.markdown.refs]', 'Controls how content references are formatted in markdown output. Ignored unless `format=markdown`.  - `relative`: Format page references as relative links from the current page. Other references might not be handled. - `stable`: Format content references as stable idempotent refs containing their identifiers.  [one of: relative, stable, default relative]')
         .option('--evaluated [evaluated]', 'Controls whether the document should be evaluated. - When set to `true`, the entire document will be evaluated. - When set to `deterministic-only`, only expressions that depend   exclusively on deterministic inputs will be evaluated.')
         .option('--dereferenced [dereferenced]', 'Controls whether the document should be deferenced (eference to other content will be resolved and expanded). - When set to `true`, the entire document will be deferenced - When set to `reusable-contents`, only reusable contents will be deferenced.')
         .option('--metadata [metadata]', 'If `false` is passed, "git" mutable metadata will not returned. Passing `false` can optimize performances of the lookup.')
@@ -1083,7 +1083,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, pageId, options) => {
             const api = await getAPIClient(true, 'spaces.content.page.get');
             const path = `/spaces/${spaceId}/content/page/${pageId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
             if (options["format.markdown.refs"] !== undefined) query['format.markdown.refs'] = String(options["format.markdown.refs"]);
             if (options["evaluated"] !== undefined) query['evaluated'] = String(options["evaluated"]);
@@ -1102,7 +1102,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1116,7 +1116,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('List all space page links')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
-        .option('--status [status]', '')
+        .option('--status [status]', '[one of: ok, broken, in-app]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -1124,7 +1124,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, pageId, options) => {
             const api = await getAPIClient(true, 'spaces.content.page.links.list');
             const path = `/spaces/${spaceId}/content/page/${pageId}/links`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["status"] !== undefined) query['status'] = String(options["status"]);
@@ -1140,7 +1140,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1161,7 +1161,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, pageId, options) => {
             const api = await getAPIClient(true, 'spaces.content.page.backlinks.list');
             const path = `/spaces/${spaceId}/content/page/${pageId}/backlinks`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -1176,7 +1176,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1206,7 +1206,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1218,8 +1218,8 @@ export function registerGeneratedCommands(program: Command): void {
     spaces_content_pathCmd
         .command('get <spaceId> <pagePath>')
         .description('Get a space page by its path')
-        .option('--format [format]', 'Output format for the content.')
-        .option('--format.markdown.refs [format.markdown.refs]', 'Controls how content references are formatted in markdown output. Ignored unless `format=markdown`.  - `relative`: Format page references as relative links from the current page. Other references might not be handled. - `stable`: Format content references as stable idempotent refs containing their identifiers.')
+        .option('--format [format]', 'Output format for the content. [one of: document, markdown]')
+        .option('--format.markdown.refs [format.markdown.refs]', 'Controls how content references are formatted in markdown output. Ignored unless `format=markdown`.  - `relative`: Format page references as relative links from the current page. Other references might not be handled. - `stable`: Format content references as stable idempotent refs containing their identifiers.  [one of: relative, stable, default relative]')
         .option('--evaluated [evaluated]', 'Controls whether the document should be evaluated. - When set to `true`, the entire document will be evaluated. - When set to `deterministic-only`, only expressions that depend   exclusively on deterministic inputs will be evaluated.')
         .option('--dereferenced [dereferenced]', 'Controls whether the document should be deferenced (eference to other content will be resolved and expanded). - When set to `true`, the entire document will be deferenced - When set to `reusable-contents`, only reusable contents will be deferenced.')
         .option('--metadata [metadata]', 'If `false` is passed, "git" mutable metadata will not returned. Passing `false` can optimize performances of the lookup.')
@@ -1231,7 +1231,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, pagePath, options) => {
             const api = await getAPIClient(true, 'spaces.content.path.get');
             const path = `/spaces/${spaceId}/content/path/${pagePath}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
             if (options["format.markdown.refs"] !== undefined) query['format.markdown.refs'] = String(options["format.markdown.refs"]);
             if (options["evaluated"] !== undefined) query['evaluated'] = String(options["evaluated"]);
@@ -1250,7 +1250,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1271,7 +1271,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, reusableContentId, options) => {
             const api = await getAPIClient(true, 'spaces.content.reusable-contents.get');
             const path = `/spaces/${spaceId}/content/reusable-contents/${reusableContentId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
             if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
@@ -1286,7 +1286,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1302,7 +1302,7 @@ export function registerGeneratedCommands(program: Command): void {
     spaces_content_computed_documentCmd
         .command('get <spaceId>')
         .description('Get a space computed document')
-        .option('--schema [schema]', 'Version of the schema used for the document.')
+        .option('--schema [schema]', 'Version of the schema used for the document. [one of: current, next]')
         .option('--seed <value>', 'Seed to use for the generation of IDs. (required)')
         .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
@@ -1312,7 +1312,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true, 'spaces.content.computed.document.get');
             const path = `/spaces/${spaceId}/content/computed/document`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["schema"] !== undefined) query['schema'] = String(options["schema"]);
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.seed !== undefined) body['seed'] = options.seed;
@@ -1329,7 +1329,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1364,7 +1364,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1376,7 +1376,7 @@ export function registerGeneratedCommands(program: Command): void {
     spaces_documentsCmd
         .command('get <spaceId> <documentId>')
         .description('Get a space document by its ID')
-        .option('--schema [schema]', 'Version of the schema used for the document.')
+        .option('--schema [schema]', 'Version of the schema used for the document. [one of: current, next]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -1384,7 +1384,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, documentId, options) => {
             const api = await getAPIClient(true, 'spaces.documents.get');
             const path = `/spaces/${spaceId}/documents/${documentId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["schema"] !== undefined) query['schema'] = String(options["schema"]);
             try {
                 const response = await api.request({
@@ -1398,7 +1398,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1412,12 +1412,12 @@ export function registerGeneratedCommands(program: Command): void {
         .description('List all change requests')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
-        .option('--status [status]', 'If defined, only change requests matching this status will be returned.')
+        .option('--status [status]', 'If defined, only change requests matching this status will be returned. [one of: draft, open, archived, merged]')
         .option('--creator [creator]', 'If defined, only change requests created by this user will be returned.')
         .option('--contributor [contributor]', 'If defined, only change requests with contributions from this user will be returned.')
         .option('--requestedReviewer [requestedReviewer]', 'If defined, only change requests with a requested reviewer for this user will be returned.')
         .option('--topic [topic]', 'If defined, only change requests linked to this site topic will be returned.')
-        .option('--orderBy [orderBy]', '')
+        .option('--orderBy [orderBy]', '[one of: updatedAt, createdAt, default updatedAt]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -1425,7 +1425,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.list');
             const path = `/spaces/${spaceId}/change-requests`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["status"] !== undefined) query['status'] = String(options["status"]);
@@ -1446,7 +1446,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1477,7 +1477,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1503,7 +1503,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1538,7 +1538,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1564,7 +1564,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1590,7 +1590,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1602,7 +1602,7 @@ export function registerGeneratedCommands(program: Command): void {
     spaces_changeRequests_reviewsCmd
         .command('list <spaceId> <changeRequestId>')
         .description('List all change request reviews')
-        .option('--format [format]', 'Output format for the content.')
+        .option('--format [format]', 'Output format for the content. [one of: document, markdown]')
         .option('--outdated [outdated]', 'Filter reviews marked as outdated.')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
@@ -1613,7 +1613,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.reviews.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/reviews`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
             if (options["outdated"] !== undefined) query['outdated'] = String(options["outdated"]);
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -1630,7 +1630,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1661,7 +1661,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1669,7 +1669,7 @@ export function registerGeneratedCommands(program: Command): void {
     spaces_changeRequests_reviewsCmd
         .command('get <spaceId> <changeRequestId> <reviewId>')
         .description('Get a change request review by its ID')
-        .option('--format [format]', 'Output format for the content.')
+        .option('--format [format]', 'Output format for the content. [one of: document, markdown]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -1677,7 +1677,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, reviewId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.reviews.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/reviews/${reviewId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
             try {
                 const response = await api.request({
@@ -1691,7 +1691,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1712,7 +1712,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.requested-reviewers.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/requested-reviewers`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -1727,7 +1727,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1760,7 +1760,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1786,7 +1786,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1807,7 +1807,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.conversations.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/conversations`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -1822,7 +1822,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1853,7 +1853,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1879,7 +1879,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1893,8 +1893,8 @@ export function registerGeneratedCommands(program: Command): void {
         .description('List all change request links')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
-        .option('--status [status]', '')
-        .option('--brokenContext [brokenContext]', '')
+        .option('--status [status]', '[one of: ok, broken, in-app]')
+        .option('--brokenContext [brokenContext]', '[one of: change-request, space]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -1902,7 +1902,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.links.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/links`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["status"] !== undefined) query['status'] = String(options["status"]);
@@ -1919,7 +1919,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1933,11 +1933,11 @@ export function registerGeneratedCommands(program: Command): void {
         .description('List all change request comments')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
-        .option('--order [order]', 'An order for the items in the list')
-        .option('--format [format]', 'Output format for the content.')
-        .option('--status [status]', 'When provided, only comments with the given status are returned. Defaults to "all".')
+        .option('--order [order]', 'An order for the items in the list [one of: asc, desc, default desc]')
+        .option('--format [format]', 'Output format for the content. [one of: document, markdown]')
+        .option('--status [status]', 'When provided, only comments with the given status are returned. Defaults to "all". [one of: all, open, resolved, default all]')
         .option('--targetPage [targetPage]', 'The target page of the comment')
-        .option('--authors [authors]', 'User IDs to filter queried comments on')
+        .option('--authors [authors]', 'User IDs to filter queried comments on [repeatable: comma-separated or a JSON array]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -1945,14 +1945,14 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.comments.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["order"] !== undefined) query['order'] = String(options["order"]);
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
             if (options["status"] !== undefined) query['status'] = String(options["status"]);
             if (options["targetPage"] !== undefined) query['targetPage'] = String(options["targetPage"]);
-            if (options["authors"] !== undefined) query['authors'] = String(options["authors"]);
+            if (options["authors"] !== undefined) query['authors'] = coerceArrayQueryParam(options["authors"]);
             try {
                 const response = await api.request({
                     path,
@@ -1965,7 +1965,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -1998,7 +1998,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2006,7 +2006,7 @@ export function registerGeneratedCommands(program: Command): void {
     spaces_changeRequests_commentsCmd
         .command('get <spaceId> <changeRequestId> <commentId>')
         .description('Get a change request comment')
-        .option('--format [format]', 'Output format for the content.')
+        .option('--format [format]', 'Output format for the content. [one of: document, markdown]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -2014,7 +2014,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, commentId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.comments.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments/${commentId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
             try {
                 const response = await api.request({
@@ -2028,7 +2028,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2063,7 +2063,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2089,7 +2089,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2103,7 +2103,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('List all change request comment replies')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
-        .option('--format [format]', 'Output format for the content.')
+        .option('--format [format]', 'Output format for the content. [one of: document, markdown]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -2111,7 +2111,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, commentId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.comments.replies.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments/${commentId}/replies`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
@@ -2127,7 +2127,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2135,7 +2135,7 @@ export function registerGeneratedCommands(program: Command): void {
     spaces_changeRequests_comments_repliesCmd
         .command('post <spaceId> <changeRequestId> <commentId>')
         .description('Create a change request comment reply')
-        .option('--format [format]', 'Output format for the content.')
+        .option('--format [format]', 'Output format for the content. [one of: document, markdown]')
         .option('--body <json>', 'Request body as a JSON string')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
@@ -2144,7 +2144,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, commentId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.comments.replies.post');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments/${commentId}/replies`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
             const body = options.body ? JSON.parse(options.body) : undefined;
             try {
@@ -2160,7 +2160,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2168,7 +2168,7 @@ export function registerGeneratedCommands(program: Command): void {
     spaces_changeRequests_comments_repliesCmd
         .command('get <spaceId> <changeRequestId> <commentId> <commentReplyId>')
         .description('Get a change request comment reply')
-        .option('--format [format]', 'Output format for the content.')
+        .option('--format [format]', 'Output format for the content. [one of: document, markdown]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -2176,7 +2176,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, commentId, commentReplyId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.comments.replies.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/comments/${commentId}/replies/${commentReplyId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
             try {
                 const response = await api.request({
@@ -2190,7 +2190,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2225,7 +2225,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2251,7 +2251,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2281,7 +2281,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2302,7 +2302,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.content.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
             if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
@@ -2317,7 +2317,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2325,8 +2325,9 @@ export function registerGeneratedCommands(program: Command): void {
     spaces_changeRequests_contentCmd
         .command('update <spaceId> <changeRequestId>')
         .description('Update the content of a change request')
-        .option('--changes <json>', '(required) [JSON array]')
+        .option('--changes <json>', '(required) [JSON array] — set "operation" to one of: update_page, insert_page, delete_page')
         .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
+        .option('--normalize', 'Make page-document markdown round-trip safe before sending: strip a duplicated leading H1 title and collapse multi-line {% ... %} blocks onto one line')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -2336,6 +2337,7 @@ export function registerGeneratedCommands(program: Command): void {
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content`;
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.changes !== undefined) body['changes'] = coerceBodyFlag(options.changes, 'array');
+            if (options.normalize) normalizeChangesMarkdown(body['changes']);
             try {
                 const response = await api.request({
                     path,
@@ -2348,7 +2350,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2369,7 +2371,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.content.pages.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/pages`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
             if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
@@ -2384,7 +2386,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2407,7 +2409,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.content.files.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/files`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
@@ -2424,7 +2426,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2441,7 +2443,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, fileId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.content.files.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/files/${fileId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
             if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
@@ -2456,7 +2458,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2477,7 +2479,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, fileId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.content.files.backlinks.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/files/${fileId}/backlinks`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -2492,7 +2494,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2504,8 +2506,8 @@ export function registerGeneratedCommands(program: Command): void {
     spaces_changeRequests_content_pageCmd
         .command('get <spaceId> <changeRequestId> <pageId>')
         .description('Get a change request page by its ID')
-        .option('--format [format]', 'Output format for the content.')
-        .option('--format.markdown.refs [format.markdown.refs]', 'Controls how content references are formatted in markdown output. Ignored unless `format=markdown`.  - `relative`: Format page references as relative links from the current page. Other references might not be handled. - `stable`: Format content references as stable idempotent refs containing their identifiers.')
+        .option('--format [format]', 'Output format for the content. [one of: document, markdown]')
+        .option('--format.markdown.refs [format.markdown.refs]', 'Controls how content references are formatted in markdown output. Ignored unless `format=markdown`.  - `relative`: Format page references as relative links from the current page. Other references might not be handled. - `stable`: Format content references as stable idempotent refs containing their identifiers.  [one of: relative, stable, default relative]')
         .option('--evaluated [evaluated]', 'Controls whether the document should be evaluated. - When set to `true`, the entire document will be evaluated. - When set to `deterministic-only`, only expressions that depend   exclusively on deterministic inputs will be evaluated.')
         .option('--dereferenced [dereferenced]', 'Controls whether the document should be deferenced (eference to other content will be resolved and expanded). - When set to `true`, the entire document will be deferenced - When set to `reusable-contents`, only reusable contents will be deferenced.')
         .option('--metadata [metadata]', 'If `false` is passed, "git" mutable metadata will not returned. Passing `false` can optimize performances of the lookup.')
@@ -2517,7 +2519,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, pageId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.content.page.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/page/${pageId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
             if (options["format.markdown.refs"] !== undefined) query['format.markdown.refs'] = String(options["format.markdown.refs"]);
             if (options["evaluated"] !== undefined) query['evaluated'] = String(options["evaluated"]);
@@ -2536,7 +2538,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2557,7 +2559,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, pageId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.content.page.links.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/page/${pageId}/links`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -2572,7 +2574,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2593,7 +2595,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, pageId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.content.page.backlinks.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/page/${pageId}/backlinks`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -2608,7 +2610,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2638,7 +2640,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2659,7 +2661,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, reusableContentId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.content.reusable-contents.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/reusable-contents/${reusableContentId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
             if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
@@ -2674,7 +2676,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2686,8 +2688,8 @@ export function registerGeneratedCommands(program: Command): void {
     spaces_changeRequests_content_pathCmd
         .command('get <spaceId> <changeRequestId> <pagePath>')
         .description('Get a change request page by its path')
-        .option('--format [format]', 'Output format for the content.')
-        .option('--format.markdown.refs [format.markdown.refs]', 'Controls how content references are formatted in markdown output. Ignored unless `format=markdown`.  - `relative`: Format page references as relative links from the current page. Other references might not be handled. - `stable`: Format content references as stable idempotent refs containing their identifiers.')
+        .option('--format [format]', 'Output format for the content. [one of: document, markdown]')
+        .option('--format.markdown.refs [format.markdown.refs]', 'Controls how content references are formatted in markdown output. Ignored unless `format=markdown`.  - `relative`: Format page references as relative links from the current page. Other references might not be handled. - `stable`: Format content references as stable idempotent refs containing their identifiers.  [one of: relative, stable, default relative]')
         .option('--evaluated [evaluated]', 'Controls whether the document should be evaluated. - When set to `true`, the entire document will be evaluated. - When set to `deterministic-only`, only expressions that depend   exclusively on deterministic inputs will be evaluated.')
         .option('--dereferenced [dereferenced]', 'Controls whether the document should be deferenced (eference to other content will be resolved and expanded). - When set to `true`, the entire document will be deferenced - When set to `reusable-contents`, only reusable contents will be deferenced.')
         .option('--metadata [metadata]', 'If `false` is passed, "git" mutable metadata will not returned. Passing `false` can optimize performances of the lookup.')
@@ -2699,7 +2701,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, pagePath, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.content.path.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/content/path/${pagePath}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
             if (options["format.markdown.refs"] !== undefined) query['format.markdown.refs'] = String(options["format.markdown.refs"]);
             if (options["evaluated"] !== undefined) query['evaluated'] = String(options["evaluated"]);
@@ -2718,7 +2720,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2738,7 +2740,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.changes.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/changes`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
                 const response = await api.request({
@@ -2752,7 +2754,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2773,7 +2775,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.pdf.get');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/pdf`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["only"] !== undefined) query['only'] = String(options["only"]);
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             try {
@@ -2788,7 +2790,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2809,7 +2811,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, changeRequestId, options) => {
             const api = await getAPIClient(true, 'spaces.change-requests.commenters.list');
             const path = `/spaces/${spaceId}/change-requests/${changeRequestId}/commenters`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -2824,7 +2826,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2845,7 +2847,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, revisionId, options) => {
             const api = await getAPIClient(true, 'spaces.revisions.get');
             const path = `/spaces/${spaceId}/revisions/${revisionId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
             if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
@@ -2860,7 +2862,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2882,7 +2884,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, revisionId, options) => {
             const api = await getAPIClient(true, 'spaces.revisions.changes.get');
             const path = `/spaces/${spaceId}/revisions/${revisionId}/changes`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
             if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
@@ -2898,7 +2900,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2919,7 +2921,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, revisionId, options) => {
             const api = await getAPIClient(true, 'spaces.revisions.pages.list');
             const path = `/spaces/${spaceId}/revisions/${revisionId}/pages`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
             if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
@@ -2934,7 +2936,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2957,7 +2959,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, revisionId, options) => {
             const api = await getAPIClient(true, 'spaces.revisions.files.list');
             const path = `/spaces/${spaceId}/revisions/${revisionId}/files`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
@@ -2974,7 +2976,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -2991,7 +2993,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, revisionId, fileId, options) => {
             const api = await getAPIClient(true, 'spaces.revisions.files.get');
             const path = `/spaces/${spaceId}/revisions/${revisionId}/files/${fileId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
             if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
@@ -3006,7 +3008,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3018,8 +3020,8 @@ export function registerGeneratedCommands(program: Command): void {
     spaces_revisions_pageCmd
         .command('get <spaceId> <revisionId> <pageId>')
         .description('Get a space revision page by its ID')
-        .option('--format [format]', 'Output format for the content.')
-        .option('--format.markdown.refs [format.markdown.refs]', 'Controls how content references are formatted in markdown output. Ignored unless `format=markdown`.  - `relative`: Format page references as relative links from the current page. Other references might not be handled. - `stable`: Format content references as stable idempotent refs containing their identifiers.')
+        .option('--format [format]', 'Output format for the content. [one of: document, markdown]')
+        .option('--format.markdown.refs [format.markdown.refs]', 'Controls how content references are formatted in markdown output. Ignored unless `format=markdown`.  - `relative`: Format page references as relative links from the current page. Other references might not be handled. - `stable`: Format content references as stable idempotent refs containing their identifiers.  [one of: relative, stable, default relative]')
         .option('--evaluated [evaluated]', 'Controls whether the document should be evaluated. - When set to `true`, the entire document will be evaluated. - When set to `deterministic-only`, only expressions that depend   exclusively on deterministic inputs will be evaluated.')
         .option('--dereferenced [dereferenced]', 'Controls whether the document should be deferenced (eference to other content will be resolved and expanded). - When set to `true`, the entire document will be deferenced - When set to `reusable-contents`, only reusable contents will be deferenced.')
         .option('--metadata [metadata]', 'If `false` is passed, "git" mutable metadata will not returned. Passing `false` can optimize performances of the lookup.')
@@ -3031,7 +3033,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, revisionId, pageId, options) => {
             const api = await getAPIClient(true, 'spaces.revisions.page.get');
             const path = `/spaces/${spaceId}/revisions/${revisionId}/page/${pageId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
             if (options["format.markdown.refs"] !== undefined) query['format.markdown.refs'] = String(options["format.markdown.refs"]);
             if (options["evaluated"] !== undefined) query['evaluated'] = String(options["evaluated"]);
@@ -3050,7 +3052,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3071,7 +3073,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, revisionId, pageId, options) => {
             const api = await getAPIClient(true, 'spaces.revisions.page.document.get');
             const path = `/spaces/${spaceId}/revisions/${revisionId}/page/${pageId}/document`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["evaluated"] !== undefined) query['evaluated'] = String(options["evaluated"]);
             if (options["dereferenced"] !== undefined) query['dereferenced'] = String(options["dereferenced"]);
             try {
@@ -3086,7 +3088,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3116,7 +3118,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3128,8 +3130,8 @@ export function registerGeneratedCommands(program: Command): void {
     spaces_revisions_pathCmd
         .command('get <spaceId> <revisionId> <pagePath>')
         .description('Get a space revision page by its path')
-        .option('--format [format]', 'Output format for the content.')
-        .option('--format.markdown.refs [format.markdown.refs]', 'Controls how content references are formatted in markdown output. Ignored unless `format=markdown`.  - `relative`: Format page references as relative links from the current page. Other references might not be handled. - `stable`: Format content references as stable idempotent refs containing their identifiers.')
+        .option('--format [format]', 'Output format for the content. [one of: document, markdown]')
+        .option('--format.markdown.refs [format.markdown.refs]', 'Controls how content references are formatted in markdown output. Ignored unless `format=markdown`.  - `relative`: Format page references as relative links from the current page. Other references might not be handled. - `stable`: Format content references as stable idempotent refs containing their identifiers.  [one of: relative, stable, default relative]')
         .option('--evaluated [evaluated]', 'Controls whether the document should be evaluated. - When set to `true`, the entire document will be evaluated. - When set to `deterministic-only`, only expressions that depend   exclusively on deterministic inputs will be evaluated.')
         .option('--dereferenced [dereferenced]', 'Controls whether the document should be deferenced (eference to other content will be resolved and expanded). - When set to `true`, the entire document will be deferenced - When set to `reusable-contents`, only reusable contents will be deferenced.')
         .option('--metadata [metadata]', 'If `false` is passed, "git" mutable metadata will not returned. Passing `false` can optimize performances of the lookup.')
@@ -3141,7 +3143,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, revisionId, pagePath, options) => {
             const api = await getAPIClient(true, 'spaces.revisions.path.get');
             const path = `/spaces/${spaceId}/revisions/${revisionId}/path/${pagePath}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
             if (options["format.markdown.refs"] !== undefined) query['format.markdown.refs'] = String(options["format.markdown.refs"]);
             if (options["evaluated"] !== undefined) query['evaluated'] = String(options["evaluated"]);
@@ -3160,7 +3162,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3181,7 +3183,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, revisionId, reusableContentId, options) => {
             const api = await getAPIClient(true, 'spaces.revisions.reusable-contents.get');
             const path = `/spaces/${spaceId}/revisions/${revisionId}/reusable-contents/${reusableContentId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["metadata"] !== undefined) query['metadata'] = String(options["metadata"]);
             if (options["computed"] !== undefined) query['computed'] = String(options["computed"]);
             try {
@@ -3196,7 +3198,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3217,7 +3219,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, revisionId, reusableContentId, options) => {
             const api = await getAPIClient(true, 'spaces.revisions.reusable-contents.document.get');
             const path = `/spaces/${spaceId}/revisions/${revisionId}/reusable-contents/${reusableContentId}/document`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["evaluated"] !== undefined) query['evaluated'] = String(options["evaluated"]);
             if (options["dereferenced"] !== undefined) query['dereferenced'] = String(options["dereferenced"]);
             try {
@@ -3232,7 +3234,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3246,11 +3248,11 @@ export function registerGeneratedCommands(program: Command): void {
         .description('List all space comments')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
-        .option('--order [order]', 'An order for the items in the list')
-        .option('--status [status]', 'When provided, only comments with the given status are returned. Defaults to "all".')
-        .option('--format [format]', 'Output format for the content.')
+        .option('--order [order]', 'An order for the items in the list [one of: asc, desc, default desc]')
+        .option('--status [status]', 'When provided, only comments with the given status are returned. Defaults to "all". [one of: all, open, resolved, default all]')
+        .option('--format [format]', 'Output format for the content. [one of: document, markdown]')
         .option('--targetPage [targetPage]', 'The target page of the comment')
-        .option('--authors [authors]', 'User IDs to filter queried comments on')
+        .option('--authors [authors]', 'User IDs to filter queried comments on [repeatable: comma-separated or a JSON array]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -3258,14 +3260,14 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true, 'spaces.comments.list');
             const path = `/spaces/${spaceId}/comments`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["order"] !== undefined) query['order'] = String(options["order"]);
             if (options["status"] !== undefined) query['status'] = String(options["status"]);
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
             if (options["targetPage"] !== undefined) query['targetPage'] = String(options["targetPage"]);
-            if (options["authors"] !== undefined) query['authors'] = String(options["authors"]);
+            if (options["authors"] !== undefined) query['authors'] = coerceArrayQueryParam(options["authors"]);
             try {
                 const response = await api.request({
                     path,
@@ -3278,7 +3280,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3311,7 +3313,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3319,7 +3321,7 @@ export function registerGeneratedCommands(program: Command): void {
     spaces_commentsCmd
         .command('get <spaceId> <commentId>')
         .description('Get a space comment')
-        .option('--format [format]', 'Output format for the content.')
+        .option('--format [format]', 'Output format for the content. [one of: document, markdown]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -3327,7 +3329,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, commentId, options) => {
             const api = await getAPIClient(true, 'spaces.comments.get');
             const path = `/spaces/${spaceId}/comments/${commentId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
             try {
                 const response = await api.request({
@@ -3341,7 +3343,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3376,7 +3378,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3402,7 +3404,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3416,7 +3418,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('List all space comment replies')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
-        .option('--format [format]', 'Output format for the content.')
+        .option('--format [format]', 'Output format for the content. [one of: document, markdown]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -3424,7 +3426,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, commentId, options) => {
             const api = await getAPIClient(true, 'spaces.comments.replies.list');
             const path = `/spaces/${spaceId}/comments/${commentId}/replies`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
@@ -3440,7 +3442,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3469,7 +3471,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3477,7 +3479,7 @@ export function registerGeneratedCommands(program: Command): void {
     spaces_comments_repliesCmd
         .command('get <spaceId> <commentId> <commentReplyId>')
         .description('Get a space comment reply')
-        .option('--format [format]', 'Output format for the content.')
+        .option('--format [format]', 'Output format for the content. [one of: document, markdown]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -3485,7 +3487,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, commentId, commentReplyId, options) => {
             const api = await getAPIClient(true, 'spaces.comments.replies.get');
             const path = `/spaces/${spaceId}/comments/${commentId}/replies/${commentReplyId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
             try {
                 const response = await api.request({
@@ -3499,7 +3501,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3532,7 +3534,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3558,7 +3560,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3579,7 +3581,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true, 'spaces.commenters.list');
             const path = `/spaces/${spaceId}/commenters`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -3594,7 +3596,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3624,7 +3626,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3645,7 +3647,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true, 'spaces.pdf.get');
             const path = `/spaces/${spaceId}/pdf`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["only"] !== undefined) query['only'] = String(options["only"]);
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             try {
@@ -3660,7 +3662,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3674,7 +3676,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('Get all links in a space including their status and location where they appear.')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
-        .option('--status [status]', '')
+        .option('--status [status]', '[one of: ok, broken, in-app]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -3682,7 +3684,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (spaceId, options) => {
             const api = await getAPIClient(true, 'spaces.links.list');
             const path = `/spaces/${spaceId}/links`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["status"] !== undefined) query['status'] = String(options["status"]);
@@ -3698,7 +3700,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3716,13 +3718,13 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--search [search]', 'A search string to filter integrations by name')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
-        .option('--category [category]', 'Filter the integrations by category')
+        .option('--category [category]', 'Filter the integrations by category [one of: analytics, collaboration, content, gitsync, marketing, visitor-auth, other]')
         .option('--blockDomain [blockDomain]', 'Filter the integrations by block\'s domains')
         .option('--blocks [blocks]', 'If true, returns only integrations with blocks. If false, returns only integrations without blocks.')
         .option('--contentSources [contentSources]', 'If true, returns only integrations with contentSources. If false, returns only integrations without contentSources.')
         .option('--owner [owner]', 'If defined, only list integrations owned by the given organization.')
-        .option('--scope [scope]', 'Filter the integrations by scope')
-        .option('--target [target]', 'Filter the integrations by target')
+        .option('--scope [scope]', 'Filter the integrations by scope [one of: space:content:read, space:content:write, space:metadata:read, space:metadata:write, space:git:sync, page:feedback:read, site:metadata:read, site:views:read, site:script:inject, site:script:cookies, site:visitor:auth, site:visitor:claims, site:adaptive:read, site:adaptive:write, conversations:ingest, openapi:read, openapi:write]')
+        .option('--target [target]', 'Filter the integrations by target [one of: all, site, space, organization]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -3748,7 +3750,7 @@ export function registerGeneratedCommands(program: Command): void {
                 console.error('Specify a valid scope (or none for all): --space, --organization, --site. Some scopes require a combination (e.g. --integration with --installation).');
                 process.exit(1);
             }
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["search"] !== undefined) query['search'] = String(options["search"]);
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
@@ -3771,7 +3773,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3797,7 +3799,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3856,7 +3858,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3882,7 +3884,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3904,7 +3906,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (integrationName, options) => {
             const api = await getAPIClient(true, 'integrations.installations.list');
             const path = `/integrations/${integrationName}/installations`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["externalId"] !== undefined) query['externalId'] = String(options["externalId"]);
@@ -3920,7 +3922,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3951,7 +3953,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -3977,7 +3979,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4012,7 +4014,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4038,7 +4040,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4068,7 +4070,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4090,7 +4092,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (integrationName, installationId, options) => {
             const api = await getAPIClient(true, 'integrations.installations.spaces.install');
             const path = `/integrations/${integrationName}/installations/${installationId}/spaces`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.space !== undefined) body['space'] = options.space;
@@ -4107,7 +4109,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4123,7 +4125,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (integrationName, installationId, spaceId, options) => {
             const api = await getAPIClient(true, 'integrations.installations.spaces.get');
             const path = `/integrations/${integrationName}/installations/${installationId}/spaces/${spaceId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
             try {
                 const response = await api.request({
@@ -4137,7 +4139,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4155,7 +4157,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (integrationName, installationId, spaceId, options) => {
             const api = await getAPIClient(true, 'integrations.installations.spaces.update');
             const path = `/integrations/${integrationName}/installations/${installationId}/spaces/${spaceId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.externalIds !== undefined) body['externalIds'] = coerceBodyFlag(options.externalIds, 'array');
@@ -4172,7 +4174,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4198,7 +4200,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4220,7 +4222,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (integrationName, installationId, options) => {
             const api = await getAPIClient(true, 'integrations.installations.sites.list');
             const path = `/integrations/${integrationName}/installations/${installationId}/sites`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
@@ -4236,7 +4238,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4254,7 +4256,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (integrationName, installationId, options) => {
             const api = await getAPIClient(true, 'integrations.installations.sites.install');
             const path = `/integrations/${integrationName}/installations/${installationId}/sites`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.siteId !== undefined) body['siteId'] = options.siteId;
@@ -4271,7 +4273,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4287,7 +4289,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (integrationName, installationId, siteId, options) => {
             const api = await getAPIClient(true, 'integrations.installations.sites.get');
             const path = `/integrations/${integrationName}/installations/${installationId}/sites/${siteId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
             try {
                 const response = await api.request({
@@ -4301,7 +4303,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4319,7 +4321,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (integrationName, installationId, siteId, options) => {
             const api = await getAPIClient(true, 'integrations.installations.sites.update');
             const path = `/integrations/${integrationName}/installations/${installationId}/sites/${siteId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["extended"] !== undefined) query['extended'] = String(options["extended"]);
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.externalIds !== undefined) body['externalIds'] = coerceBodyFlag(options.externalIds, 'array');
@@ -4336,7 +4338,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4362,7 +4364,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4383,7 +4385,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (integrationName, options) => {
             const api = await getAPIClient(true, 'integrations.events.list');
             const path = `/integrations/${integrationName}/events`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -4398,7 +4400,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4424,7 +4426,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4447,7 +4449,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (integrationName, options) => {
             const api = await getAPIClient(true, 'integrations.sites.list');
             const path = `/integrations/${integrationName}/sites`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["externalId"] !== undefined) query['externalId'] = String(options["externalId"]);
@@ -4464,7 +4466,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4501,7 +4503,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4527,7 +4529,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4562,7 +4564,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4592,7 +4594,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4625,7 +4627,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4651,7 +4653,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4682,7 +4684,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4713,7 +4715,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4731,7 +4733,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true, 'collections.list');
             const path = `/orgs/${organizationId}/collections`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["nested"] !== undefined) query['nested'] = String(options["nested"]);
@@ -4747,7 +4749,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4780,7 +4782,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4813,7 +4815,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4834,7 +4836,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (collectionId, options) => {
             const api = await getAPIClient(true, 'collections.permissions.teams.list');
             const path = `/collections/${collectionId}/permissions/teams`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -4849,7 +4851,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4878,7 +4880,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4904,7 +4906,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4925,7 +4927,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (collectionId, options) => {
             const api = await getAPIClient(true, 'collections.permissions.users.list');
             const path = `/collections/${collectionId}/permissions/users`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -4940,7 +4942,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4969,7 +4971,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -4995,7 +4997,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5009,7 +5011,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('List all collections users permissions')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
-        .option('--role [role]', 'If defined, only members with this role will be returned.')
+        .option('--role [role]', 'If defined, only members with this role will be returned. [one of: admin, create, edit, review, comment, read]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -5017,7 +5019,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (collectionId, options) => {
             const api = await getAPIClient(true, 'collections.permissions.aggregate.list');
             const path = `/collections/${collectionId}/permissions/aggregate`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["role"] !== undefined) query['role'] = String(options["role"]);
@@ -5033,7 +5035,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5054,7 +5056,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (options) => {
             const api = await getAPIClient(true, 'organizations.list');
             const path = '/orgs';
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -5069,7 +5071,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5095,7 +5097,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5136,7 +5138,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5162,7 +5164,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5180,7 +5182,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true, 'organizations.search');
             const path = `/orgs/${organizationId}/search`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["query"] !== undefined) query['query'] = String(options["query"]);
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
@@ -5196,7 +5198,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5210,10 +5212,10 @@ export function registerGeneratedCommands(program: Command): void {
         .description('List all organization members')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
-        .option('--order [order]', 'An order for the items in the list')
+        .option('--order [order]', 'An order for the items in the list [one of: asc, desc, default desc]')
         .option('--role [role]', 'The role to filter the list by')
         .option('--search [search]', 'A query to filter the list by display name and email')
-        .option('--sort [sort]', 'The property to sort the list by')
+        .option('--sort [sort]', 'The property to sort the list by [one of: joinedAt, lastSeenAt, name, default joinedAt]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -5221,7 +5223,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true, 'organizations.members.list');
             const path = `/orgs/${organizationId}/members`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["order"] !== undefined) query['order'] = String(options["order"]);
@@ -5240,7 +5242,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5266,7 +5268,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5295,7 +5297,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5321,7 +5323,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5351,7 +5353,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5373,7 +5375,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, userId, options) => {
             const api = await getAPIClient(true, 'organizations.members.teams.list');
             const path = `/orgs/${organizationId}/members/${userId}/teams`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["title"] !== undefined) query['title'] = String(options["title"]);
@@ -5389,7 +5391,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5419,7 +5421,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5442,7 +5444,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true, 'organizations.teams.list');
             const path = `/orgs/${organizationId}/teams`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["owner"] !== undefined) query['owner'] = String(options["owner"]);
@@ -5459,7 +5461,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5492,7 +5494,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5518,7 +5520,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5549,7 +5551,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5575,7 +5577,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5596,7 +5598,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, teamId, options) => {
             const api = await getAPIClient(true, 'organizations.teams.members.list');
             const path = `/orgs/${organizationId}/teams/${teamId}/members`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -5611,7 +5613,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5644,7 +5646,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5675,7 +5677,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5701,7 +5703,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5738,7 +5740,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5764,7 +5766,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5785,7 +5787,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true, 'organizations.link-invites.list');
             const path = `/orgs/${organizationId}/link-invites`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -5800,7 +5802,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5829,7 +5831,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5855,7 +5857,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5884,7 +5886,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5910,7 +5912,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5924,15 +5926,15 @@ export function registerGeneratedCommands(program: Command): void {
         .description('List all change requests in an organization')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
-        .option('--status [status]', '')
+        .option('--status [status]', '[repeatable: comma-separated or a JSON array]')
         .option('--creator [creator]', 'If defined, only change requests created by this user will be returned.')
         .option('--contributor [contributor]', 'If defined, only change requests with contributions from this user will be returned.')
         .option('--requestedReviewer [requestedReviewer]', 'If defined, only change requests with a requested reviewer for this user will be returned.')
         .option('--site [site]', 'If defined, only change requests linked to this site will be returned.')
         .option('--space [space]', 'If defined, only change requests from this space will be returned.')
         .option('--topic [topic]', 'If defined, only change requests linked to this site topic will be returned.')
-        .option('--finding [finding]', 'Controls whether change requests from triage are included. Pass `none` to exclude change requests from triage, or `all` to include them. Default is `none`.')
-        .option('--orderBy [orderBy]', '')
+        .option('--finding [finding]', 'Controls whether change requests from triage are included. Pass `none` to exclude change requests from triage, or `all` to include them. Default is `none`. [one of: none, all]')
+        .option('--orderBy [orderBy]', '[one of: updatedAt, createdAt, default updatedAt]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -5940,10 +5942,10 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true, 'organizations.change-requests.list');
             const path = `/orgs/${organizationId}/change-requests`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
-            if (options["status"] !== undefined) query['status'] = String(options["status"]);
+            if (options["status"] !== undefined) query['status'] = coerceArrayQueryParam(options["status"]);
             if (options["creator"] !== undefined) query['creator'] = String(options["creator"]);
             if (options["contributor"] !== undefined) query['contributor'] = String(options["contributor"]);
             if (options["requestedReviewer"] !== undefined) query['requestedReviewer'] = String(options["requestedReviewer"]);
@@ -5964,7 +5966,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -5998,7 +6000,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6012,7 +6014,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('List all integration statuses')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
-        .option('--target [target]', 'Filter installations by their target (organization, space, or site). When not provided, defaults to organization-level installations for backwards compatibility')
+        .option('--target [target]', 'Filter installations by their target (organization, space, or site). When not provided, defaults to organization-level installations for backwards compatibility [one of: organization, space, site, default organization]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -6020,7 +6022,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true, 'organizations.integrations.installations-status.list');
             const path = `/orgs/${organizationId}/integrations/installations-status`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["target"] !== undefined) query['target'] = String(options["target"]);
@@ -6036,7 +6038,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6058,7 +6060,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true, 'organizations.installations.list');
             const path = `/orgs/${organizationId}/installations`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["search"] !== undefined) query['search'] = String(options["search"]);
@@ -6074,7 +6076,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6095,7 +6097,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true, 'organizations.saml.list');
             const path = `/orgs/${organizationId}/saml`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -6110,7 +6112,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6149,7 +6151,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6175,7 +6177,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6214,7 +6216,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6240,7 +6242,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6270,7 +6272,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6282,7 +6284,7 @@ export function registerGeneratedCommands(program: Command): void {
     organizations_askCmd
         .command('create <organizationId>')
         .description('Ask a question in an organization')
-        .option('--format [format]', 'Output format for the content.')
+        .option('--format [format]', 'Output format for the content. [one of: document, markdown]')
         .option('--details [details]', 'Return query details in the result')
         .option('--query <value>', '(required)')
         .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
@@ -6293,7 +6295,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true, 'organizations.ask.create');
             const path = `/orgs/${organizationId}/ask`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
             if (options["details"] !== undefined) query['details'] = String(options["details"]);
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
@@ -6311,7 +6313,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6320,7 +6322,7 @@ export function registerGeneratedCommands(program: Command): void {
         .command('stream <organizationId>')
         .description('Ask a question in an organization (streamed)')
         .option('--query <query>', '')
-        .option('--format [format]', 'Output format for the content.')
+        .option('--format [format]', 'Output format for the content. [one of: document, markdown]')
         .option('--details [details]', 'Return query details in the result')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
@@ -6329,7 +6331,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true, 'organizations.ask.stream');
             const path = `/orgs/${organizationId}/ask/stream`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["query"] !== undefined) query['query'] = String(options["query"]);
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
             if (options["details"] !== undefined) query['details'] = String(options["details"]);
@@ -6345,7 +6347,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6375,7 +6377,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6401,7 +6403,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6422,7 +6424,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true, 'organizations.openapi.list');
             const path = `/orgs/${organizationId}/openapi`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -6437,7 +6439,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6468,7 +6470,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6494,7 +6496,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6523,7 +6525,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6554,7 +6556,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6580,7 +6582,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6601,7 +6603,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, specSlug, options) => {
             const api = await getAPIClient(true, 'organizations.openapi.versions.list');
             const path = `/orgs/${organizationId}/openapi/${specSlug}/versions`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -6616,7 +6618,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6642,7 +6644,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6672,7 +6674,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6702,7 +6704,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6732,7 +6734,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6762,7 +6764,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6791,7 +6793,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6812,7 +6814,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true, 'organizations.translations.list');
             const path = `/orgs/${organizationId}/translations`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -6827,7 +6829,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6858,7 +6860,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6884,7 +6886,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6913,7 +6915,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6939,7 +6941,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6965,7 +6967,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -6979,7 +6981,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('List glossary entries')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
-        .option('--orderBy [orderBy]', 'Sort results by language key')
+        .option('--orderBy [orderBy]', 'Sort results by language key [one of: en, fr, de, es, it, pt, pt-br, ru, ja, zh, zh-tw, yue, ko, ar, hi, nl, pl, tr, sv, no, da, fi, el, cs, hu, ro, th, vi, id, ms, he, uk, sk, bg, hr, lt, lv, et, sl]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -6987,7 +6989,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true, 'organizations.translations-glossary.list');
             const path = `/orgs/${organizationId}/translations-glossary`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["orderBy"] !== undefined) query['orderBy'] = String(options["orderBy"]);
@@ -7003,7 +7005,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7034,7 +7036,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7060,7 +7062,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7095,7 +7097,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7121,7 +7123,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7138,7 +7140,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--space [space]', 'Identifier of the space to filter the sites by')
         .option('--title [title]', 'Filter sites by their title')
         .option('--published [published]', 'Filter sites by their published status')
-        .option('--type [type]', 'Filter by site type')
+        .option('--type [type]', 'Filter by site type [repeatable: comma-separated or a JSON array]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -7146,13 +7148,13 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.list');
             const path = `/orgs/${organizationId}/sites`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["space"] !== undefined) query['space'] = String(options["space"]);
             if (options["title"] !== undefined) query['title'] = String(options["title"]);
             if (options["published"] !== undefined) query['published'] = String(options["published"]);
-            if (options["type"] !== undefined) query['type'] = String(options["type"]);
+            if (options["type"] !== undefined) query['type'] = coerceArrayQueryParam(options["type"]);
             try {
                 const response = await api.request({
                     path,
@@ -7165,7 +7167,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7202,7 +7204,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7228,7 +7230,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7269,7 +7271,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7295,7 +7297,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7321,7 +7323,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7347,7 +7349,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7365,7 +7367,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.search');
             const path = `/orgs/${organizationId}/sites/${siteId}/search`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             const body = options.body ? JSON.parse(options.body) : undefined;
@@ -7382,7 +7384,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7420,7 +7422,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7450,7 +7452,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7479,7 +7481,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7509,7 +7511,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7529,7 +7531,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.published.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/published`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["shareKey"] !== undefined) query['shareKey'] = String(options["shareKey"]);
             try {
                 const response = await api.request({
@@ -7543,7 +7545,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7565,7 +7567,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.share-links.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/share-links`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["search"] !== undefined) query['search'] = String(options["search"]);
@@ -7581,7 +7583,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7612,7 +7614,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7645,7 +7647,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7671,7 +7673,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7691,7 +7693,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.structure.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/structure`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["shareKey"] !== undefined) query['shareKey'] = String(options["shareKey"]);
             try {
                 const response = await api.request({
@@ -7705,7 +7707,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7734,7 +7736,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7768,7 +7770,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7797,7 +7799,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7823,7 +7825,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7846,7 +7848,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.publishing.preview.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/publishing/preview`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["siteSpace"] !== undefined) query['siteSpace'] = String(options["siteSpace"]);
             if (options["claims"] !== undefined) query['claims'] = String(options["claims"]);
             if (options["draft"] !== undefined) query['draft'] = String(options["draft"]);
@@ -7863,7 +7865,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7883,7 +7885,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.customization.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/customization`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["unmasked"] !== undefined) query['unmasked'] = String(options["unmasked"]);
             try {
                 const response = await api.request({
@@ -7897,7 +7899,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7930,7 +7932,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7960,7 +7962,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -7983,7 +7985,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.site-spaces.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/site-spaces`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["shareKey"] !== undefined) query['shareKey'] = String(options["shareKey"]);
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
@@ -8000,7 +8002,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8035,7 +8037,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8072,7 +8074,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8098,7 +8100,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8127,7 +8129,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8147,7 +8149,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, siteSpaceId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.site-spaces.customization.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/site-spaces/${siteSpaceId}/customization`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["unmasked"] !== undefined) query['unmasked'] = String(options["unmasked"]);
             try {
                 const response = await api.request({
@@ -8161,7 +8163,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8190,7 +8192,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8216,7 +8218,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8237,7 +8239,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.section-groups.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/section-groups`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -8252,7 +8254,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8289,7 +8291,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8322,7 +8324,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8348,7 +8350,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8377,7 +8379,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8399,7 +8401,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.sections.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/sections`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["shareKey"] !== undefined) query['shareKey'] = String(options["shareKey"]);
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
@@ -8415,7 +8417,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8450,7 +8452,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8487,7 +8489,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8513,7 +8515,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8542,7 +8544,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8554,7 +8556,7 @@ export function registerGeneratedCommands(program: Command): void {
     organizations_sites_askCmd
         .command('stream <organizationId> <siteId>')
         .description('Ask a question in a site')
-        .option('--format [format]', 'Output format for the content.')
+        .option('--format [format]', 'Output format for the content. [one of: document, markdown]')
         .option('--question <value>', '(required)')
         .option('--body <json>', 'Full request body as JSON; any typed flags above are merged on top')
         .option('--json', 'Output as JSON (machine-readable)')
@@ -8564,7 +8566,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.ask.stream');
             const path = `/orgs/${organizationId}/sites/${siteId}/ask`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["format"] !== undefined) query['format'] = String(options["format"]);
             const body: Record<string, unknown> = options.body ? JSON.parse(options.body) : {};
             if (options.question !== undefined) body['question'] = options.question;
@@ -8581,7 +8583,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8602,7 +8604,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.ask.questions.stream');
             const path = `/orgs/${organizationId}/sites/${siteId}/ask/questions`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["siteSpaceId"] !== undefined) query['siteSpaceId'] = String(options["siteSpaceId"]);
             if (options["spaceId"] !== undefined) query['spaceId'] = String(options["spaceId"]);
             try {
@@ -8617,7 +8619,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8631,7 +8633,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('List all context records')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
-        .option('--type [type]', 'Filter context records by type.')
+        .option('--type [type]', 'Filter context records by type. [one of: ticket, document]')
         .option('--connector [connector]', 'Filter context records by connector type.')
         .option('--connection [connection]', 'Filter context records by connection id.')
         .option('--topic [topic]', 'Filter context records by associated site topic ID.')
@@ -8642,7 +8644,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.context-records.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/context-records`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["type"] !== undefined) query['type'] = String(options["type"]);
@@ -8661,7 +8663,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8690,7 +8692,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8716,7 +8718,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8731,7 +8733,7 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
         .option('--topic [topic]', 'Filter scans by associated site topic ID.')
-        .option('--status [status]', 'Filter scans by status.')
+        .option('--status [status]', 'Filter scans by status. [one of: pending, running, done, failed]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -8739,7 +8741,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.scans.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/scans`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["topic"] !== undefined) query['topic'] = String(options["topic"]);
@@ -8756,7 +8758,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8787,7 +8789,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8813,7 +8815,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8828,9 +8830,9 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
         .option('--topic [topic]', 'Filter findings by associated site topic ID.')
-        .option('--status [status]', 'Filter findings by status.')
-        .option('--type [type]', 'Filter findings by type.')
-        .option('--severity [severity]', 'Filter findings by estimated severity.')
+        .option('--status [status]', 'Filter findings by status. [one of: open, done, canceled]')
+        .option('--type [type]', 'Filter findings by type. [one of: content-outdated, incoherence, content-gap, other]')
+        .option('--severity [severity]', 'Filter findings by estimated severity. [one of: low, medium, high]')
         .option('--hasChangeRequests [hasChangeRequests]', 'Filter findings that have at least one associated change request.')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
@@ -8839,7 +8841,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.findings.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/findings`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["topic"] !== undefined) query['topic'] = String(options["topic"]);
@@ -8859,7 +8861,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8885,7 +8887,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8916,7 +8918,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8937,7 +8939,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, siteFindingId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.findings.change-requests.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/findings/${siteFindingId}/change-requests`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -8952,7 +8954,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8978,7 +8980,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -8999,7 +9001,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, siteFindingId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.findings.pages.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/findings/${siteFindingId}/pages`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -9014,7 +9016,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9035,7 +9037,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, siteFindingId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.findings.questions.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/findings/${siteFindingId}/questions`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -9050,7 +9052,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9071,7 +9073,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, siteFindingId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.findings.records.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/findings/${siteFindingId}/records`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -9086,7 +9088,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9107,7 +9109,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.context-connections.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/context-connections`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -9122,7 +9124,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9151,7 +9153,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9177,7 +9179,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9206,7 +9208,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9232,7 +9234,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9258,7 +9260,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9279,7 +9281,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.topics.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/topics`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["from"] !== undefined) query['from'] = String(options["from"]);
             if (options["to"] !== undefined) query['to'] = String(options["to"]);
             try {
@@ -9294,7 +9296,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9320,7 +9322,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9349,7 +9351,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9379,7 +9381,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9393,13 +9395,13 @@ export function registerGeneratedCommands(program: Command): void {
         .description('List all questions in a site')
         .option('--from [from]', 'Filter stats to answers created at or after this timestamp.')
         .option('--to [to]', 'Filter stats to answers created at or before this timestamp.')
-        .option('--type [type]', 'Filter questions by question type.')
-        .option('--relevance [relevance]', 'Filter questions by question relevance.')
-        .option('--channelType [channelType]', 'Filter questions by answer channel type.')
-        .option('--answered [answered]', 'Filter questions by answer resolution.')
-        .option('--topic [topic]', 'Filter questions by associated site topic IDs.')
-        .option('--order [order]', 'An order for the items in the list')
-        .option('--sort [sort]', 'Sort questions by latest ask activity, answered rate, or positive feedback rate. If omitted, ordering stays on canonical question creation date to preserve current behavior.')
+        .option('--type [type]', 'Filter questions by question type. [one of: exploring, how-to, troubleshooting, reference, unknown]')
+        .option('--relevance [relevance]', 'Filter questions by question relevance. [repeatable: comma-separated or a JSON array]')
+        .option('--channelType [channelType]', 'Filter questions by answer channel type. [repeatable: comma-separated or a JSON array]')
+        .option('--answered [answered]', 'Filter questions by answer resolution. [repeatable: comma-separated or a JSON array]')
+        .option('--topic [topic]', 'Filter questions by associated site topic IDs. [repeatable: comma-separated or a JSON array]')
+        .option('--order [order]', 'An order for the items in the list [one of: asc, desc, default desc]')
+        .option('--sort [sort]', 'Sort questions by latest ask activity, answered rate, or positive feedback rate. If omitted, ordering stays on canonical question creation date to preserve current behavior. [one of: askedAt, stats.answered, stats.feedback, stats.answers]')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
         .option('--json', 'Output as JSON (machine-readable)')
@@ -9409,14 +9411,14 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.questions.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/questions`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["from"] !== undefined) query['from'] = String(options["from"]);
             if (options["to"] !== undefined) query['to'] = String(options["to"]);
             if (options["type"] !== undefined) query['type'] = String(options["type"]);
-            if (options["relevance"] !== undefined) query['relevance'] = String(options["relevance"]);
-            if (options["channelType"] !== undefined) query['channelType'] = String(options["channelType"]);
-            if (options["answered"] !== undefined) query['answered'] = String(options["answered"]);
-            if (options["topic"] !== undefined) query['topic'] = String(options["topic"]);
+            if (options["relevance"] !== undefined) query['relevance'] = coerceArrayQueryParam(options["relevance"]);
+            if (options["channelType"] !== undefined) query['channelType'] = coerceArrayQueryParam(options["channelType"]);
+            if (options["answered"] !== undefined) query['answered'] = coerceArrayQueryParam(options["answered"]);
+            if (options["topic"] !== undefined) query['topic'] = coerceArrayQueryParam(options["topic"]);
             if (options["order"] !== undefined) query['order'] = String(options["order"]);
             if (options["sort"] !== undefined) query['sort'] = String(options["sort"]);
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
@@ -9433,7 +9435,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9443,9 +9445,9 @@ export function registerGeneratedCommands(program: Command): void {
         .description('Get a site question by ID')
         .option('--from [from]', 'Filter stats to answers created at or after this timestamp.')
         .option('--to [to]', 'Filter stats to answers created at or before this timestamp.')
-        .option('--relevance [relevance]', 'Filter stats by question relevance.')
-        .option('--channelType [channelType]', 'Filter stats by answer channel type.')
-        .option('--answered [answered]', 'Filter stats by answer resolution.')
+        .option('--relevance [relevance]', 'Filter stats by question relevance. [repeatable: comma-separated or a JSON array]')
+        .option('--channelType [channelType]', 'Filter stats by answer channel type. [repeatable: comma-separated or a JSON array]')
+        .option('--answered [answered]', 'Filter stats by answer resolution. [repeatable: comma-separated or a JSON array]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -9453,12 +9455,12 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, siteQuestionId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.questions.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/questions/${siteQuestionId}`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["from"] !== undefined) query['from'] = String(options["from"]);
             if (options["to"] !== undefined) query['to'] = String(options["to"]);
-            if (options["relevance"] !== undefined) query['relevance'] = String(options["relevance"]);
-            if (options["channelType"] !== undefined) query['channelType'] = String(options["channelType"]);
-            if (options["answered"] !== undefined) query['answered'] = String(options["answered"]);
+            if (options["relevance"] !== undefined) query['relevance'] = coerceArrayQueryParam(options["relevance"]);
+            if (options["channelType"] !== undefined) query['channelType'] = coerceArrayQueryParam(options["channelType"]);
+            if (options["answered"] !== undefined) query['answered'] = coerceArrayQueryParam(options["answered"]);
             try {
                 const response = await api.request({
                     path,
@@ -9471,7 +9473,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9487,9 +9489,9 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--limit [limit]', 'The number of results per page')
         .option('--from [from]', 'Filter sources to answers created at or after this timestamp.')
         .option('--to [to]', 'Filter sources to answers created at or before this timestamp.')
-        .option('--relevance [relevance]', 'Filter answer sources by question relevance.')
-        .option('--channelType [channelType]', 'Filter answer sources by answer channel type.')
-        .option('--answered [answered]', 'Filter answer sources by answer resolution.')
+        .option('--relevance [relevance]', 'Filter answer sources by question relevance. [repeatable: comma-separated or a JSON array]')
+        .option('--channelType [channelType]', 'Filter answer sources by answer channel type. [repeatable: comma-separated or a JSON array]')
+        .option('--answered [answered]', 'Filter answer sources by answer resolution. [repeatable: comma-separated or a JSON array]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -9497,14 +9499,14 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, siteQuestionId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.questions.sources.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/questions/${siteQuestionId}/sources`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["from"] !== undefined) query['from'] = String(options["from"]);
             if (options["to"] !== undefined) query['to'] = String(options["to"]);
-            if (options["relevance"] !== undefined) query['relevance'] = String(options["relevance"]);
-            if (options["channelType"] !== undefined) query['channelType'] = String(options["channelType"]);
-            if (options["answered"] !== undefined) query['answered'] = String(options["answered"]);
+            if (options["relevance"] !== undefined) query['relevance'] = coerceArrayQueryParam(options["relevance"]);
+            if (options["channelType"] !== undefined) query['channelType'] = coerceArrayQueryParam(options["channelType"]);
+            if (options["answered"] !== undefined) query['answered'] = coerceArrayQueryParam(options["answered"]);
             try {
                 const response = await api.request({
                     path,
@@ -9517,7 +9519,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9531,10 +9533,10 @@ export function registerGeneratedCommands(program: Command): void {
         .description('Get question stats for a site')
         .option('--from [from]', 'Filter stats to answers created at or after this timestamp.')
         .option('--to [to]', 'Filter stats to answers created at or before this timestamp.')
-        .option('--topic [topic]', 'Filter stats by associated site topic IDs.')
-        .option('--relevance [relevance]', 'Filter stats by question relevance.')
-        .option('--channelType [channelType]', 'Filter stats by answer channel type.')
-        .option('--answered [answered]', 'Filter stats by answer resolution.')
+        .option('--topic [topic]', 'Filter stats by associated site topic IDs. [repeatable: comma-separated or a JSON array]')
+        .option('--relevance [relevance]', 'Filter stats by question relevance. [repeatable: comma-separated or a JSON array]')
+        .option('--channelType [channelType]', 'Filter stats by answer channel type. [repeatable: comma-separated or a JSON array]')
+        .option('--answered [answered]', 'Filter stats by answer resolution. [repeatable: comma-separated or a JSON array]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -9542,13 +9544,13 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.question-stats.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/question-stats`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["from"] !== undefined) query['from'] = String(options["from"]);
             if (options["to"] !== undefined) query['to'] = String(options["to"]);
-            if (options["topic"] !== undefined) query['topic'] = String(options["topic"]);
-            if (options["relevance"] !== undefined) query['relevance'] = String(options["relevance"]);
-            if (options["channelType"] !== undefined) query['channelType'] = String(options["channelType"]);
-            if (options["answered"] !== undefined) query['answered'] = String(options["answered"]);
+            if (options["topic"] !== undefined) query['topic'] = coerceArrayQueryParam(options["topic"]);
+            if (options["relevance"] !== undefined) query['relevance'] = coerceArrayQueryParam(options["relevance"]);
+            if (options["channelType"] !== undefined) query['channelType'] = coerceArrayQueryParam(options["channelType"]);
+            if (options["answered"] !== undefined) query['answered'] = coerceArrayQueryParam(options["answered"]);
             try {
                 const response = await api.request({
                     path,
@@ -9561,7 +9563,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9577,11 +9579,11 @@ export function registerGeneratedCommands(program: Command): void {
         .option('--from [from]', 'Filter answers created at or after this timestamp.')
         .option('--to [to]', 'Filter answers created at or before this timestamp.')
         .option('--language [language]', 'Filter answers by ISO language code.')
-        .option('--answered [answered]', 'Filter answers by answered resolution.')
-        .option('--helpfulness [helpfulness]', 'Filter answers by answered helpfulness.')
-        .option('--relevance [relevance]', 'Filter answers by question relevance.')
-        .option('--channelType [channelType]', 'Filter answers by answer channel type.')
-        .option('--question.type [question.type]', 'Filter answers by question type.')
+        .option('--answered [answered]', 'Filter answers by answered resolution. [repeatable: comma-separated or a JSON array]')
+        .option('--helpfulness [helpfulness]', 'Filter answers by answered helpfulness. [one of: low, medium, high]')
+        .option('--relevance [relevance]', 'Filter answers by question relevance. [repeatable: comma-separated or a JSON array]')
+        .option('--channelType [channelType]', 'Filter answers by answer channel type. [repeatable: comma-separated or a JSON array]')
+        .option('--question.type [question.type]', 'Filter answers by question type. [one of: exploring, how-to, troubleshooting, reference, unknown]')
         .option('--topic [topic]', 'Filter answers by associated site topic ID.')
         .option('--thread [thread]', 'Filter answers by thread root answer ID. Includes the root answer itself.')
         .option('--page [page]', 'Identifier of the page results to fetch.')
@@ -9593,15 +9595,15 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.answers.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/answers`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["question"] !== undefined) query['question'] = String(options["question"]);
             if (options["from"] !== undefined) query['from'] = String(options["from"]);
             if (options["to"] !== undefined) query['to'] = String(options["to"]);
             if (options["language"] !== undefined) query['language'] = String(options["language"]);
-            if (options["answered"] !== undefined) query['answered'] = String(options["answered"]);
+            if (options["answered"] !== undefined) query['answered'] = coerceArrayQueryParam(options["answered"]);
             if (options["helpfulness"] !== undefined) query['helpfulness'] = String(options["helpfulness"]);
-            if (options["relevance"] !== undefined) query['relevance'] = String(options["relevance"]);
-            if (options["channelType"] !== undefined) query['channelType'] = String(options["channelType"]);
+            if (options["relevance"] !== undefined) query['relevance'] = coerceArrayQueryParam(options["relevance"]);
+            if (options["channelType"] !== undefined) query['channelType'] = coerceArrayQueryParam(options["channelType"]);
             if (options["question.type"] !== undefined) query['question.type'] = String(options["question.type"]);
             if (options["topic"] !== undefined) query['topic'] = String(options["topic"]);
             if (options["thread"] !== undefined) query['thread'] = String(options["thread"]);
@@ -9619,7 +9621,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9645,7 +9647,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9675,7 +9677,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9696,7 +9698,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, siteQuestionAnswerId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.answers.sources.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/answers/${siteQuestionAnswerId}/sources`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -9711,7 +9713,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9744,7 +9746,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9758,10 +9760,10 @@ export function registerGeneratedCommands(program: Command): void {
         .description('List all sites users permissions')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
-        .option('--order [order]', 'An order for the items in the list')
+        .option('--order [order]', 'An order for the items in the list [one of: asc, desc, default desc]')
         .option('--role [role]', 'The role to filter the list by')
         .option('--search [search]', 'A query to filter the list by display name and email')
-        .option('--sort [sort]', 'The property to sort the list by')
+        .option('--sort [sort]', 'The property to sort the list by [one of: joinedAt, lastSeenAt, name, default joinedAt]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -9769,7 +9771,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.permissions.aggregate.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/permissions/aggregate`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["order"] !== undefined) query['order'] = String(options["order"]);
@@ -9788,7 +9790,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9809,7 +9811,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.permissions.users.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/permissions/users`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -9824,7 +9826,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9855,7 +9857,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9881,7 +9883,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9902,7 +9904,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.permissions.teams.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/permissions/teams`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -9917,7 +9919,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9948,7 +9950,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -9974,7 +9976,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10019,7 +10021,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10049,7 +10051,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10078,7 +10080,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10108,7 +10110,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10134,7 +10136,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10173,7 +10175,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10210,7 +10212,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10240,7 +10242,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10277,7 +10279,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10300,7 +10302,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.redirects.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/redirects`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["search"] !== undefined) query['search'] = String(options["search"]);
@@ -10317,7 +10319,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10352,7 +10354,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10383,7 +10385,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10418,7 +10420,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10444,7 +10446,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10465,7 +10467,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.redirect.get');
             const path = `/orgs/${organizationId}/sites/${siteId}/redirect`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["shareKey"] !== undefined) query['shareKey'] = String(options["shareKey"]);
             if (options["source"] !== undefined) query['source'] = String(options["source"]);
             try {
@@ -10480,7 +10482,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10501,7 +10503,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.mcp-servers.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/mcp-servers`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -10516,7 +10518,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10551,7 +10553,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10577,7 +10579,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10612,7 +10614,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10638,7 +10640,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10659,7 +10661,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (organizationId, siteId, options) => {
             const api = await getAPIClient(true, 'organizations.sites.channels.list');
             const path = `/orgs/${organizationId}/sites/${siteId}/channels`;
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             try {
@@ -10674,7 +10676,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10703,7 +10705,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10729,7 +10731,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10758,7 +10760,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10784,7 +10786,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10814,7 +10816,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10832,7 +10834,7 @@ export function registerGeneratedCommands(program: Command): void {
         .description('List all the sites with ads configured')
         .option('--page [page]', 'Identifier of the page results to fetch.')
         .option('--limit [limit]', 'The number of results per page')
-        .option('--status [status]', 'Filter sites by their ads review status')
+        .option('--status [status]', 'Filter sites by their ads review status [one of: in-review, live, rejected, default in-review]')
         .option('--json', 'Output as JSON (machine-readable)')
         .option('--yaml', 'Output as YAML (machine-readable)')
         .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
@@ -10840,7 +10842,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (options) => {
             const api = await getAPIClient(true, 'ads.sites.list');
             const path = '/ads/sites';
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["page"] !== undefined) query['page'] = String(options["page"]);
             if (options["limit"] !== undefined) query['limit'] = String(options["limit"]);
             if (options["status"] !== undefined) query['status'] = String(options["status"]);
@@ -10856,7 +10858,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10885,7 +10887,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10909,7 +10911,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (options) => {
             const api = await getAPIClient(true, 'urls.content.get');
             const path = '/urls/content';
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["url"] !== undefined) query['url'] = String(options["url"]);
             try {
                 const response = await api.request({
@@ -10923,7 +10925,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10943,7 +10945,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (options) => {
             const api = await getAPIClient(true, 'urls.embed.get');
             const path = '/urls/embed';
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["url"] !== undefined) query['url'] = String(options["url"]);
             try {
                 const response = await api.request({
@@ -10957,7 +10959,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -10979,7 +10981,7 @@ export function registerGeneratedCommands(program: Command): void {
         .action(async (options) => {
             const api = await getAPIClient(true, 'urls.published.get');
             const path = '/urls/published';
-            const query: Record<string, string> = {};
+            const query: Record<string, string | string[]> = {};
             if (options["url"] !== undefined) query['url'] = String(options["url"]);
             if (options["visitorAuthToken"] !== undefined) query['visitorAuthToken'] = String(options["visitorAuthToken"]);
             if (options["redirectOnError"] !== undefined) query['redirectOnError'] = String(options["redirectOnError"]);
@@ -10995,7 +10997,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -11028,7 +11030,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -11067,7 +11069,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -11093,7 +11095,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -11122,7 +11124,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -11148,7 +11150,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -11182,7 +11184,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -11212,7 +11214,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -11246,7 +11248,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });
@@ -11276,7 +11278,7 @@ export function registerGeneratedCommands(program: Command): void {
                     printResult(JSON.parse(text), options);
                 }
             } catch (error) {
-                console.error((error as Error).message);
+                console.error(explainApiError((error as Error).message));
                 process.exit(1);
             }
         });

@@ -64,10 +64,12 @@ program
 program
     .command('whoami')
     .option('--env <env>', 'environment to authenticate to')
+    .option('--json', 'Output as JSON (machine-readable)')
+    .option('--yaml', 'Output as YAML (machine-readable)')
     .description('print info about the current user configuration')
     .action(async (options) => {
         return withEnvironment(options.env, async () => {
-            await whoami();
+            await whoami({ json: options.json, yaml: options.yaml });
         });
     });
 

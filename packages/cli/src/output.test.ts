@@ -2,10 +2,14 @@ import { describe, it, expect } from 'bun:test';
 
 import {
     asCollection,
+    coerceArrayQueryParam,
     coerceBodyFlag,
+    explainApiError,
     formatCollection,
     formatObjectSummary,
     isPlainObject,
+    normalizeChangesMarkdown,
+    normalizeMarkdown,
     presentSummaryFields,
     resolveFormat,
     summaryCell,
@@ -206,5 +210,81 @@ describe('isPlainObject', () => {
         expect(isPlainObject({})).toBe(true);
         expect(isPlainObject([])).toBe(false);
         expect(isPlainObject(null)).toBe(false);
+    });
+});
+
+describe('coerceArrayQueryParam', () => {
+    it('wraps a bare scalar into a one-element array', () => {
+        expect(coerceArrayQueryParam('gitbook:agent')).toEqual(['gitbook:agent']);
+    });
+
+    it('splits a comma-separated list and trims', () => {
+        expect(coerceArrayQueryParam('a, b ,c')).toEqual(['a', 'b', 'c']);
+    });
+
+    it('parses a JSON array', () => {
+        expect(coerceArrayQueryParam('["x","y"]')).toEqual(['x', 'y']);
+    });
+
+    it('passes an existing array through as strings', () => {
+        expect(coerceArrayQueryParam(['a', 'b'])).toEqual(['a', 'b']);
+    });
+
+    it('throws when a JSON-looking value is not valid JSON', () => {
+        expect(() => coerceArrayQueryParam('[oops')).toThrow(/not valid JSON/);
+    });
+});
+
+describe('explainApiError', () => {
+    it('appends a hint on a schema-union validation failure', () => {
+        const msg = 'GitBook API failed with [422] /x: body.changes.0: expected to match exactly one';
+        const out = explainApiError(msg);
+        expect(out).toContain(msg);
+        expect(out).toMatch(/markdown/);
+    });
+
+    it('leaves unrelated errors untouched', () => {
+        expect(explainApiError('GitBook API failed with [404] /x: not found')).toBe(
+            'GitBook API failed with [404] /x: not found',
+        );
+    });
+});
+
+describe('normalizeMarkdown', () => {
+    it('strips a duplicated leading H1 and one trailing blank line', () => {
+        expect(normalizeMarkdown('# Title\n\nBody text')).toBe('Body text');
+    });
+
+    it('leaves an H2 and non-leading H1 alone', () => {
+        expect(normalizeMarkdown('## Section\n\nBody')).toBe('## Section\n\nBody');
+        expect(normalizeMarkdown('Intro\n\n# Later')).toBe('Intro\n\n# Later');
+    });
+
+    it('collapses a multi-line {% %} block onto one line', () => {
+        const input = '{% @mermaid/diagram content="\ngraph TD\nA-->B\n" %}';
+        expect(normalizeMarkdown(input)).toBe(
+            '{% @mermaid/diagram content="\\ngraph TD\\nA-->B\\n" %}',
+        );
+    });
+
+    it('leaves a single-line block untouched', () => {
+        const input = '{% hint style="info" %}';
+        expect(normalizeMarkdown(input)).toBe(input);
+    });
+});
+
+describe('normalizeChangesMarkdown', () => {
+    it('normalizes document.markdown across operations in place', () => {
+        const changes: unknown[] = [
+            { operation: 'update_page', page: 'p1', document: { markdown: '# Title\n\nBody' } },
+            { operation: 'delete_page', page: 'p2' },
+        ];
+        normalizeChangesMarkdown(changes);
+        expect((changes[0] as any).document.markdown).toBe('Body');
+        expect(changes[1]).toEqual({ operation: 'delete_page', page: 'p2' });
+    });
+
+    it('is a no-op on a non-array', () => {
+        expect(() => normalizeChangesMarkdown(undefined)).not.toThrow();
     });
 });
