@@ -1,5 +1,11 @@
 # @gitbook/integration-github-copilot
 
+## 0.2.2
+
+### Patch Changes
+
+- 0f2d71d: github: clarify account selection guidance
+
 ## 0.2.1
 
 ### Patch Changes
