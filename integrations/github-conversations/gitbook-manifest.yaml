@@ -1,0 +1,24 @@
+name: github-conversations
+title: GitHub Discussions
+description: Ingest resolved or closed GitHub Discussions into GitBook for auto-improvements.
+visibility: public
+script: ./src/index.ts
+summary: |
+    # Overview
+
+    Automatically get AI-suggested change requests for your docs based on GitHub community discussions.
+scopes:
+    - conversations:ingest
+organization: gitbook
+configurations:
+    account:
+        componentId: config
+secrets:
+    CLIENT_ID: ${{ env.GITHUB_CLIENT_ID }}
+    CLIENT_SECRET: ${{ env.GITHUB_CLIENT_SECRET }}
+target: organization
+envs:
+    staging:
+        secrets:
+            CLIENT_ID: ${{ "op://gitbook-integrations/GithubConversationsStaging/CLIENT_ID" }}
+            CLIENT_SECRET: ${{ "op://gitbook-integrations/GithubConversationsStaging/CLIENT_SECRET" }}
