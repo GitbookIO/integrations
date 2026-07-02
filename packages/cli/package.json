@@ -29,15 +29,19 @@
         "postinstall.js"
     ],
     "scripts": {
+        "generate-commands": "bun run ../../scripts/generate-commands.ts",
+        "prebuild": "bun run generate-commands",
         "build": "./build.sh",
         "postinstall": "node postinstall.js",
+        "test": "bun test",
         "typecheck": "tsc --noEmit"
     },
     "engines": {
         "node": ">=18.0.0"
     },
     "bin": {
-        "gitbook": "./cli.js"
+        "gitbook": "./cli.js",
+        "gitbook2": "./cli2.js"
     },
     "publishConfig": {
         "access": "public",
