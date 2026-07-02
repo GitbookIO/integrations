@@ -1,10 +1,12 @@
 import chokidar from 'chokidar';
 import getPort from 'get-port';
 import { Log, LogLevel, Miniflare, MiniflareOptions } from 'miniflare';
+import os from 'os';
 import ora from 'ora';
 import * as path from 'path';
 
 import { buildScriptFromManifest } from './build';
+import { ensureCloudflaredInstalled } from './cloudflared';
 import { resolveFile } from './manifest';
 import { getAPIClient } from './remote';
 import { createDevTunnel } from './tunnel';
@@ -17,6 +19,7 @@ export function getMiniflareOptions(scriptPath: string): MiniflareOptions {
         scriptPath,
         modules: true,
         modulesRoot: path.dirname(scriptPath),
+        cf: path.join(os.tmpdir(), '.gitbook', 'miniflare', 'cf.json'),
         compatibilityDate: '2025-05-25',
         compatibilityFlags: ['nodejs_compat'],
     };
@@ -49,13 +52,18 @@ export async function startIntegrationsDevServer(
     const port = await getPort();
     spinner.succeed(`Local port ${port} allocated`);
 
+    const cloudflaredPath = await ensureCloudflaredInstalled(
+        () => spinner.start('Installing cloudflared...'),
+        () => spinner.succeed(`cloudflared ready`),
+    );
+
     /**
      * Create a tunnel to allow the dev server to receive integration events
      * from the GitBook platform
      */
     spinner.start('Creating HTTPS tunnel...');
-    const tunnelUrl = await createDevTunnel(port);
-    spinner.succeed(`Tunnel created ${tunnelUrl}`);
+    const tunnel = await createDevTunnel(port, cloudflaredPath);
+    spinner.succeed(`Tunnel created ${tunnel.tunnelUrl}`);
 
     /**
      * Start the miniflare dev server. It will automatically reload the script
@@ -73,17 +81,19 @@ export async function startIntegrationsDevServer(
     };
     const mf = new Miniflare(miniflareOptions);
     await mf.ready;
-    spinner.succeed(`Dev server started`);
+    spinner.succeed(`Dev server started 🔥`);
 
     /**
      * Add the tunnel to the integration for the dev space events in the GitBook platform
      */
     spinner.start(`Enabling development mode for ${manifest.name}...`);
     const api = await getAPIClient(true);
-    await api.integrations.setIntegrationDevelopmentMode(manifest.name, { tunnelUrl, all });
+    await api.integrations.setIntegrationDevelopmentMode(manifest.name, {
+        tunnelUrl: tunnel.tunnelUrl,
+        all,
+    });
     spinner.succeed(`Development mode enabled`);
 
-    spinner.succeed(`Dev server 🔥`);
     spinner.info(
         `Integration events${all ? ` originating from the organization ${manifest.organization}` : ''} will be dispatched to your locally running version of the integration.`,
     );
