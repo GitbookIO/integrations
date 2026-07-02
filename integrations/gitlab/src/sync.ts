@@ -63,6 +63,13 @@ export async function triggerImport(
 
     const config = getSpaceConfigOrThrow(spaceInstallation);
 
+    if (config.migrated && typeof config.migrated === 'string') {
+        logger.info(
+            `skipping import for space ${spaceInstallation.space} as it has been migrated to native installation (${config.migrated})`,
+        );
+        return;
+    }
+
     if (!config.key) {
         logger.info(`No configuration found for space ${spaceId}, skipping import`);
         return;
@@ -124,6 +131,13 @@ export async function triggerExport(
             : spaceInstallation.space.id;
 
     const config = getSpaceConfigOrThrow(spaceInstallation);
+
+    if (config.migrated && typeof config.migrated === 'string') {
+        logger.info(
+            `skipping import for space ${spaceInstallation.space} as it has been migrated to native installation (${config.migrated})`,
+        );
+        return;
+    }
 
     if (!config.key) {
         logger.info(`No configuration found for space ${spaceId}, skipping export`);
