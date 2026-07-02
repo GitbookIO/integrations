@@ -2,6 +2,8 @@ import { IntegrationInstallationConfiguration } from '@gitbook/api';
 import type { RuntimeContext, RuntimeEnvironment } from '@gitbook/runtime';
 
 export type GitLabSpaceConfiguration = {
+    stale?: boolean;
+    migrated?: string;
     configuredAt?: string;
     webhookId?: number;
 } & SpaceInstallationConfiguration;
