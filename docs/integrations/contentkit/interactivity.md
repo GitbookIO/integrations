@@ -114,7 +114,7 @@ window.addEventListener("message", (event) => {
 
 ## Navigating to another page
 
-A webframe can navigate the reader to another page in the site by posting a `@webframe.navigate` action with the target page `path` (the same format as `state.page.path`):
+A webframe can navigate the reader to another page in the site by posting a `@webframe.navigate` action. The `path` is resolved relative to the site root (the part after your site's base URL), so it can point to a page in any section or space of the site:
 
 ```js
 window.parent.postMessage({
@@ -125,7 +125,7 @@ window.parent.postMessage({
 }, '*');
 ```
 
-GitBook resolves the path within the current space, so navigation always stays inside the site.
+The path is always resolved within the current site, so navigation stays inside it.
 
 ## Webframes and actions
 
