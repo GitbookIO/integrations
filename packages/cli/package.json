@@ -4,6 +4,7 @@
     "version": "0.28.0",
     "dependencies": {
         "@gitbook/api": "*",
+        "@gitbook/content-engine": "file:../../../gitbook-x/packages/content-engine/dist-pkg",
         "check-node-version": "^4.2.1",
         "commander": "^9.2.0",
         "conf": "^13.1.0",
