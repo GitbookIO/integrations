@@ -3,7 +3,7 @@ import { describe, it, expect } from 'bun:test';
 import type * as api from '@gitbook/api';
 
 import packageJson from '../package.json';
-import { generateSegmentTrackEvent } from '../src/events';
+import { generateSegmentTrackEvent, hasTrackingConsent } from '../src/events';
 
 const fakeSpaceViewEvent: api.SiteViewEvent = {
     eventId: 'fake-event-id',
@@ -68,5 +68,26 @@ describe('events', () => {
     it('should fallback to sending GitBook anonymousId value as anonymousId when ajs_anonymous_id is not present', () => {
         const segmentEvent = generateSegmentTrackEvent(fakeSpaceViewEvent);
         expect(segmentEvent.anonymousId).toEqual('gitbookAnonymousId');
+    });
+});
+
+describe('hasTrackingConsent', () => {
+    function withCookies(cookies: Record<string, string>): api.SiteViewEvent {
+        return {
+            ...fakeSpaceViewEvent,
+            visitor: { ...fakeSpaceViewEvent.visitor, cookies },
+        };
+    }
+
+    it('should return true when the consent cookie is granted', () => {
+        expect(hasTrackingConsent(withCookies({ __gitbook_cookie_granted: 'yes' }))).toBe(true);
+    });
+
+    it('should return false when the consent cookie is absent', () => {
+        expect(hasTrackingConsent(fakeSpaceViewEvent)).toBe(false);
+    });
+
+    it('should return false when the consent cookie is not granted', () => {
+        expect(hasTrackingConsent(withCookies({ __gitbook_cookie_granted: 'no' }))).toBe(false);
     });
 });
