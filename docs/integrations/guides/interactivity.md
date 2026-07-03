@@ -97,25 +97,39 @@ window.addEventListener("message", (event) => {
 
 ### Page and visitor context
 
-In addition to the values you bind through the `data` prop, GitBook injects contextual information about the current site into the webframe `state`, as long as your integration requests the matching [scope](../configurations.md#scopes):
+GitBook injects contextual information about the current site into the webframe `state`, alongside the values you bind through the `data` prop:
 
-- `state.page` — the current page as `{ id, path, title }`, when the integration has the `site:page:context` scope.
-- `state.visitor` — the visitor claims, when the integration has the `site:visitor:claims` scope.
+- `state.page` — the current page as `{ id, path, title }`. Always available.
+- `state.visitor` — the visitor claims, when the integration has the `site:visitor:claims` [scope](../configurations.md#scopes).
 
-This context is delivered client-side through the same `message` event as your bound `data`, so requesting it does not change how the integration block is cached:
+This context is delivered client-side through the same `message` event as your bound `data`, so it does not change how the integration block is cached:
 
 ```js
 window.addEventListener("message", (event) => {
     const state = event.data?.state;
     if (!state) return;
 
-    // Current page — only present when the integration has the `site:page:context` scope.
     if (state.page) {
         const { id, path, title } = state.page;
         // e.g. build a link to a sibling page from `path`
     }
 });
 ```
+
+### Navigating to another page
+
+A webframe can navigate the reader to another page in the site by posting a `@webframe.navigate` action with the target page `path` (the same format as `state.page.path`):
+
+```js
+window.parent.postMessage({
+    action: {
+        action: '@webframe.navigate',
+        path: 'guides/getting-started',
+    },
+}, '*');
+```
+
+GitBook resolves the path within the current space, so navigation always stays inside the site.
 
 ### Editable blocks
 
