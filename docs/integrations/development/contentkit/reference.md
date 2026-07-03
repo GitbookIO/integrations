@@ -264,6 +264,8 @@ If you need a copy button, only add it when your integration has a supported way
 | `buttons`       | `Array<Button>`          | Overlay buttons          |
 | `data`          | `Record<string, string>` | State dependencies       |
 
+The `data` values, together with GitBook-provided context, reach the frame through the `message` event as `event.data.state`. GitBook reserves two keys in `state`: `page` (`{ id, path, title }` of the current page, with the `site:page:context` scope) and `visitor` (visitor claims, with the `site:visitor:claims` scope). See [Interactivity](../../contentkit/interactivity.md#page-and-visitor-context).
+
 #### `select`
 
 ```tsx

@@ -95,6 +95,28 @@ window.addEventListener("message", (event) => {
 });
 ```
 
+### Page and visitor context
+
+In addition to the values you bind through the `data` prop, GitBook injects contextual information about the current site into the webframe `state`, as long as your integration requests the matching [scope](../configurations.md#scopes):
+
+- `state.page` — the current page as `{ id, path, title }`, when the integration has the `site:page:context` scope.
+- `state.visitor` — the visitor claims, when the integration has the `site:visitor:claims` scope.
+
+This context is delivered client-side through the same `message` event as your bound `data`, so requesting it does not change how the integration block is cached:
+
+```js
+window.addEventListener("message", (event) => {
+    const state = event.data?.state;
+    if (!state) return;
+
+    // Current page — only present when the integration has the `site:page:context` scope.
+    if (state.page) {
+        const { id, path, title } = state.page;
+        // e.g. build a link to a sibling page from `path`
+    }
+});
+```
+
 ### Editable blocks
 
 Some blocks might be static or only generated from link unfurling, but most blocks are designed to be editable by the user. Editable means that the user can interact with the blocks to change its properties.
