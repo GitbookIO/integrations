@@ -4,7 +4,7 @@ description: >-
   buttons, and more
 ---
 
-# Creating interactive blocks
+# Create interactive blocks
 
 GitBook allows you to create custom, interactive blocks using ContentKit, a UI kit made by GitBook for building integrations.
 
@@ -189,3 +189,60 @@ A common pattern is to open a url as a webpage. A default action exists for this
     }}
 />
 ```
+
+### Build a prompt-style block
+
+If you want to show a reusable prompt, use a `codeblock` with overlay buttons.
+
+This pattern renders like a code block. Readers can read the prompt in place, and use overlay actions without leaving the block.
+
+ContentKit does not currently expose a dedicated Prompt component. It also does not provide a built-in action that opens a prompt in an AI tool or copies it to the clipboard.
+
+Today, the supported pattern is:
+
+* Render the prompt with `codeblock`.
+* Add overlay buttons for supported actions.
+* Use `@ui.url.open` to open an external AI tool such as Cursor.
+
+Here is a concise example:
+
+```tsx
+const promptBlock = createComponent({
+    componentId: 'prompt-block',
+    async render() {
+        const prompt = [
+            'Summarize this API response.',
+            'Highlight breaking changes.',
+            'Return three migration steps.'
+        ].join('\n');
+
+        const cursorUrl =
+            'https://example.com/open-in-cursor?prompt=' +
+            encodeURIComponent(prompt);
+
+        return (
+            <block>
+                <codeblock
+                    content={prompt}
+                    buttons={[
+                        {
+                            icon: 'arrow-up-right-from-square',
+                            tooltip: 'Open in Cursor',
+                            onPress: {
+                                action: '@ui.url.open',
+                                url: cursorUrl
+                            }
+                        }
+                    ]}
+                />
+            </block>
+        );
+    }
+});
+```
+
+In this example, `cursorUrl` stands for any URL or deeplink your integration supports for opening the prompt in Cursor.
+
+In this pattern, readers see a code-block style prompt. They can open it in Cursor if your integration gives a supported target URL.
+
+If you also want a copy button, treat that as an integration-specific enhancement. ContentKit does not document a built-in clipboard action for `codeblock` buttons today.

@@ -1,5 +1,11 @@
 # @gitbook/integration-github
 
+## 0.7.0
+
+### Minor Changes
+
+- dce873d: Ignore github/gitlab sync operations from migrated or stale space installations
+
 ## 0.6.10
 
 ### Patch Changes
