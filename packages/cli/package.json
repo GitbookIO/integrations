@@ -2,9 +2,10 @@
     "name": "@gitbook/cli",
     "description": "CLI to build and publish integrations on GitBook.com",
     "version": "0.28.0",
+    "type": "module",
     "dependencies": {
         "@gitbook/api": "*",
-        "@gitbook/content-engine": "file:../../../gitbook-x/packages/content-engine/dist-pkg",
+        "@gitbook/content-engine": "file:../../../gitbook-x/packages/content-engine/dist",
         "check-node-version": "^4.2.1",
         "commander": "^9.2.0",
         "conf": "^13.1.0",
@@ -27,11 +28,11 @@
     },
     "files": [
         "dist/**",
-        "postinstall.js"
+        "postinstall.cjs"
     ],
     "scripts": {
         "build": "./build.sh",
-        "postinstall": "node postinstall.js",
+        "postinstall": "node postinstall.cjs",
         "typecheck": "tsc --noEmit"
     },
     "engines": {
