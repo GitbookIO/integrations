@@ -1,9 +1,40 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import * as yaml from 'js-yaml';
 
 import type { ContentDiagnostic } from '@gitbook/content-engine';
 
 const IGNORED_DIRECTORIES = new Set(['node_modules', '.git']);
+
+interface GitBookRepoConfig {
+    /** Absolute path of the GitBook content root. */
+    root: string;
+    /** File name of the table of contents (navigation, not a page). */
+    summaryName: string;
+}
+
+/**
+ * Read the repository's .gitbook.yaml, when present: it defines the content
+ * root and the structure files, exactly as Git Sync interprets them.
+ */
+async function loadGitBookRepoConfig(cwd: string): Promise<GitBookRepoConfig | null> {
+    for (const name of ['.gitbook.yaml', '.gitbook.yml']) {
+        try {
+            const raw = await fs.readFile(path.join(cwd, name), 'utf8');
+            const parsed = yaml.load(raw) as {
+                root?: string;
+                structure?: { summary?: string };
+            } | null;
+            return {
+                root: path.resolve(cwd, parsed?.root ?? '.'),
+                summaryName: path.basename(parsed?.structure?.summary ?? 'SUMMARY.md'),
+            };
+        } catch {
+            // Try the next name.
+        }
+    }
+    return null;
+}
 
 const DIFF_PREVIEW_LINES = 12;
 
@@ -24,12 +55,13 @@ async function loadEngine() {
 
 /**
  * Expand a list of files and directories into the markdown files they contain.
- * `excludeSummary` skips SUMMARY.md files: GitBook parses them as navigation,
- * not as pages, so page-level lint/format do not apply to them.
+ * `excludeSummaryName` skips the table of contents file (SUMMARY.md by
+ * default): GitBook parses it as navigation, not as a page, so page-level
+ * lint/format do not apply to it. Explicitly passed files are always kept.
  */
 async function collectMarkdownFiles(
     inputs: string[],
-    options: { excludeSummary?: boolean } = {},
+    options: { excludeSummaryName?: string } = {},
 ): Promise<string[]> {
     const files: string[] = [];
 
@@ -45,7 +77,7 @@ async function collectMarkdownFiles(
                     await visit(path.join(input, entry.name));
                 } else if (
                     entry.name.endsWith('.md') &&
-                    !(options.excludeSummary && entry.name === 'SUMMARY.md')
+                    entry.name !== options.excludeSummaryName
                 ) {
                     files.push(path.join(input, entry.name));
                 }
@@ -60,6 +92,20 @@ async function collectMarkdownFiles(
     }
 
     return files.sort();
+}
+
+/**
+ * Resolve the files to check for page-level commands (lint, format): when no
+ * input is given and the repository has a .gitbook.yaml, the configured
+ * content root is used, so files outside it (e.g. the GitHub-facing README)
+ * are not treated as GitBook content.
+ */
+async function collectPageFiles(inputs: string[]): Promise<string[]> {
+    const config = await loadGitBookRepoConfig(process.cwd());
+    const defaults = config ? [config.root] : ['.'];
+    return await collectMarkdownFiles(inputs.length > 0 ? inputs : defaults, {
+        excludeSummaryName: config?.summaryName ?? 'SUMMARY.md',
+    });
 }
 
 function printDiff(diagnostic: ContentDiagnostic) {
@@ -103,9 +149,7 @@ export async function lintContentFiles(
 ): Promise<number> {
     const { lintContent } = await loadEngine();
 
-    const files = await collectMarkdownFiles(inputs.length > 0 ? inputs : ['.'], {
-        excludeSummary: true,
-    });
+    const files = await collectPageFiles(inputs);
     if (files.length === 0) {
         console.log('No markdown files found.');
         return 0;
@@ -145,9 +189,12 @@ export async function brokenLinksContentFiles(
 ): Promise<number> {
     const { checkBrokenLinks } = await loadEngine();
 
-    const root = process.cwd();
-    // SUMMARY.md is included here: it is the navigation file, its links matter.
-    const files = await collectMarkdownFiles(inputs.length > 0 ? inputs : ['.']);
+    // Links resolve against the GitBook content root when the repository
+    // declares one. The table of contents is included: it is the navigation
+    // file, its links matter.
+    const config = await loadGitBookRepoConfig(process.cwd());
+    const root = config?.root ?? process.cwd();
+    const files = await collectMarkdownFiles(inputs.length > 0 ? inputs : [root]);
     if (files.length === 0) {
         console.log('No markdown files found.');
         return 0;
@@ -203,9 +250,7 @@ export async function formatContentFiles(
 ): Promise<number> {
     const { formatContent } = await loadEngine();
 
-    const files = await collectMarkdownFiles(inputs.length > 0 ? inputs : ['.'], {
-        excludeSummary: true,
-    });
+    const files = await collectPageFiles(inputs);
     if (files.length === 0) {
         console.log('No markdown files found.');
         return 0;
