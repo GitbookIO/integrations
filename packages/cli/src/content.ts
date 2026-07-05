@@ -24,8 +24,13 @@ async function loadEngine() {
 
 /**
  * Expand a list of files and directories into the markdown files they contain.
+ * `excludeSummary` skips SUMMARY.md files: GitBook parses them as navigation,
+ * not as pages, so page-level lint/format do not apply to them.
  */
-async function collectMarkdownFiles(inputs: string[]): Promise<string[]> {
+async function collectMarkdownFiles(
+    inputs: string[],
+    options: { excludeSummary?: boolean } = {},
+): Promise<string[]> {
     const files: string[] = [];
 
     const visit = async (input: string) => {
@@ -38,7 +43,10 @@ async function collectMarkdownFiles(inputs: string[]): Promise<string[]> {
                         continue;
                     }
                     await visit(path.join(input, entry.name));
-                } else if (entry.name.endsWith('.md')) {
+                } else if (
+                    entry.name.endsWith('.md') &&
+                    !(options.excludeSummary && entry.name === 'SUMMARY.md')
+                ) {
                     files.push(path.join(input, entry.name));
                 }
             }
@@ -95,7 +103,9 @@ export async function lintContentFiles(
 ): Promise<number> {
     const { lintContent } = await loadEngine();
 
-    const files = await collectMarkdownFiles(inputs.length > 0 ? inputs : ['.']);
+    const files = await collectMarkdownFiles(inputs.length > 0 ? inputs : ['.'], {
+        excludeSummary: true,
+    });
     if (files.length === 0) {
         console.log('No markdown files found.');
         return 0;
@@ -136,6 +146,7 @@ export async function brokenLinksContentFiles(
     const { checkBrokenLinks } = await loadEngine();
 
     const root = process.cwd();
+    // SUMMARY.md is included here: it is the navigation file, its links matter.
     const files = await collectMarkdownFiles(inputs.length > 0 ? inputs : ['.']);
     if (files.length === 0) {
         console.log('No markdown files found.');
@@ -192,7 +203,9 @@ export async function formatContentFiles(
 ): Promise<number> {
     const { formatContent } = await loadEngine();
 
-    const files = await collectMarkdownFiles(inputs.length > 0 ? inputs : ['.']);
+    const files = await collectMarkdownFiles(inputs.length > 0 ? inputs : ['.'], {
+        excludeSummary: true,
+    });
     if (files.length === 0) {
         console.log('No markdown files found.');
         return 0;
