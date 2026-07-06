@@ -2,7 +2,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 
-import type { ContentDiagnostic } from '@gitbook/content-engine';
+import type { ContentDiagnostic } from '@gitbook/content';
 
 const IGNORED_DIRECTORIES = new Set(['node_modules', '.git']);
 
@@ -50,7 +50,7 @@ const dim = (text: string) => paint('2', text);
  * initialized when a content command actually runs.
  */
 async function loadEngine() {
-    return await import('@gitbook/content-engine');
+    return await import('@gitbook/content');
 }
 
 /**

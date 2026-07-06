@@ -5,7 +5,7 @@
     "type": "module",
     "dependencies": {
         "@gitbook/api": "*",
-        "@gitbook/content-engine": "file:../../../gitbook-x/packages/content-engine/dist",
+        "@gitbook/content": "file:../../../gitbook-x/packages/content/dist",
         "check-node-version": "^4.2.1",
         "commander": "^9.2.0",
         "conf": "^13.1.0",
