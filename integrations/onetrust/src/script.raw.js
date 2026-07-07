@@ -153,7 +153,7 @@
                     if (
                         !hasRecordedConsent &&
                         w.OnetrustActiveGroups !== undefined &&
-                        typeof w.OneTrust !== 'undefined' &&
+                        w.OneTrust !== undefined &&
                         typeof w.OneTrust.IsAlertBoxClosed === 'function' &&
                         w.OneTrust.IsAlertBoxClosed()
                     ) {
