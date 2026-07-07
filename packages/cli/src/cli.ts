@@ -16,6 +16,7 @@ import { publishIntegration, unpublishIntegration } from './publish';
 import { authenticate, whoami } from './remote';
 import { tailLogs } from './tail';
 import { checkIntegrationBuild } from './check';
+import { brokenLinksContentFiles, formatContentFiles, lintContentFiles } from './content';
 import {
     publishOpenAPISpecificationFromFilepath,
     publishOpenAPISpecificationFromURL,
@@ -151,6 +152,54 @@ program
                 await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath)),
             );
         });
+    });
+
+const contentProgram = program
+    .command('content')
+    .description('lint and format markdown content against the GitBook content schema');
+contentProgram
+    .command('lint')
+    .description(
+        'report content that GitBook would remove or restructure on import, and invalid frontmatter',
+    )
+    .argument('[files...]', 'markdown files or directories (searched recursively for *.md)')
+    .option('--strict', 'exit with code 1 on warnings, not only errors')
+    .action(async (files, options) => {
+        const code = await lintContentFiles(files, { strict: options.strict ?? false });
+        if (code !== 0) {
+            process.exit(code);
+        }
+    });
+contentProgram
+    .command('broken-links')
+    .description('check for broken internal links and anchors across markdown files')
+    .argument('[files...]', 'markdown files or directories (searched recursively for *.md)')
+    .option('--strict', 'exit with code 1 on warnings (broken anchors), not only errors')
+    .action(async (files, options) => {
+        const code = await brokenLinksContentFiles(files, { strict: options.strict ?? false });
+        if (code !== 0) {
+            process.exit(code);
+        }
+    });
+contentProgram
+    .command('format')
+    .description(
+        "apply GitBook's canonical style to markdown files; never alters content unless --force",
+    )
+    .argument('[files...]', 'markdown files or directories (searched recursively for *.md)')
+    .option('--write', 'write changes to the files')
+    .option(
+        '--force',
+        "also apply GitBook's normalization: content reported as lint errors is removed or restructured",
+    )
+    .action(async (files, options) => {
+        const code = await formatContentFiles(files, {
+            write: options.write ?? false,
+            force: options.force ?? false,
+        });
+        if (code !== 0) {
+            process.exit(code);
+        }
     });
 
 const openAPIProgram = program.command('openapi').description('manage OpenAPI specifications');

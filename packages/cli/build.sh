@@ -4,6 +4,8 @@ rm -rf ./dist/
 esbuild ./src/cli.ts \
     --bundle \
     --platform=node \
+    --format=esm \
+    --banner:js="$(cat ./esm-shims.js)" \
     --external:esbuild \
     --external:miniflare \
     --external:fsevents \
