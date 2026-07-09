@@ -6,7 +6,7 @@ externalLinks:
     - label: Documentation
       url: https://piwik.pro/docs/
 visibility: public
-organization: PSFvFe3Gw54XwzXrUmzy
+organization: gitbook
 script: ./src/index.ts
 # The following scopes are available only to GitBook Staff
 # See https://developer.gitbook.com/integrations/configurations#scopes
