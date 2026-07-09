@@ -114,18 +114,31 @@ window.addEventListener("message", (event) => {
 
 ## Navigating to another page
 
-A webframe can navigate the reader to another page in the site by posting a `@webframe.navigate` action. The `path` is resolved relative to the site root (the part after your site's base URL), so it can point to a page in any section or space of the site:
+A webframe can navigate the reader to another page in the site by posting a `@webframe.navigate` action. A destination is addressed either by its page ID or by its path, and navigation always stays within the current site:
+
+- `pageId` (recommended) — resolved against the site's page tree, so it always lands on a real page. Resolution is scoped to the current space, so a page in a different section or space must be addressed by `path`.
+- `path` — resolved relative to the site root (the part after your site's base URL), so it can point to a page in any section or space of the site.
+
+You can also pass an optional `anchor` to scroll to a heading within the target page.
 
 ```js
+// By page ID (recommended)
+window.parent.postMessage({
+    action: {
+        action: '@webframe.navigate',
+        pageId: 'xxardBqcRDgUCLxS',
+    },
+}, '*');
+
+// By path, optionally scrolling to a heading anchor
 window.parent.postMessage({
     action: {
         action: '@webframe.navigate',
         path: 'guides/getting-started',
+        anchor: 'installation',
     },
 }, '*');
 ```
-
-The path is always resolved within the current site, so navigation stays inside it.
 
 ## Webframes and actions
 
