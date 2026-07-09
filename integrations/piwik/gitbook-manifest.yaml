@@ -26,17 +26,18 @@ summary: |
     When a visitor loads a page on your published GitBook site, the integration returns the Piwik PRO Tag Manager snippet with your tenant URL and container ID substituted in, which GitBook injects into every page. The tracking logic is byte-for-byte equivalent to the official Piwik PRO Tag Manager snippet: it initializes the data layer, handles the `?stg_debug` debug mode, constructs the async script tag, and stubs the `ppms.tm` / `ppms.cm` API. It only runs if the visitor has accepted the cookie consent banner.
 
     # Configure
-    Install the integration on the GitBook site of your choice, then provide your Piwik PRO container URL and container (site) ID, both available from your Piwik PRO account. The container URL is your tenant's tracker host, for example `https://YOURTENANT.containers.piwik.pro/` (include the trailing slash, do not include the container ID). The site/container ID is the UUID of your Piwik PRO container, for example `12a3b456-78f9-8c76-d543-2e1234f56g7h`. The optional data layer name defaults to `dataLayer` and only needs to be set if your Piwik PRO setup uses a custom data layer variable name.
+    Install the integration on the GitBook site of your choice, then provide your Piwik PRO container name and container (site) ID, both available from your Piwik PRO account. The container name is the subdomain of your tenant's tracker host: for a tracker host of `https://YOURTENANT.containers.piwik.pro/`, the container name is `YOURTENANT`. The site/container ID is the UUID of your Piwik PRO container, for example `12a3b456-78f9-8c76-d543-2e1234f56g7h`. The optional data layer name defaults to `dataLayer` and only needs to be set if your Piwik PRO setup uses a custom data layer variable name.
 categories:
     - analytics
 configurations:
     site:
         properties:
-            piwik_container_url:
+            piwik_container_name:
                 type: string
-                title: Piwik container URL
+                title: Piwik container name
                 description: >-
-                    Your Piwik PRO container host: https://TENANT.containers.piwik.pro/ (trailing slash, no ID).
+                    Your Piwik PRO container name: the subdomain of containers.piwik.pro
+                    (e.g. "yourtenant").
             piwik_site_id:
                 type: string
                 title: Piwik site/container ID
@@ -48,6 +49,6 @@ configurations:
                 description: >-
                     Custom data layer name. Leave blank unless using a non-default data layer.
         required:
-            - piwik_container_url
+            - piwik_container_name
             - piwik_site_id
 target: site
