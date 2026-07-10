@@ -95,6 +95,20 @@ window.addEventListener("message", (event) => {
 });
 ```
 
+### Navigating to another page
+
+A webframe can navigate the reader to another page in the site by posting a `@webframe.navigate` action. The `path` is resolved relative to the site root (the part after your site's base URL), so it can point to a page in any section or space of the site, and navigation always stays within it. You can also pass an optional `anchor` to scroll to a heading within the target page:
+
+```js
+window.parent.postMessage({
+    action: {
+        action: '@webframe.navigate',
+        path: 'guides/getting-started',
+        anchor: 'installation',
+    },
+}, '*');
+```
+
 ### Editable blocks
 
 Some blocks might be static or only generated from link unfurling, but most blocks are designed to be editable by the user. Editable means that the user can interact with the blocks to change its properties.
