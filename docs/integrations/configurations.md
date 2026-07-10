@@ -98,7 +98,6 @@ The scopes your integration has permissions for.
     - site:script:inject ## Internal scope - see note below
     - site:script:cookies ## Internal scope - see note below
     - site:visitor:auth ## Enable workflows related to authenticated access
-    - site:visitor:claims ## Expose visitor claims to webframes
     - site:adaptive:read ## Read claims available from Adaptive Content
     - site:adaptive:write ## Write claims avaiable to Adaptive Content
     # OpenAPI

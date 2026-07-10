@@ -91,46 +91,11 @@ window.addEventListener("message", (event) => {
 });
 ```
 
-## Page and visitor context
-
-GitBook injects contextual information about the current site into the webframe `state`, alongside the values you bind through the `data` prop:
-
-- `state.page` — the current page as `{ id, path, title }`. Always available.
-- `state.visitor` — the visitor claims, when the integration has the `site:visitor:claims` [scope](../configurations.md#scopes).
-
-This context is delivered client-side through the same `message` event as your bound `data`, so it does not change how the integration block is cached:
-
-```js
-window.addEventListener("message", (event) => {
-    const state = event.data?.state;
-    if (!state) return;
-
-    if (state.page) {
-        const { id, path, title } = state.page;
-        // e.g. build a link to a sibling page from `path`
-    }
-});
-```
-
 ## Navigating to another page
 
-A webframe can navigate the reader to another page in the site by posting a `@webframe.navigate` action. A destination is addressed either by its page ID or by its path, and navigation always stays within the current site:
-
-- `pageId` (recommended) — resolved against the site's page tree, so it always lands on a real page. Resolution is scoped to the current space, so a page in a different section or space must be addressed by `path`.
-- `path` — resolved relative to the site root (the part after your site's base URL), so it can point to a page in any section or space of the site.
-
-You can also pass an optional `anchor` to scroll to a heading within the target page.
+A webframe can navigate the reader to another page in the site by posting a `@webframe.navigate` action. The `path` is resolved relative to the site root (the part after your site's base URL), so it can point to a page in any section or space of the site, and navigation always stays within it. You can also pass an optional `anchor` to scroll to a heading within the target page:
 
 ```js
-// By page ID (recommended)
-window.parent.postMessage({
-    action: {
-        action: '@webframe.navigate',
-        pageId: 'xxardBqcRDgUCLxS',
-    },
-}, '*');
-
-// By path, optionally scrolling to a heading anchor
 window.parent.postMessage({
     action: {
         action: '@webframe.navigate',
