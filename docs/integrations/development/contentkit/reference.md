@@ -264,6 +264,8 @@ If you need a copy button, only add it when your integration has a supported way
 | `buttons`       | `Array<Button>`          | Overlay buttons          |
 | `data`          | `Record<string, string>` | State dependencies       |
 
+The `data` values reach the frame through the `message` event as `event.data.state`. A webframe can also navigate the reader to another page in the site by posting a `@webframe.navigate` action with a `path`. See [Interactivity](../../contentkit/interactivity.md#navigating-to-another-page).
+
 #### `select`
 
 ```tsx
