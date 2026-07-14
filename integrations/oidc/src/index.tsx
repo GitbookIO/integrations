@@ -13,6 +13,15 @@ import {
     ExposableError,
 } from '@gitbook/runtime';
 
+import {
+    clearPKCECookie,
+    computePKCECodeChallenge,
+    encryptPKCEVerifier,
+    generatePKCECodeVerifier,
+    getPKCECodeVerifierFromCookie,
+    serializePKCECookie,
+} from './pkce';
+
 const logger = Logger('oidc.visitor-auth');
 
 type OIDCRuntimeEnvironment = RuntimeEnvironment<{}, OIDCSiteInstallationConfiguration>;
@@ -25,6 +34,7 @@ type OIDCSiteInstallationConfiguration = {
     access_token_endpoint?: string;
     client_secret?: string;
     scope?: string;
+    use_pkce?: boolean;
 };
 
 type OIDCState = OIDCSiteInstallationConfiguration;
@@ -71,6 +81,7 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
             access_token_endpoint: siteInstallation.configuration?.access_token_endpoint || '',
             client_secret: siteInstallation.configuration?.client_secret || '',
             scope: siteInstallation.configuration?.scope || '',
+            use_pkce: siteInstallation.configuration?.use_pkce ?? false,
         };
     },
     action: async (element, action, context) => {
@@ -91,6 +102,7 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                         element.state.access_token_endpoint ?? '',
                     ),
                     scope: element.state.scope ? normalizeScopes(element.state.scope) : undefined,
+                    use_pkce: element.state.use_pkce ?? false,
                 };
                 await api.integrations.updateIntegrationSiteInstallation(
                     siteInstallation.integration,
@@ -210,6 +222,26 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                         </text>
                     }
                     element={<textinput state="scope" placeholder="Scopes" />}
+                />
+
+                <input
+                    label="Use PKCE"
+                    hint={
+                        <text>
+                            Enable Proof Key for Code Exchange (PKCE) for the authorization code
+                            flow. Turn this on if your authentication provider requires or
+                            recommends PKCE.
+                            <link
+                                target={{
+                                    url: 'https://datatracker.ietf.org/doc/html/rfc7636',
+                                }}
+                            >
+                                {' '}
+                                More Details
+                            </link>
+                        </text>
+                    }
+                    element={<switch state="use_pkce" />}
                 />
                 <divider size="medium" />
                 <hint>
@@ -428,6 +460,27 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                     redirect_uri: `${installationURL}/visitor-auth/response`,
                 });
 
+                // If PKCE is enabled, read the code verifier back from the first-party cookie
+                // set when the flow started and include it in the token request.
+                if (siteInstallation.configuration.use_pkce) {
+                    const signingSecret = context.environment.signingSecrets.siteInstallation;
+                    if (!signingSecret) {
+                        return new Response('Error: Missing signing secret required for PKCE', {
+                            status: 400,
+                        });
+                    }
+                    const codeVerifier = await getPKCECodeVerifierFromCookie(
+                        request.headers.get('Cookie'),
+                        signingSecret,
+                    );
+                    if (!codeVerifier) {
+                        return new Response('Error: Missing or invalid PKCE verifier cookie', {
+                            status: 400,
+                        });
+                    }
+                    searchParams.append('code_verifier', codeVerifier);
+                }
+
                 const tokenResp = await fetchTokenFromUpstreamAuth(
                     accessTokenEndpoint,
                     searchParams,
@@ -517,6 +570,17 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                 );
                 url.searchParams.append('jwt_token', jwtToken);
 
+                // Clear the PKCE verifier cookie now that the flow is complete.
+                if (siteInstallation.configuration.use_pkce) {
+                    return new Response(null, {
+                        status: 302,
+                        headers: {
+                            Location: url.toString(),
+                            'Set-Cookie': clearPKCECookie(new URL(installationURL).pathname),
+                        },
+                    });
+                }
+
                 return Response.redirect(url.toString());
             }
         });
@@ -568,14 +632,76 @@ export default createIntegration({
         }
 
         const location = event.location ? event.location : '';
+        const redirectURI = `${installationURL}/visitor-auth/response`;
 
-        const url = new URL(authorizationEndpoint);
-        url.searchParams.append('client_id', clientId);
-        url.searchParams.append('response_type', 'code');
-        url.searchParams.append('redirect_uri', `${installationURL}/visitor-auth/response`);
-        url.searchParams.append('scope', scope.toLowerCase());
-        url.searchParams.append('state', `oidcstate-${location}`);
+        // With PKCE enabled, generate the code verifier here and store it in a first-party
+        // cookie. This response is served from the integration's own domain, the same domain
+        // as the `/visitor-auth/response` callback, so the cookie is sent back to the callback
+        // where the verifier is needed for the token exchange.
+        if (configuration.use_pkce) {
+            const signingSecret = environment.signingSecrets.siteInstallation;
+            if (!signingSecret) {
+                throw new ExposableError('Missing signing secret required for PKCE');
+            }
+
+            const codeVerifier = generatePKCECodeVerifier();
+            const codeChallenge = await computePKCECodeChallenge(codeVerifier);
+            const encryptedVerifier = await encryptPKCEVerifier(signingSecret, codeVerifier);
+
+            const url = buildAuthorizeURL({
+                authorizationEndpoint,
+                clientId,
+                redirectURI,
+                scope,
+                state: `oidcstate-${location}`,
+                codeChallenge,
+            });
+
+            return new Response(null, {
+                status: 302,
+                headers: {
+                    Location: url.toString(),
+                    'Set-Cookie': serializePKCECookie(
+                        encryptedVerifier,
+                        new URL(installationURL).pathname,
+                    ),
+                },
+            });
+        }
+
+        const url = buildAuthorizeURL({
+            authorizationEndpoint,
+            clientId,
+            redirectURI,
+            scope,
+            state: `oidcstate-${location}`,
+        });
 
         return Response.redirect(url.toString());
     },
 });
+
+/**
+ * Build the authorization endpoint URL for the OAuth redirect, optionally
+ * including the PKCE code challenge.
+ */
+function buildAuthorizeURL(params: {
+    authorizationEndpoint: string;
+    clientId: string;
+    redirectURI: string;
+    scope: string;
+    state: string;
+    codeChallenge?: string;
+}): URL {
+    const url = new URL(params.authorizationEndpoint);
+    url.searchParams.append('client_id', params.clientId);
+    url.searchParams.append('response_type', 'code');
+    url.searchParams.append('redirect_uri', params.redirectURI);
+    url.searchParams.append('scope', params.scope.toLowerCase());
+    url.searchParams.append('state', params.state);
+    if (params.codeChallenge) {
+        url.searchParams.append('code_challenge', params.codeChallenge);
+        url.searchParams.append('code_challenge_method', 'S256');
+    }
+    return url;
+}
