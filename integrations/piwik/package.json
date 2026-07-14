@@ -1,6 +1,6 @@
 {
-    "name": "@gitbook/integration-onetrust",
-    "version": "0.1.3",
+    "name": "@gitbook/integration-piwik",
+    "version": "2.0.0",
     "private": true,
     "dependencies": {
         "@gitbook/api": "*",
@@ -8,13 +8,12 @@
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",
-        "@gitbook/tsconfig": "workspace:*",
-        "@gitbook/browser-types": "^0.1.5"
+        "@gitbook/tsconfig": "workspace:*"
     },
     "scripts": {
         "typecheck": "tsc --noEmit",
-        "publish-integrations-staging": "gitbook publish .",
         "check": "gitbook check",
+        "publish-integrations-staging": "gitbook publish .",
         "publish-integrations": "gitbook publish ."
     }
 }

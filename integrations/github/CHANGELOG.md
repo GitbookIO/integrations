@@ -1,5 +1,17 @@
 # @gitbook/integration-github
 
+## 0.7.0
+
+### Minor Changes
+
+- dce873d: Ignore github/gitlab sync operations from migrated or stale space installations
+
+## 0.6.10
+
+### Patch Changes
+
+- 0f2d71d: github: clarify account selection guidance
+
 ## 0.6.9
 
 ### Patch Changes

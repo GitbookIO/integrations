@@ -2,6 +2,17 @@ import * as api from '@gitbook/api';
 
 import { version } from '../package.json';
 
+// GitBook's cookie banner (or a consent manager like OneTrust) sets this cookie to
+// `yes` once the visitor accepts tracking cookies.
+const GRANTED_COOKIE = '__gitbook_cookie_granted';
+
+/**
+ * Whether the visitor has granted tracking-cookie consent.
+ */
+export function hasTrackingConsent(event: api.SiteViewEvent): boolean {
+    return event.visitor.cookies[GRANTED_COOKIE] === 'yes';
+}
+
 /**
  * Generate the event to track in Segment for an actual GitBook event.
  */
