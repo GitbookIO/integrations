@@ -1,5 +1,11 @@
 # @gitbook/integration-segment
 
+## 2.4.0
+
+### Minor Changes
+
+- 32b0a4f: Only send Segment events when the visitor has granted cookie tracking consent
+
 ## 2.3.0
 
 ### Minor Changes

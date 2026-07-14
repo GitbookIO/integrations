@@ -147,9 +147,16 @@
                 previousOptanonWrapper && previousOptanonWrapper();
                 try {
                     w.dispatchEvent(new Event('onetrust-banner-loaded'));
-                    // Emit initial consent for returning visitors (OnetrustActiveGroups
-                    // is populated from stored consent; OTConsentApplied won't fire)
-                    if (!hasRecordedConsent && w.OnetrustActiveGroups !== undefined) {
+                    // Re-sync stored consent for returning visitors, but only once the
+                    // banner has actually been answered. Before that, OnetrustActiveGroups
+                    // holds the essential-only default and emitConsent would wrongly reject.
+                    if (
+                        !hasRecordedConsent &&
+                        w.OnetrustActiveGroups !== undefined &&
+                        w.OneTrust !== undefined &&
+                        typeof w.OneTrust.IsAlertBoxClosed === 'function' &&
+                        w.OneTrust.IsAlertBoxClosed()
+                    ) {
                         emitConsent();
                     }
                 } catch (e) {}
@@ -165,11 +172,11 @@
                 }
             };
 
-            // OTConsentApplied fires when user clicks Accept/Reject
+            // OTConsentApplied fires when the user clicks Accept/Reject. A live choice is
+            // always a fresh decision, so it must re-sync even if a stale consent cookie
+            // was already recorded (e.g. a default-deny) when the page loaded.
             w.addEventListener('OTConsentApplied', function () {
-                if (!hasRecordedConsent) {
-                    emitConsent();
-                }
+                emitConsent();
             });
         });
     }

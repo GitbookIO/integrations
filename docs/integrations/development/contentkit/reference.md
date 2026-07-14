@@ -219,6 +219,34 @@ A visual delimiter between 2 elements of a containing stack layout.
 | `state`           | `string`            | Makes block editable, value stored in state |
 | `onContentChange` | `Action`            | Action on edit                              |
 
+Use `codeblock` when you need a prompt-style block.
+
+It renders with the same visual treatment as a code block. This works well for prompts, commands, and other text readers might want to reuse in another tool.
+
+ContentKit does not currently expose a dedicated `prompt` component. It also does not define a built-in AI-tool action for `codeblock`.
+
+You can build the closest equivalent by adding overlay buttons. For example, you can add a button that opens a prompt target URL in Cursor using `@ui.url.open`.
+
+```tsx
+<codeblock
+    content={prompt}
+    buttons={[
+        {
+            icon: 'arrow-up-right-from-square',
+            tooltip: 'Open in Cursor',
+            onPress: {
+                action: '@ui.url.open',
+                url: cursorUrl
+            }
+        }
+    ]}
+/>
+```
+
+In this example, `cursorUrl` is a URL or deeplink your integration generates for the target AI tool.
+
+If you need a copy button, only add it when your integration has a supported way to handle copy behavior. ContentKit does not document a built-in clipboard action for `codeblock` buttons today.
+
 #### `webframe`
 
 ```tsx
@@ -235,6 +263,8 @@ A visual delimiter between 2 elements of a containing stack layout.
 | `aspectRatio`\* | `number`                 | Aspect ratio             |
 | `buttons`       | `Array<Button>`          | Overlay buttons          |
 | `data`          | `Record<string, string>` | State dependencies       |
+
+The `data` values reach the frame through the `message` event as `event.data.state`. A webframe can also navigate the reader to another page in the site by posting a `@webframe.navigate` action with a `path`. See [Interactivity](../../contentkit/interactivity.md#navigating-to-another-page).
 
 #### `select`
 

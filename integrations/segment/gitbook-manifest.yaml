@@ -21,6 +21,7 @@ summary: |
 
     Automatic page view events on your public documentation:
     Each of your connected GitBook sites will send a `[GitBook] site_view` event to the associated Segment source.
+    Events are only sent once the visitor has accepted tracking cookies, so tracking respects your site's cookie consent.
 
     Track your users' actions across all your company's websites:
     - Each `[GitBook] site_view` includes the `anonymousId` property.

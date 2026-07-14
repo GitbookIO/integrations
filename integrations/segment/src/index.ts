@@ -1,6 +1,6 @@
 import { createIntegration, RuntimeContext, RuntimeEnvironment } from '@gitbook/runtime';
 
-import { generateSegmentTrackEvent } from './events';
+import { generateSegmentTrackEvent, hasTrackingConsent } from './events';
 
 type SegmentRuntimeContext = RuntimeContext<
     RuntimeEnvironment<
@@ -15,6 +15,10 @@ type SegmentRuntimeContext = RuntimeContext<
 export default createIntegration<SegmentRuntimeContext>({
     events: {
         site_view: async (event, { environment }) => {
+            if (!hasTrackingConsent(event)) {
+                return;
+            }
+
             const writeKey = environment.siteInstallation?.configuration.write_key;
             const euRegion = environment.siteInstallation?.configuration.eu_region;
 
