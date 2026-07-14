@@ -5,28 +5,12 @@ import { getAuthConfig, saveAuthConfig } from './config';
 import { DEFAULT_ENV, getEnvironment } from './environments';
 import { type OutputOptions, printResult } from './output';
 
-const BASE_USER_AGENT = `GitBook-CLI/${version}`;
+const USER_AGENT = `GitBook-CLI/${version}`;
 
 /**
- * Build the User-Agent sent to the API.
- *
- * `command` is the dotted command path the user invoked (e.g.
- * "spaces.change-requests.content.update"). Including it lets requests be
- * attributed to a specific command in the API logs / the GCP per-endpoint
- * dashboard, without per-request plumbing. Omitted → just the surface token.
+ * Get an authenticated API client.
  */
-function buildUserAgent(command?: string): string {
-    return command ? `${BASE_USER_AGENT} (${command})` : BASE_USER_AGENT;
-}
-
-/**
- * Get an authenticated API client. `command` is the invoked command path, folded
- * into the User-Agent for usage attribution (see buildUserAgent).
- */
-export async function getAPIClient(
-    requireAuth: boolean = true,
-    command?: string,
-): Promise<GitBookAPI> {
+export async function getAPIClient(requireAuth: boolean = true): Promise<GitBookAPI> {
     const authConfig = getAuthConfig();
     if (!authConfig.token && requireAuth) {
         throw new Error(
@@ -35,7 +19,7 @@ export async function getAPIClient(
     }
 
     return new GitBookAPI({
-        userAgent: buildUserAgent(command),
+        userAgent: USER_AGENT,
         endpoint: authConfig.endpoint,
         authToken: authConfig.token,
     });
@@ -60,7 +44,7 @@ export async function authenticate({
     console.log(`Authenticating with ${endpoint}...`);
 
     const api = new GitBookAPI({
-        userAgent: buildUserAgent('auth'),
+        userAgent: USER_AGENT,
         endpoint,
         authToken,
     });
@@ -80,7 +64,7 @@ export async function authenticate({
  */
 export async function whoami(options: OutputOptions = {}): Promise<void> {
     const env = getEnvironment();
-    const api = await getAPIClient(true, 'whoami');
+    const api = await getAPIClient(true);
     // Only the explicit --json/--yaml flags switch to machine output; unlike the
     // generated commands we don't auto-switch when piped, so the human form (and
     // the not-authenticated guidance) stays the interactive default.

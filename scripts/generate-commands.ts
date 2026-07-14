@@ -1,7 +1,7 @@
 /**
  * generate-commands.ts
  *
- * Build-time script. Reads packages/api/spec/openapi.yaml and emits
+ * Build-time script. Reads packages/api/spec/openapi.json and emits
  * packages/cli/src/generated-commands.ts — a Commander registration
  * file with one command per public API operation.
  *
@@ -55,7 +55,6 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as yaml from 'js-yaml';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -85,6 +84,7 @@ interface Operation {
     security?: SecurityRequirement[];
     parameters?: (ParameterObject | RefObject)[];
     requestBody?: RequestBody;
+    responses?: Record<string, { content?: Record<string, unknown> }>;
 }
 
 interface TagObject {
@@ -210,7 +210,7 @@ const OVERRIDES: Record<string, { group: string[]; verb: string }> = {
 
 function loadSpec(specPath: string): OpenAPISpec {
     const raw = fs.readFileSync(specPath, 'utf8');
-    return yaml.load(raw) as OpenAPISpec;
+    return JSON.parse(raw) as OpenAPISpec;
 }
 
 // ─── $ref resolution ──────────────────────────────────────────────────────────
@@ -250,6 +250,18 @@ function isPublicOperation(operation: Operation, globalSecurity: SecurityRequire
     if (!security || security.length === 0) return true;
     const schemes = security.map((req) => Object.keys(req)[0]).filter(Boolean);
     return !schemes.every((s) => RESTRICTED_SCHEMES.has(s));
+}
+
+// SSE endpoints (text/event-stream). Their generated client methods return an
+// EventIterator rather than a Promise<HttpResponse>, so they don't fit the
+// one-response-per-command model this CLI emits — consuming a stream needs
+// dedicated handling. They're skipped for now (they were never usable here
+// anyway: the previous JSON.parse(response.text()) path chokes on SSE framing).
+function isStreamingOperation(operation: Operation): boolean {
+    for (const response of Object.values(operation.responses ?? {})) {
+        if (response.content && 'text/event-stream' in response.content) return true;
+    }
+    return false;
 }
 
 // ─── Path parsing ───────────────────────────────────────────────────────────--
@@ -489,6 +501,22 @@ function camelize(s: string): string {
     return s.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase());
 }
 
+// Map an operationId to the method name on the generated GitBookAPI client.
+// swagger-typescript-api names methods with a lodash.camelCase, which folds
+// acronym runs into single-capital words: getSpacePDF → getSpacePdf,
+// listOpenAPISpecs → listOpenApiSpecs, setUserAsSSOMember → setUserAsSsoMember.
+// (getSpaceById etc. are already in this form and pass through unchanged.)
+function toClientMethod(operationId: string): string {
+    const words = operationId.match(/[A-Z]{2,}(?=[A-Z][a-z]|\b)|[A-Z][a-z]+|[A-Z]+|[a-z]+|[0-9]+/g);
+    if (!words) return operationId;
+    return words
+        .map((w, i) => {
+            const lower = w.toLowerCase();
+            return i === 0 ? lower : lower.charAt(0).toUpperCase() + lower.slice(1);
+        })
+        .join('');
+}
+
 function escapeStr(s: string): string {
     return s.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, ' ').trim();
 }
@@ -513,6 +541,7 @@ interface Variant {
     scope: { flag: string; idParam: string }[];
     apiPath: string;
     method: string;
+    operationId: string;
     summary: string;
     queryParams: ParameterObject[];
     bodyFlags: BodyFlag[] | null;
@@ -542,6 +571,7 @@ function buildRoutes(spec: OpenAPISpec): Route[] {
             const operation = pathItem[method];
             if (!operation?.operationId) continue;
             if (!isPublicOperation(operation, globalSecurity)) continue;
+            if (isStreamingOperation(operation)) continue;
             const upper = method.toUpperCase();
             if (EXCLUDE.has(`${upper} ${apiPath}`)) continue;
 
@@ -629,6 +659,7 @@ function buildCommands(routes: Route[]): Command[] {
             scope: r.naming.scope,
             apiPath: r.apiPath,
             method: r.method,
+            operationId: r.operationId,
             summary: r.summary,
             queryParams: r.queryParams,
             bodyFlags: r.bodyFlags,
@@ -695,14 +726,6 @@ function assertNoVerbGroupClash(node: GroupNode, prefix: string[]): void {
 
 // ─── Emitters ─────────────────────────────────────────────────────────────────
 
-function urlExpr(apiPath: string, pathParams: ParameterObject[]): string {
-    let tmpl = apiPath;
-    for (const p of pathParams) {
-        tmpl = tmpl.replace(`{${p.name}}`, '${' + camelize(p.name) + '}');
-    }
-    return tmpl.includes('${') ? '`' + tmpl + '`' : `'${tmpl}'`;
-}
-
 function emitOutputFlags(I: string): string[] {
     return [
         `${I}    .option('--json', 'Output as JSON (machine-readable)')`,
@@ -712,31 +735,36 @@ function emitOutputFlags(I: string): string[] {
     ];
 }
 
+// The namespace an operation's method lives under on the generated GitBookAPI
+// client. swagger-typescript-api groups methods by the first URL path segment
+// (camelized): /orgs/… → api.orgs.*, /custom-hostnames/… → api.customHostnames.*.
+// `GET /` has no segment and its method sits at the top level (api.getApiInformation).
+function clientNamespace(apiPath: string): string {
+    const first = apiPath.split('/').filter(Boolean)[0];
+    return first ? camelize(first) : '';
+}
+
+// Emit the API call + response handling. Rather than hand-rolling api.request()
+// with a raw path, we call the generated typed method (api.<ns>.<operationId>),
+// which already resolves the path, sends `format: 'json'`, and returns the parsed
+// body on `.data`. Path params are positional; a body (`data`) and query object
+// follow, matching the generated signatures. `args` are the pre-built arg exprs.
 function emitRequest(
     I: string,
-    opts: { method: string; hasQuery: boolean; hasBody: boolean },
+    opts: { namespace: string; method: string; args: string[] },
 ): string[] {
+    const target = opts.namespace ? `api.${opts.namespace}.${opts.method}` : `api.${opts.method}`;
     const lines: string[] = [];
     lines.push(`${I}        try {`);
-    lines.push(`${I}            const response = await api.request({`);
-    lines.push(`${I}                path,`);
-    lines.push(`${I}                method: '${opts.method}',`);
-    lines.push(`${I}                secure: true,`);
-    if (opts.hasQuery) lines.push(`${I}                query,`);
-    if (opts.hasBody) {
-        lines.push(
-            `${I}                ...(body !== undefined ? { body, type: ContentType.Json } : {}),`,
-        );
-    }
-    lines.push(`${I}            });`);
-    // Some successful responses carry no body (e.g. 204 No Content, 205 Reset
-    // Content for deletions). Keying off the body rather than a specific status
-    // avoids "Unexpected end of JSON input" when the status isn't 204.
-    lines.push(`${I}            const text = await response.text();`);
-    lines.push(`${I}            if (text) {`);
-    lines.push(`${I}                printResult(JSON.parse(text), options);`);
+    lines.push(`${I}            const response = await ${target}(${opts.args.join(', ')});`);
+    lines.push(`${I}            if (response.data != null) {`);
+    lines.push(`${I}                printResult(response.data, options);`);
     lines.push(`${I}            }`);
     lines.push(`${I}        } catch (error) {`);
+    // A successful response with an empty body (e.g. 204/205 from a delete) makes
+    // the client's `format: 'json'` parse reject with a SyntaxError — that's not
+    // an API error, so there's simply nothing to print.
+    lines.push(`${I}            if (error instanceof SyntaxError) return;`);
     lines.push(`${I}            console.error(explainApiError((error as Error).message));`);
     lines.push(`${I}            process.exit(1);`);
     lines.push(`${I}        }`);
@@ -823,8 +851,6 @@ function emitSimpleCommand(
     const lines: string[] = [];
     const argStr = route.pathParams.map((p) => `<${p.name}>`).join(' ');
     const fullCmd = argStr ? `${verb} ${argStr}` : verb;
-    // Dotted command path, folded into the User-Agent for usage attribution.
-    const commandPath = [...cmd.group, verb].join('.');
 
     lines.push(`${I}${parentVar}`);
     lines.push(`${I}    .command('${fullCmd}')`);
@@ -863,8 +889,7 @@ function emitSimpleCommand(
     const paramNames = route.pathParams.map((p) => camelize(p.name));
     const actionArgs = [...paramNames, 'options'].join(', ');
     lines.push(`${I}    .action(async (${actionArgs}) => {`);
-    lines.push(`${I}        const api = await getAPIClient(true, '${escapeStr(commandPath)}');`);
-    lines.push(`${I}        const path = ${urlExpr(route.apiPath, route.pathParams)};`);
+    lines.push(`${I}        const api = await getAPIClient(true);`);
 
     if (route.queryParams.length > 0) {
         lines.push(`${I}        const query: Record<string, string | string[]> = {};`);
@@ -904,11 +929,19 @@ function emitSimpleCommand(
         }
     }
 
+    // Typed-method args: path params (positional), then the body (`data`) and the
+    // query object, matching the generated signatures. The dynamically-built body
+    // and query are cast (`as never`) past the method's strict param types — the
+    // CLI assembles them from string flags, so they can't be statically typed.
+    const callArgs = [...paramNames];
+    if (route.hasBody) callArgs.push('body as never');
+    if (route.queryParams.length > 0) callArgs.push('query as never');
+
     lines.push(
         ...emitRequest(I, {
-            method: route.method,
-            hasQuery: route.queryParams.length > 0,
-            hasBody: route.hasBody,
+            namespace: clientNamespace(route.apiPath),
+            method: toClientMethod(route.operationId),
+            args: callArgs,
         }),
     );
     lines.push(`${I}    });`);
@@ -946,8 +979,7 @@ function emitMergedCommand(
     lines.push(...emitOutputFlags(I));
 
     lines.push(`${I}    .action(async (options) => {`);
-    const commandPath = [...cmd.group, cmd.verb].join('.');
-    lines.push(`${I}        const api = await getAPIClient(true, '${escapeStr(commandPath)}');`);
+    lines.push(`${I}        const api = await getAPIClient(true);`);
     // Determine which variant the supplied scope flags select.
     lines.push(
         `${I}        const scopeFlags = [${scopeFlags.map((s) => `'${s.flag}'`).join(', ')}];`,
@@ -955,43 +987,48 @@ function emitMergedCommand(
     lines.push(
         `${I}        const provided = scopeFlags.filter((f) => (options as Record<string, unknown>)[f] !== undefined).sort().join(',');`,
     );
-    lines.push(`${I}        let path: string;`);
-    let first = true;
-    for (const v of cmd.variants) {
-        const cond = `provided === '${v.scopeKey}'`;
-        lines.push(`${I}        ${first ? 'if' : 'else if'} (${cond}) {`);
-        // Build the path using options.<flag> for each id param.
-        let tmpl = v.apiPath;
-        for (const s of v.scope) {
-            tmpl = tmpl.replace(`{${s.idParam}}`, '${options.' + s.flag + '}');
-        }
-        const expr = tmpl.includes('${') ? '`' + tmpl + '`' : `'${tmpl}'`;
-        lines.push(`${I}            path = ${expr};`);
-        lines.push(`${I}        }`);
-        first = false;
-    }
-    const flagList = scopeFlags.map((s) => `--${s.flag}`).join(', ');
-    const noScopeNote = cmd.allowNoScope ? ' (or none for all)' : '';
-    lines.push(`${I}        else {`);
-    lines.push(
-        `${I}            console.error('Specify a valid scope${noScopeNote}: ${escapeStr(flagList)}. Some scopes require a combination (e.g. --integration with --installation).');`,
-    );
-    lines.push(`${I}            process.exit(1);`);
-    lines.push(`${I}        }`);
 
-    if (cmd.queryParams.length > 0) {
+    const hasQuery = cmd.queryParams.length > 0;
+    if (hasQuery) {
         lines.push(`${I}        const query: Record<string, string | string[]> = {};`);
         for (const qp of cmd.queryParams) {
             lines.push(emitQueryAssign(qp, I));
         }
     }
+
+    // Each scope selects a different API operation, so the typed call lives inside
+    // the branch. Path args are the scope ids (options.<flag>); the query object,
+    // when present, follows and is cast past the method's strict param type.
+    lines.push(`${I}        try {`);
+    lines.push(`${I}            let data: unknown;`);
+    let first = true;
+    for (const v of cmd.variants) {
+        lines.push(`${I}            ${first ? 'if' : 'else if'} (provided === '${v.scopeKey}') {`);
+        const callArgs = v.scope.map((s) => `options.${s.flag}`);
+        if (hasQuery) callArgs.push('query as never');
+        const ns = clientNamespace(v.apiPath);
+        const method = toClientMethod(v.operationId);
+        const target = ns ? `api.${ns}.${method}` : `api.${method}`;
+        lines.push(`${I}                data = (await ${target}(${callArgs.join(', ')})).data;`);
+        lines.push(`${I}            }`);
+        first = false;
+    }
+    const flagList = scopeFlags.map((s) => `--${s.flag}`).join(', ');
+    const noScopeNote = cmd.allowNoScope ? ' (or none for all)' : '';
+    lines.push(`${I}            else {`);
     lines.push(
-        ...emitRequest(I, {
-            method: 'GET',
-            hasQuery: cmd.queryParams.length > 0,
-            hasBody: false,
-        }),
+        `${I}                console.error('Specify a valid scope${noScopeNote}: ${escapeStr(flagList)}. Some scopes require a combination (e.g. --integration with --installation).');`,
     );
+    lines.push(`${I}                process.exit(1);`);
+    lines.push(`${I}            }`);
+    lines.push(`${I}            if (data != null) {`);
+    lines.push(`${I}                printResult(data, options);`);
+    lines.push(`${I}            }`);
+    lines.push(`${I}        } catch (error) {`);
+    lines.push(`${I}            if (error instanceof SyntaxError) return;`);
+    lines.push(`${I}            console.error(explainApiError((error as Error).message));`);
+    lines.push(`${I}            process.exit(1);`);
+    lines.push(`${I}        }`);
     lines.push(`${I}    });`);
     lines.push('');
     return lines.join('\n');
@@ -1028,7 +1065,7 @@ function emitFile(tree: GroupNode, completions: Record<string, string>): string 
     lines.push(`/**`);
     lines.push(` * AUTO-GENERATED — DO NOT EDIT`);
     lines.push(` *`);
-    lines.push(` * Source:    packages/api/spec/openapi.yaml`);
+    lines.push(` * Source:    packages/api/spec/openapi.json`);
     lines.push(` * Generator: scripts/generate-commands.ts`);
     lines.push(` *`);
     lines.push(` * Re-generate: npm run generate-commands (from monorepo root)`);
@@ -1037,7 +1074,6 @@ function emitFile(tree: GroupNode, completions: Record<string, string>): string 
     lines.push(`/* eslint-disable */`);
     lines.push(``);
     lines.push(`import { Command } from 'commander';`);
-    lines.push(`import { ContentType } from '@gitbook/api';`);
     lines.push(`import { getAPIClient } from './remote';`);
     lines.push(`// Output formatting lives in ./output (a real, unit-tested module) rather than`);
     lines.push(`// being inlined here, so the rendering logic has a single source of truth.`);
@@ -1146,7 +1182,7 @@ ${bash}`;
 
 // ─── Entry point ──────────────────────────────────────────────────────────────
 
-const SPEC_PATH = path.resolve(__dirname, '../packages/api/spec/openapi.yaml');
+const SPEC_PATH = path.resolve(__dirname, '../packages/api/spec/openapi.json');
 const OUT_PATH = path.resolve(__dirname, '../packages/cli/src/generated-commands.ts');
 
 console.log('Reading spec from', SPEC_PATH);
