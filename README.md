@@ -12,11 +12,11 @@
 
 <p align="center">Welcome to GitBook Integration Platform!</p>
 
-This repository contains code, packages, and scripts related to the integrations platform in GitBook. Want to get started building your first integration? Head to our [documentation](https://developer.gitbook.com/getting-started/setup-guide) to get started.
+This repository contains code, packages, and scripts related to the integrations platform in GitBook. Want to get started building your first integration? Head to our [documentation](https://gitbook.com/docs/developers/getting-started/setup-guide) to get started.
 
 ## Documentation
 
-Visit our [documentation](https://developer.gitbook.com/) to learn how to use
+Visit our [documentation](https://gitbook.com/docs/developers) to learn how to use
 the GitBook Integration Platform with our API reference, getting started guides, and more.
 
 > The documentation is hosted on GitBook and lives in this repository, within
@@ -143,6 +143,6 @@ Whether you're interested in contributing your own integration, helping out with
   <img src="https://contrib.rocks/image?repo=gitbookIO/integrations" />
 </a>
 
-## Resources
-- [GitBook Integrations Homepage](https://www.gitbook.com/integrations)
-- [GitBook Integrations Docs](https://developer.gitbook.com/)
+> Looking for something else? Head to [our developer docs](https://gitbook.com/docs/developers) or try asking [GitBook Assistant](https://gitbook.com/docs/developers?ask=).
+>
+> Still stuck? [Send our support team a message](https://gitbook.com/docs/help-center/further-help/how-do-i-contact-support).
