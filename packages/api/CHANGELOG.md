@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.189.0
+
+### Minor Changes
+
+- b2dc5f3: Bump API to 0.189.0
+
 ## 0.188.0
 
 ### Minor Changes
