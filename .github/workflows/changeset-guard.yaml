@@ -1,0 +1,64 @@
+name: Changeset guard
+
+on:
+    pull_request:
+
+jobs:
+    cli-republish-on-api-bump:
+        runs-on: ubuntu-latest
+        name: CLI changeset on API bump
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  # Full history so we can diff against the PR base.
+                  fetch-depth: 0
+            - name: Require a @gitbook/cli changeset when @gitbook/api is bumped
+              env:
+                  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+              run: |
+                  set -euo pipefail
+
+                  api_re="^['\"]?@gitbook/api['\"]?[[:space:]]*:"
+                  cli_re="^['\"]?@gitbook/cli['\"]?[[:space:]]*:"
+
+                  # Changeset files introduced by THIS PR (added or modified), excluding the README.
+                  pr_changesets=$(git diff --name-only --diff-filter=AM "$BASE_SHA...HEAD" -- '.changeset/*.md' \
+                      | grep -vi '/README\.md$' || true)
+
+                  if [ -z "$pr_changesets" ]; then
+                      echo "No changeset changes in this PR — nothing to check."
+                      exit 0
+                  fi
+
+                  # Does this PR introduce a @gitbook/api bump?
+                  api_bumped=false
+                  while IFS= read -r f; do
+                      [ -n "$f" ] && [ -f "$f" ] || continue
+                      if grep -Eq "$api_re" "$f"; then api_bumped=true; fi
+                  done <<< "$pr_changesets"
+
+                  if [ "$api_bumped" = false ]; then
+                      echo "This PR does not bump @gitbook/api — nothing to enforce."
+                      exit 0
+                  fi
+
+                  # Is there ANY pending @gitbook/cli changeset (from this PR or already on the branch)?
+                  # The release batches all pending changesets, so a @gitbook/cli bump anywhere counts.
+                  cli_bumped=false
+                  for f in .changeset/*.md; do
+                      [ -f "$f" ] || continue
+                      case "$f" in */README.md) continue ;; esac
+                      if grep -Eq "$cli_re" "$f"; then cli_bumped=true; fi
+                  done
+
+                  if [ "$cli_bumped" = false ]; then
+                      echo "::error::This PR bumps @gitbook/api but no pending changeset bumps @gitbook/cli."
+                      echo "The gitbook CLI generates its commands from the API's OpenAPI spec, so an"
+                      echo "@gitbook/api bump should normally also republish the CLI. Add"
+                      echo "\"'@gitbook/cli': patch\" to your changeset (or add a second .changeset/*.md)"
+                      echo "so the CLI is regenerated and released with the new spec."
+                      exit 1
+                  fi
+
+                  echo "Changeset guard passed (a @gitbook/cli changeset is present)."
