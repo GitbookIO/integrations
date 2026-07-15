@@ -50,7 +50,7 @@
  * Shell completion
  * ----------------
  * The command tree is also emitted as bash/zsh/fish completion scripts, exposed
- * via `gitbook2 completion <shell>`.
+ * via `gitbook completion <shell>`.
  */
 
 import * as fs from 'fs';
@@ -825,7 +825,8 @@ function emitQueryOption(qp: ParameterObject, I: string): string {
     }
     const enumVals = (qp.schema?.enum ?? []).map((v) => String(v));
     if (enumVals.length > 0) {
-        const def = qp.schema?.default !== undefined ? `, default ${String(qp.schema.default)}` : '';
+        const def =
+            qp.schema?.default !== undefined ? `, default ${String(qp.schema.default)}` : '';
         append(`[one of: ${enumVals.join(', ')}${def}]`);
     }
     return `${I}    .option('--${qp.name} ${bracket}', '${escapeStr(desc)}')`;
@@ -838,7 +839,9 @@ function emitQueryOption(qp: ParameterObject, I: string): string {
 // value the API rejected with a 500.
 function emitQueryAssign(qp: ParameterObject, I: string): string {
     const accessor = `options[${JSON.stringify(camelize(qp.name))}]`;
-    const rhs = queryParamIsArray(qp) ? `coerceArrayQueryParam(${accessor})` : `String(${accessor})`;
+    const rhs = queryParamIsArray(qp)
+        ? `coerceArrayQueryParam(${accessor})`
+        : `String(${accessor})`;
     return `${I}        if (${accessor} !== undefined) query['${qp.name}'] = ${rhs};`;
 }
 
@@ -1120,8 +1123,17 @@ function completionMap(commands: Command[]): Map<string, string[]> {
 
 function generateCompletions(commands: Command[]): Record<string, string> {
     const map = completionMap(commands);
-    // Always-available top-level extras.
-    for (const extra of ['auth', 'whoami', 'completion', 'help']) {
+    // Always-available top-level extras (hand-written commands not in the generated tree).
+    for (const extra of [
+        'login',
+        'logout',
+        'auth',
+        'whoami',
+        'completion',
+        'integration',
+        'openapi',
+        'help',
+    ]) {
         if (!map.has('')) map.set('', []);
         if (!map.get('')!.includes(extra)) map.get('')!.push(extra);
     }
@@ -1131,30 +1143,30 @@ function generateCompletions(commands: Command[]): Record<string, string> {
     const arms = [...map.entries()]
         .map(([k, v]) => `    '${k === '' ? '/' : k}') echo '${v.join(' ')}' ;;`)
         .join('\n');
-    const bash = `# gitbook2 bash completion. Install: gitbook2 completion bash >> ~/.bashrc
-_gb2_children() {
+    const bash = `# gitbook bash completion. Install: gitbook completion bash >> ~/.bashrc
+_gb_children() {
   case "\$1" in
 ${arms}
     *) echo '' ;;
   esac
 }
-_gitbook2_complete() {
+_gitbook_complete() {
   local cur key next i token
   key="/"
   for ((i=1; i<COMP_CWORD; i++)); do
     token="\${COMP_WORDS[i]}"
     [[ "\$token" == -* ]] && continue
     if [[ "\$key" == "/" ]]; then next="\$token"; else next="\$key \$token"; fi
-    if [[ -n "\$(_gb2_children "\$next")" ]]; then key="\$next"; fi
+    if [[ -n "\$(_gb_children "\$next")" ]]; then key="\$next"; fi
   done
   cur="\${COMP_WORDS[COMP_CWORD]}"
-  COMPREPLY=( \$(compgen -W "\$(_gb2_children "\$key")" -- "\$cur") )
+  COMPREPLY=( \$(compgen -W "\$(_gb_children "\$key")" -- "\$cur") )
 }
-complete -F _gitbook2_complete gitbook2
+complete -F _gitbook_complete gitbook
 `;
 
     // zsh: reuse the bash function via bashcompinit.
-    const zsh = `# gitbook2 zsh completion. Install: gitbook2 completion zsh >> ~/.zshrc
+    const zsh = `# gitbook zsh completion. Install: gitbook completion zsh >> ~/.zshrc
 # Initialise the completion system if the host shell hasn't already.
 if ! whence compdef >/dev/null 2>&1; then autoload -Uz compinit && compinit; fi
 autoload -U +X bashcompinit && bashcompinit
@@ -1162,7 +1174,7 @@ ${bash}`;
 
     // fish: one `complete` line per node path.
     const fishLines: string[] = [
-        '# gitbook2 fish completion. Install: gitbook2 completion fish > ~/.config/fish/completions/gitbook2.fish',
+        '# gitbook fish completion. Install: gitbook completion fish > ~/.config/fish/completions/gitbook.fish',
     ];
     for (const [key, tokens] of map) {
         const depth = key === '' ? 0 : key.split(' ').length;
@@ -1172,7 +1184,7 @@ ${bash}`;
                 : `__fish_seen_subcommand_from ${key.split(' ').join(' ')}`;
         for (const t of tokens) {
             fishLines.push(
-                `complete -c gitbook2 -n '${depth === 0 ? 'test (count (commandline -opc)) -eq 1' : cond}' -f -a '${t}'`,
+                `complete -c gitbook -n '${depth === 0 ? 'test (count (commandline -opc)) -eq 1' : cond}' -f -a '${t}'`,
             );
         }
     }

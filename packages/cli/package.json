@@ -40,8 +40,7 @@
         "node": ">=18.0.0"
     },
     "bin": {
-        "gitbook": "./cli.js",
-        "gitbook2": "./cli2.js"
+        "gitbook": "./cli.js"
     },
     "publishConfig": {
         "access": "public",

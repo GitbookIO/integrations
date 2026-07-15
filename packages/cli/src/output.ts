@@ -1,5 +1,5 @@
 /**
- * Output formatting for the `gitbook2` CLI.
+ * Output formatting for the `gitbook` CLI.
  *
  * This module is the single source of truth for how API responses are rendered.
  * `scripts/generate-commands.ts` imports `printResult` from here rather than

@@ -149,9 +149,8 @@ const LIFECYCLE_COMMANDS: LifecycleCommand[] = [
 ];
 
 export function registerCustomCommands(program: Command): void {
-    // Derive the binary name at runtime instead of hardcoding it. This CLI ships
-    // as `gitbook2` today but is intended to take over the `gitbook` name, so the
-    // deprecation messages below must follow the rename automatically.
+    // Derive the binary name at runtime instead of hardcoding it, so the
+    // deprecation messages below stay correct regardless of the program name.
     const binName = program.name();
 
     const integration = program
