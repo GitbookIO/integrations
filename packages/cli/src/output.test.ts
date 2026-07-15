@@ -237,7 +237,8 @@ describe('coerceArrayQueryParam', () => {
 
 describe('explainApiError', () => {
     it('appends a hint on a schema-union validation failure', () => {
-        const msg = 'GitBook API failed with [422] /x: body.changes.0: expected to match exactly one';
+        const msg =
+            'GitBook API failed with [422] /x: body.changes.0: expected to match exactly one';
         const out = explainApiError(msg);
         expect(out).toContain(msg);
         expect(out).toMatch(/markdown/);
