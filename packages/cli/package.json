@@ -29,8 +29,12 @@
         "postinstall.js"
     ],
     "scripts": {
+        "generate-commands": "bun run ../../scripts/generate-commands.ts",
+        "prebuild": "bun run generate-commands",
         "build": "./build.sh",
+        "prepack": "bun run build",
         "postinstall": "node postinstall.js",
+        "test": "bun test",
         "typecheck": "tsc --noEmit"
     },
     "engines": {

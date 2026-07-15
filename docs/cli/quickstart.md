@@ -10,18 +10,24 @@ npm install @gitbook/cli -g
 
 ### Step 2: Authenticate with your account
 
-Create an API token in your GitBook.com at [app.gitbook.com/account/developer](https://app.gitbook.com/account/developer).
-
-Then run the following command to authenticate locally:
+Sign in through your browser:
 
 ```
-gitbook auth
+gitbook login
 ```
+
+Or, to publish integrations, authenticate with a personal API token instead. Create one at [app.gitbook.com/account/developer](https://app.gitbook.com/account/developer), then run:
+
+```
+gitbook auth --token <token>
+```
+
+> Publishing integrations requires a personal API token; the browser (OAuth) session cannot publish.
 
 ### Step 3: Bootstrap your app
 
 Bootstrap your first app by running:
 
 ```
-gitbook new
+gitbook integration new
 ```

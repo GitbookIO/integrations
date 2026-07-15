@@ -43,6 +43,25 @@ You're also welcome to contribute updates or improvements to the packages living
 `@gitbook/api`: https://gitbook.com/docs/developers/gitbook-api/overview
 `@gitbook/runtime`: https://gitbook.com/docs/developers/integrations/runtime
 
+#### Releasing packages
+
+Package releases are driven by [changesets](https://github.com/changesets/changesets). Add one with `bun run changeset` (or write a `.changeset/*.md` file by hand) describing the change and the version bump for each affected package. Merges to `main` are then versioned and published automatically by the release workflow.
+
+##### Bumping `@gitbook/api` also bumps `@gitbook/cli`
+
+The `gitbook` CLI generates its command tree from the GitBook OpenAPI spec at build time. When you bump `@gitbook/api`, add a `@gitbook/cli` changeset in the same PR so the CLI is regenerated and republished with the new spec. A single changeset file can bump both:
+
+```markdown
+---
+'@gitbook/api': minor
+'@gitbook/cli': patch
+---
+
+Bump API to 0.x.0 and regenerate CLI commands
+```
+
+You don't need to run codegen or commit anything generated — the CLI's commands are regenerated from the live spec during the release build. This is the only extra step. A CI check (`Changeset guard`) fails any PR that bumps `@gitbook/api` without a pending `@gitbook/cli` changeset.
+
 ## Contributing
 
 ### Tooling
