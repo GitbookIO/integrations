@@ -950,7 +950,9 @@ function emitCommandPreamble(
     }
     if (route.pathParams.length > 0) {
         const posUsage = escapeStr(
-            ['gitbook', ...cmd.group, verb, ...route.pathParams.map((p) => `<${p.name}>`)].join(' '),
+            ['gitbook', ...cmd.group, verb, ...route.pathParams.map((p) => `<${p.name}>`)].join(
+                ' ',
+            ),
         );
         const flagUsage = escapeStr(route.pathParams.map((p) => `--${p.name} <value>`).join(' '));
         lines.push(`${I}        const missingParams: string[] = [];`);
@@ -1348,8 +1350,7 @@ ${bash}`;
 // requests zero scopes. Scopes are environment-independent, so the prod spec is a
 // safe source for them (unlike the OAuth *endpoint*, which stays runtime-derived).
 function extractOAuthScopes(spec: OpenAPISpec): string[] {
-    const scopes =
-        spec.components?.securitySchemes?.oauth?.flows?.authorizationCode?.scopes ?? {};
+    const scopes = spec.components?.securitySchemes?.oauth?.flows?.authorizationCode?.scopes ?? {};
     return Object.keys(scopes);
 }
 

@@ -346,7 +346,10 @@ describe('createStreamRenderer', () => {
         const out = captureStdout(() => {
             const r = createStreamRenderer({ pretty: true });
             // Each event carries the answer so far; only the new suffix prints.
-            r.write({ type: 'answer', answer: { answer: 'Hello', sources: [], followupQuestions: [] } });
+            r.write({
+                type: 'answer',
+                answer: { answer: 'Hello', sources: [], followupQuestions: [] },
+            });
             r.write({
                 type: 'answer',
                 answer: {
@@ -394,14 +397,14 @@ describe('createRequestTimeout', () => {
 
 describe('formatStreamSource', () => {
     it('renders a page source with reason', () => {
-        expect(formatStreamSource({ type: 'page', page: 'p1', space: 's1', reason: 'covers it' })).toBe(
-            'page p1  space s1  — covers it',
-        );
+        expect(
+            formatStreamSource({ type: 'page', page: 'p1', space: 's1', reason: 'covers it' }),
+        ).toBe('page p1  space s1  — covers it');
     });
 
     it('renders a context-record source with title and url', () => {
-        expect(
-            formatStreamSource({ type: 'record', title: 'Guide', url: 'https://x/guide' }),
-        ).toBe('Guide  https://x/guide');
+        expect(formatStreamSource({ type: 'record', title: 'Guide', url: 'https://x/guide' })).toBe(
+            'Guide  https://x/guide',
+        );
     });
 });
