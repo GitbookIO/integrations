@@ -29,11 +29,11 @@
 * [Quickstart](gitbook-api/quickstart.md)
 * [API reference](gitbook-api/api-reference/README.md)
   * ```yaml
-    type: builtin:openapi
     props:
       models: false
       downloadLink: true
       grouping: by-operation
+    type: builtin:openapi
     dependencies:
       spec:
         ref:
