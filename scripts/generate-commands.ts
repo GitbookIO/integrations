@@ -865,12 +865,22 @@ function emitSimpleCommand(
 ): string {
     const { route, verb } = cmd;
     const lines: string[] = [];
-    const argStr = route.pathParams.map((p) => `<${p.name}>`).join(' ');
+    // Path params are documented as positionals (optional in the signature so the
+    // flag form is also accepted), and additionally offered as --<name> flags for
+    // discoverability. The positional wins when both are supplied (resolved below).
+    const argStr = route.pathParams.map((p) => `[${p.name}]`).join(' ');
     const fullCmd = argStr ? `${verb} ${argStr}` : verb;
 
     lines.push(`${I}${parentVar}`);
     lines.push(`${I}    .command('${fullCmd}')`);
     lines.push(`${I}    .description('${escapeStr(route.summary)}')`);
+
+    for (const p of route.pathParams) {
+        const desc = escapeStr(
+            `${p.description ? `${p.description} ` : ''}(path parameter — may be given positionally instead)`,
+        );
+        lines.push(`${I}    .option('--${p.name} <value>', '${desc}')`);
+    }
 
     for (const qp of route.queryParams) {
         lines.push(emitQueryOption(qp, I));
@@ -903,8 +913,34 @@ function emitSimpleCommand(
     lines.push(...emitOutputFlags(I));
 
     const paramNames = route.pathParams.map((p) => camelize(p.name));
-    const actionArgs = [...paramNames, 'options'].join(', ');
+    // Positionals arrive as `<name>Arg`; the real `<name>` const is the resolved
+    // value (positional first, then the --flag) that the request call reads.
+    const actionArgs = [...paramNames.map((n) => `${n}Arg`), 'options'].join(', ');
     lines.push(`${I}    .action(async (${actionArgs}) => {`);
+    for (const p of route.pathParams) {
+        const n = camelize(p.name);
+        lines.push(`${I}        const ${n} = ${n}Arg ?? options.${n};`);
+    }
+    if (route.pathParams.length > 0) {
+        const posUsage = escapeStr(
+            ['gitbook', ...cmd.group, verb, ...route.pathParams.map((p) => `<${p.name}>`)].join(' '),
+        );
+        const flagUsage = escapeStr(route.pathParams.map((p) => `--${p.name} <value>`).join(' '));
+        lines.push(`${I}        const missingParams: string[] = [];`);
+        for (const p of route.pathParams) {
+            lines.push(
+                `${I}        if (${camelize(p.name)} === undefined) missingParams.push('${p.name}');`,
+            );
+        }
+        lines.push(`${I}        if (missingParams.length > 0) {`);
+        lines.push(
+            `${I}            console.error(\`Missing required path parameter(s): \${missingParams.join(', ')}.\`);`,
+        );
+        lines.push(`${I}            console.error('  positional: ${posUsage}');`);
+        lines.push(`${I}            console.error('  or flags:   ${flagUsage}');`);
+        lines.push(`${I}            process.exit(1);`);
+        lines.push(`${I}        }`);
+    }
     lines.push(`${I}        const api = await getAPIClient(true);`);
 
     if (route.queryParams.length > 0) {
