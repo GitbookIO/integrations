@@ -32,8 +32,13 @@ import { authenticate, login, logout, whoami } from './remote';
 import { withEnvironment } from './environments';
 import { registerGeneratedCommands, COMPLETIONS } from './generated-commands';
 import { registerCustomCommands } from './api-commands';
+import { installCommandTreeHelp } from './help-tree';
 
 program.name('gitbook').description(packageJSON.description).version(packageJSON.version);
+
+// List subcommands alphabetically in --help (both the built-in command list and
+// the nested tree in help-tree.ts), rather than in registration order.
+program.configureHelp({ sortSubcommands: true });
 
 program
     .command('login')
@@ -152,6 +157,19 @@ program
 // Mount the spec-generated and hand-written API commands at the top level.
 registerGeneratedCommands(program);
 registerCustomCommands(program);
+
+// The integration build/publish lifecycle (new/dev/publish/…) lives under the
+// singular `integration` group, kept distinct from the spec-generated plural
+// `integrations` group (raw API ops). People reasonably look under `integrations`
+// first, so point them across from there.
+const integrationsGroup = program.commands.find((c) => c.name() === 'integrations');
+integrationsGroup?.addHelpText(
+    'after',
+    `\nTo create, run, or publish your own integration (new, dev, publish, …), see \`${program.name()} integration --help\`.`,
+);
+
+// Reveal nested subgroups in `--help` (Commander shows only immediate children).
+installCommandTreeHelp(program);
 
 checkNodeVersion({ node: '>= 18' }, (error, result) => {
     if (error) {
