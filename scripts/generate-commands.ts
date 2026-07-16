@@ -143,6 +143,19 @@ const EXCLUDE = new Set([
     'POST /integrations/{integrationName}/render',
 ]);
 
+// Hand-written commands that live outside the spec-derived tree (registered by
+// registerCustomCommands in api-commands.ts and the auth/completion commands in
+// cli.ts). The generator can't see them, so shell completion would otherwise miss
+// them and their subcommands. Keep this in sync with those files as hand-written
+// commands change; the CLI has no runtime introspection to derive it from.
+//   ''  → tokens that complete at the top level (the hand-written groups + auth).
+//   'x' → subcommands that complete under the hand-written group `x`.
+const HAND_WRITTEN_COMPLETIONS: Record<string, string[]> = {
+    '': ['login', 'logout', 'auth', 'whoami', 'completion', 'integration', 'openapi', 'help'],
+    integration: ['new', 'dev', 'publish', 'unpublish', 'tail', 'check'],
+    openapi: ['publish'],
+};
+
 // Top-level resources: those reachable directly as /{resource}/{id}. These are
 // the only resources eligible for the P1 scope-flag merge.
 const TIER1 = new Set([
@@ -1123,19 +1136,14 @@ function completionMap(commands: Command[]): Map<string, string[]> {
 
 function generateCompletions(commands: Command[]): Record<string, string> {
     const map = completionMap(commands);
-    // Always-available top-level extras (hand-written commands not in the generated tree).
-    for (const extra of [
-        'login',
-        'logout',
-        'auth',
-        'whoami',
-        'completion',
-        'integration',
-        'openapi',
-        'help',
-    ]) {
-        if (!map.has('')) map.set('', []);
-        if (!map.get('')!.includes(extra)) map.get('')!.push(extra);
+    // Merge in the hand-written commands (top-level groups + their subcommands)
+    // so `gitbook integration <TAB>`, `gitbook openapi <TAB>`, etc. complete too.
+    for (const [key, tokens] of Object.entries(HAND_WRITTEN_COMPLETIONS)) {
+        if (!map.has(key)) map.set(key, []);
+        const arr = map.get(key)!;
+        for (const token of tokens) {
+            if (!arr.includes(token)) arr.push(token);
+        }
     }
 
     // bash: a `case`-based child lookup (portable to bash 3.2; no associative
