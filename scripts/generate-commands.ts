@@ -63,9 +63,20 @@ interface OpenAPISpec {
     components?: {
         schemas?: Record<string, SchemaObject>;
         parameters?: Record<string, ParameterObject>;
+        securitySchemes?: Record<string, SecuritySchemeObject>;
     };
     tags?: TagObject[];
     security?: SecurityRequirement[];
+}
+
+interface SecuritySchemeObject {
+    type?: string;
+    flows?: {
+        authorizationCode?: {
+            // scope name → human description
+            scopes?: Record<string, string>;
+        };
+    };
 }
 
 interface PathItem {
@@ -1296,10 +1307,47 @@ ${bash}`;
     return { bash, zsh, fish: fishLines.join('\n') + '\n' };
 }
 
+// ─── OAuth scopes ───────────────────────────────────────────────────────────--
+
+// The authoritative OAuth scope list lives in the spec's `oauth` securityScheme.
+// The CLI's `gitbook login` normally requests the scopes the OAuth server
+// advertises via `.well-known` discovery (which is environment-correct — the
+// bundled spec is prod-only); this generated list is the fallback for a server
+// whose discovery document omits `scopes_supported`, so login never silently
+// requests zero scopes. Scopes are environment-independent, so the prod spec is a
+// safe source for them (unlike the OAuth *endpoint*, which stays runtime-derived).
+function extractOAuthScopes(spec: OpenAPISpec): string[] {
+    const scopes =
+        spec.components?.securitySchemes?.oauth?.flows?.authorizationCode?.scopes ?? {};
+    return Object.keys(scopes);
+}
+
+function emitOAuthScopesFile(scopes: string[]): string {
+    return [
+        `/**`,
+        ` * AUTO-GENERATED — DO NOT EDIT`,
+        ` *`,
+        ` * Source:    packages/api/spec/openapi.json (components.securitySchemes.oauth)`,
+        ` * Generator: scripts/generate-commands.ts`,
+        ` *`,
+        ` * Re-generate: npm run generate-commands (from monorepo root)`,
+        ` */`,
+        ``,
+        `// Fallback OAuth scopes, used by \`gitbook login\` only when the OAuth server's`,
+        `// discovery metadata omits \`scopes_supported\`. See oauth.ts.`,
+        `export const OAUTH_SCOPES: string[] = ${JSON.stringify(scopes, null, 4)};`,
+        ``,
+    ].join('\n');
+}
+
 // ─── Entry point ──────────────────────────────────────────────────────────────
 
 const SPEC_PATH = path.resolve(__dirname, '../packages/api/spec/openapi.json');
 const OUT_PATH = path.resolve(__dirname, '../packages/cli/src/generated-commands.ts');
+const OAUTH_SCOPES_OUT_PATH = path.resolve(
+    __dirname,
+    '../packages/cli/src/generated-oauth-scopes.ts',
+);
 
 console.log('Reading spec from', SPEC_PATH);
 const spec = loadSpec(SPEC_PATH);
@@ -1312,9 +1360,15 @@ const completions = generateCompletions(commands);
 const merged = commands.filter((c) => c.kind === 'merged').length;
 const complexBody = routes.filter((r) => r.hasBody && r.bodyFlags === null).length;
 
+const oauthScopes = extractOAuthScopes(spec);
+
 console.log(`  ${routes.length} public operations included`);
 console.log(`  ${commands.length} commands (${merged} merged scope-flag commands)`);
 console.log(`  ${complexBody} operations using --body fallback (complex schema)`);
+console.log(`  ${oauthScopes.length} OAuth scopes (login fallback)`);
 
 fs.writeFileSync(OUT_PATH, emitFile(tree, completions), 'utf8');
 console.log('Written to', OUT_PATH);
+
+fs.writeFileSync(OAUTH_SCOPES_OUT_PATH, emitOAuthScopesFile(oauthScopes), 'utf8');
+console.log('Written to', OAUTH_SCOPES_OUT_PATH);
