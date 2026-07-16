@@ -20,7 +20,7 @@ jobs:
           node-version: 18.x
       - run: npm ci
       - run: npm install -g @gitbook/cli
-      - run: gitbook publish .
+      - run: gitbook integration publish .
         env:
             GITBOOK_TOKEN: ${{ secrets.GITBOOK_TOKEN }}
 ```

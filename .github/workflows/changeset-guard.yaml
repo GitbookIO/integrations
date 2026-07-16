@@ -1,0 +1,19 @@
+name: Changeset guard
+
+on:
+    pull_request:
+
+jobs:
+    cli-republish-on-api-bump:
+        runs-on: ubuntu-latest
+        name: CLI changeset on API bump
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  # Full history so we can diff against the PR base.
+                  fetch-depth: 0
+            - name: Require a @gitbook/cli changeset when @gitbook/api is bumped
+              env:
+                  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+              run: ./scripts/changeset-guard.sh

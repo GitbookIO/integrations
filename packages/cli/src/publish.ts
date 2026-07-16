@@ -5,7 +5,7 @@ import * as api from '@gitbook/api';
 
 import { buildScriptFromManifest } from './build';
 import { resolveFile } from './manifest';
-import { getAPIClient } from './remote';
+import { assertCanPublishIntegrations, getAPIClient } from './remote';
 
 /**
  * Publish the integration to GitBook.
@@ -15,10 +15,12 @@ export async function publishIntegration(
     specFilePath: string,
     updates: Partial<api.RequestPublishIntegration> = {},
 ): Promise<void> {
+    assertCanPublishIntegrations();
+
     // Build the script
     const { script, manifest } = await buildScriptFromManifest(specFilePath);
 
-    const api = await getAPIClient(true);
+    const api = await getAPIClient(true, { personalTokenOnly: true });
 
     if (typeof manifest.target === 'string') {
         console.log(
@@ -63,7 +65,9 @@ export async function publishIntegration(
  * Delete an integration
  */
 export async function unpublishIntegration(name: string): Promise<void> {
-    const api = await getAPIClient(true);
+    assertCanPublishIntegrations();
+
+    const api = await getAPIClient(true, { personalTokenOnly: true });
     await api.integrations.unpublishIntegration(name);
 
     console.log(`👌 Integration "${name}" has been deleted`);

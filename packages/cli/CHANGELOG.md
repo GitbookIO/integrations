@@ -1,5 +1,12 @@
 # @gitbook/cli
 
+## 0.29.0
+
+### Minor Changes
+
+- d52fb27: Add `gitbook login` / `gitbook logout` to authenticate through the browser using OAuth, with automatic token refresh. A browser session and a personal API token can be configured at the same time: the OAuth session is used for API commands, while a personal token (via `gitbook auth --token`) is still used — and required — for publishing integrations.
+- d52fb27: The `gitbook` CLI is now the spec-generated CLI: every GitBook API operation is available as a command group (e.g. `gitbook organizations list`), alongside shell completion (`gitbook completion`). The integration build/publish lifecycle now lives under `gitbook integration <verb>` (`new`, `dev`, `publish`, `unpublish`, `tail`, `check`); the historical top-level spellings (`gitbook publish`, …) keep working as deprecated aliases that print a warning. The separate `gitbook2` binary has been removed — it is now just `gitbook`.
+
 ## 0.28.0
 
 ### Minor Changes

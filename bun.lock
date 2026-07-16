@@ -780,6 +780,7 @@
       "version": "0.28.0",
       "bin": {
         "gitbook": "./cli.js",
+        "gitbook2": "./cli2.js",
       },
       "dependencies": {
         "@1password/op-js": "^0.1.13",
