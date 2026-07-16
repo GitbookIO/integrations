@@ -2,10 +2,13 @@ import { describe, it, expect } from 'bun:test';
 
 import {
     asCollection,
+    CLI_TIMEOUT_MS,
     coerceArrayQueryParam,
     coerceBodyFlag,
+    createRequestTimeout,
     createStreamRenderer,
     explainApiError,
+    explainTimeout,
     formatCollection,
     formatObjectSummary,
     formatStreamSource,
@@ -370,6 +373,22 @@ describe('createStreamRenderer', () => {
         expect(out).toBe(
             '[response_start]\n[response_document] insert — 2 block(s)\n[response_finish]\n',
         );
+    });
+});
+
+describe('createRequestTimeout', () => {
+    it('returns a live, un-aborted timeout by default (and clear() stops the timer)', () => {
+        const t = createRequestTimeout();
+        // The default CLI_TIMEOUT_MS is non-zero, so a timeout is created.
+        expect(t).not.toBeNull();
+        expect(t!.signal.aborted).toBe(false);
+        t!.clear(); // release the pending timer so the test process can exit
+    });
+
+    it('explainTimeout names the configured duration and the override env var', () => {
+        const msg = explainTimeout();
+        expect(msg).toContain(`${CLI_TIMEOUT_MS / 1000}s`);
+        expect(msg).toContain('GITBOOK_CLI_TIMEOUT_MS');
     });
 });
 

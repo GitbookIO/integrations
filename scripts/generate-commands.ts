@@ -780,17 +780,26 @@ function emitRequest(
 ): string[] {
     const target = opts.namespace ? `api.${opts.namespace}.${opts.method}` : `api.${opts.method}`;
     const lines: string[] = [];
+    lines.push(`${I}        const timeout = createRequestTimeout();`);
     lines.push(`${I}        try {`);
     lines.push(`${I}            const response = await ${target}(${opts.args.join(', ')});`);
+    lines.push(`${I}            timeout?.clear();`);
     lines.push(`${I}            if (response.data != null) {`);
     lines.push(`${I}                printResult(response.data, options);`);
     lines.push(`${I}            }`);
     lines.push(`${I}        } catch (error) {`);
+    lines.push(`${I}            timeout?.clear();`);
     // A successful response with an empty body (e.g. 204/205 from a delete) makes
     // the client's `format: 'json'` parse reject with a SyntaxError — that's not
     // an API error, so there's simply nothing to print.
     lines.push(`${I}            if (error instanceof SyntaxError) return;`);
-    lines.push(`${I}            console.error(explainApiError((error as Error).message));`);
+    // The idle timer aborted the request: report the timeout, not the raw
+    // AbortError the client surfaces.
+    lines.push(`${I}            if (timeout?.signal.aborted) {`);
+    lines.push(`${I}                console.error(explainTimeout());`);
+    lines.push(`${I}            } else {`);
+    lines.push(`${I}                console.error(explainApiError((error as Error).message));`);
+    lines.push(`${I}            }`);
     lines.push(`${I}            process.exit(1);`);
     lines.push(`${I}        }`);
     return lines;
@@ -1006,6 +1015,9 @@ function emitCommandPreamble(
     const callArgs = [...paramNames];
     if (route.hasBody) callArgs.push('body as never');
     if (route.queryParams.length > 0) callArgs.push('query as never');
+    // Final client arg is the request params object; we use it to pass the idle
+    // abort signal. `timeout` is declared by the caller before the request call.
+    callArgs.push('{ signal: timeout?.signal }');
 
     return { lines, callArgs };
 }
@@ -1045,7 +1057,9 @@ function emitStreamingCommand(
     const method = toClientMethod(route.operationId);
     const target = ns ? `api.${ns}.${method}` : `api.${method}`;
     lines.push(`${I}        const stream = createStreamRenderer(options);`);
+    lines.push(`${I}        const timeout = createRequestTimeout();`);
     lines.push(`${I}        const onSigint = () => {`);
+    lines.push(`${I}            timeout?.clear();`);
     lines.push(`${I}            stream.end();`);
     lines.push(`${I}            process.exit(130);`);
     lines.push(`${I}        };`);
@@ -1055,12 +1069,20 @@ function emitStreamingCommand(
         `${I}            const events = ${target}(${callArgs.join(', ')}) as AsyncIterable<unknown>;`,
     );
     lines.push(`${I}            for await (const event of events) {`);
+    // Each event resets the idle timer, so a slow-but-live stream is never cut off.
+    lines.push(`${I}                timeout?.bump();`);
     lines.push(`${I}                stream.write(event);`);
     lines.push(`${I}            }`);
+    lines.push(`${I}            timeout?.clear();`);
     lines.push(`${I}            stream.end();`);
     lines.push(`${I}        } catch (error) {`);
+    lines.push(`${I}            timeout?.clear();`);
     lines.push(`${I}            stream.end();`);
-    lines.push(`${I}            console.error(explainApiError((error as Error).message));`);
+    lines.push(`${I}            if (timeout?.signal.aborted) {`);
+    lines.push(`${I}                console.error(explainTimeout());`);
+    lines.push(`${I}            } else {`);
+    lines.push(`${I}                console.error(explainApiError((error as Error).message));`);
+    lines.push(`${I}            }`);
     lines.push(`${I}            process.exitCode = 1;`);
     lines.push(`${I}        } finally {`);
     lines.push(`${I}            process.off('SIGINT', onSigint);`);
@@ -1120,6 +1142,7 @@ function emitMergedCommand(
     // Each scope selects a different API operation, so the typed call lives inside
     // the branch. Path args are the scope ids (options.<flag>); the query object,
     // when present, follows and is cast past the method's strict param type.
+    lines.push(`${I}        const timeout = createRequestTimeout();`);
     lines.push(`${I}        try {`);
     lines.push(`${I}            let data: unknown;`);
     let first = true;
@@ -1127,6 +1150,7 @@ function emitMergedCommand(
         lines.push(`${I}            ${first ? 'if' : 'else if'} (provided === '${v.scopeKey}') {`);
         const callArgs = v.scope.map((s) => `options.${s.flag}`);
         if (hasQuery) callArgs.push('query as never');
+        callArgs.push('{ signal: timeout?.signal }');
         const ns = clientNamespace(v.apiPath);
         const method = toClientMethod(v.operationId);
         const target = ns ? `api.${ns}.${method}` : `api.${method}`;
@@ -1137,17 +1161,24 @@ function emitMergedCommand(
     const flagList = scopeFlags.map((s) => `--${s.flag}`).join(', ');
     const noScopeNote = cmd.allowNoScope ? ' (or none for all)' : '';
     lines.push(`${I}            else {`);
+    lines.push(`${I}                timeout?.clear();`);
     lines.push(
         `${I}                console.error('Specify a valid scope${noScopeNote}: ${escapeStr(flagList)}. Some scopes require a combination (e.g. --integration with --installation).');`,
     );
     lines.push(`${I}                process.exit(1);`);
     lines.push(`${I}            }`);
+    lines.push(`${I}            timeout?.clear();`);
     lines.push(`${I}            if (data != null) {`);
     lines.push(`${I}                printResult(data, options);`);
     lines.push(`${I}            }`);
     lines.push(`${I}        } catch (error) {`);
+    lines.push(`${I}            timeout?.clear();`);
     lines.push(`${I}            if (error instanceof SyntaxError) return;`);
-    lines.push(`${I}            console.error(explainApiError((error as Error).message));`);
+    lines.push(`${I}            if (timeout?.signal.aborted) {`);
+    lines.push(`${I}                console.error(explainTimeout());`);
+    lines.push(`${I}            } else {`);
+    lines.push(`${I}                console.error(explainApiError((error as Error).message));`);
+    lines.push(`${I}            }`);
     lines.push(`${I}            process.exit(1);`);
     lines.push(`${I}        }`);
     lines.push(`${I}    });`);
@@ -1201,7 +1232,7 @@ function emitFile(tree: GroupNode, completions: Record<string, string>): string 
     lines.push(`// Output formatting lives in ./output (a real, unit-tested module) rather than`);
     lines.push(`// being inlined here, so the rendering logic has a single source of truth.`);
     lines.push(
-        `import { printResult, coerceBodyFlag, coerceArrayQueryParam, explainApiError, normalizeChangesMarkdown, createStreamRenderer } from './output';`,
+        `import { printResult, coerceBodyFlag, coerceArrayQueryParam, explainApiError, normalizeChangesMarkdown, createStreamRenderer, createRequestTimeout, explainTimeout } from './output';`,
     );
     lines.push(``);
     lines.push(`export function registerGeneratedCommands(program: Command): void {`);

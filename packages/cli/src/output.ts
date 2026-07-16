@@ -108,6 +108,50 @@ export function explainApiError(message: string): string {
     return message;
 }
 
+// ─── Request timeout ────────────────────────────────────────────────────────────
+
+// Generated commands abort a request that produces no response — for streams, no
+// next event — within this many ms, so the CLI fails loudly instead of hanging on
+// an unresponsive endpoint. Configurable via GITBOOK_CLI_TIMEOUT_MS (0 disables).
+export const CLI_TIMEOUT_MS: number = ((): number => {
+    const raw = process.env.GITBOOK_CLI_TIMEOUT_MS;
+    if (raw === undefined) return 60_000;
+    const n = Number(raw);
+    return Number.isFinite(n) && n >= 0 ? n : 60_000;
+})();
+
+export interface RequestTimeout {
+    signal: AbortSignal;
+    // Reset the idle timer — called per streamed event so a long but live
+    // response is never cut off; a buffered request just lets it run once.
+    bump: () => void;
+    clear: () => void;
+}
+
+// An abort signal that fires after CLI_TIMEOUT_MS of inactivity, or null when
+// timeouts are disabled (CLI_TIMEOUT_MS === 0). The generated command passes
+// `signal` to the client, calls `bump()` on each event, and `clear()` when done.
+export function createRequestTimeout(): RequestTimeout | null {
+    if (!CLI_TIMEOUT_MS) return null;
+    const controller = new AbortController();
+    let timer: ReturnType<typeof setTimeout>;
+    const bump = () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => controller.abort(), CLI_TIMEOUT_MS);
+    };
+    const clear = () => clearTimeout(timer);
+    bump();
+    return { signal: controller.signal, bump, clear };
+}
+
+export function explainTimeout(): string {
+    return (
+        `Timed out after ${CLI_TIMEOUT_MS / 1000}s with no response from the server. ` +
+        `The endpoint may be slow or unavailable for this content. ` +
+        `Set GITBOOK_CLI_TIMEOUT_MS (milliseconds; 0 disables) to change.`
+    );
+}
+
 // ─── Markdown round-trip normalization ──────────────────────────────────────────
 
 // Make page-document markdown safe to push back via update_page/insert_page.
