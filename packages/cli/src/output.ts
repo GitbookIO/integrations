@@ -484,13 +484,38 @@ function createPrettyStreamRenderer(): StreamRenderer {
     };
 }
 
-// Renderable text for an answer field. `--format markdown` yields a string; the
-// default `document` form has no direct text rendering here, so it is skipped
-// (its sources still render as citations once the stream ends).
+// Renderable text for an answer field. `--format markdown` yields `{ markdown }`;
+// `--format document` (the raw form) yields `{ document }`, a node tree we flatten
+// to plain text via documentToText so pretty mode still shows the answer.
 function streamAnswerText(answer: unknown): string | undefined {
     if (typeof answer === 'string') return answer;
-    if (isPlainObject(answer) && typeof answer.markdown === 'string') return answer.markdown;
+    if (isPlainObject(answer)) {
+        if (typeof answer.markdown === 'string') return answer.markdown;
+        if (isPlainObject(answer.document)) return documentToText(answer.document);
+    }
     return undefined;
+}
+
+// Flatten a GitBook document node tree to plain text. Text nodes concatenate their
+// `leaves`; block containers join their children — with newlines when those
+// children are themselves blocks (paragraphs, headings, list items), directly when
+// they're inline text. Marks (bold/italic/links) are dropped; this is a legible
+// fallback for pretty mode, not a full markdown serializer.
+export function documentToText(node: unknown): string {
+    if (typeof node === 'string') return node;
+    if (!isPlainObject(node)) return '';
+    if (Array.isArray(node.leaves)) {
+        return node.leaves
+            .map((leaf) => (isPlainObject(leaf) && typeof leaf.text === 'string' ? leaf.text : ''))
+            .join('');
+    }
+    if (Array.isArray(node.nodes)) {
+        const hasBlockChildren = node.nodes.some(
+            (child) => isPlainObject(child) && child.object === 'block',
+        );
+        return node.nodes.map(documentToText).join(hasBlockChildren ? '\n' : '');
+    }
+    return '';
 }
 
 // One-line status for an AIStreamResponse event, keyed by its `type`.

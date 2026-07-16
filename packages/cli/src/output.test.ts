@@ -7,6 +7,7 @@ import {
     coerceBodyFlag,
     createRequestTimeout,
     createStreamRenderer,
+    documentToText,
     explainApiError,
     explainTimeout,
     formatCollection,
@@ -365,6 +366,41 @@ describe('createStreamRenderer', () => {
         );
     });
 
+    it('pretty renders a document-form answer (--format document) as text', () => {
+        const out = captureStdout(() => {
+            const r = createStreamRenderer({ pretty: true });
+            r.write({
+                type: 'answer',
+                answer: {
+                    answer: {
+                        document: {
+                            object: 'document',
+                            nodes: [
+                                {
+                                    object: 'block',
+                                    type: 'paragraph',
+                                    nodes: [
+                                        {
+                                            object: 'text',
+                                            leaves: [
+                                                { object: 'leaf', text: 'Hello ' },
+                                                { object: 'leaf', text: 'world' },
+                                            ],
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    },
+                    sources: [],
+                    followupQuestions: [],
+                },
+            });
+            r.end();
+        });
+        expect(out).toBe('Hello world\n');
+    });
+
     it('pretty renders agent-response events as concise status lines', () => {
         const out = captureStdout(() => {
             const r = createStreamRenderer({ pretty: true });
@@ -376,6 +412,41 @@ describe('createStreamRenderer', () => {
         expect(out).toBe(
             '[response_start]\n[response_document] insert — 2 block(s)\n[response_finish]\n',
         );
+    });
+});
+
+describe('documentToText', () => {
+    it('joins block children with newlines and inline text directly, dropping marks', () => {
+        const doc = {
+            object: 'document',
+            nodes: [
+                {
+                    object: 'block',
+                    type: 'heading-1',
+                    nodes: [{ object: 'text', leaves: [{ text: 'Title' }] }],
+                },
+                {
+                    object: 'block',
+                    type: 'paragraph',
+                    nodes: [
+                        {
+                            object: 'text',
+                            leaves: [
+                                { text: 'A ' },
+                                { text: 'bold', marks: [{ type: 'bold' }] },
+                                { text: ' word.' },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        };
+        expect(documentToText(doc)).toBe('Title\nA bold word.');
+    });
+
+    it('returns empty string for non-document input', () => {
+        expect(documentToText(undefined)).toBe('');
+        expect(documentToText('x')).toBe('x');
     });
 });
 
