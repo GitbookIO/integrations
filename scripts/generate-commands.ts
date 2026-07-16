@@ -1058,6 +1058,17 @@ function emitStreamingCommand(
     const ns = clientNamespace(route.apiPath);
     const method = toClientMethod(route.operationId);
     const target = ns ? `api.${ns}.${method}` : `api.${method}`;
+    // The ask endpoints default `format` to `document` (a structured tree the CLI
+    // can't render as text), so a plain `ask stream` would print no answer — only
+    // sources. Default to `markdown` when the user hasn't chosen a format; they can
+    // still pass `--format document` for the raw form. `query` is declared by the
+    // preamble whenever the route has query params (all `format`-bearing ones do).
+    const formatQp = route.queryParams.find(
+        (qp) => qp.name === 'format' && (qp.schema?.enum ?? []).map(String).includes('markdown'),
+    );
+    if (formatQp) {
+        lines.push(`${I}        if (options.format === undefined) query['format'] = 'markdown';`);
+    }
     lines.push(`${I}        const stream = createStreamRenderer(options);`);
     lines.push(`${I}        const timeout = createRequestTimeout();`);
     lines.push(`${I}        const onSigint = () => {`);
