@@ -267,9 +267,9 @@ function isPublicOperation(operation: Operation, globalSecurity: SecurityRequire
 
 // SSE endpoints (text/event-stream). Their generated client methods return an
 // EventIterator rather than a Promise<HttpResponse>, so they don't fit the
-// one-response-per-command model this CLI emits — consuming a stream needs
-// dedicated handling. They're skipped for now (they were never usable here
-// anyway: the previous JSON.parse(response.text()) path chokes on SSE framing).
+// one-response-per-command model. They get a dedicated emit path
+// (emitStreamingCommand) that iterates the events through a StreamRenderer
+// instead of the buffered printResult path; this flag routes them there.
 function isStreamingOperation(operation: Operation): boolean {
     for (const response of Object.values(operation.responses ?? {})) {
         if (response.content && 'text/event-stream' in response.content) return true;
@@ -545,6 +545,7 @@ interface Route {
     queryParams: ParameterObject[];
     bodyFlags: BodyFlag[] | null;
     hasBody: boolean;
+    isStreaming: boolean; // SSE endpoint → emitted via the streaming path
     naming: Naming;
 }
 
@@ -584,7 +585,6 @@ function buildRoutes(spec: OpenAPISpec): Route[] {
             const operation = pathItem[method];
             if (!operation?.operationId) continue;
             if (!isPublicOperation(operation, globalSecurity)) continue;
-            if (isStreamingOperation(operation)) continue;
             const upper = method.toUpperCase();
             if (EXCLUDE.has(`${upper} ${apiPath}`)) continue;
 
@@ -616,6 +616,7 @@ function buildRoutes(spec: OpenAPISpec): Route[] {
                 queryParams,
                 bodyFlags,
                 hasBody,
+                isStreaming: isStreamingOperation(operation),
                 naming: computeNaming(
                     upper,
                     apiPath,
@@ -858,11 +859,17 @@ function emitQueryAssign(qp: ParameterObject, I: string): string {
     return `${I}        if (${accessor} !== undefined) query['${qp.name}'] = ${rhs};`;
 }
 
-function emitSimpleCommand(
+// Everything a simple/streaming command has in common: the command declaration,
+// path-param positionals + --flags, query/body options, output flags, the action
+// signature, path-param resolution, and query/body assembly. The action block is
+// left OPEN — the caller appends the request (emitSimpleCommand) or the streaming
+// loop (emitStreamingCommand) and closes it — and `callArgs` is the ordered arg
+// list for the generated client method (path params, then body, then query).
+function emitCommandPreamble(
     cmd: Extract<Command, { kind: 'simple' }>,
     parentVar: string,
     I: string,
-): string {
+): { lines: string[]; callArgs: string[] } {
     const { route, verb } = cmd;
     const lines: string[] = [];
     // Path params are documented as positionals (optional in the signature so the
@@ -989,6 +996,16 @@ function emitSimpleCommand(
     if (route.hasBody) callArgs.push('body as never');
     if (route.queryParams.length > 0) callArgs.push('query as never');
 
+    return { lines, callArgs };
+}
+
+function emitSimpleCommand(
+    cmd: Extract<Command, { kind: 'simple' }>,
+    parentVar: string,
+    I: string,
+): string {
+    const { route } = cmd;
+    const { lines, callArgs } = emitCommandPreamble(cmd, parentVar, I);
     lines.push(
         ...emitRequest(I, {
             namespace: clientNamespace(route.apiPath),
@@ -996,6 +1013,47 @@ function emitSimpleCommand(
             args: callArgs,
         }),
     );
+    lines.push(`${I}    });`);
+    lines.push('');
+    return lines.join('\n');
+}
+
+// SSE endpoint: iterate the event stream through a StreamRenderer instead of the
+// buffered printResult path. A partial answer stays on screen if the stream errors
+// mid-flight (renderer.end() flushes first, then the error prints); SIGINT flushes
+// what streamed so far and exits 130. The client method returns an EventIterator,
+// cast to AsyncIterable for `for await`.
+function emitStreamingCommand(
+    cmd: Extract<Command, { kind: 'simple' }>,
+    parentVar: string,
+    I: string,
+): string {
+    const { route } = cmd;
+    const { lines, callArgs } = emitCommandPreamble(cmd, parentVar, I);
+    const ns = clientNamespace(route.apiPath);
+    const method = toClientMethod(route.operationId);
+    const target = ns ? `api.${ns}.${method}` : `api.${method}`;
+    lines.push(`${I}        const stream = createStreamRenderer(options);`);
+    lines.push(`${I}        const onSigint = () => {`);
+    lines.push(`${I}            stream.end();`);
+    lines.push(`${I}            process.exit(130);`);
+    lines.push(`${I}        };`);
+    lines.push(`${I}        process.on('SIGINT', onSigint);`);
+    lines.push(`${I}        try {`);
+    lines.push(
+        `${I}            const events = ${target}(${callArgs.join(', ')}) as AsyncIterable<unknown>;`,
+    );
+    lines.push(`${I}            for await (const event of events) {`);
+    lines.push(`${I}                stream.write(event);`);
+    lines.push(`${I}            }`);
+    lines.push(`${I}            stream.end();`);
+    lines.push(`${I}        } catch (error) {`);
+    lines.push(`${I}            stream.end();`);
+    lines.push(`${I}            console.error(explainApiError((error as Error).message));`);
+    lines.push(`${I}            process.exitCode = 1;`);
+    lines.push(`${I}        } finally {`);
+    lines.push(`${I}            process.off('SIGINT', onSigint);`);
+    lines.push(`${I}        }`);
     lines.push(`${I}    });`);
     lines.push('');
     return lines.join('\n');
@@ -1094,11 +1152,13 @@ function emitNode(node: GroupNode, pathParts: string[], lines: string[]): void {
     const parentVar = pathParts.length === 0 ? 'program' : varNameForPath(pathParts);
 
     for (const cmd of node.commands) {
-        lines.push(
-            cmd.kind === 'simple'
-                ? emitSimpleCommand(cmd, parentVar, '    ')
-                : emitMergedCommand(cmd, parentVar, '    '),
-        );
+        if (cmd.kind === 'merged') {
+            lines.push(emitMergedCommand(cmd, parentVar, '    '));
+        } else if (cmd.route.isStreaming) {
+            lines.push(emitStreamingCommand(cmd, parentVar, '    '));
+        } else {
+            lines.push(emitSimpleCommand(cmd, parentVar, '    '));
+        }
     }
 
     for (const [name, child] of node.children) {
@@ -1130,7 +1190,7 @@ function emitFile(tree: GroupNode, completions: Record<string, string>): string 
     lines.push(`// Output formatting lives in ./output (a real, unit-tested module) rather than`);
     lines.push(`// being inlined here, so the rendering logic has a single source of truth.`);
     lines.push(
-        `import { printResult, coerceBodyFlag, coerceArrayQueryParam, explainApiError, normalizeChangesMarkdown } from './output';`,
+        `import { printResult, coerceBodyFlag, coerceArrayQueryParam, explainApiError, normalizeChangesMarkdown, createStreamRenderer } from './output';`,
     );
     lines.push(``);
     lines.push(`export function registerGeneratedCommands(program: Command): void {`);

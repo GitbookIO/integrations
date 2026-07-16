@@ -4,9 +4,11 @@ import {
     asCollection,
     coerceArrayQueryParam,
     coerceBodyFlag,
+    createStreamRenderer,
     explainApiError,
     formatCollection,
     formatObjectSummary,
+    formatStreamSource,
     isPlainObject,
     normalizeChangesMarkdown,
     normalizeMarkdown,
@@ -14,6 +16,22 @@ import {
     resolveFormat,
     summaryCell,
 } from './output';
+
+// Capture everything the renderer writes to stdout during `fn`.
+function captureStdout(fn: () => void): string {
+    const original = process.stdout.write.bind(process.stdout);
+    let buffer = '';
+    (process.stdout as unknown as { write: (chunk: unknown) => boolean }).write = (chunk) => {
+        buffer += String(chunk);
+        return true;
+    };
+    try {
+        fn();
+    } finally {
+        (process.stdout as unknown as { write: typeof original }).write = original;
+    }
+    return buffer;
+}
 
 describe('coerceBodyFlag', () => {
     it('parses an array flag string into a real array', () => {
@@ -287,5 +305,84 @@ describe('normalizeChangesMarkdown', () => {
 
     it('is a no-op on a non-array', () => {
         expect(() => normalizeChangesMarkdown(undefined)).not.toThrow();
+    });
+});
+
+describe('createStreamRenderer', () => {
+    it('--json emits one NDJSON record per event', () => {
+        const out = captureStdout(() => {
+            const r = createStreamRenderer({ json: true });
+            r.write({ question: 'a' });
+            r.write({ question: 'b' });
+            r.end();
+        });
+        expect(out).toBe('{"question":"a"}\n{"question":"b"}\n');
+    });
+
+    it('--yaml emits one YAML document per event, marker-delimited', () => {
+        const out = captureStdout(() => {
+            const r = createStreamRenderer({ yaml: true });
+            r.write({ a: 1 });
+            r.write({ b: 2 });
+            r.end();
+        });
+        expect(out).toBe('---\na: 1\n---\nb: 2\n');
+    });
+
+    it('pretty renders a recommended-question stream as bullets', () => {
+        const out = captureStdout(() => {
+            const r = createStreamRenderer({ pretty: true });
+            r.write({ question: 'How do I start?' });
+            r.write({ question: 'What is X?' });
+            r.end();
+        });
+        expect(out).toBe('• How do I start?\n• What is X?\n');
+    });
+
+    it('pretty prints answer text incrementally, then sources and follow-ups', () => {
+        const out = captureStdout(() => {
+            const r = createStreamRenderer({ pretty: true });
+            // Each event carries the answer so far; only the new suffix prints.
+            r.write({ type: 'answer', answer: { answer: 'Hello', sources: [], followupQuestions: [] } });
+            r.write({
+                type: 'answer',
+                answer: {
+                    answer: 'Hello world',
+                    sources: [{ type: 'page', page: 'p1', space: 's1' }],
+                    followupQuestions: ['Tell me more?'],
+                },
+            });
+            r.end();
+        });
+        expect(out).toBe(
+            'Hello world\n\nSources:\n  - page p1  space s1\n\nFollow-up questions:\n  - Tell me more?\n',
+        );
+    });
+
+    it('pretty renders agent-response events as concise status lines', () => {
+        const out = captureStdout(() => {
+            const r = createStreamRenderer({ pretty: true });
+            r.write({ type: 'response_start', messageId: 'm1' });
+            r.write({ type: 'response_document', operation: 'insert', blocks: [{}, {}] });
+            r.write({ type: 'response_finish', messageId: 'm1', response: {} });
+            r.end();
+        });
+        expect(out).toBe(
+            '[response_start]\n[response_document] insert — 2 block(s)\n[response_finish]\n',
+        );
+    });
+});
+
+describe('formatStreamSource', () => {
+    it('renders a page source with reason', () => {
+        expect(formatStreamSource({ type: 'page', page: 'p1', space: 's1', reason: 'covers it' })).toBe(
+            'page p1  space s1  — covers it',
+        );
+    });
+
+    it('renders a context-record source with title and url', () => {
+        expect(
+            formatStreamSource({ type: 'record', title: 'Guide', url: 'https://x/guide' }),
+        ).toBe('Guide  https://x/guide');
     });
 });

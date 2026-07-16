@@ -321,3 +321,156 @@ export function printResult(data: unknown, options: OutputOptions): void {
         }
     }
 }
+
+// ─── Streaming output ──────────────────────────────────────────────────────────
+
+// The SSE endpoints (organization/site `ask`, recommended `questions`, and the
+// site agent `ai-response`) yield a sequence of events rather than one response,
+// so they can't go through printResult. A StreamRenderer consumes those events as
+// they arrive: `write` per event, `end` once the stream closes (or errors).
+export interface StreamRenderer {
+    write(event: unknown): void;
+    end(): void;
+}
+
+// Machine formats stream one record per event so a consumer can parse the output
+// incrementally: NDJSON for --json (one compact object per line), a stream of
+// YAML documents for --yaml (each introduced by the `---` marker). Pretty mode
+// renders progressively (see createPrettyStreamRenderer). Format resolution — and
+// the piped-defaults-to-YAML behaviour — is shared with printResult.
+export function createStreamRenderer(options: OutputOptions): StreamRenderer {
+    const format = resolveFormat(options);
+    if (format === 'json') {
+        return {
+            write: (event) => process.stdout.write(`${JSON.stringify(event)}\n`),
+            end: () => {},
+        };
+    }
+    if (format === 'yaml') {
+        return {
+            write: (event) =>
+                process.stdout.write(`---\n${jsyaml.dump(event, { indent: 2, lineWidth: 120 })}`),
+            end: () => {},
+        };
+    }
+    return createPrettyStreamRenderer();
+}
+
+// Human-readable streaming. The three event shapes these endpoints emit are each
+// rendered on the fly:
+//   - recommended-question events (`{ question }`)   → one bullet per question
+//   - answer snapshots (`{ type: 'answer', answer }`) → the answer text, printed
+//     incrementally as the snapshot grows, then its sources as citations at end
+//   - agent-response events (`{ type: 'response_*' }`) → a concise status line
+// Unknown shapes fall back to a compact block so nothing is silently dropped.
+function createPrettyStreamRenderer(): StreamRenderer {
+    let printedAnswerLen = 0; // chars of the (string) answer already written
+    let midLine = false; // last write left the cursor mid-line
+    let sources: unknown[] | null = null;
+    let followups: unknown[] | null = null;
+
+    const out = (s: string) => {
+        if (s.length === 0) return;
+        process.stdout.write(s);
+        midLine = !s.endsWith('\n');
+    };
+    const line = (s: string) => {
+        process.stdout.write(`${s}\n`);
+        midLine = false;
+    };
+
+    return {
+        write(event: unknown): void {
+            if (typeof event === 'string') {
+                out(event);
+                return;
+            }
+            if (!isPlainObject(event)) {
+                line(formatScalar(event));
+                return;
+            }
+            // Recommended-question stream: one `{ question }` per event.
+            if (typeof event.question === 'string' && event.type === undefined) {
+                line(`• ${event.question}`);
+                return;
+            }
+            // Answer stream: progressive `{ type: 'answer', answer }` snapshots.
+            // Each event carries the answer so far, so we print only the new
+            // suffix; sources/followups from the latest snapshot render at end.
+            if (event.type === 'answer' && isPlainObject(event.answer)) {
+                const answer = event.answer;
+                if (Array.isArray(answer.sources)) sources = answer.sources;
+                if (Array.isArray(answer.followupQuestions)) followups = answer.followupQuestions;
+                const text = streamAnswerText(answer.answer);
+                if (text !== undefined) {
+                    if (text.length >= printedAnswerLen) out(text.slice(printedAnswerLen));
+                    else out(`\n${text}`); // shrank unexpectedly: reprint whole
+                    printedAnswerLen = text.length;
+                }
+                return;
+            }
+            // Agent-response stream (AIStreamResponse): a status line per event,
+            // except the JSON-object chunks which are raw text to concatenate.
+            if (typeof event.type === 'string') {
+                if (typeof event.jsonChunk === 'string') {
+                    out(event.jsonChunk);
+                    return;
+                }
+                line(streamStatusLine(event));
+                return;
+            }
+            line(formatPretty(event));
+        },
+        end(): void {
+            if (midLine) {
+                process.stdout.write('\n');
+                midLine = false;
+            }
+            if (sources && sources.length > 0) {
+                line('');
+                line('Sources:');
+                for (const s of sources) line(`  - ${formatStreamSource(s)}`);
+            }
+            if (followups && followups.length > 0) {
+                line('');
+                line('Follow-up questions:');
+                for (const q of followups) line(`  - ${formatScalar(q)}`);
+            }
+        },
+    };
+}
+
+// Renderable text for an answer field. `--format markdown` yields a string; the
+// default `document` form has no direct text rendering here, so it is skipped
+// (its sources still render as citations once the stream ends).
+function streamAnswerText(answer: unknown): string | undefined {
+    if (typeof answer === 'string') return answer;
+    if (isPlainObject(answer) && typeof answer.markdown === 'string') return answer.markdown;
+    return undefined;
+}
+
+// One-line status for an AIStreamResponse event, keyed by its `type`.
+function streamStatusLine(event: Record<string, unknown>): string {
+    const type = String(event.type);
+    if (type === 'response_document' || type === 'response_reasoning') {
+        const n = Array.isArray(event.blocks) ? event.blocks.length : 0;
+        return `[${type}] ${formatScalar(event.operation)} — ${n} block(s)`;
+    }
+    return `[${type}]`;
+}
+
+// A citation line for a SearchAIAnswerSource (a page or a context record).
+export function formatStreamSource(source: unknown): string {
+    if (!isPlainObject(source)) return formatScalar(source);
+    const parts: string[] = [];
+    if (source.type === 'record') {
+        if (typeof source.title === 'string') parts.push(source.title);
+        if (typeof source.url === 'string') parts.push(source.url);
+        else if (typeof source.record === 'string') parts.push(`record ${source.record}`);
+    } else {
+        if (typeof source.page === 'string') parts.push(`page ${source.page}`);
+        if (typeof source.space === 'string') parts.push(`space ${source.space}`);
+    }
+    if (typeof source.reason === 'string' && source.reason) parts.push(`— ${source.reason}`);
+    return parts.length ? parts.join('  ') : formatPretty(source);
+}
