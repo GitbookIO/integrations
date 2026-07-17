@@ -95,6 +95,27 @@ window.addEventListener("message", (event) => {
 });
 ```
 
+### Page and visitor context
+
+GitBook injects contextual information about the current site into the webframe `state`, alongside the values you bind through the `data` prop:
+
+- `state.page` — the current page as `{ id, path, title }`. Always available.
+- `state.visitor` — the visitor claims, when the integration has the `site:visitor:claims` [scope](../configurations.md#scopes).
+
+This context is delivered client-side through the same `message` event as your bound `data`, so it does not change how the integration block is cached:
+
+```js
+window.addEventListener("message", (event) => {
+    const state = event.data?.state;
+    if (!state) return;
+
+    if (state.page) {
+        const { id, path, title } = state.page;
+        // e.g. build a link to a sibling page from `path`
+    }
+});
+```
+
 ### Navigating to another page
 
 A webframe can navigate the reader to another page in the site by posting a `@webframe.navigate` action. The `path` is resolved relative to the site root (the part after your site's base URL), so it can point to a page in any section or space of the site, and navigation always stays within it. You can also pass an optional `anchor` to scroll to a heading within the target page:
