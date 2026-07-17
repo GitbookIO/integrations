@@ -5,6 +5,10 @@ import {
     CLI_TIMEOUT_MS,
     coerceArrayQueryParam,
     coerceBodyFlag,
+    createAgentResponseStreamRenderer,
+    createAnswerStreamRenderer,
+    createGenericStreamRenderer,
+    createQuestionStreamRenderer,
     createRequestTimeout,
     createStreamRenderer,
     documentToText,
@@ -335,7 +339,7 @@ describe('createStreamRenderer', () => {
 
     it('pretty renders a recommended-question stream as bullets', () => {
         const out = captureStdout(() => {
-            const r = createStreamRenderer({ pretty: true });
+            const r = createStreamRenderer({ pretty: true }, createQuestionStreamRenderer());
             r.write({ question: 'How do I start?' });
             r.write({ question: 'What is X?' });
             r.end();
@@ -345,7 +349,7 @@ describe('createStreamRenderer', () => {
 
     it('pretty prints answer text incrementally, then sources and follow-ups', () => {
         const out = captureStdout(() => {
-            const r = createStreamRenderer({ pretty: true });
+            const r = createStreamRenderer({ pretty: true }, createAnswerStreamRenderer());
             // Each event carries the answer so far; only the new suffix prints.
             r.write({
                 type: 'answer',
@@ -368,7 +372,7 @@ describe('createStreamRenderer', () => {
 
     it('pretty renders a document-form answer (--format document) as text', () => {
         const out = captureStdout(() => {
-            const r = createStreamRenderer({ pretty: true });
+            const r = createStreamRenderer({ pretty: true }, createAnswerStreamRenderer());
             r.write({
                 type: 'answer',
                 answer: {
@@ -403,7 +407,7 @@ describe('createStreamRenderer', () => {
 
     it('pretty renders agent-response events as concise status lines', () => {
         const out = captureStdout(() => {
-            const r = createStreamRenderer({ pretty: true });
+            const r = createStreamRenderer({ pretty: true }, createAgentResponseStreamRenderer());
             r.write({ type: 'response_start', messageId: 'm1' });
             r.write({ type: 'response_document', operation: 'insert', blocks: [{}, {}] });
             r.write({ type: 'response_finish', messageId: 'm1', response: {} });
@@ -412,6 +416,32 @@ describe('createStreamRenderer', () => {
         expect(out).toBe(
             '[response_start]\n[response_document] insert — 2 block(s)\n[response_finish]\n',
         );
+    });
+
+    it('generic renderer (the default) streams strings inline and blocks objects', () => {
+        const withDefault = captureStdout(() => {
+            const r = createStreamRenderer({ pretty: true }); // no strategy → generic
+            r.write('hello ');
+            r.write('world');
+            r.end();
+        });
+        expect(withDefault).toBe('hello world\n');
+
+        const explicit = captureStdout(() => {
+            const r = createStreamRenderer({ pretty: true }, createGenericStreamRenderer());
+            r.write({ a: 1 });
+            r.end();
+        });
+        expect(explicit).toBe('a: 1\n');
+    });
+
+    it('machine formats ignore the event renderer (stay schema-agnostic)', () => {
+        const out = captureStdout(() => {
+            const r = createStreamRenderer({ json: true }, createAnswerStreamRenderer());
+            r.write({ anything: true });
+            r.end();
+        });
+        expect(out).toBe('{"anything":true}\n');
     });
 });
 

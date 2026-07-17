@@ -288,6 +288,20 @@ function isStreamingOperation(operation: Operation): boolean {
     return false;
 }
 
+// The schema name of an SSE operation's event (e.g. `SearchAIAnswerStream`), read
+// from the `text/event-stream` response's schema `$ref`. Drives per-endpoint
+// renderer selection in emitStreamingCommand. Undefined if not resolvable.
+function streamEventSchemaName(operation: Operation): string | undefined {
+    for (const response of Object.values(operation.responses ?? {})) {
+        const stream = (
+            response.content as Record<string, { schema?: SchemaObject }> | undefined
+        )?.['text/event-stream'];
+        const ref = stream?.schema?.$ref ?? stream?.schema?.items?.$ref;
+        if (typeof ref === 'string') return ref.match(/\/([^/]+)$/)?.[1];
+    }
+    return undefined;
+}
+
 // ─── Path parsing ───────────────────────────────────────────────────────────--
 
 interface Seg {
@@ -557,6 +571,9 @@ interface Route {
     bodyFlags: BodyFlag[] | null;
     hasBody: boolean;
     isStreaming: boolean; // SSE endpoint → emitted via the streaming path
+    // Schema name of the SSE event (from the text/event-stream response), used to
+    // pick the pretty StreamEventRenderer. Undefined for non-streaming routes.
+    streamEventSchema?: string;
     naming: Naming;
 }
 
@@ -628,6 +645,7 @@ function buildRoutes(spec: OpenAPISpec): Route[] {
                 bodyFlags,
                 hasBody,
                 isStreaming: isStreamingOperation(operation),
+                streamEventSchema: streamEventSchemaName(operation),
                 naming: computeNaming(
                     upper,
                     apiPath,
@@ -1043,6 +1061,17 @@ function emitSimpleCommand(
     return lines.join('\n');
 }
 
+// Maps an SSE event schema name to the output-module StreamEventRenderer factory
+// that knows how to render it in pretty mode. An unmapped schema falls back to the
+// generic renderer (createStreamRenderer's default) — so a new streaming endpoint
+// is never silently blank, it just gets a generic rendering until a strategy is
+// added here. This is the one place endpoint↔renderer wiring lives.
+const STREAM_RENDERERS: Record<string, string> = {
+    SearchAIAnswerStream: 'createAnswerStreamRenderer',
+    SearchAIRecommendedQuestionStream: 'createQuestionStreamRenderer',
+    AIStreamResponse: 'createAgentResponseStreamRenderer',
+};
+
 // SSE endpoint: iterate the event stream through a StreamRenderer instead of the
 // buffered printResult path. A partial answer stays on screen if the stream errors
 // mid-flight (renderer.end() flushes first, then the error prints); SIGINT flushes
@@ -1069,7 +1098,13 @@ function emitStreamingCommand(
     if (formatQp) {
         lines.push(`${I}        if (options.format === undefined) query['format'] = 'markdown';`);
     }
-    lines.push(`${I}        const stream = createStreamRenderer(options);`);
+    // Pick the pretty renderer for this endpoint's event schema; unmapped schemas
+    // fall through to createStreamRenderer's generic default.
+    const rendererFactory = route.streamEventSchema
+        ? STREAM_RENDERERS[route.streamEventSchema]
+        : undefined;
+    const rendererArg = rendererFactory ? `, ${rendererFactory}()` : '';
+    lines.push(`${I}        const stream = createStreamRenderer(options${rendererArg});`);
     lines.push(`${I}        const timeout = createRequestTimeout();`);
     lines.push(`${I}        const onSigint = () => {`);
     lines.push(`${I}            timeout?.clear();`);
@@ -1245,7 +1280,7 @@ function emitFile(tree: GroupNode, completions: Record<string, string>): string 
     lines.push(`// Output formatting lives in ./output (a real, unit-tested module) rather than`);
     lines.push(`// being inlined here, so the rendering logic has a single source of truth.`);
     lines.push(
-        `import { printResult, coerceBodyFlag, coerceArrayQueryParam, explainApiError, normalizeChangesMarkdown, createStreamRenderer, createRequestTimeout, explainTimeout } from './output';`,
+        `import { printResult, coerceBodyFlag, coerceArrayQueryParam, explainApiError, normalizeChangesMarkdown, createStreamRenderer, createAnswerStreamRenderer, createQuestionStreamRenderer, createAgentResponseStreamRenderer, createRequestTimeout, explainTimeout } from './output';`,
     );
     lines.push(``);
     lines.push(`export function registerGeneratedCommands(program: Command): void {`);

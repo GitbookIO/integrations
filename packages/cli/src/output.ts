@@ -377,12 +377,37 @@ export interface StreamRenderer {
     end(): void;
 }
 
+// A line-oriented output target handed to StreamEventRenderers. `out` writes
+// inline (and may leave the cursor mid-line, e.g. incremental answer text);
+// `line` writes a full line. The core tracks the mid-line state so `end` can
+// flush a trailing newline before any end-of-stream content.
+export interface StreamSink {
+    out(text: string): void;
+    line(text: string): void;
+}
+
+// Strategy for rendering ONE family of events in pretty mode. The core renderer
+// owns all the generic mechanics (machine-format serialization, the sink and its
+// mid-line tracking, calling `end`); a StreamEventRenderer only has to know how to
+// turn its own event schema into text. New/changed event schemas mean a new
+// strategy passed at the call site — the core never changes. See generate-commands.ts,
+// which selects the strategy per endpoint from the response's event-stream schema.
+export interface StreamEventRenderer {
+    write(event: unknown, sink: StreamSink): void;
+    // Flush end-of-stream content (e.g. citations). Optional; defaults to a no-op.
+    end?(sink: StreamSink): void;
+}
+
 // Machine formats stream one record per event so a consumer can parse the output
 // incrementally: NDJSON for --json (one compact object per line), a stream of
-// YAML documents for --yaml (each introduced by the `---` marker). Pretty mode
-// renders progressively (see createPrettyStreamRenderer). Format resolution — and
-// the piped-defaults-to-YAML behaviour — is shared with printResult.
-export function createStreamRenderer(options: OutputOptions): StreamRenderer {
+// YAML documents for --yaml (each introduced by the `---` marker) — both fully
+// schema-agnostic. Pretty mode delegates per-event rendering to `eventRenderer`
+// (a generic fallback when the caller doesn't supply one). Format resolution —
+// and the piped-defaults-to-YAML behaviour — is shared with printResult.
+export function createStreamRenderer(
+    options: OutputOptions,
+    eventRenderer: StreamEventRenderer = createGenericStreamRenderer(),
+): StreamRenderer {
     const format = resolveFormat(options);
     if (format === 'json') {
         return {
@@ -397,89 +422,110 @@ export function createStreamRenderer(options: OutputOptions): StreamRenderer {
             end: () => {},
         };
     }
-    return createPrettyStreamRenderer();
-}
 
-// Human-readable streaming. The three event shapes these endpoints emit are each
-// rendered on the fly:
-//   - recommended-question events (`{ question }`)   → one bullet per question
-//   - answer snapshots (`{ type: 'answer', answer }`) → the answer text, printed
-//     incrementally as the snapshot grows, then its sources as citations at end
-//   - agent-response events (`{ type: 'response_*' }`) → a concise status line
-// Unknown shapes fall back to a compact block so nothing is silently dropped.
-function createPrettyStreamRenderer(): StreamRenderer {
-    let printedAnswerLen = 0; // chars of the (string) answer already written
     let midLine = false; // last write left the cursor mid-line
-    let sources: unknown[] | null = null;
-    let followups: unknown[] | null = null;
-
-    const out = (s: string) => {
-        if (s.length === 0) return;
-        process.stdout.write(s);
-        midLine = !s.endsWith('\n');
-    };
-    const line = (s: string) => {
-        process.stdout.write(`${s}\n`);
-        midLine = false;
-    };
-
-    return {
-        write(event: unknown): void {
-            if (typeof event === 'string') {
-                out(event);
-                return;
-            }
-            if (!isPlainObject(event)) {
-                line(formatScalar(event));
-                return;
-            }
-            // Recommended-question stream: one `{ question }` per event.
-            if (typeof event.question === 'string' && event.type === undefined) {
-                line(`• ${event.question}`);
-                return;
-            }
-            // Answer stream: progressive `{ type: 'answer', answer }` snapshots.
-            // Each event carries the answer so far, so we print only the new
-            // suffix; sources/followups from the latest snapshot render at end.
-            if (event.type === 'answer' && isPlainObject(event.answer)) {
-                const answer = event.answer;
-                if (Array.isArray(answer.sources)) sources = answer.sources;
-                if (Array.isArray(answer.followupQuestions)) followups = answer.followupQuestions;
-                const text = streamAnswerText(answer.answer);
-                if (text !== undefined) {
-                    if (text.length >= printedAnswerLen) out(text.slice(printedAnswerLen));
-                    else out(`\n${text}`); // shrank unexpectedly: reprint whole
-                    printedAnswerLen = text.length;
-                }
-                return;
-            }
-            // Agent-response stream (AIStreamResponse): a status line per event,
-            // except the JSON-object chunks which are raw text to concatenate.
-            if (typeof event.type === 'string') {
-                if (typeof event.jsonChunk === 'string') {
-                    out(event.jsonChunk);
-                    return;
-                }
-                line(streamStatusLine(event));
-                return;
-            }
-            line(formatPretty(event));
+    const sink: StreamSink = {
+        out(text) {
+            if (text.length === 0) return;
+            process.stdout.write(text);
+            midLine = !text.endsWith('\n');
         },
-        end(): void {
+        line(text) {
+            process.stdout.write(`${text}\n`);
+            midLine = false;
+        },
+    };
+    return {
+        write: (event) => eventRenderer.write(event, sink),
+        end: () => {
             if (midLine) {
                 process.stdout.write('\n');
                 midLine = false;
             }
+            eventRenderer.end?.(sink);
+        },
+    };
+}
+
+// Fallback strategy: no schema knowledge. Strings stream inline; objects/scalars
+// print as a compact block. Used for any streaming endpoint without a dedicated
+// renderer, so a new SSE endpoint is never silently blank.
+export function createGenericStreamRenderer(): StreamEventRenderer {
+    return {
+        write(event, sink) {
+            if (typeof event === 'string') sink.out(event);
+            else if (isPlainObject(event)) sink.line(formatPretty(event));
+            else sink.line(formatScalar(event));
+        },
+    };
+}
+
+// `SearchAIRecommendedQuestionStream`: one `{ question }` per event → a bullet.
+export function createQuestionStreamRenderer(): StreamEventRenderer {
+    return {
+        write(event, sink) {
+            if (isPlainObject(event) && typeof event.question === 'string') {
+                sink.line(`• ${event.question}`);
+            }
+        },
+    };
+}
+
+// `SearchAIAnswerStream`: progressive `{ type: 'answer', answer }` snapshots. Each
+// event carries the answer so far, so only the new suffix is printed; the latest
+// snapshot's sources/follow-ups render as citations once the stream ends.
+export function createAnswerStreamRenderer(): StreamEventRenderer {
+    let printedAnswerLen = 0;
+    let sources: unknown[] | null = null;
+    let followups: unknown[] | null = null;
+    return {
+        write(event, sink) {
+            if (!isPlainObject(event) || event.type !== 'answer' || !isPlainObject(event.answer)) {
+                return;
+            }
+            const answer = event.answer;
+            if (Array.isArray(answer.sources)) sources = answer.sources;
+            if (Array.isArray(answer.followupQuestions)) followups = answer.followupQuestions;
+            const text = streamAnswerText(answer.answer);
+            if (text !== undefined) {
+                if (text.length >= printedAnswerLen) sink.out(text.slice(printedAnswerLen));
+                else sink.out(`\n${text}`); // shrank unexpectedly: reprint whole
+                printedAnswerLen = text.length;
+            }
+        },
+        end(sink) {
             if (sources && sources.length > 0) {
-                line('');
-                line('Sources:');
-                for (const s of sources) line(`  - ${formatStreamSource(s)}`);
+                sink.line('');
+                sink.line('Sources:');
+                for (const s of sources) sink.line(`  - ${formatStreamSource(s)}`);
             }
             if (followups && followups.length > 0) {
-                line('');
-                line('Follow-up questions:');
-                for (const q of followups) line(`  - ${formatScalar(q)}`);
+                sink.line('');
+                sink.line('Follow-up questions:');
+                for (const q of followups) sink.line(`  - ${formatScalar(q)}`);
             }
+        },
+    };
+}
+
+// `AIStreamResponse`: a status line per event, except the JSON-object chunks,
+// which are raw text to concatenate.
+export function createAgentResponseStreamRenderer(): StreamEventRenderer {
+    return {
+        write(event, sink) {
+            if (!isPlainObject(event)) {
+                sink.line(formatScalar(event));
+                return;
+            }
+            if (typeof event.jsonChunk === 'string') {
+                sink.out(event.jsonChunk);
+                return;
+            }
+            if (typeof event.type === 'string') {
+                sink.line(streamStatusLine(event));
+                return;
+            }
+            sink.line(formatPretty(event));
         },
     };
 }
