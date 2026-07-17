@@ -2,11 +2,21 @@ import { describe, it, expect } from 'bun:test';
 
 import {
     asCollection,
+    CLI_TIMEOUT_MS,
     coerceArrayQueryParam,
     coerceBodyFlag,
+    createAgentResponseStreamRenderer,
+    createAnswerStreamRenderer,
+    createGenericStreamRenderer,
+    createQuestionStreamRenderer,
+    createRequestTimeout,
+    createStreamRenderer,
+    documentToText,
     explainApiError,
+    explainTimeout,
     formatCollection,
     formatObjectSummary,
+    formatStreamSource,
     isPlainObject,
     normalizeChangesMarkdown,
     normalizeMarkdown,
@@ -14,6 +24,22 @@ import {
     resolveFormat,
     summaryCell,
 } from './output';
+
+// Capture everything the renderer writes to stdout during `fn`.
+function captureStdout(fn: () => void): string {
+    const original = process.stdout.write.bind(process.stdout);
+    let buffer = '';
+    (process.stdout as unknown as { write: (chunk: unknown) => boolean }).write = (chunk) => {
+        buffer += String(chunk);
+        return true;
+    };
+    try {
+        fn();
+    } finally {
+        (process.stdout as unknown as { write: typeof original }).write = original;
+    }
+    return buffer;
+}
 
 describe('coerceBodyFlag', () => {
     it('parses an array flag string into a real array', () => {
@@ -287,5 +313,199 @@ describe('normalizeChangesMarkdown', () => {
 
     it('is a no-op on a non-array', () => {
         expect(() => normalizeChangesMarkdown(undefined)).not.toThrow();
+    });
+});
+
+describe('createStreamRenderer', () => {
+    it('--json emits one NDJSON record per event', () => {
+        const out = captureStdout(() => {
+            const r = createStreamRenderer({ json: true });
+            r.write({ question: 'a' });
+            r.write({ question: 'b' });
+            r.end();
+        });
+        expect(out).toBe('{"question":"a"}\n{"question":"b"}\n');
+    });
+
+    it('--yaml emits one YAML document per event, marker-delimited', () => {
+        const out = captureStdout(() => {
+            const r = createStreamRenderer({ yaml: true });
+            r.write({ a: 1 });
+            r.write({ b: 2 });
+            r.end();
+        });
+        expect(out).toBe('---\na: 1\n---\nb: 2\n');
+    });
+
+    it('pretty renders a recommended-question stream as bullets', () => {
+        const out = captureStdout(() => {
+            const r = createStreamRenderer({ pretty: true }, createQuestionStreamRenderer());
+            r.write({ question: 'How do I start?' });
+            r.write({ question: 'What is X?' });
+            r.end();
+        });
+        expect(out).toBe('• How do I start?\n• What is X?\n');
+    });
+
+    it('pretty prints answer text incrementally, then sources and follow-ups', () => {
+        const out = captureStdout(() => {
+            const r = createStreamRenderer({ pretty: true }, createAnswerStreamRenderer());
+            // Each event carries the answer so far; only the new suffix prints.
+            r.write({
+                type: 'answer',
+                answer: { answer: 'Hello', sources: [], followupQuestions: [] },
+            });
+            r.write({
+                type: 'answer',
+                answer: {
+                    answer: 'Hello world',
+                    sources: [{ type: 'page', page: 'p1', space: 's1' }],
+                    followupQuestions: ['Tell me more?'],
+                },
+            });
+            r.end();
+        });
+        expect(out).toBe(
+            'Hello world\n\nSources:\n  - page p1  space s1\n\nFollow-up questions:\n  - Tell me more?\n',
+        );
+    });
+
+    it('pretty renders a document-form answer (--format document) as text', () => {
+        const out = captureStdout(() => {
+            const r = createStreamRenderer({ pretty: true }, createAnswerStreamRenderer());
+            r.write({
+                type: 'answer',
+                answer: {
+                    answer: {
+                        document: {
+                            object: 'document',
+                            nodes: [
+                                {
+                                    object: 'block',
+                                    type: 'paragraph',
+                                    nodes: [
+                                        {
+                                            object: 'text',
+                                            leaves: [
+                                                { object: 'leaf', text: 'Hello ' },
+                                                { object: 'leaf', text: 'world' },
+                                            ],
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    },
+                    sources: [],
+                    followupQuestions: [],
+                },
+            });
+            r.end();
+        });
+        expect(out).toBe('Hello world\n');
+    });
+
+    it('pretty renders agent-response events as concise status lines', () => {
+        const out = captureStdout(() => {
+            const r = createStreamRenderer({ pretty: true }, createAgentResponseStreamRenderer());
+            r.write({ type: 'response_start', messageId: 'm1' });
+            r.write({ type: 'response_document', operation: 'insert', blocks: [{}, {}] });
+            r.write({ type: 'response_finish', messageId: 'm1', response: {} });
+            r.end();
+        });
+        expect(out).toBe(
+            '[response_start]\n[response_document] insert — 2 block(s)\n[response_finish]\n',
+        );
+    });
+
+    it('generic renderer (the default) streams strings inline and blocks objects', () => {
+        const withDefault = captureStdout(() => {
+            const r = createStreamRenderer({ pretty: true }); // no strategy → generic
+            r.write('hello ');
+            r.write('world');
+            r.end();
+        });
+        expect(withDefault).toBe('hello world\n');
+
+        const explicit = captureStdout(() => {
+            const r = createStreamRenderer({ pretty: true }, createGenericStreamRenderer());
+            r.write({ a: 1 });
+            r.end();
+        });
+        expect(explicit).toBe('a: 1\n');
+    });
+
+    it('machine formats ignore the event renderer (stay schema-agnostic)', () => {
+        const out = captureStdout(() => {
+            const r = createStreamRenderer({ json: true }, createAnswerStreamRenderer());
+            r.write({ anything: true });
+            r.end();
+        });
+        expect(out).toBe('{"anything":true}\n');
+    });
+});
+
+describe('documentToText', () => {
+    it('joins block children with newlines and inline text directly, dropping marks', () => {
+        const doc = {
+            object: 'document',
+            nodes: [
+                {
+                    object: 'block',
+                    type: 'heading-1',
+                    nodes: [{ object: 'text', leaves: [{ text: 'Title' }] }],
+                },
+                {
+                    object: 'block',
+                    type: 'paragraph',
+                    nodes: [
+                        {
+                            object: 'text',
+                            leaves: [
+                                { text: 'A ' },
+                                { text: 'bold', marks: [{ type: 'bold' }] },
+                                { text: ' word.' },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        };
+        expect(documentToText(doc)).toBe('Title\nA bold word.');
+    });
+
+    it('returns empty string for non-document input', () => {
+        expect(documentToText(undefined)).toBe('');
+        expect(documentToText('x')).toBe('x');
+    });
+});
+
+describe('createRequestTimeout', () => {
+    it('returns a live, un-aborted timeout by default (and clear() stops the timer)', () => {
+        const t = createRequestTimeout();
+        // The default CLI_TIMEOUT_MS is non-zero, so a timeout is created.
+        expect(t).not.toBeNull();
+        expect(t!.signal.aborted).toBe(false);
+        t!.clear(); // release the pending timer so the test process can exit
+    });
+
+    it('explainTimeout names the configured duration and the override env var', () => {
+        const msg = explainTimeout();
+        expect(msg).toContain(`${CLI_TIMEOUT_MS / 1000}s`);
+        expect(msg).toContain('GITBOOK_CLI_TIMEOUT_MS');
+    });
+});
+
+describe('formatStreamSource', () => {
+    it('renders a page source with reason', () => {
+        expect(
+            formatStreamSource({ type: 'page', page: 'p1', space: 's1', reason: 'covers it' }),
+        ).toBe('page p1  space s1  — covers it');
+    });
+
+    it('renders a context-record source with title and url', () => {
+        expect(formatStreamSource({ type: 'record', title: 'Guide', url: 'https://x/guide' })).toBe(
+            'Guide  https://x/guide',
+        );
     });
 });

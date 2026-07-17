@@ -7,6 +7,7 @@ import getPort from 'get-port';
 
 import { version } from '../package.json';
 import type { OAuthSession } from './config';
+import { OAUTH_SCOPES } from './generated-oauth-scopes';
 
 const CLIENT_NAME = 'GitBook CLI';
 const CLIENT_URI = 'https://github.com/GitbookIO/integrations';
@@ -173,8 +174,12 @@ export async function authenticateWithBrowser({
     );
     const state = base64URLEncode(crypto.randomBytes(16));
 
-    // Request every scope the server supports; the user narrows it on the consent screen.
-    const scope = (metadata.scopes_supported ?? []).join(' ');
+    // Request every scope the server supports; the user narrows it on the consent
+    // screen. Prefer the server's discovery metadata (environment-correct); fall
+    // back to the spec-derived scope list only when discovery omits it, so login
+    // never silently requests zero scopes. See generated-oauth-scopes.ts.
+    const supported = metadata.scopes_supported ?? [];
+    const scope = (supported.length > 0 ? supported : OAUTH_SCOPES).join(' ');
 
     const authorizationURL = new URL(metadata.authorization_endpoint);
     authorizationURL.searchParams.set('response_type', 'code');

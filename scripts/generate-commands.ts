@@ -63,9 +63,20 @@ interface OpenAPISpec {
     components?: {
         schemas?: Record<string, SchemaObject>;
         parameters?: Record<string, ParameterObject>;
+        securitySchemes?: Record<string, SecuritySchemeObject>;
     };
     tags?: TagObject[];
     security?: SecurityRequirement[];
+}
+
+interface SecuritySchemeObject {
+    type?: string;
+    flows?: {
+        authorizationCode?: {
+            // scope name → human description
+            scopes?: Record<string, string>;
+        };
+    };
 }
 
 interface PathItem {
@@ -267,14 +278,28 @@ function isPublicOperation(operation: Operation, globalSecurity: SecurityRequire
 
 // SSE endpoints (text/event-stream). Their generated client methods return an
 // EventIterator rather than a Promise<HttpResponse>, so they don't fit the
-// one-response-per-command model this CLI emits — consuming a stream needs
-// dedicated handling. They're skipped for now (they were never usable here
-// anyway: the previous JSON.parse(response.text()) path chokes on SSE framing).
+// one-response-per-command model. They get a dedicated emit path
+// (emitStreamingCommand) that iterates the events through a StreamRenderer
+// instead of the buffered printResult path; this flag routes them there.
 function isStreamingOperation(operation: Operation): boolean {
     for (const response of Object.values(operation.responses ?? {})) {
         if (response.content && 'text/event-stream' in response.content) return true;
     }
     return false;
+}
+
+// The schema name of an SSE operation's event (e.g. `SearchAIAnswerStream`), read
+// from the `text/event-stream` response's schema `$ref`. Drives per-endpoint
+// renderer selection in emitStreamingCommand. Undefined if not resolvable.
+function streamEventSchemaName(operation: Operation): string | undefined {
+    for (const response of Object.values(operation.responses ?? {})) {
+        const stream = (
+            response.content as Record<string, { schema?: SchemaObject }> | undefined
+        )?.['text/event-stream'];
+        const ref = stream?.schema?.$ref ?? stream?.schema?.items?.$ref;
+        if (typeof ref === 'string') return ref.match(/\/([^/]+)$/)?.[1];
+    }
+    return undefined;
 }
 
 // ─── Path parsing ───────────────────────────────────────────────────────────--
@@ -545,6 +570,10 @@ interface Route {
     queryParams: ParameterObject[];
     bodyFlags: BodyFlag[] | null;
     hasBody: boolean;
+    isStreaming: boolean; // SSE endpoint → emitted via the streaming path
+    // Schema name of the SSE event (from the text/event-stream response), used to
+    // pick the pretty StreamEventRenderer. Undefined for non-streaming routes.
+    streamEventSchema?: string;
     naming: Naming;
 }
 
@@ -584,7 +613,6 @@ function buildRoutes(spec: OpenAPISpec): Route[] {
             const operation = pathItem[method];
             if (!operation?.operationId) continue;
             if (!isPublicOperation(operation, globalSecurity)) continue;
-            if (isStreamingOperation(operation)) continue;
             const upper = method.toUpperCase();
             if (EXCLUDE.has(`${upper} ${apiPath}`)) continue;
 
@@ -616,6 +644,8 @@ function buildRoutes(spec: OpenAPISpec): Route[] {
                 queryParams,
                 bodyFlags,
                 hasBody,
+                isStreaming: isStreamingOperation(operation),
+                streamEventSchema: streamEventSchemaName(operation),
                 naming: computeNaming(
                     upper,
                     apiPath,
@@ -768,17 +798,26 @@ function emitRequest(
 ): string[] {
     const target = opts.namespace ? `api.${opts.namespace}.${opts.method}` : `api.${opts.method}`;
     const lines: string[] = [];
+    lines.push(`${I}        const timeout = createRequestTimeout();`);
     lines.push(`${I}        try {`);
     lines.push(`${I}            const response = await ${target}(${opts.args.join(', ')});`);
+    lines.push(`${I}            timeout?.clear();`);
     lines.push(`${I}            if (response.data != null) {`);
     lines.push(`${I}                printResult(response.data, options);`);
     lines.push(`${I}            }`);
     lines.push(`${I}        } catch (error) {`);
+    lines.push(`${I}            timeout?.clear();`);
     // A successful response with an empty body (e.g. 204/205 from a delete) makes
     // the client's `format: 'json'` parse reject with a SyntaxError — that's not
     // an API error, so there's simply nothing to print.
     lines.push(`${I}            if (error instanceof SyntaxError) return;`);
-    lines.push(`${I}            console.error(explainApiError((error as Error).message));`);
+    // The idle timer aborted the request: report the timeout, not the raw
+    // AbortError the client surfaces.
+    lines.push(`${I}            if (timeout?.signal.aborted) {`);
+    lines.push(`${I}                console.error(explainTimeout());`);
+    lines.push(`${I}            } else {`);
+    lines.push(`${I}                console.error(explainApiError((error as Error).message));`);
+    lines.push(`${I}            }`);
     lines.push(`${I}            process.exit(1);`);
     lines.push(`${I}        }`);
     return lines;
@@ -858,19 +897,35 @@ function emitQueryAssign(qp: ParameterObject, I: string): string {
     return `${I}        if (${accessor} !== undefined) query['${qp.name}'] = ${rhs};`;
 }
 
-function emitSimpleCommand(
+// Everything a simple/streaming command has in common: the command declaration,
+// path-param positionals + --flags, query/body options, output flags, the action
+// signature, path-param resolution, and query/body assembly. The action block is
+// left OPEN — the caller appends the request (emitSimpleCommand) or the streaming
+// loop (emitStreamingCommand) and closes it — and `callArgs` is the ordered arg
+// list for the generated client method (path params, then body, then query).
+function emitCommandPreamble(
     cmd: Extract<Command, { kind: 'simple' }>,
     parentVar: string,
     I: string,
-): string {
+): { lines: string[]; callArgs: string[] } {
     const { route, verb } = cmd;
     const lines: string[] = [];
-    const argStr = route.pathParams.map((p) => `<${p.name}>`).join(' ');
+    // Path params are documented as positionals (optional in the signature so the
+    // flag form is also accepted), and additionally offered as --<name> flags for
+    // discoverability. The positional wins when both are supplied (resolved below).
+    const argStr = route.pathParams.map((p) => `[${p.name}]`).join(' ');
     const fullCmd = argStr ? `${verb} ${argStr}` : verb;
 
     lines.push(`${I}${parentVar}`);
     lines.push(`${I}    .command('${fullCmd}')`);
     lines.push(`${I}    .description('${escapeStr(route.summary)}')`);
+
+    for (const p of route.pathParams) {
+        const desc = escapeStr(
+            `${p.description ? `${p.description} ` : ''}(path parameter — may be given positionally instead)`,
+        );
+        lines.push(`${I}    .option('--${p.name} <value>', '${desc}')`);
+    }
 
     for (const qp of route.queryParams) {
         lines.push(emitQueryOption(qp, I));
@@ -903,8 +958,36 @@ function emitSimpleCommand(
     lines.push(...emitOutputFlags(I));
 
     const paramNames = route.pathParams.map((p) => camelize(p.name));
-    const actionArgs = [...paramNames, 'options'].join(', ');
+    // Positionals arrive as `<name>Arg`; the real `<name>` const is the resolved
+    // value (positional first, then the --flag) that the request call reads.
+    const actionArgs = [...paramNames.map((n) => `${n}Arg`), 'options'].join(', ');
     lines.push(`${I}    .action(async (${actionArgs}) => {`);
+    for (const p of route.pathParams) {
+        const n = camelize(p.name);
+        lines.push(`${I}        const ${n} = ${n}Arg ?? options.${n};`);
+    }
+    if (route.pathParams.length > 0) {
+        const posUsage = escapeStr(
+            ['gitbook', ...cmd.group, verb, ...route.pathParams.map((p) => `<${p.name}>`)].join(
+                ' ',
+            ),
+        );
+        const flagUsage = escapeStr(route.pathParams.map((p) => `--${p.name} <value>`).join(' '));
+        lines.push(`${I}        const missingParams: string[] = [];`);
+        for (const p of route.pathParams) {
+            lines.push(
+                `${I}        if (${camelize(p.name)} === undefined) missingParams.push('${p.name}');`,
+            );
+        }
+        lines.push(`${I}        if (missingParams.length > 0) {`);
+        lines.push(
+            `${I}            console.error(\`Missing required path parameter(s): \${missingParams.join(', ')}.\`);`,
+        );
+        lines.push(`${I}            console.error('  positional: ${posUsage}');`);
+        lines.push(`${I}            console.error('  or flags:   ${flagUsage}');`);
+        lines.push(`${I}            process.exit(1);`);
+        lines.push(`${I}        }`);
+    }
     lines.push(`${I}        const api = await getAPIClient(true);`);
 
     if (route.queryParams.length > 0) {
@@ -952,7 +1035,20 @@ function emitSimpleCommand(
     const callArgs = [...paramNames];
     if (route.hasBody) callArgs.push('body as never');
     if (route.queryParams.length > 0) callArgs.push('query as never');
+    // Final client arg is the request params object; we use it to pass the idle
+    // abort signal. `timeout` is declared by the caller before the request call.
+    callArgs.push('{ signal: timeout?.signal }');
 
+    return { lines, callArgs };
+}
+
+function emitSimpleCommand(
+    cmd: Extract<Command, { kind: 'simple' }>,
+    parentVar: string,
+    I: string,
+): string {
+    const { route } = cmd;
+    const { lines, callArgs } = emitCommandPreamble(cmd, parentVar, I);
     lines.push(
         ...emitRequest(I, {
             namespace: clientNamespace(route.apiPath),
@@ -960,6 +1056,85 @@ function emitSimpleCommand(
             args: callArgs,
         }),
     );
+    lines.push(`${I}    });`);
+    lines.push('');
+    return lines.join('\n');
+}
+
+// Maps an SSE event schema name to the output-module StreamEventRenderer factory
+// that knows how to render it in pretty mode. An unmapped schema falls back to the
+// generic renderer (createStreamRenderer's default) — so a new streaming endpoint
+// is never silently blank, it just gets a generic rendering until a strategy is
+// added here. This is the one place endpoint↔renderer wiring lives.
+const STREAM_RENDERERS: Record<string, string> = {
+    SearchAIAnswerStream: 'createAnswerStreamRenderer',
+    SearchAIRecommendedQuestionStream: 'createQuestionStreamRenderer',
+    AIStreamResponse: 'createAgentResponseStreamRenderer',
+};
+
+// SSE endpoint: iterate the event stream through a StreamRenderer instead of the
+// buffered printResult path. A partial answer stays on screen if the stream errors
+// mid-flight (renderer.end() flushes first, then the error prints); SIGINT flushes
+// what streamed so far and exits 130. The client method returns an EventIterator,
+// cast to AsyncIterable for `for await`.
+function emitStreamingCommand(
+    cmd: Extract<Command, { kind: 'simple' }>,
+    parentVar: string,
+    I: string,
+): string {
+    const { route } = cmd;
+    const { lines, callArgs } = emitCommandPreamble(cmd, parentVar, I);
+    const ns = clientNamespace(route.apiPath);
+    const method = toClientMethod(route.operationId);
+    const target = ns ? `api.${ns}.${method}` : `api.${method}`;
+    // The ask endpoints default `format` to `document` (a structured tree the CLI
+    // can't render as text), so a plain `ask stream` would print no answer — only
+    // sources. Default to `markdown` when the user hasn't chosen a format; they can
+    // still pass `--format document` for the raw form. `query` is declared by the
+    // preamble whenever the route has query params (all `format`-bearing ones do).
+    const formatQp = route.queryParams.find(
+        (qp) => qp.name === 'format' && (qp.schema?.enum ?? []).map(String).includes('markdown'),
+    );
+    if (formatQp) {
+        lines.push(`${I}        if (options.format === undefined) query['format'] = 'markdown';`);
+    }
+    // Pick the pretty renderer for this endpoint's event schema; unmapped schemas
+    // fall through to createStreamRenderer's generic default.
+    const rendererFactory = route.streamEventSchema
+        ? STREAM_RENDERERS[route.streamEventSchema]
+        : undefined;
+    const rendererArg = rendererFactory ? `, ${rendererFactory}()` : '';
+    lines.push(`${I}        const stream = createStreamRenderer(options${rendererArg});`);
+    lines.push(`${I}        const timeout = createRequestTimeout();`);
+    lines.push(`${I}        const onSigint = () => {`);
+    lines.push(`${I}            timeout?.clear();`);
+    lines.push(`${I}            stream.end();`);
+    lines.push(`${I}            process.exit(130);`);
+    lines.push(`${I}        };`);
+    lines.push(`${I}        process.on('SIGINT', onSigint);`);
+    lines.push(`${I}        try {`);
+    lines.push(
+        `${I}            const events = ${target}(${callArgs.join(', ')}) as AsyncIterable<unknown>;`,
+    );
+    lines.push(`${I}            for await (const event of events) {`);
+    // Each event resets the idle timer, so a slow-but-live stream is never cut off.
+    lines.push(`${I}                timeout?.bump();`);
+    lines.push(`${I}                stream.write(event);`);
+    lines.push(`${I}            }`);
+    lines.push(`${I}            timeout?.clear();`);
+    lines.push(`${I}            stream.end();`);
+    lines.push(`${I}        } catch (error) {`);
+    lines.push(`${I}            timeout?.clear();`);
+    lines.push(`${I}            stream.end();`);
+    lines.push(`${I}            if (timeout?.signal.aborted) {`);
+    lines.push(`${I}                console.error(explainTimeout());`);
+    lines.push(`${I}            } else {`);
+    lines.push(`${I}                console.error(explainApiError((error as Error).message));`);
+    lines.push(`${I}            }`);
+    lines.push(`${I}            process.exitCode = 1;`);
+    lines.push(`${I}        } finally {`);
+    lines.push(`${I}            process.off('SIGINT', onSigint);`);
+    lines.push(`${I}        }`);
     lines.push(`${I}    });`);
     lines.push('');
     return lines.join('\n');
@@ -1015,6 +1190,7 @@ function emitMergedCommand(
     // Each scope selects a different API operation, so the typed call lives inside
     // the branch. Path args are the scope ids (options.<flag>); the query object,
     // when present, follows and is cast past the method's strict param type.
+    lines.push(`${I}        const timeout = createRequestTimeout();`);
     lines.push(`${I}        try {`);
     lines.push(`${I}            let data: unknown;`);
     let first = true;
@@ -1022,6 +1198,7 @@ function emitMergedCommand(
         lines.push(`${I}            ${first ? 'if' : 'else if'} (provided === '${v.scopeKey}') {`);
         const callArgs = v.scope.map((s) => `options.${s.flag}`);
         if (hasQuery) callArgs.push('query as never');
+        callArgs.push('{ signal: timeout?.signal }');
         const ns = clientNamespace(v.apiPath);
         const method = toClientMethod(v.operationId);
         const target = ns ? `api.${ns}.${method}` : `api.${method}`;
@@ -1032,17 +1209,24 @@ function emitMergedCommand(
     const flagList = scopeFlags.map((s) => `--${s.flag}`).join(', ');
     const noScopeNote = cmd.allowNoScope ? ' (or none for all)' : '';
     lines.push(`${I}            else {`);
+    lines.push(`${I}                timeout?.clear();`);
     lines.push(
         `${I}                console.error('Specify a valid scope${noScopeNote}: ${escapeStr(flagList)}. Some scopes require a combination (e.g. --integration with --installation).');`,
     );
     lines.push(`${I}                process.exit(1);`);
     lines.push(`${I}            }`);
+    lines.push(`${I}            timeout?.clear();`);
     lines.push(`${I}            if (data != null) {`);
     lines.push(`${I}                printResult(data, options);`);
     lines.push(`${I}            }`);
     lines.push(`${I}        } catch (error) {`);
+    lines.push(`${I}            timeout?.clear();`);
     lines.push(`${I}            if (error instanceof SyntaxError) return;`);
-    lines.push(`${I}            console.error(explainApiError((error as Error).message));`);
+    lines.push(`${I}            if (timeout?.signal.aborted) {`);
+    lines.push(`${I}                console.error(explainTimeout());`);
+    lines.push(`${I}            } else {`);
+    lines.push(`${I}                console.error(explainApiError((error as Error).message));`);
+    lines.push(`${I}            }`);
     lines.push(`${I}            process.exit(1);`);
     lines.push(`${I}        }`);
     lines.push(`${I}    });`);
@@ -1058,11 +1242,13 @@ function emitNode(node: GroupNode, pathParts: string[], lines: string[]): void {
     const parentVar = pathParts.length === 0 ? 'program' : varNameForPath(pathParts);
 
     for (const cmd of node.commands) {
-        lines.push(
-            cmd.kind === 'simple'
-                ? emitSimpleCommand(cmd, parentVar, '    ')
-                : emitMergedCommand(cmd, parentVar, '    '),
-        );
+        if (cmd.kind === 'merged') {
+            lines.push(emitMergedCommand(cmd, parentVar, '    '));
+        } else if (cmd.route.isStreaming) {
+            lines.push(emitStreamingCommand(cmd, parentVar, '    '));
+        } else {
+            lines.push(emitSimpleCommand(cmd, parentVar, '    '));
+        }
     }
 
     for (const [name, child] of node.children) {
@@ -1094,7 +1280,7 @@ function emitFile(tree: GroupNode, completions: Record<string, string>): string 
     lines.push(`// Output formatting lives in ./output (a real, unit-tested module) rather than`);
     lines.push(`// being inlined here, so the rendering logic has a single source of truth.`);
     lines.push(
-        `import { printResult, coerceBodyFlag, coerceArrayQueryParam, explainApiError, normalizeChangesMarkdown } from './output';`,
+        `import { printResult, coerceBodyFlag, coerceArrayQueryParam, explainApiError, normalizeChangesMarkdown, createStreamRenderer, createAnswerStreamRenderer, createQuestionStreamRenderer, createAgentResponseStreamRenderer, createRequestTimeout, explainTimeout } from './output';`,
     );
     lines.push(``);
     lines.push(`export function registerGeneratedCommands(program: Command): void {`);
@@ -1200,10 +1386,46 @@ ${bash}`;
     return { bash, zsh, fish: fishLines.join('\n') + '\n' };
 }
 
+// ─── OAuth scopes ───────────────────────────────────────────────────────────--
+
+// The authoritative OAuth scope list lives in the spec's `oauth` securityScheme.
+// The CLI's `gitbook login` normally requests the scopes the OAuth server
+// advertises via `.well-known` discovery (which is environment-correct — the
+// bundled spec is prod-only); this generated list is the fallback for a server
+// whose discovery document omits `scopes_supported`, so login never silently
+// requests zero scopes. Scopes are environment-independent, so the prod spec is a
+// safe source for them (unlike the OAuth *endpoint*, which stays runtime-derived).
+function extractOAuthScopes(spec: OpenAPISpec): string[] {
+    const scopes = spec.components?.securitySchemes?.oauth?.flows?.authorizationCode?.scopes ?? {};
+    return Object.keys(scopes);
+}
+
+function emitOAuthScopesFile(scopes: string[]): string {
+    return [
+        `/**`,
+        ` * AUTO-GENERATED — DO NOT EDIT`,
+        ` *`,
+        ` * Source:    packages/api/spec/openapi.json (components.securitySchemes.oauth)`,
+        ` * Generator: scripts/generate-commands.ts`,
+        ` *`,
+        ` * Re-generate: npm run generate-commands (from monorepo root)`,
+        ` */`,
+        ``,
+        `// Fallback OAuth scopes, used by \`gitbook login\` only when the OAuth server's`,
+        `// discovery metadata omits \`scopes_supported\`. See oauth.ts.`,
+        `export const OAUTH_SCOPES: string[] = ${JSON.stringify(scopes, null, 4)};`,
+        ``,
+    ].join('\n');
+}
+
 // ─── Entry point ──────────────────────────────────────────────────────────────
 
 const SPEC_PATH = path.resolve(__dirname, '../packages/api/spec/openapi.json');
 const OUT_PATH = path.resolve(__dirname, '../packages/cli/src/generated-commands.ts');
+const OAUTH_SCOPES_OUT_PATH = path.resolve(
+    __dirname,
+    '../packages/cli/src/generated-oauth-scopes.ts',
+);
 
 console.log('Reading spec from', SPEC_PATH);
 const spec = loadSpec(SPEC_PATH);
@@ -1216,9 +1438,15 @@ const completions = generateCompletions(commands);
 const merged = commands.filter((c) => c.kind === 'merged').length;
 const complexBody = routes.filter((r) => r.hasBody && r.bodyFlags === null).length;
 
+const oauthScopes = extractOAuthScopes(spec);
+
 console.log(`  ${routes.length} public operations included`);
 console.log(`  ${commands.length} commands (${merged} merged scope-flag commands)`);
 console.log(`  ${complexBody} operations using --body fallback (complex schema)`);
+console.log(`  ${oauthScopes.length} OAuth scopes (login fallback)`);
 
 fs.writeFileSync(OUT_PATH, emitFile(tree, completions), 'utf8');
 console.log('Written to', OUT_PATH);
+
+fs.writeFileSync(OAUTH_SCOPES_OUT_PATH, emitOAuthScopesFile(oauthScopes), 'utf8');
+console.log('Written to', OAUTH_SCOPES_OUT_PATH);
