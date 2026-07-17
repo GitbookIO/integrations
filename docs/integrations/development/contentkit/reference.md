@@ -264,7 +264,7 @@ If you need a copy button, only add it when your integration has a supported way
 | `buttons`       | `Array<Button>`          | Overlay buttons          |
 | `data`          | `Record<string, string>` | State dependencies       |
 
-The `data` values, together with GitBook-provided context, reach the frame through the `message` event as `event.data.state`. GitBook reserves two keys in `state`: `page` (`{ id, path, title }` of the current page, always available) and `visitor` (visitor claims, with the `site:visitor:claims` scope). A webframe can also navigate the reader to another page in the site by posting a `@webframe.navigate` action with a `path`. See [Interactivity](../../contentkit/interactivity.md#page-and-visitor-context).
+The `data` values, together with GitBook-provided context, reach the frame through the `message` event as `event.data.state`. GitBook reserves two keys in `state`: `page` (`{ id, path, title }` of the current page — `path` is relative to the site root — always available) and `visitor` (visitor claims, with the `site:visitor:claims` scope). A webframe can also navigate the reader to another page in the site by posting a `@webframe.navigate` action with a `path`. See [Interactivity](../../contentkit/interactivity.md#page-and-visitor-context).
 
 #### `select`
 

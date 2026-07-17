@@ -99,7 +99,7 @@ window.addEventListener("message", (event) => {
 
 GitBook injects contextual information about the current site into the webframe `state`, alongside the values you bind through the `data` prop:
 
-- `state.page` — the current page as `{ id, path, title }`. Always available.
+- `state.page` — the current page as `{ id, path, title }`, where `path` is relative to the site root (the part after your site's base URL, including any section). Always available.
 - `state.visitor` — the visitor claims, when the integration has the `site:visitor:claims` [scope](../configurations.md#scopes).
 
 This context is delivered client-side through the same `message` event as your bound `data`, so it does not change how the integration block is cached:
@@ -111,7 +111,7 @@ window.addEventListener("message", (event) => {
 
     if (state.page) {
         const { id, path, title } = state.page;
-        // e.g. build a link to a sibling page from `path`
+        // `path` is relative to the site root, so it can be passed to @webframe.navigate
     }
 });
 ```
