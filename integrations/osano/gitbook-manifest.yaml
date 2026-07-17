@@ -1,0 +1,47 @@
+name: osano
+title: Osano Cookie Consent
+description: Add the Osano cookie consent banner to your published GitBook site.
+visibility: public
+organization: gitbook
+icon: ./assets/icon.png
+previewImages:
+    - ./assets/osano-preview.png
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+    - site:script:cookies
+contentSecurityPolicy:
+    script-src: |
+        https://cmp.osano.com;
+summary: |
+    # Overview
+    This integration allows you to add the Osano cookie consent banner on your published GitBook site.
+
+    # How it works
+    The integration injects the Osano CMP script `osano.js` on your page, using your Customer ID and
+    Configuration ID, so that the cookie consent banner is displayed and consent is managed according
+    to your Osano configuration.
+
+    # Configure
+    Install the integration on the GitBook site of your choice.
+    Provide your Osano Customer ID and Configuration ID. These required values are provided by Osano
+    and correspond to the two IDs in your `osano.js` script URL: `https://cmp.osano.com/<Customer ID>/<Configuration ID>/osano.js`.
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            customer_id:
+                type: string
+                title: Customer ID
+                description: The Osano Customer ID, the first ID segment in your osano.js script URL
+            config_id:
+                type: string
+                title: Configuration ID
+                description: The Osano Configuration ID, the second ID segment in your osano.js script URL
+        required:
+            - customer_id
+            - config_id
+target: site
