@@ -1,5 +1,11 @@
 # @gitbook/integration-gitlab
 
+## 0.8.0
+
+### Minor Changes
+
+- 4b5598e: Unlist github & gitlab sync integrations
+
 ## 0.7.0
 
 ### Minor Changes
