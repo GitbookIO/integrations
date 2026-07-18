@@ -1,7 +1,7 @@
 name: gitlab
 title: GitLab Sync
 organization: gitbook
-visibility: public
+visibility: unlisted
 description: Synchronize your GitBook content with GitLab with GitBook’s bi-directional integration.
 icon: ./assets/gitlab-logo.png
 previewImages:
