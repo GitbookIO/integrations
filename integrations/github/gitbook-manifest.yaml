@@ -1,7 +1,7 @@
 name: github
 title: GitHub Sync
 organization: gitbook
-visibility: public
+visibility: unlisted
 description: Synchronize your GitBook content with GitHub with GitBook’s bi-directional integration.
 icon: ./assets/github-icon.png
 previewImages:
