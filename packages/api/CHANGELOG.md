@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.190.0
+
+### Minor Changes
+
+- 9bfc7f4: Bump API for prompt block data additions
+
 ## 0.189.0
 
 ### Minor Changes
