@@ -1,5 +1,13 @@
 # @gitbook/integration-gitlab
 
+## 0.8.1
+
+### Patch Changes
+
+- 6aa7fbb: Remove the deprecated `gitsync` category from the GitHub and GitLab integration manifests.
+- Updated dependencies [6aa7fbb]
+    - @gitbook/api@0.191.0
+
 ## 0.8.0
 
 ### Minor Changes
