@@ -1,0 +1,19 @@
+{
+    "name": "@gitbook/integration-calibermind",
+    "version": "1.0.0",
+    "private": true,
+    "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "check": "gitbook check",
+        "publish-integrations-staging": "gitbook publish .",
+        "publish-integrations": "gitbook publish ."
+    }
+}
