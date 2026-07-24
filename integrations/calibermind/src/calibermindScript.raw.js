@@ -2,9 +2,7 @@
     var analytics = (window.analytics = window.analytics || []);
     if (!analytics.initialize) {
         if (analytics.invoked) {
-            window.console &&
-                console.error &&
-                console.error('CaliberMind snippet included twice.');
+            window.console && console.error && console.error('CaliberMind snippet included twice.');
         } else {
             analytics.invoked = true;
             analytics.methods = [
