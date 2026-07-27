@@ -45,6 +45,7 @@
 * [Pagination](gitbook-api/pagination.md)
 * [Errors](gitbook-api/errors.md)
 * [Concepts](gitbook-api/concepts.md)
+* [Find your IDs](gitbook-api/find-your-ids.md)
 * [Guides](gitbook-api/guides/README.md)
   * [Track advanced analytics with GitBook's Events Aggregation API](https://gitbook.com/docs/guides/docs-analytics/track-advanced-analytics-with-gitbooks-events-aggregation-api)
 

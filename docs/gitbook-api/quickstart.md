@@ -9,14 +9,14 @@ The GitBook API allows you to read and write information across the spaces and p
 
 You can use the GitBook API to:
 
-* Create, update, and delete [organizations](/broken/pages/d27c140ce3faf40f0cca69a7c3c3fd8959942102), [spaces](/broken/pages/236c16444b4a09a7452918c1df4c355ecb29f18d), [collections](/broken/pages/344c4e16b9a94db6720cc4418a0e80df4e3544f4), and [published docs sites](/broken/pages/657cc880208e956c699dff06252708af625afac4)
-* [Manage users, teams, and access permissions](/broken/pages/c970f91a312311faca32e9c25ba50d2f0f339e8e) at both the space and organization level
-* [Import and export content](/broken/pages/5347ba54565e21473f7de51af8bf8d68d6d8162d) (pages, files, and reusable content)
-* [Create, list, review, merge, and update change requests](/broken/pages/c9484d1c23130ae8bfe4e1d761042e14d43c6794)
-* [Post, retrieve, update, and delete comments](/broken/pages/e792dd727868ace7da2c61f9e183f56a492de1b1) (and comment replies)
-* [Configure custom hostnames](/broken/pages/969fc13867f2fb506e4e50baeb5424cf4f3cbfa3), URLs, and search settings
-* [Monitor content performance](/broken/pages/59fc8fb1624424d4a5a10a480a413f19f284f48a) with analytics endpoints
-* [Manage integrations](/broken/pages/a4032cb05dbf7a1290acb36098bb877b427c2f87) and OpenAPI documentation
+* Create, update, and delete [organizations](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/organizations), [spaces](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/spaces), [collections](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/collections), and [published docs sites](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/docs-sites)
+* [Manage users, teams, and access permissions](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/organizations/organization-members) at both the space and organization level
+* [Import and export content](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/imports) (pages, files, and reusable content)
+* [Create, list, review, merge, and update change requests](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/change-requests)
+* [Post, retrieve, update, and delete comments](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/change-requests/change-request-comments) (and comment replies)
+* [Configure custom hostnames](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/custom-hostnames), URLs, and search settings
+* [Monitor content performance](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/docs-sites/site-insights) with analytics endpoints
+* [Manage integrations](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/integrations) and OpenAPI documentation
 
 …and much more, all via simple REST calls.
 
@@ -45,6 +45,10 @@ Once you have your personal access token, you'll want to understand the differen
 ### Make your first API call
 
 The example below shows how to make an API call that asks GitBook Assistant a question in a site within your organization.
+
+{% hint style="warning" %}
+This example requires your organization ID and site ID. [Find them here](find-your-ids.md).
+{% endhint %}
 
 {% tabs %}
 {% tab title="HTTP" %}
@@ -169,4 +173,4 @@ GitBook’s API has many different API calls that allow you to interact with Git
 
 ### Explore GitBook’s API
 
-<table data-view="cards"><thead><tr><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Create and edit content</strong></td><td><a href="/broken/pages/236c16444b4a09a7452918c1df4c355ecb29f18d">Broken link</a></td></tr><tr><td><strong>Update a site</strong></td><td><a href="/broken/pages/657cc880208e956c699dff06252708af625afac4">Broken link</a></td></tr><tr><td><strong>Work with analytics</strong></td><td><a href="/broken/pages/59fc8fb1624424d4a5a10a480a413f19f284f48a">Broken link</a></td></tr></tbody></table>
+<table data-view="cards"><thead><tr><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Create and edit content</strong></td><td><a href="https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/spaces">Spaces</a></td></tr><tr><td><strong>Update a site</strong></td><td><a href="https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/docs-sites">Docs sites</a></td></tr><tr><td><strong>Work with analytics</strong></td><td><a href="https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/docs-sites/site-insights">Site insights</a></td></tr></tbody></table>
