@@ -73,7 +73,7 @@ createComponent({
                     <textinput state="content" />
                     <divider />
                     <webframe
-                        source={{ uri: '/iframe.html' }}
+                        source={{ url: '/iframe.html' }}
                         data={{
                             content: element.dynamicState('content')
                         }}
