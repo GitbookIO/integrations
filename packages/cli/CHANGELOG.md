@@ -1,5 +1,13 @@
 # @gitbook/cli
 
+## 0.29.4
+
+### Patch Changes
+
+- e8973bb: Patch cli for api change
+- Updated dependencies [bf57975]
+    - @gitbook/api@0.192.0
+
 ## 0.29.3
 
 ### Patch Changes
