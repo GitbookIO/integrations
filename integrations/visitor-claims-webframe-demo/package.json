@@ -1,0 +1,21 @@
+{
+    "name": "@gitbook/integration-visitor-claims-webframe-demo",
+    "version": "0.0.0",
+    "private": true,
+    "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+        "itty-router": "^2.6.1"
+    },
+    "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*"
+    },
+    "scripts": {
+        "typecheck": "tsc --noEmit",
+        "check": "gitbook check",
+        "publish-integrations": "gitbook publish .",
+        "publish-integrations-staging": "gitbook publish .",
+        "dev": "gitbook dev ."
+    }
+}
