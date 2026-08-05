@@ -1,5 +1,16 @@
 # @gitbook/cli
 
+## 0.30.0
+
+### Minor Changes
+
+- b4a0336: Update CLI to use new API version.
+
+### Patch Changes
+
+- Updated dependencies [b4a0336]
+    - @gitbook/api@0.193.0
+
 ## 0.29.4
 
 ### Patch Changes
