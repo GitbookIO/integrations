@@ -1,24 +1,12 @@
 ---
-description: Learn how to use the GitBook API within minutes
-icon: bolt
+description: Get started with the GitBook API in minutes
 ---
 
 # Quickstart
 
 The GitBook API allows you to read and write information across the spaces and pages you have access to in GitBook.
 
-You can use the GitBook API to:
-
-* Create, update, and delete [organizations](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/organizations), [spaces](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/spaces), [collections](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/collections), and [published docs sites](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/docs-sites)
-* [Manage users, teams, and access permissions](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/organizations/organization-members) at both the space and organization level
-* [Import and export content](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/imports) (pages, files, and reusable content)
-* [Create, list, review, merge, and update change requests](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/change-requests)
-* [Post, retrieve, update, and delete comments](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/change-requests/change-request-comments) (and comment replies)
-* [Configure custom hostnames](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/custom-hostnames), URLs, and search settings
-* [Monitor content performance](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/docs-sites/site-insights) with analytics endpoints
-* [Manage integrations](https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/integrations) and OpenAPI documentation
-
-…and much more, all via simple REST calls.
+Use this guide to authenticate and make your first API call.
 
 {% stepper %}
 {% step %}
@@ -80,7 +68,7 @@ The API will return an answer generated from your site’s content.
 {% endtab %}
 
 {% tab title="JavaScript" %}
-To send a question to the Ask API from JavaScript, you can use [GitBook’s client library](../integrations/development/client-library/). After initializing the client with your personal access token, call the `askQueryInSpace()` method with your organization ID, site ID, and query payload.
+To send a question to the Ask API from JavaScript, you can use [GitBook’s client library](../integrations/development/client-library.md). After initializing the client with your personal access token, call the `askQueryInSpace()` method with your organization ID, site ID, and query payload.
 
 **Ask a question using GitBook’s JavaScript SDK**
 
@@ -171,6 +159,12 @@ GitBook’s API has many different API calls that allow you to interact with Git
 {% endstep %}
 {% endstepper %}
 
+### Build on the GitBook API
+
+Build a complete workflow with one of these guides:
+
+<table data-view="cards"><thead><tr><th></th><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><h4><i class="fa-chart-line">:chart-line:</i></h4></td><td><h4>Pull analytics from your site</h4></td><td>Query event data to find your site’s most-visited pages.</td><td><a href="guides/pull-analytics-from-your-site.md">pull-analytics-from-your-site.md</a></td></tr><tr><td><h4><i class="fa-robot">:robot:</i></h4></td><td><h4>Work on your site with an AI agent</h4></td><td>Use a coding agent and GitBook skills to update your site.</td><td><a href="guides/work-on-your-site-with-an-ai-agent.md">work-on-your-site-with-an-ai-agent.md</a></td></tr><tr><td><h4><i class="fa-users">:users:</i></h4></td><td><h4>Manage your team with the API</h4></td><td>Create a team from existing organization members.</td><td><a href="guides/manage-your-team-with-the-api.md">manage-your-team-with-the-api.md</a></td></tr></tbody></table>
+
 ### Explore GitBook’s API
 
-<table data-view="cards"><thead><tr><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Create and edit content</strong></td><td><a href="https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/spaces">Spaces</a></td></tr><tr><td><strong>Update a site</strong></td><td><a href="https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/docs-sites">Docs sites</a></td></tr><tr><td><strong>Work with analytics</strong></td><td><a href="https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/docs-sites/site-insights">Site insights</a></td></tr></tbody></table>
+<table data-view="cards"><thead><tr><th></th><th></th><th></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><h4><i class="fa-file-lines">:file-lines:</i></h4></td><td><h4>Create and edit content</h4></td><td>Create and manage spaces, pages, and their content.</td><td><a href="https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/spaces">Spaces</a></td></tr><tr><td><h4><i class="fa-globe">:globe:</i></h4></td><td><h4>Update a site</h4></td><td>Manage a published site’s settings, structure, and content.</td><td><a href="https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/docs-sites">Docs sites</a></td></tr><tr><td><h4><i class="fa-chart-line">:chart-line:</i></h4></td><td><h4>Work with analytics</h4></td><td>Retrieve analytics data to understand content performance.</td><td><a href="https://app.gitbook.com/s/2SyQSbIa1iYS7z6Dx5di/gitbook-api/api-reference/docs-sites/site-insights">Site insights</a></td></tr></tbody></table>

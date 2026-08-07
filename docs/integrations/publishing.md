@@ -2,10 +2,9 @@
 description: >-
   Publish your apps and integrations publicly or privately in order to use them
   in GitBook
-icon: up-from-line
 ---
 
-# Publish your integration
+# Publish your component
 
 When you're ready to publish your integration, you're able to publish it for use within GitBook.
 

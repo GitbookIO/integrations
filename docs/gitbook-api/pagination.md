@@ -1,6 +1,5 @@
 ---
 description: Learn how to view and navigate paginate paginated results from the GitBook API
-icon: list-tree
 ---
 
 # Pagination

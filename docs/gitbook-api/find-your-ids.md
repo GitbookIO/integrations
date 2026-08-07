@@ -1,6 +1,5 @@
 ---
 description: Find your organization, space, and site IDs
-icon: fingerprint
 ---
 
 # Find your IDs

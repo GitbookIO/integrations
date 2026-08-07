@@ -1,6 +1,5 @@
 ---
 description: Learn about the rate limits the GitBook API enforces
-icon: block-brick-fire
 ---
 
 # Rate limiting
