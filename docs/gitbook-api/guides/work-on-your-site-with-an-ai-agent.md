@@ -30,11 +30,15 @@ See the [GitBook skills repository](https://github.com/GitbookIO/gitbook-skills)
 
 In your agent, enter a request like this:
 
-```
+{% prompt description="Review content" defaultExpanded="partial" %}
+```markdown
 Use the GitBook skills to review our site’s getting-started content.
+
 Propose updates for outdated setup steps.
+
 Create a change request for review. Do not merge it.
 ```
+{% endprompt %}
 
 Name the site, space, pages, and desired outcome in your prompt.
 
