@@ -1,6 +1,5 @@
 {
   "lockfileVersion": 1,
-  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@gitbook/integrations",
@@ -60,6 +59,18 @@
       },
       "devDependencies": {
         "@cloudflare/workers-types": "*",
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
+    "integrations/calibermind": {
+      "name": "@gitbook/integration-calibermind",
+      "version": "0.0.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
         "@gitbook/cli": "workspace:*",
         "@gitbook/tsconfig": "workspace:*",
       },
@@ -185,7 +196,7 @@
     },
     "integrations/github": {
       "name": "@gitbook/integration-github",
-      "version": "0.8.0",
+      "version": "0.8.1",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -235,7 +246,7 @@
     },
     "integrations/gitlab": {
       "name": "@gitbook/integration-gitlab",
-      "version": "0.8.0",
+      "version": "0.8.1",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -762,7 +773,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.190.0",
+      "version": "0.191.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -777,7 +788,7 @@
     },
     "packages/cli": {
       "name": "@gitbook/cli",
-      "version": "0.29.2",
+      "version": "0.29.3",
       "bin": {
         "gitbook": "./cli.js",
       },
@@ -1116,6 +1127,8 @@
     "@gitbook/integration-arcade": ["@gitbook/integration-arcade@workspace:integrations/arcade"],
 
     "@gitbook/integration-bucket": ["@gitbook/integration-bucket@workspace:integrations/bucket"],
+
+    "@gitbook/integration-calibermind": ["@gitbook/integration-calibermind@workspace:integrations/calibermind"],
 
     "@gitbook/integration-cognito": ["@gitbook/integration-cognito@workspace:integrations/cognito"],
 

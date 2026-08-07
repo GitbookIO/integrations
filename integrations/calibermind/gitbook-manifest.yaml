@@ -1,0 +1,39 @@
+name: calibermind
+title: CaliberMind
+icon: ./assets/icon.png
+description: Track and identify GitBook page visitors with CaliberMind's AnalyticsJS tracker.
+externalLinks:
+    - label: Documentation
+      url: https://docs.calibermind.com/
+visibility: public
+organization: gitbook
+script: ./src/index.ts
+scopes:
+    - site:script:inject
+    - site:script:cookies
+contentSecurityPolicy:
+    script-src: |
+        https://cdn.calibermind.com;
+    connect-src: |
+        cdn.calibermind.com;
+summary: |
+    # Overview
+    CaliberMind is a B2B marketing analytics and attribution platform that helps you understand who visits your pages, identify accounts, and track engagement across the buyer journey.
+
+    # How it works
+    The GitBook CaliberMind integration injects the CaliberMind AnalyticsJS tracker into your published site. Each page view fetches the tracker with your write key substituted in, enabling visitor tracking, account identification, and ABM vendor detection in your CaliberMind dashboard.
+
+    # Configure
+    Install the integration on the GitBook site of your choice, then provide your CaliberMind write key. You can find your write key in CaliberMind under Settings > Website > Tracker, or by asking your Customer Success Manager.
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            write_key:
+                type: string
+                title: Write Key
+                description: Your CaliberMind write key, found under Settings > Website > Tracker in your CaliberMind account.
+        required:
+            - write_key
+target: site
