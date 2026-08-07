@@ -1,5 +1,11 @@
 # @gitbook/integration-googleanalytics
 
+## 0.7.1
+
+### Patch Changes
+
+- 318e0a0: Update summary to better configure integration
+
 ## 0.7.0
 
 ### Minor Changes
