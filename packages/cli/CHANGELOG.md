@@ -1,5 +1,18 @@
 # @gitbook/cli
 
+## 0.31.0
+
+### Minor Changes
+
+- a7d6ac2: Add page ids to site spaces
+- bd799e8: Add custom greeting to AI assistant
+
+### Patch Changes
+
+- Updated dependencies [a7d6ac2]
+- Updated dependencies [bd799e8]
+    - @gitbook/api@0.194.0
+
 ## 0.30.0
 
 ### Minor Changes
