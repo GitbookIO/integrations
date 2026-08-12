@@ -1,6 +1,5 @@
 ---
 description: Authenticate your requests with your user account when using the GitBook API
-icon: key
 ---
 
 # Authentication

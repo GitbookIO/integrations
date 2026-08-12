@@ -1,11 +1,10 @@
 ---
 description: List your integration on GitBook’s verified integration page
-icon: paper-plane
 ---
 
-# Submit your integration for review
+# Submit for review
 
-After [bootstrapping](quickstart.md) and [publishing](publishing.md) an integration, you’re already able to install and use it [via the install link](quickstart.md#install-and-use-your-integration) returned from the CLI.&#x20;
+After [bootstrapping](quickstart.md) and [publishing](publishing.md) an integration, you’re already able to install and use it [via the install link](quickstart.md#install-and-use-your-integration) returned from the CLI.
 
 If you’d like to add your integration to the public, verified integrations page in GitBook, you’ll need to go through a few more steps.
 
@@ -47,7 +46,7 @@ This is the name for your integration — and **must be unique across all GitBoo
 
 #### **Icon**
 
-The main icon for your integration. It should be high-resolution, and a 1:1 aspect ratio — we recommend and image size of 512 × 512px.
+The main icon for your integration. It should be high-resolution, and a 1:1 aspect ratio — we recommend and image size of 512 × 512px.
 
 #### **Preview images**
 

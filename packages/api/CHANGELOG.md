@@ -1,5 +1,17 @@
 # @gitbook/api
 
+## 0.193.0
+
+### Minor Changes
+
+- b4a0336: Bump API version
+
+## 0.192.0
+
+### Minor Changes
+
+- bf57975: Minor API bump for new InlineButton action
+
 ## 0.191.0
 
 ### Minor Changes

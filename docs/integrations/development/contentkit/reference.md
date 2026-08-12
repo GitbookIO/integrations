@@ -167,10 +167,29 @@ A visual delimiter between 2 elements of a containing stack layout.
 | `returnValue` | `object`                               | Data returned when modal is closed |
 | `submit`      | `Button`                               | Submit button                      |
 
+Dispatch `@ui.modal.open` from a button to render a modal component:
+
+```tsx
+<button
+    label="Open modal"
+    onPress={{
+        action: '@ui.modal.open',
+        componentId: 'custommodal',
+        props: {
+            message: 'Hello world'
+        }
+    }}
+/>
+```
+
+The modal component receives the defined props. Dispatch `@ui.modal.close` to close it. The action can include `returnValue`, which the parent component receives in its action handler.
+
+Follow [Open a modal from a button](../../guides/open-a-modal-from-a-button.md) for a complete example.
+
 #### `button`
 
 ```tsx
-<button label="Click me" onPress={{ type: 'something' }} />
+<button label="Update text" onPress={{ action: 'update-message' }} />
 ```
 
 | Props               | Type                                   | Description               |
@@ -185,6 +204,31 @@ A visual delimiter between 2 elements of a containing stack layout.
 | `confirm.text`\*    | `string`                               | Confirmation text         |
 | `confirm.confirm`\* | `string`                               | Confirmation button label |
 | `confirm.style`\*   | `'primary' \| 'danger'`                | Confirmation button style |
+
+Use `onPress` to dispatch an action. Handle custom actions in the component `action` callback:
+
+```tsx
+<button
+    label="Update text"
+    onPress={{
+        action: 'update-message'
+    }}
+/>
+```
+
+Use `@ui.url.open` to open an external URL:
+
+```tsx
+<button
+    label="Open GitBook"
+    onPress={{
+        action: '@ui.url.open',
+        url: 'https://www.gitbook.com'
+    }}
+/>
+```
+
+Follow [Update text with a button](../../guides/interactivity.md) for a complete custom-action example.
 
 #### `textinput`
 
@@ -203,6 +247,24 @@ A visual delimiter between 2 elements of a containing stack layout.
 | `initialValue` | `string` | Initial input value   |
 | `label`        | `string` | Input label           |
 | `placeholder`  | `string` | Placeholder text      |
+
+The `state` value identifies where ContentKit stores the input value. Your action handler can read that value from the component state.
+
+Use `@editor.node.updateProps` to save the current input value as a block property:
+
+```tsx
+<button
+    label="Save content"
+    onPress={{
+        action: '@editor.node.updateProps',
+        props: {
+            content: element.dynamicState('content')
+        }
+    }}
+/>
+```
+
+Follow [Create an interactive text input](../../guides/create-an-interactive-text-input.md) to build a text input with an action. Follow [Save editable block content](../../guides/save-editable-block-content.md) to save its value.
 
 #### `codeblock`
 
@@ -264,7 +326,56 @@ If you need a copy button, only add it when your integration has a supported way
 | `buttons`       | `Array<Button>`          | Overlay buttons          |
 | `data`          | `Record<string, string>` | State dependencies       |
 
-The `data` values, together with GitBook-provided context, reach the frame through the `message` event as `event.data.state`. GitBook reserves two keys in `state`: `page` (`{ id, path, title }` of the current page, always available) and `visitor` (visitor claims, with the `site:visitor:claims` scope). A webframe can also navigate the reader to another page in the site by posting a `@webframe.navigate` action with a `path`. See [Interactivity](../../contentkit/interactivity.md#page-and-visitor-context).
+Pass component state through `data`. Use `dynamicState` when the frame needs updates as the reader interacts:
+
+```tsx
+<webframe
+    source={{ url: '/iframe.html' }}
+    data={{
+        content: element.dynamicState('content')
+    }}
+/>
+```
+
+The frame receives bound data and GitBook context through the `message` event:
+
+```javascript
+window.addEventListener('message', (event) => {
+    const state = event.data?.state;
+    if (!state) return;
+
+    const content = state.content;
+    const page = state.page;
+});
+```
+
+GitBook always provides `state.page` as `{ id, path, title }`. GitBook provides `state.visitor` when the integration has the `site:visitor:claims` [scope](../../configurations.md#scopes).
+
+The frame can dispatch a custom action to the component:
+
+```javascript
+window.parent.postMessage({
+    action: {
+        type: 'doSomething'
+    }
+}, '*');
+```
+
+The frame can navigate within the published site with `@webframe.navigate`:
+
+```javascript
+window.parent.postMessage({
+    action: {
+        action: '@webframe.navigate',
+        path: 'guides/getting-started',
+        anchor: 'installation'
+    }
+}, '*');
+```
+
+The `path` starts after the site's base URL. The optional `anchor` scrolls to a heading on the target page.
+
+Follow [Send data to a webframe](../../guides/send-data-to-a-webframe.md) for a complete example.
 
 #### `select`
 

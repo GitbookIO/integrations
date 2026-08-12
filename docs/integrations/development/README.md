@@ -1,9 +1,8 @@
 ---
 description: Develop and test integrations locally on your machine
-icon: shapes
 ---
 
-# Develop your integration
+# Develop
 
 After [bootstrapping your integration with the GitBook CLI](../quickstart.md#bootstrap-your-app), you can continue using the CLI to develop and test your app.
 
@@ -44,6 +43,17 @@ All integration traffic will automatically be served from your local server inst
 
 {% step %}
 #### Develop your integration
+
+If you use an AI coding assistant, add GitBook’s [`build-integration`](https://github.com/GitbookIO/gitbook-skills/tree/main/skills/build-integration) skill. It gives your assistant integration-specific guidance.
+
+1. In your integration repository’s root directory, run:
+
+```bash
+npx skills add GitBookIO/gitbook-skills
+```
+
+2. Start a new agent session after the installation completes.
+3. Ask your assistant to read the `build-integration` skill before building your integration.
 
 It's recommended that you [disable browser caching](https://stackoverflow.com/a/7000899) for the most optimal experience when developing your app.
 

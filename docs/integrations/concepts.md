@@ -1,6 +1,5 @@
 ---
 description: Learn about different GitBook concepts related to GitBook integrations
-icon: glasses-round
 ---
 
 # Concepts

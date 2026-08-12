@@ -1,283 +1,88 @@
 ---
-description: >-
-  Add interactivity to custom blocks in GitBook integrations using inputs,
-  buttons, and more
+description: Build a block where a button updates displayed text.
 ---
 
-# Create interactive blocks
+# Update text with a button
 
-GitBook allows you to create custom, interactive blocks using ContentKit, a UI kit made by GitBook for building integrations.
+This guide builds a custom block with a button. Selecting the button updates text in the block.
 
-ContentKit components can be interactive, meaning visitors using your integration can do things like type or click in your components. Different components expose different action handlers, like buttons exposing an `onPress` event.
+### Before you start
 
-When creating your component through the `createComponent` call, you can also specify how to handle each action through the `action` prop.
+You need a local integration project. Follow the [integration quickstart](../quickstart.md) before continuing.
 
-### Buttons and actions
+### Add the component
 
-The most common interactive elements are buttons. Buttons can be use to trigger an asynchronous action.
-
-```tsx
-<button
-    label="Click me"
-    onPress={{
-        action: 'update-state',
-        anotherProperty: 'something'
-    }}
-/>
-```
-
-When the user presses the button, the `action` is dispatched to the integration and can be handled in the `action` callback:
+In your integration entry file, create and register the component:
 
 ```tsx
-const helloWorldBlock = createComponent({
-    ...
-    async action(previous, action) {
-        switch (action.action) {
-            case 'update-state':
-                return { state: { content: action.anotherProperty } };
-            default:
+import { createComponent, createIntegration } from '@gitbook/runtime';
+
+const textUpdater = createComponent({
+    componentId: 'text-updater',
+    initialState: () => ({
+        message: 'Select the button to update this text.'
+    }),
+    async action(element, action) {
+        if (action.action !== 'update-message') {
+            return {};
         }
-    },
-    ...
-});
-```
 
-### Text and other inputs
-
-Collecting user input can be done through through `textinput`. For example, considering the following element:
-
-```tsx
-<textinput state="content" />
-```
-
-When an action is dispatched (ex: when pressing a button in the example above), the value of the input will be accessible as `state.content`.
-
-### Dynamic binding
-
-Interactions with actions are asynchronous, meaning that pressing a button will cause the integration's code to run and re-render the component. But in some cases, there is a need for synchronous binding between the elements to provide a top class user experience (ex: live preview when typing).
-
-ContentKit provides a solution with dynamic binding, connecting multiple elements to a dynamic state.
-
-For example, we can update a webframe by binding directly to a text input:
-
-```tsx
-createComponent({
-    componentId: 'demo',
-    initialState: {
-        content: ''
-    },
-    async render(element) {
-        return (
-            <block>
-                <hstack>
-                    <textinput state="content" />
-                    <divider />
-                    <webframe
-                        source={{ uri: '/iframe.html' }}
-                        data={{
-                            content: element.dynamicState('content')
-                        }}
-                        />
-                </hstack>
-            </block>
-        )
-    }
-})
-```
-
-In the `iframe.html`, you can handle incoming events by listening to the `message` event coming from the parent window:
-
-```js
-window.addEventListener("message", (event) => {
-    if (event.data) {
-        const content = event.data.state.content;
-    }
-});
-```
-
-### Page and visitor context
-
-GitBook injects contextual information about the current site into the webframe `state`, alongside the values you bind through the `data` prop:
-
-- `state.page` — the current page as `{ id, path, title }`. Always available.
-- `state.visitor` — the visitor claims, when the integration has the `site:visitor:claims` [scope](../configurations.md#scopes).
-
-This context is delivered client-side through the same `message` event as your bound `data`, so it does not change how the integration block is cached:
-
-```js
-window.addEventListener("message", (event) => {
-    const state = event.data?.state;
-    if (!state) return;
-
-    if (state.page) {
-        const { id, path, title } = state.page;
-        // e.g. build a link to a sibling page from `path`
-    }
-});
-```
-
-### Navigating to another page
-
-A webframe can navigate the reader to another page in the site by posting a `@webframe.navigate` action. The `path` is resolved relative to the site root (the part after your site's base URL), so it can point to a page in any section or space of the site, and navigation always stays within it. You can also pass an optional `anchor` to scroll to a heading within the target page:
-
-```js
-window.parent.postMessage({
-    action: {
-        action: '@webframe.navigate',
-        path: 'guides/getting-started',
-        anchor: 'installation',
-    },
-}, '*');
-```
-
-### Editable blocks
-
-Some blocks might be static or only generated from link unfurling, but most blocks are designed to be editable by the user. Editable means that the user can interact with the blocks to change its properties.
-
-Updating the properties of a block is done through a [`@editor.node.updateProps`](../development/runtime.md#actions) action:
-
-```jsx
-<block>
-    <textinput state="content" />
-    <button
-        label="Edit"
-        onPress={{
-            action: '@editor.node.updateProps',
-            props: {
-                content: element.dynamicState('content')
+        return {
+            state: {
+                message: 'The button updated this text.'
             }
-        }}
-        />
-</block>
-```
-
-### Webframes and actions
-
-Webframes are powerful elements to integrate in GitBook external applications or complete UI. Passing data to the webframe can be done using the `data` prop. But the webframe also needs to be able to communicate data back to the top component. It can be achieved using the `window.postMessage`:
-
-```js
-window.parent.postMessage({
-    action: {
-        type: 'doSomething',
-    }
-}, '*');
-```
-
-### Modals
-
-Components can open overlay modals to show extra information or prompt the user. Opening a modal is done by dispatching the `@ui.modal.open` action:
-
-```typescript
-const block = createComponent({
-    componentId: 'block',
+        };
+    },
     async render(element) {
         return (
             <block>
+                <text>{element.state.message}</text>
                 <button
-                    label="Open modal"
+                    label="Update text"
                     onPress={{
-                        action: '@ui.modal.open',
-                        componentId: 'custommodal',
-                        props: {
-                            message: 'Hello world'
-                        }
+                        action: 'update-message'
                     }}
-                />
-            </block>
-        )
-    }
-});
-```
-
-Opening the modal will start rendering the component `custommodal` with the defined props:
-
-```typescript
-const custommodal = createComponent({
-    componentId: 'custommodal',
-    async render(element) {
-        return (
-            <modal title="Hello world">
-                <button
-                    label="Close the modal"
-                    onPress={{
-                        action: '@ui.modal.close',
-                        returnValue: {}
-                    }}
-                />
-            </modal>
-        )
-    }
-});
-```
-
-When closing a modal, data can be returned to the parent component using `returnValue`. These data will be accessible in the parent component's action handler.
-
-### Opening urls
-
-A common pattern is to open a url as a webpage. A default action exists for this:
-
-```typescript
-<button
-    onPress={{
-        action: '@ui.url.open',
-        url: 'https://www.gitbook.com'
-    }}
-/>
-```
-
-### Build a prompt-style block
-
-If you want to show a reusable prompt, use a `codeblock` with overlay buttons.
-
-This pattern renders like a code block. Readers can read the prompt in place, and use overlay actions without leaving the block.
-
-ContentKit does not currently expose a dedicated Prompt component. It also does not provide a built-in action that opens a prompt in an AI tool or copies it to the clipboard.
-
-Today, the supported pattern is:
-
-* Render the prompt with `codeblock`.
-* Add overlay buttons for supported actions.
-* Use `@ui.url.open` to open an external AI tool such as Cursor.
-
-Here is a concise example:
-
-```tsx
-const promptBlock = createComponent({
-    componentId: 'prompt-block',
-    async render() {
-        const prompt = [
-            'Summarize this API response.',
-            'Highlight breaking changes.',
-            'Return three migration steps.'
-        ].join('\n');
-
-        const cursorUrl =
-            'https://example.com/open-in-cursor?prompt=' +
-            encodeURIComponent(prompt);
-
-        return (
-            <block>
-                <codeblock
-                    content={prompt}
-                    buttons={[
-                        {
-                            icon: 'arrow-up-right-from-square',
-                            tooltip: 'Open in Cursor',
-                            onPress: {
-                                action: '@ui.url.open',
-                                url: cursorUrl
-                            }
-                        }
-                    ]}
                 />
             </block>
         );
     }
 });
+
+export default createIntegration({
+    components: [textUpdater]
+});
 ```
 
-In this example, `cursorUrl` stands for any URL or deeplink your integration supports for opening the prompt in Cursor.
+The button dispatches the `update-message` action. The action handler returns the new component state.
 
-In this pattern, readers see a code-block style prompt. They can open it in Cursor if your integration gives a supported target URL.
+### Add the block to your manifest
 
-If you also want a copy button, treat that as an integration-specific enhancement. ContentKit does not document a built-in clipboard action for `codeblock` buttons today.
+In `gitbook-manifest.yaml`, add the block to the `blocks` list:
+
+```yaml
+title: My integration
+blocks:
+  - id: text-updater
+    title: Text updater
+```
+
+The manifest block ID must match `componentId`.
+
+### Test the block
+
+1. Start your integration with the development command.
+2. Insert **Text updater** from the inline palette.
+3. Select **Update text**.
+
+The text changes after the integration handles the action.
+
+### Continue building
+
+Choose a focused guide for the next interaction:
+
+* [Create an interactive text input](create-an-interactive-text-input.md).
+* [Send data to a webframe](send-data-to-a-webframe.md).
+* [Open a modal from a button](open-a-modal-from-a-button.md).
+* [Save editable block content](save-editable-block-content.md).
+
+For component options and supported actions, see the [component reference](../development/contentkit/reference.md).
