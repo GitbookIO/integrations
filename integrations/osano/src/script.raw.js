@@ -33,6 +33,8 @@
         w.GitBook.registerCookieBanner(function ({ onApprove, onReject }) {
             setupOsanoPreload();
 
+            var CONSENT_STORAGE_KEY = 'osano-gitbook-last-consent-decision';
+
             function emitConsent(consent) {
                 try {
                     var hasNonEssential =
@@ -40,6 +42,17 @@
                         NON_ESSENTIAL_CATEGORIES.some(function (category) {
                             return consent[category] === 'ACCEPT';
                         });
+                    var decision = hasNonEssential ? 'approve' : 'reject';
+
+                    // onConsentSaved replays the visitor's existing decision on every
+                    // page load, not just when it changes. GitBook's onApprove/onReject
+                    // can trigger a reload to reinitialize scripts, so forwarding every
+                    // replay would reload -> replay -> reload forever. Only forward the
+                    // decision when it's actually different from last time, and persist
+                    // that in sessionStorage since it must survive the reload.
+                    if (w.sessionStorage.getItem(CONSENT_STORAGE_KEY) === decision) return;
+                    w.sessionStorage.setItem(CONSENT_STORAGE_KEY, decision);
+
                     if (hasNonEssential) {
                         onApprove();
                     } else {
@@ -50,12 +63,6 @@
                 }
             }
 
-            // osano-cm-consent-saved fires immediately with the existing Consent Object
-            // for a returning visitor who already answered, and again on every future
-            // save (including one triggered by a Global Privacy Control signal, which
-            // Osano honors natively). Unlike OneTrust, there's no need to guard against
-            // a premature default-state callback here: this event simply never fires
-            // until the visitor (or GPC) has actually recorded a decision.
             w.Osano('onConsentSaved', emitConsent);
 
             injectOsano();
