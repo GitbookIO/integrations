@@ -108,6 +108,50 @@ export function explainApiError(message: string): string {
     return message;
 }
 
+// ─── Request timeout ────────────────────────────────────────────────────────────
+
+// Generated commands abort a request that produces no response — for streams, no
+// next event — within this many ms, so the CLI fails loudly instead of hanging on
+// an unresponsive endpoint. Configurable via GITBOOK_CLI_TIMEOUT_MS (0 disables).
+export const CLI_TIMEOUT_MS: number = ((): number => {
+    const raw = process.env.GITBOOK_CLI_TIMEOUT_MS;
+    if (raw === undefined) return 60_000;
+    const n = Number(raw);
+    return Number.isFinite(n) && n >= 0 ? n : 60_000;
+})();
+
+export interface RequestTimeout {
+    signal: AbortSignal;
+    // Reset the idle timer — called per streamed event so a long but live
+    // response is never cut off; a buffered request just lets it run once.
+    bump: () => void;
+    clear: () => void;
+}
+
+// An abort signal that fires after CLI_TIMEOUT_MS of inactivity, or null when
+// timeouts are disabled (CLI_TIMEOUT_MS === 0). The generated command passes
+// `signal` to the client, calls `bump()` on each event, and `clear()` when done.
+export function createRequestTimeout(): RequestTimeout | null {
+    if (!CLI_TIMEOUT_MS) return null;
+    const controller = new AbortController();
+    let timer: ReturnType<typeof setTimeout>;
+    const bump = () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => controller.abort(), CLI_TIMEOUT_MS);
+    };
+    const clear = () => clearTimeout(timer);
+    bump();
+    return { signal: controller.signal, bump, clear };
+}
+
+export function explainTimeout(): string {
+    return (
+        `Timed out after ${CLI_TIMEOUT_MS / 1000}s with no response from the server. ` +
+        `The endpoint may be slow or unavailable for this content. ` +
+        `Set GITBOOK_CLI_TIMEOUT_MS (milliseconds; 0 disables) to change.`
+    );
+}
+
 // ─── Markdown round-trip normalization ──────────────────────────────────────────
 
 // Make page-document markdown safe to push back via update_page/insert_page.
@@ -320,4 +364,228 @@ export function printResult(data: unknown, options: OutputOptions): void {
             break;
         }
     }
+}
+
+// ─── Streaming output ──────────────────────────────────────────────────────────
+
+// The SSE endpoints (organization/site `ask`, recommended `questions`, and the
+// site agent `ai-response`) yield a sequence of events rather than one response,
+// so they can't go through printResult. A StreamRenderer consumes those events as
+// they arrive: `write` per event, `end` once the stream closes (or errors).
+export interface StreamRenderer {
+    write(event: unknown): void;
+    end(): void;
+}
+
+// A line-oriented output target handed to StreamEventRenderers. `out` writes
+// inline (and may leave the cursor mid-line, e.g. incremental answer text);
+// `line` writes a full line. The core tracks the mid-line state so `end` can
+// flush a trailing newline before any end-of-stream content.
+export interface StreamSink {
+    out(text: string): void;
+    line(text: string): void;
+}
+
+// Strategy for rendering ONE family of events in pretty mode. The core renderer
+// owns all the generic mechanics (machine-format serialization, the sink and its
+// mid-line tracking, calling `end`); a StreamEventRenderer only has to know how to
+// turn its own event schema into text. New/changed event schemas mean a new
+// strategy passed at the call site — the core never changes. See generate-commands.ts,
+// which selects the strategy per endpoint from the response's event-stream schema.
+export interface StreamEventRenderer {
+    write(event: unknown, sink: StreamSink): void;
+    // Flush end-of-stream content (e.g. citations). Optional; defaults to a no-op.
+    end?(sink: StreamSink): void;
+}
+
+// Machine formats stream one record per event so a consumer can parse the output
+// incrementally: NDJSON for --json (one compact object per line), a stream of
+// YAML documents for --yaml (each introduced by the `---` marker) — both fully
+// schema-agnostic. Pretty mode delegates per-event rendering to `eventRenderer`
+// (a generic fallback when the caller doesn't supply one). Format resolution —
+// and the piped-defaults-to-YAML behaviour — is shared with printResult.
+export function createStreamRenderer(
+    options: OutputOptions,
+    eventRenderer: StreamEventRenderer = createGenericStreamRenderer(),
+): StreamRenderer {
+    const format = resolveFormat(options);
+    if (format === 'json') {
+        return {
+            write: (event) => process.stdout.write(`${JSON.stringify(event)}\n`),
+            end: () => {},
+        };
+    }
+    if (format === 'yaml') {
+        return {
+            write: (event) =>
+                process.stdout.write(`---\n${jsyaml.dump(event, { indent: 2, lineWidth: 120 })}`),
+            end: () => {},
+        };
+    }
+
+    let midLine = false; // last write left the cursor mid-line
+    const sink: StreamSink = {
+        out(text) {
+            if (text.length === 0) return;
+            process.stdout.write(text);
+            midLine = !text.endsWith('\n');
+        },
+        line(text) {
+            process.stdout.write(`${text}\n`);
+            midLine = false;
+        },
+    };
+    return {
+        write: (event) => eventRenderer.write(event, sink),
+        end: () => {
+            if (midLine) {
+                process.stdout.write('\n');
+                midLine = false;
+            }
+            eventRenderer.end?.(sink);
+        },
+    };
+}
+
+// Fallback strategy: no schema knowledge. Strings stream inline; objects/scalars
+// print as a compact block. Used for any streaming endpoint without a dedicated
+// renderer, so a new SSE endpoint is never silently blank.
+export function createGenericStreamRenderer(): StreamEventRenderer {
+    return {
+        write(event, sink) {
+            if (typeof event === 'string') sink.out(event);
+            else if (isPlainObject(event)) sink.line(formatPretty(event));
+            else sink.line(formatScalar(event));
+        },
+    };
+}
+
+// `SearchAIRecommendedQuestionStream`: one `{ question }` per event → a bullet.
+export function createQuestionStreamRenderer(): StreamEventRenderer {
+    return {
+        write(event, sink) {
+            if (isPlainObject(event) && typeof event.question === 'string') {
+                sink.line(`• ${event.question}`);
+            }
+        },
+    };
+}
+
+// `SearchAIAnswerStream`: progressive `{ type: 'answer', answer }` snapshots. Each
+// event carries the answer so far, so only the new suffix is printed; the latest
+// snapshot's sources/follow-ups render as citations once the stream ends.
+export function createAnswerStreamRenderer(): StreamEventRenderer {
+    let printedAnswerLen = 0;
+    let sources: unknown[] | null = null;
+    let followups: unknown[] | null = null;
+    return {
+        write(event, sink) {
+            if (!isPlainObject(event) || event.type !== 'answer' || !isPlainObject(event.answer)) {
+                return;
+            }
+            const answer = event.answer;
+            if (Array.isArray(answer.sources)) sources = answer.sources;
+            if (Array.isArray(answer.followupQuestions)) followups = answer.followupQuestions;
+            const text = streamAnswerText(answer.answer);
+            if (text !== undefined) {
+                if (text.length >= printedAnswerLen) sink.out(text.slice(printedAnswerLen));
+                else sink.out(`\n${text}`); // shrank unexpectedly: reprint whole
+                printedAnswerLen = text.length;
+            }
+        },
+        end(sink) {
+            if (sources && sources.length > 0) {
+                sink.line('');
+                sink.line('Sources:');
+                for (const s of sources) sink.line(`  - ${formatStreamSource(s)}`);
+            }
+            if (followups && followups.length > 0) {
+                sink.line('');
+                sink.line('Follow-up questions:');
+                for (const q of followups) sink.line(`  - ${formatScalar(q)}`);
+            }
+        },
+    };
+}
+
+// `AIStreamResponse`: a status line per event, except the JSON-object chunks,
+// which are raw text to concatenate.
+export function createAgentResponseStreamRenderer(): StreamEventRenderer {
+    return {
+        write(event, sink) {
+            if (!isPlainObject(event)) {
+                sink.line(formatScalar(event));
+                return;
+            }
+            if (typeof event.jsonChunk === 'string') {
+                sink.out(event.jsonChunk);
+                return;
+            }
+            if (typeof event.type === 'string') {
+                sink.line(streamStatusLine(event));
+                return;
+            }
+            sink.line(formatPretty(event));
+        },
+    };
+}
+
+// Renderable text for an answer field. `--format markdown` yields `{ markdown }`;
+// `--format document` (the raw form) yields `{ document }`, a node tree we flatten
+// to plain text via documentToText so pretty mode still shows the answer.
+function streamAnswerText(answer: unknown): string | undefined {
+    if (typeof answer === 'string') return answer;
+    if (isPlainObject(answer)) {
+        if (typeof answer.markdown === 'string') return answer.markdown;
+        if (isPlainObject(answer.document)) return documentToText(answer.document);
+    }
+    return undefined;
+}
+
+// Flatten a GitBook document node tree to plain text. Text nodes concatenate their
+// `leaves`; block containers join their children — with newlines when those
+// children are themselves blocks (paragraphs, headings, list items), directly when
+// they're inline text. Marks (bold/italic/links) are dropped; this is a legible
+// fallback for pretty mode, not a full markdown serializer.
+export function documentToText(node: unknown): string {
+    if (typeof node === 'string') return node;
+    if (!isPlainObject(node)) return '';
+    if (Array.isArray(node.leaves)) {
+        return node.leaves
+            .map((leaf) => (isPlainObject(leaf) && typeof leaf.text === 'string' ? leaf.text : ''))
+            .join('');
+    }
+    if (Array.isArray(node.nodes)) {
+        const hasBlockChildren = node.nodes.some(
+            (child) => isPlainObject(child) && child.object === 'block',
+        );
+        return node.nodes.map(documentToText).join(hasBlockChildren ? '\n' : '');
+    }
+    return '';
+}
+
+// One-line status for an AIStreamResponse event, keyed by its `type`.
+function streamStatusLine(event: Record<string, unknown>): string {
+    const type = String(event.type);
+    if (type === 'response_document' || type === 'response_reasoning') {
+        const n = Array.isArray(event.blocks) ? event.blocks.length : 0;
+        return `[${type}] ${formatScalar(event.operation)} — ${n} block(s)`;
+    }
+    return `[${type}]`;
+}
+
+// A citation line for a SearchAIAnswerSource (a page or a context record).
+export function formatStreamSource(source: unknown): string {
+    if (!isPlainObject(source)) return formatScalar(source);
+    const parts: string[] = [];
+    if (source.type === 'record') {
+        if (typeof source.title === 'string') parts.push(source.title);
+        if (typeof source.url === 'string') parts.push(source.url);
+        else if (typeof source.record === 'string') parts.push(`record ${source.record}`);
+    } else {
+        if (typeof source.page === 'string') parts.push(`page ${source.page}`);
+        if (typeof source.space === 'string') parts.push(`space ${source.space}`);
+    }
+    if (typeof source.reason === 'string' && source.reason) parts.push(`— ${source.reason}`);
+    return parts.length ? parts.join('  ') : formatPretty(source);
 }

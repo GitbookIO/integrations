@@ -1,6 +1,5 @@
 ---
 description: Learn about errors the GitBook API might return
-icon: triangle-exclamation
 ---
 
 # Errors

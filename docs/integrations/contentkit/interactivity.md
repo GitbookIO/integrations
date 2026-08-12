@@ -69,7 +69,7 @@ createComponent({
                     <textinput state="content" />
                     <divider />
                     <webframe
-                        source={{ uri: '/iframe.html' }}
+                        source={{ url: '/iframe.html' }}
                         data={{
                             content: element.dynamicState('content')
                         }}
@@ -87,6 +87,27 @@ In the `iframe.html`, you can handle incoming events by listening to the `messag
 window.addEventListener("message", (event) => {
     if (event.data) {
         const content = event.data.state.content;
+    }
+});
+```
+
+## Page and visitor context
+
+GitBook injects contextual information about the current site into the webframe `state`, alongside the values you bind through the `data` prop:
+
+- `state.page` — the current page as `{ id, path, title }`. Always available.
+- `state.visitor` — the visitor claims, when the integration has the `site:visitor:claims` [scope](../configurations.md#scopes).
+
+This context is delivered client-side through the same `message` event as your bound `data`, so it does not change how the integration block is cached:
+
+```js
+window.addEventListener("message", (event) => {
+    const state = event.data?.state;
+    if (!state) return;
+
+    if (state.page) {
+        const { id, path, title } = state.page;
+        // e.g. build a link to a sibling page from `path`
     }
 });
 ```

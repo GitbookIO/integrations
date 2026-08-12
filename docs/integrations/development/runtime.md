@@ -4,22 +4,13 @@ description: Extend GitBook with custom components, event handling, OAuth flows,
 
 # Integration runtime
 
-GitBook’s integration runtime is the platform that lets you build and run integrations within GitBook. Integrations can extend GitBook’s functionality by providing custom UI components, handling events, managing OAuth authentication, and communicating over HTTP.&#x20;
-
-This guide explains how to build an integration, what each key element does, and how they interact.
+GitBook’s integration runtime is the platform that lets you build and run integrations within GitBook. Integrations can extend GitBook’s functionality by providing custom UI components, handling events, managing OAuth authentication, and communicating over HTTP.
 
 The main building blocks are:
 
-* **Integration Initialization** – Register your integration.
-* **UI Components** – Create custom, interactive components.
-* **OAuth Handling** – Manage authentication flows.
-* **Environment Context** – Access runtime and installation details.
-* **HTTP Communication** – Fetch external data using HTTP.
-* **Actions & Rendering** – Define component behavior and display.
-* **Event Handling** – Listen and respond to GitBook events.
-* **URL Utilities** – Work with URLs and query strings.
+<table data-search="false"><thead><tr><th>Building block</th><th>What it does</th></tr></thead><tbody><tr><td><a href="runtime.md#create-an-integration"><strong>Integration initialization</strong></a></td><td>Registers your integration.</td></tr><tr><td><a href="runtime.md#create-a-component"><strong>UI components</strong></a></td><td>Creates custom, interactive components.</td></tr><tr><td><a href="runtime.md#create-an-oauth-handler"><strong>OAuth handling</strong></a></td><td>Manages authentication flows.</td></tr><tr><td><a href="runtime.md#environment-context"><strong>Environment context</strong></a></td><td>Accesses runtime and installation details.</td></tr><tr><td><a href="runtime.md#http-communication"><strong>HTTP communication</strong></a></td><td>Fetches external data using HTTP.</td></tr><tr><td><a href="runtime.md#actions"><strong>Actions</strong></a> and <a href="runtime.md#rendering-components"><strong>rendering</strong></a></td><td>Defines component behavior and display.</td></tr><tr><td><a href="runtime.md#events"><strong>Event handling</strong></a></td><td>Listens and responds to GitBook events.</td></tr><tr><td><a href="runtime.md#environment-context"><strong>URL utilities</strong></a></td><td>Works with URLs and query strings.</td></tr></tbody></table>
 
-### `createIntegration`
+### Create an integration
 
 Integrations are created using the `createIntegration()` method. This method is the entrypoint for your integration and sets up its runtime context, including HTTP fetch methods, UI components, and event handlers.
 
@@ -45,9 +36,9 @@ export default createIntegration({
 
 `createIntegration()` accepts the following object parameters:
 
-<table><thead><tr><th valign="top">Key</th><th valign="top">Type</th><th valign="top">Description</th></tr></thead><tbody><tr><td valign="top"><strong>fetch</strong></td><td valign="top">Async Function</td><td valign="top">A function to handle incoming HTTP requests or action dispatches.</td></tr><tr><td valign="top"><strong>components</strong></td><td valign="top">Array</td><td valign="top">A list of UI component definitions created using <code>createComponent()</code>.</td></tr><tr><td valign="top"><strong>events</strong></td><td valign="top">Object</td><td valign="top">An object mapping event names to their handler functions.</td></tr></tbody></table>
+<table><thead><tr><th valign="top">Key</th><th valign="top">Type</th><th valign="top">Description</th></tr></thead><tbody><tr><td valign="top"><code>fetch</code></td><td valign="top"><code>Async Function</code></td><td valign="top">A function to handle incoming HTTP requests or action dispatches.</td></tr><tr><td valign="top"><code>components</code></td><td valign="top"><code>Array</code></td><td valign="top">A list of UI component definitions created using <code>createComponent()</code>.</td></tr><tr><td valign="top"><code>events</code></td><td valign="top"><code>Object</code></td><td valign="top">An object mapping event names to their handler functions.</td></tr></tbody></table>
 
-### `createComponent`
+### Create a component
 
 UI components let you build interactive elements that appear in GitBook’s quick insert menu (⌘ + /) or in the configuration screen of your integration. Use the `createComponent()` method to define a component’s identifier, initial state, actions, and rendering logic.
 
@@ -75,9 +66,9 @@ const myComponent = createComponent({
 
 `createComponent()` accepts the following object parameters:
 
-<table><thead><tr><th valign="top">Key</th><th valign="top">Type</th><th valign="top">Description</th></tr></thead><tbody><tr><td valign="top"><strong>componentId</strong></td><td valign="top">string</td><td valign="top">Unique identifier for the component.</td></tr><tr><td valign="top"><strong>initialState</strong></td><td valign="top">Function (props) ⇒ object</td><td valign="top">Function that initializes the component state based on its props.</td></tr><tr><td valign="top"><strong>action</strong></td><td valign="top">Async Function</td><td valign="top">Callback that handles user interactions; receives <code>element</code>, <code>action</code>, and <code>context</code>.</td></tr><tr><td valign="top"><strong>render</strong></td><td valign="top">Async Function</td><td valign="top">Function that returns the component’s UI as ContentKit markup.</td></tr></tbody></table>
+<table><thead><tr><th valign="top">Key</th><th valign="top">Type</th><th valign="top">Description</th></tr></thead><tbody><tr><td valign="top"><code>componentId</code></td><td valign="top"><code>string</code></td><td valign="top">Unique identifier for the component.</td></tr><tr><td valign="top"><code>initialState</code></td><td valign="top"><code>Function (props) ⇒ object</code></td><td valign="top">Function that initializes the component state based on its props.</td></tr><tr><td valign="top"><code>action</code></td><td valign="top"><code>Async Function</code></td><td valign="top">Callback that handles user interactions; receives <code>element</code>, <code>action</code>, and <code>context</code>.</td></tr><tr><td valign="top"><code>render</code></td><td valign="top"><code>Async Function</code></td><td valign="top">Function that returns the component’s UI as ContentKit markup.</td></tr></tbody></table>
 
-### `createOAuthHandler`
+### Create an OAuth handler
 
 When your integration requires user authentication via OAuth, you use `createOAuthHandler()` to define the OAuth flow. This function sets up redirection, token exchange, and extraction of credentials.
 
@@ -103,7 +94,7 @@ const oauthHandler = createOAuthHandler({
 
 `createOAuthHandler()` accepts the following object parameters:
 
-<table><thead><tr><th width="174.37933349609375">Parameter</th><th width="101.98699951171875">Type</th><th>Description</th><th>Example Value</th></tr></thead><tbody><tr><td><strong>clientId</strong>*</td><td>string</td><td>Your client application ID from the OAuth provider.</td><td><code>"my-client-id"</code></td></tr><tr><td><strong>clientSecret</strong>*</td><td>string</td><td>Your client secret from the OAuth provider.</td><td><code>"my-client-secret"</code></td></tr><tr><td><strong>authorizeURL</strong>*</td><td>string</td><td>The URL where users are redirected for authorization.</td><td><code>"https://oauth.example.com/authorize"</code></td></tr><tr><td><strong>accessTokenURL</strong>*</td><td>string</td><td>The URL used to exchange the authorization code for an access token.</td><td><code>"https://oauth.example.com/token"</code></td></tr><tr><td><strong>redirectURL</strong></td><td>string</td><td>(Optional) URL used for redirection if a static URL is needed.</td><td><code>"https://myapp.example.com/oauth"</code></td></tr><tr><td><strong>scopes</strong></td><td>string[]</td><td>An array of scopes to request during authentication.</td><td><code>["read", "write"]</code></td></tr><tr><td><strong>prompt</strong></td><td>string</td><td>(Optional) Configuration for prompting the user during authentication.</td><td><code>"consent"</code></td></tr><tr><td><strong>extractCredentials</strong></td><td>function</td><td>A function that processes the OAuth response and returns credentials in the expected format.</td><td><code>(response) => { … }</code></td></tr></tbody></table>
+<table><thead><tr><th width="174.37933349609375">Parameter</th><th width="101.98699951171875">Type</th><th>Description</th><th>Example Value</th></tr></thead><tbody><tr><td><code>clientId</code>*</td><td><code>string</code></td><td>Your client application ID from the OAuth provider.</td><td><code>"my-client-id"</code></td></tr><tr><td><code>clientSecret</code>*</td><td><code>string</code></td><td>Your client secret from the OAuth provider.</td><td><code>"my-client-secret"</code></td></tr><tr><td><code>authorizeURL</code>*</td><td><code>string</code></td><td>The URL where users are redirected for authorization.</td><td><code>"https://oauth.example.com/authorize"</code></td></tr><tr><td><code>accessTokenURL</code>*</td><td><code>string</code></td><td>The URL used to exchange the authorization code for an access token.</td><td><code>"https://oauth.example.com/token"</code></td></tr><tr><td><code>redirectURL</code></td><td><code>string</code></td><td>(Optional) URL used for redirection if a static URL is needed.</td><td><code>"https://myapp.example.com/oauth"</code></td></tr><tr><td><code>scopes</code></td><td><code>string[]</code></td><td>An array of scopes to request during authentication.</td><td><code>["read", "write"]</code></td></tr><tr><td><code>prompt</code></td><td><code>string</code></td><td>(Optional) Configuration for prompting the user during authentication.</td><td><code>"consent"</code></td></tr><tr><td><code>extractCredentials</code></td><td><code>function</code></td><td>A function that processes the OAuth response and returns credentials in the expected format.</td><td><code>(response) => { … }</code></td></tr></tbody></table>
 
 ### Rendering components
 
@@ -133,43 +124,43 @@ The `context.environment` object can include the following:
 
 #### API information
 
-| Key             | Type   | Description                                 |
-| --------------- | ------ | ------------------------------------------- |
-| **apiEndpoint** | string | URL of the HTTP API.                        |
-| **apiTokens**   | object | Contains authentication tokens for the API. |
+| Key           | Type     | Description                                 |
+| ------------- | -------- | ------------------------------------------- |
+| `apiEndpoint` | `string` | URL of the HTTP API.                        |
+| `apiTokens`   | `object` | Contains authentication tokens for the API. |
 
 #### Integration information
 
-| Key             | Type   | Description                           |
-| --------------- | ------ | ------------------------------------- |
-| **integration** | object | Details about the integration itself. |
+| Key           | Type     | Description                           |
+| ------------- | -------- | ------------------------------------- |
+| `integration` | `object` | Details about the integration itself. |
 
 #### Site installation (if applicable)
 
-| Key               | Type   | Description                                                             |
-| ----------------- | ------ | ----------------------------------------------------------------------- |
-| **space**         | string | ID of the space where the integration is installed.                     |
-| **status**        | object | Installation status; e.g., Active, Pending, Paused.                     |
-| **configuration** | object | Custom configuration variables for the space.                           |
-| **externalIds**   | any    | External identifiers.                                                   |
-| **urls**          | object | Contains URLs associated with the installation (e.g., public endpoint). |
+| Key             | Type     | Description                                                             |
+| --------------- | -------- | ----------------------------------------------------------------------- |
+| `space`         | `string` | ID of the space where the integration is installed.                     |
+| `status`        | `object` | Installation status; e.g., Active, Pending, Paused.                     |
+| `configuration` | `object` | Custom configuration variables for the space.                           |
+| `externalIds`   | `any`    | External identifiers.                                                   |
+| `urls`          | `object` | Contains URLs associated with the installation (e.g., public endpoint). |
 
 #### Organization installation (if applicable)
 
-| Key                  | Type      | Description                                               |
-| -------------------- | --------- | --------------------------------------------------------- |
-| **id**               | string    | Installation ID.                                          |
-| **space\_selection** | object    | Specifies whether all spaces or selected spaces are used. |
-| **configuration**    | object    | Custom configuration for the organization.                |
-| **urls**             | object    | Contains organization-related URLs.                       |
-| **externalIds**      | string\[] | Array of external IDs assigned by the integration.        |
-| **target**           | string    | Target of the integration installation.                   |
+| Key               | Type       | Description                                               |
+| ----------------- | ---------- | --------------------------------------------------------- |
+| `id`              | `string`   | Installation ID.                                          |
+| `space_selection` | `object`   | Specifies whether all spaces or selected spaces are used. |
+| `configuration`   | `object`   | Custom configuration for the organization.                |
+| `urls`            | `object`   | Contains organization-related URLs.                       |
+| `externalIds`     | `string[]` | Array of external IDs assigned by the integration.        |
+| `target`          | `string`   | Target of the integration installation.                   |
 
 #### Runtime secrets
 
-| Key         | Type   | Description                                                                                                            |
-| ----------- | ------ | ---------------------------------------------------------------------------------------------------------------------- |
-| **secrets** | object | Secrets stored on the integration for runtime use. Defined in the integration's [configuration](../configurations.md). |
+| Key       | Type     | Description                                                                                                            |
+| --------- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `secrets` | `object` | Secrets stored on the integration for runtime use. Defined in the integration's [configuration](../configurations.md). |
 
 ### Events
 
@@ -220,15 +211,40 @@ action: async (element, action, context) => {
 
 ### HTTP communication
 
-Integrations communicate with external services via HTTP using the Fetch API.
+Use the Fetch API to receive requests and call external services. Each integration installation has a public HTTPS endpoint at `context.environment.integration.urls.publicEndpoint`.
 
-| Option      | Type   | Description                       | Example Value                            |
-| ----------- | ------ | --------------------------------- | ---------------------------------------- |
-| **method**  | string | HTTP method (GET, POST, etc.).    | `"POST"`                                 |
-| **headers** | object | HTTP headers as key/value pairs.  | `{ "Content-Type": "application/json" }` |
-| **body**    | string | Payload to send with the request. | `'{"message": "Hello World"}'`           |
+#### Receiving requests
 
-#### Fetch Method Example
+GitBook receives requests at the versioned endpoint:
+
+```http
+POST /{version}
+Content-Type: multipart/form-data
+```
+
+GitBook manages endpoint versioning and backward compatibility. It normalizes the request envelope before it reaches your integration code.
+
+The envelope contains these fields:
+
+| Field         | Type     | Description                                                                 |
+| ------------- | -------- | --------------------------------------------------------------------------- |
+| `event`       | `Event`  | The trigger event, typed by `@gitbook/api-client`.                          |
+| `environment` | `object` | The installation details and runtime context.                               |
+| `fetch-body`  | `Buffer` | The unmodified request body, when present. Use it for signature validation. |
+
+Use `fetch-body` for signed webhooks and non-JSON payloads. Verify a webhook signature before you process its event.
+
+#### Sending requests
+
+Pass these options when you create an outbound request:
+
+| Option    | Type     | Description                           | Example value                            |
+| --------- | -------- | ------------------------------------- | ---------------------------------------- |
+| `method`  | `string` | HTTP method, such as `GET` or `POST`. | `"POST"`                                 |
+| `headers` | `object` | HTTP headers as key-value pairs.      | `{ "Content-Type": "application/json" }` |
+| `body`    | `string` | Payload to send with the request.     | `'{"message": "Hello World"}'`           |
+
+#### Handle a request
 
 ```javascript
 fetch: async (request, context) => {
@@ -241,7 +257,7 @@ fetch: async (request, context) => {
 }
 ```
 
-**Request Example:**
+#### Create a request
 
 ```javascript
 const request = new Request("https://example.com", {
@@ -250,7 +266,7 @@ const request = new Request("https://example.com", {
 });
 ```
 
-**Response Example:**
+#### Return a response
 
 ```javascript
 const handleFetchEvent = async (request, context) => {
@@ -260,4 +276,4 @@ const handleFetchEvent = async (request, context) => {
 };
 ```
 
-Learn more from the [MDN Request docs](https://developer.mozilla.org/en-US/docs/Web/API/Request) and [MDN Response docs](https://developer.mozilla.org/en-US/docs/Web/API/Response).
+To implement a public endpoint, follow [Handle an HTTP request](../guides/receiving-requests.md). Learn more from the [MDN Request documentation](https://developer.mozilla.org/en-US/docs/Web/API/Request) and [MDN Response documentation](https://developer.mozilla.org/en-US/docs/Web/API/Response).

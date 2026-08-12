@@ -1,13 +1,16 @@
 ---
 description: Learn about the gitbook-manifest.yaml file used to configure your integration
-icon: gear
 ---
 
-# Configure your integration
+# Configure
 
 Integrations are defined through a file called `gitbook-manifest.yaml`. This file is automatically created through the CLI when creating a new integration.
 
-<mark style="color:red;">\*required</mark>
+Use this reference to configure your integration and its installation flow.
+
+### Manifest fields
+
+<table data-search="false"><thead><tr><th width="168.8984375">Field</th><th width="133.921875">Required</th><th>Use it to</th></tr></thead><tbody><tr><td><a href="configurations.md#name"><code>name</code></a></td><td>Yes</td><td>Set a unique integration identifier.</td></tr><tr><td><a href="configurations.md#title"><code>title</code></a></td><td>Yes</td><td>Set the integration name shown in GitBook.</td></tr><tr><td><a href="configurations.md#description"><code>description</code></a></td><td>Yes</td><td>Describe the integration.</td></tr><tr><td><a href="configurations.md#summary"><code>summary</code></a></td><td>No</td><td>Add Markdown content to the installation page.</td></tr><tr><td><a href="configurations.md#organization"><code>organization</code></a></td><td>Yes</td><td>Identify the organization that owns the integration.</td></tr><tr><td><a href="configurations.md#visibility"><code>visibility</code></a></td><td>Yes</td><td>Control who can install the integration.</td></tr><tr><td><a href="configurations.md#scopes"><code>scopes</code></a></td><td>Yes</td><td>Request GitBook permissions.</td></tr><tr><td><a href="configurations.md#script"><code>script</code></a></td><td>No</td><td>Set the integration entrypoint.</td></tr><tr><td><a href="configurations.md#blocks"><code>blocks</code></a></td><td>No</td><td>Register components in the inline palette.</td></tr><tr><td><a href="configurations.md#categories"><code>categories</code></a></td><td>No</td><td>Categorize the integration.</td></tr><tr><td><a href="configurations.md#icon"><code>icon</code></a></td><td>No</td><td>Add an installation-page icon.</td></tr><tr><td><a href="configurations.md#preview-images"><code>previewImages</code></a></td><td>No</td><td>Add installation-page preview images.</td></tr><tr><td><a href="configurations.md#external-links"><code>externalLinks</code></a></td><td>No</td><td>Add installation-page links.</td></tr><tr><td><a href="configurations.md#configurations"><code>configurations</code></a></td><td>No</td><td>Collect installation settings.</td></tr><tr><td><a href="configurations.md#secrets"><code>secrets</code></a></td><td>No</td><td>Pass environment variables to the manifest.</td></tr></tbody></table>
 
 ### Name<mark style="color:red;">\*</mark>
 
@@ -98,6 +101,7 @@ The scopes your integration has permissions for.
     - site:script:inject ## Internal scope - see note below
     - site:script:cookies ## Internal scope - see note below
     - site:visitor:auth ## Enable workflows related to authenticated access
+    - site:visitor:claims ## Expose visitor claims to webframes
     - site:adaptive:read ## Read claims available from Adaptive Content
     - site:adaptive:write ## Write claims avaiable to Adaptive Content
     # OpenAPI

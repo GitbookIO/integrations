@@ -1,5 +1,44 @@
 # @gitbook/cli
 
+## 0.30.0
+
+### Minor Changes
+
+- b4a0336: Update CLI to use new API version.
+
+### Patch Changes
+
+- Updated dependencies [b4a0336]
+    - @gitbook/api@0.193.0
+
+## 0.29.4
+
+### Patch Changes
+
+- e8973bb: Patch cli for api change
+- Updated dependencies [bf57975]
+    - @gitbook/api@0.192.0
+
+## 0.29.3
+
+### Patch Changes
+
+- 6aa7fbb: Bump API
+- Updated dependencies [6aa7fbb]
+    - @gitbook/api@0.191.0
+
+## 0.29.2
+
+### Patch Changes
+
+- fc57ad2: Generated commands now accept each path parameter as both a positional argument and a `--<name>` flag (the positional wins when both are given), with a clearer error when a required path parameter is missing. Added commands for the 5 streaming (SSE) API endpoints — `organizations ask stream`, `organizations ask questions stream`, `organizations sites ask stream`, `organizations sites ask questions stream`, and `organizations sites ai response stream` — which stream NDJSON/YAML records in machine mode and render incrementally in pretty mode. `gitbook login` now falls back to the spec-derived OAuth scope list when the server's discovery metadata omits `scopes_supported`.
+
+## 0.29.1
+
+### Patch Changes
+
+- 17de11e: Improve command discoverability: `--help` now shows a nested "Command groups" tree so subgroups like `organizations sites` are visible without drilling in; shell completion now includes the hand-written `integration` and `openapi` subcommands; and `gitbook integrations --help` points to `gitbook integration` for the build/publish lifecycle commands.
+
 ## 0.29.0
 
 ### Minor Changes

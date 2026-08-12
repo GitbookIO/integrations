@@ -1,5 +1,29 @@
 # @gitbook/api
 
+## 0.193.0
+
+### Minor Changes
+
+- b4a0336: Bump API version
+
+## 0.192.0
+
+### Minor Changes
+
+- bf57975: Minor API bump for new InlineButton action
+
+## 0.191.0
+
+### Minor Changes
+
+- 6aa7fbb: Bump API
+
+## 0.190.0
+
+### Minor Changes
+
+- 9bfc7f4: Bump API for prompt block data additions
+
 ## 0.189.0
 
 ### Minor Changes

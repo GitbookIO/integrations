@@ -1,5 +1,11 @@
 # @gitbook/integration-oidc
 
+## 0.5.0
+
+### Minor Changes
+
+- fc53e8e: Add support for PKCE to the OIDC visitor authentication flow.
+
 ## 0.4.1
 
 ### Patch Changes

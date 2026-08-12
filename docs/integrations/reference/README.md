@@ -1,6 +1,5 @@
 ---
 description: Install the GitBook CLI to build and publish integrations
-icon: rectangle-terminal
 ---
 
 # Install the CLI
