@@ -1,5 +1,13 @@
 # @gitbook/cli
 
+## 0.31.1
+
+### Patch Changes
+
+- ae38b36: Bump API to expose new visitor.type prop
+- Updated dependencies [ae38b36]
+    - @gitbook/api@0.195.0
+
 ## 0.31.0
 
 ### Minor Changes
