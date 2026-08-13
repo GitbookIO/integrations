@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.195.0
+
+### Minor Changes
+
+- ae38b36: Bump API to expose new visitor.type prop
+
 ## 0.194.0
 
 ### Minor Changes
