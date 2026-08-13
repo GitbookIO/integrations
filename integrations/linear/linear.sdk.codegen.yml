@@ -4,7 +4,7 @@ documents:
     - './src/linear/operations.graphql'
 hooks:
     afterOneFileWrite:
-        - oxfmt
+        - oxfmt --no-error-on-unmatched-pattern
 generates:
     src/linear/gql/graphql.ts:
         plugins:
