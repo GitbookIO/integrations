@@ -221,7 +221,7 @@ async function getPublishedContentUrls(context: Auth0RuntimeContext) {
 }
 
 function assertOrgId(environment: Auth0RuntimeEnvironment) {
-    const orgId = environment.installation?.target?.organization!;
+    const orgId = environment.installation?.target?.organization;
     if (!orgId) {
         throw new Error('No org ID found');
     }
@@ -341,7 +341,7 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                         Math.floor(Date.now() / 1000) + auth0TokenData.expires_in;
                     const jwtToken = await jwt.sign(
                         {
-                            ...(userInfo ?? {}),
+                            ...userInfo,
                             exp: Math.max(minimumExp, upstreamAccessTokenExp),
                         },
                         privateKey,

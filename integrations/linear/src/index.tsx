@@ -221,7 +221,7 @@ const previewModal = createComponent<{
             return renderGenericModal(element.props.url, context);
         }
 
-        const { issueId, url } = element.props;
+        const { issueId } = element.props;
         const linearClient = await getLinearAPIClient(configuration);
 
         let response: IssueQuery;

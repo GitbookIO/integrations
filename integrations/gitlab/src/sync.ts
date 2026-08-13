@@ -4,7 +4,7 @@ import {
     IntegrationSpaceInstallation,
     Revision,
 } from '@gitbook/api';
-import { ExposableError, Logger } from '@gitbook/runtime';
+import { Logger } from '@gitbook/runtime';
 
 import {
     getGitCommitURL,

@@ -16,7 +16,7 @@ function getProject(url: string) {
 
 const splitGitlabUrl = (url: string) => {
     const gitlabLinkRegex =
-        /^https?:\/\/(?:www\.)?gitlab\.com\/(?:(?:[^\/]+\/)+)?([^\/]+)\/([^\/]+)\/(?:-\/)?blob\/([^\/]+)\/(.+)$/;
+        /^https?:\/\/(?:www\.)?gitlab\.com\/(?:(?:[^/]+\/)+)?([^/]+)\/([^/]+)\/(?:-\/)?blob\/([^/]+)\/(.+)$/;
     const matchGitlabLink = url.match(gitlabLinkRegex);
 
     const hashRegex = /#(.*)/;

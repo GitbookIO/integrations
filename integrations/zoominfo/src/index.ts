@@ -38,7 +38,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     }
 
     // match[0] looks like "'abc...'" we need to remove the single quotes
-    const siteId = match[0].replace(/\'/g, '');
+    const siteId = match[0].replace(/'/g, '');
 
     return new Response((rawScript as string).replace('<TO_REPLACE>', siteId), {
         headers: {
