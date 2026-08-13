@@ -4,7 +4,7 @@ documents:
     - './src/linear/operations.graphql'
 hooks:
     afterOneFileWrite:
-        - prettier --write
+        - oxfmt
 generates:
     src/linear/gql/graphql.ts:
         plugins:
