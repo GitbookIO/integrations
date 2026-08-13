@@ -19,9 +19,6 @@ This repository contains code, packages, and scripts related to the integrations
 Visit our [documentation](https://gitbook.com/docs/developers) to learn how to use
 the GitBook Integration Platform with our API reference, getting started guides, and more.
 
-> The documentation is hosted on GitBook and lives in this repository, within
-> [`/docs`](./docs).
-
 See a mistake or would like to help us with our documentation? Feel free to follow our [contributing guide](./.github/CONTRIBUTING.md) to open a pull request!
 
 ## Packages
