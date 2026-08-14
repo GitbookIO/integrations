@@ -22,6 +22,8 @@ type OktaSiteInstallationBaseConfiguration = {
     client_id?: string;
     okta_domain?: string;
     client_secret?: string;
+    logout_url?: string;
+    redirect_to_site_on_logout?: boolean;
 };
 
 type OktaSiteInstallationConfiguration = OktaSiteInstallationBaseConfiguration & {
@@ -86,6 +88,9 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
             include_claims: !!siteInstallation?.configuration?.okta_custom_auth_server?.id || false,
             okta_custom_auth_server_id:
                 siteInstallation?.configuration?.okta_custom_auth_server?.id || '',
+            logout_url: siteInstallation?.configuration?.logout_url || '',
+            redirect_to_site_on_logout:
+                siteInstallation?.configuration?.redirect_to_site_on_logout || false,
         };
     },
     action: async (element, action, context) => {
@@ -137,6 +142,8 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                     okta_custom_auth_server: element.state.include_claims
                         ? oktaCustomServerInfo
                         : undefined,
+                    logout_url: element.state.logout_url || undefined,
+                    redirect_to_site_on_logout: element.state.redirect_to_site_on_logout,
                 };
                 await api.integrations.updateIntegrationSiteInstallation(
                     siteInstallation.integration,
@@ -258,6 +265,58 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                         />
                     ) : null}
 
+                    <divider size="medium" />
+
+                    <markdown content="### Logout" />
+                    <vstack>
+                        <input
+                            label="Okta Logout URL"
+                            hint={
+                                <text>
+                                    The Okta sign-out endpoint visitors are sent to when they log
+                                    out of the site. Leave empty to only end their GitBook session.
+                                    <link
+                                        target={{
+                                            url: 'https://developer.okta.com/docs/guides/sign-users-out/main/',
+                                        }}
+                                    >
+                                        {' '}
+                                        More Details
+                                    </link>
+                                </text>
+                            }
+                            element={
+                                <textinput
+                                    state="logout_url"
+                                    placeholder={`https://${
+                                        element.state.okta_domain || 'your-org.okta.com'
+                                    }/login/signout`}
+                                />
+                            }
+                        />
+
+                        <input
+                            label="Return to the site after logout"
+                            hint={
+                                <text>
+                                    Return visitors to your site once they are logged out. Requires
+                                    your site's origin as a <text style="bold">Redirect</text>{' '}
+                                    trusted origin in Okta, otherwise Okta ignores it and lands the
+                                    visitor on its own sign-in page.
+                                    <link
+                                        target={{
+                                            url: 'https://help.okta.com/oie/en-us/content/topics/security/api-trusted-origins.htm',
+                                        }}
+                                    >
+                                        {' '}
+                                        More Details
+                                    </link>
+                                </text>
+                            }
+                            element={<switch state="redirect_to_site_on_logout" />}
+                        />
+                    </vstack>
+
                     <input
                         label=""
                         hint=""
@@ -309,6 +368,41 @@ function assertOrgId(environment: OktaRuntimeEnvironment) {
     }
 
     return orgId;
+}
+
+/**
+ * Log the visitor out of Okta when a logout URL is configured, and otherwise send them
+ * straight back to the site.
+ */
+async function handleLogout(
+    context: OktaRuntimeContext,
+    siteInstallation: ReturnType<typeof assertSiteInstallation>,
+): Promise<Response> {
+    const configuration = siteInstallation.configuration;
+    const publishedContentUrls = await getPublishedContentUrls(context);
+    const siteURL = publishedContentUrls?.published;
+    const logoutURL = configuration.logout_url;
+
+    if (logoutURL) {
+        try {
+            const url = new URL(logoutURL);
+
+            // Okta only accepts a `fromURI` that stays within the org or that matches a
+            // Redirect trusted origin, so it is only sent when the site admin opted in.
+            if (configuration.redirect_to_site_on_logout && siteURL) {
+                url.searchParams.set('fromURI', siteURL);
+            }
+
+            logger.info('redirecting the visitor to the configured Okta logout endpoint');
+            return Response.redirect(url.toString());
+        } catch (error) {
+            logger.error(`invalid Okta logout URL configured: ${logoutURL}`, error);
+        }
+    }
+
+    // Nothing to log out of upstream: send the visitor to the site root.
+    logger.info('redirecting the visitor to the site without logging them out of Okta');
+    return Response.redirect(siteURL ?? siteInstallation.urls.publicEndpoint);
 }
 
 const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request, context) => {
@@ -450,6 +544,10 @@ export default createIntegration({
     fetch_visitor_authentication: async (event, context) => {
         const { environment } = context;
         const siteInstallation = assertSiteInstallation(environment);
+
+        if (event.action === 'logout') {
+            return handleLogout(context, siteInstallation);
+        }
 
         const installationURL = siteInstallation.urls.publicEndpoint;
         const configuration = siteInstallation.configuration;

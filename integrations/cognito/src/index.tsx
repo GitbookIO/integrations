@@ -25,6 +25,8 @@ type CognitoSiteInstallationConfiguration = {
     client_id?: string;
     cognito_domain?: string;
     client_secret?: string;
+    logout_url?: string;
+    redirect_to_site_on_logout?: boolean;
 };
 
 type CognitoState = CognitoSiteInstallationConfiguration;
@@ -76,6 +78,9 @@ const configBlock = createComponent<
             client_id: siteInstallation.configuration?.client_id?.toString() || '',
             cognito_domain: siteInstallation.configuration?.cognito_domain?.toString() || '',
             client_secret: siteInstallation.configuration?.client_secret?.toString() || '',
+            logout_url: siteInstallation.configuration?.logout_url?.toString() || '',
+            redirect_to_site_on_logout:
+                siteInstallation.configuration?.redirect_to_site_on_logout || false,
         };
     },
     action: async (element, action, context) => {
@@ -89,6 +94,10 @@ const configBlock = createComponent<
                     client_id: element.state.client_id,
                     client_secret: element.state.client_secret,
                     cognito_domain: getDomainWithHttps(element.state.cognito_domain ?? ''),
+                    logout_url: element.state.logout_url
+                        ? getDomainWithHttps(element.state.logout_url)
+                        : undefined,
+                    redirect_to_site_on_logout: element.state.redirect_to_site_on_logout,
                 };
                 await api.integrations.updateIntegrationSiteInstallation(
                     siteOrSpaceInstallation.integration,
@@ -163,6 +172,45 @@ const configBlock = createComponent<
                     }
                     element={<textinput state="client_secret" placeholder="Client Secret" />}
                 />
+
+                <input
+                    label="Logout URL"
+                    hint={
+                        <text>
+                            The Cognito sign-out endpoint visitors are sent to when they log out of
+                            the site. Leave empty to only end their GitBook session. Note that this
+                            endpoint does not sign visitors out of an external identity provider
+                            federated into your user pool.
+                            <link
+                                target={{
+                                    url: 'https://docs.aws.amazon.com/cognito/latest/developerguide/logout-endpoint.html',
+                                }}
+                            >
+                                {' '}
+                                More Details
+                            </link>
+                        </text>
+                    }
+                    element={
+                        <textinput
+                            state="logout_url"
+                            placeholder={`${element.state.cognito_domain || 'https://your-domain.auth.region.amazoncognito.com'}/logout`}
+                        />
+                    }
+                />
+
+                <input
+                    label="Return to the site after logout"
+                    hint={
+                        <text>
+                            Return visitors to your site once they are logged out. Requires your
+                            site's URL in the <text style="bold">Allowed sign-out URLs</text> of
+                            your app client. When disabled, visitors land on Cognito's hosted
+                            sign-in page.
+                        </text>
+                    }
+                    element={<switch state="redirect_to_site_on_logout" />}
+                />
                 <divider size="medium" />
                 <hint>
                     <text style="bold">
@@ -214,6 +262,52 @@ function assertInstallation(environment: RuntimeEnvironment) {
     }
 
     return siteInstallation;
+}
+
+/**
+ * Log the visitor out of Cognito when a logout URL is configured, and otherwise send them
+ * straight back to the site.
+ */
+async function handleLogout(
+    context: CognitoRuntimeContext,
+    siteInstallation: ReturnType<typeof assertInstallation>,
+): Promise<Response> {
+    const installationURL = siteInstallation.urls.publicEndpoint;
+    const configuration = siteInstallation.configuration as CognitoSiteInstallationConfiguration;
+    const publishedContentUrls = await getPublishedContentUrls(context);
+    const siteURL = publishedContentUrls?.published;
+    const logoutURL = configuration.logout_url;
+    const clientId = configuration.client_id;
+
+    if (logoutURL && clientId) {
+        try {
+            const url = new URL(logoutURL);
+            // Cognito only honours the sign-out request when the app client is identified.
+            url.searchParams.set('client_id', clientId);
+
+            // `logout_uri` has to be an Allowed sign-out URL of the app client, so it is
+            // only sent when the site admin opted in.
+            if (configuration.redirect_to_site_on_logout && siteURL) {
+                url.searchParams.set('logout_uri', siteURL);
+            } else {
+                // Cognito rejects a sign-out request that carries neither a `logout_uri`
+                // nor a `redirect_uri`, so fall back to sending the visitor to its hosted
+                // sign-in page. The visitor authentication callback is already an allowed
+                // callback URL of the app client, so this needs no extra configuration.
+                url.searchParams.set('response_type', 'code');
+                url.searchParams.set('redirect_uri', `${installationURL}/visitor-auth/response`);
+            }
+
+            logger.info('redirecting the visitor to the configured Cognito logout endpoint');
+            return Response.redirect(url.toString());
+        } catch (error) {
+            logger.error(`invalid Cognito logout URL configured: ${logoutURL}`, error);
+        }
+    }
+
+    // Nothing to log out of upstream: send the visitor to the site root.
+    logger.info('redirecting the visitor to the site without logging them out of Cognito');
+    return Response.redirect(siteURL ?? installationURL);
 }
 
 const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (request, context) => {
@@ -358,6 +452,10 @@ export default createIntegration({
     ) => {
         const { environment } = context;
         const siteInstallation = assertInstallation(environment);
+
+        if (event.action === 'logout') {
+            return handleLogout(context, siteInstallation);
+        }
 
         const installationURL = siteInstallation.urls.publicEndpoint;
 

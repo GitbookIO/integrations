@@ -22,6 +22,8 @@ type AzureSiteInstallationConfiguration = {
     client_id?: string;
     tenant_id?: string;
     client_secret?: string;
+    logout_url?: string;
+    redirect_to_site_on_logout?: boolean;
 };
 
 type AzureState = AzureSiteInstallationConfiguration;
@@ -62,6 +64,9 @@ const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRu
             client_id: siteInstallation?.configuration?.client_id || '',
             tenant_id: siteInstallation?.configuration?.tenant_id || '',
             client_secret: siteInstallation?.configuration?.client_secret || '',
+            logout_url: siteInstallation?.configuration?.logout_url || '',
+            redirect_to_site_on_logout:
+                siteInstallation?.configuration?.redirect_to_site_on_logout || false,
         };
     },
     action: async (element, action, context) => {
@@ -75,6 +80,8 @@ const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRu
                     client_id: element.state.client_id,
                     client_secret: element.state.client_secret,
                     tenant_id: element.state.tenant_id,
+                    logout_url: element.state.logout_url || undefined,
+                    redirect_to_site_on_logout: element.state.redirect_to_site_on_logout,
                 };
 
                 await api.integrations.updateIntegrationSiteInstallation(
@@ -150,6 +157,43 @@ const configBlock = createComponent<AzureProps, AzureState, AzureAction, AzureRu
                     }
                     element={<textinput state="client_secret" placeholder="Client Secret" />}
                 />
+
+                <input
+                    label="Logout URL"
+                    hint={
+                        <text>
+                            The Microsoft Entra logout endpoint visitors are sent to when they log
+                            out of the site. Leave empty to only end their GitBook session.
+                            <link
+                                target={{
+                                    url: 'https://learn.microsoft.com/en-us/entra/identity-platform/v2-protocols-oidc#send-a-sign-out-request',
+                                }}
+                            >
+                                {' '}
+                                More Details
+                            </link>
+                        </text>
+                    }
+                    element={
+                        <textinput
+                            state="logout_url"
+                            placeholder={`https://login.microsoftonline.com/${
+                                element.state.tenant_id || '{tenant}'
+                            }/oauth2/v2.0/logout`}
+                        />
+                    }
+                />
+
+                <input
+                    label="Return to the site after logout"
+                    hint={
+                        <text>
+                            Return visitors to your site once they are logged out. Requires your
+                            site's URL as a Redirect URI on your app registration in Azure.
+                        </text>
+                    }
+                    element={<switch state="redirect_to_site_on_logout" />}
+                />
                 <divider size="medium" />
                 <hint>
                     <text style="bold">
@@ -207,6 +251,43 @@ function assertOrgId(environment: AzureRuntimeEnvironment) {
     }
 
     return orgId;
+}
+
+/**
+ * Log the visitor out of Microsoft Entra when a logout URL is configured, and otherwise
+ * send them straight back to the site.
+ */
+async function handleLogout(
+    context: AzureRuntimeContext,
+    siteInstallation: ReturnType<typeof assertSiteInstallation>,
+): Promise<Response> {
+    const configuration = siteInstallation.configuration;
+    const publishedContentUrls = await getPublishedContentUrls(context);
+    const siteURL = publishedContentUrls?.published;
+    const logoutURL = configuration.logout_url;
+
+    if (logoutURL) {
+        try {
+            const url = new URL(logoutURL);
+
+            // `post_logout_redirect_uri` has to be registered as a Redirect URI on the app
+            // registration, so it is only sent when the site admin opted in.
+            if (configuration.redirect_to_site_on_logout && siteURL) {
+                url.searchParams.set('post_logout_redirect_uri', siteURL);
+            }
+
+            logger.info(
+                'redirecting the visitor to the configured Microsoft Entra logout endpoint',
+            );
+            return Response.redirect(url.toString());
+        } catch (error) {
+            logger.error(`invalid Azure logout URL configured: ${logoutURL}`, error);
+        }
+    }
+
+    // Nothing to log out of upstream: send the visitor to the site root.
+    logger.info('redirecting the visitor to the site without logging them out of Microsoft Entra');
+    return Response.redirect(siteURL ?? siteInstallation.urls.publicEndpoint);
 }
 
 const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request, context) => {
@@ -343,6 +424,10 @@ export default createIntegration({
     fetch_visitor_authentication: async (event, context) => {
         const { environment } = context;
         const siteInstallation = assertSiteInstallation(environment);
+
+        if (event.action === 'logout') {
+            return handleLogout(context, siteInstallation);
+        }
 
         const installationURL = siteInstallation.urls.publicEndpoint;
         const configuration = siteInstallation.configuration;
