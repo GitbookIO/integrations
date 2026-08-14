@@ -1,5 +1,11 @@
 # @gitbook/integration-va-okta
 
+## 0.5.0
+
+### Minor Changes
+
+- d0f1af0: Sign visitors out of Okta when they log out of a site with authenticated access.
+
 ## 0.4.0
 
 ### Minor Changes
@@ -15,7 +21,7 @@
 ### Patch Changes
 
 - Updated dependencies [ac4735e]
-    - @gitbook/api@0.94.0
+  - @gitbook/api@0.94.0
 
 ## 0.2.0
 

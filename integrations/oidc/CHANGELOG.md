@@ -1,5 +1,11 @@
 # @gitbook/integration-oidc
 
+## 0.6.0
+
+### Minor Changes
+
+- d0f1af0: Sign visitors out of the upstream authentication provider when they log out of a site with authenticated access.
+
 ## 0.5.0
 
 ### Minor Changes
@@ -12,7 +18,7 @@
 
 - 6b5fa20: Update OIDC integration to allow redirect on/token requests for trusted origin
 - Updated dependencies [16379b1]
-    - @gitbook/api@0.174.0
+  - @gitbook/api@0.174.0
 
 ## 0.4.0
 
@@ -45,7 +51,7 @@
 - 5474280: Add error logs when token request fails
 - Updated dependencies [aab7f96]
 - Updated dependencies [84ea77c]
-    - @gitbook/runtime@0.23.1
+  - @gitbook/runtime@0.23.1
 
 ## 0.2.6
 

@@ -1,5 +1,11 @@
 # @gitbook/integration-va-auth0
 
+## 0.6.0
+
+### Minor Changes
+
+- d0f1af0: Sign visitors out of Auth0 when they log out of a site with authenticated access.
+
 ## 0.5.0
 
 ### Minor Changes
@@ -25,7 +31,7 @@
 ### Patch Changes
 
 - Updated dependencies [9dd3c5f]
-    - @gitbook/api@0.79.0
+  - @gitbook/api@0.79.0
 
 ## 0.2.0
 
