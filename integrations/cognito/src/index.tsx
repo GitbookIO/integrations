@@ -242,7 +242,10 @@ const configBlock = createComponent<
  * Get the published content (site or space) related urls.
  */
 async function getPublishedContentUrls(context: CognitoRuntimeContext) {
-    const organizationId = context.environment.installation?.target?.organization!;
+    const organizationId = context.environment.installation?.target?.organization;
+    if (!organizationId) {
+        throw new Error('No organization ID found');
+    }
     const siteInstallation = assertInstallation(context.environment);
     const publishedContentData = await context.api.orgs.getSiteById(
         organizationId,
@@ -392,7 +395,7 @@ const handleFetchEvent: FetchEventCallback<CognitoRuntimeContext> = async (reque
                             : undefined;
                     const jwtToken = await jwt.sign(
                         {
-                            ...(decodedCognitoToken.payload ?? {}),
+                            ...decodedCognitoToken.payload,
                             exp: Math.max(minimumExp, upstreamTokenExp ?? 0),
                         },
                         privateKey,

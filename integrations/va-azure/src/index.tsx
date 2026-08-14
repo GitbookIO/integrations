@@ -245,7 +245,7 @@ function assertSiteInstallation(environment: AzureRuntimeEnvironment) {
 }
 
 function assertOrgId(environment: AzureRuntimeEnvironment) {
-    const orgId = environment.installation?.target?.organization!;
+    const orgId = environment.installation?.target?.organization;
     if (!orgId) {
         throw new Error('No org ID found');
     }
@@ -370,7 +370,7 @@ const handleFetchEvent: FetchEventCallback<AzureRuntimeContext> = async (request
                             : undefined;
                     const jwtToken = await jwt.sign(
                         {
-                            ...(decodedAzureToken.payload ?? {}),
+                            ...decodedAzureToken.payload,
                             exp: Math.max(minimumExp, upstreamTokenExp ?? 0),
                         },
                         privateKey,

@@ -349,7 +349,7 @@ function assertSiteInstallation(environment: OIDCRuntimeEnvironment) {
 }
 
 function assertOrgId(environment: OIDCRuntimeEnvironment) {
-    const orgId = environment.installation?.target?.organization!;
+    const orgId = environment.installation?.target?.organization;
     if (!orgId) {
         throw new Error('No org ID found');
     }
@@ -523,10 +523,6 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                 }
 
                 if (!request.query.code) {
-                    `Error: authorization response from upstream provider doesn't include the auth code.` +
-                        (request.query.error
-                            ? ` (error: ${request.query.error.toString()} - ${request.query.error_description?.toString()})`
-                            : '');
                     return new Response(`Error: received request without authorization code`, {
                         status: 401,
                     });
@@ -617,7 +613,7 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                             : undefined;
                     jwtToken = await jwt.sign(
                         {
-                            ...(decodedIdToken.payload ?? {}),
+                            ...decodedIdToken.payload,
                             exp: Math.max(minimumExp, upstreamTokenExp ?? 0),
                         },
                         privateKey,

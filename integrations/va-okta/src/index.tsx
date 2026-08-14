@@ -362,7 +362,7 @@ function assertSiteInstallation(environment: OktaRuntimeEnvironment) {
 }
 
 function assertOrgId(environment: OktaRuntimeEnvironment) {
-    const orgId = environment.installation?.target?.organization!;
+    const orgId = environment.installation?.target?.organization;
     if (!orgId) {
         throw new Error('No org ID found');
     }
@@ -488,7 +488,7 @@ const handleFetchEvent: FetchEventCallback<OktaRuntimeContext> = async (request,
                             : undefined;
                     const jwtToken = await jwt.sign(
                         {
-                            ...(decodedOktaToken.payload ?? {}),
+                            ...decodedOktaToken.payload,
                             exp: Math.max(minimumExp, upstreamTokenExp ?? 0),
                         },
                         privateKey,
