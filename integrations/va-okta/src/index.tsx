@@ -393,6 +393,7 @@ async function handleLogout(
                 url.searchParams.set('fromURI', siteURL);
             }
 
+            logger.info('redirecting the visitor to the configured Okta logout endpoint');
             return Response.redirect(url.toString());
         } catch (error) {
             logger.error(`invalid Okta logout URL configured: ${logoutURL}`, error);
@@ -400,6 +401,7 @@ async function handleLogout(
     }
 
     // Nothing to log out of upstream: send the visitor to the site root.
+    logger.info('redirecting the visitor to the site without logging them out of Okta');
     return Response.redirect(siteURL ?? siteInstallation.urls.publicEndpoint);
 }
 

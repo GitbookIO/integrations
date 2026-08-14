@@ -381,6 +381,7 @@ async function handleLogout(
                 url.searchParams.set('post_logout_redirect_uri', siteURL);
             }
 
+            logger.info('redirecting the visitor to the configured end session endpoint');
             return Response.redirect(url.toString());
         } catch (error) {
             logger.error(`invalid end session endpoint configured: ${logoutEndpoint}`, error);
@@ -388,6 +389,7 @@ async function handleLogout(
     }
 
     // Nothing to log out of upstream: send the visitor to the site root.
+    logger.info('redirecting the visitor to the site without logging them out upstream');
     return Response.redirect(siteURL ?? siteInstallation.urls.publicEndpoint);
 }
 

@@ -295,6 +295,7 @@ async function handleLogout(
                 url.searchParams.set('redirect_uri', `${installationURL}/visitor-auth/response`);
             }
 
+            logger.info('redirecting the visitor to the configured Cognito logout endpoint');
             return Response.redirect(url.toString());
         } catch (error) {
             logger.error(`invalid Cognito logout URL configured: ${logoutURL}`, error);
@@ -302,6 +303,7 @@ async function handleLogout(
     }
 
     // Nothing to log out of upstream: send the visitor to the site root.
+    logger.info('redirecting the visitor to the site without logging them out of Cognito');
     return Response.redirect(siteURL ?? installationURL);
 }
 
