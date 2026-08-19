@@ -1,5 +1,11 @@
 # @gitbook/integration-cognito
 
+## 0.5.0
+
+### Minor Changes
+
+- d0f1af0: Sign visitors out of Amazon Cognito when they log out of a site with authenticated access.
+
 ## 0.4.0
 
 ### Minor Changes
@@ -15,7 +21,7 @@
 ### Patch Changes
 
 - Updated dependencies [30caa3e]
-    - @gitbook/api@0.93.0
+  - @gitbook/api@0.93.0
 
 ## 0.2.0
 
