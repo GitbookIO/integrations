@@ -8,12 +8,28 @@ import {
 import script from './amplitudeScript.raw.js';
 
 const DEFAULT_SERVER_URL = 'https://api2.amplitude.com/2/httpapi';
+const EU_SERVER_URL = 'https://api.eu.amplitude.com/2/httpapi';
+
+/**
+ * Maps server region selection to the Amplitude script CDN host.
+ * Projects with EU data residency are only served by the EU CDN,
+ * the US CDN responds with 401 "Invalid Key." for them (and vice versa).
+ */
+function getCdnHost(region: string | undefined): string {
+    switch (region) {
+        case 'EU':
+            return 'cdn.eu.amplitude.com';
+        default:
+            return 'cdn.amplitude.com';
+    }
+}
 
 type AmplitudeRuntimeContext = RuntimeContext<
     RuntimeEnvironment<
         {},
         {
             amplitude_api_key?: string;
+            server_region?: string;
             server_url?: string;
             autocapture_attribution?: boolean;
             autocapture_page_views?: boolean;
@@ -40,9 +56,16 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
         return;
     }
 
+    const isEU = config?.server_region === 'EU';
     const serverUrl = config?.server_url ?? DEFAULT_SERVER_URL;
+    // The default server URL of the selected region is redundant: the SDK
+    // derives it from serverZone. Only a genuinely custom URL (e.g. a proxy)
+    // needs to be passed on.
+    const isRegionDefaultServerUrl =
+        serverUrl === DEFAULT_SERVER_URL || (isEU && serverUrl === EU_SERVER_URL);
     const initConfig = {
-        ...(serverUrl !== DEFAULT_SERVER_URL ? { serverUrl } : {}),
+        ...(isEU ? { serverZone: 'EU' } : {}),
+        ...(isRegionDefaultServerUrl ? {} : { serverUrl }),
         fetchRemoteConfig: true,
         autocapture: {
             attribution: config?.autocapture_attribution ?? true,
@@ -61,6 +84,10 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     const initConfigJson = JSON.stringify(initConfig).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
     let scriptContent = (script as string).replace(/<TO_REPLACE>/g, amplitudeApiKey);
+    scriptContent = scriptContent.replace(
+        '<TO_REPLACE_CDN_HOST>',
+        getCdnHost(config?.server_region),
+    );
     scriptContent = scriptContent.replace('<TO_REPLACE_INIT_CONFIG>', initConfigJson);
 
     return new Response(scriptContent, {
