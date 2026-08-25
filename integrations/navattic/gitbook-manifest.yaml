@@ -1,0 +1,29 @@
+name: navattic
+title: Navattic
+icon: ./assets/icon.png
+description: Embed interactive product demos in your documentation.
+summary: |
+    # Overview
+
+    Navattic lets you create interactive product demos that let users experience your product hands-on, right from your documentation.
+
+    This integration allows you to embed Navattic interactive demos into your GitBook documentation.
+
+    # How it works
+
+    Embedding a Navattic demo in your documentation is simple - just paste a Navattic demo link into the GitBook editor. The app will turn the link into a Navattic embed showing your interactive demo.
+
+    # Configure
+
+    To install on a single space navigate to integrations in sub-navigation. If you prefer to install the Navattic integration on multiple or all spaces, navigate to your organization settings and enable it from the integrations panel. This will give you access to the custom navattic block.
+visibility: public
+organization: gitbook
+script: ./src/index.tsx
+scopes: []
+blocks:
+    - id: embed
+      title: Navattic
+      description: Interactive product demo
+      urlUnfurl:
+          - https://capture.navattic.com/**
+target: space

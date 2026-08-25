@@ -1,6 +1,5 @@
 {
   "lockfileVersion": 1,
-  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@gitbook/integrations",
@@ -442,6 +441,18 @@
     "integrations/mixpanel": {
       "name": "@gitbook/integration-mixpanel",
       "version": "0.7.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
+    "integrations/navattic": {
+      "name": "@gitbook/integration-navattic",
+      "version": "1.0.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -1177,6 +1188,8 @@
     "@gitbook/integration-mermaid": ["@gitbook/integration-mermaid@workspace:integrations/mermaid"],
 
     "@gitbook/integration-mixpanel": ["@gitbook/integration-mixpanel@workspace:integrations/mixpanel"],
+
+    "@gitbook/integration-navattic": ["@gitbook/integration-navattic@workspace:integrations/navattic"],
 
     "@gitbook/integration-oidc": ["@gitbook/integration-oidc@workspace:integrations/oidc"],
 
