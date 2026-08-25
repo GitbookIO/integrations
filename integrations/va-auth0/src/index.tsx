@@ -23,6 +23,8 @@ type Auth0SiteInstallationConfiguration = {
     issuer_base_url?: string;
     client_secret?: string;
     enrich_session?: boolean;
+    logout_url?: string;
+    redirect_to_site_on_logout?: boolean;
 };
 
 type Auth0State = Auth0SiteInstallationConfiguration;
@@ -69,6 +71,9 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
             issuer_base_url: siteInstallation?.configuration?.issuer_base_url || '',
             client_secret: siteInstallation?.configuration?.client_secret || '',
             enrich_session: siteInstallation?.configuration?.enrich_session || false,
+            logout_url: siteInstallation?.configuration?.logout_url || '',
+            redirect_to_site_on_logout:
+                siteInstallation?.configuration?.redirect_to_site_on_logout || false,
         };
     },
     action: async (element, action, context) => {
@@ -83,6 +88,10 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
                     client_secret: element.state.client_secret,
                     issuer_base_url: getDomainWithHttps(element.state.issuer_base_url ?? ''),
                     enrich_session: element.state.enrich_session,
+                    logout_url: element.state.logout_url
+                        ? getDomainWithHttps(element.state.logout_url)
+                        : undefined,
+                    redirect_to_site_on_logout: element.state.redirect_to_site_on_logout,
                 };
 
                 await api.integrations.updateIntegrationSiteInstallation(
@@ -185,6 +194,51 @@ const configBlock = createComponent<Auth0Props, Auth0State, Auth0Action, Auth0Ru
                         element={<switch state="enrich_session" />}
                     />
 
+                    <divider size="medium" />
+
+                    <markdown content="### Logout" />
+                    <vstack>
+                        <input
+                            label="Auth0 Logout URL"
+                            hint={
+                                <text>
+                                    The Auth0 logout endpoint visitors are sent to when they sign
+                                    out of the site. Leave empty to only end their GitBook session.
+                                    <link
+                                        target={{
+                                            url: 'https://auth0.com/docs/authenticate/login/logout/log-users-out-of-auth0',
+                                        }}
+                                    >
+                                        {' '}
+                                        More Details
+                                    </link>
+                                </text>
+                            }
+                            element={
+                                <textinput
+                                    state="logout_url"
+                                    placeholder={`${
+                                        element.state.issuer_base_url ||
+                                        'https://your-tenant.auth0.com'
+                                    }/v2/logout`}
+                                />
+                            }
+                        />
+
+                        <input
+                            label="Return to the site after logout"
+                            hint={
+                                <text>
+                                    Return visitors to your site once they are logged out. Requires
+                                    your site's URL in the{' '}
+                                    <text style="bold">Allowed Logout URLs</text> section of your
+                                    application's settings in Auth0.
+                                </text>
+                            }
+                            element={<switch state="redirect_to_site_on_logout" />}
+                        />
+                    </vstack>
+
                     <input
                         label=""
                         hint=""
@@ -221,7 +275,7 @@ async function getPublishedContentUrls(context: Auth0RuntimeContext) {
 }
 
 function assertOrgId(environment: Auth0RuntimeEnvironment) {
-    const orgId = environment.installation?.target?.organization!;
+    const orgId = environment.installation?.target?.organization;
     if (!orgId) {
         throw new Error('No org ID found');
     }
@@ -235,6 +289,42 @@ function assertSiteInstallation(environment: Auth0RuntimeEnvironment) {
     }
 
     return siteInstallation;
+}
+
+/**
+ * Log the visitor out of Auth0 when a logout URL is configured, and otherwise send them
+ * straight back to the site.
+ */
+async function handleLogout(
+    context: Auth0RuntimeContext,
+    siteInstallation: ReturnType<typeof assertSiteInstallation>,
+): Promise<Response> {
+    const configuration = siteInstallation.configuration;
+    const publishedContentUrls = await getPublishedContentUrls(context);
+    const siteURL = publishedContentUrls?.published;
+    const logoutURL = configuration.logout_url;
+
+    if (logoutURL) {
+        try {
+            const url = new URL(logoutURL);
+
+            // `returnTo` has to be allowlisted in Auth0, so it is only sent when the site
+            // admin opted in.
+            if (configuration.redirect_to_site_on_logout && configuration.client_id && siteURL) {
+                url.searchParams.set('client_id', configuration.client_id);
+                url.searchParams.set('returnTo', siteURL);
+            }
+
+            logger.info('redirecting the visitor to the configured Auth0 logout endpoint');
+            return Response.redirect(url.toString());
+        } catch (error) {
+            logger.error(`invalid Auth0 logout URL configured: ${logoutURL}`, error);
+        }
+    }
+
+    // Nothing to log out of upstream: send the visitor to the site root.
+    logger.info('redirecting the visitor to the site without logging them out of Auth0');
+    return Response.redirect(siteURL ?? siteInstallation.urls.publicEndpoint);
 }
 
 const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request, context) => {
@@ -341,7 +431,7 @@ const handleFetchEvent: FetchEventCallback<Auth0RuntimeContext> = async (request
                         Math.floor(Date.now() / 1000) + auth0TokenData.expires_in;
                     const jwtToken = await jwt.sign(
                         {
-                            ...(userInfo ?? {}),
+                            ...userInfo,
                             exp: Math.max(minimumExp, upstreamAccessTokenExp),
                         },
                         privateKey,
@@ -395,6 +485,10 @@ export default createIntegration({
     fetch_visitor_authentication: async (event, context) => {
         const { environment } = context;
         const siteInstallation = assertSiteInstallation(environment);
+
+        if (event.action === 'logout') {
+            return handleLogout(context, siteInstallation);
+        }
 
         const installationURL = siteInstallation.urls.publicEndpoint;
         const configuration = siteInstallation.configuration;

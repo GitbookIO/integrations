@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-amplitude",
-    "version": "2.1.0",
+    "version": "2.2.0",
     "private": true,
     "dependencies": {
         "@gitbook/api": "*",
@@ -11,8 +11,8 @@
         "@gitbook/tsconfig": "workspace:*"
     },
     "scripts": {
-        "lint": "eslint ./src/**/*.ts",
         "typecheck": "tsc --noEmit",
+        "test": "bun test",
         "publish-integrations-staging": "gitbook publish .",
         "publish-integrations": "gitbook publish ."
     }

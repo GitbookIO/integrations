@@ -35,6 +35,8 @@ type OIDCSiteInstallationConfiguration = {
     client_secret?: string;
     scope?: string;
     use_pkce?: boolean;
+    logout_endpoint?: string;
+    redirect_to_site_on_logout?: boolean;
 };
 
 type OIDCState = OIDCSiteInstallationConfiguration;
@@ -82,6 +84,9 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
             client_secret: siteInstallation.configuration?.client_secret || '',
             scope: siteInstallation.configuration?.scope || '',
             use_pkce: siteInstallation.configuration?.use_pkce ?? false,
+            logout_endpoint: siteInstallation.configuration?.logout_endpoint || '',
+            redirect_to_site_on_logout:
+                siteInstallation.configuration?.redirect_to_site_on_logout ?? false,
         };
     },
     action: async (element, action, context) => {
@@ -103,6 +108,10 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                     ),
                     scope: element.state.scope ? normalizeScopes(element.state.scope) : undefined,
                     use_pkce: element.state.use_pkce ?? false,
+                    logout_endpoint: element.state.logout_endpoint
+                        ? getDomainWithHttps(element.state.logout_endpoint)
+                        : undefined,
+                    redirect_to_site_on_logout: element.state.redirect_to_site_on_logout ?? false,
                 };
                 await api.integrations.updateIntegrationSiteInstallation(
                     siteInstallation.integration,
@@ -243,6 +252,41 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                     }
                     element={<switch state="use_pkce" />}
                 />
+
+                <input
+                    label="End Session Endpoint"
+                    hint={
+                        <text>
+                            The End Session endpoint of your authentication provider, used to log
+                            visitors out of it when they log out of the site. Leave empty to only
+                            end their GitBook session.
+                            <link
+                                target={{
+                                    url: 'https://openid.net/specs/openid-connect-rpinitiated-1_0.html#RPLogout',
+                                }}
+                            >
+                                {' '}
+                                More Details
+                            </link>
+                        </text>
+                    }
+                    element={
+                        <textinput state="logout_endpoint" placeholder="End Session endpoint" />
+                    }
+                />
+
+                <input
+                    label="Return to the site after logout"
+                    hint={
+                        <text>
+                            Return visitors to your site once they are logged out. Requires your
+                            site's URL to be registered as a{' '}
+                            <text style="bold">post_logout_redirect_uri</text> with your
+                            authentication provider.
+                        </text>
+                    }
+                    element={<switch state="redirect_to_site_on_logout" />}
+                />
                 <divider size="medium" />
                 <hint>
                     <text style="bold">
@@ -305,12 +349,48 @@ function assertSiteInstallation(environment: OIDCRuntimeEnvironment) {
 }
 
 function assertOrgId(environment: OIDCRuntimeEnvironment) {
-    const orgId = environment.installation?.target?.organization!;
+    const orgId = environment.installation?.target?.organization;
     if (!orgId) {
         throw new Error('No org ID found');
     }
 
     return orgId;
+}
+
+/**
+ * Log the visitor out of the upstream authentication provider when an end session endpoint
+ * is configured, and otherwise send them straight back to the site.
+ */
+async function handleLogout(
+    context: OIDCRuntimeContext,
+    siteInstallation: ReturnType<typeof assertSiteInstallation>,
+): Promise<Response> {
+    const configuration = siteInstallation.configuration;
+    const publishedContentUrls = await getPublishedContentUrls(context);
+    const siteURL = publishedContentUrls?.published;
+    const logoutEndpoint = configuration.logout_endpoint;
+
+    if (logoutEndpoint) {
+        try {
+            const url = new URL(logoutEndpoint);
+
+            // `post_logout_redirect_uri` has to be generally registered with the provider, so it is
+            // only sent when the site admin opted in.
+            if (configuration.redirect_to_site_on_logout && configuration.client_id && siteURL) {
+                url.searchParams.set('client_id', configuration.client_id);
+                url.searchParams.set('post_logout_redirect_uri', siteURL);
+            }
+
+            logger.info('redirecting the visitor to the configured end session endpoint');
+            return Response.redirect(url.toString());
+        } catch (error) {
+            logger.error(`invalid end session endpoint configured: ${logoutEndpoint}`, error);
+        }
+    }
+
+    // Nothing to log out of upstream: send the visitor to the site root.
+    logger.info('redirecting the visitor to the site without logging them out upstream');
+    return Response.redirect(siteURL ?? siteInstallation.urls.publicEndpoint);
 }
 
 /**
@@ -443,10 +523,6 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                 }
 
                 if (!request.query.code) {
-                    `Error: authorization response from upstream provider doesn't include the auth code.` +
-                        (request.query.error
-                            ? ` (error: ${request.query.error.toString()} - ${request.query.error_description?.toString()})`
-                            : '');
                     return new Response(`Error: received request without authorization code`, {
                         status: 401,
                     });
@@ -537,7 +613,7 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                             : undefined;
                     jwtToken = await jwt.sign(
                         {
-                            ...(decodedIdToken.payload ?? {}),
+                            ...decodedIdToken.payload,
                             exp: Math.max(minimumExp, upstreamTokenExp ?? 0),
                         },
                         privateKey,
@@ -620,6 +696,10 @@ export default createIntegration({
     fetch_visitor_authentication: async (event, context) => {
         const { environment } = context;
         const siteInstallation = assertSiteInstallation(environment);
+
+        if (event.action === 'logout') {
+            return handleLogout(context, siteInstallation);
+        }
 
         const installationURL = siteInstallation.urls.publicEndpoint;
         const configuration = siteInstallation.configuration;

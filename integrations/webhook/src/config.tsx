@@ -1,5 +1,4 @@
 import { createComponent, ExposableError } from '@gitbook/runtime';
-import { IntegrationInstallationConfiguration } from '@gitbook/api';
 import {
     AVAILABLE_EVENTS,
     EventType,

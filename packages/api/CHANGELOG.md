@@ -1,5 +1,18 @@
 # @gitbook/api
 
+## 0.195.0
+
+### Minor Changes
+
+- ae38b36: Bump API to expose new visitor.type prop
+
+## 0.194.0
+
+### Minor Changes
+
+- a7d6ac2: Add page ids to site spaces
+- bd799e8: Add custom greeting to AI assistant
+
 ## 0.193.0
 
 ### Minor Changes

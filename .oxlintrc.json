@@ -1,0 +1,60 @@
+{
+    "$schema": "./node_modules/oxlint/configuration_schema.json",
+    "plugins": ["typescript", "unicorn", "oxc"],
+    "categories": {
+        "correctness": "error"
+    },
+    "ignorePatterns": ["packages/cli/src/generated-commands.ts"],
+    "rules": {
+        "eslint/no-unused-vars": [
+            "error",
+            {
+                "args": "none",
+                "caughtErrors": "none"
+            }
+        ]
+    },
+    "overrides": [
+        {
+            "files": ["**/*.raw.js"],
+            "rules": {
+                "eslint/no-constant-condition": "off",
+                "eslint/no-unassigned-vars": "off",
+                "eslint/no-unused-expressions": "off",
+                "eslint/no-unused-vars": "off",
+                "oxc/number-arg-out-of-range": "off",
+                "unicorn/no-thenable": "off"
+            }
+        },
+        {
+            "files": [
+                "integrations/marketo/webframe/src/webframe.ts",
+                "integrations/runkit/webframe/src/webframe.ts"
+            ],
+            "rules": {
+                "eslint/no-unused-vars": "off"
+            }
+        },
+        {
+            "files": ["scripts/generate-commands.ts"],
+            "rules": {
+                "eslint/no-useless-escape": "off"
+            }
+        },
+        {
+            "files": ["packages/cli/postinstall.js"],
+            "rules": {
+                "eslint/no-unused-expressions": "off"
+            }
+        },
+        {
+            "files": ["integrations/bucket/src/schema.ts"],
+            "rules": {
+                "unicorn/no-useless-spread": "off"
+            }
+        }
+    ],
+    "env": {
+        "builtin": true
+    }
+}
