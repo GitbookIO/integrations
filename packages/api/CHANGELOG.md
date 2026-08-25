@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.196.0
+
+### Minor Changes
+
+- 4109cbf: Bump API & CLI to 0.196.0
+
 ## 0.195.0
 
 ### Minor Changes
@@ -1181,7 +1187,7 @@
 ### Minor Changes
 
 - 5f9c5c9: - Bump API client to use the latest spec
-    - Update CLI to use the latest manifest with target support
+  - Update CLI to use the latest manifest with target support
 
 ## 0.10.0
 
