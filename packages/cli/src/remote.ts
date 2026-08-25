@@ -1,15 +1,10 @@
-import { GitBookAPI, type GitBookAPIServiceBinding } from "@gitbook/api";
+import { GitBookAPI, type GitBookAPIServiceBinding } from '@gitbook/api';
 
-import { version } from "../package.json";
-import {
-  clearAuthConfig,
-  getAuthConfig,
-  getStoredEnvConfig,
-  saveAuthConfig,
-} from "./config";
-import { DEFAULT_ENV, getEnvironment } from "./environments";
-import { authenticateWithBrowser, refreshOAuthSessionIfNeeded } from "./oauth";
-import { type OutputOptions, printResult } from "./output";
+import { version } from '../package.json';
+import { clearAuthConfig, getAuthConfig, getStoredEnvConfig, saveAuthConfig } from './config';
+import { DEFAULT_ENV, getEnvironment } from './environments';
+import { authenticateWithBrowser, refreshOAuthSessionIfNeeded } from './oauth';
+import { type OutputOptions, printResult } from './output';
 
 const USER_AGENT = `GitBook-CLI/${version}`;
 
@@ -25,22 +20,20 @@ const MISSING_SCOPES_REGEX = /missing OAuth scopes:\s*([^)]+)/i;
  * When the user has a browser (OAuth) session it is used (and its access token refreshed as
  * needed); a personal API token is used otherwise.
  */
-export async function getAPIClient(
-  requireAuth: boolean = true,
-): Promise<GitBookAPI> {
-  const { endpoint, token, oauth } = await resolveAuth();
-  if (!token && requireAuth) {
-    throw new Error(
-      `You must be authenticated before you can run this command.\n  Run "${getLoginCommand()}" to sign in with your browser, or "${getAuthCommand()}" to use an API token.`,
-    );
-  }
+export async function getAPIClient(requireAuth: boolean = true): Promise<GitBookAPI> {
+    const { endpoint, token, oauth } = await resolveAuth();
+    if (!token && requireAuth) {
+        throw new Error(
+            `You must be authenticated before you can run this command.\n  Run "${getLoginCommand()}" to sign in with your browser, or "${getAuthCommand()}" to use an API token.`,
+        );
+    }
 
-  return new GitBookAPI({
-    userAgent: USER_AGENT,
-    endpoint,
-    authToken: token,
-    serviceBinding: oauth ? createScopeAwareServiceBinding() : undefined,
-  });
+    return new GitBookAPI({
+        userAgent: USER_AGENT,
+        endpoint,
+        authToken: token,
+        serviceBinding: oauth ? createScopeAwareServiceBinding() : undefined,
+    });
 }
 
 /**
@@ -48,45 +41,43 @@ export async function getAPIClient(
  * when needed) and falling back to a personal API token. `oauth` reports which one was picked.
  */
 async function resolveAuth(): Promise<{
-  endpoint: string;
-  token?: string;
-  oauth: boolean;
+    endpoint: string;
+    token?: string;
+    oauth: boolean;
 }> {
-  const authConfig = getAuthConfig();
+    const authConfig = getAuthConfig();
 
-  if (authConfig.oauth) {
-    const refreshed = await refreshOAuthSessionIfNeeded(authConfig.oauth);
-    if (refreshed) {
-      // Persist a rotated access/refresh token so later commands reuse it.
-      if (refreshed.accessToken !== authConfig.oauth.accessToken) {
-        saveAuthConfig({ ...authConfig, oauth: refreshed });
-      }
-      return {
-        endpoint: authConfig.endpoint,
-        token: refreshed.accessToken,
-        oauth: true,
-      };
+    if (authConfig.oauth) {
+        const refreshed = await refreshOAuthSessionIfNeeded(authConfig.oauth);
+        if (refreshed) {
+            // Persist a rotated access/refresh token so later commands reuse it.
+            if (refreshed.accessToken !== authConfig.oauth.accessToken) {
+                saveAuthConfig({ ...authConfig, oauth: refreshed });
+            }
+            return {
+                endpoint: authConfig.endpoint,
+                token: refreshed.accessToken,
+                oauth: true,
+            };
+        }
+
+        // The OAuth session expired and couldn't be refreshed. Fall back to a personal token
+        // if one is configured, otherwise prompt the user to sign in again.
+        if (authConfig.token) {
+            return {
+                endpoint: authConfig.endpoint,
+                token: authConfig.token,
+                oauth: false,
+            };
+        }
+        throw new Error(`Your session has expired. Run "${getLoginCommand()}" to sign in again.`);
     }
 
-    // The OAuth session expired and couldn't be refreshed. Fall back to a personal token
-    // if one is configured, otherwise prompt the user to sign in again.
-    if (authConfig.token) {
-      return {
+    return {
         endpoint: authConfig.endpoint,
         token: authConfig.token,
         oauth: false,
-      };
-    }
-    throw new Error(
-      `Your session has expired. Run "${getLoginCommand()}" to sign in again.`,
-    );
-  }
-
-  return {
-    endpoint: authConfig.endpoint,
-    token: authConfig.token,
-    oauth: false,
-  };
+    };
 }
 
 /**
@@ -94,79 +85,74 @@ async function resolveAuth(): Promise<{
  * guidance before the API client reports it as a generic error.
  */
 function createScopeAwareServiceBinding(): GitBookAPIServiceBinding {
-  return {
-    fetch: async (input, init) => {
-      const response = await fetch(input, init);
-      if (response.status !== 403) {
-        return response;
-      }
+    return {
+        fetch: async (input, init) => {
+            const response = await fetch(input, init);
+            if (response.status !== 403) {
+                return response;
+            }
 
-      // Read from a clone so the API client can still parse the original body.
-      const missingScopes = await readMissingScopes(response.clone());
-      if (!missingScopes) {
-        return response;
-      }
+            // Read from a clone so the API client can still parse the original body.
+            const missingScopes = await readMissingScopes(response.clone());
+            if (!missingScopes) {
+                return response;
+            }
 
-      throw new Error(
-        `Your session does not include the permissions needed to run this command (missing: ${missingScopes}).\n` +
-          `  Run "${getLoginCommand()}" again and grant them to continue.`,
-      );
-    },
-  };
+            throw new Error(
+                `Your session does not include the permissions needed to run this command (missing: ${missingScopes}).\n` +
+                    `  Run "${getLoginCommand()}" again and grant them to continue.`,
+            );
+        },
+    };
 }
 
 /**
  * Read the scopes the API reports as missing from a 403 response, or `undefined` when the
  * response isn't a missing-scopes error.
  */
-async function readMissingScopes(
-  response: Response,
-): Promise<string | undefined> {
-  try {
-    const body = (await response.json()) as { error?: { message?: string } };
-    return (
-      body?.error?.message?.match(MISSING_SCOPES_REGEX)?.[1]?.trim() ||
-      undefined
-    );
-  } catch {
-    // Not a JSON error body, so let the API client report the raw failure.
-    return undefined;
-  }
+async function readMissingScopes(response: Response): Promise<string | undefined> {
+    try {
+        const body = (await response.json()) as { error?: { message?: string } };
+        return body?.error?.message?.match(MISSING_SCOPES_REGEX)?.[1]?.trim() || undefined;
+    } catch {
+        // Not a JSON error body, so let the API client report the raw failure.
+        return undefined;
+    }
 }
 
 /**
  * Authenticate with an API token, preserving any existing browser (OAuth) session.
  */
 export async function authenticate({
-  endpoint,
-  authToken,
-}: {
-  /**
-   * API endpoint to authenticate to.
-   */
-  endpoint: string;
-  /**
-   * API token to authenticate with.
-   */
-  authToken: string;
-}): Promise<void> {
-  console.log(`Authenticating with ${endpoint}...`);
-
-  const api = new GitBookAPI({
-    userAgent: USER_AGENT,
     endpoint,
     authToken,
-  });
+}: {
+    /**
+     * API endpoint to authenticate to.
+     */
+    endpoint: string;
+    /**
+     * API token to authenticate with.
+     */
+    authToken: string;
+}): Promise<void> {
+    console.log(`Authenticating with ${endpoint}...`);
 
-  const { data: user } = await api.user.getAuthenticatedUser();
+    const api = new GitBookAPI({
+        userAgent: USER_AGENT,
+        endpoint,
+        authToken,
+    });
 
-  saveAuthConfig({
-    ...getStoredEnvConfig(),
-    endpoint,
-    token: authToken,
-  });
+    const { data: user } = await api.user.getAuthenticatedUser();
 
-  console.log(`You are now authenticated as ${user.displayName}.`);
+    saveAuthConfig({
+        ...getStoredEnvConfig(),
+        endpoint,
+        token: authToken,
+    });
+
+    console.log(`You are now authenticated as ${user.displayName}.`);
 }
 
 /**
@@ -174,97 +160,93 @@ export async function authenticate({
  * existing personal API token.
  */
 export async function login({ endpoint }: { endpoint: string }): Promise<void> {
-  console.log(`Opening your browser to sign in with ${endpoint}...`);
+    console.log(`Opening your browser to sign in with ${endpoint}...`);
 
-  const oauth = await authenticateWithBrowser({
-    endpoint,
-    onAuthorizationURL: (url) => {
-      console.log(
-        `\nIf your browser did not open, visit this URL to continue:\n  ${url}\n`,
-      );
-    },
-  });
+    const oauth = await authenticateWithBrowser({
+        endpoint,
+        onAuthorizationURL: (url) => {
+            console.log(`\nIf your browser did not open, visit this URL to continue:\n  ${url}\n`);
+        },
+    });
 
-  const api = new GitBookAPI({
-    userAgent: USER_AGENT,
-    endpoint,
-    authToken: oauth.accessToken,
-  });
+    const api = new GitBookAPI({
+        userAgent: USER_AGENT,
+        endpoint,
+        authToken: oauth.accessToken,
+    });
 
-  const { data: user } = await api.user.getAuthenticatedUser();
+    const { data: user } = await api.user.getAuthenticatedUser();
 
-  saveAuthConfig({
-    ...getStoredEnvConfig(),
-    endpoint,
-    oauth,
-  });
+    saveAuthConfig({
+        ...getStoredEnvConfig(),
+        endpoint,
+        oauth,
+    });
 
-  console.log(`\nYou are now authenticated as ${user.displayName}.`);
+    console.log(`\nYou are now authenticated as ${user.displayName}.`);
 }
 
 /**
  * Remove the stored authentication (token and OAuth session) for the current environment.
  */
 export async function logout(): Promise<void> {
-  clearAuthConfig();
-  console.log("You have been logged out.");
+    clearAuthConfig();
+    console.log('You have been logged out.');
 }
 
 /**
  * Print authentication infos
  */
 export async function whoami(options: OutputOptions = {}): Promise<void> {
-  const env = getEnvironment();
-  const authConfig = getAuthConfig();
-  const api = await getAPIClient(false);
-  // Only the explicit --json/--yaml flags switch to machine output; unlike the
-  // generated commands we don't auto-switch when piped, so the human form (and
-  // the not-authenticated guidance) stays the interactive default.
-  const machine = options.json || options.yaml;
+    const env = getEnvironment();
+    const authConfig = getAuthConfig();
+    const api = await getAPIClient(false);
+    // Only the explicit --json/--yaml flags switch to machine output; unlike the
+    // generated commands we don't auto-switch when piped, so the human form (and
+    // the not-authenticated guidance) stays the interactive default.
+    const machine = options.json || options.yaml;
 
-  if (!api.authToken) {
-    if (machine) {
-      printResult({ authenticated: false }, options);
-    } else {
-      console.log(
-        `No authentication configured. Run "${getLoginCommand()}" to sign in with your browser, or "${getAuthCommand()}" to use an API token.`,
-      );
+    if (!api.authToken) {
+        if (machine) {
+            printResult({ authenticated: false }, options);
+        } else {
+            console.log(
+                `No authentication configured. Run "${getLoginCommand()}" to sign in with your browser, or "${getAuthCommand()}" to use an API token.`,
+            );
+        }
+        return;
     }
-    return;
-  }
 
-  const { data: user } = await api.user.getAuthenticatedUser();
+    const { data: user } = await api.user.getAuthenticatedUser();
 
-  if (machine) {
-    // Emit the user object itself so scripts can read e.g. `--json | jq -r .id`
-    // for their own user ID (the reason this command needed machine output).
-    printResult(user, options);
-    return;
-  }
+    if (machine) {
+        // Emit the user object itself so scripts can read e.g. `--json | jq -r .id`
+        // for their own user ID (the reason this command needed machine output).
+        printResult(user, options);
+        return;
+    }
 
-  console.log(`Authenticated as ${user.displayName}`);
-  console.log(`ID: ${user.id}`);
-  console.log(`Email: ${user.email}`);
-  console.log(`API: ${api.endpoint}`);
-  console.log(`Method: ${authConfig.oauth ? "browser (OAuth)" : "API token"}`);
-  if (authConfig.oauth && authConfig.token) {
-    console.log(
-      "A personal API token is also configured (used as a fallback).",
-    );
-  }
-  if (env !== DEFAULT_ENV) {
-    console.log(`Environment: ${env}`);
-  }
+    console.log(`Authenticated as ${user.displayName}`);
+    console.log(`ID: ${user.id}`);
+    console.log(`Email: ${user.email}`);
+    console.log(`API: ${api.endpoint}`);
+    console.log(`Method: ${authConfig.oauth ? 'browser (OAuth)' : 'API token'}`);
+    if (authConfig.oauth && authConfig.token) {
+        console.log('A personal API token is also configured (used as a fallback).');
+    }
+    if (env !== DEFAULT_ENV) {
+        console.log(`Environment: ${env}`);
+    }
 }
 
 function getAuthCommand() {
-  const env = getEnvironment();
-  return env === DEFAULT_ENV
-    ? "gitbook auth --token <token>"
-    : `gitbook auth --token <token> --env ${env}`;
+    const env = getEnvironment();
+    return env === DEFAULT_ENV
+        ? 'gitbook auth --token <token>'
+        : `gitbook auth --token <token> --env ${env}`;
 }
 
 function getLoginCommand() {
-  const env = getEnvironment();
-  return env === DEFAULT_ENV ? "gitbook login" : `gitbook login --env ${env}`;
+    const env = getEnvironment();
+    return env === DEFAULT_ENV ? 'gitbook login' : `gitbook login --env ${env}`;
 }
