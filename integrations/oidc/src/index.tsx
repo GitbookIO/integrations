@@ -19,6 +19,7 @@ import {
 import {
     clearLogoutHintCookie,
     encryptLogoutHint,
+    getLogoutHintCookiePath,
     getLogoutHintFromCookies,
     serializeLogoutHintCookie,
 } from './logout-hint';
@@ -480,9 +481,7 @@ function redirectAndClearLogoutHint(
         status: 302,
         headers: {
             Location: location,
-            'Set-Cookie': clearLogoutHintCookie(
-                new URL(siteInstallation.urls.publicEndpoint).pathname,
-            ),
+            'Set-Cookie': clearLogoutHintCookie(getLogoutHintCookiePath(siteInstallation)),
         },
     });
 }
@@ -764,7 +763,7 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                     );
                     const hintCookie = serializeLogoutHintCookie(
                         hint,
-                        installationPath,
+                        getLogoutHintCookiePath(siteInstallation),
                         sessionExp,
                     );
                     if (hintCookie) {
