@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.197.0
+
+### Minor Changes
+
+- e6934d9: Bump API to expose external link site-structure nodes
+
 ## 0.196.0
 
 ### Minor Changes
