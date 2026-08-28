@@ -1,5 +1,13 @@
 # @gitbook/cli
 
+## 0.32.1
+
+### Patch Changes
+
+- e6934d9: Bump API to expose external link site-structure nodes
+- Updated dependencies [e6934d9]
+  - @gitbook/api@0.197.0
+
 ## 0.32.0
 
 ### Minor Changes
