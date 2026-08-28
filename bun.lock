@@ -30,7 +30,7 @@
     },
     "integrations/amplitude": {
       "name": "@gitbook/integration-amplitude",
-      "version": "2.1.0",
+      "version": "2.2.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -67,7 +67,7 @@
     },
     "integrations/cognito": {
       "name": "@gitbook/integration-cognito",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -451,9 +451,21 @@
         "@gitbook/tsconfig": "workspace:*",
       },
     },
+    "integrations/navattic": {
+      "name": "@gitbook/integration-navattic",
+      "version": "2.0.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
     "integrations/oidc": {
       "name": "@gitbook/integration-oidc",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -669,7 +681,7 @@
     },
     "integrations/va-auth0": {
       "name": "@gitbook/integration-va-auth0",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -683,7 +695,7 @@
     },
     "integrations/va-azure": {
       "name": "@gitbook/integration-va-azure",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -697,7 +709,7 @@
     },
     "integrations/va-okta": {
       "name": "@gitbook/integration-va-okta",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -763,7 +775,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.195.0",
+      "version": "0.196.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -778,7 +790,7 @@
     },
     "packages/cli": {
       "name": "@gitbook/cli",
-      "version": "0.31.1",
+      "version": "0.31.2",
       "bin": {
         "gitbook": "./cli.js",
       },
@@ -1177,6 +1189,8 @@
     "@gitbook/integration-mermaid": ["@gitbook/integration-mermaid@workspace:integrations/mermaid"],
 
     "@gitbook/integration-mixpanel": ["@gitbook/integration-mixpanel@workspace:integrations/mixpanel"],
+
+    "@gitbook/integration-navattic": ["@gitbook/integration-navattic@workspace:integrations/navattic"],
 
     "@gitbook/integration-oidc": ["@gitbook/integration-oidc@workspace:integrations/oidc"],
 

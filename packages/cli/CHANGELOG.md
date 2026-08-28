@@ -1,12 +1,26 @@
 # @gitbook/cli
 
+## 0.32.0
+
+### Minor Changes
+
+- 1dde90e: Publishing integrations no longer requires a personal API token: `gitbook login` alone is now enough for the whole integration developer workflow, since the GitBook API exposes the integration developer endpoints to OAuth tokens through the new `integration:*` scopes. A session created before those scopes existed gets actionable guidance (naming the scopes the API says are missing) telling it to run `gitbook login` again, instead of a raw 403.
+
+## 0.31.2
+
+### Patch Changes
+
+- 4109cbf: Bump API & CLI to 0.196.0
+- Updated dependencies [4109cbf]
+  - @gitbook/api@0.196.0
+
 ## 0.31.1
 
 ### Patch Changes
 
 - ae38b36: Bump API to expose new visitor.type prop
 - Updated dependencies [ae38b36]
-    - @gitbook/api@0.195.0
+  - @gitbook/api@0.195.0
 
 ## 0.31.0
 
@@ -19,7 +33,7 @@
 
 - Updated dependencies [a7d6ac2]
 - Updated dependencies [bd799e8]
-    - @gitbook/api@0.194.0
+  - @gitbook/api@0.194.0
 
 ## 0.30.0
 
@@ -30,7 +44,7 @@
 ### Patch Changes
 
 - Updated dependencies [b4a0336]
-    - @gitbook/api@0.193.0
+  - @gitbook/api@0.193.0
 
 ## 0.29.4
 
@@ -38,7 +52,7 @@
 
 - e8973bb: Patch cli for api change
 - Updated dependencies [bf57975]
-    - @gitbook/api@0.192.0
+  - @gitbook/api@0.192.0
 
 ## 0.29.3
 
@@ -46,7 +60,7 @@
 
 - 6aa7fbb: Bump API
 - Updated dependencies [6aa7fbb]
-    - @gitbook/api@0.191.0
+  - @gitbook/api@0.191.0
 
 ## 0.29.2
 
@@ -85,7 +99,7 @@
 
 - 25d0e77: Use NPM trusted publishing for publishing the package.
 - Updated dependencies [25d0e77]
-    - @gitbook/api@0.160.1
+  - @gitbook/api@0.160.1
 
 ## 0.27.0
 
@@ -120,7 +134,7 @@
 ### Patch Changes
 
 - Updated dependencies [7a8ee22]
-    - @gitbook/api@0.143.0
+  - @gitbook/api@0.143.0
 
 ## 0.25.1
 
@@ -144,7 +158,7 @@
 ### Patch Changes
 
 - Updated dependencies [a9192a5]
-    - @gitbook/api@0.117.1
+  - @gitbook/api@0.117.1
 
 ## 0.23.0
 
@@ -164,7 +178,7 @@
 
 - ee7f211: Allow to publish an OpenAPI spec from URL
 - Updated dependencies [0ad4713]
-    - @gitbook/api@0.109.0
+  - @gitbook/api@0.109.0
 
 ## 0.21.1
 
@@ -173,7 +187,7 @@
 - ddecb2b: Add completion_url and enum to the integration configuration manifest.
 - Updated dependencies [c3431ff]
 - Updated dependencies [60e18d0]
-    - @gitbook/api@0.106.0
+  - @gitbook/api@0.106.0
 
 ## 0.21.0
 
@@ -187,7 +201,7 @@
 
 - 34b1ae9: Improve CLI to support definition of content sources
 - Updated dependencies [ac4735e]
-    - @gitbook/api@0.94.0
+  - @gitbook/api@0.94.0
 
 ## 0.20.0
 
@@ -198,7 +212,7 @@
 ### Patch Changes
 
 - Updated dependencies [a5d441f]
-    - @gitbook/api@0.92.0
+  - @gitbook/api@0.92.0
 
 ## 0.19.0
 
@@ -221,7 +235,7 @@
 ### Patch Changes
 
 - Updated dependencies [76f2716]
-    - @gitbook/api@0.64.1
+  - @gitbook/api@0.64.1
 
 ## 0.17.0
 
@@ -232,7 +246,7 @@
 ### Patch Changes
 
 - Updated dependencies [d3fcacc]
-    - @gitbook/api@0.57.0
+  - @gitbook/api@0.57.0
 
 ## 0.16.0
 
@@ -246,7 +260,7 @@
 
 - 65c7dc7: Bumping API and CLI package to use latest specs
 - Updated dependencies [65c7dc7]
-    - @gitbook/api@0.44.0
+  - @gitbook/api@0.44.0
 
 ## 0.15.1
 
@@ -254,7 +268,7 @@
 
 - 7d76dfb: Update integrations to use latest runtime and api client with `User-Agent`
 - Updated dependencies [46c9686]
-    - @gitbook/api@0.27.0
+  - @gitbook/api@0.27.0
 
 ## 0.15.0
 
@@ -271,7 +285,7 @@
 ### Patch Changes
 
 - Updated dependencies [1c45194]
-    - @gitbook/api@0.16.0
+  - @gitbook/api@0.16.0
 
 ## 0.13.1
 
@@ -284,12 +298,12 @@
 ### Minor Changes
 
 - 5f9c5c9: - Bump API client to use the latest spec
-    - Update CLI to use the latest manifest with target support
+  - Update CLI to use the latest manifest with target support
 
 ### Patch Changes
 
 - Updated dependencies [5f9c5c9]
-    - @gitbook/api@0.11.0
+  - @gitbook/api@0.11.0
 
 ## 0.12.0
 
@@ -351,8 +365,8 @@
 ### Minor Changes
 
 - ab8df1d: - Install deps for gitbook new command
-    - Create root folder when running gitbook new
-    - Bump cloudflared to 2023.4.0
+  - Create root folder when running gitbook new
+  - Bump cloudflared to 2023.4.0
 
 ## 0.3.0
 
@@ -382,15 +396,15 @@
 - a2bba42: Interpolate environment variables in the manifest' secrets using \${{ env.SOMETHING }}
 - 704ae2b: Added the Plausible and Fathom integrations.
 
-    Also added some logic to load script with the `.raw.js` extension as text in the integrations. This should make sure
-    that script injection is as seamless to develop as the other parts of teh integration by allowing us to write code
-    in script file, then loading it as a script during the build process.
+  Also added some logic to load script with the `.raw.js` extension as text in the integrations. This should make sure
+  that script injection is as seamless to develop as the other parts of teh integration by allowing us to write code
+  in script file, then loading it as a script during the build process.
 
 - 44d577c: Log the url of the newly published integration
 - a472e04: Warn about missing environment variables used in secrets
 - Updated dependencies [f0c07cb]
 - Updated dependencies [782d91b]
-    - @gitbook/api@null
+  - @gitbook/api@null
 
 ## 0.0.1
 

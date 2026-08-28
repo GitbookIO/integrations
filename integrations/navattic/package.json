@@ -1,6 +1,6 @@
 {
-    "name": "@gitbook/integration-amplitude",
-    "version": "2.2.0",
+    "name": "@gitbook/integration-navattic",
+    "version": "2.0.0",
     "private": true,
     "dependencies": {
         "@gitbook/api": "*",
@@ -12,8 +12,8 @@
     },
     "scripts": {
         "typecheck": "tsc --noEmit",
-        "test": "bun test",
-        "publish-integrations-staging": "gitbook publish .",
-        "publish-integrations": "gitbook publish ."
+        "check": "gitbook check",
+        "publish-integrations": "gitbook publish .",
+        "publish-integrations-staging": "gitbook publish ."
     }
 }
