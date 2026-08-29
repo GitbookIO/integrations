@@ -1,5 +1,13 @@
 # @gitbook/cli
 
+## 0.32.2
+
+### Patch Changes
+
+- e59c991: Bump API to 0.198.0 and regenerate CLI commands
+- Updated dependencies [e59c991]
+  - @gitbook/api@0.198.0
+
 ## 0.32.1
 
 ### Patch Changes
