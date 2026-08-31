@@ -34,16 +34,6 @@ import {
 
 const logger = Logger('oidc.visitor-auth');
 
-/**
- * Cookies set by this integration on the visitor authentication response are
- * forwarded back to it on subsequent visitor authentication events.
- *
- * TODO: drop this once `cookies` ships on the generated event type.
- */
-type OIDCVisitorAuthenticationEvent = FetchVisitorAuthenticationEvent & {
-    cookies?: Record<string, string>;
-};
-
 type OIDCRuntimeEnvironment = RuntimeEnvironment<{}, OIDCSiteInstallationConfiguration>;
 
 type OIDCRuntimeContext = RuntimeContext<OIDCRuntimeEnvironment>;
@@ -399,7 +389,7 @@ function assertOrgId(environment: OIDCRuntimeEnvironment) {
 async function handleLogout(
     context: OIDCRuntimeContext,
     siteInstallation: ReturnType<typeof assertSiteInstallation>,
-    event: OIDCVisitorAuthenticationEvent,
+    event: FetchVisitorAuthenticationEvent,
 ): Promise<Response> {
     const configuration = siteInstallation.configuration;
     const publishedContentUrls = await getPublishedContentUrls(context);
@@ -449,7 +439,7 @@ async function handleLogout(
 async function getLogoutHint(
     context: OIDCRuntimeContext,
     siteInstallation: ReturnType<typeof assertSiteInstallation>,
-    event: OIDCVisitorAuthenticationEvent,
+    event: FetchVisitorAuthenticationEvent,
 ): Promise<string | undefined> {
     if (!siteInstallation.configuration.send_id_token_hint) {
         return undefined;
