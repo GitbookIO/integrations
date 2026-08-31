@@ -1,5 +1,17 @@
 # @gitbook/api
 
+## 0.198.0
+
+### Minor Changes
+
+- e59c991: Bump API to 0.198.0 and regenerate CLI commands
+
+## 0.197.0
+
+### Minor Changes
+
+- e6934d9: Bump API to expose external link site-structure nodes
+
 ## 0.196.0
 
 ### Minor Changes
