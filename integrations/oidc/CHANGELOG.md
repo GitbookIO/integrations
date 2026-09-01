@@ -1,5 +1,11 @@
 # @gitbook/integration-oidc
 
+## 0.7.0
+
+### Minor Changes
+
+- ef21c80: Support `id_token_hint` on OIDC logout allowing logout to bypass confirmation when provided with initial token.
+
 ## 0.6.0
 
 ### Minor Changes
