@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.199.0
+
+### Minor Changes
+
+- ea10371: Bump API
+
 ## 0.198.0
 
 ### Minor Changes

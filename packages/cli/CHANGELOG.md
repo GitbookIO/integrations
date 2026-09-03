@@ -1,5 +1,13 @@
 # @gitbook/cli
 
+## 0.32.3
+
+### Patch Changes
+
+- ea10371: Bump API
+- Updated dependencies [ea10371]
+  - @gitbook/api@0.199.0
+
 ## 0.32.2
 
 ### Patch Changes
