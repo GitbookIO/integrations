@@ -2,11 +2,12 @@ import { GitBookAPI, type GitBookAPIServiceBinding } from '@gitbook/api';
 
 import { version } from '../package.json';
 import { clearAuthConfig, getAuthConfig, getStoredEnvConfig, saveAuthConfig } from './config';
+import { markUserActionable } from './errors';
 import { DEFAULT_ENV, getEnvironment } from './environments';
 import { authenticateWithBrowser, refreshOAuthSessionIfNeeded } from './oauth';
 import { type OutputOptions, printResult } from './output';
 
-const USER_AGENT = `GitBook-CLI/${version}`;
+export const USER_AGENT = `GitBook-CLI/${version}`;
 
 /**
  * Extracted from the API's 403 error message when the token is missing OAuth scopes, e.g. "This
@@ -23,8 +24,10 @@ const MISSING_SCOPES_REGEX = /missing OAuth scopes:\s*([^)]+)/i;
 export async function getAPIClient(requireAuth: boolean = true): Promise<GitBookAPI> {
     const { endpoint, token, oauth } = await resolveAuth();
     if (!token && requireAuth) {
-        throw new Error(
-            `You must be authenticated before you can run this command.\n  Run "${getLoginCommand()}" to sign in with your browser, or "${getAuthCommand()}" to use an API token.`,
+        throw markUserActionable(
+            new Error(
+                `You must be authenticated before you can run this command.\n  Run "${getLoginCommand()}" to sign in with your browser, or "${getAuthCommand()}" to use an API token.`,
+            ),
         );
     }
 

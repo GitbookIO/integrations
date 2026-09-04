@@ -93,6 +93,7 @@ interface Operation {
     description?: string;
     tags?: string[];
     security?: SecurityRequirement[];
+    'x-internal'?: boolean;
     parameters?: (ParameterObject | RefObject)[];
     requestBody?: RequestBody;
     responses?: Record<string, { content?: Record<string, unknown> }>;
@@ -162,7 +163,17 @@ const EXCLUDE = new Set([
 //   ''  → tokens that complete at the top level (the hand-written groups + auth).
 //   'x' → subcommands that complete under the hand-written group `x`.
 const HAND_WRITTEN_COMPLETIONS: Record<string, string[]> = {
-    '': ['login', 'logout', 'auth', 'whoami', 'completion', 'integration', 'openapi', 'help'],
+    '': [
+        'login',
+        'logout',
+        'auth',
+        'whoami',
+        'completion',
+        'feedback',
+        'integration',
+        'openapi',
+        'help',
+    ],
     integration: ['new', 'dev', 'publish', 'unpublish', 'tail', 'check'],
     openapi: ['publish'],
 };
@@ -612,6 +623,7 @@ function buildRoutes(spec: OpenAPISpec): Route[] {
         for (const method of HTTP_VERBS) {
             const operation = pathItem[method];
             if (!operation?.operationId) continue;
+            if (operation['x-internal']) continue;
             if (!isPublicOperation(operation, globalSecurity)) continue;
             const upper = method.toUpperCase();
             if (EXCLUDE.has(`${upper} ${apiPath}`)) continue;
@@ -674,7 +686,12 @@ function buildCommands(routes: Route[]): Command[] {
     for (const [key, group] of byKey) {
         if (group.length === 1) {
             const r = group[0];
-            commands.push({ kind: 'simple', group: r.naming.group, verb: r.naming.verb, route: r });
+            commands.push({
+                kind: 'simple',
+                group: r.naming.group,
+                verb: r.naming.verb,
+                route: r,
+            });
             continue;
         }
 
@@ -922,7 +939,9 @@ function emitCommandPreamble(
 
     for (const p of route.pathParams) {
         const desc = escapeStr(
-            `${p.description ? `${p.description} ` : ''}(path parameter — may be given positionally instead)`,
+            `${
+                p.description ? `${p.description} ` : ''
+            }(path parameter — may be given positionally instead)`,
         );
         lines.push(`${I}    .option('--${p.name} <value>', '${desc}')`);
     }
@@ -976,7 +995,9 @@ function emitCommandPreamble(
         lines.push(`${I}        const missingParams: string[] = [];`);
         for (const p of route.pathParams) {
             lines.push(
-                `${I}        if (${camelize(p.name)} === undefined) missingParams.push('${p.name}');`,
+                `${I}        if (${camelize(
+                    p.name,
+                )} === undefined) missingParams.push('${p.name}');`,
             );
         }
         lines.push(`${I}        if (missingParams.length > 0) {`);
@@ -1010,7 +1031,9 @@ function emitCommandPreamble(
             }
             for (const f of liveFlags) {
                 lines.push(
-                    `${I}        if (options.${camelize(f.name)} !== undefined) body['${f.name}'] = ${bodyFlagExpr(f)};`,
+                    `${I}        if (options.${camelize(f.name)} !== undefined) body['${
+                        f.name
+                    }'] = ${bodyFlagExpr(f)};`,
                 );
             }
             // Opt-in markdown round-trip fixups on the page-document array, after
@@ -1114,7 +1137,9 @@ function emitStreamingCommand(
     lines.push(`${I}        process.on('SIGINT', onSigint);`);
     lines.push(`${I}        try {`);
     lines.push(
-        `${I}            const events = ${target}(${callArgs.join(', ')}) as AsyncIterable<unknown>;`,
+        `${I}            const events = ${target}(${callArgs.join(
+            ', ',
+        )}) as AsyncIterable<unknown>;`,
     );
     lines.push(`${I}            for await (const event of events) {`);
     // Each event resets the idle timer, so a slow-but-live stream is never cut off.
@@ -1211,7 +1236,9 @@ function emitMergedCommand(
     lines.push(`${I}            else {`);
     lines.push(`${I}                timeout?.clear();`);
     lines.push(
-        `${I}                console.error('Specify a valid scope${noScopeNote}: ${escapeStr(flagList)}. Some scopes require a combination (e.g. --integration with --installation).');`,
+        `${I}                console.error('Specify a valid scope${noScopeNote}: ${escapeStr(
+            flagList,
+        )}. Some scopes require a combination (e.g. --integration with --installation).');`,
     );
     lines.push(`${I}                process.exit(1);`);
     lines.push(`${I}            }`);
@@ -1291,7 +1318,11 @@ function emitFile(tree: GroupNode, completions: Record<string, string>): string 
     lines.push(``);
     lines.push(`// Shell completion scripts, generated from the command tree.`);
     lines.push(
-        `export const COMPLETIONS: Record<string, string> = ${JSON.stringify(completions, null, 4)};`,
+        `export const COMPLETIONS: Record<string, string> = ${JSON.stringify(
+            completions,
+            null,
+            4,
+        )};`,
     );
     lines.push(``);
     return lines.join('\n');
@@ -1378,7 +1409,9 @@ ${bash}`;
                 : `__fish_seen_subcommand_from ${key.split(' ').join(' ')}`;
         for (const t of tokens) {
             fishLines.push(
-                `complete -c gitbook -n '${depth === 0 ? 'test (count (commandline -opc)) -eq 1' : cond}' -f -a '${t}'`,
+                `complete -c gitbook -n '${
+                    depth === 0 ? 'test (count (commandline -opc)) -eq 1' : cond
+                }' -f -a '${t}'`,
             );
         }
     }

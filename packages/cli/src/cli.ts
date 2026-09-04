@@ -22,15 +22,19 @@ import * as os from 'os';
 import * as path from 'path';
 
 import checkNodeVersion from 'check-node-version';
+import dedent from 'dedent-js';
 import { program } from 'commander';
 import prompts from 'prompts';
 
 import { GITBOOK_DEFAULT_ENDPOINT } from '@gitbook/api';
 
 import packageJSON from '../package.json';
+import { formatCommandFailure } from './errors';
+import { reportFeedback, resolveFeedbackInput } from './feedback';
 import { authenticate, login, logout, whoami } from './remote';
 import { withEnvironment } from './environments';
 import { registerGeneratedCommands, COMPLETIONS } from './generated-commands';
+import { printResult } from './output';
 import { registerCustomCommands } from './api-commands';
 import { installCommandTreeHelp } from './help-tree';
 
@@ -98,6 +102,100 @@ program
     .action(async (options) => {
         return withEnvironment(options.env, async () => {
             await whoami({ json: options.json, yaml: options.yaml });
+        });
+    });
+
+program
+    .command('feedback')
+    .description(
+        'report friction with the CLI, or suggest an improvement — agents: use it when a command confuses, blocks or fails you, or nothing can do what you need',
+    )
+    .option(
+        '--category <category>',
+        'usability | reliability | documentation | efficiency | interoperability | could-not-accomplish',
+    )
+    .option('--summary <summary>', 'one short sentence naming the problem (max 256 chars)')
+    .option(
+        '--command <command>',
+        'the command it was about, without arguments; omit when nothing could do what you needed',
+    )
+    .option('--flag <name...>', 'flag names passed to that command (names only, never values)')
+    .option('--severity <severity>', 'low | medium | high')
+    .option('--detail <detail>', 'what happened and how you ran into it')
+    .option('--goal <goal>', 'what you were trying to accomplish')
+    .option('--workaround <workaround>', 'how you worked around it, if you did')
+    .option('--model <model>', 'the model reporting, when an agent is running the CLI')
+    .option('--on-demand', 'the user explicitly asked for this to be reported')
+    .option('--body <json>', 'the whole report as a JSON object, instead of the flags above')
+    .option('--json', 'Output as JSON (machine-readable)')
+    .option('--yaml', 'Output as YAML (machine-readable)')
+    .option('--pretty', 'Output in human-readable form (default when attached to a terminal)')
+    .option('--full', 'Show all fields (disable compact summaries in pretty mode)')
+    .option('--env <env>', 'environment to report to')
+    .addHelpText(
+        'after',
+        dedent(`
+
+        Report as soon as you hit the problem, while you still remember what you were trying
+        to do, then carry on. Reporting is cheap and changes nothing about your current task.
+
+        Worth reporting:
+          - a command, flag or its help text that led you to the wrong choice
+          - a command that failed, or produced output you could not use
+          - a task that took far more commands than it should have
+          - something you needed that no command could do (omit --command: that records the
+            missing capability rather than blaming one command)
+          - an improvement worth making, even when nothing went wrong
+
+        Suggestions have no category of their own yet, so pick the one the improvement is
+        about: efficiency for fewer commands or less output, usability for a clearer name or
+        flag, interoperability for composing better, could-not-accomplish for something
+        missing entirely.
+
+        Categories:
+          usability             hard to understand or use correctly
+          reliability           failed unexpectedly or returned something unusable
+          documentation         its own help or docs were missing, unclear or misleading
+          efficiency            took more commands, steps or output than it should have
+          interoperability      did not compose with other commands or formats
+          could-not-accomplish  nothing available could do what was needed
+
+        Use --severity high only when you could not finish the task at all.
+
+        Never put flag values, file contents, credentials or anything identifying a person
+        into a report. Describe the problem, not the data. --flag takes names only.
+
+        Agents can pass the whole report as one object instead of flags:
+
+          gitbook feedback --body '{
+            "category": "documentation",
+            "severity": "medium",
+            "summary": "publish --draft is not documented",
+            "command": "gitbook integration publish",
+            "flags": ["--draft"],
+            "goal": "Publish a draft integration"
+          }'
+        `),
+    )
+    .action(async (options) => {
+        return withEnvironment(options.env, async () => {
+            const input = resolveFeedbackInput(
+                options.body ? JSON.parse(options.body) : undefined,
+                {
+                    category: options.category,
+                    summary: options.summary,
+                    command: options.command,
+                    flags: options.flag,
+                    severity: options.severity,
+                    detail: options.detail,
+                    goal: options.goal,
+                    workaround: options.workaround,
+                    model: options.model,
+                    onDemand: options.onDemand,
+                },
+            );
+
+            printResult(await reportFeedback(input), options);
         });
     });
 
@@ -195,7 +293,7 @@ checkNodeVersion({ node: '>= 18' }, (error, result) => {
             process.exit(0);
         },
         (error) => {
-            console.error(error.message);
+            console.error(formatCommandFailure(error, program.args));
             process.exit(1);
         },
     );
