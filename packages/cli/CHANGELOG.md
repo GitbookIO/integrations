@@ -1,5 +1,13 @@
 # @gitbook/cli
 
+## 0.32.4
+
+### Patch Changes
+
+- 95d1140: Bump API to expose the permanent flag on site redirects
+- Updated dependencies [95d1140]
+  - @gitbook/api@0.200.0
+
 ## 0.32.3
 
 ### Patch Changes
