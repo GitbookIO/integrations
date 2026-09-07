@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.200.0
+
+### Minor Changes
+
+- 95d1140: Bump API to expose the permanent flag on site redirects
+
 ## 0.199.0
 
 ### Minor Changes
