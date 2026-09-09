@@ -13,6 +13,7 @@ type OsanoRuntimeContext = RuntimeContext<
         {
             customer_id?: string;
             config_id?: string;
+            variant?: string;
         }
     >
 >;
@@ -23,13 +24,17 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 ) => {
     const customerId = environment.siteInstallation?.configuration?.customer_id;
     const configId = environment.siteInstallation?.configuration?.config_id;
+    const variant = environment.siteInstallation?.configuration?.variant;
 
     if (!customerId || !configId) {
         return;
     }
 
     return new Response(
-        (script as string).replace('<CUSTOMER_ID>', customerId).replace('<CONFIG_ID>', configId),
+        (script as string)
+            .replace('<CUSTOMER_ID>', customerId)
+            .replace('<CONFIG_ID>', configId)
+            .replace('<VARIANT_QUERY>', variant ? `?variant=${encodeURIComponent(variant)}` : ''),
         {
             headers: {
                 'Content-Type': 'application/javascript',
