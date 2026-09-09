@@ -41,6 +41,15 @@ configurations:
                 type: string
                 title: Configuration ID
                 description: The Osano Configuration ID, the second ID segment in your osano.js script URL
+            variant:
+                type: string
+                title: Banner template
+                description: Force one banner template for all visitors. Leave empty to let Osano pick by region.
+                enum:
+                    - one
+                    - two
+                    - three
+                    - six
         required:
             - customer_id
             - config_id
