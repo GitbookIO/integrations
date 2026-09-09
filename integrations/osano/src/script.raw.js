@@ -37,9 +37,7 @@
             var initialized = false;
 
             function emitConsent(consent) {
-                // Everything Osano saves before it reports itself initialized is its own doing:
-                // the auto-accept on informational (timer) banners, or a returning visitor's
-                // replayed decision. Forwarding those reloaded the page under the banner.
+                // Consent saved before Osano is initialized is Osano's own, not the visitor's.
                 if (!initialized) return;
 
                 try {
@@ -50,9 +48,7 @@
                         });
                     var decision = hasNonEssential ? 'approve' : 'reject';
 
-                    // GitBook's onApprove/onReject reload to reinitialize scripts, so only
-                    // forward a decision GitBook doesn't already hold. The sessionStorage
-                    // copy must survive that reload.
+                    // onApprove/onReject reload the page, so skip decisions GitBook already holds.
                     if (w.GitBook.isCookiesTrackingDisabled() === !hasNonEssential) return;
                     if (w.sessionStorage.getItem(CONSENT_STORAGE_KEY) === decision) return;
                     w.sessionStorage.setItem(CONSENT_STORAGE_KEY, decision);
