@@ -34,30 +34,26 @@
             setupOsanoPreload();
 
             var CONSENT_STORAGE_KEY = 'osano-gitbook-last-consent-decision';
-            var visitorActed = false;
-            var pendingDecision = null;
+            var initialized = false;
 
-            function decisionFor(consent) {
-                var hasNonEssential =
-                    !!consent &&
-                    NON_ESSENTIAL_CATEGORIES.some(function (category) {
-                        return consent[category] === 'ACCEPT';
-                    });
-                return hasNonEssential ? 'approve' : 'reject';
-            }
+            function emitConsent(consent) {
+                // Consent saved before Osano is initialized is Osano's own, not the visitor's.
+                if (!initialized) return;
 
-            function forward(decision) {
                 try {
-                    // onConsentSaved replays the visitor's existing decision on every
-                    // page load, not just when it changes. GitBook's onApprove/onReject
-                    // can trigger a reload to reinitialize scripts, so forwarding every
-                    // replay would reload -> replay -> reload forever. Only forward the
-                    // decision when it's actually different from last time, and persist
-                    // that in sessionStorage since it must survive the reload.
+                    var hasNonEssential =
+                        !!consent &&
+                        NON_ESSENTIAL_CATEGORIES.some(function (category) {
+                            return consent[category] === 'ACCEPT';
+                        });
+                    var decision = hasNonEssential ? 'approve' : 'reject';
+
+                    // onApprove/onReject reload the page, so skip decisions GitBook already holds.
+                    if (w.GitBook.isCookiesTrackingDisabled() === !hasNonEssential) return;
                     if (w.sessionStorage.getItem(CONSENT_STORAGE_KEY) === decision) return;
                     w.sessionStorage.setItem(CONSENT_STORAGE_KEY, decision);
 
-                    if (decision === 'approve') {
+                    if (hasNonEssential) {
                         onApprove();
                     } else {
                         onReject();
@@ -67,37 +63,10 @@
                 }
             }
 
-            function emitConsent(consent) {
-                var decision = decisionFor(consent);
-
-                // In permissive mode Osano saves a default consent on its own while the
-                // banner is still up. Forwarding that reloads the page under the banner,
-                // and Osano then treats the consent as given and never shows it again.
-                // Hold the decision until the visitor has actually done something.
-                if (!visitorActed) {
-                    pendingDecision = decision;
-                    return;
-                }
-
-                forward(decision);
-            }
-
-            function onVisitorActed() {
-                visitorActed = true;
-                if (pendingDecision) {
-                    var decision = pendingDecision;
-                    pendingDecision = null;
-                    forward(decision);
-                }
-            }
-
-            w.Osano('onConsentSaved', emitConsent);
-            // The dialog or drawer only closes on visitor input.
-            w.Osano('onUiChanged', function (component, state) {
-                if ((component === 'dialog' || component === 'drawer') && state === 'hide') {
-                    onVisitorActed();
-                }
+            w.Osano('onInitialized', function () {
+                initialized = true;
             });
+            w.Osano('onConsentSaved', emitConsent);
 
             injectOsano();
         });
