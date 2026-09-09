@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "@gitbook/integrations",
@@ -464,7 +465,7 @@
     },
     "integrations/oidc": {
       "name": "@gitbook/integration-oidc",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -492,7 +493,7 @@
     },
     "integrations/osano": {
       "name": "@gitbook/integration-osano",
-      "version": "0.0.0",
+      "version": "0.1.1",
       "dependencies": {
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
@@ -787,7 +788,7 @@
     },
     "packages/api": {
       "name": "@gitbook/api",
-      "version": "0.196.0",
+      "version": "0.200.0",
       "dependencies": {
         "event-iterator": "^2.0.0",
         "eventsource-parser": "^3.0.0",
@@ -802,7 +803,7 @@
     },
     "packages/cli": {
       "name": "@gitbook/cli",
-      "version": "0.31.2",
+      "version": "0.32.4",
       "bin": {
         "gitbook": "./cli.js",
       },
