@@ -23,7 +23,7 @@
         s.id = 'osano-sdk-stub';
         s.type = 'text/javascript';
         s.async = true;
-        s.src = 'https://cmp.osano.com/<CUSTOMER_ID>/<CONFIG_ID>/osano.js';
+        s.src = 'https://cmp.osano.com/<CUSTOMER_ID>/<CONFIG_ID>/osano.js<VARIANT_QUERY>';
         d.head.appendChild(s);
     }
 
