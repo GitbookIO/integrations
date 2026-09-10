@@ -1,5 +1,13 @@
 # @gitbook/cli
 
+## 0.32.5
+
+### Patch Changes
+
+- 2d193ac: Add cachedMetadata property to the API revision call
+- Updated dependencies [2d193ac]
+  - @gitbook/api@0.201.0
+
 ## 0.32.4
 
 ### Patch Changes
