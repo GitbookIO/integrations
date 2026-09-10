@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.201.0
+
+### Minor Changes
+
+- 2d193ac: Add cachedMetadata property to the API revision call
+
 ## 0.200.0
 
 ### Minor Changes
