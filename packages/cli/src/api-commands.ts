@@ -93,9 +93,7 @@ const LIFECYCLE_COMMANDS: LifecycleCommand[] = [
             return withEnvironment(options.env, async () => {
                 await publishIntegration(
                     await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath)),
-                    {
-                        ...(options.organization ? { organization: options.organization } : {}),
-                    },
+                    options.organization ? { organization: options.organization } : {},
                 );
             });
         },

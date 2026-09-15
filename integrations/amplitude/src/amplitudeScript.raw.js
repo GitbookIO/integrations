@@ -1,4 +1,4 @@
-(function (w, d, s, apiKey, initConfigJson) {
+(function (w, d, s, apiKey, cdnHost, initConfigJson) {
     const GRANTED_COOKIE = '__gitbook_cookie_granted';
 
     function getCookie(cname) {
@@ -26,7 +26,7 @@
     // Create and inject the Amplitude CDN script
     var j = d.createElement(s);
     j.async = true;
-    j.src = 'https://cdn.amplitude.com/script/' + apiKey + '.js';
+    j.src = 'https://' + cdnHost + '/script/' + apiKey + '.js';
     j.referrerPolicy = 'no-referrer-when-downgrade';
     j.onload = function () {
         window.amplitude.add(window.sessionReplay.plugin({ sampleRate: 1 }));
@@ -34,4 +34,4 @@
         window.amplitude.init(apiKey, initConfig);
     };
     f.parentNode.insertBefore(j, f);
-})(window, document, 'script', '<TO_REPLACE>', '<TO_REPLACE_INIT_CONFIG>');
+})(window, document, 'script', '<TO_REPLACE>', '<TO_REPLACE_CDN_HOST>', '<TO_REPLACE_INIT_CONFIG>');

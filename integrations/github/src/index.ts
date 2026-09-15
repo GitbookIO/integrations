@@ -1,4 +1,4 @@
-import { Router, error } from 'itty-router';
+import { Router } from 'itty-router';
 
 import { ContentKitIcon, ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
 import {
@@ -23,7 +23,7 @@ import { configBlock } from './components';
 import { getGitHubAppJWT } from './provider';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
 import { handleIntegrationTask } from './tasks';
-import type { GithubRuntimeContext, IntegrationTask } from './types';
+import type { GithubRuntimeContext } from './types';
 import { BRANCH_REF_PREFIX } from './utils';
 import { handlePullRequestEvents, handlePushEvent, verifyGitHubWebhookSignature } from './webhooks';
 
@@ -120,19 +120,17 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
     router.get('/installations', async () => {
         const installations = await fetchInstallations(context);
 
-        const data = installations.map(
-            (installation): ContentKitSelectOption => ({
-                id: `${installation.id}`,
-                label: installation.account.login,
-                icon: {
-                    type: 'image',
-                    aspectRatio: 1,
-                    source: {
-                        url: installation.account.avatar_url,
-                    },
+        const data = installations.map((installation): ContentKitSelectOption => ({
+            id: `${installation.id}`,
+            label: installation.account.login,
+            icon: {
+                type: 'image',
+                aspectRatio: 1,
+                source: {
+                    url: installation.account.avatar_url,
                 },
-            }),
-        );
+            },
+        }));
 
         return new Response(JSON.stringify(data), {
             headers: {
@@ -204,16 +202,11 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                         walkPagination: false,
                     });
 
-                    const items = searchedRepos.map(
-                        (repository): ContentKitSelectOption => ({
-                            id: `${repository.id}`,
-                            label: repository.name,
-                            icon:
-                                repository.visibility === 'private'
-                                    ? ContentKitIcon.Lock
-                                    : undefined,
-                        }),
-                    );
+                    const items = searchedRepos.map((repository): ContentKitSelectOption => ({
+                        id: `${repository.id}`,
+                        label: repository.name,
+                        icon: repository.visibility === 'private' ? ContentKitIcon.Lock : undefined,
+                    }));
 
                     return new Response(JSON.stringify({ items, selected }), {
                         headers: {
@@ -231,13 +224,11 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                     walkPagination: false,
                 });
 
-                const items = repositories.map(
-                    (repository): ContentKitSelectOption => ({
-                        id: `${repository.id}`,
-                        label: repository.name,
-                        icon: repository.visibility === 'private' ? ContentKitIcon.Lock : undefined,
-                    }),
-                );
+                const items = repositories.map((repository): ContentKitSelectOption => ({
+                    id: `${repository.id}`,
+                    label: repository.name,
+                    icon: repository.visibility === 'private' ? ContentKitIcon.Lock : undefined,
+                }));
 
                 const nextPage = new URL(request.url);
                 nextPage.searchParams.set('page', `${page + 1}`);
@@ -279,13 +270,11 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
 
         const branches = repositoryId ? await fetchRepositoryBranches(context, repositoryId) : [];
 
-        const data = branches.map(
-            (branch): ContentKitSelectOption => ({
-                id: `refs/heads/${branch.name}`,
-                label: branch.name,
-                icon: branch.protected ? ContentKitIcon.Lock : undefined,
-            }),
-        );
+        const data = branches.map((branch): ContentKitSelectOption => ({
+            id: `refs/heads/${branch.name}`,
+            label: branch.name,
+            icon: branch.protected ? ContentKitIcon.Lock : undefined,
+        }));
 
         /**
          * When a branch is selected by typing its name, it might not be in the list of branches

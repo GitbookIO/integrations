@@ -32,9 +32,9 @@ export const configBlock = createComponent<
             projectDirectory: props.spaceInstallation.configuration?.projectDirectory,
             withCustomTemplate: Boolean(
                 props.spaceInstallation.configuration?.commitMessageTemplate &&
-                    props.spaceInstallation.configuration?.commitMessageTemplate.length > 0 &&
-                    props.spaceInstallation.configuration?.commitMessageTemplate !==
-                        GITSYNC_DEFAULT_COMMIT_MESSAGE,
+                props.spaceInstallation.configuration?.commitMessageTemplate.length > 0 &&
+                props.spaceInstallation.configuration?.commitMessageTemplate !==
+                    GITSYNC_DEFAULT_COMMIT_MESSAGE,
             ),
             commitMessageTemplate:
                 props.spaceInstallation.configuration?.commitMessageTemplate ||

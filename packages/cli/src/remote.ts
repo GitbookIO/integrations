@@ -1,4 +1,4 @@
-import { GitBookAPI } from '@gitbook/api';
+import { GitBookAPI, type GitBookAPIServiceBinding } from '@gitbook/api';
 
 import { version } from '../package.json';
 import { clearAuthConfig, getAuthConfig, getStoredEnvConfig, saveAuthConfig } from './config';
@@ -8,25 +8,20 @@ import { type OutputOptions, printResult } from './output';
 
 const USER_AGENT = `GitBook-CLI/${version}`;
 
-interface GetAPIClientOptions {
-    /**
-     * Only use a personal API token, never the OAuth session. Used by operations that aren't
-     * available to OAuth tokens (e.g. publishing integrations).
-     */
-    personalTokenOnly?: boolean;
-}
+/**
+ * Extracted from the API's 403 error message when the token is missing OAuth scopes, e.g. "This
+ * method cannot be accessed with this authentication (missing OAuth scopes: integration:publish)".
+ */
+const MISSING_SCOPES_REGEX = /missing OAuth scopes:\s*([^)]+)/i;
 
 /**
  * Get an authenticated API client.
  *
  * When the user has a browser (OAuth) session it is used (and its access token refreshed as
- * needed); a personal API token is used otherwise, or when `personalTokenOnly` is set.
+ * needed); a personal API token is used otherwise.
  */
-export async function getAPIClient(
-    requireAuth: boolean = true,
-    options: GetAPIClientOptions = {},
-): Promise<GitBookAPI> {
-    const { endpoint, token } = await resolveAuth(options.personalTokenOnly ?? false);
+export async function getAPIClient(requireAuth: boolean = true): Promise<GitBookAPI> {
+    const { endpoint, token, oauth } = await resolveAuth();
     if (!token && requireAuth) {
         throw new Error(
             `You must be authenticated before you can run this command.\n  Run "${getLoginCommand()}" to sign in with your browser, or "${getAuthCommand()}" to use an API token.`,
@@ -37,37 +32,92 @@ export async function getAPIClient(
         userAgent: USER_AGENT,
         endpoint,
         authToken: token,
+        serviceBinding: oauth ? createScopeAwareServiceBinding() : undefined,
     });
 }
 
 /**
- * Resolve the access token to use, preferring the OAuth session (refreshing and persisting it
- * when needed) and falling back to a personal API token.
+ * Resolve the credentials to use, preferring the OAuth session (refreshing and persisting it
+ * when needed) and falling back to a personal API token. `oauth` reports which one was picked.
  */
-async function resolveAuth(
-    personalTokenOnly: boolean,
-): Promise<{ endpoint: string; token?: string }> {
+async function resolveAuth(): Promise<{
+    endpoint: string;
+    token?: string;
+    oauth: boolean;
+}> {
     const authConfig = getAuthConfig();
 
-    if (!personalTokenOnly && authConfig.oauth) {
+    if (authConfig.oauth) {
         const refreshed = await refreshOAuthSessionIfNeeded(authConfig.oauth);
         if (refreshed) {
             // Persist a rotated access/refresh token so later commands reuse it.
             if (refreshed.accessToken !== authConfig.oauth.accessToken) {
                 saveAuthConfig({ ...authConfig, oauth: refreshed });
             }
-            return { endpoint: authConfig.endpoint, token: refreshed.accessToken };
+            return {
+                endpoint: authConfig.endpoint,
+                token: refreshed.accessToken,
+                oauth: true,
+            };
         }
 
         // The OAuth session expired and couldn't be refreshed. Fall back to a personal token
         // if one is configured, otherwise prompt the user to sign in again.
         if (authConfig.token) {
-            return { endpoint: authConfig.endpoint, token: authConfig.token };
+            return {
+                endpoint: authConfig.endpoint,
+                token: authConfig.token,
+                oauth: false,
+            };
         }
         throw new Error(`Your session has expired. Run "${getLoginCommand()}" to sign in again.`);
     }
 
-    return { endpoint: authConfig.endpoint, token: authConfig.token };
+    return {
+        endpoint: authConfig.endpoint,
+        token: authConfig.token,
+        oauth: false,
+    };
+}
+
+/**
+ * Fetch layer used for OAuth sessions, turning a "missing OAuth scopes" 403 into actionable
+ * guidance before the API client reports it as a generic error.
+ */
+function createScopeAwareServiceBinding(): GitBookAPIServiceBinding {
+    return {
+        fetch: async (input, init) => {
+            const response = await fetch(input, init);
+            if (response.status !== 403) {
+                return response;
+            }
+
+            // Read from a clone so the API client can still parse the original body.
+            const missingScopes = await readMissingScopes(response.clone());
+            if (!missingScopes) {
+                return response;
+            }
+
+            throw new Error(
+                `Your session does not include the permissions needed to run this command (missing: ${missingScopes}).\n` +
+                    `  Run "${getLoginCommand()}" again and grant them to continue.`,
+            );
+        },
+    };
+}
+
+/**
+ * Read the scopes the API reports as missing from a 403 response, or `undefined` when the
+ * response isn't a missing-scopes error.
+ */
+async function readMissingScopes(response: Response): Promise<string | undefined> {
+    try {
+        const body = (await response.json()) as { error?: { message?: string } };
+        return body?.error?.message?.match(MISSING_SCOPES_REGEX)?.[1]?.trim() || undefined;
+    } catch {
+        // Not a JSON error body, so let the API client report the raw failure.
+        return undefined;
+    }
 }
 
 /**
@@ -182,27 +232,10 @@ export async function whoami(options: OutputOptions = {}): Promise<void> {
     console.log(`API: ${api.endpoint}`);
     console.log(`Method: ${authConfig.oauth ? 'browser (OAuth)' : 'API token'}`);
     if (authConfig.oauth && authConfig.token) {
-        console.log('A personal API token is also configured (used for publishing integrations).');
+        console.log('A personal API token is also configured (used as a fallback).');
     }
     if (env !== DEFAULT_ENV) {
         console.log(`Environment: ${env}`);
-    }
-}
-
-/**
- * Throw a helpful error if the current session can't publish integrations.
- *
- * Publishing/unpublishing integrations is not an OAuth-exposed API operation, so a browser
- * (OAuth) session can't perform it — a personal API token is required.
- */
-export function assertCanPublishIntegrations(): void {
-    const authConfig = getAuthConfig();
-    if (!authConfig.token && authConfig.oauth) {
-        throw new Error(
-            'Publishing integrations requires a personal API token, but you are signed in through the browser (OAuth).\n' +
-                '  Create a token at https://app.gitbook.com/account/developer and run:\n' +
-                `    ${getAuthCommand()}`,
-        );
     }
 }
 

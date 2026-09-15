@@ -1,6 +1,6 @@
 import { Router } from 'itty-router';
 
-import { createOAuthHandler, FetchEventCallback, Logger, OAuthResponse } from '@gitbook/runtime';
+import { createOAuthHandler, FetchEventCallback, OAuthResponse } from '@gitbook/runtime';
 
 import {
     createSlackEventsHandler,
@@ -13,9 +13,6 @@ import {
 import { unfurlLink } from './links';
 import { verifySlackRequest, acknowledgeSlackRequest } from './middlewares';
 import { getChannelsPaginated } from './slack';
-import { handleAskAITask, IntegrationTask } from './actions';
-
-const logger = Logger('slack');
 
 /**
  * Handle incoming HTTP requests:

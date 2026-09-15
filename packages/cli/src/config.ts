@@ -37,8 +37,9 @@ export interface OAuthSession {
 /**
  * Authentication configuration for a single environment.
  *
- * A personal API token and a browser (OAuth) session can both be stored at once: the token is
- * required for publishing integrations, while the OAuth session covers the rest of the API.
+ * A personal API token (`gitbook auth`) and a browser (OAuth) session (`gitbook login`) are both
+ * fully supported, and which one to use is up to the user. Both can be stored at once; when they
+ * are, the OAuth session is the one sent to the API, with the token as a fallback.
  */
 export interface EnvAuthConfig {
     /**

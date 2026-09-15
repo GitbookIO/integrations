@@ -1,5 +1,61 @@
 # @gitbook/api
 
+## 0.202.0
+
+### Minor Changes
+
+- 142bfef: Bump API to include the anchors page layout option
+- 55553e0: Bump API to include slug in tab's data properties
+
+## 0.201.0
+
+### Minor Changes
+
+- 2d193ac: Add cachedMetadata property to the API revision call
+
+## 0.200.0
+
+### Minor Changes
+
+- 95d1140: Bump API to expose the permanent flag on site redirects
+
+## 0.199.0
+
+### Minor Changes
+
+- ea10371: Bump API
+
+## 0.198.0
+
+### Minor Changes
+
+- e59c991: Bump API to 0.198.0 and regenerate CLI commands
+
+## 0.197.0
+
+### Minor Changes
+
+- e6934d9: Bump API to expose external link site-structure nodes
+
+## 0.196.0
+
+### Minor Changes
+
+- 4109cbf: Bump API & CLI to 0.196.0
+
+## 0.195.0
+
+### Minor Changes
+
+- ae38b36: Bump API to expose new visitor.type prop
+
+## 0.194.0
+
+### Minor Changes
+
+- a7d6ac2: Add page ids to site spaces
+- bd799e8: Add custom greeting to AI assistant
+
 ## 0.193.0
 
 ### Minor Changes
@@ -1168,7 +1224,7 @@
 ### Minor Changes
 
 - 5f9c5c9: - Bump API client to use the latest spec
-    - Update CLI to use the latest manifest with target support
+  - Update CLI to use the latest manifest with target support
 
 ## 0.10.0
 

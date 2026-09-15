@@ -1,0 +1,23 @@
+{
+    "$schema": "./node_modules/oxfmt/configuration_schema.json",
+    "printWidth": 100,
+    "singleQuote": true,
+    "tabWidth": 4,
+    "sortPackageJson": false,
+    "ignorePatterns": [
+        ".DS_Store",
+        "node_modules/",
+        "dist/",
+        "*.log",
+        ".cache",
+        ".idea/",
+        "CHANGELOG.md",
+        "docs",
+        "*.MD",
+        "*.md",
+        "*.html",
+        "**/*.raw.js",
+        "integrations/runkit/src/webframe.ts",
+        "packages/cli/src/generated-commands.ts"
+    ]
+}

@@ -1,5 +1,12 @@
 # @gitbook/integration-posthog
 
+## 1.3.1
+
+### Patch Changes
+
+- b58095e: Run bun install
+- 66e8109: Fix events not being sent after accepting the cookie consent banner. The script declared `projectApiKey`, `apiHost`, `uiHost`, `GRANTED_COOKIE` and `getCookie` at the top level of the file instead of inside the wrapping function. Since all `<script>` tags on a page share the same global lexical scope, re-injecting the script after consent is granted (the first, pre-consent execution already having run and declared these `const` bindings) threw `Identifier 'projectApiKey' has already been declared` and aborted before `posthog.init` ran. Moved the declarations inside the IIFE, matching the pattern used by the other tracking integrations.
+
 ## 1.3.0
 
 ### Minor Changes
@@ -9,7 +16,7 @@
 ### Patch Changes
 
 - Updated dependencies [16379b1]
-    - @gitbook/api@0.174.0
+  - @gitbook/api@0.174.0
 
 ## 1.2.1
 
@@ -32,7 +39,7 @@
 ### Patch Changes
 
 - Updated dependencies [b72b44b]
-    - @gitbook/api@0.131.0
+  - @gitbook/api@0.131.0
 
 ## 1.0.0
 
@@ -86,7 +93,7 @@
 ### Patch Changes
 
 - Updated dependencies [a04dfb8]
-    - @gitbook/api@0.58.0
+  - @gitbook/api@0.58.0
 
 ## 0.0.7
 
@@ -100,7 +107,7 @@
 
 - cebbcb6: Updating inject scripts integration to support sites installations
 - Updated dependencies [cebbcb6]
-    - @gitbook/runtime@0.14.1
+  - @gitbook/runtime@0.14.1
 
 ## 0.0.5
 
@@ -108,8 +115,8 @@
 
 - 7d76dfb: Update integrations to use latest runtime and api client with `User-Agent`
 - Updated dependencies [46c9686]
-    - @gitbook/runtime@0.11.0
-    - @gitbook/api@0.27.0
+  - @gitbook/runtime@0.11.0
+  - @gitbook/api@0.27.0
 
 ## 0.0.4
 
@@ -123,4 +130,4 @@
 
 - f16edb8: Posthog fix to the US URL
 - Updated dependencies [2f49b3f]
-    - @gitbook/api@0.10.0
+  - @gitbook/api@0.10.0

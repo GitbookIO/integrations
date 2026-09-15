@@ -13,7 +13,7 @@ export const slackActionsHandler = async (request: Request, context: SlackRuntim
     const actionPayload = await parseActionPayload(request);
 
     const { actionName, actionPostType } = getActionNameAndType(actionPayload);
-    const { actions, container, channel, team, user, message_ts, response_url } = actionPayload;
+    const { actions, container, channel, team, user } = actionPayload;
 
     switch (actionName) {
         case 'queryAskAI': {

@@ -3,7 +3,6 @@ import LinkHeader from 'http-link-header';
 import { Logger, ExposableError } from '@gitbook/runtime';
 
 import type { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
-import { signResponse } from './utils';
 
 const logger = Logger('gitlab:api');
 

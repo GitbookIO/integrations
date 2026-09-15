@@ -28,15 +28,18 @@ const formspreeBlock = createComponent<
                     return element;
                 }
 
-                const success = await handleSubmit(
-                    (context.environment.spaceInstallation?.configuration as FormspreeConfiguration)
-                        .formspree_id,
-                    {
-                        email: element.state.email,
-                        name: element.state.name,
-                        message: element.state.message,
-                    },
-                );
+                const configuration = context.environment.spaceInstallation?.configuration as
+                    | FormspreeConfiguration
+                    | undefined;
+                if (!configuration?.formspree_id) {
+                    return element;
+                }
+
+                const success = await handleSubmit(configuration.formspree_id, {
+                    email: element.state.email,
+                    name: element.state.name,
+                    message: element.state.message,
+                });
 
                 if (!success) {
                     return element;

@@ -1,4 +1,4 @@
-import { Router, error } from 'itty-router';
+import { Router } from 'itty-router';
 
 import { ContentKitIcon, ContentKitSelectOption, GitSyncOperationState } from '@gitbook/api';
 import {
@@ -14,7 +14,7 @@ import { configBlock } from './components';
 import { uninstallWebhook } from './provider';
 import { triggerExport, updateCommitWithPreviewLinks } from './sync';
 import { handleIntegrationTask } from './tasks';
-import type { GitLabRuntimeContext, GitLabSpaceConfiguration, IntegrationTask } from './types';
+import type { GitLabRuntimeContext, GitLabSpaceConfiguration } from './types';
 import {
     getSpaceConfigOrThrow,
     assertIsDefined,
@@ -130,13 +130,11 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
                 walkPagination: false,
             });
 
-            const items = searchedProjects.map(
-                (project): ContentKitSelectOption => ({
-                    id: `${project.id}`,
-                    label: project.path_with_namespace,
-                    icon: project.visibility === 'public' ? undefined : ContentKitIcon.Lock,
-                }),
-            );
+            const items = searchedProjects.map((project): ContentKitSelectOption => ({
+                id: `${project.id}`,
+                label: project.path_with_namespace,
+                icon: project.visibility === 'public' ? undefined : ContentKitIcon.Lock,
+            }));
 
             return new Response(JSON.stringify({ items, selected }), {
                 headers: {
@@ -151,13 +149,11 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
                 walkPagination: false,
             });
 
-            const items = projects.map(
-                (project): ContentKitSelectOption => ({
-                    id: `${project.id}`,
-                    label: project.path_with_namespace,
-                    icon: project.visibility === 'public' ? undefined : ContentKitIcon.Lock,
-                }),
-            );
+            const items = projects.map((project): ContentKitSelectOption => ({
+                id: `${project.id}`,
+                label: project.path_with_namespace,
+                icon: project.visibility === 'public' ? undefined : ContentKitIcon.Lock,
+            }));
 
             const nextPage = new URL(req.url);
             nextPage.searchParams.set('page', `${page + 1}`);
@@ -197,13 +193,11 @@ const handleFetchEvent: FetchEventCallback<GitLabRuntimeContext> = async (reques
 
         const branches = projectId ? await fetchProjectBranches(context, config, projectId) : [];
 
-        const data = branches.map(
-            (branch): ContentKitSelectOption => ({
-                id: `refs/heads/${branch.name}`,
-                label: branch.name,
-                icon: branch.protected ? ContentKitIcon.Lock : undefined,
-            }),
-        );
+        const data = branches.map((branch): ContentKitSelectOption => ({
+            id: `refs/heads/${branch.name}`,
+            label: branch.name,
+            icon: branch.protected ? ContentKitIcon.Lock : undefined,
+        }));
 
         /**
          * When a branch is selected by typing its name, it might not be in the list of branches

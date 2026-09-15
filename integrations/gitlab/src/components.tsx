@@ -34,7 +34,7 @@ export const configBlock = createComponent<
             accessToken: props.spaceInstallation.configuration?.accessToken,
             withCustomInstanceUrl: Boolean(
                 props.spaceInstallation.configuration?.customInstanceUrl &&
-                    props.spaceInstallation.configuration?.customInstanceUrl.length > 0,
+                props.spaceInstallation.configuration?.customInstanceUrl.length > 0,
             ),
             customInstanceUrl: props.spaceInstallation.configuration?.customInstanceUrl,
             project: props.spaceInstallation.configuration?.project?.toString(),
@@ -42,9 +42,9 @@ export const configBlock = createComponent<
             projectDirectory: props.spaceInstallation.configuration?.projectDirectory,
             withCustomTemplate: Boolean(
                 props.spaceInstallation.configuration?.commitMessageTemplate &&
-                    props.spaceInstallation.configuration?.commitMessageTemplate.length > 0 &&
-                    props.spaceInstallation.configuration?.commitMessageTemplate !==
-                        GITSYNC_DEFAULT_COMMIT_MESSAGE,
+                props.spaceInstallation.configuration?.commitMessageTemplate.length > 0 &&
+                props.spaceInstallation.configuration?.commitMessageTemplate !==
+                    GITSYNC_DEFAULT_COMMIT_MESSAGE,
             ),
             commitMessageTemplate:
                 props.spaceInstallation.configuration?.commitMessageTemplate ||

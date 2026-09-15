@@ -57,15 +57,13 @@ export function QueryDisplayBlock(params: { queries: Array<string>; heading?: st
     }
 
     return [
-        ...[
-            {
-                type: 'section',
-                text: {
-                    type: 'mrkdwn',
-                    text: heading ?? '*Want to know more? Try these questions:*',
-                },
+        {
+            type: 'section',
+            text: {
+                type: 'mrkdwn',
+                text: heading ?? '*Want to know more? Try these questions:*',
             },
-        ],
+        },
 
         ...FollowUpQueryList({ queries }),
     ];

@@ -15,10 +15,13 @@ scopes:
     - site:script:cookies
 contentSecurityPolicy:
     script-src: |
-        https://cdn.amplitude.com;
+        https://cdn.amplitude.com
+        https://cdn.eu.amplitude.com;
     connect-src: |
         cdn.amplitude.com;
         api2.amplitude.com;
+        cdn.eu.amplitude.com;
+        api.eu.amplitude.com;
 summary: |
     # Overview
 
@@ -43,6 +46,14 @@ configurations:
                 type: string
                 title: Amplitude API Key
                 description: Your Amplitude API Key
+            server_region:
+                type: string
+                title: Server Region
+                description: Data residency region of your Amplitude project (Organization Settings > Projects)
+                default: Standard (US)
+                enum:
+                    - Standard (US)
+                    - EU
             server_url:
                 type: string
                 title: Server URL
