@@ -1,5 +1,15 @@
 # @gitbook/cli
 
+## 0.32.6
+
+### Patch Changes
+
+- 142bfef: Bump API to include the anchors page layout option
+- 55553e0: Bump API to include slug in tab's data properties
+- Updated dependencies [142bfef]
+- Updated dependencies [55553e0]
+  - @gitbook/api@0.202.0
+
 ## 0.32.5
 
 ### Patch Changes
