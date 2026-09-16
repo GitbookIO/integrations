@@ -78,6 +78,19 @@
         "@gitbook/tsconfig": "workspace:*",
       },
     },
+    "integrations/cookiebot": {
+      "name": "@gitbook/integration-cookiebot",
+      "version": "0.1.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/browser-types": "^0.1.5",
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
     "integrations/cookiescript": {
       "name": "@gitbook/integration-cookiescript",
       "version": "0.0.0",
@@ -1156,6 +1169,8 @@
     "@gitbook/integration-bucket": ["@gitbook/integration-bucket@workspace:integrations/bucket"],
 
     "@gitbook/integration-cognito": ["@gitbook/integration-cognito@workspace:integrations/cognito"],
+
+    "@gitbook/integration-cookiebot": ["@gitbook/integration-cookiebot@workspace:integrations/cookiebot"],
 
     "@gitbook/integration-cookiescript": ["@gitbook/integration-cookiescript@workspace:integrations/cookiescript"],
 
