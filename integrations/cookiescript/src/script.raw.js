@@ -47,7 +47,7 @@
         w.GitBook.registerCookieBanner(function (handlers) {
             var onApprove = handlers.onApprove;
             var onReject = handlers.onReject;
-            var lastEmittedConsent;
+            var CONSENT_STORAGE_KEY = 'cookiescript-gitbook-last-consent-decision';
 
             function emitConsent() {
                 var categories = getGrantedCategories();
@@ -59,12 +59,20 @@
                 var hasNonEssential = categories.some(function (category) {
                     return category !== ESSENTIAL_CATEGORY;
                 });
+                var decision = hasNonEssential ? 'approve' : 'reject';
 
-                // Cookie Script fires more than one event for a single click (e.g. both
-                // CookieScriptAccept and CookieScriptAcceptAll for "Accept all"), so de-dupe
-                // before forwarding anything to GitBook.
-                if (lastEmittedConsent === hasNonEssential) return;
-                lastEmittedConsent = hasNonEssential;
+                try {
+                    // Cookie Script replays the visitor's stored decision on every page load
+                    // (e.g. CookieScriptLoaded), not just when it changes, and GitBook's
+                    // onApprove/onReject reload the page to apply it. An in-memory de-dupe
+                    // doesn't survive that reload, so forwarding the same replayed decision
+                    // would reload -> replay -> reload forever. Persist the last decision in
+                    // sessionStorage instead, which does survive the reload.
+                    if (w.sessionStorage.getItem(CONSENT_STORAGE_KEY) === decision) return;
+                    w.sessionStorage.setItem(CONSENT_STORAGE_KEY, decision);
+                } catch (e) {
+                    return;
+                }
 
                 // onApprove/onReject reload the page to apply the new consent state. For a
                 // returning visitor whose stored decision GitBook already holds, forwarding it
