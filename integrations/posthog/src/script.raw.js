@@ -65,5 +65,9 @@
             e._i.push([i, s, a]);
         }),
         (e.__SV = 1));
-    posthog.init(projectApiKey, { api_host: apiHost, ui_host: uiHost });
+    posthog.init(projectApiKey, {
+        api_host: apiHost,
+        ui_host: uiHost,
+        capture_pageview: 'history_change',
+    });
 })(document, window.posthog || []);
