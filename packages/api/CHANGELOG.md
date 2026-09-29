@@ -1,5 +1,12 @@
 # @gitbook/api
 
+## 0.203.0
+
+### Minor Changes
+
+- 4f2723f: Bump API to include `previousUrl` in site insights event locations
+- a51c7bc: Add Ask AI click triggers tracking
+
 ## 0.202.0
 
 ### Minor Changes
