@@ -1,5 +1,13 @@
 # @gitbook/cli
 
+## 0.32.8
+
+### Patch Changes
+
+- 05af9b2: Bump API to include `tagTitle` on revision pages
+- Updated dependencies [05af9b2]
+  - @gitbook/api@0.204.0
+
 ## 0.32.7
 
 ### Patch Changes
