@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.204.0
+
+### Minor Changes
+
+- 05af9b2: Bump API to include `tagTitle` on revision pages
+
 ## 0.203.0
 
 ### Minor Changes
