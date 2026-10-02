@@ -22,14 +22,14 @@ import * as os from 'os';
 import * as path from 'path';
 
 import checkNodeVersion from 'check-node-version';
-import { Command, program } from 'commander';
+import { program } from 'commander';
 import prompts from 'prompts';
 
 import { GITBOOK_DEFAULT_ENDPOINT } from '@gitbook/api';
 
 import packageJSON from '../package.json';
 import { authenticate, login, logout, whoami } from './remote';
-import { setEnvironment, withEnvironment } from './environments';
+import { setEnvironment } from './environments';
 import { registerGeneratedCommands, COMPLETIONS } from './generated-commands';
 import { registerCustomCommands } from './api-commands';
 import { installCommandTreeHelp } from './help-tree';
@@ -38,67 +38,68 @@ program.name('gitbook').description(packageJSON.description).version(packageJSON
 
 // List subcommands alphabetically in --help (both the built-in command list and
 // the nested tree in help-tree.ts), rather than in registration order.
-program.configureHelp({ sortSubcommands: true });
+program.configureHelp({ sortSubcommands: true, showGlobalOptions: true });
+
+// `--env` selects which stored login (and API endpoint) to use. It's a global option so every
+// command accepts it, before or after the command name (`gitbook --env staging spaces list` or
+// `gitbook spaces list --env staging`). Set it before any action runs, so `getEnvironment()`
+// sees it everywhere.
+program.option('--env <env>', 'CLI environment (stored login) to use');
+program.hook('preAction', () => {
+    const { env } = program.opts();
+    if (env) {
+        console.error(`ℹ️  Running with CLI environment "${env}"`);
+    }
+    setEnvironment(env);
+});
 
 program
     .command('login')
     .option('-e, --endpoint <endpoint>', GITBOOK_DEFAULT_ENDPOINT)
-    .option('--env <env>', 'environment to authenticate to')
     .description('authenticate with gitbook.com using your browser')
     .action(async (options) => {
-        return withEnvironment(options.env, async () => {
-            await login({
-                endpoint: options.endpoint || GITBOOK_DEFAULT_ENDPOINT,
-            });
+        await login({
+            endpoint: options.endpoint || GITBOOK_DEFAULT_ENDPOINT,
         });
     });
 
 program
     .command('logout')
-    .option('--env <env>', 'environment to sign out of')
     .description('remove the stored authentication')
-    .action(async (options) => {
-        return withEnvironment(options.env, async () => {
-            await logout();
-        });
+    .action(async () => {
+        await logout();
     });
 
 program
     .command('auth')
     .option('-t, --token <token>')
     .option('-e, --endpoint <endpoint>', GITBOOK_DEFAULT_ENDPOINT)
-    .option('--env <env>', 'environment to authenticate to')
     .description('authenticate with gitbook.com using an API token')
     .action(async (options) => {
-        return withEnvironment(options.env, async () => {
-            let token = options.token;
-            if (!token) {
-                const response = await prompts({
-                    type: 'password',
-                    name: 'token',
-                    message:
-                        'Enter your API token (create one at https://app.gitbook.com/account/developer):',
-                });
-                token = response.token;
-            }
-
-            await authenticate({
-                endpoint: options.endpoint || GITBOOK_DEFAULT_ENDPOINT,
-                authToken: token,
+        let token = options.token;
+        if (!token) {
+            const response = await prompts({
+                type: 'password',
+                name: 'token',
+                message:
+                    'Enter your API token (create one at https://app.gitbook.com/account/developer):',
             });
+            token = response.token;
+        }
+
+        await authenticate({
+            endpoint: options.endpoint || GITBOOK_DEFAULT_ENDPOINT,
+            authToken: token,
         });
     });
 
 program
     .command('whoami')
-    .option('--env <env>', 'environment to authenticate to')
     .option('--json', 'Output as JSON (machine-readable)')
     .option('--yaml', 'Output as YAML (machine-readable)')
     .description('print info about the current user configuration')
     .action(async (options) => {
-        return withEnvironment(options.env, async () => {
-            await whoami({ json: options.json, yaml: options.yaml });
-        });
+        await whoami({ json: options.json, yaml: options.yaml });
     });
 
 const COMPLETION_MARKER = '# >>> gitbook completion >>>';
@@ -167,29 +168,6 @@ integrationsGroup?.addHelpText(
     'after',
     `\nTo create, run, or publish your own integration (new, dev, publish, …), see \`${program.name()} integration --help\`.`,
 );
-
-// Accept `--env <env>` on every API-backed command, not just the hand-written ones that
-// declare it, so the generated commands can target a non-default login too.
-// `completion` never talks to the API, and `check` always runs against the "test" env.
-const COMMANDS_WITHOUT_ENV = new Set(['completion', 'check']);
-const helper = program.createHelp();
-function addEnvOption(cmd: Command): void {
-    if (cmd.commands.length > 0) {
-        cmd.commands.forEach(addEnvOption);
-        return;
-    }
-    if (
-        COMMANDS_WITHOUT_ENV.has(cmd.name()) ||
-        helper.visibleOptions(cmd).some((o) => o.long === '--env')
-    ) {
-        return;
-    }
-    cmd.option('--env <env>', 'environment to use');
-}
-program.commands.forEach(addEnvOption);
-program.hook('preAction', (_, actionCommand) => {
-    setEnvironment(actionCommand.opts().env);
-});
 
 // Reveal nested subgroups in `--help` (Commander shows only immediate children).
 installCommandTreeHelp(program);

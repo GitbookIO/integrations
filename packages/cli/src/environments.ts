@@ -5,9 +5,7 @@ export const DEFAULT_ENV = 'default';
 const environmentStore = new AsyncLocalStorage<string | undefined>();
 
 /**
- * Environment selected with `--env` for the command being run, set once before its action runs.
- * Lets commands that don't wrap themselves in `withEnvironment` (e.g. the generated API
- * commands) still honour the flag.
+ * Environment selected with the global `--env` option, set once before the command's action runs.
  */
 let commandEnvironment: string | undefined;
 
