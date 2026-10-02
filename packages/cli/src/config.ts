@@ -113,6 +113,10 @@ export function clearAuthConfig(): void {
  * Get the authentication stored on disk for the current environment, ignoring any
  * `GITBOOK_TOKEN` environment override. Used when merging in a new credential so the other
  * one is preserved.
+ *
+ * An environment that hasn't been configured yet resolves to an unauthenticated config, so
+ * `gitbook auth --env <name>` / `gitbook login --env <name>` can create it, and other commands
+ * fail with a prompt to sign in to that environment.
  */
 export function getStoredEnvConfig(): EnvAuthConfig {
     const env = getEnvironment();
@@ -121,7 +125,7 @@ export function getStoredEnvConfig(): EnvAuthConfig {
         return envConfig;
     }
     if (env !== DEFAULT_ENV) {
-        throw new Error(`Environment "${env}" not found`);
+        return { endpoint: GITBOOK_DEFAULT_ENDPOINT };
     }
 
     const deprecatedEndpoint = config.get('endpoint');
