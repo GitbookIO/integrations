@@ -22,14 +22,14 @@ import * as os from 'os';
 import * as path from 'path';
 
 import checkNodeVersion from 'check-node-version';
-import { program } from 'commander';
+import { Command, program } from 'commander';
 import prompts from 'prompts';
 
 import { GITBOOK_DEFAULT_ENDPOINT } from '@gitbook/api';
 
 import packageJSON from '../package.json';
 import { authenticate, login, logout, whoami } from './remote';
-import { withEnvironment } from './environments';
+import { setEnvironment, withEnvironment } from './environments';
 import { registerGeneratedCommands, COMPLETIONS } from './generated-commands';
 import { registerCustomCommands } from './api-commands';
 import { installCommandTreeHelp } from './help-tree';
@@ -167,6 +167,29 @@ integrationsGroup?.addHelpText(
     'after',
     `\nTo create, run, or publish your own integration (new, dev, publish, …), see \`${program.name()} integration --help\`.`,
 );
+
+// Accept `--env <env>` on every API-backed command, not just the hand-written ones that
+// declare it, so the generated commands can target a non-default login too.
+// `completion` never talks to the API, and `check` always runs against the "test" env.
+const COMMANDS_WITHOUT_ENV = new Set(['completion', 'check']);
+const helper = program.createHelp();
+function addEnvOption(cmd: Command): void {
+    if (cmd.commands.length > 0) {
+        cmd.commands.forEach(addEnvOption);
+        return;
+    }
+    if (
+        COMMANDS_WITHOUT_ENV.has(cmd.name()) ||
+        helper.visibleOptions(cmd).some((o) => o.long === '--env')
+    ) {
+        return;
+    }
+    cmd.option('--env <env>', 'environment to use');
+}
+program.commands.forEach(addEnvOption);
+program.hook('preAction', (_, actionCommand) => {
+    setEnvironment(actionCommand.opts().env);
+});
 
 // Reveal nested subgroups in `--help` (Commander shows only immediate children).
 installCommandTreeHelp(program);
