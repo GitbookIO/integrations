@@ -29,7 +29,7 @@ import { GITBOOK_DEFAULT_ENDPOINT } from '@gitbook/api';
 
 import packageJSON from '../package.json';
 import { authenticate, login, logout, whoami } from './remote';
-import { withEnvironment } from './environments';
+import { setEnvironment } from './environments';
 import { registerGeneratedCommands, COMPLETIONS } from './generated-commands';
 import { registerCustomCommands } from './api-commands';
 import { installCommandTreeHelp } from './help-tree';
@@ -38,67 +38,68 @@ program.name('gitbook').description(packageJSON.description).version(packageJSON
 
 // List subcommands alphabetically in --help (both the built-in command list and
 // the nested tree in help-tree.ts), rather than in registration order.
-program.configureHelp({ sortSubcommands: true });
+program.configureHelp({ sortSubcommands: true, showGlobalOptions: true });
+
+// `--env` selects which stored login (and API endpoint) to use. It's a global option so every
+// command accepts it, before or after the command name (`gitbook --env staging spaces list` or
+// `gitbook spaces list --env staging`). Set it before any action runs, so `getEnvironment()`
+// sees it everywhere.
+program.option('--env <env>', 'CLI environment (stored login) to use');
+program.hook('preAction', () => {
+    const { env } = program.opts();
+    if (env) {
+        console.error(`ℹ️  Running with CLI environment "${env}"`);
+    }
+    setEnvironment(env);
+});
 
 program
     .command('login')
     .option('-e, --endpoint <endpoint>', GITBOOK_DEFAULT_ENDPOINT)
-    .option('--env <env>', 'environment to authenticate to')
     .description('authenticate with gitbook.com using your browser')
     .action(async (options) => {
-        return withEnvironment(options.env, async () => {
-            await login({
-                endpoint: options.endpoint || GITBOOK_DEFAULT_ENDPOINT,
-            });
+        await login({
+            endpoint: options.endpoint || GITBOOK_DEFAULT_ENDPOINT,
         });
     });
 
 program
     .command('logout')
-    .option('--env <env>', 'environment to sign out of')
     .description('remove the stored authentication')
-    .action(async (options) => {
-        return withEnvironment(options.env, async () => {
-            await logout();
-        });
+    .action(async () => {
+        await logout();
     });
 
 program
     .command('auth')
     .option('-t, --token <token>')
     .option('-e, --endpoint <endpoint>', GITBOOK_DEFAULT_ENDPOINT)
-    .option('--env <env>', 'environment to authenticate to')
     .description('authenticate with gitbook.com using an API token')
     .action(async (options) => {
-        return withEnvironment(options.env, async () => {
-            let token = options.token;
-            if (!token) {
-                const response = await prompts({
-                    type: 'password',
-                    name: 'token',
-                    message:
-                        'Enter your API token (create one at https://app.gitbook.com/account/developer):',
-                });
-                token = response.token;
-            }
-
-            await authenticate({
-                endpoint: options.endpoint || GITBOOK_DEFAULT_ENDPOINT,
-                authToken: token,
+        let token = options.token;
+        if (!token) {
+            const response = await prompts({
+                type: 'password',
+                name: 'token',
+                message:
+                    'Enter your API token (create one at https://app.gitbook.com/account/developer):',
             });
+            token = response.token;
+        }
+
+        await authenticate({
+            endpoint: options.endpoint || GITBOOK_DEFAULT_ENDPOINT,
+            authToken: token,
         });
     });
 
 program
     .command('whoami')
-    .option('--env <env>', 'environment to authenticate to')
     .option('--json', 'Output as JSON (machine-readable)')
     .option('--yaml', 'Output as YAML (machine-readable)')
     .description('print info about the current user configuration')
     .action(async (options) => {
-        return withEnvironment(options.env, async () => {
-            await whoami({ json: options.json, yaml: options.yaml });
-        });
+        await whoami({ json: options.json, yaml: options.yaml });
     });
 
 const COMPLETION_MARKER = '# >>> gitbook completion >>>';
