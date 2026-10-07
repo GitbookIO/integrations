@@ -1,5 +1,14 @@
 # @gitbook/cli
 
+## 0.32.9
+
+### Patch Changes
+
+- e2423f9: Bump API to include `scope` on search button actions
+- 9056ac5: Make `--env` a global option accepted by every command (before or after the command name), and allow `gitbook auth --env <name>` / `gitbook login --env <name>` to create a new environment instead of failing with "not found".
+- Updated dependencies [e2423f9]
+  - @gitbook/api@0.205.0
+
 ## 0.32.8
 
 ### Patch Changes
