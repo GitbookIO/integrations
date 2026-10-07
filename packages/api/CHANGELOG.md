@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.205.0
+
+### Minor Changes
+
+- e2423f9: Bump API to include `scope` on search button actions
+
 ## 0.204.0
 
 ### Minor Changes
