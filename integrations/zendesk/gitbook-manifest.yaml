@@ -1,0 +1,25 @@
+name: zendesk
+title: Zendesk
+organization: gitbook
+visibility: public
+description: ''
+summary: |
+    # Overview
+    https://support.zendesk.com/hc/en-us/articles/4593564000410-Setting-up-the-search-crawler
+categories:
+    - analytics
+script: src/index.tsx
+scopes:
+    - site:script:inject
+    - site:script:cookies
+secrets: {}
+configurations:
+    site:
+        properties:
+            site_tag:
+                type: string
+                title: Zendesk Site ID
+                description: Site Tag from Zendesk
+        required:
+            - site_tag
+target: site
