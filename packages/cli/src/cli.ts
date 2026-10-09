@@ -196,7 +196,7 @@ checkNodeVersion({ node: '>= 18' }, (error, result) => {
             process.exit(0);
         },
         (error) => {
-            console.error(error.message);
+            console.error(error);
             process.exit(1);
         },
     );
