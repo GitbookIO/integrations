@@ -1,5 +1,13 @@
 # @gitbook/cli
 
+## 0.32.10
+
+### Patch Changes
+
+- 7900e3a: Updates to align api validator with document model
+- Updated dependencies [7900e3a]
+  - @gitbook/api@0.206.0
+
 ## 0.32.9
 
 ### Patch Changes
