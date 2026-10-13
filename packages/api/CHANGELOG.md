@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.206.0
+
+### Minor Changes
+
+- 7900e3a: Updates to align api validator with document model
+
 ## 0.205.0
 
 ### Minor Changes

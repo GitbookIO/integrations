@@ -1,5 +1,13 @@
 # @gitbook/integration-oidc
 
+## 0.7.1
+
+### Patch Changes
+
+- 23c97f0: Fix "Could not sign JWT token" error for visitors whose ID token contains non-ASCII claims (e.g. Cyrillic or other Unicode characters)
+- Updated dependencies [7900e3a]
+  - @gitbook/api@0.206.0
+
 ## 0.7.0
 
 ### Minor Changes
