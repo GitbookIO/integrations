@@ -4,6 +4,7 @@
     "private": true,
     "scripts": {
         "typecheck": "tsc --noEmit",
+        "test": "bun test",
         "publish-integrations-staging": "gitbook publish .",
         "check": "gitbook check",
         "publish-integrations": "gitbook publish ."

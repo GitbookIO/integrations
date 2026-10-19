@@ -175,33 +175,55 @@ async function getExistingAdaptiveSchema(
     }
 }
 
-async function getFeatureFlags(args: { projectKey: string; serviceToken: string }) {
+type LaunchDarklyFeatureFlag = {
+    name: string;
+    key: string;
+    kind: 'boolean' | 'multivariate';
+    _version: number;
+    creationDate: number;
+    variations: Array<{
+        value: unknown;
+        description?: string;
+        name?: string;
+        _id?: string;
+    }>;
+};
+
+// LaunchDarkly REST API version 20240415 returns the flags in pages (20 by default, at most 100).
+// https://launchdarkly.com/docs/guides/api/api-migration-guide
+const LAUNCHDARKLY_API_VERSION = '20240415';
+const FEATURE_FLAGS_PAGE_SIZE = 100;
+
+export async function getFeatureFlags(args: { projectKey: string; serviceToken: string }) {
     const { projectKey, serviceToken } = args;
-    const res = await fetch(`https://app.launchdarkly.com/api/v2/flags/${projectKey}`, {
-        headers: {
-            Authorization: serviceToken,
-        },
-    });
+    const flags: LaunchDarklyFeatureFlag[] = [];
 
-    if (!res.ok) {
-        throw new Error(`(${res.status}) Failed to fetch feature flags: ${res.statusText}`);
-    }
+    let totalCount = 0;
+    do {
+        const res = await fetch(
+            `https://app.launchdarkly.com/api/v2/flags/${projectKey}?limit=${FEATURE_FLAGS_PAGE_SIZE}&offset=${flags.length}`,
+            {
+                headers: {
+                    Authorization: serviceToken,
+                    'LD-API-Version': LAUNCHDARKLY_API_VERSION,
+                },
+            },
+        );
 
-    const data = await res.json<{
-        items: Array<{
-            name: string;
-            key: string;
-            kind: 'boolean' | 'multivariate';
-            _version: number;
-            creationDate: number;
-            variations: Array<{
-                value: unknown;
-                description?: string;
-                name?: string;
-                _id?: string;
-            }>;
-        }>;
-    }>();
+        if (!res.ok) {
+            throw new Error(`(${res.status}) Failed to fetch feature flags: ${res.statusText}`);
+        }
 
-    return data.items || [];
+        const data = (await res.json()) as {
+            items?: LaunchDarklyFeatureFlag[];
+            totalCount?: number;
+        };
+
+        const items = data.items || [];
+        flags.push(...items);
+        // Stop at an empty page, so a wrong totalCount cannot make this loop forever.
+        totalCount = items.length > 0 ? (data.totalCount ?? 0) : 0;
+    } while (flags.length < totalCount);
+
+    return flags;
 }
