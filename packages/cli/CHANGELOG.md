@@ -1,5 +1,13 @@
 # @gitbook/cli
 
+## 0.32.11
+
+### Patch Changes
+
+- 5763440: Add `condition` to site section groups (read, create and update).
+- Updated dependencies [5763440]
+  - @gitbook/api@0.207.0
+
 ## 0.32.10
 
 ### Patch Changes

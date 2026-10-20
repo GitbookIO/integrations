@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.207.0
+
+### Minor Changes
+
+- 5763440: Add `condition` to site section groups (read, create and update).
+
 ## 0.206.0
 
 ### Minor Changes
