@@ -175,33 +175,52 @@ async function getExistingAdaptiveSchema(
     }
 }
 
+type LaunchDarklyFeatureFlag = {
+    name: string;
+    key: string;
+    kind: 'boolean' | 'multivariate';
+    _version: number;
+    creationDate: number;
+    variations: Array<{
+        value: unknown;
+        description?: string;
+        name?: string;
+        _id?: string;
+    }>;
+};
+
+const LAUNCHDARKLY_API_URL = 'https://app.launchdarkly.com';
+
 async function getFeatureFlags(args: { projectKey: string; serviceToken: string }) {
     const { projectKey, serviceToken } = args;
-    const res = await fetch(`https://app.launchdarkly.com/api/v2/flags/${projectKey}`, {
-        headers: {
-            Authorization: serviceToken,
-        },
-    });
+    const flags: LaunchDarklyFeatureFlag[] = [];
 
-    if (!res.ok) {
-        throw new Error(`(${res.status}) Failed to fetch feature flags: ${res.statusText}`);
+    // The flags endpoint is paginated (20 items per page by default),
+    // so we follow the `next` links until we've fetched every page.
+    let url: string | undefined = `${LAUNCHDARKLY_API_URL}/api/v2/flags/${projectKey}`;
+    while (url) {
+        const res: Response = await fetch(url, {
+            headers: {
+                Authorization: serviceToken,
+            },
+        });
+
+        if (!res.ok) {
+            throw new Error(`(${res.status}) Failed to fetch feature flags: ${res.statusText}`);
+        }
+
+        const data: {
+            items?: LaunchDarklyFeatureFlag[];
+            _links?: {
+                next?: { href: string };
+            };
+        } = await res.json();
+
+        flags.push(...(data.items ?? []));
+
+        const next: string | undefined = data._links?.next?.href;
+        url = next ? new URL(next, LAUNCHDARKLY_API_URL).toString() : undefined;
     }
 
-    const data = await res.json<{
-        items: Array<{
-            name: string;
-            key: string;
-            kind: 'boolean' | 'multivariate';
-            _version: number;
-            creationDate: number;
-            variations: Array<{
-                value: unknown;
-                description?: string;
-                name?: string;
-                _id?: string;
-            }>;
-        }>;
-    }>();
-
-    return data.items || [];
+    return flags;
 }
