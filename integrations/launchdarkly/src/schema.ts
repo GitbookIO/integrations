@@ -1,5 +1,9 @@
 import { Logger } from '@gitbook/runtime';
-import type { LaunchDarklyRuntimeContext } from './types';
+import type {
+    LaunchDarklyFeatureFlag,
+    LaunchDarklyFeatureFlagsResponse,
+    LaunchDarklyRuntimeContext,
+} from './types';
 import {
     GitBookAPI,
     GitBookAPIError,
@@ -175,33 +179,44 @@ async function getExistingAdaptiveSchema(
     }
 }
 
+// Pin the API version so the flags endpoint is always paginated,
+// whatever version the customer's access token defaults to.
+const LAUNCHDARKLY_API_VERSION = '20240415';
+// Maximum page size allowed by the flags endpoint.
+const LAUNCHDARKLY_FLAGS_PAGE_SIZE = 100;
+
 async function getFeatureFlags(args: { projectKey: string; serviceToken: string }) {
     const { projectKey, serviceToken } = args;
-    const res = await fetch(`https://app.launchdarkly.com/api/v2/flags/${projectKey}`, {
-        headers: {
-            Authorization: serviceToken,
-        },
-    });
+    const flags: LaunchDarklyFeatureFlag[] = [];
 
-    if (!res.ok) {
-        throw new Error(`(${res.status}) Failed to fetch feature flags: ${res.statusText}`);
+    let offset = 0;
+    while (true) {
+        const url = new URL(`https://app.launchdarkly.com/api/v2/flags/${projectKey}`);
+        url.searchParams.set('limit', String(LAUNCHDARKLY_FLAGS_PAGE_SIZE));
+        url.searchParams.set('offset', String(offset));
+
+        const res = await fetch(url, {
+            headers: {
+                Authorization: serviceToken,
+                'LD-API-Version': LAUNCHDARKLY_API_VERSION,
+            },
+        });
+
+        if (!res.ok) {
+            throw new Error(`(${res.status}) Failed to fetch feature flags: ${res.statusText}`);
+        }
+
+        const data = await res.json<LaunchDarklyFeatureFlagsResponse>();
+        flags.push(...data.items);
+        offset += data.items.length;
+
+        const isLastPage =
+            data.items.length < LAUNCHDARKLY_FLAGS_PAGE_SIZE ||
+            (data.totalCount !== undefined && offset >= data.totalCount);
+        if (isLastPage) {
+            break;
+        }
     }
 
-    const data = await res.json<{
-        items: Array<{
-            name: string;
-            key: string;
-            kind: 'boolean' | 'multivariate';
-            _version: number;
-            creationDate: number;
-            variations: Array<{
-                value: unknown;
-                description?: string;
-                name?: string;
-                _id?: string;
-            }>;
-        }>;
-    }>();
-
-    return data.items || [];
+    return flags;
 }
