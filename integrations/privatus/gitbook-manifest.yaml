@@ -1,0 +1,45 @@
+name: privatus
+title: Privatus Analytics
+icon: ./assets/icon.png
+description: See who reads your docs with cookieless analytics that filters out bots.
+previewImages:
+    - ./assets/privatus-preview.png
+externalLinks:
+    - label: Documentation
+      url: https://privatusanalytics.com/docs
+    - label: Privatus Analytics
+      url: https://privatusanalytics.com
+visibility: public
+organization: gitbook
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+contentSecurityPolicy:
+    script-src: https://privatusstats.com
+    connect-src: https://privatusstats.com
+summary: |
+    # Overview
+
+    Privatus Analytics is simple website analytics that uses no cookies and stores nothing on the reader's device. Your readers never see a cookie pop-up, so you keep their attention. Bots and AI crawlers are flagged, so your numbers show real people.
+
+    # How it works
+
+    The integration adds the small Privatus Analytics tracker to every page of your published GitBook site. It counts page views, time on page, outbound link clicks, file downloads and page speed. It follows page changes inside your docs, so every page a reader opens is counted.
+
+    # Configure
+
+    Create a free Privatus Analytics account at https://privatusanalytics.com and add your docs site. The free plan has 10,000 events a month and needs no card. Copy your site ID, which starts with pa_. Then open your site settings in GitBook, go to Integrations, install Privatus Analytics and paste the site ID.
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            site_id:
+                type: string
+                title: Site ID
+                description: Your Privatus Analytics site ID. It starts with pa_ and is shown in your site settings.
+        required:
+            - site_id
+target: site

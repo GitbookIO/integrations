@@ -602,6 +602,18 @@
         "@gitbook/tsconfig": "workspace:*",
       },
     },
+    "integrations/privatus": {
+      "name": "@gitbook/integration-privatus",
+      "version": "0.0.0",
+      "dependencies": {
+        "@gitbook/api": "*",
+        "@gitbook/runtime": "*",
+      },
+      "devDependencies": {
+        "@gitbook/cli": "workspace:*",
+        "@gitbook/tsconfig": "workspace:*",
+      },
+    },
     "integrations/reo": {
       "name": "@gitbook/integration-reo.dev",
       "version": "0.5.0",
@@ -1264,6 +1276,8 @@
     "@gitbook/integration-plausible": ["@gitbook/integration-plausible@workspace:integrations/plausible"],
 
     "@gitbook/integration-posthog": ["@gitbook/integration-posthog@workspace:integrations/posthog"],
+
+    "@gitbook/integration-privatus": ["@gitbook/integration-privatus@workspace:integrations/privatus"],
 
     "@gitbook/integration-reo.dev": ["@gitbook/integration-reo.dev@workspace:integrations/reo"],
 
