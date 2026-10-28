@@ -1,5 +1,9 @@
 import { Logger } from '@gitbook/runtime';
-import type { LaunchDarklyRuntimeContext } from './types';
+import type {
+    LaunchDarklyFeatureFlag,
+    LaunchDarklyFeatureFlagsResponse,
+    LaunchDarklyRuntimeContext,
+} from './types';
 import {
     GitBookAPI,
     GitBookAPIError,
@@ -175,33 +179,26 @@ async function getExistingAdaptiveSchema(
     }
 }
 
-type LaunchDarklyFeatureFlag = {
-    name: string;
-    key: string;
-    kind: 'boolean' | 'multivariate';
-    _version: number;
-    creationDate: number;
-    variations: Array<{
-        value: unknown;
-        description?: string;
-        name?: string;
-        _id?: string;
-    }>;
-};
-
-const LAUNCHDARKLY_API_URL = 'https://app.launchdarkly.com';
+// Pin the API version so the flags endpoint is always paginated,
+// whatever version the customer's access token defaults to.
+const LAUNCHDARKLY_API_VERSION = '20240415';
+// Maximum page size allowed by the flags endpoint.
+const LAUNCHDARKLY_FLAGS_PAGE_SIZE = 100;
 
 async function getFeatureFlags(args: { projectKey: string; serviceToken: string }) {
     const { projectKey, serviceToken } = args;
     const flags: LaunchDarklyFeatureFlag[] = [];
 
-    // The flags endpoint is paginated (20 items per page by default),
-    // so we follow the `next` links until we've fetched every page.
-    let url: string | undefined = `${LAUNCHDARKLY_API_URL}/api/v2/flags/${projectKey}`;
-    while (url) {
-        const res: Response = await fetch(url, {
+    let offset = 0;
+    while (true) {
+        const url = new URL(`https://app.launchdarkly.com/api/v2/flags/${projectKey}`);
+        url.searchParams.set('limit', String(LAUNCHDARKLY_FLAGS_PAGE_SIZE));
+        url.searchParams.set('offset', String(offset));
+
+        const res = await fetch(url, {
             headers: {
                 Authorization: serviceToken,
+                'LD-API-Version': LAUNCHDARKLY_API_VERSION,
             },
         });
 
@@ -209,17 +206,16 @@ async function getFeatureFlags(args: { projectKey: string; serviceToken: string 
             throw new Error(`(${res.status}) Failed to fetch feature flags: ${res.statusText}`);
         }
 
-        const data: {
-            items: Array<LaunchDarklyFeatureFlag>;
-            _links?: {
-                next?: { href: string };
-            };
-        } = await res.json();
+        const data = await res.json<LaunchDarklyFeatureFlagsResponse>();
+        flags.push(...data.items);
+        offset += data.items.length;
 
-        flags.push(...(data.items ?? []));
-
-        const next: string | undefined = data._links?.next?.href;
-        url = next ? new URL(next, LAUNCHDARKLY_API_URL).toString() : undefined;
+        const isLastPage =
+            data.items.length < LAUNCHDARKLY_FLAGS_PAGE_SIZE ||
+            (data.totalCount !== undefined && offset >= data.totalCount);
+        if (isLastPage) {
+            break;
+        }
     }
 
     return flags;
