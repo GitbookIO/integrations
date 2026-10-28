@@ -210,7 +210,7 @@ async function getFeatureFlags(args: { projectKey: string; serviceToken: string 
         }
 
         const data: {
-            items?: LaunchDarklyFeatureFlag[];
+            items: Array<LaunchDarklyFeatureFlag>;
             _links?: {
                 next?: { href: string };
             };
