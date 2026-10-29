@@ -1,5 +1,11 @@
 # @gitbook/integration-launchdarkly
 
+## 0.3.4
+
+### Patch Changes
+
+- 67e0041: Fetch every page of LaunchDarkly feature flags when syncing the adaptive schema, instead of only the first 20
+
 ## 0.3.3
 
 ### Patch Changes
