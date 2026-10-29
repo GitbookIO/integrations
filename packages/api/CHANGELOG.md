@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.208.0
+
+### Minor Changes
+
+- 4a4ab12: Add `secondaryColor` to site customization styles and `$secondary` to document text colors.
+
 ## 0.207.0
 
 ### Minor Changes
