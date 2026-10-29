@@ -1,5 +1,13 @@
 # @gitbook/cli
 
+## 0.32.12
+
+### Patch Changes
+
+- 4a4ab12: Add `secondaryColor` to site customization styles and `$secondary` to document text colors.
+- Updated dependencies [4a4ab12]
+  - @gitbook/api@0.208.0
+
 ## 0.32.11
 
 ### Patch Changes
