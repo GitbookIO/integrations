@@ -1,5 +1,11 @@
 # @gitbook/integration-oidc
 
+## 0.8.0
+
+### Minor Changes
+
+- 8c4923b: Add a "Session Expiry" option to choose whether the GitBook session expiry is derived from the ID token's `exp` claim (default) or the access token's `expires_in`, and cap sessions at 7 days
+
 ## 0.7.1
 
 ### Patch Changes
