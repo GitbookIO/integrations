@@ -35,9 +35,12 @@
     };
 
     // Consent must be configured before gtag is loaded, else it will be ignored
+    const consent = disableCookies ? 'denied' : 'granted';
     win.gtag('consent', 'default', {
-        ad_storage: disableCookies ? 'denied' : 'granted',
-        analytics_storage: disableCookies ? 'denied' : 'granted',
+        ad_storage: consent,
+        analytics_storage: consent,
+        ad_user_data: consent,
+        ad_personalization: consent,
     });
     const f = doc.getElementsByTagName(script)[0],
         j = doc.createElement(script),
