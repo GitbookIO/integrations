@@ -27,6 +27,7 @@ blocks:
       title: Figma
       description: Preview of a Figma file
       urlUnfurl:
+          - https://www.figma.com/design/**
           - https://www.figma.com/file/**
 configurations:
     account:
