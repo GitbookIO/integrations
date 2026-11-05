@@ -63,6 +63,8 @@ export interface OAuthConfig<TOAuthResponse = OAuthResponse> {
     ) => RequestUpdateIntegrationInstallation | Promise<RequestUpdateIntegrationInstallation>;
 }
 
+const MAX_ERROR_DETAIL_LENGTH = 200;
+
 const logger = Logger('oauth');
 
 /**
@@ -120,7 +122,7 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
                     ? config.authorizeURL(environment.installation)
                     : config.authorizeURL;
 
-            logger.debug(`handle redirect to authorization at: ${authorizeURL}`);
+            logger.debug(`handle redirect to authorization at: ${getURLForLogging(authorizeURL)}`);
 
             const redirectTo = new URL(authorizeURL);
             redirectTo.searchParams.set('client_id', config.clientId);
@@ -151,7 +153,7 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
                 .toString()
                 .replace('SCOPE_PLACEHOLDER', config.scopes?.join('%20') ?? '');
 
-            logger.debug(`oauth redirecting to ${url}`);
+            logger.debug(`oauth redirecting to ${getURLForLogging(url)}`);
 
             return Response.redirect(url);
         }
@@ -197,7 +199,7 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
                 accessTokenURL = config.accessTokenURL;
             }
 
-            logger.debug(`handle oauth access token exchange: ${accessTokenURL}`);
+            logger.debug(`handle oauth access token exchange: ${getURLForLogging(accessTokenURL)}`);
 
             const params = new URLSearchParams();
             params.set('client_id', config.clientId);
@@ -219,7 +221,7 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
 
             if (!response.ok) {
                 throw new Error(
-                    `Failed to exchange code for access token ${await response.text()}`,
+                    `Failed to exchange code for access token: ${await getOAuthErrorSummary(response)}`,
                 );
             }
 
@@ -228,7 +230,11 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
             // Store the credentials in the installation configuration
             // @ts-ignore
             const credentials = await extractCredentials(json);
-            logger.debug(`exchange code for credentials`, credentials);
+            logger.debug('exchanged code for credentials', {
+                installationId: state.installationId,
+                spaceId: state.spaceId,
+                siteId: state.siteId,
+            });
 
             const existing = {
                 configuration: {},
@@ -388,7 +394,9 @@ export async function getOAuthToken<TOAuthResponse extends OAuthResponse = OAuth
     logger.debug(`received oauth response ${response.status}: ${response.statusText}`);
 
     if (!response.ok) {
-        throw new Error(`Failed to exchange code for access token ${await response.text()}`);
+        throw new Error(
+            `Failed to refresh the OAuth access token: ${await getOAuthErrorSummary(response)}`,
+        );
     }
 
     const json = (await response.json()) as OAuthResponse & TOAuthResponse;
@@ -422,7 +430,7 @@ export function defaultOAuthExtractCredentials(
 ): RequestUpdateIntegrationInstallation {
     if (!response.access_token) {
         const message = `Failed to retrieve access_token from response`;
-        logger.error(`${message} ${JSON.stringify(response, null, 2)} `);
+        logger.error(`${message}: ${summarizeOAuthErrorBody(response)}`);
         throw new Error(message);
     }
 
@@ -435,4 +443,57 @@ export function defaultOAuthExtractCredentials(
             },
         },
     };
+}
+
+/**
+ * Describe an OAuth provider response body without exposing its values.
+ * Only the standard `error` and `error_description` fields are kept; otherwise only field names are listed.
+ */
+export function summarizeOAuthErrorBody(body: unknown): string {
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+        return 'no error details';
+    }
+
+    const { error, error_description } = body as Record<string, unknown>;
+    const details = [error, error_description]
+        .filter((value): value is string => typeof value === 'string' && value.length > 0)
+        .map((value) => value.slice(0, MAX_ERROR_DETAIL_LENGTH));
+    if (details.length > 0) {
+        return details.join(': ');
+    }
+
+    return `no error details (fields: ${Object.keys(body).join(', ') || 'none'})`;
+}
+
+/**
+ * Describe a failed OAuth token endpoint response, without its raw body.
+ */
+async function getOAuthErrorSummary(response: Response): Promise<string> {
+    const status = `HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ''}`;
+    const text = await response.text().catch(() => '');
+
+    let body: unknown = null;
+    if (response.headers.get('content-type')?.includes('application/x-www-form-urlencoded')) {
+        body = Object.fromEntries(new URLSearchParams(text));
+    } else {
+        try {
+            body = JSON.parse(text);
+        } catch {
+            // Unknown formats may echo request values, so they are left out.
+        }
+    }
+
+    return `${status}: ${summarizeOAuthErrorBody(body)}`;
+}
+
+/**
+ * Strip the credentials, query and fragment of a URL before logging it.
+ */
+function getURLForLogging(url: string): string {
+    try {
+        const parsed = new URL(url);
+        return `${parsed.origin}${parsed.pathname}`;
+    } catch {
+        return '<invalid URL>';
+    }
 }
