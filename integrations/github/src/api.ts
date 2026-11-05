@@ -362,18 +362,20 @@ async function refreshCredentials(
     context: GithubRuntimeContext,
     refreshToken: string,
 ): Promise<OAuthTokenCredentials> {
-    const url = new URL('https://github.com/login/oauth/access_token');
+    const params = new URLSearchParams();
+    params.set('client_id', context.environment.secrets.CLIENT_ID);
+    params.set('client_secret', context.environment.secrets.CLIENT_SECRET);
+    params.set('grant_type', 'refresh_token');
+    params.set('refresh_token', refreshToken);
 
-    url.searchParams.set('client_id', context.environment.secrets.CLIENT_ID);
-    url.searchParams.set('client_secret', context.environment.secrets.CLIENT_SECRET);
-    url.searchParams.set('grant_type', 'refresh_token');
-    url.searchParams.set('refresh_token', refreshToken);
-
-    const resp = await fetch(url.toString(), {
+    // Credentials go in the body so they never appear in a URL.
+    const resp = await fetch('https://github.com/login/oauth/access_token', {
         method: 'POST',
         headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
             'User-Agent': 'GitHub-Integration-Worker',
         },
+        body: params.toString(),
     });
 
     if (!resp.ok) {
