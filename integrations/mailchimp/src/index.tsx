@@ -8,6 +8,7 @@ import {
     Logger,
     RuntimeContext,
     RuntimeEnvironment,
+    summarizeOAuthErrorBody,
 } from '@gitbook/runtime';
 import { ContentKitIcon } from '@gitbook/api';
 
@@ -300,7 +301,7 @@ export default createIntegration<MailchimpRuntimeContext>({
                 async extractCredentials(response) {
                     if (!response.access_token) {
                         throw new Error(
-                            `Could not extract access_token from response ${JSON.stringify(
+                            `Could not extract access_token from response: ${summarizeOAuthErrorBody(
                                 response,
                             )}`,
                         );

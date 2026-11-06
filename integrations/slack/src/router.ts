@@ -1,6 +1,11 @@
 import { Router } from 'itty-router';
 
-import { createOAuthHandler, FetchEventCallback, OAuthResponse } from '@gitbook/runtime';
+import {
+    createOAuthHandler,
+    FetchEventCallback,
+    OAuthResponse,
+    summarizeOAuthErrorBody,
+} from '@gitbook/runtime';
 
 import {
     createSlackEventsHandler,
@@ -65,7 +70,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             extractCredentials: (response) => {
                 if (!response.ok) {
                     throw new Error(
-                        `Failed to exchange code for access token ${JSON.stringify(response)}`,
+                        `Failed to exchange code for access token: ${summarizeOAuthErrorBody(response)}`,
                     );
                 }
 
