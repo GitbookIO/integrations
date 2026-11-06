@@ -1,4 +1,10 @@
-import { GitBookAPI, IntegrationEnvironment } from '@gitbook/api';
+import {
+    type FetchEvent as GitBookFetchEvent,
+    GitBookAPI,
+    IntegrationEnvironment,
+} from '@gitbook/api';
+
+import { ExposableError } from './errors';
 
 export interface RuntimeEnvironment<
     InstallationConfiguration = {},
@@ -60,7 +66,24 @@ export interface RuntimeContext<
      * the execution context is closed.
      */
     waitUntil: FetchEvent['waitUntil'];
+
+    /**
+     * GitBook user who sent the request, verified by GitBook.
+     *
+     * Only set for `fetch` events sent from the GitBook app with the user's ID token. For a request
+     * to an installation, space installation or site installation URL, GitBook has also checked
+     * that the user is an admin of that installation. For a request to the integration URL, the
+     * user can be any GitBook user, or an admin of the integration if it's private.
+     *
+     * Use `assertAuthenticated` to require it.
+     */
+    auth?: RuntimeAuth;
 }
+
+/**
+ * Verified GitBook user who sent a fetch request.
+ */
+export type RuntimeAuth = NonNullable<GitBookFetchEvent['auth']>;
 
 /**
  * Extract the task payload type from a context.
@@ -84,6 +107,7 @@ export type RuntimeCallback<
 export function createContext(
     environment: IntegrationEnvironment,
     waitUntil: FetchEvent['waitUntil'],
+    auth?: RuntimeAuth,
 ): RuntimeContext {
     const integrationAPI = new GitBookAPI({
         endpoint: environment.apiEndpoint,
@@ -113,5 +137,19 @@ export function createContext(
         },
 
         waitUntil,
+
+        ...(auth ? { auth } : {}),
     };
+}
+
+/**
+ * Assert that the request comes from a GitBook user verified by GitBook (see `RuntimeContext.auth`).
+ * Throws a 401 error otherwise.
+ */
+export function assertAuthenticated<Context extends RuntimeContext>(
+    context: Context,
+): asserts context is Context & { auth: RuntimeAuth } {
+    if (!context.auth) {
+        throw new ExposableError('Authentication required', 401);
+    }
 }
