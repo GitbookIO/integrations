@@ -1,5 +1,15 @@
 # @gitbook/integration-slack
 
+## 2.7.1
+
+### Patch Changes
+
+- 5fb12f3: Clean up logging in the OAuth exchange and token refresh flows
+- 1c9a399: Update channels endpoint
+- Updated dependencies [5fb12f3]
+- Updated dependencies [1c9a399]
+  - @gitbook/runtime@0.24.0
+
 ## 2.7.0
 
 ### Minor Changes
@@ -18,7 +28,7 @@
 
 - d7fa48f: Replace custom code for tasks to leverage the new runtime API.
 - Updated dependencies [d7fa48f]
-    - @gitbook/runtime@0.23.0
+  - @gitbook/runtime@0.23.0
 
 ## 2.6.0
 
@@ -33,7 +43,7 @@
 
 - 75d605c: Fix AI queries timing out after 30s
 - Updated dependencies [75d605c]
-    - @gitbook/runtime@0.22.0
+  - @gitbook/runtime@0.22.0
 
 ## 2.5.2
 
@@ -84,7 +94,7 @@
 
 - 6bdd531: Add section to slack notifications when revision was merged from change request
 - Updated dependencies [b67367a]
-    - @gitbook/api@0.123.0
+  - @gitbook/api@0.123.0
 
 ## 2.0.3
 
@@ -114,7 +124,7 @@
 
 - e427c87: Update description
 - Updated dependencies [5238e32]
-    - @gitbook/api@0.91.0
+  - @gitbook/api@0.91.0
 
 ## 1.4.0
 
@@ -158,7 +168,7 @@
 
 - 7d76dfb: Update integrations to use latest runtime and api client with `User-Agent`
 - Updated dependencies [46c9686]
-    - @gitbook/runtime@0.11.0
+  - @gitbook/runtime@0.11.0
 
 ## 1.1.1
 
@@ -181,7 +191,7 @@
 - 6faa977: Update term used in Save
 - 0634853: Restrict usage from external connected slack channels
 - Updated dependencies [619e1e9]
-    - @gitbook/runtime@0.10.0
+  - @gitbook/runtime@0.10.0
 
 ## 1.0.1
 
@@ -211,17 +221,17 @@
 - 49f015a: Fix a crash when handling a link_shared event for an improperly configured installation
 - d08888a: Improve Segment integration description
 - 5df9eff: Fixed a few bugs in the slack integration
-    - The channels endpoint didn't support pagination and that could lead to some unexpected behaviors due to the inherent weirdness of the slack API. See context here: https://github.com/GitbookIO/support-bucket/issues/961
-    - The README was missing the signing secret step for publishing an integration.
-    - There was a bug where the signature validation code would lock the body by reading it, which made it throw once the event tried to read from it again. Solved with a request clone.
-    - There was an issue in the slack manifests where we would call the events path for `url_verifications`, but that should happen under `events_task`.
+  - The channels endpoint didn't support pagination and that could lead to some unexpected behaviors due to the inherent weirdness of the slack API. See context here: https://github.com/GitbookIO/support-bucket/issues/961
+  - The README was missing the signing secret step for publishing an integration.
+  - There was a bug where the signature validation code would lock the body by reading it, which made it throw once the event tried to read from it again. Solved with a request clone.
+  - There was an issue in the slack manifests where we would call the events path for `url_verifications`, but that should happen under `events_task`.
 - Updated dependencies [e36efa5]
 - Updated dependencies [d762a7c]
 - Updated dependencies [782d91b]
 - Updated dependencies [9fa2838]
 - Updated dependencies [ce12efa]
 - Updated dependencies [5df9eff]
-    - @gitbook/runtime@null
+  - @gitbook/runtime@null
 
 ## null
 
