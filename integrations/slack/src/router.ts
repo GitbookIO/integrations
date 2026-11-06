@@ -1,6 +1,7 @@
 import { Router } from 'itty-router';
 
 import {
+    assertAuthenticated,
     createOAuthHandler,
     FetchEventCallback,
     OAuthResponse,
@@ -125,8 +126,11 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
 
     /*
      * List the channels the user can select in the configuration flow.
+     * Requires a verified GitBook user.
      */
     router.get('/channels', async () => {
+        assertAuthenticated(context);
+
         const channels = await getChannelsPaginated(context);
 
         const completions = channels.map((channel) => ({
