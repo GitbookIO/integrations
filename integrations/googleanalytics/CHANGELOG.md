@@ -1,5 +1,14 @@
 # @gitbook/integration-googleanalytics
 
+## 0.7.2
+
+### Patch Changes
+
+- d765567: Set `ad_user_data` and `ad_personalization` in the default consent state to support Google Consent Mode v2
+- Updated dependencies [5fb12f3]
+- Updated dependencies [1c9a399]
+  - @gitbook/runtime@0.24.0
+
 ## 0.7.1
 
 ### Patch Changes
@@ -58,7 +67,7 @@
 ### Patch Changes
 
 - Updated dependencies [a04dfb8]
-    - @gitbook/api@0.58.0
+  - @gitbook/api@0.58.0
 
 ## 0.1.5
 
@@ -78,7 +87,7 @@
 
 - cebbcb6: Updating inject scripts integration to support sites installations
 - Updated dependencies [cebbcb6]
-    - @gitbook/runtime@0.14.1
+  - @gitbook/runtime@0.14.1
 
 ## 0.1.2
 
@@ -86,8 +95,8 @@
 
 - 7d76dfb: Update integrations to use latest runtime and api client with `User-Agent`
 - Updated dependencies [46c9686]
-    - @gitbook/runtime@0.11.0
-    - @gitbook/api@0.27.0
+  - @gitbook/runtime@0.11.0
+  - @gitbook/api@0.27.0
 
 ## 0.1.1
 
@@ -104,7 +113,7 @@
 ### Patch Changes
 
 - Updated dependencies [4e17700]
-    - @gitbook/api@0.21.0
+  - @gitbook/api@0.21.0
 
 ## 0.0.1
 
@@ -114,9 +123,9 @@
 - bd17ba3: Fixed documentation links
 - 704ae2b: Added the Plausible and Fathom integrations.
 
-    Also added some logic to load script with the `.raw.js` extension as text in the integrations. This should make sure
-    that script injection is as seamless to develop as the other parts of teh integration by allowing us to write code
-    in script file, then loading it as a script during the build process.
+  Also added some logic to load script with the `.raw.js` extension as text in the integrations. This should make sure
+  that script injection is as seamless to develop as the other parts of teh integration by allowing us to write code
+  in script file, then loading it as a script during the build process.
 
 - a8bb4db: Fixed the manifests to make sure they can be deployed without being blocked by other work
 - Updated dependencies [f0c07cb]
@@ -127,5 +136,5 @@
 - Updated dependencies [9fa2838]
 - Updated dependencies [ce12efa]
 - Updated dependencies [5df9eff]
-    - @gitbook/api@null
-    - @gitbook/runtime@null
+  - @gitbook/api@null
+  - @gitbook/runtime@null
