@@ -15,6 +15,7 @@ export function getGitHubOAuthConfiguration(ctx: GitHubCopilotRuntimeContext) {
         accessTokenURL: 'https://github.com/login/oauth/access_token',
         scopes: [],
         prompt: 'consent',
+        pkce: true,
 
         // By default select all accounts as enabled in the configuration
         // The user can still edits the list from the configuration UI

@@ -182,6 +182,7 @@ export default createIntegration<FigmaRuntimeContext>({
             clientSecret: context.environment.secrets.CLIENT_SECRET,
             authorizeURL: 'https://www.figma.com/oauth?scope=file_content:read',
             accessTokenURL: 'https://api.figma.com/v1/oauth/token',
+            pkce: true,
         });
 
         return oauthHandler(request, context);
