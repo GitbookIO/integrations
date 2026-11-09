@@ -9,10 +9,6 @@ import { Logger } from '@gitbook/runtime';
 
 const logger = Logger('slack:actions:inferUserIntent');
 
-const ROUTING_CONTEXT =
-    'You are a Slack assistant designed to help users with their product documentation.';
-const IS_DOCS_QUESTION =
-    'Is the user clearly asking a question about their product, features, documentation, or content?';
 // Ask AI only answers questions; it cannot act on the user's behalf.
 const DOCS_QUESTION_CRITERIA = {
     true: 'The user wants an answer or an explanation, including how to do something themselves.',
@@ -35,7 +31,6 @@ interface InferUserIntentParams {
     authorization?: any;
 }
 
-// Answers documentation questions with Ask AI and asks for clarification otherwise.
 export async function inferUserIntentAndTriggerAction(
     params: InferUserIntentParams,
     context: SlackRuntimeContext,
@@ -130,11 +125,16 @@ async function isDocsQuestionMessage({
         const { answers } = await experimental_decide({
             model: openai.decisionModel('gpt-6-luna'),
             // The context must be in the state: in the instructions, real questions score near 0.
-            state: { context: ROUTING_CONTEXT, message: userMessage },
+            state: {
+                context:
+                    'You are a Slack assistant designed to help users with their product documentation.',
+                message: userMessage,
+            },
             questions: {
                 docsQuestion: {
                     type: 'boolean',
-                    instructions: IS_DOCS_QUESTION,
+                    instructions:
+                        'Is the user clearly asking a question about their product, features, documentation, or content?',
                     criteria: DOCS_QUESTION_CRITERIA,
                 },
             },
