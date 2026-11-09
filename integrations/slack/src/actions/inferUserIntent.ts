@@ -83,8 +83,8 @@ export async function inferUserIntentAndTriggerAction(
         })(),
         generateText({
             model: openai('gpt-6-luna'),
-            // gpt-5-nano ran at the API default (medium); kept explicit across the model switch.
-            providerOptions: { openai: { reasoningEffort: 'medium' } },
+            // Single-tool routing doesn't need more, and it keeps the Slack reply fast.
+            providerOptions: { openai: { reasoningEffort: 'low' } },
             messages: [
                 {
                     role: 'system',
