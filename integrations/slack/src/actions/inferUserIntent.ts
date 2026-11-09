@@ -159,23 +159,14 @@ async function writeClarification({
     openai: OpenAIProvider;
     userMessage: string;
 }) {
-    try {
-        const { text } = await generateText({
-            model: openai('gpt-6-luna'),
-            instructions: `You are a Slack assistant that answers questions about the user's product documentation.
+    const { text } = await generateText({
+        model: openai('gpt-6-luna'),
+        instructions: `You are a Slack assistant that answers questions about the user's product documentation.
 The user's message is not a question you can answer. Reply in the language of their message, in one or two short sentences:
 acknowledge it if it is a greeting or thanks, and ask what they would like to know about their documentation.
 If they asked you to perform an action, say that you can only answer questions about their documentation.`,
-            prompt: userMessage,
-            providerOptions: { openai: { reasoningEffort: 'none' } },
-        });
-        const reply = text.trim();
-        if (reply) {
-            return reply;
-        }
-    } catch (error) {
-        logger.error('Could not write the clarification reply', error);
-    }
-
-    return `⚠️ Oops, I didn’t quite catch what you want me to do. Could you clarify?`;
+        prompt: userMessage,
+        providerOptions: { openai: { reasoningEffort: 'none' } },
+    });
+    return text;
 }
