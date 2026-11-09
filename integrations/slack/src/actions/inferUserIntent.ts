@@ -13,6 +13,11 @@ const ROUTING_CONTEXT =
     'You are a Slack assistant designed to help users with their product documentation.';
 const IS_DOCS_QUESTION =
     'Is the user clearly asking a question about their product, features, documentation, or content?';
+// Ask AI only answers questions; it cannot act on the user's behalf.
+const DOCS_QUESTION_CRITERIA = {
+    true: 'The user wants an answer or an explanation, including how to do something themselves.',
+    false: 'The user asks the assistant itself to perform an action, such as creating, changing or sending something, or the message is not a question.',
+};
 const DOCS_QUESTION_THRESHOLD = 0.5;
 
 interface InferUserIntentParams {
@@ -121,7 +126,11 @@ async function isDocsQuestionMessage({
             // The context must be in the state: in the instructions, real questions score near 0.
             state: { context: ROUTING_CONTEXT, message: userMessage },
             questions: {
-                docsQuestion: { type: 'boolean', instructions: IS_DOCS_QUESTION },
+                docsQuestion: {
+                    type: 'boolean',
+                    instructions: IS_DOCS_QUESTION,
+                    criteria: DOCS_QUESTION_CRITERIA,
+                },
             },
         });
         logger.debug('Documentation question probability:', answers.docsQuestion.probability);
