@@ -1,5 +1,5 @@
-import { createOpenAI } from '@ai-sdk/openai';
-import { experimental_decide, Experimental_DecisionRefusalError } from 'ai';
+import { createOpenAI, type OpenAIProvider } from '@ai-sdk/openai';
+import { experimental_decide, Experimental_DecisionRefusalError, generateText } from 'ai';
 
 import { queryAskAI } from './queryAskAI';
 import type { SlackInstallationConfiguration, SlackRuntimeContext } from '../configuration';
@@ -19,6 +19,12 @@ const DOCS_QUESTION_CRITERIA = {
     false: 'The user asks the assistant itself to perform an action, such as creating, changing or sending something, or the message is not a question.',
 };
 const DOCS_QUESTION_THRESHOLD = 0.5;
+
+const CLARIFICATION_INSTRUCTIONS = `You are a Slack assistant that answers questions about the user's product documentation.
+The user's message is not a question you can answer. Reply in the language of their message, in one or two short sentences:
+acknowledge it if it is a greeting or thanks, and ask what they would like to know about their documentation.
+If they asked you to perform an action, say that you can only answer questions about their documentation.`;
+const FALLBACK_CLARIFICATION = `⚠️ Oops, I didn’t quite catch what you want me to do. Could you clarify?`;
 
 interface InferUserIntentParams {
     userMessage: string;
@@ -43,6 +49,7 @@ export async function inferUserIntentAndTriggerAction(
 
     logger.debug('Infering user intent from message', userMessage);
 
+    const openai = createOpenAI({ apiKey });
     const [accessToken, isDocsQuestion] = await Promise.all([
         (async () => {
             const installation = await getIntegrationInstallationForTeam(context, teamId);
@@ -80,7 +87,7 @@ export async function inferUserIntentAndTriggerAction(
             }
             return accessToken;
         })(),
-        isDocsQuestionMessage({ apiKey, userMessage }),
+        isDocsQuestionMessage({ openai, userMessage }),
     ]);
 
     if (isDocsQuestion) {
@@ -105,7 +112,7 @@ export async function inferUserIntentAndTriggerAction(
             payload: {
                 channel: channelId,
                 thread_ts: threadTs,
-                text: `⚠️ Oops, I didn’t quite catch what you want me to do. Could you clarify?`,
+                text: await writeClarification({ openai, userMessage }),
             },
         },
         { accessToken },
@@ -113,13 +120,12 @@ export async function inferUserIntentAndTriggerAction(
 }
 
 async function isDocsQuestionMessage({
-    apiKey,
+    openai,
     userMessage,
 }: {
-    apiKey: string;
+    openai: OpenAIProvider;
     userMessage: string;
 }) {
-    const openai = createOpenAI({ apiKey });
     try {
         const { answers } = await experimental_decide({
             model: openai.decisionModel('gpt-6-luna'),
@@ -140,5 +146,26 @@ async function isDocsQuestionMessage({
             return false;
         }
         throw error;
+    }
+}
+
+async function writeClarification({
+    openai,
+    userMessage,
+}: {
+    openai: OpenAIProvider;
+    userMessage: string;
+}) {
+    try {
+        const { text } = await generateText({
+            model: openai('gpt-6-luna'),
+            instructions: CLARIFICATION_INSTRUCTIONS,
+            prompt: userMessage,
+            providerOptions: { openai: { reasoningEffort: 'none' } },
+        });
+        return text.trim() || FALLBACK_CLARIFICATION;
+    } catch (error) {
+        logger.error('Could not write the clarification reply', error);
+        return FALLBACK_CLARIFICATION;
     }
 }
