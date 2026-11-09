@@ -82,7 +82,9 @@ export async function inferUserIntentAndTriggerAction(
             return accessToken;
         })(),
         generateText({
-            model: openai('gpt-5-nano'),
+            model: openai('gpt-6-luna'),
+            // gpt-5-nano ran at the API default (medium); kept explicit across the model switch.
+            providerOptions: { openai: { reasoningEffort: 'medium' } },
             messages: [
                 {
                     role: 'system',

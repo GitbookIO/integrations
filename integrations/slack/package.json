@@ -3,7 +3,7 @@
     "version": "2.7.1",
     "private": true,
     "dependencies": {
-        "@ai-sdk/openai": "^2.0.62",
+        "@ai-sdk/openai": "^2.0.141",
         "@gitbook/api": "*",
         "@gitbook/runtime": "*",
         "ai": "^5.0.87",
