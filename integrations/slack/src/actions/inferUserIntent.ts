@@ -1,5 +1,5 @@
-import { createOpenAI, type OpenAIProvider } from '@ai-sdk/openai';
 import { experimental_decide, Experimental_DecisionRefusalError, generateText } from 'ai';
+import { createOpenAI, type OpenAIProvider } from '@ai-sdk/openai';
 
 import { queryAskAI } from './queryAskAI';
 import type { SlackInstallationConfiguration, SlackRuntimeContext } from '../configuration';
@@ -8,19 +8,6 @@ import { getIntegrationInstallationForTeam } from '../utils';
 import { Logger } from '@gitbook/runtime';
 
 const logger = Logger('slack:actions:inferUserIntent');
-
-// Ask AI only answers questions; it cannot act on the user's behalf.
-const DOCS_QUESTION_CRITERIA = {
-    true: 'The user wants an answer or an explanation, including how to do something themselves.',
-    false: 'The user asks the assistant itself to perform an action, such as creating, changing or sending something, or the message is not a question.',
-};
-const DOCS_QUESTION_THRESHOLD = 0.5;
-
-const CLARIFICATION_INSTRUCTIONS = `You are a Slack assistant that answers questions about the user's product documentation.
-The user's message is not a question you can answer. Reply in the language of their message, in one or two short sentences:
-acknowledge it if it is a greeting or thanks, and ask what they would like to know about their documentation.
-If they asked you to perform an action, say that you can only answer questions about their documentation.`;
-const FALLBACK_CLARIFICATION = `⚠️ Oops, I didn’t quite catch what you want me to do. Could you clarify?`;
 
 interface InferUserIntentParams {
     userMessage: string;
@@ -31,20 +18,26 @@ interface InferUserIntentParams {
     authorization?: any;
 }
 
+/**
+ * Infer the user's intent from a Slack app mention message using the OpenAI Decisions API and trigger
+ * the corresponding action: AskAI for documentation questions, a clarification reply otherwise.
+ */
 export async function inferUserIntentAndTriggerAction(
     params: InferUserIntentParams,
     context: SlackRuntimeContext,
 ) {
     const { userMessage, channelId, threadTs, userId, teamId, authorization } = params;
 
-    const apiKey = context.environment.secrets.OPENAI_API_KEY;
-    if (!apiKey) {
+    if (!context.environment.secrets.OPENAI_API_KEY) {
         throw new Error('OpenAI API key not found');
     }
 
+    const openai = createOpenAI({
+        apiKey: context.environment.secrets.OPENAI_API_KEY,
+    });
+
     logger.debug('Infering user intent from message', userMessage);
 
-    const openai = createOpenAI({ apiKey });
     const [accessToken, isDocsQuestion] = await Promise.all([
         (async () => {
             const installation = await getIntegrationInstallationForTeam(context, teamId);
@@ -114,6 +107,9 @@ export async function inferUserIntentAndTriggerAction(
     );
 }
 
+/**
+ * Decide whether the message is a question about the user's product documentation.
+ */
 async function isDocsQuestionMessage({
     openai,
     userMessage,
@@ -135,12 +131,16 @@ async function isDocsQuestionMessage({
                     type: 'boolean',
                     instructions:
                         'Is the user clearly asking a question about their product, features, documentation, or content?',
-                    criteria: DOCS_QUESTION_CRITERIA,
+                    // AskAI only answers questions, it cannot act on the user's behalf.
+                    criteria: {
+                        true: 'The user wants an answer or an explanation, including how to do something themselves.',
+                        false: 'The user asks the assistant itself to perform an action, such as creating, changing or sending something, or the message is not a question.',
+                    },
                 },
             },
         });
         logger.debug('Documentation question probability:', answers.docsQuestion.probability);
-        return answers.docsQuestion.probability >= DOCS_QUESTION_THRESHOLD;
+        return answers.docsQuestion.probability >= 0.5;
     } catch (error) {
         if (Experimental_DecisionRefusalError.isInstance(error)) {
             return false;
@@ -149,6 +149,9 @@ async function isDocsQuestionMessage({
     }
 }
 
+/**
+ * Write a short reply, in the user's language, asking what they would like to know about their documentation.
+ */
 async function writeClarification({
     openai,
     userMessage,
@@ -159,13 +162,20 @@ async function writeClarification({
     try {
         const { text } = await generateText({
             model: openai('gpt-6-luna'),
-            instructions: CLARIFICATION_INSTRUCTIONS,
+            instructions: `You are a Slack assistant that answers questions about the user's product documentation.
+The user's message is not a question you can answer. Reply in the language of their message, in one or two short sentences:
+acknowledge it if it is a greeting or thanks, and ask what they would like to know about their documentation.
+If they asked you to perform an action, say that you can only answer questions about their documentation.`,
             prompt: userMessage,
             providerOptions: { openai: { reasoningEffort: 'none' } },
         });
-        return text.trim() || FALLBACK_CLARIFICATION;
+        const reply = text.trim();
+        if (reply) {
+            return reply;
+        }
     } catch (error) {
         logger.error('Could not write the clarification reply', error);
-        return FALLBACK_CLARIFICATION;
     }
+
+    return `⚠️ Oops, I didn’t quite catch what you want me to do. Could you clarify?`;
 }
