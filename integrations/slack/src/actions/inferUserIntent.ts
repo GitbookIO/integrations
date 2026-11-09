@@ -1,3 +1,6 @@
+import { createOpenAI } from '@ai-sdk/openai';
+import { experimental_decide, Experimental_DecisionRefusalError } from 'ai';
+
 import { queryAskAI } from './queryAskAI';
 import type { SlackInstallationConfiguration, SlackRuntimeContext } from '../configuration';
 import { slackAPI } from '../slack';
@@ -111,34 +114,22 @@ async function isDocsQuestionMessage({
     apiKey: string;
     userMessage: string;
 }) {
-    const response = await fetch('https://api.openai.com/v1/decisions', {
-        method: 'POST',
-        headers: {
-            Authorization: `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            model: 'gpt-6-luna',
-            input: [
-                { role: 'system', content: ROUTING_CONTEXT },
-                { role: 'user', content: userMessage },
-            ],
-            questions: [
-                { type: 'predicate', name: 'docs_question', instructions: IS_DOCS_QUESTION },
-            ],
-        }),
-    });
-    if (!response.ok) {
-        throw new Error(
-            `OpenAI Decisions API failed with ${response.status}: ${await response.text()}`,
-        );
+    const openai = createOpenAI({ apiKey });
+    try {
+        const { answers } = await experimental_decide({
+            model: openai.decisionModel('gpt-6-luna'),
+            // The context must be in the state: in the instructions, real questions score near 0.
+            state: { context: ROUTING_CONTEXT, message: userMessage },
+            questions: {
+                docsQuestion: { type: 'boolean', instructions: IS_DOCS_QUESTION },
+            },
+        });
+        logger.debug('Documentation question probability:', answers.docsQuestion.probability);
+        return answers.docsQuestion.probability >= DOCS_QUESTION_THRESHOLD;
+    } catch (error) {
+        if (Experimental_DecisionRefusalError.isInstance(error)) {
+            return false;
+        }
+        throw error;
     }
-
-    const { answers } = (await response.json()) as {
-        answers: Array<{ type: 'predicate' | 'refusal'; probability?: number }>;
-    };
-    logger.debug('Documentation question decision:', JSON.stringify(answers[0]));
-    return (
-        answers[0]?.type === 'predicate' && (answers[0].probability ?? 0) >= DOCS_QUESTION_THRESHOLD
-    );
 }
