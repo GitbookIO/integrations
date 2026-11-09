@@ -1,7 +1,3 @@
-import { generateText, tool, ToolSet } from 'ai';
-import { createOpenAI } from '@ai-sdk/openai';
-import { z } from 'zod';
-
 import { queryAskAI } from './queryAskAI';
 import type { SlackInstallationConfiguration, SlackRuntimeContext } from '../configuration';
 import { slackAPI } from '../slack';
@@ -9,6 +5,12 @@ import { getIntegrationInstallationForTeam } from '../utils';
 import { Logger } from '@gitbook/runtime';
 
 const logger = Logger('slack:actions:inferUserIntent');
+
+const ROUTING_CONTEXT =
+    'You are a Slack assistant designed to help users with their product documentation.';
+const IS_DOCS_QUESTION =
+    'Is the user clearly asking a question about their product, features, documentation, or content?';
+const DOCS_QUESTION_THRESHOLD = 0.5;
 
 interface InferUserIntentParams {
     userMessage: string;
@@ -19,32 +21,21 @@ interface InferUserIntentParams {
     authorization?: any;
 }
 
-/**
- * Infer the user's intent from a Slack app mention message using an OpenAI lightweight model
- * and automatically triggers the corresponding action.
- *
- * If the model cannot confidently determine the intent, the function returns a
- * clarification prompt that can be sent back to Slack.
- */
+// Answers documentation questions with Ask AI and asks for clarification otherwise.
 export async function inferUserIntentAndTriggerAction(
     params: InferUserIntentParams,
     context: SlackRuntimeContext,
 ) {
-    const { userMessage, channelId, threadTs, teamId } = params;
+    const { userMessage, channelId, threadTs, userId, teamId, authorization } = params;
 
-    if (!context.environment.secrets.OPENAI_API_KEY) {
+    const apiKey = context.environment.secrets.OPENAI_API_KEY;
+    if (!apiKey) {
         throw new Error('OpenAI API key not found');
     }
 
-    const openai = createOpenAI({
-        apiKey: context.environment.secrets.OPENAI_API_KEY,
-    });
-
-    const tools = getActionsTools(params, context);
-
     logger.debug('Infering user intent from message', userMessage);
 
-    const [accessToken, result] = await Promise.all([
+    const [accessToken, isDocsQuestion] = await Promise.all([
         (async () => {
             const installation = await getIntegrationInstallationForTeam(context, teamId);
             if (!installation) {
@@ -81,112 +72,73 @@ export async function inferUserIntentAndTriggerAction(
             }
             return accessToken;
         })(),
-        generateText({
-            model: openai('gpt-6-luna'),
-            // Single-tool routing doesn't need more, and it keeps the Slack reply fast.
-            providerOptions: { openai: { reasoningEffort: 'low' } },
-            messages: [
-                {
-                    role: 'system',
-                    content: `
-You are a Slack assistant designed to help users with their product documentation.
-
-# Instructions
-1. Determine the user's intent from the message.
-2. Select the appropriate tool from the available tools listed below based on the user's intent to handle the request.
-3. If the intent is unclear, politely ask the user for clarification.
-4. Only return freeform text asking for clarification to the user when no tool clearly applies.
-
-# Tools
-- **askAIQuery**: Use when the user is clearly asking a question about their product, features, documentation, or content.
-
-# Rules
-- Always pick the tool that best matches the user’s intent.
-- Be concise and polite when asking for clarification.
-- Base decisions solely on the current message and its immediate context.
-`,
-                },
-                {
-                    role: 'user',
-                    content: userMessage,
-                },
-            ],
-            tools,
-        }),
+        isDocsQuestionMessage({ apiKey, userMessage }),
     ]);
 
-    // If no tool was called, the AI couldn't get the user intent with confidence so ask for clarifications.
-    if (!result.toolCalls || result.toolCalls.length === 0) {
-        logger.debug(
-            'Could not infer intent based on the message, asking for clarification. AI result: ',
-            JSON.stringify(result.response),
-        );
-
-        const assistantMessages = result.response.messages
-            .filter((msg) => msg.role === 'assistant')
-            .flatMap((msg) => {
-                const { content } = msg;
-                if (Array.isArray(content)) {
-                    return content;
-                }
-                return [
-                    {
-                        type: 'text',
-                        text: content,
-                    },
-                ] as const;
-            })
-            .filter((content) => content && content.type === 'text');
-        const lastAssistantMessage = assistantMessages.pop();
-
-        await slackAPI(
+    if (isDocsQuestion) {
+        await queryAskAI({
+            channelId,
+            threadId: threadTs,
+            userId,
+            teamId,
+            messageType: 'permanent',
+            queryText: userMessage,
             context,
-            {
-                method: 'POST',
-                path: 'chat.postMessage',
-                payload: {
-                    channel: channelId,
-                    thread_ts: threadTs,
-                    text: lastAssistantMessage
-                        ? lastAssistantMessage.text
-                        : `⚠️ Oops, I didn’t quite catch what you want me to do. Could you clarify?`,
-                },
-            },
-            { accessToken },
-        );
-
+            authorization,
+        });
         return;
     }
 
-    logger.debug('Actions called based on the user message:', JSON.stringify(result.toolCalls));
+    await slackAPI(
+        context,
+        {
+            method: 'POST',
+            path: 'chat.postMessage',
+            payload: {
+                channel: channelId,
+                thread_ts: threadTs,
+                text: `⚠️ Oops, I didn’t quite catch what you want me to do. Could you clarify?`,
+            },
+        },
+        { accessToken },
+    );
 }
 
-function getActionsTools(
-    params: InferUserIntentParams,
-    slackRuntimeContext: SlackRuntimeContext,
-): ToolSet {
-    const { channelId, threadTs, userId, teamId, authorization } = params;
-
-    const askAIQueryTool = tool({
-        description: 'Answer questions about documentation or product usage.',
-        inputSchema: z.object({
-            queryText: z.string().describe('The user’s query to the AI'),
-        }),
-        execute: async ({ queryText }) => {
-            return queryAskAI({
-                channelId,
-                threadId: threadTs,
-                userId,
-                teamId,
-                messageType: 'permanent',
-                queryText,
-                context: slackRuntimeContext,
-                authorization,
-            });
+async function isDocsQuestionMessage({
+    apiKey,
+    userMessage,
+}: {
+    apiKey: string;
+    userMessage: string;
+}) {
+    const response = await fetch('https://api.openai.com/v1/decisions', {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+            model: 'gpt-6-luna',
+            input: [
+                { role: 'system', content: ROUTING_CONTEXT },
+                { role: 'user', content: userMessage },
+            ],
+            questions: [
+                { type: 'predicate', name: 'docs_question', instructions: IS_DOCS_QUESTION },
+            ],
+        }),
     });
+    if (!response.ok) {
+        throw new Error(
+            `OpenAI Decisions API failed with ${response.status}: ${await response.text()}`,
+        );
+    }
 
-    return {
-        askAIQuery: askAIQueryTool,
+    const { answers } = (await response.json()) as {
+        answers: Array<{ type: 'predicate' | 'refusal'; probability?: number }>;
     };
+    logger.debug('Documentation question decision:', JSON.stringify(answers[0]));
+    return (
+        answers[0]?.type === 'predicate' && (answers[0].probability ?? 0) >= DOCS_QUESTION_THRESHOLD
+    );
 }

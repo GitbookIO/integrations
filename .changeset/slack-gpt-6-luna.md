@@ -2,4 +2,4 @@
 "@gitbook/integration-slack": patch
 ---
 
-Move Slack intent detection from gpt-5-nano to gpt-6-luna before the gpt-5-nano shutdown
+Route Slack mentions with the OpenAI Decisions API (gpt-6-luna) instead of gpt-5-nano before its shutdown
