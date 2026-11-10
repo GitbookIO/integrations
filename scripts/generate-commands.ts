@@ -543,9 +543,10 @@ function camelize(s: string): string {
 // swagger-typescript-api names methods with a lodash.camelCase, which folds
 // acronym runs into single-capital words: getSpacePDF → getSpacePdf,
 // listOpenAPISpecs → listOpenApiSpecs, setUserAsSSOMember → setUserAsSsoMember.
+// A capital that starts a word stays its own word: OAuth → O + Auth → OAuth.
 // (getSpaceById etc. are already in this form and pass through unchanged.)
 function toClientMethod(operationId: string): string {
-    const words = operationId.match(/[A-Z]{2,}(?=[A-Z][a-z]|\b)|[A-Z][a-z]+|[A-Z]+|[a-z]+|[0-9]+/g);
+    const words = operationId.match(/[A-Z]+(?=[A-Z][a-z])|[A-Z]?[a-z]+|[A-Z]+|[0-9]+/g);
     if (!words) return operationId;
     return words
         .map((w, i) => {
