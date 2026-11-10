@@ -1,5 +1,16 @@
 # @gitbook/integration-slack
 
+## 2.7.2
+
+### Patch Changes
+
+- 6c91f6d: Update integrations to support new Oauth transaction Id
+- a5950b0: Route Slack mentions with the OpenAI Decisions API (gpt-6-luna) instead of gpt-5-nano before its shutdown
+- Updated dependencies [6c91f6d]
+- Updated dependencies [92a6f32]
+  - @gitbook/runtime@0.25.0
+  - @gitbook/api@0.209.0
+
 ## 2.7.1
 
 ### Patch Changes

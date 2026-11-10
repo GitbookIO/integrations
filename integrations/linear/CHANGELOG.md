@@ -1,5 +1,15 @@
 # @gitbook/integration-linear
 
+## 1.2.1
+
+### Patch Changes
+
+- 6c91f6d: Update integrations to support new Oauth transaction Id
+- Updated dependencies [6c91f6d]
+- Updated dependencies [92a6f32]
+  - @gitbook/runtime@0.25.0
+  - @gitbook/api@0.209.0
+
 ## 1.2.0
 
 ### Minor Changes
@@ -31,8 +41,8 @@
 
 - 7d76dfb: Update integrations to use latest runtime and api client with `User-Agent`
 - Updated dependencies [46c9686]
-    - @gitbook/runtime@0.11.0
-    - @gitbook/api@0.27.0
+  - @gitbook/runtime@0.11.0
+  - @gitbook/api@0.27.0
 
 ## 1.0.1
 
@@ -56,5 +66,5 @@
 - Updated dependencies [9fa2838]
 - Updated dependencies [ce12efa]
 - Updated dependencies [5df9eff]
-    - @gitbook/api@null
-    - @gitbook/runtime@null
+  - @gitbook/api@null
+  - @gitbook/runtime@null
