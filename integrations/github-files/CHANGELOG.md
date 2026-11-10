@@ -1,5 +1,15 @@
 # @gitbook/integration-github
 
+## 0.2.6
+
+### Patch Changes
+
+- 6c91f6d: Update integrations to support new Oauth transaction Id
+- Updated dependencies [6c91f6d]
+- Updated dependencies [92a6f32]
+  - @gitbook/runtime@0.25.0
+  - @gitbook/api@0.209.0
+
 ## 0.2.5
 
 ### Patch Changes
@@ -12,7 +22,7 @@
 
 - 0bf599e: Fix Github files URL parsing
 - Updated dependencies [8edbe3b]
-    - @gitbook/api@0.128.0
+  - @gitbook/api@0.128.0
 
 ## 0.2.3
 
@@ -46,8 +56,8 @@
 - 144bcc3: Fix errors and improve some messages
 - Updated dependencies [0cd6eb4]
 - Updated dependencies [4842312]
-    - @gitbook/api@0.65.0
-    - @gitbook/runtime@0.16.0
+  - @gitbook/api@0.65.0
+  - @gitbook/runtime@0.16.0
 
 ## 0.1.4
 
@@ -66,11 +76,11 @@
 ### Patch Changes
 
 - Updated dependencies [51eca27]
-    - @gitbook/api@0.4.0
+  - @gitbook/api@0.4.0
 
 ## 0.1.1
 
 ### Patch Changes
 
 - Updated dependencies [2b19969]
-    - @gitbook/runtime@0.4.0
+  - @gitbook/runtime@0.4.0

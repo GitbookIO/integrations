@@ -1,5 +1,16 @@
 # @gitbook/cli
 
+## 0.33.0
+
+### Minor Changes
+
+- 92a6f32: Bump API version
+
+### Patch Changes
+
+- Updated dependencies [92a6f32]
+  - @gitbook/api@0.209.0
+
 ## 0.32.12
 
 ### Patch Changes

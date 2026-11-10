@@ -1,5 +1,16 @@
 # @gitbook/runtime
 
+## 0.25.0
+
+### Minor Changes
+
+- 6c91f6d: Update integrations to support new Oauth transaction Id
+
+### Patch Changes
+
+- Updated dependencies [92a6f32]
+  - @gitbook/api@0.209.0
+
 ## 0.24.0
 
 ### Minor Changes

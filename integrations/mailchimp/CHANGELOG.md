@@ -1,5 +1,13 @@
 # @gitbook/integration-mailchimp
 
+## 1.3.4
+
+### Patch Changes
+
+- 6c91f6d: Update integrations to support new Oauth transaction Id
+- Updated dependencies [6c91f6d]
+  - @gitbook/runtime@0.25.0
+
 ## 1.3.3
 
 ### Patch Changes

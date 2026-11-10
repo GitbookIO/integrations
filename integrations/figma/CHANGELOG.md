@@ -1,5 +1,13 @@
 # @gitbook/integration-figma
 
+## 0.5.2
+
+### Patch Changes
+
+- 6c91f6d: Update integrations to support new Oauth transaction Id
+- Updated dependencies [6c91f6d]
+  - @gitbook/runtime@0.25.0
+
 ## 0.5.1
 
 ### Patch Changes
@@ -55,7 +63,7 @@
 
 - 7d76dfb: Update integrations to use latest runtime and api client with `User-Agent`
 - Updated dependencies [46c9686]
-    - @gitbook/runtime@0.11.0
+  - @gitbook/runtime@0.11.0
 
 ## 0.1.1
 
@@ -78,4 +86,4 @@
 - Updated dependencies [9fa2838]
 - Updated dependencies [ce12efa]
 - Updated dependencies [5df9eff]
-    - @gitbook/runtime@null
+  - @gitbook/runtime@null
