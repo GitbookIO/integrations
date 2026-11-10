@@ -78,33 +78,46 @@ export async function inferUserIntentAndTriggerAction(
         isDocsQuestionMessage({ openai, userMessage }),
     ]);
 
-    if (isDocsQuestion) {
-        await queryAskAI({
-            channelId,
-            threadId: threadTs,
-            userId,
-            teamId,
-            messageType: 'permanent',
-            queryText: userMessage,
-            context,
-            authorization,
+    if (!isDocsQuestion) {
+        const clarification = await writeClarification({
+            openai,
+            userMessage,
+        }).catch((error) => {
+            logger.error('Failed to write the clarification reply', error);
+            return '';
         });
-        return;
+
+        if (clarification) {
+            await slackAPI(
+                context,
+                {
+                    method: 'POST',
+                    path: 'chat.postMessage',
+                    payload: {
+                        channel: channelId,
+                        thread_ts: threadTs,
+                        text: clarification,
+                        unfurl_links: false,
+                        unfurl_media: false,
+                    },
+                },
+                { accessToken },
+            );
+            return;
+        }
     }
 
-    await slackAPI(
+    // AskAI always posts a reply, even when it finds nothing, so the user is never left without one.
+    await queryAskAI({
+        channelId,
+        threadId: threadTs,
+        userId,
+        teamId,
+        messageType: 'permanent',
+        queryText: userMessage,
         context,
-        {
-            method: 'POST',
-            path: 'chat.postMessage',
-            payload: {
-                channel: channelId,
-                thread_ts: threadTs,
-                text: await writeClarification({ openai, userMessage }),
-            },
-        },
-        { accessToken },
-    );
+        authorization,
+    });
 }
 
 /**
@@ -143,6 +156,7 @@ async function isDocsQuestionMessage({
         return answers.docsQuestion.probability >= 0.5;
     } catch (error) {
         if (Experimental_DecisionRefusalError.isInstance(error)) {
+            logger.info('Decisions API refused the message:', error.message);
             return false;
         }
         throw error;
@@ -164,9 +178,14 @@ async function writeClarification({
         instructions: `You are a Slack assistant that answers questions about the user's product documentation.
 The user's message is not a question you can answer. Reply in the language of their message, in one or two short sentences:
 acknowledge it if it is a greeting or thanks, and ask what they would like to know about their documentation.
-If they asked you to perform an action, say that you can only answer questions about their documentation.`,
+If they asked you to perform an action, say that you can only answer questions about their documentation.
+Never mention people, groups or channels, and never include links.`,
         prompt: userMessage,
+        maxOutputTokens: 100,
         providerOptions: { openai: { reasoningEffort: 'none' } },
     });
-    return text;
+
+    // The reply is steerable by the user's message: escape Slack's control characters so a mention
+    // such as <!channel> written despite the instructions cannot notify anyone.
+    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').trim();
 }
