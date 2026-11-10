@@ -107,6 +107,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
                 accessTokenURL: 'https://github.com/login/oauth/access_token',
                 scopes: [],
                 prompt: 'consent',
+                pkce: true,
             },
             {
                 replace: false,

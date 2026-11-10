@@ -1,4 +1,8 @@
-import type { IntegrationInstallation, RequestUpdateIntegrationInstallation } from '@gitbook/api';
+import {
+    GitBookAPIError,
+    type IntegrationInstallation,
+    type RequestUpdateIntegrationInstallation,
+} from '@gitbook/api';
 
 import type { RuntimeCallback, RuntimeContext } from './context';
 import { Logger } from './logger';
@@ -61,9 +65,31 @@ export interface OAuthConfig<TOAuthResponse = OAuthResponse> {
     extractCredentials?: (
         response: TOAuthResponse,
     ) => RequestUpdateIntegrationInstallation | Promise<RequestUpdateIntegrationInstallation>;
+
+    /**
+     * Send a PKCE (S256) `code_challenge` when authorizing and the matching `code_verifier` when
+     * exchanging the code. Only applies to flows started by GitBook with an OAuth transaction.
+     * Enable it only if the OAuth provider supports PKCE for this client.
+     * @default false
+     */
+    pkce?: boolean;
+}
+
+/**
+ * Target of an OAuth flow, where the credentials are written.
+ */
+interface OAuthTarget {
+    installationId: string;
+    spaceId?: string;
+    siteId?: string;
 }
 
 const MAX_ERROR_DETAIL_LENGTH = 200;
+
+/**
+ * Transaction IDs and PKCE S256 challenges are both 32 bytes encoded as unpadded base64url.
+ */
+const OAUTH_TRANSACTION_VALUE_REGEX = /^[A-Za-z0-9_-]{43}$/;
 
 const logger = Logger('oauth');
 
@@ -71,7 +97,12 @@ const logger = Logger('oauth');
  * Create a fetch request handler to handle an OAuth authentication flow.
  * The credentials are stored in the installation configuration as `installationCredentialsKey`.
  *
- * When using this handler, you must configure `https://integrations.gitbook.com/integrations/{name}/` as a redirect URI.
+ * When using this handler, register the exact redirect URI with the OAuth provider: `redirectURL`
+ * when set (usually `<integration publicEndpoint>/oauth`), otherwise the URL of the handler's route.
+ * Do not register a prefix such as `https://integrations.gitbook.com/`.
+ *
+ * When GitBook starts the flow with an OAuth transaction, `state` is the transaction ID and the
+ * credentials are written to the installation, space or site bound to the transaction.
  */
 export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
     config: OAuthConfig<TOAuthResponse>,
@@ -117,6 +148,19 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
                 );
             }
 
+            const transactionId = url.searchParams.get('gitbook_oauth_transaction');
+            const codeChallenge = url.searchParams.get('gitbook_oauth_code_challenge');
+            if (
+                (transactionId !== null || codeChallenge !== null) &&
+                (transactionId === null ||
+                    codeChallenge === null ||
+                    !isOAuthTransactionValue(transactionId) ||
+                    !isOAuthTransactionValue(codeChallenge))
+            ) {
+                logger.error('Invalid OAuth transaction parameters');
+                return createRestartResponse();
+            }
+
             const authorizeURL =
                 typeof config.authorizeURL === 'function'
                     ? config.authorizeURL(environment.installation)
@@ -128,18 +172,26 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
             redirectTo.searchParams.set('client_id', config.clientId);
             redirectTo.searchParams.set('redirect_uri', redirectUri);
             redirectTo.searchParams.set('response_type', 'code');
-            redirectTo.searchParams.set(
-                'state',
-                JSON.stringify({
-                    installationId: environment.installation.id,
-                    ...(environment.spaceInstallation?.space
-                        ? { spaceId: environment.spaceInstallation?.space }
-                        : {}),
-                    ...(environment.siteInstallation?.site
-                        ? { siteId: environment.siteInstallation?.site }
-                        : {}),
-                }),
-            );
+            if (transactionId !== null && codeChallenge !== null) {
+                redirectTo.searchParams.set('state', transactionId);
+                if (config.pkce) {
+                    redirectTo.searchParams.set('code_challenge', codeChallenge);
+                    redirectTo.searchParams.set('code_challenge_method', 'S256');
+                }
+            } else {
+                redirectTo.searchParams.set(
+                    'state',
+                    JSON.stringify({
+                        installationId: environment.installation.id,
+                        ...(environment.spaceInstallation?.space
+                            ? { spaceId: environment.spaceInstallation?.space }
+                            : {}),
+                        ...(environment.siteInstallation?.site
+                            ? { siteId: environment.siteInstallation?.site }
+                            : {}),
+                    }),
+                );
+            }
 
             if (config.scopes?.length) {
                 redirectTo.searchParams.set('scope', 'SCOPE_PLACEHOLDER');
@@ -149,13 +201,13 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
                 redirectTo.searchParams.set('prompt', config.prompt);
             }
 
-            const url = redirectTo
+            const authorizationURL = redirectTo
                 .toString()
                 .replace('SCOPE_PLACEHOLDER', config.scopes?.join('%20') ?? '');
 
-            logger.debug(`oauth redirecting to ${getURLForLogging(url)}`);
+            logger.debug(`oauth redirecting to ${getURLForLogging(authorizationURL)}`);
 
-            return Response.redirect(url);
+            return Response.redirect(authorizationURL);
         }
 
         //
@@ -167,23 +219,56 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
                 throw new Error('Missing state parameter in OAuth callback');
             }
 
-            /**
-             * Parse the JSON encoded state parameter.
-             *
-             * If the state contains a spaceId, then the Oauth flow was initiated from a space installation
-             * public url and thus we need to update the space installation config
-             *
-             * If the state contains a siteId, then the Oauth flow was initiated from a site installation
-             * public url and thus we need to update the site installation config
-             *
-             * If the state does not contain a spaceId or siteId, then the Oauth flow was initiated from
-             * a regular installation public url and thus we need to update the installation config
-             */
-            const state: {
-                installationId: string;
-                spaceId?: string;
-                siteId?: string;
-            } = JSON.parse(rawState);
+            let target: OAuthTarget;
+            let oauthTransaction: string | undefined;
+            let codeVerifier: string | undefined;
+
+            if (isOAuthTransactionValue(rawState)) {
+                // The target comes only from the consumed transaction, never from the request.
+                try {
+                    const { data: transaction } =
+                        await api.integrations.consumeIntegrationOAuthTransaction(
+                            environment.integration.name,
+                            rawState,
+                            { redirectUri, code },
+                        );
+                    target = {
+                        installationId: transaction.installation,
+                        ...(transaction.space ? { spaceId: transaction.space } : {}),
+                        ...(transaction.site ? { siteId: transaction.site } : {}),
+                    };
+                    oauthTransaction = rawState;
+                    codeVerifier = transaction.codeVerifier;
+                } catch (error) {
+                    logger.error(
+                        `Failed to consume the OAuth transaction: ${
+                            error instanceof GitBookAPIError
+                                ? `HTTP ${error.code}`
+                                : 'request error'
+                        }`,
+                    );
+                    return createRestartResponse();
+                }
+
+                if (config.pkce && !codeVerifier) {
+                    logger.error('Missing PKCE code verifier in the OAuth transaction');
+                    return createRestartResponse();
+                }
+            } else {
+                /**
+                 * Parse the JSON encoded state parameter.
+                 *
+                 * If the state contains a spaceId, then the Oauth flow was initiated from a space installation
+                 * public url and thus we need to update the space installation config
+                 *
+                 * If the state contains a siteId, then the Oauth flow was initiated from a site installation
+                 * public url and thus we need to update the site installation config
+                 *
+                 * If the state does not contain a spaceId or siteId, then the Oauth flow was initiated from
+                 * a regular installation public url and thus we need to update the installation config
+                 */
+                target = JSON.parse(rawState);
+            }
 
             let installation: IntegrationInstallation | null = null;
 
@@ -191,7 +276,7 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
             if (typeof config.accessTokenURL === 'function') {
                 const result = await api.integrations.getIntegrationInstallationById(
                     environment.integration.name,
-                    state.installationId,
+                    target.installationId,
                 );
                 installation = result.data;
                 accessTokenURL = config.accessTokenURL(installation);
@@ -207,6 +292,9 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
             params.set('code', code);
             params.set('redirect_uri', redirectUri);
             params.set('grant_type', 'authorization_code');
+            if (config.pkce && codeVerifier) {
+                params.set('code_verifier', codeVerifier);
+            }
 
             const response = await fetch(accessTokenURL, {
                 method: 'POST',
@@ -231,99 +319,78 @@ export function createOAuthHandler<TOAuthResponse = OAuthResponse>(
             // @ts-ignore
             const credentials = await extractCredentials(json);
             logger.debug('exchanged code for credentials', {
-                installationId: state.installationId,
-                spaceId: state.spaceId,
-                siteId: state.siteId,
+                installationId: target.installationId,
+                spaceId: target.spaceId,
+                siteId: target.siteId,
             });
 
             const existing = {
                 configuration: {},
             };
 
-            if (state.spaceId) {
+            // Properties outside of the credentials configuration (such as externalIds) are also
+            // passed. The credentials are written in a single call: an OAuth transaction grant is single-use.
+            const { configuration: credentialsConfiguration, ...credentialsMinusConfiguration } =
+                credentials;
+            const buildUpdate = () => ({
+                configuration: {
+                    ...existing.configuration,
+                    ...credentialsConfiguration,
+                },
+                ...credentialsMinusConfiguration,
+                ...(oauthTransaction ? { oauthTransaction } : {}),
+            });
+
+            if (target.spaceId) {
                 if (!replace) {
                     const { data: spaceInstallation } =
                         await api.integrations.getIntegrationSpaceInstallation(
                             environment.integration.name,
-                            state.installationId,
-                            state.spaceId,
+                            target.installationId,
+                            target.spaceId,
                         );
                     existing.configuration = spaceInstallation.configuration;
                 }
 
-                // We need to make sure that properties outside of the credentials configuration are also passed when updating the installation (such as externalIds)
-                const {
-                    configuration: credentialsConfiguration,
-                    ...credentialsMinusConfiguration
-                } = credentials;
                 await api.integrations.updateIntegrationSpaceInstallation(
                     environment.integration.name,
-                    state.installationId,
-                    state.spaceId,
-                    {
-                        configuration: {
-                            ...existing.configuration,
-                            ...credentialsConfiguration,
-                        },
-                        ...credentialsMinusConfiguration,
-                    },
+                    target.installationId,
+                    target.spaceId,
+                    buildUpdate(),
                 );
-            } else if (state.siteId) {
+            } else if (target.siteId) {
                 if (!replace) {
                     const { data: siteInstallation } =
                         await api.integrations.getIntegrationSiteInstallation(
                             environment.integration.name,
-                            state.installationId,
-                            state.siteId,
+                            target.installationId,
+                            target.siteId,
                         );
                     existing.configuration = siteInstallation.configuration;
                 }
 
-                // We need to make sure that properties outside of the credentials configuration are also passed when updating the installation (such as externalIds)
-                const {
-                    configuration: credentialsConfiguration,
-                    ...credentialsMinusConfiguration
-                } = credentials;
                 await api.integrations.updateIntegrationSiteInstallation(
                     environment.integration.name,
-                    state.installationId,
-                    state.siteId,
-                    {
-                        configuration: {
-                            ...existing.configuration,
-                            ...credentialsConfiguration,
-                        },
-                        ...credentialsMinusConfiguration,
-                    },
+                    target.installationId,
+                    target.siteId,
+                    buildUpdate(),
                 );
             } else {
                 if (!replace) {
                     if (!installation) {
                         const result = await api.integrations.getIntegrationInstallationById(
                             environment.integration.name,
-                            state.installationId,
+                            target.installationId,
                         );
                         installation = result.data;
                     }
                     existing.configuration = installation.configuration;
                 }
 
-                // We need to make sure that properties outside of the credentials configuration are also passed when updating the installation (such as externalIds)
-                const {
-                    configuration: credentialsConfiguration,
-                    ...credentialsMinusConfiguration
-                } = credentials;
-
                 await api.integrations.updateIntegrationInstallation(
                     environment.integration.name,
-                    state.installationId,
-                    {
-                        configuration: {
-                            ...existing.configuration,
-                            ...credentialsConfiguration,
-                        },
-                        ...credentialsMinusConfiguration,
-                    },
+                    target.installationId,
+                    buildUpdate(),
                 );
             }
 
@@ -484,6 +551,28 @@ async function getOAuthErrorSummary(response: Response): Promise<string> {
     }
 
     return `${status}: ${summarizeOAuthErrorBody(body)}`;
+}
+
+function isOAuthTransactionValue(value: string): boolean {
+    return OAUTH_TRANSACTION_VALUE_REGEX.test(value);
+}
+
+/**
+ * Page shown when an OAuth transaction cannot be used. API errors are not shown.
+ */
+function createRestartResponse(): Response {
+    return new Response(
+        `
+        <p>This connection could not be completed. Close this window and start the connection again from GitBook.</p>
+        `,
+        {
+            status: 400,
+            headers: {
+                'Content-Type': 'text/html',
+                'Cache-Control': 'no-store',
+            },
+        },
+    );
 }
 
 /**
