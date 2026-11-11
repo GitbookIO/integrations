@@ -112,8 +112,8 @@ It also hosts the default integrations provided by the GitBook team, organized b
 
 | Integration                           | Description                                                                             |
 | ------------------------------------- | --------------------------------------------------------------------------------------- |
-| [GitHub Sync](./integrations/github/) | Synchronize your GitBook content with GitHub with GitBook's bi-directional integration. |
-| [GitLab Sync](./integrations/gitlab/) | Synchronize your GitBook content with GitLab with GitBook's bi-directional integration. |
+| [GitHub Sync](./integrations/github/) | Retired: Git Sync with GitHub is built into GitBook. |
+| [GitLab Sync](./integrations/gitlab/) | Retired: Git Sync with GitLab is built into GitBook. |
 
 #### Collaboration & Notifications
 

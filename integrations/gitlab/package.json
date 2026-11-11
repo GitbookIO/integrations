@@ -9,17 +9,10 @@
         "publish-integrations-staging": "gitbook publish ."
     },
     "dependencies": {
-        "@gitbook/api": "*",
-        "@gitbook/runtime": "*",
-        "hash-sum": "^2.0.0",
-        "http-errors": "^2.0.0",
-        "http-link-header": "^1.1.1",
-        "itty-router": "^4.0.26"
+        "@gitbook/runtime": "*"
     },
     "devDependencies": {
         "@gitbook/cli": "workspace:*",
-        "@gitbook/tsconfig": "workspace:*",
-        "@types/hash-sum": "^1.0.0",
-        "@types/http-link-header": "^1.0.3"
+        "@gitbook/tsconfig": "workspace:*"
     }
 }
