@@ -1,7 +1,7 @@
 name: github
 title: GitHub Sync
 organization: gitbook
-visibility: unlisted
+visibility: private
 description: This integration has been retired. Git Sync with GitHub is built into GitBook.
 icon: ./assets/github-icon.png
 externalLinks:

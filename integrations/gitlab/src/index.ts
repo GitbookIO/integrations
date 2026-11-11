@@ -6,7 +6,7 @@ const logger = Logger('gitlab');
  * This integration has been retired: Git Sync with GitLab is built into GitBook.
  *
  * The integration stays published so that anything still pointing at it (GitLab project webhooks,
- * links to the OAuth or API endpoints, GitBook events and queued tasks) gets a clear answer,
+ * links to the OAuth or API endpoints, installation events and queued tasks) gets a clear answer,
  * but it does no work and keeps no state.
  */
 
@@ -25,13 +25,14 @@ export default createIntegration({
             headers: { 'content-type': 'application/json' },
         });
     },
+    /**
+     * With no scopes, GitBook only sends the installation lifecycle events, which need none.
+     */
     events: {
         installation_setup: handleGitBookEvent,
+        installation_deleted: handleGitBookEvent,
         space_installation_setup: handleGitBookEvent,
         space_installation_deleted: handleGitBookEvent,
-        space_content_updated: handleGitBookEvent,
-        space_gitsync_started: handleGitBookEvent,
-        space_gitsync_completed: handleGitBookEvent,
     },
     task: async () => {
         logger.debug('ignoring task: integration retired');

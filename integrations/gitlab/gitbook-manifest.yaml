@@ -1,7 +1,7 @@
 name: gitlab
 title: GitLab Sync
 organization: gitbook
-visibility: unlisted
+visibility: private
 description: This integration has been retired. Git Sync with GitLab is built into GitBook.
 icon: ./assets/gitlab-logo.png
 externalLinks:
