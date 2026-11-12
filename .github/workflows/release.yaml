@@ -11,20 +11,23 @@ jobs:
     release:
         name: Release
         runs-on: ubuntu-latest
+        outputs:
+            published: ${{ steps.changesets.outputs.published }}
+            publishedPackages: ${{ steps.changesets.outputs.publishedPackages }}
         permissions:
             contents: write
             pull-requests: write
             id-token: write
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
               with:
                   # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
                   fetch-depth: 0
                   # Using a PAT instead of the default token to ensure commits trigger CI
                   token: ${{ secrets.GH_PERSONAL_TOKEN }}
             - name: Setup Node.js for npm trusted publishing
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
               with:
                   # npm trusted publishing requires npm 11.5.1+ (Node 22.14.0+)
                   node-version: '24'
@@ -35,14 +38,14 @@ jobs:
             - name: Update npm
               run: npm install -g npm@11
             - name: Setup bun
-              uses: oven-sh/setup-bun@v2
+              uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
               with:
                   bun-version-file: 'package.json'
             - name: Install dependencies
               run: bun install --frozen-lockfile
             - name: Create Release Pull Request or Publish to npm
               id: changesets
-              uses: changesets/action@v1
+              uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1
               with:
                   publish: bun run release
               env:
@@ -54,11 +57,17 @@ jobs:
     publish-integrations-staging:
         name: Publish Integrations to Staging
         runs-on: ubuntu-latest
+        environment: staging
+        permissions:
+            contents: read
+            id-token: write
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+              with:
+                  persist-credentials: false
             - name: Setup bun
-              uses: oven-sh/setup-bun@v2
+              uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
               with:
                   bun-version-file: 'package.json'
             - name: Setup 1Password CLI
@@ -73,10 +82,20 @@ jobs:
                   CLOUDFLARE_PAGES_PROJECT: ${{ secrets.INTEGRATIONS_ASSETS_STAGING_PROJECT }}
                   CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
                   CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
+            - name: Build all integrations
+              run: bun run build
+            # GitHub OIDC tokens expire a few minutes after they are issued: request one per integration.
             - name: Publish all integrations to staging
-              run: bun run publish-integrations-staging
+              run: |
+                  set -o pipefail
+                  for dir in integrations/*/; do
+                      jq -e '.scripts["publish-integrations-staging"]' "$dir/package.json" > /dev/null || continue
+                      token=$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+                          "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=https://api.gitbook-staging.com" | jq -er .value)
+                      echo "::add-mask::$token"
+                      (cd "$dir" && GITBOOK_TOKEN="$token" bun run publish-integrations-staging)
+                  done
               env:
-                  GITBOOK_TOKEN: ${{ secrets.GITBOOK_STAGING_API_TOKEN }}
                   GITBOOK_ENDPOINT: https://api.gitbook-staging.com
                   GITBOOK_ORGANIZATION: gitbookio
                   OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
@@ -122,3 +141,110 @@ jobs:
                   GITHUBCOPILOT_APP_URL: ${{ secrets.GITHUBCOPILOT_STAGING_APP_URL }}
                   GITHUBCOPILOT_CLIENT_ID: ${{ secrets.GITHUBCOPILOT_STAGING_CLIENT_ID }}
                   GITHUBCOPILOT_CLIENT_SECRET: ${{ secrets.GITHUBCOPILOT_STAGING_CLIENT_SECRET }}
+
+    # Runs from protected main once the release job has tagged new integration versions.
+    deploy-integrations-to-production:
+        name: Deploy released integrations to production
+        needs: release
+        if: needs.release.outputs.published == 'true'
+        runs-on: ubuntu-latest
+        environment: production
+        permissions:
+            contents: read
+            id-token: write
+        steps:
+            # Package names come from the release job's output: validate them before any use.
+            - name: List released integrations
+              id: integrations
+              env:
+                  PUBLISHED_PACKAGES: ${{ needs.release.outputs.publishedPackages }}
+              run: |
+                  set -o pipefail -o noglob
+                  packages=$(jq -r '.[].name | select(startswith("@gitbook/integration-"))' <<< "$PUBLISHED_PACKAGES")
+                  for package in $packages; do
+                      if [[ ! "$package" =~ ^@gitbook/integration-[a-z0-9.-]+$ ]]; then
+                          echo "::error::Unexpected package name: $package"
+                          exit 1
+                      fi
+                  done
+                  echo "packages=$(echo $packages)" >> "$GITHUB_OUTPUT"
+
+            - name: Checkout
+              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+              with:
+                  persist-credentials: false
+            - name: Setup bun
+              uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+              with:
+                  bun-version-file: 'package.json'
+            - name: Setup 1Password CLI
+              uses: ./.github/composite/setup-1password-op
+              with:
+                  OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+            - name: Install dependencies
+              run: bun install --frozen-lockfile
+
+            # TODO: Remove this once we incorporate this in the publish API of the integration
+            - name: Publish all integrations assets to production
+              run: bun run publish-assets
+              env:
+                  CLOUDFLARE_PAGES_PROJECT: ${{ secrets.INTEGRATIONS_ASSETS_PROD_PROJECT }}
+                  CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+                  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
+
+            # GitHub OIDC tokens expire a few minutes after they are issued: build first, then
+            # request one per integration right before publishing it.
+            - name: Deploy integrations
+              if: steps.integrations.outputs.packages != ''
+              run: |
+                  set -o pipefail -o noglob
+                  for package in $INTEGRATION_PACKAGES; do
+                      bunx turbo run build --filter="$package"
+                      token=$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+                          "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=https://api.gitbook.com" | jq -er .value)
+                      echo "::add-mask::$token"
+                      GITBOOK_TOKEN="$token" bun run publish-integrations -- --filter="$package"
+                  done
+              env:
+                  INTEGRATION_PACKAGES: ${{ steps.integrations.outputs.packages }}
+                  GITBOOK_ENDPOINT: https://api.gitbook.com
+                  GITBOOK_ORGANIZATION: gitbook
+                  OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+                  # Proxy
+                  GITBOOK_PROXY_URL: ${{ secrets.PROXY_URL }}
+                  GITBOOK_PROXY_SECRET: ${{ secrets.PROXY_SECRET }}
+                  REFLAG_SECRET_KEY: ${{ secrets.REFLAG_SECRET_KEY }}
+                  # GitHub Files
+                  UNFURL_GITHUB_CLIENT_ID: ${{ secrets.UNFURL_GITHUB_CLIENT_ID }}
+                  UNFURL_GITHUB_CLIENT_SECRET: ${{ secrets.UNFURL_GITHUB_CLIENT_SECRET }}
+                  # GitLab
+                  GITLAB_CLIENT_ID: ${{ secrets.GITLAB_CLIENT_ID }}
+                  GITLAB_CLIENT_SECRET: ${{ secrets.GITLAB_CLIENT_SECRET }}
+                  # Discord
+                  DISCORD_CLIENT_ID: $ {{ secrets.DISCORD_CLIENT_ID }}
+                  DISCORD_CLIENT_SECRET: $ {{ secrets.DISCORD_CLIENT_SECRET }}
+                  DISCORD_BOT_TOKEN: $ {{ secrets.DISCORD_BOT_TOKEN }}
+                  # Mailchimp
+                  MAILCHIMP_CLIENT_ID: ${{ secrets.MAILCHIMP_PROD_CLIENT_ID }}
+                  MAILCHIMP_CLIENT_SECRET: ${{ secrets.MAILCHIMP_PROD_CLIENT_SECRET }}
+                  # Jira
+                  JIRA_CLIENT_ID: ${{ secrets.JIRA_PROD_CLIENT_ID }}
+                  JIRA_CLIENT_SECRET: ${{ secrets.JIRA_PROD_CLIENT_SECRET }}
+                  # Linear
+                  LINEAR_CLIENT_ID: ${{ secrets.LINEAR_PROD_CLIENT_ID }}
+                  LINEAR_CLIENT_SECRET: ${{ secrets.LINEAR_PROD_CLIENT_SECRET }}
+                  # GitHub
+                  GITHUB_APP_INSTALL_URL: ${{ secrets.GITBOOK_GITHUB_APP_INSTALL_URL }}
+                  GITHUB_APP_ID: ${{ secrets.GITBOOK_GITHUB_APP_ID }}
+                  GITHUB_CLIENT_ID: ${{ secrets.GITBOOK_GITHUB_CLIENT_ID }}
+                  GITHUB_CLIENT_SECRET: ${{ secrets.GITBOOK_GITHUB_CLIENT_SECRET }}
+                  GITHUB_WEBHOOK_SECRET: ${{ secrets.GITBOOK_GITHUB_WEBHOOK_SECRET }}
+                  GITHUB_PRIVATE_KEY: ${{ secrets.GITBOOK_GITHUB_PRIVATE_KEY }}
+                  # Lucid
+                  LUCID_CLIENT_ID: ${{ secrets.LUCID_CLIENT_ID }}
+                  LUCID_CLIENT_SECRET: ${{ secrets.LUCID_CLIENT_SECRET }}
+                  # GitHub Copilot
+                  GITHUBCOPILOT_APP_ID: ${{ secrets.GITHUBCOPILOT_PROD_APP_ID }}
+                  GITHUBCOPILOT_APP_URL: ${{ secrets.GITHUBCOPILOT_PROD_APP_URL }}
+                  GITHUBCOPILOT_CLIENT_ID: ${{ secrets.GITHUBCOPILOT_PROD_CLIENT_ID }}
+                  GITHUBCOPILOT_CLIENT_SECRET: ${{ secrets.GITHUBCOPILOT_PROD_CLIENT_SECRET }}
