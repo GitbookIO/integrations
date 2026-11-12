@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.209.1
+
+### Patch Changes
+
+- 3f1c362: License the `@gitbook/api` package under Apache-2.0.
+
 ## 0.209.0
 
 ### Minor Changes

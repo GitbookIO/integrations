@@ -1,5 +1,11 @@
 # @gitbook/integration-github
 
+## 0.9.0
+
+### Minor Changes
+
+- 10825ce: Retire the legacy GitHub and GitLab Sync integrations: they now answer every request with 410 Gone and ignore GitBook events and tasks.
+
 ## 0.8.3
 
 ### Patch Changes
