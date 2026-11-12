@@ -5,6 +5,7 @@
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "version": "0.209.0",
+    "license": "Apache-2.0",
     "sideEffects": false,
     "files": [
         "README.md",
