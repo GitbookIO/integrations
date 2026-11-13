@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/cli",
-    "description": "CLI to build and publish integrations on GitBook.com",
+    "description": "Manage GitBook docs, sites, and integrations from the command line",
     "version": "0.33.1",
     "dependencies": {
         "@gitbook/api": "*",

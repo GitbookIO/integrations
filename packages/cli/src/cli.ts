@@ -56,7 +56,17 @@ program.hook('preAction', () => {
 program
     .command('login')
     .option('-e, --endpoint <endpoint>', GITBOOK_DEFAULT_ENDPOINT)
-    .description('authenticate with gitbook.com using your browser')
+    .description(
+        'authenticate with gitbook.com in a browser (needs a localhost callback; use `auth` on remote or headless machines)',
+    )
+    .addHelpText(
+        'after',
+        '\nOpens GitBook in your browser and waits for the authorization to redirect back to a\n' +
+            'local server on http://127.0.0.1:<port>/callback. The browser must run on the same\n' +
+            'machine as the CLI, so this does not work over SSH, in containers, CI, or sandboxed\n' +
+            'agents. In those environments, use an API token instead:\n\n' +
+            '  gitbook auth --token <token>   (create one at https://app.gitbook.com/account/developer)\n',
+    )
     .action(async (options) => {
         await login({
             endpoint: options.endpoint || GITBOOK_DEFAULT_ENDPOINT,
@@ -74,7 +84,9 @@ program
     .command('auth')
     .option('-t, --token <token>')
     .option('-e, --endpoint <endpoint>', GITBOOK_DEFAULT_ENDPOINT)
-    .description('authenticate with gitbook.com using an API token')
+    .description(
+        'authenticate with gitbook.com using an API token (works in CI, SSH, and agent sandboxes)',
+    )
     .action(async (options) => {
         let token = options.token;
         if (!token) {
@@ -167,6 +179,18 @@ const integrationsGroup = program.commands.find((c) => c.name() === 'integration
 integrationsGroup?.addHelpText(
     'after',
     `\nTo create, run, or publish your own integration (new, dev, publish, …), see \`${program.name()} integration --help\`.`,
+);
+
+// Root help: the generated groups are named after API resources ("Manage spaces", …), so
+// point to the docs for the workflows they add up to, rather than duplicating them here.
+program.addHelpText(
+    'after',
+    `
+Docs:
+  CLI guide (auth, output formats, examples)  https://gitbook.com/docs/docs-as-code/gitbook-cli
+  Publish a site from the command line        https://gitbook.com/docs/guides/editing-and-publishing-documentation/create-and-publish-a-site-from-the-command-line
+  Set up GitBook from an AI agent             https://gitbook.com/docs/setup.md
+`,
 );
 
 // Reveal nested subgroups in `--help` (Commander shows only immediate children).
