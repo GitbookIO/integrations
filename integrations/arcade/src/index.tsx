@@ -5,7 +5,11 @@ import {
     RuntimeContext,
 } from '@gitbook/runtime';
 
-import { extractArcadeFlowFromURL, fetchArcadeOEmbedData } from './arcade';
+import {
+    ARCADE_OEMBED_CACHE_MAX_AGE,
+    extractArcadeFlowFromURL,
+    fetchArcadeOEmbedData,
+} from './arcade';
 
 interface ArcadeInstallationConfiguration {}
 
@@ -68,7 +72,9 @@ const embedBlock = createComponent<{
             );
         }
 
-        const embedData = await fetchArcadeOEmbedData(flowId);
+        const embedData = await fetchArcadeOEmbedData(flowId, context);
+        // Bound output caching as well so dimension changes and deleted flows are rechecked.
+        element.setCache({ maxAge: ARCADE_OEMBED_CACHE_MAX_AGE });
         const aspectRatio = embedData.width / embedData.height;
         const embedUrl = `https://demo.arcade.software/${flowId}?embed${language ? `&language=${encodeURIComponent(language)}` : ''}`;
         return (
