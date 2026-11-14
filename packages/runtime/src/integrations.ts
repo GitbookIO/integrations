@@ -11,7 +11,7 @@ import {
     IntegrationTaskEventCallback,
 } from './events';
 import { Logger } from './logger';
-import { ExposableError } from './errors';
+import { ExposableError, IntegrationError } from './errors';
 import { ContentSourceDefinition } from './contentSources';
 
 const logger = Logger('integrations');
@@ -84,10 +84,16 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                 }
             }
 
+            let isFetchEvent = false;
             try {
                 const formData = await request.formData();
 
                 const event = JSON.parse(formData.get('event') as string) as Event;
+                isFetchEvent = [
+                    'fetch',
+                    'fetch_published_script',
+                    'fetch_visitor_authentication',
+                ].includes(event.type);
                 const fetchBody = formData.get('fetch-body');
                 const context = createContext(
                     JSON.parse(formData.get('environment') as string) as IntegrationEnvironment,
@@ -246,17 +252,30 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                     }
                 }
             } catch (err) {
-                const error = err as Error | ExposableError;
+                const error = err instanceof Error ? err : new Error('Unknown integration failure');
                 logger.error(error.stack ?? error.message);
+                // An integration's authentication failure must never invalidate the GitBook login.
+                const authenticationError =
+                    !isFetchEvent &&
+                    error instanceof ExposableError &&
+                    (error.code === 401 || error.code === 403);
                 return new Response(
                     JSON.stringify({
-                        error:
-                            error instanceof ExposableError
-                                ? error.message
-                                : 'Internal server error',
+                        error: authenticationError
+                            ? new IntegrationError('authentication_required').message
+                            : error instanceof ExposableError
+                              ? error.message
+                              : 'Internal server error',
+                        ...(error instanceof IntegrationError
+                            ? { integrationError: { version: 1, code: error.reason } }
+                            : {}),
                     }),
                     {
-                        status: error instanceof ExposableError ? error.code : 500,
+                        status: authenticationError
+                            ? 424
+                            : error instanceof ExposableError
+                              ? error.code
+                              : 500,
                         headers: { 'content-type': 'application/json' },
                     },
                 );
