@@ -3,6 +3,7 @@
     "version": "0.2.3",
     "private": true,
     "scripts": {
+        "test": "bun test",
         "typecheck": "tsc --noEmit",
         "publish-integrations-staging": "gitbook publish .",
         "check": "gitbook check",
