@@ -1,5 +1,25 @@
 # @gitbook/integration-oidc
 
+## 0.8.0
+
+### Minor Changes
+
+- 8c4923b: Add a "Session Expiry" option to choose whether the GitBook session expiry is derived from the ID token's `exp` claim (default) or the access token's `expires_in`, and cap sessions at 7 days
+
+## 0.7.1
+
+### Patch Changes
+
+- 23c97f0: Fix "Could not sign JWT token" error for visitors whose ID token contains non-ASCII claims (e.g. Cyrillic or other Unicode characters)
+- Updated dependencies [7900e3a]
+  - @gitbook/api@0.206.0
+
+## 0.7.0
+
+### Minor Changes
+
+- ef21c80: Support `id_token_hint` on OIDC logout allowing logout to bypass confirmation when provided with initial token.
+
 ## 0.6.0
 
 ### Minor Changes

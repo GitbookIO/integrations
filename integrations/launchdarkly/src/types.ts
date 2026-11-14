@@ -21,3 +21,22 @@ export type LaunchDarklyProps = {
     };
 };
 export type LaunchDarklyAction = { action: 'save.config' };
+
+export type LaunchDarklyFeatureFlag = {
+    name: string;
+    key: string;
+    kind: 'boolean' | 'multivariate';
+    _version: number;
+    creationDate: number;
+    variations: Array<{
+        value: unknown;
+        description?: string;
+        name?: string;
+        _id?: string;
+    }>;
+};
+
+export type LaunchDarklyFeatureFlagsResponse = {
+    items: Array<LaunchDarklyFeatureFlag>;
+    totalCount?: number;
+};

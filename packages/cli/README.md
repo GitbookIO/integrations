@@ -1,8 +1,12 @@
 # `@gitbook/cli`
 
+Manage GitBook from the command line: browse and edit spaces and pages, create and merge
+change requests, publish sites, and build and publish integrations. Run `gitbook --help` to
+see every command.
+
 ### Step 1: Install the GitBook CLI
 
-The GitBook Development CLI requires Node v18 or later. It can be installed from NPM using:
+The GitBook CLI requires Node v18 or later. It can be installed from NPM using:
 
 ```
 npm install @gitbook/cli -g
@@ -18,6 +22,10 @@ gitbook login
 
 This opens GitBook in your browser, asks you to authorize the CLI, and stores the resulting
 token locally. Sessions are refreshed automatically.
+
+`gitbook login` waits for the browser to redirect to a local server on `127.0.0.1`, so the
+browser must run on the same machine as the CLI. Over SSH, in containers, in CI, or in
+sandboxed agents, use an API token with `gitbook auth` instead.
 
 Alternatively, authenticate with a personal API token. Create one at
 [app.gitbook.com/account/developer](https://app.gitbook.com/account/developer), then run:

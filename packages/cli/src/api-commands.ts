@@ -13,7 +13,7 @@ import {
     publishOpenAPISpecificationFromURL,
 } from './openapi/publish';
 import { checkIsHTTPURL } from './util';
-import { withEnvironment } from './environments';
+import { DEFAULT_ENV, getEnvironment, withEnvironment } from './environments';
 
 /**
  * Hand-written companion to the auto-generated `generated-commands.ts`.
@@ -64,17 +64,14 @@ const LIFECYCLE_COMMANDS: LifecycleCommand[] = [
         configure: (cmd) =>
             cmd
                 .argument('[file]', 'integration definition file', DEFAULT_MANIFEST_FILE)
-                .option('-a, --all', 'Proxy all events from all installations')
-                .option('--env <env>', 'environment to use'),
-        action: async (filePath: string, options: { all?: boolean; env?: string }) => {
-            return withEnvironment(options.env, async () => {
-                await startIntegrationsDevServer(
-                    await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath)),
-                    {
-                        all: options.all ?? false,
-                    },
-                );
-            });
+                .option('-a, --all', 'Proxy all events from all installations'),
+        action: async (filePath: string, options: { all?: boolean }) => {
+            await startIntegrationsDevServer(
+                await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath)),
+                {
+                    all: options.all ?? false,
+                },
+            );
         },
     },
     {
@@ -83,29 +80,23 @@ const LIFECYCLE_COMMANDS: LifecycleCommand[] = [
         configure: (cmd) =>
             cmd
                 .argument('[file]', 'integration definition file', DEFAULT_MANIFEST_FILE)
-                .option('--env <env>', 'environment to use')
                 .option(
                     '-o, --organization <organization>',
                     'organization to publish to',
                     process.env.GITBOOK_ORGANIZATION,
                 ),
-        action: async (filePath: string, options: { env?: string; organization?: string }) => {
-            return withEnvironment(options.env, async () => {
-                await publishIntegration(
-                    await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath)),
-                    options.organization ? { organization: options.organization } : {},
-                );
-            });
+        action: async (filePath: string, options: { organization?: string }) => {
+            await publishIntegration(
+                await resolveIntegrationManifestPath(path.resolve(process.cwd(), filePath)),
+                options.organization ? { organization: options.organization } : {},
+            );
         },
     },
     {
         name: 'unpublish',
         description: 'unpublish an integration',
-        configure: (cmd) =>
-            cmd
-                .argument('[integration]', 'Name of the integration to unpublish')
-                .option('--env <env>', 'environment to use'),
-        action: async (name: string, options: { env?: string }) => {
+        configure: (cmd) => cmd.argument('[integration]', 'Name of the integration to unpublish'),
+        action: async (name: string) => {
             const response = await prompts({
                 type: 'confirm',
                 name: 'confirm',
@@ -114,20 +105,16 @@ const LIFECYCLE_COMMANDS: LifecycleCommand[] = [
             });
 
             if (response.confirm) {
-                return withEnvironment(options.env, async () => {
-                    await unpublishIntegration(name);
-                });
+                await unpublishIntegration(name);
             }
         },
     },
     {
         name: 'tail',
         description: 'fetch and print the execution logs of the integration',
-        configure: (cmd) => cmd.option('--env <env>', 'environment to use'),
-        action: async (options: { env?: string }) => {
-            return withEnvironment(options.env, async () => {
-                await tailLogs();
-            });
+        configure: (cmd) => cmd,
+        action: async () => {
+            await tailLogs();
         },
     },
     {
@@ -136,6 +123,11 @@ const LIFECYCLE_COMMANDS: LifecycleCommand[] = [
         configure: (cmd) =>
             cmd.argument('[file]', 'integration definition file', DEFAULT_MANIFEST_FILE),
         action: async (filePath: string) => {
+            if (getEnvironment() !== DEFAULT_ENV) {
+                console.error(
+                    `⚠️  \`check\` always runs against the "test" environment; ignoring --env.`,
+                );
+            }
             // We use a special env "test" to make it easy to configure the integration for testing.
             return withEnvironment('test', async () => {
                 await checkIntegrationBuild(

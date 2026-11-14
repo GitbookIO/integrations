@@ -1,5 +1,13 @@
 # @gitbook/integration-gitlab-files
 
+## 0.2.5
+
+### Patch Changes
+
+- 6c91f6d: Update integrations to support new Oauth transaction Id
+- Updated dependencies [6c91f6d]
+  - @gitbook/runtime@0.25.0
+
 ## 0.2.4
 
 ### Patch Changes

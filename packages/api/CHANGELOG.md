@@ -1,5 +1,79 @@
 # @gitbook/api
 
+## 0.209.1
+
+### Patch Changes
+
+- 3f1c362: License the `@gitbook/api` package under Apache-2.0.
+
+## 0.209.0
+
+### Minor Changes
+
+- 92a6f32: Bump API version
+
+## 0.208.0
+
+### Minor Changes
+
+- 4a4ab12: Add `secondaryColor` to site customization styles and `$secondary` to document text colors.
+
+## 0.207.0
+
+### Minor Changes
+
+- 5763440: Add `condition` to site section groups (read, create and update).
+
+## 0.206.0
+
+### Minor Changes
+
+- 7900e3a: Updates to align api validator with document model
+
+## 0.205.0
+
+### Minor Changes
+
+- e2423f9: Bump API to include `scope` on search button actions
+
+## 0.204.0
+
+### Minor Changes
+
+- 05af9b2: Bump API to include `tagTitle` on revision pages
+
+## 0.203.0
+
+### Minor Changes
+
+- 4f2723f: Bump API to include `previousUrl` in site insights event locations
+- a51c7bc: Add Ask AI click triggers tracking
+
+## 0.202.0
+
+### Minor Changes
+
+- 142bfef: Bump API to include the anchors page layout option
+- 55553e0: Bump API to include slug in tab's data properties
+
+## 0.201.0
+
+### Minor Changes
+
+- 2d193ac: Add cachedMetadata property to the API revision call
+
+## 0.200.0
+
+### Minor Changes
+
+- 95d1140: Bump API to expose the permanent flag on site redirects
+
+## 0.199.0
+
+### Minor Changes
+
+- ea10371: Bump API
+
 ## 0.198.0
 
 ### Minor Changes

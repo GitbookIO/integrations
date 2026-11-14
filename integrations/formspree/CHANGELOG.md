@@ -1,18 +1,33 @@
 # @gitbook/integration-formspree
 
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies [6c91f6d]
+  - @gitbook/runtime@0.25.0
+
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies [5fb12f3]
+- Updated dependencies [1c9a399]
+  - @gitbook/runtime@0.24.0
+
 ## 0.3.2
 
 ### Patch Changes
 
 - Updated dependencies [ce9b4c3]
-    - @gitbook/runtime@0.23.3
+  - @gitbook/runtime@0.23.3
 
 ## 0.3.1
 
 ### Patch Changes
 
 - Updated dependencies [25d0e77]
-    - @gitbook/runtime@0.23.2
+  - @gitbook/runtime@0.23.2
 
 ## 0.3.0
 
@@ -26,21 +41,21 @@
 
 - Updated dependencies [aab7f96]
 - Updated dependencies [84ea77c]
-    - @gitbook/runtime@0.23.1
+  - @gitbook/runtime@0.23.1
 
 ## 0.2.13
 
 ### Patch Changes
 
 - Updated dependencies [d7fa48f]
-    - @gitbook/runtime@0.23.0
+  - @gitbook/runtime@0.23.0
 
 ## 0.2.12
 
 ### Patch Changes
 
 - Updated dependencies [75d605c]
-    - @gitbook/runtime@0.22.0
+  - @gitbook/runtime@0.22.0
 
 ## 0.2.11
 
@@ -53,21 +68,21 @@
 ### Patch Changes
 
 - Updated dependencies [5b37e83]
-    - @gitbook/runtime@0.21.0
+  - @gitbook/runtime@0.21.0
 
 ## 0.2.9
 
 ### Patch Changes
 
 - Updated dependencies [6dfb882]
-    - @gitbook/runtime@0.20.0
+  - @gitbook/runtime@0.20.0
 
 ## 0.2.8
 
 ### Patch Changes
 
 - Updated dependencies [89b1298]
-    - @gitbook/runtime@0.19.2
+  - @gitbook/runtime@0.19.2
 
 ## 0.2.7
 
@@ -80,7 +95,7 @@
 ### Patch Changes
 
 - Updated dependencies [99ac594]
-    - @gitbook/runtime@0.19.1
+  - @gitbook/runtime@0.19.1
 
 ## 0.2.5
 
@@ -93,14 +108,14 @@
 ### Patch Changes
 
 - Updated dependencies [ff3ac23]
-    - @gitbook/runtime@0.19.0
+  - @gitbook/runtime@0.19.0
 
 ## 0.2.3
 
 ### Patch Changes
 
 - Updated dependencies [ebfa12c]
-    - @gitbook/runtime@0.18.0
+  - @gitbook/runtime@0.18.0
 
 ## 0.2.2
 

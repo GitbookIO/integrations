@@ -1,0 +1,45 @@
+name: cookiescript
+title: Cookie Script
+description: Add the Cookie Script cookie consent banner to your published GitBook site.
+visibility: public
+organization: gitbook
+icon: ./assets/icon.png
+script: ./src/index.ts
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+    - site:script:cookies
+contentSecurityPolicy:
+    script-src: |
+        https://cdn.cookie-script.com;
+summary: |
+    # Overview
+    This integration allows you to add the Cookie Script cookie consent banner on your published GitBook site.
+
+    # How it works
+    The integration injects the Cookie Script banner script `https://cdn.cookie-script.com/s/<Cookie Script ID>.js`
+    on your page, so that the cookie consent banner is displayed and consent is managed according to your
+    Cookie Script configuration.
+
+    Cookie Script becomes the source of truth for consent on the site: GitBook's own cookie banner is replaced
+    by it, and GitBook tracking is enabled as soon as the visitor grants any non-essential category
+    (functionality, performance, targeting or unclassified), and disabled when only strictly necessary
+    cookies are allowed.
+
+    # Configure
+    Install the integration on the GitBook site of your choice.
+    Provide your Cookie Script ID. You can find it in your Cookie Script dashboard, in the banner install
+    snippet: it is the ID segment of the script URL `https://cdn.cookie-script.com/s/<Cookie Script ID>.js`.
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            cookiescript_id:
+                type: string
+                title: Cookie Script ID
+                description: The ID in your Cookie Script banner URL, cdn.cookie-script.com/s/<ID>.js
+        required:
+            - cookiescript_id
+target: site

@@ -1,5 +1,109 @@
 # @gitbook/cli
 
+## 0.33.1
+
+### Patch Changes
+
+- 3f1c362: License the `@gitbook/api` package under Apache-2.0.
+- Updated dependencies [3f1c362]
+  - @gitbook/api@0.209.1
+
+## 0.33.0
+
+### Minor Changes
+
+- 92a6f32: Bump API version
+
+### Patch Changes
+
+- Updated dependencies [92a6f32]
+  - @gitbook/api@0.209.0
+
+## 0.32.12
+
+### Patch Changes
+
+- 4a4ab12: Add `secondaryColor` to site customization styles and `$secondary` to document text colors.
+- Updated dependencies [4a4ab12]
+  - @gitbook/api@0.208.0
+
+## 0.32.11
+
+### Patch Changes
+
+- 5763440: Add `condition` to site section groups (read, create and update).
+- Updated dependencies [5763440]
+  - @gitbook/api@0.207.0
+
+## 0.32.10
+
+### Patch Changes
+
+- 7900e3a: Updates to align api validator with document model
+- Updated dependencies [7900e3a]
+  - @gitbook/api@0.206.0
+
+## 0.32.9
+
+### Patch Changes
+
+- e2423f9: Bump API to include `scope` on search button actions
+- 9056ac5: Make `--env` a global option accepted by every command (before or after the command name), and allow `gitbook auth --env <name>` / `gitbook login --env <name>` to create a new environment instead of failing with "not found".
+- Updated dependencies [e2423f9]
+  - @gitbook/api@0.205.0
+
+## 0.32.8
+
+### Patch Changes
+
+- 05af9b2: Bump API to include `tagTitle` on revision pages
+- Updated dependencies [05af9b2]
+  - @gitbook/api@0.204.0
+
+## 0.32.7
+
+### Patch Changes
+
+- 4f2723f: Bump API to include `previousUrl` in site insights event locations
+- a51c7bc: Add Ask AI click triggers tracking
+- Updated dependencies [4f2723f]
+- Updated dependencies [a51c7bc]
+  - @gitbook/api@0.203.0
+
+## 0.32.6
+
+### Patch Changes
+
+- 142bfef: Bump API to include the anchors page layout option
+- 55553e0: Bump API to include slug in tab's data properties
+- Updated dependencies [142bfef]
+- Updated dependencies [55553e0]
+  - @gitbook/api@0.202.0
+
+## 0.32.5
+
+### Patch Changes
+
+- 2d193ac: Add cachedMetadata property to the API revision call
+- Updated dependencies [2d193ac]
+  - @gitbook/api@0.201.0
+
+## 0.32.4
+
+### Patch Changes
+
+- 95d1140: Bump API to expose the permanent flag on site redirects
+- Updated dependencies [95d1140]
+  - @gitbook/api@0.200.0
+
+## 0.32.3
+
+### Patch Changes
+
+- ea10371: Bump API
+- Updated dependencies [ea10371]
+  - @gitbook/api@0.199.0
+
 ## 0.32.2
 
 ### Patch Changes

@@ -2,7 +2,10 @@ import * as jwt from '@tsndr/cloudflare-worker-jwt';
 import { Router } from 'itty-router';
 import { getDomain } from 'tldts';
 
-import { IntegrationInstallationConfiguration } from '@gitbook/api';
+import {
+    FetchVisitorAuthenticationEvent,
+    IntegrationInstallationConfiguration,
+} from '@gitbook/api';
 import {
     createIntegration,
     FetchEventCallback,
@@ -14,6 +17,13 @@ import {
 } from '@gitbook/runtime';
 
 import {
+    clearLogoutHintCookie,
+    encryptLogoutHint,
+    getLogoutHintCookiePath,
+    getLogoutHintFromCookies,
+    serializeLogoutHintCookie,
+} from './logout-hint';
+import {
     clearPKCECookie,
     computePKCECodeChallenge,
     encryptPKCEVerifier,
@@ -21,6 +31,11 @@ import {
     getPKCECodeVerifierFromCookie,
     serializePKCECookie,
 } from './pkce';
+import {
+    computeSessionExpiry,
+    DEFAULT_SESSION_EXPIRY_SOURCE,
+    type OIDCSessionExpirySource,
+} from './session-expiry';
 
 const logger = Logger('oidc.visitor-auth');
 
@@ -37,6 +52,8 @@ type OIDCSiteInstallationConfiguration = {
     use_pkce?: boolean;
     logout_endpoint?: string;
     redirect_to_site_on_logout?: boolean;
+    send_id_token_hint?: boolean;
+    session_expiry_source?: OIDCSessionExpirySource;
 };
 
 type OIDCState = OIDCSiteInstallationConfiguration;
@@ -52,12 +69,28 @@ type OIDCProps = {
 
 export type OIDCAction = { action: 'save.config' };
 
+/**
+ * Successful response of the token endpoint.
+ *
+ * Spec: https://datatracker.ietf.org/doc/html/rfc6749#section-5.1 and
+ * https://openid.net/specs/openid-connect-core-1_0.html#TokenResponse
+ *
+ * The response comes from the authentication provider, so even the fields the specs
+ * mark as required are validated at runtime before being used.
+ */
 type OIDCTokenResponseData = {
-    access_token?: string;
-    id_token?: string;
+    /** REQUIRED by OIDC Core section 3.1.3.3. */
+    id_token: string;
+    /** REQUIRED by RFC 6749 section 4.1.4. */
+    access_token: string;
+    /** REQUIRED by RFC 6749 section 4.1.4. Case-insensitive, in practice `Bearer`. */
+    token_type: string;
+    /** RECOMMENDED by RFC 6749 section 4.1.4: lifetime of the access token, in seconds. */
+    expires_in?: number;
+    /** OPTIONAL by RFC 6749 section 4.1.4. */
     refresh_token?: string;
-    token_type: 'Bearer';
-    expires_in: number;
+    /** OPTIONAL by RFC 6749 section 4.1.4, REQUIRED when the granted scope differs from the requested one. */
+    scope?: string;
 };
 
 const getDomainWithHttps = (url: string): string => {
@@ -87,6 +120,10 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
             logout_endpoint: siteInstallation.configuration?.logout_endpoint || '',
             redirect_to_site_on_logout:
                 siteInstallation.configuration?.redirect_to_site_on_logout ?? false,
+            send_id_token_hint: siteInstallation.configuration?.send_id_token_hint ?? false,
+            session_expiry_source:
+                siteInstallation.configuration?.session_expiry_source ??
+                DEFAULT_SESSION_EXPIRY_SOURCE,
         };
     },
     action: async (element, action, context) => {
@@ -112,6 +149,9 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                         ? getDomainWithHttps(element.state.logout_endpoint)
                         : undefined,
                     redirect_to_site_on_logout: element.state.redirect_to_site_on_logout ?? false,
+                    send_id_token_hint: element.state.send_id_token_hint ?? false,
+                    session_expiry_source:
+                        element.state.session_expiry_source ?? DEFAULT_SESSION_EXPIRY_SOURCE,
                 };
                 await api.integrations.updateIntegrationSiteInstallation(
                     siteInstallation.integration,
@@ -254,6 +294,28 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                 />
 
                 <input
+                    label="Session Expiry"
+                    hint={
+                        <text>
+                            The token whose expiry determines how long a visitor stays signed in to
+                            your site. The ID token uses its <text style="bold">exp</text> claim,
+                            the access token uses the <text style="bold">expires_in</text> of the
+                            token response. Sessions last at least 1 hour and never more than 7
+                            days.
+                        </text>
+                    }
+                    element={
+                        <select
+                            state="session_expiry_source"
+                            options={[
+                                { id: 'id_token', label: 'ID token (default)' },
+                                { id: 'access_token', label: 'Access token' },
+                            ]}
+                        />
+                    }
+                />
+
+                <input
                     label="End Session Endpoint"
                     hint={
                         <text>
@@ -273,6 +335,18 @@ const configBlock = createComponent<OIDCProps, OIDCState, OIDCAction, OIDCRuntim
                     element={
                         <textinput state="logout_endpoint" placeholder="End Session endpoint" />
                     }
+                />
+
+                <input
+                    label="Skip the logout confirmation prompt"
+                    hint={
+                        <text>
+                            Log visitors out in a single step, without the confirmation screen some
+                            authentication providers show when signing out. Requires an End Session
+                            endpoint.
+                        </text>
+                    }
+                    element={<switch state="send_id_token_hint" />}
                 />
 
                 <input
@@ -364,6 +438,7 @@ function assertOrgId(environment: OIDCRuntimeEnvironment) {
 async function handleLogout(
     context: OIDCRuntimeContext,
     siteInstallation: ReturnType<typeof assertSiteInstallation>,
+    event: FetchVisitorAuthenticationEvent,
 ): Promise<Response> {
     const configuration = siteInstallation.configuration;
     const publishedContentUrls = await getPublishedContentUrls(context);
@@ -381,8 +456,17 @@ async function handleLogout(
                 url.searchParams.set('post_logout_redirect_uri', siteURL);
             }
 
+            // Replaying the ID token issued at login lets the provider skip the logout
+            // confirmation prompt. It is optional on every level: when the hint is missing or
+            // can no longer be trusted the visitor is logged out without it, and simply sees
+            // the confirmation prompt.
+            const idTokenHint = await getLogoutHint(context, siteInstallation, event);
+            if (idTokenHint) {
+                url.searchParams.set('id_token_hint', idTokenHint);
+            }
+
             logger.info('redirecting the visitor to the configured end session endpoint');
-            return Response.redirect(url.toString());
+            return redirectAndClearLogoutHint(url.toString(), siteInstallation);
         } catch (error) {
             logger.error(`invalid end session endpoint configured: ${logoutEndpoint}`, error);
         }
@@ -390,7 +474,55 @@ async function handleLogout(
 
     // Nothing to log out of upstream: send the visitor to the site root.
     logger.info('redirecting the visitor to the site without logging them out upstream');
-    return Response.redirect(siteURL ?? siteInstallation.urls.publicEndpoint);
+    return redirectAndClearLogoutHint(
+        siteURL ?? siteInstallation.urls.publicEndpoint,
+        siteInstallation,
+    );
+}
+
+/**
+ * Recover the ID token stored at the end of the login flow, to be replayed as the
+ * `id_token_hint` of the logout request. Returns `undefined` whenever it is not
+ * available, which leaves the logout working without the hint.
+ */
+async function getLogoutHint(
+    context: OIDCRuntimeContext,
+    siteInstallation: ReturnType<typeof assertSiteInstallation>,
+    event: FetchVisitorAuthenticationEvent,
+): Promise<string | undefined> {
+    if (!siteInstallation.configuration.send_id_token_hint) {
+        return undefined;
+    }
+
+    const signingSecret = context.environment.signingSecrets.siteInstallation;
+    if (!signingSecret) {
+        return undefined;
+    }
+
+    const idToken = await getLogoutHintFromCookies(event.cookies, signingSecret, siteInstallation);
+
+    if (!idToken) {
+        logger.info('logging the visitor out without an id_token_hint');
+    }
+
+    return idToken;
+}
+
+/**
+ * Redirect the visitor on logout, clearing the logout hint cookie on the way out:
+ * the session it belongs to is over, and it is of no use afterwards.
+ */
+function redirectAndClearLogoutHint(
+    location: string,
+    siteInstallation: ReturnType<typeof assertSiteInstallation>,
+): Response {
+    return new Response(null, {
+        status: 302,
+        headers: {
+            Location: location,
+            'Set-Cookie': clearLogoutHintCookie(getLogoutHintCookiePath(siteInstallation)),
+        },
+    });
 }
 
 /**
@@ -604,17 +736,20 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                     });
                 }
 
+                const sessionExp = computeSessionExpiry({
+                    source:
+                        siteInstallation.configuration.session_expiry_source ??
+                        DEFAULT_SESSION_EXPIRY_SOURCE,
+                    idTokenExp: decodedIdToken?.payload?.exp,
+                    accessTokenExpiresIn: tokenRespData.expires_in,
+                });
+
                 let jwtToken: string | undefined;
                 try {
-                    const minimumExp = Math.floor(Date.now() / 1000) + 60 * 60;
-                    const upstreamTokenExp =
-                        typeof decodedIdToken?.payload?.exp === 'number'
-                            ? decodedIdToken.payload.exp
-                            : undefined;
                     jwtToken = await jwt.sign(
                         {
                             ...decodedIdToken.payload,
-                            exp: Math.max(minimumExp, upstreamTokenExp ?? 0),
+                            exp: sessionExp,
                         },
                         privateKey,
                     );
@@ -646,15 +781,48 @@ const handleFetchEvent: FetchEventCallback<OIDCRuntimeContext> = async (request,
                 );
                 url.searchParams.append('jwt_token', jwtToken);
 
+                const installationPath = new URL(installationURL).pathname;
+                const setCookies: string[] = [];
+
                 // Clear the PKCE verifier cookie now that the flow is complete.
                 if (siteInstallation.configuration.use_pkce) {
-                    return new Response(null, {
-                        status: 302,
-                        headers: {
-                            Location: url.toString(),
-                            'Set-Cookie': clearPKCECookie(new URL(installationURL).pathname),
-                        },
-                    });
+                    setCookies.push(clearPKCECookie(installationPath));
+                }
+
+                // Keep the ID token around for the logout, where it is replayed as the
+                // `id_token_hint` so the provider does not prompt the visitor to confirm.
+                if (
+                    siteInstallation.configuration.send_id_token_hint &&
+                    siteInstallation.configuration.logout_endpoint
+                ) {
+                    const hint = await encryptLogoutHint(
+                        privateKey,
+                        siteInstallation,
+                        tokenRespData.id_token,
+                        sessionExp,
+                    );
+                    const hintCookie = serializeLogoutHintCookie(
+                        hint,
+                        getLogoutHintCookiePath(siteInstallation),
+                        sessionExp,
+                    );
+                    if (hintCookie) {
+                        setCookies.push(hintCookie);
+                    } else {
+                        // Browsers drop oversized cookies silently, so the hint is skipped
+                        // rather than written: the visitor is logged out without it.
+                        logger.info(
+                            'ID token too large to be stored as a logout hint, logout will not send an id_token_hint',
+                        );
+                    }
+                }
+
+                if (setCookies.length > 0) {
+                    const headers = new Headers({ Location: url.toString() });
+                    for (const cookie of setCookies) {
+                        headers.append('Set-Cookie', cookie);
+                    }
+                    return new Response(null, { status: 302, headers });
                 }
 
                 return Response.redirect(url.toString());
@@ -698,7 +866,7 @@ export default createIntegration({
         const siteInstallation = assertSiteInstallation(environment);
 
         if (event.action === 'logout') {
-            return handleLogout(context, siteInstallation);
+            return handleLogout(context, siteInstallation, event);
         }
 
         const installationURL = siteInstallation.urls.publicEndpoint;

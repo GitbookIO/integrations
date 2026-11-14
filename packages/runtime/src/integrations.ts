@@ -92,13 +92,18 @@ export function createIntegration<Context extends RuntimeContext = RuntimeContex
                 const context = createContext(
                     JSON.parse(formData.get('environment') as string) as IntegrationEnvironment,
                     (promise) => ctx.waitUntil(promise),
+                    event.type === 'fetch' ? event.auth : undefined,
                 ) as Context;
 
                 logger.info(`[${event.eventId}] ${event.type}`);
 
                 switch (event.type) {
                     case 'fetch': {
-                        logger.info(`handling fetch ${event.request.method} ${event.request.url}`);
+                        // The query can hold OAuth codes and state, so it is not logged.
+                        const requestURL = new URL(event.request.url);
+                        logger.info(
+                            `handling fetch ${event.request.method} ${requestURL.origin}${requestURL.pathname}`,
+                        );
 
                         if (!definition.fetch) {
                             throw new ExposableError(

@@ -14,6 +14,7 @@ export function getGithubOAuthConfiguration(
         accessTokenURL: 'https://github.com/login/oauth/access_token',
         scopes: ['repo'],
         prompt: 'consent',
+        pkce: true,
         extractCredentials: (response) => {
             // GitHub can return an OAuth error in an HTTP 200 response. Reject it before
             // createOAuthHandler replaces the installation's existing credentials.

@@ -1,5 +1,15 @@
 # @gitbook/integration-jira
 
+## 0.2.3
+
+### Patch Changes
+
+- 6c91f6d: Update integrations to support new Oauth transaction Id
+- Updated dependencies [6c91f6d]
+- Updated dependencies [92a6f32]
+  - @gitbook/runtime@0.25.0
+  - @gitbook/api@0.209.0
+
 ## 0.2.2
 
 ### Patch Changes

@@ -4,6 +4,7 @@ import { getGithubOAuthConfiguration } from '../src/oauth';
 import type { GithubRuntimeContext } from '../src/types';
 
 const existingCredentials = { access_token: 'existing-test-token' };
+const transactionId = 't'.repeat(43);
 
 function createContext() {
     const updateInstallation = mock(async () => ({ data: {} }));
@@ -19,16 +20,23 @@ function createContext() {
             },
             secrets: { CLIENT_ID: 'test-client', CLIENT_SECRET: 'test-secret' },
         },
-        api: { integrations: { updateIntegrationInstallation: updateInstallation } },
+        api: {
+            integrations: {
+                consumeIntegrationOAuthTransaction: mock(async () => ({
+                    data: { installation: 'test-installation', codeVerifier: 'test-code-verifier' },
+                })),
+                updateIntegrationInstallation: updateInstallation,
+            },
+        },
     } as unknown as GithubRuntimeContext;
 
     return { context, updateInstallation };
 }
 
-function callbackRequest() {
+function callbackRequest(state = transactionId) {
     const url = new URL('https://example.com/github-files/oauth');
     url.searchParams.set('code', 'test-code');
-    url.searchParams.set('state', JSON.stringify({ installationId: 'test-installation' }));
+    url.searchParams.set('state', state);
     return new Request(url);
 }
 
@@ -87,7 +95,7 @@ describe('GitHub Files OAuth callback', () => {
 
     it('replaces the connection after a successful non-expiring token exchange', async () => {
         spyOn(console, 'debug').mockImplementation(() => {});
-        spyOn(globalThis, 'fetch').mockResolvedValue(
+        const fetch = spyOn(globalThis, 'fetch').mockResolvedValue(
             Response.json({ access_token: 'replacement-test-token', token_type: 'bearer' }),
         );
         const { context, updateInstallation } = createContext();
@@ -96,9 +104,16 @@ describe('GitHub Files OAuth callback', () => {
         const response = await handler(callbackRequest(), context);
 
         expect(response.status).toBe(200);
+        expect(fetch).toHaveBeenCalledWith(
+            'https://github.com/login/oauth/access_token',
+            expect.objectContaining({
+                body: expect.stringContaining('code_verifier=test-code-verifier'),
+            }),
+        );
         expect(updateInstallation).toHaveBeenCalledTimes(1);
         expect(updateInstallation).toHaveBeenCalledWith('github-files-test', 'test-installation', {
             configuration: { oauth_credentials: { access_token: 'replacement-test-token' } },
+            oauthTransaction: transactionId,
         });
     });
 
@@ -125,6 +140,26 @@ describe('GitHub Files OAuth callback', () => {
                     refresh_token: 'refresh-test-token',
                 },
             },
+            oauthTransaction: transactionId,
         });
+    });
+
+    it('also preserves the existing connection for a failed legacy callback', async () => {
+        spyOn(console, 'debug').mockImplementation(() => {});
+        spyOn(globalThis, 'fetch').mockResolvedValue(
+            Response.json({ error: 'bad_verification_code' }),
+        );
+        const { context, updateInstallation } = createContext();
+        const handler = createOAuthHandler(getGithubOAuthConfiguration(context));
+
+        await expect(
+            handler(
+                callbackRequest(JSON.stringify({ installationId: 'test-installation' })),
+                context,
+            ),
+        ).rejects.toThrow('GitHub authorization did not return an access token');
+
+        expect(updateInstallation).not.toHaveBeenCalled();
+        expect(context.api.integrations.consumeIntegrationOAuthTransaction).not.toHaveBeenCalled();
     });
 });

@@ -1,0 +1,55 @@
+name: gravito
+title: Gravito Cookie Consent
+description: Add the Gravito consent management platform banner to your published GitBook site.
+visibility: public
+organization: gitbook
+icon: ./assets/icon.png
+script: ./src/index.ts
+externalLinks:
+    - label: Gravito CMP documentation
+      url: https://docs.gravito.net/Gravito_V6_CMP/Getting_Started/
+# The following scope(s) are available only to GitBook Staff
+# See https://developer.gitbook.com/integrations/configurations#scopes
+scopes:
+    - site:script:inject
+    - site:script:cookies
+contentSecurityPolicy:
+    script-src: |
+        https://cdn.gravito.net;
+    connect-src: |
+        https://*.gravito.net
+        https://*.gravito.network;
+    img-src: |
+        https://cdn.gravito.net
+        https://gto.gravito.net;
+    style-src: |
+        https://cdn.gravito.net
+        'unsafe-inline';
+summary: |
+    # Overview
+    This integration allows you to add the Gravito Consent Management Platform (CMP) banner on your published GitBook site.
+
+    # How it works
+    The integration loads your published Gravito CMP configuration and the Gravito SDK `sdk.js` on your page,
+    so that the consent banner is displayed and consent is managed according to your Gravito configuration.
+    Both the Gravito Standard CMP and the TCF CMP components are supported.
+
+    When a visitor accepts or rejects cookies in the Gravito banner, the decision is forwarded to GitBook so
+    that GitBook's own cookie handling follows the visitor's choice.
+
+    # Configure
+    Install the integration on the GitBook site of your choice.
+    Provide your Gravito configuration token. In the Gravito CMP Configurator, open your published configuration,
+    go to the **Deployment** tab and use **Copy GTM Token**. Paste the copied token in the integration configuration.
+categories:
+    - analytics
+configurations:
+    site:
+        properties:
+            config_token:
+                type: string
+                title: Configuration token
+                description: The GTM token from the Deployment tab of your published Gravito CMP configuration
+        required:
+            - config_token
+target: site

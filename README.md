@@ -112,8 +112,8 @@ It also hosts the default integrations provided by the GitBook team, organized b
 
 | Integration                           | Description                                                                             |
 | ------------------------------------- | --------------------------------------------------------------------------------------- |
-| [GitHub Sync](./integrations/github/) | Synchronize your GitBook content with GitHub with GitBook's bi-directional integration. |
-| [GitLab Sync](./integrations/gitlab/) | Synchronize your GitBook content with GitLab with GitBook's bi-directional integration. |
+| [GitHub Sync](./integrations/github/) | Retired: Git Sync with GitHub is built into GitBook. |
+| [GitLab Sync](./integrations/gitlab/) | Retired: Git Sync with GitLab is built into GitBook. |
 
 #### Collaboration & Notifications
 
@@ -126,9 +126,11 @@ It also hosts the default integrations provided by the GitBook team, organized b
 
 #### Compliance
 
-| Integration                                         | Description                                                            |
-| --------------------------------------------------- | ---------------------------------------------------------------------- |
-| [OneTrust Cookie Consent](./integrations/onetrust/) | Add the OneTrust cookie consent banner to your published GitBook site. |
+| Integration                                         | Description                                                                        |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| [Cookie Script](./integrations/cookiescript/)       | Add the Cookie Script cookie consent banner to your published GitBook site.        |
+| [Gravito Cookie Consent](./integrations/gravito/)   | Add the Gravito consent management platform banner to your published GitBook site. |
+| [OneTrust Cookie Consent](./integrations/onetrust/) | Add the OneTrust cookie consent banner to your published GitBook site.             |
 
 ## Contributing
 

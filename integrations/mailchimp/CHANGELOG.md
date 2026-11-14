@@ -1,5 +1,22 @@
 # @gitbook/integration-mailchimp
 
+## 1.3.4
+
+### Patch Changes
+
+- 6c91f6d: Update integrations to support new Oauth transaction Id
+- Updated dependencies [6c91f6d]
+  - @gitbook/runtime@0.25.0
+
+## 1.3.3
+
+### Patch Changes
+
+- 5fb12f3: Clean up logging in the OAuth exchange and token refresh flows
+- Updated dependencies [5fb12f3]
+- Updated dependencies [1c9a399]
+  - @gitbook/runtime@0.24.0
+
 ## 1.3.2
 
 ### Patch Changes
@@ -49,7 +66,7 @@
 
 - 7d76dfb: Update integrations to use latest runtime and api client with `User-Agent`
 - Updated dependencies [46c9686]
-    - @gitbook/runtime@0.11.0
+  - @gitbook/runtime@0.11.0
 
 ## 1.0.1
 
@@ -71,4 +88,4 @@
 - Updated dependencies [9fa2838]
 - Updated dependencies [ce12efa]
 - Updated dependencies [5df9eff]
-    - @gitbook/runtime@null
+  - @gitbook/runtime@null

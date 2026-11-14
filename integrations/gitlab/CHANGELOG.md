@@ -1,12 +1,18 @@
 # @gitbook/integration-gitlab
 
+## 0.9.0
+
+### Minor Changes
+
+- 10825ce: Retire the legacy GitHub and GitLab Sync integrations: they now answer every request with 410 Gone and ignore GitBook events and tasks.
+
 ## 0.8.1
 
 ### Patch Changes
 
 - 6aa7fbb: Remove the deprecated `gitsync` category from the GitHub and GitLab integration manifests.
 - Updated dependencies [6aa7fbb]
-    - @gitbook/api@0.191.0
+  - @gitbook/api@0.191.0
 
 ## 0.8.0
 
@@ -25,9 +31,9 @@
 ### Patch Changes
 
 - cf6d2ea: - Open the changes in GitBook in diff mode by default
-    - Updated the commit status description to be more informative about the target
+  - Updated the commit status description to be more informative about the target
 - Updated dependencies [651e18d]
-    - @gitbook/api@0.185.0
+  - @gitbook/api@0.185.0
 
 ## 0.6.7
 
@@ -36,7 +42,7 @@
 - d12bbb0: Fix git sync export showing no commit message for computed revisions
 - 0cc2b06: Revert previous gitsync integration changes
 - Updated dependencies [d12bbb0]
-    - @gitbook/api@0.178.0
+  - @gitbook/api@0.178.0
 
 ## 0.6.6
 
@@ -44,7 +50,7 @@
 
 - b65956d: Limit Git Sync branch selector requests to the first page of branches to avoid configuration timeouts on repositories with large branch counts.
 - Updated dependencies [16379b1]
-    - @gitbook/api@0.174.0
+  - @gitbook/api@0.174.0
 
 ## 0.6.5
 
@@ -59,7 +65,7 @@
 
 - 247db36: Improve support for proxy
 - Updated dependencies [7cb9bbc]
-    - @gitbook/api@0.152.1
+  - @gitbook/api@0.152.1
 
 ## 0.6.3
 
@@ -67,7 +73,7 @@
 
 - d7fa48f: Replace custom code for tasks to leverage the new runtime API.
 - Updated dependencies [d7fa48f]
-    - @gitbook/runtime@0.23.0
+  - @gitbook/runtime@0.23.0
 
 ## 0.6.2
 
@@ -153,8 +159,8 @@
 
 - 7d76dfb: Update integrations to use latest runtime and api client with `User-Agent`
 - Updated dependencies [46c9686]
-    - @gitbook/runtime@0.11.0
-    - @gitbook/api@0.27.0
+  - @gitbook/runtime@0.11.0
+  - @gitbook/api@0.27.0
 
 ## 0.0.12
 

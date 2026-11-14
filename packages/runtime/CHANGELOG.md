@@ -1,5 +1,26 @@
 # @gitbook/runtime
 
+## 0.25.0
+
+### Minor Changes
+
+- 6c91f6d: Update integrations to support new Oauth transaction Id
+
+### Patch Changes
+
+- Updated dependencies [92a6f32]
+  - @gitbook/api@0.209.0
+
+## 0.24.0
+
+### Minor Changes
+
+- 1c9a399: Expose the request user in the runtime context
+
+### Patch Changes
+
+- 5fb12f3: Clean up logging in the OAuth exchange and token refresh flows
+
 ## 0.23.3
 
 ### Patch Changes
@@ -12,7 +33,7 @@
 
 - 25d0e77: Use NPM trusted publishing for publishing the package.
 - Updated dependencies [25d0e77]
-    - @gitbook/api@0.160.1
+  - @gitbook/api@0.160.1
 
 ## 0.23.1
 
@@ -57,7 +78,7 @@
 
 - 99ac594: Update OpenAPI spec parsing and take order of tags in consideration
 - Updated dependencies [c24bcd1]
-    - @gitbook/api@0.96.1
+  - @gitbook/api@0.96.1
 
 ## 0.19.0
 
@@ -68,7 +89,7 @@
 ### Patch Changes
 
 - Updated dependencies [0d67d6e]
-    - @gitbook/api@0.95.0
+  - @gitbook/api@0.95.0
 
 ## 0.18.0
 
@@ -79,7 +100,7 @@
 ### Patch Changes
 
 - Updated dependencies [a5d441f]
-    - @gitbook/api@0.92.0
+  - @gitbook/api@0.92.0
 
 ## 0.17.0
 
@@ -90,7 +111,7 @@
 ### Patch Changes
 
 - Updated dependencies [597ba64]
-    - @gitbook/api@0.67.0
+  - @gitbook/api@0.67.0
 
 ## 0.16.0
 
@@ -101,7 +122,7 @@
 ### Patch Changes
 
 - Updated dependencies [0cd6eb4]
-    - @gitbook/api@0.65.0
+  - @gitbook/api@0.65.0
 
 ## 0.15.0
 
@@ -132,7 +153,7 @@
 ### Patch Changes
 
 - Updated dependencies [0961cf4]
-    - @gitbook/api@0.31.0
+  - @gitbook/api@0.31.0
 
 ## 0.12.0
 
@@ -149,7 +170,7 @@
 ### Patch Changes
 
 - Updated dependencies [46c9686]
-    - @gitbook/api@0.27.0
+  - @gitbook/api@0.27.0
 
 ## 0.10.3
 
@@ -178,7 +199,7 @@
 ### Patch Changes
 
 - Updated dependencies [619e1e9]
-    - @gitbook/api@0.14.0
+  - @gitbook/api@0.14.0
 
 ## 0.9.0
 
@@ -189,7 +210,7 @@
 ### Patch Changes
 
 - Updated dependencies [4affdac]
-    - @gitbook/api@0.9.0
+  - @gitbook/api@0.9.0
 
 ## 0.8.0
 
@@ -262,10 +283,10 @@
 
 - 782d91b: Allow `createOAuthHandler` to update the entire installation (including the externalIds)
 - 5df9eff: Fixed a few bugs in the slack integration
-    - The channels endpoint didn't support pagination and that could lead to some unexpected behaviors due to the inherent weirdness of the slack API. See context here: https://github.com/GitbookIO/support-bucket/issues/961
-    - The README was missing the signing secret step for publishing an integration.
-    - There was a bug where the signature validation code would lock the body by reading it, which made it throw once the event tried to read from it again. Solved with a request clone.
-    - There was an issue in the slack manifests where we would call the events path for `url_verifications`, but that should happen under `events_task`.
+  - The channels endpoint didn't support pagination and that could lead to some unexpected behaviors due to the inherent weirdness of the slack API. See context here: https://github.com/GitbookIO/support-bucket/issues/961
+  - The README was missing the signing secret step for publishing an integration.
+  - There was a bug where the signature validation code would lock the body by reading it, which made it throw once the event tried to read from it again. Solved with a request clone.
+  - There was an issue in the slack manifests where we would call the events path for `url_verifications`, but that should happen under `events_task`.
 - Updated dependencies [f0c07cb]
 - Updated dependencies [782d91b]
-    - @gitbook/api@null
+  - @gitbook/api@null

@@ -1,6 +1,12 @@
 import { Router } from 'itty-router';
 
-import { createOAuthHandler, FetchEventCallback, OAuthResponse } from '@gitbook/runtime';
+import {
+    assertAuthenticated,
+    createOAuthHandler,
+    FetchEventCallback,
+    OAuthResponse,
+    summarizeOAuthErrorBody,
+} from '@gitbook/runtime';
 
 import {
     createSlackEventsHandler,
@@ -65,7 +71,7 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
             extractCredentials: (response) => {
                 if (!response.ok) {
                     throw new Error(
-                        `Failed to exchange code for access token ${JSON.stringify(response)}`,
+                        `Failed to exchange code for access token: ${summarizeOAuthErrorBody(response)}`,
                     );
                 }
 
@@ -120,8 +126,11 @@ export const handleFetchEvent: FetchEventCallback = async (request, context) => 
 
     /*
      * List the channels the user can select in the configuration flow.
+     * Requires a verified GitBook user.
      */
     router.get('/channels', async () => {
+        assertAuthenticated(context);
+
         const channels = await getChannelsPaginated(context);
 
         const completions = channels.map((channel) => ({
