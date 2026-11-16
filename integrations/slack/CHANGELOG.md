@@ -1,5 +1,11 @@
 # @gitbook/integration-slack
 
+## 2.7.3
+
+### Patch Changes
+
+- 16c96f1: Rebuild all built-in integrations with the updated runtime’s support for recoverable errors and safe handling of integration authentication failures.
+
 ## 2.7.2
 
 ### Patch Changes

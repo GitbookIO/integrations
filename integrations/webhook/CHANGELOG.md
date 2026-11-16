@@ -1,5 +1,11 @@
 # @gitbook/integration-webhook
 
+## 1.1.1
+
+### Patch Changes
+
+- 16c96f1: Rebuild all built-in integrations with the updated runtime’s support for recoverable errors and safe handling of integration authentication failures.
+
 ## 1.1.0
 
 ### Minor Changes
@@ -11,4 +17,4 @@
 - 7a8ee22: Introduce the Webhook integration and bumps api and cli to latest openapi spec.
 - 1e572d3: Simpler config screens and fix documentation links in webhook integration.
 - Updated dependencies [7a8ee22]
-    - @gitbook/api@0.143.0
+  - @gitbook/api@0.143.0

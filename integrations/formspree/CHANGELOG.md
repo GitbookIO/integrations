@@ -1,5 +1,18 @@
 # @gitbook/integration-formspree
 
+## 0.3.6
+
+### Patch Changes
+
+- 16c96f1: Rebuild all built-in integrations with the updated runtime’s support for recoverable errors and safe handling of integration authentication failures.
+
+## 0.3.5
+
+### Patch Changes
+
+- Updated dependencies [88860e0]
+  - @gitbook/runtime@0.26.0
+
 ## 0.3.4
 
 ### Patch Changes
