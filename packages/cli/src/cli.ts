@@ -173,13 +173,26 @@ registerCustomCommands(program);
 
 // The integration build/publish lifecycle (new/dev/publish/…) lives under the
 // singular `integration` group, kept distinct from the spec-generated plural
-// `integrations` group (raw API ops). People reasonably look under `integrations`
-// first, so point them across from there.
+// `integrations` group (raw API ops). The names differ by one letter and both
+// groups have `dev`, `publish`, and `unpublish`, so describe each by what it
+// works on (local source vs. integrations already on GitBook) and point across
+// in both directions.
+const integrationGroup = program.commands.find((c) => c.name() === 'integration');
 const integrationsGroup = program.commands.find((c) => c.name() === 'integrations');
-integrationsGroup?.addHelpText(
-    'after',
-    `\nTo create, run, or publish your own integration (new, dev, publish, …), see \`${program.name()} integration --help\`.`,
-);
+integrationGroup
+    ?.description('develop your own integration from local source: new, dev, check, publish, tail')
+    .addHelpText(
+        'after',
+        `\nTo list, inspect, or install integrations already on GitBook, see \`${program.name()} integrations --help\`.`,
+    );
+integrationsGroup
+    ?.description(
+        'Find and install published integrations (API); to build your own, use `integration`',
+    )
+    .addHelpText(
+        'after',
+        `\nThese commands call the GitBook API directly. To create, run, or publish your own integration from source (new, dev, publish, …), use \`${program.name()} integration\` instead: see \`${program.name()} integration --help\`.`,
+    );
 
 // Root help: the generated groups are named after API resources ("Manage spaces", …), so
 // point to the docs for the workflows they add up to, rather than duplicating them here.
