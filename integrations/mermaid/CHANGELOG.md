@@ -1,5 +1,11 @@
 # @gitbook/integration-mermaid
 
+## 0.4.4
+
+### Patch Changes
+
+- 16c96f1: Rebuild all built-in integrations with the updated runtime’s support for recoverable errors and safe handling of integration authentication failures.
+
 ## 0.4.3
 
 ### Patch Changes
@@ -37,7 +43,7 @@
 - d3b3fc8: Add support for new @webframe/resize API
 - Updated dependencies [f0d076e]
 - Updated dependencies [6341510]
-    - @gitbook/api@0.98.0
+  - @gitbook/api@0.98.0
 
 ## 0.3.2
 
@@ -100,8 +106,8 @@
 
 - 7d76dfb: Update integrations to use latest runtime and api client with `User-Agent`
 - Updated dependencies [46c9686]
-    - @gitbook/runtime@0.11.0
-    - @gitbook/api@0.27.0
+  - @gitbook/runtime@0.11.0
+  - @gitbook/api@0.27.0
 
 ## 0.1.1
 
@@ -126,5 +132,5 @@
 - Updated dependencies [9fa2838]
 - Updated dependencies [ce12efa]
 - Updated dependencies [5df9eff]
-    - @gitbook/api@null
-    - @gitbook/runtime@null
+  - @gitbook/api@null
+  - @gitbook/runtime@null

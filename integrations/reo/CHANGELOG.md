@@ -1,5 +1,11 @@
 # @gitbook/integration-reo.dev
 
+## 0.5.1
+
+### Patch Changes
+
+- 16c96f1: Rebuild all built-in integrations with the updated runtime’s support for recoverable errors and safe handling of integration authentication failures.
+
 ## 0.5.0
 
 ### Minor Changes
@@ -15,7 +21,7 @@
 ### Patch Changes
 
 - Updated dependencies [b72b44b]
-    - @gitbook/api@0.131.0
+  - @gitbook/api@0.131.0
 
 ## 0.3.2
 
@@ -57,4 +63,4 @@
 ### Patch Changes
 
 - Updated dependencies [a04dfb8]
-    - @gitbook/api@0.58.0
+  - @gitbook/api@0.58.0

@@ -1,5 +1,11 @@
 # @gitbook/cli
 
+## 0.33.2
+
+### Patch Changes
+
+- 2cb98d6: Describe the CLI as a general GitBook tool in `--help` (spaces, change requests, sites and publishing, integrations), link to the CLI, publishing, and agent setup docs from the root help, and explain that `gitbook login` needs a localhost callback, pointing remote and sandboxed environments to `gitbook auth`.
+
 ## 0.33.1
 
 ### Patch Changes

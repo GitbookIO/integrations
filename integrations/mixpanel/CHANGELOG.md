@@ -1,5 +1,11 @@
 # @gitbook/integration-mixpanel
 
+## 0.7.1
+
+### Patch Changes
+
+- 16c96f1: Rebuild all built-in integrations with the updated runtime’s support for recoverable errors and safe handling of integration authentication failures.
+
 ## 0.7.0
 
 ### Minor Changes
@@ -21,7 +27,7 @@
 ### Patch Changes
 
 - Updated dependencies [b72b44b]
-    - @gitbook/api@0.131.0
+  - @gitbook/api@0.131.0
 
 ## 0.4.2
 
@@ -69,7 +75,7 @@
 ### Patch Changes
 
 - Updated dependencies [a04dfb8]
-    - @gitbook/api@0.58.0
+  - @gitbook/api@0.58.0
 
 ## 0.0.4
 
@@ -83,7 +89,7 @@
 
 - cebbcb6: Updating inject scripts integration to support sites installations
 - Updated dependencies [cebbcb6]
-    - @gitbook/runtime@0.14.1
+  - @gitbook/runtime@0.14.1
 
 ## 0.0.2
 
