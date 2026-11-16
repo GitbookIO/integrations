@@ -11,12 +11,47 @@ export async function handleSubmit(formspreeId: string, body: FormspreeBodyData)
         body: JSON.stringify(cleanedFormBody),
         headers: {
             Accept: 'application/json',
+            'Content-Type': 'application/json',
         },
     });
 
     if (!response.ok) {
-        if (response.status === 422) {
-            throw new IntegrationError('invalid_input');
+        if (response.status === 400 || response.status === 422) {
+            const body: unknown = await response.json().catch(() => null);
+            if (
+                body &&
+                typeof body === 'object' &&
+                'errors' in body &&
+                Array.isArray(body.errors)
+            ) {
+                const errors: unknown[] = body.errors;
+                for (const error of errors) {
+                    if (!error || typeof error !== 'object' || !('code' in error)) {
+                        continue;
+                    }
+                    switch (error.code) {
+                        case 'INACTIVE':
+                        case 'BLOCKED':
+                        case 'PROJECT_NOT_FOUND':
+                        case 'FORM_NOT_FOUND':
+                            throw new IntegrationError('configuration_required');
+                        case 'EMPTY':
+                            throw new IntegrationError('invalid_input');
+                        case 'REQUIRED_FIELD_MISSING':
+                        case 'REQUIRED_FIELD_EMPTY':
+                        case 'TYPE_EMAIL':
+                        case 'TYPE_NUMERIC':
+                        case 'TYPE_TEXT':
+                            if (
+                                'field' in error &&
+                                typeof error.field === 'string' &&
+                                ['email', 'name', 'message'].includes(error.field)
+                            ) {
+                                throw new IntegrationError('invalid_input');
+                            }
+                    }
+                }
+            }
         }
         if ([401, 403, 404].includes(response.status)) {
             throw new IntegrationError('configuration_required');

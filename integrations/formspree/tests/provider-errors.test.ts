@@ -10,7 +10,12 @@ afterEach(() => {
 });
 
 it('reports rejected form input without submitting again', async () => {
-    const fetchMock = mock(async () => new Response('private-provider-body', { status: 422 }));
+    const fetchMock = mock(async () =>
+        Response.json(
+            { errors: [{ code: 'TYPE_EMAIL', field: 'email', message: 'private-provider-body' }] },
+            { status: 422 },
+        ),
+    );
     globalThis.fetch = fetchMock as unknown as typeof fetch;
     await expect(handleSubmit('form', INPUT)).rejects.toMatchObject({
         reason: 'invalid_input',
@@ -26,4 +31,25 @@ it('keeps provider outages unexpected', async () => {
     const error = await handleSubmit('form', INPUT).catch((error) => error);
     expect(error).toBeInstanceOf(Error);
     expect(error).not.toBeInstanceOf(ExposableError);
+});
+
+it.each([
+    () => new Response('<html>private-provider-body</html>', { status: 422 }),
+    () => Response.json({ errors: [{ code: 'UNKNOWN' }] }, { status: 422 }),
+    () => Response.json({ errors: [{ code: 'TYPE_EMAIL', field: 'email' }] }, { status: 503 }),
+])('keeps unrecognized and unavailable responses unexpected', async (response) => {
+    globalThis.fetch = mock(async () => response()) as unknown as typeof fetch;
+    const error = await handleSubmit('form', INPUT).catch((error) => error);
+    expect(error).toBeInstanceOf(Error);
+    expect(error).not.toBeInstanceOf(ExposableError);
+});
+
+it('recognizes a disabled form as a configuration failure', async () => {
+    globalThis.fetch = mock(async () =>
+        Response.json({ errors: [{ code: 'INACTIVE' }] }, { status: 422 }),
+    ) as unknown as typeof fetch;
+    await expect(handleSubmit('form', INPUT)).rejects.toMatchObject({
+        reason: 'configuration_required',
+        code: 424,
+    });
 });
