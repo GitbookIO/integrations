@@ -1,5 +1,11 @@
 # @gitbook/integration-onetrust
 
+## 0.1.4
+
+### Patch Changes
+
+- 16c96f1: Rebuild all built-in integrations with the updated runtime’s support for recoverable errors and safe handling of integration authentication failures.
+
 ## 0.1.3
 
 ### Patch Changes
@@ -12,7 +18,7 @@
 
 - 8cb514d: Add GPC support to OneTrust cookie banner
 - Updated dependencies [30ca6c3]
-    - @gitbook/api@0.165.0
+  - @gitbook/api@0.165.0
 
 ## 0.1.1
 

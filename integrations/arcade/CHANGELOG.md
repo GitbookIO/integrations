@@ -1,5 +1,11 @@
 # @gitbook/integration-arcade
 
+## 0.3.1
+
+### Patch Changes
+
+- 16c96f1: Rebuild all built-in integrations with the updated runtime’s support for recoverable errors and safe handling of integration authentication failures.
+
 ## 0.3.0
 
 ### Minor Changes
@@ -28,7 +34,7 @@
 ### Patch Changes
 
 - Updated dependencies [c3a7bb5]
-    - @gitbook/api@0.77.0
+  - @gitbook/api@0.77.0
 
 ## 0.1.0
 
@@ -42,8 +48,8 @@
 
 - 7d76dfb: Update integrations to use latest runtime and api client with `User-Agent`
 - Updated dependencies [46c9686]
-    - @gitbook/runtime@0.11.0
-    - @gitbook/api@0.27.0
+  - @gitbook/runtime@0.11.0
+  - @gitbook/api@0.27.0
 
 ## 0.0.2
 
@@ -64,5 +70,5 @@
 - Updated dependencies [9fa2838]
 - Updated dependencies [ce12efa]
 - Updated dependencies [5df9eff]
-    - @gitbook/api@null
-    - @gitbook/runtime@null
+  - @gitbook/api@null
+  - @gitbook/runtime@null

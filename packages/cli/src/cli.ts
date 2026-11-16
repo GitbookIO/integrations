@@ -206,6 +206,18 @@ Docs:
 `,
 );
 
+// Root help: the generated groups are named after API resources ("Manage spaces", …), so
+// point to the docs for the workflows they add up to, rather than duplicating them here.
+program.addHelpText(
+    'after',
+    `
+Docs:
+  CLI guide (auth, output formats, examples)  https://gitbook.com/docs/docs-as-code/gitbook-cli
+  Publish a site from the command line        https://gitbook.com/docs/guides/editing-and-publishing-documentation/create-and-publish-a-site-from-the-command-line
+  Set up GitBook from an AI agent             https://gitbook.com/docs/setup.md
+`,
+);
+
 // Reveal nested subgroups in `--help` (Commander shows only immediate children).
 installCommandTreeHelp(program);
 

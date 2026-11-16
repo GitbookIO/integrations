@@ -1,5 +1,11 @@
 # @gitbook/integration-pendo
 
+## 0.0.7
+
+### Patch Changes
+
+- 16c96f1: Rebuild all built-in integrations with the updated runtime’s support for recoverable errors and safe handling of integration authentication failures.
+
 ## 0.0.6
 
 ### Patch Changes

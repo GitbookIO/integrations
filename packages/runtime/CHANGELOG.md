@@ -1,5 +1,11 @@
 # @gitbook/runtime
 
+## 0.26.0
+
+### Minor Changes
+
+- 88860e0: Add `IntegrationError` for explicitly identified connection, configuration and input failures. Keep integration authentication errors separate from the GitBook login and unexpected failures as JSON 500 responses.
+
 ## 0.25.0
 
 ### Minor Changes
