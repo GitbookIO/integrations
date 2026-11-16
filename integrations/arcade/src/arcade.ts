@@ -1,4 +1,4 @@
-import { ExposableError } from '@gitbook/runtime';
+import { IntegrationError } from '@gitbook/runtime';
 
 export interface ArcadeOEmbed {
     type: 'rich';
@@ -17,8 +17,11 @@ export async function fetchArcadeOEmbedData(flowId: string): Promise<ArcadeOEmbe
     const response = await fetch(url.toString());
 
     if (!response.ok) {
-        if (response.status < 500) {
-            throw new ExposableError(response.statusText, response.status);
+        if ([400, 404, 422].includes(response.status)) {
+            throw new IntegrationError('invalid_input');
+        }
+        if (response.status === 401 || response.status === 403) {
+            throw new IntegrationError('configuration_required');
         }
 
         throw new Error(`${response.status} ${response.statusText}`);

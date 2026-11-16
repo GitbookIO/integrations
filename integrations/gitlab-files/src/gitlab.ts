@@ -1,4 +1,4 @@
-import { ExposableError } from '@gitbook/runtime';
+import { IntegrationError } from '@gitbook/runtime';
 import { GitlabInstallationConfiguration, GitlabRuntimeContext } from './types';
 
 export interface GitlabProps {
@@ -84,7 +84,10 @@ const getGitlabApiResponse = async (
     });
 
     if (!res.ok) {
-        if (res.status === 401 || res.status === 403 || res.status === 404) {
+        if (res.status === 401) {
+            throw new IntegrationError('authentication_required');
+        }
+        if (res.status === 403 || res.status === 404) {
             return false;
         } else {
             throw new Error(`Response status from ${baseURL}: ${res.status}`);
@@ -125,7 +128,7 @@ export const getGitlabContent = async (url: string, context: GitlabRuntimeContex
     const accessToken = configuration.oauth_credentials?.access_token;
 
     if (!accessToken) {
-        throw new ExposableError('Integration is not authenticated');
+        throw new IntegrationError('authentication_required');
     }
 
     let content: string | boolean = '';

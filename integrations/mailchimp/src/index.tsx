@@ -4,7 +4,7 @@ import {
     createComponent,
     createIntegration,
     createOAuthHandler,
-    ExposableError,
+    IntegrationError,
     Logger,
     RuntimeContext,
     RuntimeEnvironment,
@@ -71,7 +71,7 @@ const mailchimpSubscribe = createComponent<
                 const configuration = environment.installation?.configuration;
                 const accessToken = configuration?.oauth_credentials?.access_token;
                 if (!accessToken) {
-                    throw new ExposableError('Mailchimp integration not configured');
+                    throw new IntegrationError('authentication_required');
                 }
 
                 try {
@@ -82,7 +82,7 @@ const mailchimpSubscribe = createComponent<
                     );
 
                     if (!listId) {
-                        throw new Error(`no lists found`);
+                        throw new IntegrationError('configuration_required');
                     }
 
                     await subscribeUserToList(listId, action.email, {
@@ -97,6 +97,9 @@ const mailchimpSubscribe = createComponent<
                         },
                     };
                 } catch (err) {
+                    if (!(err instanceof IntegrationError) || err.reason !== 'invalid_input') {
+                        throw err;
+                    }
                     logger.error('Error while subscribing', (err as Error).stack);
 
                     return {
@@ -109,7 +112,7 @@ const mailchimpSubscribe = createComponent<
             }
             case '@ui.modal.close': {
                 if (!('cta' in action)) {
-                    throw new ExposableError('Invalid @ui.modal.close action payload');
+                    throw new IntegrationError('invalid_input');
                 }
                 return {
                     props: {
@@ -215,7 +218,7 @@ const settingsModal = createComponent<
         const accessToken = configuration?.oauth_credentials?.access_token;
 
         if (!accessToken) {
-            throw new ExposableError('Mailchimp integration not configured');
+            throw new IntegrationError('authentication_required');
         }
 
         const { listId } = element.props;

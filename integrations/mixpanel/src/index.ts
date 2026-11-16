@@ -1,5 +1,6 @@
 import {
     createIntegration,
+    IntegrationError,
     FetchPublishScriptEventCallback,
     RuntimeContext,
     RuntimeEnvironment,
@@ -42,11 +43,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
         environment.siteInstallation?.configuration?.server_region || 'Standard (US)';
 
     if (!projectToken) {
-        throw new Error(
-            `The Mixpanel Project Token is missing from the configuration (ID: ${
-                'spaceId' in event ? event.spaceId : event.siteId
-            }).`,
-        );
+        throw new IntegrationError('configuration_required');
     }
 
     const apiHost = getApiHost(serverRegion);

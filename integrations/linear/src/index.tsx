@@ -1,5 +1,11 @@
 import { ContentKitBlock, ContentKitIcon, ContentKitModal } from '@gitbook/api';
-import { createIntegration, createComponent, createOAuthHandler, Logger } from '@gitbook/runtime';
+import {
+    createIntegration,
+    createComponent,
+    createOAuthHandler,
+    IntegrationError,
+    Logger,
+} from '@gitbook/runtime';
 import { extractLinearIssueIdFromLink, getLinearAPIClient } from './linear';
 import { IssueQuery } from './linear/gql/graphql';
 import { LinearRuntimeContext } from './types';
@@ -118,6 +124,9 @@ const embedBlock = createComponent<{
         try {
             response = await linearClient.issue({ id: issueId });
         } catch (error) {
+            if (error instanceof IntegrationError) {
+                throw error;
+            }
             logger.info(
                 `API Error when fetching the issue (ID: ${issueId})`,
                 JSON.stringify(error),
@@ -228,6 +237,9 @@ const previewModal = createComponent<{
         try {
             response = await linearClient.issue({ id: issueId });
         } catch (error) {
+            if (error instanceof IntegrationError) {
+                throw error;
+            }
             logger.info(
                 `API Error when fetching the issue (ID: ${issueId})`,
                 JSON.stringify(error),

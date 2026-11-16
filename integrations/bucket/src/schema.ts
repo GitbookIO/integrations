@@ -1,4 +1,4 @@
-import { Logger } from '@gitbook/runtime';
+import { IntegrationError, Logger } from '@gitbook/runtime';
 import type { ReflagRuntimeContext } from './types';
 import {
     GitBookAPI,
@@ -47,7 +47,7 @@ export async function handleSyncAdaptiveSchema(
                 ? siteInstallation.configuration.secret_key
                 : null;
         if (typeof secretKey !== 'string' || !secretKey) {
-            throw new Error(`No secret key configured in the site installation ${siteId}`);
+            throw new IntegrationError('configuration_required');
         }
 
         const { data: site } = await api.orgs.getSiteById(organizationId, siteId);
@@ -161,6 +161,9 @@ async function getFeatureFlags(secretKey: string) {
     });
 
     if (!res.ok) {
+        if (res.status === 401 || res.status === 403) {
+            throw new IntegrationError('configuration_required');
+        }
         throw new Error(`(${res.status}) Failed to fetch feature flags: ${res.statusText}`);
     }
 

@@ -9,7 +9,7 @@ import {
     RuntimeContext,
     RuntimeEnvironment,
     createComponent,
-    ExposableError,
+    IntegrationError,
 } from '@gitbook/runtime';
 
 const logger = Logger('okta.visitor-auth');
@@ -120,9 +120,13 @@ const configBlock = createComponent<OktaProps, OktaState, OktaAction, OktaRuntim
                     });
 
                     if (!discoveryResp.ok) {
-                        throw new ExposableError(
-                            'Error: The Okta custom auth server ID provided is invalid',
-                        );
+                        if (discoveryResp.status === 400 || discoveryResp.status === 404) {
+                            throw new IntegrationError('invalid_input');
+                        }
+                        if (discoveryResp.status === 401 || discoveryResp.status === 403) {
+                            throw new IntegrationError('configuration_required');
+                        }
+                        throw new Error(`Okta discovery failed: HTTP ${discoveryResp.status}`);
                     }
                     const { authorization_endpoint, token_endpoint } =
                         await discoveryResp.json<OktaCustomAuthServerDiscoveryData>();
@@ -557,7 +561,7 @@ export default createIntegration({
         const location = event.location ? event.location : '';
 
         if (!clientId || !oktaDomain) {
-            throw new ExposableError('OIDC configuration is missing');
+            throw new IntegrationError('configuration_required');
         }
 
         const oktaCustomAuthServerConfig = siteInstallation.configuration.okta_custom_auth_server;

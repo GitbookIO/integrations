@@ -1,4 +1,4 @@
-import { ExposableError } from '@gitbook/runtime';
+import { IntegrationError } from '@gitbook/runtime';
 import type { GithubInstallationConfiguration, GithubRuntimeContext } from './types';
 
 export interface GithubProps {
@@ -95,6 +95,9 @@ const getGithubApiResponse = async (
     });
 
     if (!res.ok) {
+        if (res.status === 401) {
+            throw new IntegrationError('authentication_required');
+        }
         if (res.status === 403 || res.status === 404) {
             return false;
         }
@@ -129,7 +132,7 @@ export const getGithubContent = async (url: string, context: GithubRuntimeContex
         ?.configuration as GithubInstallationConfiguration;
     const accessToken = configuration.oauth_credentials?.access_token;
     if (!accessToken) {
-        throw new ExposableError('Integration is not authenticated with GitHub');
+        throw new IntegrationError('authentication_required');
     }
 
     content = await fetchGithubFile(

@@ -13,6 +13,7 @@
         "typecheck": "tsc --noEmit",
         "check": "gitbook check",
         "publish-integrations-staging": "gitbook publish .",
-        "publish-integrations": "gitbook publish ."
+        "publish-integrations": "gitbook publish .",
+        "test": "bun test"
     }
 }
