@@ -1,5 +1,11 @@
 # @gitbook/integration-crisp
 
+## 0.4.5
+
+### Patch Changes
+
+- 16c96f1: Rebuild all built-in integrations with the updated runtime’s support for recoverable errors and safe handling of integration authentication failures.
+
 ## 0.4.4
 
 ### Patch Changes
@@ -12,7 +18,7 @@
 
 - 827b288: Fix CSP format
 - Updated dependencies [1950ba3]
-    - @gitbook/api@0.88.1
+  - @gitbook/api@0.88.1
 
 ## 0.4.2
 
@@ -60,4 +66,4 @@
 ### Patch Changes
 
 - Updated dependencies [a04dfb8]
-    - @gitbook/api@0.58.0
+  - @gitbook/api@0.58.0

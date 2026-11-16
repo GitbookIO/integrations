@@ -1,5 +1,11 @@
 # @gitbook/integration-helpscout
 
+## 1.5.2
+
+### Patch Changes
+
+- 16c96f1: Rebuild all built-in integrations with the updated runtime’s support for recoverable errors and safe handling of integration authentication failures.
+
 ## 1.5.1
 
 ### Patch Changes
