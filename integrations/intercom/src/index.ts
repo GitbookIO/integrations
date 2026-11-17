@@ -15,6 +15,7 @@ type IntercomRuntimeContext = RuntimeContext<
         {
             app_id?: string;
             region?: IntercomRegion;
+            load_before_consent?: boolean;
         }
     >
 >;
@@ -37,9 +38,13 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 
     const region = environment.siteInstallation?.configuration?.region ?? 'US';
     const apiBase = apiBases[region] ?? apiBases.US;
+    const loadBeforeConsent = environment.siteInstallation?.configuration?.load_before_consent;
 
     return new Response(
-        (script as string).replace('<TO_REPLACE>', appId).replace('<API_BASE>', apiBase),
+        (script as string)
+            .replace('<TO_REPLACE>', appId)
+            .replace('<API_BASE>', apiBase)
+            .replace('<LOAD_BEFORE_CONSENT>', loadBeforeConsent ? 'true' : 'false'),
         {
             headers: {
                 'Content-Type': 'application/javascript',
