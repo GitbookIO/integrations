@@ -93,7 +93,7 @@ configurations:
             load_before_consent:
                 type: boolean
                 title: Show chat before cookie consent
-                description: Load the Intercom chat even when visitors have not accepted cookies. Intercom sets its own cookies, so check this fits your cookie policy.
+                description: Load Intercom for visitors who have not accepted cookies. Intercom sets its own cookies.
                 default: false
         required:
             - app_id
