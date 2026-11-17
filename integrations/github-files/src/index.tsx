@@ -1,15 +1,15 @@
 import { Router } from 'itty-router';
 
-import { ContentKitIcon, RequestUpdateIntegrationInstallation } from '@gitbook/api';
+import { ContentKitIcon } from '@gitbook/api';
 import {
     createIntegration,
     createComponent,
     createOAuthHandler,
-    OAuthResponse,
     FetchEventCallback,
 } from '@gitbook/runtime';
 
 import { getGithubContent, GithubProps } from './github';
+import { getGithubOAuthConfiguration } from './oauth';
 import { GithubRuntimeContext } from './types';
 import { getFileExtension } from './utils';
 
@@ -162,17 +162,7 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
     router.get(
         '/oauth',
         // @ts-ignore
-        createOAuthHandler({
-            redirectURL: `${context.environment.integration.urls.publicEndpoint}/oauth`,
-            clientId: environment.secrets.CLIENT_ID,
-            clientSecret: environment.secrets.CLIENT_SECRET,
-            authorizeURL: 'https://github.com/login/oauth/authorize',
-            accessTokenURL: 'https://github.com/login/oauth/access_token',
-            scopes: ['repo'],
-            prompt: 'consent',
-            pkce: true,
-            extractCredentials,
-        }),
+        createOAuthHandler(getGithubOAuthConfiguration(context)),
     );
 
     const response = await router.handle(request, context);
@@ -183,22 +173,6 @@ const handleFetchEvent: FetchEventCallback<GithubRuntimeContext> = async (reques
     }
 
     return response;
-};
-
-const extractCredentials = async (
-    response: OAuthResponse,
-): Promise<RequestUpdateIntegrationInstallation> => {
-    const { access_token } = response;
-
-    return {
-        configuration: {
-            oauth_credentials: {
-                access_token,
-                expires_at: Date.now() + response.expires_in * 1000,
-                refresh_token: response.refresh_token,
-            },
-        },
-    };
 };
 
 export default createIntegration<GithubRuntimeContext>({
