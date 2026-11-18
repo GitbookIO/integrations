@@ -79,7 +79,7 @@ jobs:
             - name: Build all integrations
               run: bun run build
             - name: Prepare publish requests
-              run: bun packages/cli/src/prepare-ci-publish.ts staging "$RUNNER_TEMP/publish"
+              run: bun scripts/prepare-ci-publish.mjs staging "$RUNNER_TEMP/publish"
             - name: Record artifact digest
               id: digest
               shell: bash
@@ -108,6 +108,10 @@ jobs:
               uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
               with:
                   persist-credentials: false
+            - name: Set up Bun for the built-in YAML parser
+              uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+              with:
+                  bun-version-file: 'package.json'
             - name: Download publish requests
               uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
               with:
@@ -121,12 +125,14 @@ jobs:
                   test "${digest%% *}" = "$EXPECTED_DIGEST"
               env:
                   EXPECTED_DIGEST: ${{ needs.prepare-integrations-staging.outputs.publish-digest }}
+            - name: Check release targets against the protected checkout
+              run: bun --no-install scripts/publish-prepared-integrations.mjs staging "$RUNNER_TEMP/publish" --check
             - name: Setup 1Password CLI
               uses: ./.github/composite/setup-1password-op
               with:
                   OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
             - name: Publish prepared integrations
-              run: node scripts/publish-prepared-integrations.mjs staging "$RUNNER_TEMP/publish"
+              run: bun --no-install scripts/publish-prepared-integrations.mjs staging "$RUNNER_TEMP/publish"
               env:
                   OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
                   # Proxy
