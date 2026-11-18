@@ -1,5 +1,13 @@
 # @gitbook/cli
 
+## 0.33.4
+
+### Patch Changes
+
+- c5a4983: Add an optional `target` (`self` or `blank`) to inline links, so a link can open in the same tab or a new tab.
+- Updated dependencies [c5a4983]
+  - @gitbook/api@0.210.0
+
 ## 0.33.3
 
 ### Patch Changes
