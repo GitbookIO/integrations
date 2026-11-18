@@ -5,15 +5,15 @@ on:
         types: [published]
 
 jobs:
-    deploy-integration-to-production:
+    prepare-integrations-production:
         if: startsWith(github.event.release.tag_name, '@gitbook/integration-')
-        name: Deploy integration to production
+        name: Prepare integration for production
         runs-on: ubuntu-latest
-        # The GitBook API only accepts OIDC tokens from this environment, on protected release tags.
         environment: production
         permissions:
             contents: read
-            id-token: write
+        outputs:
+            publish-digest: ${{ steps.digest.outputs.value }}
         steps:
             # The tag name comes from the release event: validate it before any use.
             - name: Get integration package name
@@ -35,10 +35,6 @@ jobs:
               uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
               with:
                   bun-version-file: 'package.json'
-            - name: Setup 1Password CLI
-              uses: ./.github/composite/setup-1password-op
-              with:
-                  OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
             - name: Install dependencies
               run: bun install --frozen-lockfile
 
@@ -50,53 +46,91 @@ jobs:
                   CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
                   CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
 
-            - name: Build integration
+            - name: Build integration dependencies
               run: bunx turbo run build --filter="$INTEGRATION_PACKAGE"
               env:
                   INTEGRATION_PACKAGE: ${{ steps.integration-package.outputs.integrationPackage }}
-
-            # GitHub OIDC tokens expire minutes after they are issued: request one right before
-            # publishing, and run the package script directly so turbo doesn't rebuild first.
-            - name: Deploy integration
-              run: |
-                  set -o pipefail
-                  token=$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-                      "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=https://api.gitbook.com" | jq -er .value)
-                  echo "::add-mask::$token"
-                  GITBOOK_TOKEN="$token" bun run --filter "$INTEGRATION_PACKAGE" publish-integrations
+            - name: Prepare publish request
+              run: bun packages/cli/src/prepare-ci-publish.ts production "$RUNNER_TEMP/publish" "$INTEGRATION_PACKAGE"
               env:
                   INTEGRATION_PACKAGE: ${{ steps.integration-package.outputs.integrationPackage }}
-                  GITBOOK_ENDPOINT: https://api.gitbook.com
-                  GITBOOK_ORGANIZATION: gitbook
+            - name: Record artifact digest
+              id: digest
+              shell: bash
+              run: |
+                  cd "$RUNNER_TEMP/publish"
+                  digest=$(sha256sum -- *.json | sha256sum)
+                  echo "value=${digest%% *}" >> "$GITHUB_OUTPUT"
+            - name: Upload publish requests
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+              with:
+                  name: integration-publish-production
+                  path: ${{ runner.temp }}/publish
+                  if-no-files-found: error
+                  retention-days: 1
+
+    deploy-integration-to-production:
+        name: Publish integrations to production
+        needs: prepare-integrations-production
+        runs-on: ubuntu-latest
+        environment: production
+        permissions:
+            contents: read
+            id-token: write
+        steps:
+            - name: Checkout publishing code
+              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+              with:
+                  persist-credentials: false
+            - name: Download publish requests
+              uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+              with:
+                  name: integration-publish-production
+                  path: ${{ runner.temp }}/publish
+            - name: Verify artifact digest
+              shell: bash
+              run: |
+                  cd "$RUNNER_TEMP/publish"
+                  digest=$(sha256sum -- *.json | sha256sum)
+                  test "${digest%% *}" = "$EXPECTED_DIGEST"
+              env:
+                  EXPECTED_DIGEST: ${{ needs.prepare-integrations-production.outputs.publish-digest }}
+            - name: Setup 1Password CLI
+              uses: ./.github/composite/setup-1password-op
+              with:
+                  OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+            - name: Publish prepared integrations
+              run: node scripts/publish-prepared-integrations.mjs production "$RUNNER_TEMP/publish"
+              env:
                   OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
                   # Proxy
-                  GITBOOK_PROXY_URL: ${{ secrets.PROXY_URL }}
-                  GITBOOK_PROXY_SECRET: ${{ secrets.PROXY_SECRET }}
-                  REFLAG_SECRET_KEY: ${{ secrets.REFLAG_SECRET_KEY }}
+                  PUBLISH_SECRET_GITBOOK_PROXY_URL: ${{ secrets.PROXY_URL }}
+                  PUBLISH_SECRET_GITBOOK_PROXY_SECRET: ${{ secrets.PROXY_SECRET }}
+                  PUBLISH_SECRET_REFLAG_SECRET_KEY: ${{ secrets.REFLAG_SECRET_KEY }}
                   # GitHub Files
-                  UNFURL_GITHUB_CLIENT_ID: ${{ secrets.UNFURL_GITHUB_CLIENT_ID }}
-                  UNFURL_GITHUB_CLIENT_SECRET: ${{ secrets.UNFURL_GITHUB_CLIENT_SECRET }}
+                  PUBLISH_SECRET_UNFURL_GITHUB_CLIENT_ID: ${{ secrets.UNFURL_GITHUB_CLIENT_ID }}
+                  PUBLISH_SECRET_UNFURL_GITHUB_CLIENT_SECRET: ${{ secrets.UNFURL_GITHUB_CLIENT_SECRET }}
                   # GitLab
-                  GITLAB_CLIENT_ID: ${{ secrets.GITLAB_CLIENT_ID }}
-                  GITLAB_CLIENT_SECRET: ${{ secrets.GITLAB_CLIENT_SECRET }}
+                  PUBLISH_SECRET_GITLAB_CLIENT_ID: ${{ secrets.GITLAB_CLIENT_ID }}
+                  PUBLISH_SECRET_GITLAB_CLIENT_SECRET: ${{ secrets.GITLAB_CLIENT_SECRET }}
                   # Discord
-                  DISCORD_CLIENT_ID: $ {{ secrets.DISCORD_CLIENT_ID }}
-                  DISCORD_CLIENT_SECRET: $ {{ secrets.DISCORD_CLIENT_SECRET }}
-                  DISCORD_BOT_TOKEN: $ {{ secrets.DISCORD_BOT_TOKEN }}
+                  PUBLISH_SECRET_DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
+                  PUBLISH_SECRET_DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
+                  PUBLISH_SECRET_DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
                   # Mailchimp
-                  MAILCHIMP_CLIENT_ID: ${{ secrets.MAILCHIMP_PROD_CLIENT_ID }}
-                  MAILCHIMP_CLIENT_SECRET: ${{ secrets.MAILCHIMP_PROD_CLIENT_SECRET }}
+                  PUBLISH_SECRET_MAILCHIMP_CLIENT_ID: ${{ secrets.MAILCHIMP_PROD_CLIENT_ID }}
+                  PUBLISH_SECRET_MAILCHIMP_CLIENT_SECRET: ${{ secrets.MAILCHIMP_PROD_CLIENT_SECRET }}
                   # Jira
-                  JIRA_CLIENT_ID: ${{ secrets.JIRA_PROD_CLIENT_ID }}
-                  JIRA_CLIENT_SECRET: ${{ secrets.JIRA_PROD_CLIENT_SECRET }}
+                  PUBLISH_SECRET_JIRA_CLIENT_ID: ${{ secrets.JIRA_PROD_CLIENT_ID }}
+                  PUBLISH_SECRET_JIRA_CLIENT_SECRET: ${{ secrets.JIRA_PROD_CLIENT_SECRET }}
                   # Linear
-                  LINEAR_CLIENT_ID: ${{ secrets.LINEAR_PROD_CLIENT_ID }}
-                  LINEAR_CLIENT_SECRET: ${{ secrets.LINEAR_PROD_CLIENT_SECRET }}
+                  PUBLISH_SECRET_LINEAR_CLIENT_ID: ${{ secrets.LINEAR_PROD_CLIENT_ID }}
+                  PUBLISH_SECRET_LINEAR_CLIENT_SECRET: ${{ secrets.LINEAR_PROD_CLIENT_SECRET }}
                   # Lucid
-                  LUCID_CLIENT_ID: ${{ secrets.LUCID_CLIENT_ID }}
-                  LUCID_CLIENT_SECRET: ${{ secrets.LUCID_CLIENT_SECRET }}
+                  PUBLISH_SECRET_LUCID_CLIENT_ID: ${{ secrets.LUCID_CLIENT_ID }}
+                  PUBLISH_SECRET_LUCID_CLIENT_SECRET: ${{ secrets.LUCID_CLIENT_SECRET }}
                   # GitHub Copilot
-                  GITHUBCOPILOT_APP_ID: ${{ secrets.GITHUBCOPILOT_PROD_APP_ID }}
-                  GITHUBCOPILOT_APP_URL: ${{ secrets.GITHUBCOPILOT_PROD_APP_URL }}
-                  GITHUBCOPILOT_CLIENT_ID: ${{ secrets.GITHUBCOPILOT_PROD_CLIENT_ID }}
-                  GITHUBCOPILOT_CLIENT_SECRET: ${{ secrets.GITHUBCOPILOT_PROD_CLIENT_SECRET }}
+                  PUBLISH_SECRET_GITHUBCOPILOT_APP_ID: ${{ secrets.GITHUBCOPILOT_PROD_APP_ID }}
+                  PUBLISH_SECRET_GITHUBCOPILOT_APP_URL: ${{ secrets.GITHUBCOPILOT_PROD_APP_URL }}
+                  PUBLISH_SECRET_GITHUBCOPILOT_CLIENT_ID: ${{ secrets.GITHUBCOPILOT_PROD_CLIENT_ID }}
+                  PUBLISH_SECRET_GITHUBCOPILOT_CLIENT_SECRET: ${{ secrets.GITHUBCOPILOT_PROD_CLIENT_SECRET }}

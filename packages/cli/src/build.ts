@@ -21,9 +21,12 @@ export async function buildScriptFromManifest(
     manifestSpecPath: string,
     options: {
         mode?: 'development' | 'production';
+        resolveSecrets?: boolean;
     } = { mode: 'production' },
 ): Promise<BuildOutput> {
-    const manifest = await readIntegrationManifest(manifestSpecPath);
+    const manifest = await readIntegrationManifest(manifestSpecPath, {
+        resolveSecrets: options.resolveSecrets,
+    });
     /**
      * Resolve the input and output file paths relatve to the manifest file.
      */

@@ -15,19 +15,31 @@ export async function publishIntegration(
     specFilePath: string,
     updates: Partial<api.RequestPublishIntegration> = {},
 ): Promise<void> {
-    // Build the script
-    const { script, manifest } = await buildScriptFromManifest(specFilePath);
-
+    const { name, body } = await prepareIntegrationPublish(specFilePath);
     const api = await getAPIClient(true);
 
-    if (typeof manifest.target === 'string') {
+    if (typeof body.target === 'string') {
         console.log(
-            `ℹ️  Publishing integration with "${manifest.target}" as target for installations.`,
+            `ℹ️  Publishing integration with "${body.target}" as target for installations.`,
         );
     }
 
-    // Publish the integration.
-    const created = await api.integrations.publishIntegration(manifest.name, {
+    const created = await api.integrations.publishIntegration(name, { ...body, ...updates });
+    console.log(`🚀 Integration "${created.data.name}" published`);
+    console.log(`👉 ${created.data.urls.app}`);
+}
+
+/** Builds the publish request while optionally preserving secret references for CI. */
+export async function prepareIntegrationPublish(
+    specFilePath: string,
+    { resolveSecrets = true }: { resolveSecrets?: boolean } = {},
+): Promise<{ name: string; body: api.RequestPublishIntegration }> {
+    const { script, manifest } = await buildScriptFromManifest(specFilePath, {
+        mode: 'production',
+        resolveSecrets,
+    });
+
+    const body: api.RequestPublishIntegration = {
         runtime: 'v2',
         title: manifest.title,
         icon: manifest.icon
@@ -52,11 +64,8 @@ export async function publishIntegration(
         ),
         contentSecurityPolicy: manifest.contentSecurityPolicy,
         script,
-        ...updates,
-    });
-
-    console.log(`🚀 Integration "${created.data.name}" published`);
-    console.log(`👉 ${created.data.urls.app}`);
+    };
+    return { name: manifest.name, body };
 }
 
 /**
