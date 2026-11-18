@@ -1,30 +1,26 @@
 import { execFileSync } from 'node:child_process';
-import { readdir, readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { createPublishBody } from '../packages/cli/src/publish-body';
+import { getReleaseEntries, loadReleaseScripts } from './integration-release.mjs';
 
-const [target, directory] = process.argv.slice(2);
+const [target, directory, mode] = process.argv.slice(2);
 const destinations = {
     production: { endpoint: 'https://api.gitbook.com', organization: 'gitbook' },
     staging: { endpoint: 'https://api.gitbook-staging.com', organization: 'gitbookio' },
 };
-if (!Object.hasOwn(destinations, target) || !directory) {
+if (!Object.hasOwn(destinations, target) || !directory || (mode && mode !== '--check')) {
     throw new Error('Usage: publish-prepared-integrations <production|staging> <directory>');
 }
 
 const { endpoint, organization } = destinations[target];
-const files = await readdir(directory, { withFileTypes: true });
-if (!files.length || (target === 'production' && files.length !== 1)) {
-    throw new Error(`Unexpected number of prepared integrations for ${target}`);
+const entries = await getReleaseEntries(target, process.env.GITHUB_REF, process.env.GITHUB_SHA);
+const scripts = await loadReleaseScripts(entries, directory);
+if (mode === '--check') {
+    console.log(`Validated ${scripts.size} integration scripts for ${target}`);
+    process.exit(0);
 }
-
-for (const file of files) {
-    if (!file.isFile() || !/^[a-z0-9]+(?:-[a-z0-9]+)*\.json$/.test(file.name)) {
-        throw new Error('Invalid publish artifact entry');
-    }
-    const { name, body } = JSON.parse(await readFile(join(directory, file.name), 'utf8'));
-    if (`${name}.json` !== file.name || body?.runtime !== 'v2' || typeof body.script !== 'string') {
-        throw new Error(`Invalid publish artifact for ${file.name}`);
-    }
+for (const [file, { identity, manifestPath, manifest }] of entries) {
+    const name = identity.name;
+    const body = await createPublishBody(manifestPath, manifest, scripts.get(file));
 
     if (body.secrets !== undefined) {
         if (!body.secrets || typeof body.secrets !== 'object' || Array.isArray(body.secrets)) {
