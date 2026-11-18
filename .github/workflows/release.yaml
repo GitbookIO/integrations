@@ -17,14 +17,14 @@ jobs:
             id-token: write
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
               with:
                   # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
                   fetch-depth: 0
                   # Using a PAT instead of the default token to ensure commits trigger CI
                   token: ${{ secrets.GH_PERSONAL_TOKEN }}
             - name: Setup Node.js for npm trusted publishing
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
               with:
                   # npm trusted publishing requires npm 11.5.1+ (Node 22.14.0+)
                   node-version: '24'
@@ -35,14 +35,14 @@ jobs:
             - name: Update npm
               run: npm install -g npm@11
             - name: Setup bun
-              uses: oven-sh/setup-bun@v2
+              uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
               with:
                   bun-version-file: 'package.json'
             - name: Install dependencies
               run: bun install --frozen-lockfile
             - name: Create Release Pull Request or Publish to npm
               id: changesets
-              uses: changesets/action@v1
+              uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
               with:
                   publish: bun run release
               env:
@@ -51,20 +51,23 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GH_PERSONAL_TOKEN }}
                   NPM_CONFIG_PROVENANCE: true
 
-    publish-integrations-staging:
-        name: Publish Integrations to Staging
+    prepare-integrations-staging:
+        name: Prepare integrations for staging
         runs-on: ubuntu-latest
+        environment: staging
+        permissions:
+            contents: read
+        outputs:
+            publish-digest: ${{ steps.digest.outputs.value }}
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+              with:
+                  persist-credentials: false
             - name: Setup bun
-              uses: oven-sh/setup-bun@v2
+              uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
               with:
                   bun-version-file: 'package.json'
-            - name: Setup 1Password CLI
-              uses: ./.github/composite/setup-1password-op
-              with:
-                  OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
             - name: Install dependencies
               run: bun install --frozen-lockfile
             - name: Publish all integrations assets to staging
@@ -73,45 +76,97 @@ jobs:
                   CLOUDFLARE_PAGES_PROJECT: ${{ secrets.INTEGRATIONS_ASSETS_STAGING_PROJECT }}
                   CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
                   CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
-            - name: Publish all integrations to staging
-              run: bun run publish-integrations-staging
+            - name: Build all integrations
+              run: bun run build
+            - name: Prepare publish requests
+              run: bun scripts/prepare-ci-publish.mjs staging "$RUNNER_TEMP/publish"
+            - name: Record artifact digest
+              id: digest
+              shell: bash
+              run: |
+                  cd "$RUNNER_TEMP/publish"
+                  digest=$(sha256sum -- *.json | sha256sum)
+                  echo "value=${digest%% *}" >> "$GITHUB_OUTPUT"
+            - name: Upload publish requests
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+              with:
+                  name: integration-publish-staging
+                  path: ${{ runner.temp }}/publish
+                  if-no-files-found: error
+                  retention-days: 1
+
+    publish-integrations-staging:
+        name: Publish integrations to staging
+        needs: prepare-integrations-staging
+        runs-on: ubuntu-latest
+        environment: staging
+        permissions:
+            contents: read
+            id-token: write
+        steps:
+            - name: Checkout publishing code
+              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+              with:
+                  persist-credentials: false
+            - name: Set up Bun for the built-in YAML parser
+              uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+              with:
+                  bun-version-file: 'package.json'
+            - name: Download publish requests
+              uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+              with:
+                  name: integration-publish-staging
+                  path: ${{ runner.temp }}/publish
+            - name: Verify artifact digest
+              shell: bash
+              run: |
+                  cd "$RUNNER_TEMP/publish"
+                  digest=$(sha256sum -- *.json | sha256sum)
+                  test "${digest%% *}" = "$EXPECTED_DIGEST"
               env:
-                  GITBOOK_TOKEN: ${{ secrets.GITBOOK_STAGING_API_TOKEN }}
-                  GITBOOK_ENDPOINT: https://api.gitbook-staging.com
-                  GITBOOK_ORGANIZATION: gitbookio
+                  EXPECTED_DIGEST: ${{ needs.prepare-integrations-staging.outputs.publish-digest }}
+            - name: Check release targets against the protected checkout
+              run: bun --no-install scripts/publish-prepared-integrations.mjs staging "$RUNNER_TEMP/publish" --check
+            - name: Setup 1Password CLI
+              uses: ./.github/composite/setup-1password-op
+              with:
+                  OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+            - name: Publish prepared integrations
+              run: bun --no-install scripts/publish-prepared-integrations.mjs staging "$RUNNER_TEMP/publish"
+              env:
                   OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
                   # Proxy
-                  GITBOOK_PROXY_URL: ${{ secrets.PROXY_STAGING_URL }}
-                  GITBOOK_PROXY_SECRET: ${{ secrets.PROXY_STAGING_SECRET }}
-                  REFLAG_SECRET_KEY: ${{ secrets.REFLAG_STAGING_SECRET_KEY }}
+                  PUBLISH_SECRET_GITBOOK_PROXY_URL: ${{ secrets.PROXY_STAGING_URL }}
+                  PUBLISH_SECRET_GITBOOK_PROXY_SECRET: ${{ secrets.PROXY_STAGING_SECRET }}
+                  PUBLISH_SECRET_REFLAG_SECRET_KEY: ${{ secrets.REFLAG_STAGING_SECRET_KEY }}
                   # GitHub Files
-                  UNFURL_GITHUB_CLIENT_ID: ${{ secrets.UNFURL_GITHUB_CLIENT_ID }}
-                  UNFURL_GITHUB_CLIENT_SECRET: ${{ secrets.UNFURL_GITHUB_CLIENT_SECRET }}
+                  PUBLISH_SECRET_UNFURL_GITHUB_CLIENT_ID: ${{ secrets.UNFURL_GITHUB_CLIENT_ID }}
+                  PUBLISH_SECRET_UNFURL_GITHUB_CLIENT_SECRET: ${{ secrets.UNFURL_GITHUB_CLIENT_SECRET }}
                   # GitLab
-                  GITLAB_CLIENT_ID: ${{ secrets.GITLAB_CLIENT_ID }}
-                  GITLAB_CLIENT_SECRET: ${{ secrets.GITLAB_CLIENT_SECRET }}
+                  PUBLISH_SECRET_GITLAB_CLIENT_ID: ${{ secrets.GITLAB_CLIENT_ID }}
+                  PUBLISH_SECRET_GITLAB_CLIENT_SECRET: ${{ secrets.GITLAB_CLIENT_SECRET }}
                   # Discord
-                  DISCORD_CLIENT_ID: $ {{ secrets.DISCORD_CLIENT_ID }}
-                  DISCORD_CLIENT_SECRET: $ {{ secrets.DISCORD_CLIENT_SECRET }}
-                  DISCORD_BOT_TOKEN: $ {{ secrets.DISCORD_BOT_TOKEN }}
+                  PUBLISH_SECRET_DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
+                  PUBLISH_SECRET_DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
+                  PUBLISH_SECRET_DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
                   # Mailchimp
-                  MAILCHIMP_CLIENT_ID: ${{ secrets.MAILCHIMP_STAGING_CLIENT_ID }}
-                  MAILCHIMP_CLIENT_SECRET: ${{ secrets.MAILCHIMP_STAGING_CLIENT_SECRET }}
+                  PUBLISH_SECRET_MAILCHIMP_CLIENT_ID: ${{ secrets.MAILCHIMP_STAGING_CLIENT_ID }}
+                  PUBLISH_SECRET_MAILCHIMP_CLIENT_SECRET: ${{ secrets.MAILCHIMP_STAGING_CLIENT_SECRET }}
                   # Jira
-                  JIRA_CLIENT_ID: ${{ secrets.JIRA_STAGING_CLIENT_ID }}
-                  JIRA_CLIENT_SECRET: ${{ secrets.JIRA_STAGING_CLIENT_SECRET }}
+                  PUBLISH_SECRET_JIRA_CLIENT_ID: ${{ secrets.JIRA_STAGING_CLIENT_ID }}
+                  PUBLISH_SECRET_JIRA_CLIENT_SECRET: ${{ secrets.JIRA_STAGING_CLIENT_SECRET }}
                   # Linear
-                  LINEAR_CLIENT_ID: ${{ secrets.LINEAR_STAGING_CLIENT_ID }}
-                  LINEAR_CLIENT_SECRET: ${{ secrets.LINEAR_STAGING_CLIENT_SECRET }}
+                  PUBLISH_SECRET_LINEAR_CLIENT_ID: ${{ secrets.LINEAR_STAGING_CLIENT_ID }}
+                  PUBLISH_SECRET_LINEAR_CLIENT_SECRET: ${{ secrets.LINEAR_STAGING_CLIENT_SECRET }}
                   # Sentry
-                  SENTRY_CLIENT_ID: ${{ secrets.SENTRY_STAGING_CLIENT_ID }}
-                  SENTRY_CLIENT_SECRET: ${{ secrets.SENTRY_STAGING_CLIENT_SECRET }}
-                  SENTRY_GITBOOK_INTEGRATION: ${{ secrets.SENTRY_STAGING_GITBOOK_INTEGRATION }}
+                  PUBLISH_SECRET_SENTRY_CLIENT_ID: ${{ secrets.SENTRY_STAGING_CLIENT_ID }}
+                  PUBLISH_SECRET_SENTRY_CLIENT_SECRET: ${{ secrets.SENTRY_STAGING_CLIENT_SECRET }}
+                  PUBLISH_SECRET_SENTRY_GITBOOK_INTEGRATION: ${{ secrets.SENTRY_STAGING_GITBOOK_INTEGRATION }}
                   # Lucid
-                  LUCID_CLIENT_ID: ${{ secrets.LUCID_CLIENT_ID }}
-                  LUCID_CLIENT_SECRET: ${{ secrets.LUCID_CLIENT_SECRET }}
+                  PUBLISH_SECRET_LUCID_CLIENT_ID: ${{ secrets.LUCID_CLIENT_ID }}
+                  PUBLISH_SECRET_LUCID_CLIENT_SECRET: ${{ secrets.LUCID_CLIENT_SECRET }}
                   # GitHub Copilot
-                  GITHUBCOPILOT_APP_ID: ${{ secrets.GITHUBCOPILOT_STAGING_APP_ID }}
-                  GITHUBCOPILOT_APP_URL: ${{ secrets.GITHUBCOPILOT_STAGING_APP_URL }}
-                  GITHUBCOPILOT_CLIENT_ID: ${{ secrets.GITHUBCOPILOT_STAGING_CLIENT_ID }}
-                  GITHUBCOPILOT_CLIENT_SECRET: ${{ secrets.GITHUBCOPILOT_STAGING_CLIENT_SECRET }}
+                  PUBLISH_SECRET_GITHUBCOPILOT_APP_ID: ${{ secrets.GITHUBCOPILOT_STAGING_APP_ID }}
+                  PUBLISH_SECRET_GITHUBCOPILOT_APP_URL: ${{ secrets.GITHUBCOPILOT_STAGING_APP_URL }}
+                  PUBLISH_SECRET_GITHUBCOPILOT_CLIENT_ID: ${{ secrets.GITHUBCOPILOT_STAGING_CLIENT_ID }}
+                  PUBLISH_SECRET_GITHUBCOPILOT_CLIENT_SECRET: ${{ secrets.GITHUBCOPILOT_STAGING_CLIENT_SECRET }}
