@@ -1,0 +1,3 @@
+{
+    "extends": "@gitbook/tsconfig/integration.json"
+}
