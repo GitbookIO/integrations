@@ -5,7 +5,7 @@ import {
     createComponent,
     RuntimeContext,
     FetchEventCallback,
-    ExposableError,
+    IntegrationError,
 } from '@gitbook/runtime';
 
 import { getWebframeCacheControl, getWebframeCacheKey } from './cache';
@@ -39,7 +39,7 @@ const embedBlock = createComponent<EmbedBlockProps, EmbedBlockState>({
                 const { url } = action;
                 const match = await fetchRunKitFromLink(url);
                 if (!match) {
-                    throw new ExposableError('Invalid RunKit link');
+                    throw new IntegrationError('invalid_input');
                 }
 
                 return {

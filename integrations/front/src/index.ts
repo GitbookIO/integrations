@@ -1,5 +1,6 @@
 import {
     createIntegration,
+    IntegrationError,
     FetchPublishScriptEventCallback,
     RuntimeContext,
     RuntimeEnvironment,
@@ -22,7 +23,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 ) => {
     const chatId = environment.siteInstallation?.configuration?.chat_id;
     if (!chatId) {
-        throw new Error('The Front Chat ID is missing from the configuration.');
+        throw new IntegrationError('configuration_required');
     }
 
     return new Response((script as string).replace('<TO_REPLACE>', chatId), {

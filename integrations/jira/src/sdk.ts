@@ -1,3 +1,5 @@
+import { IntegrationError } from '@gitbook/runtime';
+
 /**
  * Returns the accessible Jira resources.
  * https://developer.atlassian.com/cloud/jira/platform/oauth-2-3lo-apps/#4--check-site-access-for-the-app
@@ -11,6 +13,12 @@ export async function getJIRASites(accessToken: string): Promise<AccessibleResou
     });
 
     if (!resp.ok) {
+        if (resp.status === 401) {
+            throw new IntegrationError('authentication_required');
+        }
+        if (resp.status === 403) {
+            throw new IntegrationError('configuration_required');
+        }
         throw new Error(`Could not fetch JIRA sites ${resp.status} ${resp.statusText}`);
     }
 
@@ -44,6 +52,19 @@ export async function getJIRAIssue(
             },
         },
     );
+
+    if (!resp.ok) {
+        if (resp.status === 401) {
+            throw new IntegrationError('authentication_required');
+        }
+        if (resp.status === 403) {
+            throw new IntegrationError('configuration_required');
+        }
+        if (resp.status === 404) {
+            throw new IntegrationError('invalid_input');
+        }
+        throw new Error(`Could not fetch JIRA issue: HTTP ${resp.status}`);
+    }
 
     const issue = (await resp.json()) as JiraIssue;
     return issue;

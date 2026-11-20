@@ -20,6 +20,7 @@
         "typecheck": "tsc --noEmit",
         "check": "gitbook check",
         "publish-integrations": "gitbook publish . --env prod",
-        "publish-integrations-staging": "gitbook publish . --env staging"
+        "publish-integrations-staging": "gitbook publish . --env staging",
+        "test": "bun test"
     }
 }

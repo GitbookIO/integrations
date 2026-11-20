@@ -1,4 +1,4 @@
-import { createComponent, ExposableError } from '@gitbook/runtime';
+import { createComponent, IntegrationError } from '@gitbook/runtime';
 import {
     ReflagAction,
     ReflagProps,
@@ -31,9 +31,7 @@ export const configBlock = createComponent<
 
                 const secretKey = element.state.secret_key;
                 if (typeof secretKey !== 'string' || !secretKey) {
-                    throw new ExposableError(
-                        'Incomplete configuration: missing Reflag environment secret key',
-                    );
+                    throw new IntegrationError('invalid_input');
                 }
 
                 const configurationBody: ReflagSiteInstallationConfiguration = {

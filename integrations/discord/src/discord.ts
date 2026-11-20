@@ -1,4 +1,4 @@
-import { EventByType } from '@gitbook/runtime';
+import { EventByType, IntegrationError } from '@gitbook/runtime';
 import { DiscordRuntimeContext } from './types';
 
 export const sendDiscordMessage = async (
@@ -18,7 +18,10 @@ export const sendDiscordMessage = async (
     const accessToken = environment.installation?.configuration.oauth_credentials?.access_token;
 
     if (!accessToken) {
-        throw new Error('No authentication token provided');
+        throw new IntegrationError('authentication_required');
+    }
+    if (!botToken || !channelId) {
+        throw new IntegrationError('configuration_required');
     }
 
     const embedObject = {
@@ -38,7 +41,13 @@ export const sendDiscordMessage = async (
         embeds: [embedObject],
     });
 
-    await fetch(url, { method: 'POST', headers, body }).catch((err) => {
+    const response = await fetch(url, { method: 'POST', headers, body }).catch((err) => {
         throw new Error(`Error fetching content from ${url}. ${err}`);
     });
+    if (!response.ok) {
+        if ([401, 403, 404].includes(response.status)) {
+            throw new IntegrationError('configuration_required');
+        }
+        throw new Error(`Discord API error: HTTP ${response.status}`);
+    }
 };

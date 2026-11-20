@@ -72,7 +72,7 @@ const embedBlock = createComponent<{
             );
         }
 
-        const embedData = await fetchArcadeOEmbedData(flowId, context);
+        const embedData = await fetchArcadeOEmbedData(flowId);
         // Bound output caching as well so dimension changes and deleted flows are rechecked.
         element.setCache({ maxAge: ARCADE_OEMBED_CACHE_MAX_AGE });
         const aspectRatio = embedData.width / embedData.height;

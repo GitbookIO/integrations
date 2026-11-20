@@ -1,3 +1,5 @@
+import { IntegrationError } from '@gitbook/runtime';
+
 /**
  * Returns all available mailing lists (audiences), fetching all pages.
  */
@@ -17,8 +19,13 @@ export async function getMailingLists(
         });
 
         if (!resp.ok) {
-            const body = await resp.text();
-            throw new Error(`Mailchimp API error: ${resp.status} ${resp.statusText} - ${body}`);
+            if (resp.status === 401) {
+                throw new IntegrationError('authentication_required');
+            }
+            if (resp.status === 403) {
+                throw new IntegrationError('configuration_required');
+            }
+            throw new Error(`Mailchimp API error: HTTP ${resp.status}`);
         }
 
         const { lists = [], total_items = 0 } = (await resp.json()) as MailchimpListsResponse;
@@ -43,6 +50,16 @@ export async function getUserMetadata(accessToken: string): Promise<MailchimpMet
             Authorization: `OAuth ${accessToken}`,
         },
     });
+
+    if (!resp.ok) {
+        if (resp.status === 401) {
+            throw new IntegrationError('authentication_required');
+        }
+        if (resp.status === 403) {
+            throw new IntegrationError('configuration_required');
+        }
+        throw new Error(`Mailchimp metadata error: HTTP ${resp.status}`);
+    }
 
     const json = (await resp.json()) as MailchimpMetadataResponse;
     return json;
@@ -71,8 +88,35 @@ export async function subscribeUserToList(
     });
 
     if (!resp.ok) {
-        const body = await resp.text();
-        throw new Error(`Mailchimp API error: ${resp.status} ${resp.statusText} - ${body}`);
+        if (resp.status === 401) {
+            throw new IntegrationError('authentication_required');
+        }
+        if (resp.status === 403 || resp.status === 404) {
+            throw new IntegrationError('configuration_required');
+        }
+        if (resp.status === 400) {
+            const body: unknown = await resp.json().catch(() => null);
+            if (body && typeof body === 'object' && 'title' in body) {
+                if (body.title === 'Member Exists') {
+                    throw new IntegrationError('invalid_input');
+                }
+                if (
+                    body.title === 'Invalid Resource' &&
+                    'errors' in body &&
+                    Array.isArray(body.errors) &&
+                    body.errors.some(
+                        (error: unknown) =>
+                            error &&
+                            typeof error === 'object' &&
+                            'field' in error &&
+                            error.field === 'email_address',
+                    )
+                ) {
+                    throw new IntegrationError('invalid_input');
+                }
+            }
+        }
+        throw new Error(`Mailchimp API error: HTTP ${resp.status}`);
     }
 }
 

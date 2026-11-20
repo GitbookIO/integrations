@@ -5,6 +5,7 @@ import {
 } from '@gitbook/api';
 
 import type { RuntimeCallback, RuntimeContext } from './context';
+import { IntegrationError } from './errors';
 import { Logger } from './logger';
 
 /**
@@ -433,9 +434,7 @@ export async function getOAuthToken<TOAuthResponse extends OAuthResponse = OAuth
     }
 
     if (!credentials.refresh_token) {
-        throw new Error(
-            `No refresh token available to refresh the OAuth token, expired at ${credentials.expires_at}`,
-        );
+        throw new IntegrationError('authentication_required');
     }
 
     // Refresh using the refresh_token
@@ -461,9 +460,21 @@ export async function getOAuthToken<TOAuthResponse extends OAuthResponse = OAuth
     logger.debug(`received oauth response ${response.status}: ${response.statusText}`);
 
     if (!response.ok) {
-        throw new Error(
-            `Failed to refresh the OAuth access token: ${await getOAuthErrorSummary(response)}`,
-        );
+        if ([400, 401, 403].includes(response.status)) {
+            const body = await getOAuthErrorBody(response);
+            if (body && typeof body === 'object' && !Array.isArray(body) && 'error' in body) {
+                switch (body.error) {
+                    case 'invalid_grant':
+                        throw new IntegrationError('authentication_required');
+                    case 'invalid_client':
+                    case 'unauthorized_client':
+                        throw new IntegrationError('configuration_required');
+                }
+            }
+        } else {
+            await response.body?.cancel();
+        }
+        throw new Error(`Failed to refresh the OAuth access token: HTTP ${response.status}`);
     }
 
     const json = (await response.json()) as OAuthResponse & TOAuthResponse;
@@ -537,6 +548,10 @@ export function summarizeOAuthErrorBody(body: unknown): string {
  */
 async function getOAuthErrorSummary(response: Response): Promise<string> {
     const status = `HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ''}`;
+    return `${status}: ${summarizeOAuthErrorBody(await getOAuthErrorBody(response))}`;
+}
+
+async function getOAuthErrorBody(response: Response): Promise<unknown> {
     const text = await response.text().catch(() => '');
 
     let body: unknown = null;
@@ -550,7 +565,7 @@ async function getOAuthErrorSummary(response: Response): Promise<string> {
         }
     }
 
-    return `${status}: ${summarizeOAuthErrorBody(body)}`;
+    return body;
 }
 
 function isOAuthTransactionValue(value: string): boolean {

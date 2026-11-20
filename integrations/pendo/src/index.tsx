@@ -1,5 +1,6 @@
 import {
     createIntegration,
+    IntegrationError,
     FetchPublishScriptEventCallback,
     RuntimeContext,
     RuntimeEnvironment,
@@ -124,11 +125,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     const apiKey = environment.siteInstallation?.configuration?.api_key;
     const isEURegion = environment.siteInstallation?.configuration?.is_eu_region;
     if (!apiKey) {
-        throw new Error(
-            `The API key is missing from the configuration (ID: ${
-                'spaceId' in event ? event.spaceId : event.siteId
-            }).`,
-        );
+        throw new IntegrationError('configuration_required');
     }
     const region = isEURegion ? 'EU' : 'US';
     return new Response(

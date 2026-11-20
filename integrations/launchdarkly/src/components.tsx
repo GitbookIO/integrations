@@ -1,4 +1,4 @@
-import { createComponent, ExposableError } from '@gitbook/runtime';
+import { createComponent, IntegrationError } from '@gitbook/runtime';
 import {
     LaunchDarklyAction,
     LaunchDarklyProps,
@@ -32,16 +32,12 @@ export const configBlock = createComponent<
 
                 const projectKey = element.state.project_key;
                 if (typeof projectKey !== 'string' || !projectKey) {
-                    throw new ExposableError(
-                        'Incomplete configuration: missing LaunchDarkly project key',
-                    );
+                    throw new IntegrationError('invalid_input');
                 }
 
                 const serviceToken = element.state.service_token;
                 if (typeof serviceToken !== 'string' || !serviceToken) {
-                    throw new ExposableError(
-                        'Incomplete configuration: missing LaunchDarkly service token',
-                    );
+                    throw new IntegrationError('invalid_input');
                 }
 
                 const configurationBody: LaunchDarklySiteInstallationConfiguration = {
