@@ -1,4 +1,4 @@
-import { createComponent, ExposableError } from '@gitbook/runtime';
+import { createComponent, IntegrationError } from '@gitbook/runtime';
 import {
     AVAILABLE_EVENTS,
     EventType,
@@ -57,14 +57,14 @@ export const config = createComponent<
 
                 // Validate webhook URL
                 if (!webhookUrl) {
-                    throw new ExposableError('Webhook URL is required');
+                    throw new IntegrationError('invalid_input');
                 }
 
                 // Very basic URL format validation
                 try {
                     new URL(webhookUrl);
                 } catch (error) {
-                    throw new ExposableError('Please enter a valid webhook URL');
+                    throw new IntegrationError('invalid_input');
                 }
 
                 // Always save account-level configuration (webhookUrl and secret)
@@ -83,7 +83,7 @@ export const config = createComponent<
                 if (environment.spaceInstallation) {
                     // Validate that at least one event is enabled for space
                     if (!element.state[EventType.CONTENT_UPDATED]) {
-                        throw new ExposableError('At least one event type must be enabled');
+                        throw new IntegrationError('invalid_input');
                     }
 
                     await api.integrations.updateIntegrationSpaceInstallation(
@@ -103,7 +103,7 @@ export const config = createComponent<
                         !element.state[EventType.SITE_VIEW] &&
                         !element.state[EventType.PAGE_FEEDBACK]
                     ) {
-                        throw new ExposableError('At least one event type must be enabled');
+                        throw new IntegrationError('invalid_input');
                     }
 
                     await api.integrations.updateIntegrationSiteInstallation(

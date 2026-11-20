@@ -1,4 +1,4 @@
-import { Logger } from '@gitbook/runtime';
+import { IntegrationError, Logger } from '@gitbook/runtime';
 import type {
     LaunchDarklyFeatureFlag,
     LaunchDarklyFeatureFlagsResponse,
@@ -52,7 +52,7 @@ export async function handleSyncAdaptiveSchema(
                 ? siteInstallation.configuration.project_key
                 : null;
         if (typeof projectKey !== 'string' || !projectKey) {
-            throw new Error(`No project key configured in the site installation ${siteId}`);
+            throw new IntegrationError('configuration_required');
         }
 
         const serviceToken =
@@ -60,7 +60,7 @@ export async function handleSyncAdaptiveSchema(
                 ? siteInstallation.configuration.service_token
                 : null;
         if (typeof serviceToken !== 'string' || !serviceToken) {
-            throw new Error(`No service token configured in the site installation ${siteId}`);
+            throw new IntegrationError('configuration_required');
         }
 
         const { data: site } = await api.orgs.getSiteById(organizationId, siteId);
@@ -203,6 +203,9 @@ async function getFeatureFlags(args: { projectKey: string; serviceToken: string 
         });
 
         if (!res.ok) {
+            if (res.status === 401 || res.status === 403) {
+                throw new IntegrationError('configuration_required');
+            }
             throw new Error(`(${res.status}) Failed to fetch feature flags: ${res.statusText}`);
         }
 

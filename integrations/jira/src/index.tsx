@@ -96,13 +96,14 @@ const embedBlock = createComponent<Props, {}, void, IntegrationContext>({
             );
         }
 
+        // Discover sites during authorization only: a failed lookup during refresh would
+        // discard the new rotating refresh token before it can be persisted.
         const accessToken = await getOAuthToken(
             configuration.oauth_credentials,
             {
                 clientId: environment.secrets.CLIENT_ID,
                 clientSecret: environment.secrets.CLIENT_SECRET,
                 accessTokenURL: 'https://auth.atlassian.com/oauth/token',
-                extractCredentials,
             },
             context,
         );

@@ -1,8 +1,8 @@
 import { ContentKitBlock } from '@gitbook/api';
-import { createComponent, ExposableError, Logger } from '@gitbook/runtime';
+import { createComponent, Logger } from '@gitbook/runtime';
 
 import * as sentry from './sentry';
-import { SentryIssue, SentryRuntimeContext } from './types';
+import { SentryRuntimeContext } from './types';
 import { capitalizeFirstLetter, extractIssueIdFromURL } from './utils';
 
 export const logger = Logger('integration:sentry');
@@ -71,12 +71,7 @@ export const embedBlock = createComponent<{
             return defaultBlock(url, context);
         }
 
-        let issueData: SentryIssue;
-        try {
-            issueData = await sentry.getIssue(issueId, context);
-        } catch (err) {
-            throw new ExposableError('Failed to fetch Sentry issue data');
-        }
+        const issueData = await sentry.getIssue(issueId, context);
 
         const { title, shortId, level, metadata, status } = issueData;
 

@@ -1,3 +1,5 @@
+import { IntegrationError } from '@gitbook/runtime';
+
 interface RunKitCell {
     content: {
         type: 'rich-text' | 'source';
@@ -26,6 +28,9 @@ async function fetchRunKitAPI<APIResponse>(path: string): Promise<APIResponse> {
     const response = await fetch(url.toString());
 
     if (!response.ok) {
+        if (response.status === 404) {
+            throw new IntegrationError('invalid_input');
+        }
         throw new Error(`${response.status} ${response.statusText}`);
     }
 

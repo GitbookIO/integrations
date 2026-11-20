@@ -9,7 +9,7 @@ import {
     RuntimeContext,
     RuntimeEnvironment,
     createComponent,
-    ExposableError,
+    IntegrationError,
 } from '@gitbook/runtime';
 
 const logger = Logger('auth0.visitor-auth');
@@ -497,7 +497,7 @@ export default createIntegration({
         const clientId = configuration.client_id;
         const location = event.location ? event.location : '';
         if (!clientId || !issuerBaseUrl) {
-            throw new ExposableError('OIDC configuration is missing');
+            throw new IntegrationError('configuration_required');
         }
 
         const url = new URL(`${issuerBaseUrl}/authorize`);

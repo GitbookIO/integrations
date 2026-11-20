@@ -1,4 +1,4 @@
-import { ExposableError, Logger } from '@gitbook/runtime';
+import { IntegrationError, Logger } from '@gitbook/runtime';
 
 import { SlackRuntimeContext } from './configuration';
 
@@ -110,7 +110,7 @@ export async function slackAPI<Result>(
         environment.installation?.configuration.oauth_credentials?.access_token;
 
     if (!accessToken) {
-        throw new ExposableError('Integration is not authenticated');
+        throw new IntegrationError('authentication_required');
     }
 
     const url = request.responseUrl
@@ -143,13 +143,34 @@ export async function slackAPI<Result>(
     });
 
     if (!response.ok) {
+        if (response.status === 401) {
+            throw new IntegrationError('authentication_required');
+        }
+        if (response.status === 403) {
+            throw new IntegrationError('configuration_required');
+        }
         logger.error(`API error ${response.status}: ${response.statusText}`);
         throw new Error(`${response.status} ${response.statusText}`);
     }
 
     const result = (await response.json()) as SlackResponse<Result>;
+    if (typeof result?.ok !== 'boolean') {
+        throw new Error('Invalid Slack API response');
+    }
 
     if (!result.ok) {
+        switch (result.error) {
+            case 'not_authed':
+            case 'invalid_auth':
+            case 'token_revoked':
+            case 'token_expired':
+            case 'account_inactive':
+                throw new IntegrationError('authentication_required');
+            case 'missing_scope':
+            case 'no_permission':
+            case 'not_allowed_token_type':
+                throw new IntegrationError('configuration_required');
+        }
         if (retriesLeft > 0) {
             switch (result.error) {
                 case 'not_in_channel':

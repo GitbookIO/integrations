@@ -1,4 +1,4 @@
-import { ExposableError } from '@gitbook/runtime';
+import { IntegrationError } from '@gitbook/runtime';
 import { FigmaRuntimeContext } from './types';
 
 export interface FileNodeId {
@@ -76,6 +76,9 @@ export async function fetchFigmaNode(fileId: string, nodeId: string, context: Fi
             nodeImage: image,
         };
     } catch (err) {
+        if (err instanceof IntegrationError) {
+            throw err;
+        }
         return undefined;
     }
 }
@@ -110,6 +113,9 @@ export async function fetchFigmaImage(
             url: imageUrl,
         };
     } catch (err) {
+        if (err instanceof IntegrationError) {
+            throw err;
+        }
         return undefined;
     }
 }
@@ -122,6 +128,9 @@ export async function fetchFigmaFile(fileId: string, context: FigmaRuntimeContex
         const response = await fetchFigmaAPI<FigmaAPIFile>(`files/${fileId}`, {}, context);
         return response;
     } catch (err) {
+        if (err instanceof IntegrationError) {
+            throw err;
+        }
         return undefined;
     }
 }
@@ -136,7 +145,7 @@ export async function fetchFigmaAPI<T>(
 ): Promise<T> {
     const accessToken = environment.installation?.configuration.oauth_credentials?.access_token;
     if (!accessToken) {
-        throw new ExposableError('Integration is not authenticated');
+        throw new IntegrationError('authentication_required');
     }
 
     const url = new URL(`https://api.figma.com/v1/${path}`);
@@ -152,6 +161,12 @@ export async function fetchFigmaAPI<T>(
     });
 
     if (!response.ok) {
+        if (response.status === 401) {
+            throw new IntegrationError('authentication_required');
+        }
+        if (response.status === 403) {
+            throw new IntegrationError('configuration_required');
+        }
         throw new Error(`Figma API error: ${response.statusText}`);
     }
 

@@ -1,4 +1,4 @@
-import { ExposableError, Logger } from '@gitbook/runtime';
+import { IntegrationError, Logger } from '@gitbook/runtime';
 
 import { SentryIssue, SentryRuntimeContext } from './types';
 
@@ -13,7 +13,7 @@ export async function getIssue(
 ): Promise<SentryIssue> {
     const token = context.environment.installation?.configuration.auth_token;
     if (!token) {
-        throw new ExposableError('Sentry integration is not configured');
+        throw new IntegrationError('authentication_required');
     }
 
     const response = await fetch(`https://sentry.io/api/0/issues/${issueId}/`, {
@@ -21,6 +21,15 @@ export async function getIssue(
     });
 
     if (!response.ok) {
+        if (response.status === 401) {
+            throw new IntegrationError('authentication_required');
+        }
+        if (response.status === 403) {
+            throw new IntegrationError('configuration_required');
+        }
+        if (response.status === 404) {
+            throw new IntegrationError('invalid_input');
+        }
         throw Error('Failed to fetch Sentry issue');
     }
 

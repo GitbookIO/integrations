@@ -9,7 +9,7 @@ import {
     RuntimeContext,
     RuntimeEnvironment,
     createComponent,
-    ExposableError,
+    IntegrationError,
 } from '@gitbook/runtime';
 
 const logger = Logger('azure.visitor-auth');
@@ -436,7 +436,7 @@ export default createIntegration({
         const clientId = configuration.client_id;
         const location = event.location ? event.location : '';
         if (!clientId || !tenantId) {
-            throw new ExposableError('Azure configuration is missing');
+            throw new IntegrationError('configuration_required');
         }
 
         const url = new URL(`https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize`);

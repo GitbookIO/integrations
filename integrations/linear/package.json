@@ -21,6 +21,7 @@
         "publish-linear-dev": "dotenv gitbook publish .",
         "check": "gitbook check",
         "publish-integrations": "gitbook publish .",
-        "publish-integrations-staging": "gitbook publish ."
+        "publish-integrations-staging": "gitbook publish .",
+        "test": "bun test"
     }
 }

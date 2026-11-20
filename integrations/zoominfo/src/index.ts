@@ -1,5 +1,6 @@
 import {
     createIntegration,
+    IntegrationError,
     FetchPublishScriptEventCallback,
     RuntimeContext,
     RuntimeEnvironment,
@@ -22,11 +23,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 ) => {
     const script = environment.siteInstallation?.configuration?.script;
     if (!script) {
-        throw new Error(
-            `The ZoomInfo script is missing from the configuration (ID: ${
-                'spaceId' in event ? event.spaceId : event.siteId
-            }).`,
-        );
+        throw new IntegrationError('configuration_required');
     }
     // matches occurances of alphanumeric strings inside single quotes
     // of length of exactly 20, which is what we need
@@ -34,7 +31,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
 
     const match = script.match(regex);
     if (!match) {
-        throw new Error(`Match for ZoomInfo's site id could not be found`);
+        throw new IntegrationError('configuration_required');
     }
 
     // match[0] looks like "'abc...'" we need to remove the single quotes

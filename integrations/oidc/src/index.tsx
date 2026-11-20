@@ -14,6 +14,7 @@ import {
     RuntimeEnvironment,
     createComponent,
     ExposableError,
+    IntegrationError,
 } from '@gitbook/runtime';
 
 import {
@@ -876,7 +877,7 @@ export default createIntegration({
         const clientId = configuration.client_id;
         const scope = configuration.scope;
         if (!clientId || !authorizationEndpoint || !scope) {
-            throw new ExposableError('OIDC configuration is missing');
+            throw new IntegrationError('configuration_required');
         }
 
         const location = event.location ? event.location : '';

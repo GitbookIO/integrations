@@ -4,7 +4,7 @@ import {
     createIntegration,
     createComponent,
     FetchEventCallback,
-    ExposableError,
+    IntegrationError,
 } from '@gitbook/runtime';
 
 const defaultContent = '';
@@ -40,7 +40,7 @@ const LucidComponent = createComponent<{
     async render(element, context) {
         const { url } = element.props;
         if (!url) {
-            throw new ExposableError('Missing URL');
+            throw new IntegrationError('invalid_input');
         }
 
         const urlObject = new URL(url);
@@ -48,7 +48,7 @@ const LucidComponent = createComponent<{
 
         const { spaceInstallation } = context.environment;
         if (!spaceInstallation) {
-            throw new ExposableError('Missing space installation');
+            throw new IntegrationError('configuration_required');
         }
 
         const frameUrl = new URL(spaceInstallation.urls.publicContentEndpoint);
