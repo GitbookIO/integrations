@@ -1,34 +1,38 @@
-import { IntegrationError } from '@gitbook/runtime';
+import { IntegrationError, Logger, type RuntimeContext } from '@gitbook/runtime';
 
 export const ARCADE_OEMBED_CACHE_MAX_AGE = 5 * 60;
 const OEMBED_REQUEST_TIMEOUT = 10_000;
-const MAX_OEMBED_CACHE_ENTRIES = 256;
-const MAX_CACHED_FLOW_ID_LENGTH = 256;
+const logger = Logger('arcade');
 
 interface ArcadeOEmbedDimensions {
     readonly width: number;
     readonly height: number;
 }
 
-// Isolate-local memory keeps the dimensions private in either namespace mode.
-const oEmbedCache = new Map<string, { dimensions: ArcadeOEmbedDimensions; expiresAt: number }>();
-
 /**
  * Fetch validated Arcade oEmbed dimensions.
  */
-export async function fetchArcadeOEmbedData(flowId: string): Promise<ArcadeOEmbedDimensions> {
-    const cached = oEmbedCache.get(flowId);
-    if (cached) {
-        oEmbedCache.delete(flowId);
-        if (cached.expiresAt > Date.now()) {
-            oEmbedCache.set(flowId, cached);
-            return cached.dimensions;
-        }
-    }
-
+export async function fetchArcadeOEmbedData(
+    flowId: string,
+    context: Pick<RuntimeContext, 'waitUntil'>,
+): Promise<ArcadeOEmbedDimensions> {
     const url = new URL('https://app.arcade.software/api/oembed');
     url.searchParams.append('url', `https://app.arcade.software/share/${flowId}`);
-    const response = await fetch(url.toString(), {
+    const cacheKey = url.toString();
+
+    let cache: Cache | undefined;
+    try {
+        // Untrusted dispatch namespaces isolate Cache API entries by Worker.
+        cache = await caches.open('arcade-oembed');
+        const cached = await cache.match(cacheKey);
+        if (cached) {
+            return await readArcadeOEmbed(cached);
+        }
+    } catch {
+        logger.error('Failed to read oEmbed cache');
+    }
+
+    const response = await fetch(cacheKey, {
         signal: AbortSignal.timeout(OEMBED_REQUEST_TIMEOUT),
     });
 
@@ -44,19 +48,17 @@ export async function fetchArcadeOEmbedData(flowId: string): Promise<ArcadeOEmbe
     }
 
     const dimensions = await readArcadeOEmbed(response);
-    if (typeof flowId === 'string' && flowId.length <= MAX_CACHED_FLOW_ID_LENGTH) {
-        oEmbedCache.delete(flowId);
-        oEmbedCache.set(flowId, {
-            dimensions,
-            expiresAt: Date.now() + ARCADE_OEMBED_CACHE_MAX_AGE * 1000,
-        });
-
-        if (oEmbedCache.size > MAX_OEMBED_CACHE_ENTRIES) {
-            const oldestFlowId = oEmbedCache.keys().next().value;
-            if (oldestFlowId !== undefined) {
-                oEmbedCache.delete(oldestFlowId);
-            }
-        }
+    if (cache) {
+        context.waitUntil(
+            cache
+                .put(
+                    cacheKey,
+                    Response.json(dimensions, {
+                        headers: { 'Cache-Control': `max-age=${ARCADE_OEMBED_CACHE_MAX_AGE}` },
+                    }),
+                )
+                .catch(() => logger.error('Failed to write oEmbed cache')),
+        );
     }
 
     return dimensions;

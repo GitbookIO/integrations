@@ -5,7 +5,7 @@ import { fetchArcadeOEmbedData } from '../src/arcade';
 
 const ORIGINAL_FETCH = globalThis.fetch;
 
-const request = () => fetchArcadeOEmbedData('flow');
+const request = () => fetchArcadeOEmbedData('flow', { waitUntil() {} });
 
 afterEach(() => {
     globalThis.fetch = ORIGINAL_FETCH;

@@ -1,20 +1,42 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from 'bun:test';
 
-import { fetchArcadeOEmbedData } from '../src/arcade';
+import { fetchArcadeOEmbedData as fetchDimensions } from '../src/arcade';
 import integration from '../src/index';
 
 const dimensions = { width: 1280, height: 720 };
 const embed = { type: 'rich', title: 'Demo', ...dimensions };
+const entries = new Map<string, Response>();
+const tasks: Promise<unknown>[] = [];
+const context = {
+    waitUntil: (promise: Promise<unknown>) => {
+        tasks.push(promise);
+    },
+};
+const cache = {
+    match: async (key: string) => entries.get(key)?.clone(),
+    put: async (key: string, response: Response) => {
+        entries.set(key, response.clone());
+    },
+};
+const openCache = mock(async () => cache);
 const originalCaches = Object.getOwnPropertyDescriptor(globalThis, 'caches');
 const originalMode = Object.getOwnPropertyDescriptor(globalThis, 'MODE');
 
 beforeEach(() => {
+    openCache.mockClear();
+    Object.defineProperty(globalThis, 'caches', {
+        configurable: true,
+        value: { open: openCache },
+    });
     Object.defineProperty(globalThis, 'MODE', { configurable: true, value: 'production' });
     spyOn(console, 'log').mockImplementation(() => {});
     spyOn(console, 'error').mockImplementation(() => {});
 });
 
-afterEach(() => {
+afterEach(async () => {
+    await Promise.all(tasks);
+    tasks.length = 0;
+    entries.clear();
     mock.restore();
     for (const [name, descriptor] of [
         ['caches', originalCaches],
@@ -29,21 +51,23 @@ afterEach(() => {
 });
 
 describe('Arcade oEmbed lookups', () => {
-    it('reuses a successful lookup without accessing the Workers Cache API', async () => {
-        const accessCache = mock(() => undefined);
-        Object.defineProperty(globalThis, 'caches', { configurable: true, get: accessCache });
+    it('reuses validated dimensions by flow in the named cache', async () => {
         const secondDimensions = { ...dimensions, height: 960 };
         const fetch = spyOn(globalThis, 'fetch')
             .mockResolvedValueOnce(Response.json(embed))
             .mockResolvedValueOnce(Response.json({ ...embed, ...secondDimensions }));
 
-        const first = await fetchArcadeOEmbedData('first-flow');
-        const reused = await fetchArcadeOEmbedData('first-flow');
-
+        expect(await fetchArcadeOEmbedData('first-flow')).toEqual(dimensions);
+        await Promise.all(tasks);
+        expect(await fetchArcadeOEmbedData('first-flow')).toEqual(dimensions);
         expect(fetch).toHaveBeenCalledTimes(1);
-        expect(accessCache).not.toHaveBeenCalled();
-        expect(first).toEqual(dimensions);
-        expect(reused).toEqual(dimensions);
+        expect(openCache).toHaveBeenCalledWith('arcade-oembed');
+        const stored = entries.values().next().value;
+        if (!stored) {
+            throw new Error('Expected the lookup to be cached');
+        }
+        expect(stored.headers.get('cache-control')).toBe('max-age=300');
+        expect(await stored.clone().json<typeof dimensions>()).toEqual(dimensions);
 
         expect(await fetchArcadeOEmbedData('second-flow')).toEqual(secondDimensions);
         expect(fetch).toHaveBeenCalledTimes(2);
@@ -51,31 +75,28 @@ describe('Arcade oEmbed lookups', () => {
         expect(url.searchParams.get('url')).toBe('https://app.arcade.software/share/second-flow');
     });
 
-    it('refreshes dimensions five minutes after the fetch even if the entry was used', async () => {
-        const clock = spyOn(Date, 'now').mockReturnValue(1_000);
+    it('refreshes dimensions when the cache no longer holds the entry', async () => {
         const updated = { ...dimensions, height: 960 };
         const fetch = spyOn(globalThis, 'fetch')
             .mockResolvedValueOnce(Response.json(embed))
             .mockResolvedValueOnce(Response.json(updated));
 
         expect(await fetchArcadeOEmbedData('expiring-flow')).toEqual(dimensions);
-        clock.mockReturnValue(300_999);
-        expect(await fetchArcadeOEmbedData('expiring-flow')).toEqual(dimensions);
-        expect(fetch).toHaveBeenCalledTimes(1);
+        await Promise.all(tasks);
+        entries.clear();
 
-        clock.mockReturnValue(301_000);
         expect(await fetchArcadeOEmbedData('expiring-flow')).toEqual(updated);
         expect(fetch).toHaveBeenCalledTimes(2);
     });
 
     it('reports deletion after expiry', async () => {
-        const clock = spyOn(Date, 'now').mockReturnValue(1_000);
         const fetch = spyOn(globalThis, 'fetch')
             .mockResolvedValueOnce(Response.json(embed))
             .mockResolvedValueOnce(new Response(null, { status: 404, statusText: 'Not Found' }));
 
         await fetchArcadeOEmbedData('deleted-flow');
-        clock.mockReturnValue(301_000);
+        await Promise.all(tasks);
+        entries.clear();
 
         await expect(fetchArcadeOEmbedData('deleted-flow')).rejects.toMatchObject({
             name: 'IntegrationError',
@@ -83,38 +104,22 @@ describe('Arcade oEmbed lookups', () => {
             code: 422,
         });
         expect(fetch).toHaveBeenCalledTimes(2);
+        expect(entries.size).toBe(0);
     });
 
-    it('evicts the least recently used flow at capacity', async () => {
-        const fetch = spyOn(globalThis, 'fetch').mockImplementation(async () =>
-            Response.json(embed),
-        );
+    it('fetches dimensions when the cache is unavailable', async () => {
+        openCache.mockRejectedValueOnce(new Error('Cache unavailable'));
+        spyOn(globalThis, 'fetch').mockResolvedValueOnce(Response.json(embed));
 
-        await fetchArcadeOEmbedData('frequent-flow');
-        await fetchArcadeOEmbedData('least-recent-flow');
-        for (let index = 2; index < 256; index++) {
-            await fetchArcadeOEmbedData('distinct-flow-' + index);
-        }
-        fetch.mockClear();
-
-        await fetchArcadeOEmbedData('frequent-flow');
-        await fetchArcadeOEmbedData('new-flow');
-        await fetchArcadeOEmbedData('frequent-flow');
-        expect(fetch).toHaveBeenCalledTimes(1);
-
-        await fetchArcadeOEmbedData('least-recent-flow');
-        expect(fetch).toHaveBeenCalledTimes(2);
+        expect(await fetchArcadeOEmbedData('cache-unavailable')).toEqual(dimensions);
     });
 
-    it('keeps oversized flow IDs out of memory while still fetching their dimensions', async () => {
-        const fetch = spyOn(globalThis, 'fetch').mockImplementation(async () =>
-            Response.json(embed),
-        );
-        const flowId = 'x'.repeat(257);
+    it('keeps a successful lookup usable when the cache write fails', async () => {
+        spyOn(cache, 'put').mockRejectedValueOnce(new Error('Cache unavailable'));
+        spyOn(globalThis, 'fetch').mockResolvedValueOnce(Response.json(embed));
 
-        expect(await fetchArcadeOEmbedData(flowId)).toEqual(dimensions);
-        expect(await fetchArcadeOEmbedData(flowId)).toEqual(dimensions);
-        expect(fetch).toHaveBeenCalledTimes(2);
+        expect(await fetchArcadeOEmbedData('write-failure')).toEqual(dimensions);
+        await Promise.all(tasks);
     });
 
     it.each([404, 422, 500])('does not cache an upstream %i response', async (status) => {
@@ -191,6 +196,7 @@ it('reuses the lookup across render contexts while preserving language and rende
     const fetch = spyOn(globalThis, 'fetch').mockImplementation(async () => Response.json(embed));
 
     const first = await renderEmbed('first-space', 'pt BR');
+    await Promise.all(tasks);
     const second = await renderEmbed('other-space', 'en');
 
     expect(fetch).toHaveBeenCalledTimes(1);
@@ -248,6 +254,10 @@ async function renderEmbed(spaceId: string, language: string) {
     return integration.fetch(
         new Request('https://worker.example.com/v1', { method: 'POST', body }),
         {},
-        { waitUntil() {}, passThroughOnException() {}, props: {}, exports: {}, abort() {} },
+        { ...context, passThroughOnException() {}, props: {}, exports: {}, abort() {} },
     );
+}
+
+function fetchArcadeOEmbedData(flowId: string) {
+    return fetchDimensions(flowId, context);
 }
