@@ -1,5 +1,11 @@
 # @gitbook/integration-intercom
 
+## 0.7.0
+
+### Minor Changes
+
+- decc723: Add a "Show chat before cookie consent" option so sites can load the Intercom chat for visitors who have not accepted cookies.
+
 ## 0.6.1
 
 ### Patch Changes

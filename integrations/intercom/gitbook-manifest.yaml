@@ -90,6 +90,11 @@ configurations:
                     - EU
                     - Australia
                 default: US
+            load_before_consent:
+                type: boolean
+                title: Show chat before cookie consent
+                description: Load Intercom for visitors who have not accepted cookies. Intercom sets its own cookies.
+                default: false
         required:
             - app_id
 target: site

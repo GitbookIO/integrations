@@ -1,6 +1,7 @@
 (function () {
     const APP_ID = '<TO_REPLACE>';
     const API_BASE = '<API_BASE>';
+    const LOAD_BEFORE_CONSENT = '<LOAD_BEFORE_CONSENT>' === 'true';
     const GRANTED_COOKIE = '__gitbook_cookie_granted';
 
     function getCookie(cname) {
@@ -19,7 +20,7 @@
         return '';
     }
 
-    if (getCookie(GRANTED_COOKIE) !== 'yes') {
+    if (!LOAD_BEFORE_CONSENT && getCookie(GRANTED_COOKIE) !== 'yes') {
         return;
     }
 
