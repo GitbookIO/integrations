@@ -1,5 +1,27 @@
 # @gitbook/cli
 
+## 0.33.5
+
+### Patch Changes
+
+- 85d4090: Regenerate the API client and CLI from the current OpenAPI schema. Merge revisions can come from space or site change requests. The API may omit the source when the caller cannot view the site change request.
+- Updated dependencies [85d4090]
+  - @gitbook/api@0.211.0
+
+## 0.33.4
+
+### Patch Changes
+
+- c5a4983: Add an optional `target` (`self` or `blank`) to inline links, so a link can open in the same tab or a new tab.
+- Updated dependencies [c5a4983]
+  - @gitbook/api@0.210.0
+
+## 0.33.3
+
+### Patch Changes
+
+- 7ff90c4: Disambiguate the `integration` and `integrations` command groups in `--help`: `integration` is for developing your own integration from local source, `integrations` is for finding and installing published integrations through the API, and each group's help points to the other.
+
 ## 0.33.2
 
 ### Patch Changes
