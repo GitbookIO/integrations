@@ -1,5 +1,13 @@
 # @gitbook/runtime
 
+## 0.26.1
+
+### Patch Changes
+
+- dc3f60b: Report recognized authentication, saved configuration and input failures with safe recovery guidance. Keep provider outages, rate limits and malformed responses unexpected, and preserve existing preview fallbacks and custom authentication responses.
+- Updated dependencies [2084c5a]
+  - @gitbook/api@0.212.0
+
 ## 0.26.0
 
 ### Minor Changes

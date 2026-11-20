@@ -1,5 +1,13 @@
 # @gitbook/integration-figma
 
+## 0.5.4
+
+### Patch Changes
+
+- dc3f60b: Report recognized authentication, saved configuration and input failures with safe recovery guidance. Keep provider outages, rate limits and malformed responses unexpected, and preserve existing preview fallbacks and custom authentication responses.
+- Updated dependencies [dc3f60b]
+  - @gitbook/runtime@0.26.1
+
 ## 0.5.3
 
 ### Patch Changes
