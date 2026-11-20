@@ -1,5 +1,6 @@
 import {
     createIntegration,
+    IntegrationError,
     FetchPublishScriptEventCallback,
     RuntimeContext,
     RuntimeEnvironment,
@@ -48,18 +49,10 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     const instanceAddress = environment.siteInstallation?.configuration?.instanceAddress;
     const reverseProxyRaw = environment.siteInstallation?.configuration?.reverseProxyUrl;
     if (!projectApiKey) {
-        throw new Error(
-            `The PostHog project API key is missing from the space configuration (ID: ${
-                'spaceId' in event ? event.spaceId : event.siteId
-            }).`,
-        );
+        throw new IntegrationError('configuration_required');
     }
     if (!instanceAddress) {
-        throw new Error(
-            `The PostHog instance address is missing from the space configuration (ID: ${
-                'spaceId' in event ? event.spaceId : event.siteId
-            }).`,
-        );
+        throw new IntegrationError('configuration_required');
     }
 
     const normalizedProxy = reverseProxyRaw ? normalizeReverseProxyUrl(reverseProxyRaw) : '';

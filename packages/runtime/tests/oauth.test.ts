@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from 'bun:te
 
 import { GitBookAPIError } from '@gitbook/api';
 
+import { IntegrationError } from '../src/errors';
 import { createOAuthHandler, getOAuthToken } from '../src/oauth';
 
 const CLIENT_SECRET = 'fake-client-secret-0001';
@@ -420,18 +421,23 @@ describe('getOAuthToken', () => {
         expectNoSecrets(logged.join('\n'));
     });
 
-    it('should report the provider error when the refresh fails', async () => {
-        mockTokenEndpoint(
+    it.each([
+        [400, 'invalid_grant', 'authentication_required'],
+        [403, 'invalid_grant', 'authentication_required'],
+        [401, 'invalid_client', 'configuration_required'],
+        [403, 'unauthorized_client', 'configuration_required'],
+    ] as const)('classifies HTTP %s with %s as %s', async (status, code, reason) => {
+        const fetchMock = mockTokenEndpoint(
             Response.json(
                 {
-                    error: 'invalid_grant',
-                    error_description: 'The refresh token is invalid',
+                    error: code,
+                    error_description: REFRESH_TOKEN,
                     refresh_token: REFRESH_TOKEN,
                 },
-                { status: 400, statusText: 'Bad Request' },
+                { status },
             ),
         );
-
+        const context = createContext();
         const error = await getRejection(
             getOAuthToken(
                 {
@@ -440,13 +446,86 @@ describe('getOAuthToken', () => {
                     expires_at: expiredAt(),
                 },
                 OAUTH_CONFIG,
+                context,
+            ),
+        );
+
+        expect(error).toBeInstanceOf(IntegrationError);
+        expect(error).toMatchObject({ reason, code: 424 });
+        expect(fetchMock).toHaveBeenCalledTimes(1);
+        expect(context.api.integrations.updateIntegrationInstallation).not.toHaveBeenCalled();
+        expectNoSecrets(`${error.message}\n${logged.join('\n')}`);
+    });
+
+    it('requires reconnecting when an expired token cannot be refreshed', async () => {
+        const fetchMock = mockTokenEndpoint(Response.json({ access_token: ACCESS_TOKEN }));
+        const context = createContext();
+        const error = await getRejection(
+            getOAuthToken(
+                { access_token: ACCESS_TOKEN, expires_at: expiredAt() },
+                OAUTH_CONFIG,
+                context,
+            ),
+        );
+
+        expect(error).toMatchObject({ reason: 'authentication_required', code: 424 });
+        expect(fetchMock).not.toHaveBeenCalled();
+        expect(context.api.integrations.updateIntegrationInstallation).not.toHaveBeenCalled();
+    });
+
+    it('recognizes form-encoded token endpoint errors', async () => {
+        mockTokenEndpoint(
+            new Response('error=invalid_grant', {
+                status: 400,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            }),
+        );
+        const error = await getRejection(
+            getOAuthToken(
+                {
+                    access_token: ACCESS_TOKEN,
+                    refresh_token: REFRESH_TOKEN,
+                    expires_at: expiredAt(),
+                },
+                OAUTH_CONFIG,
                 createContext(),
             ),
         );
 
-        expect(error.message).toBe(
-            'Failed to refresh the OAuth access token: HTTP 400 Bad Request: invalid_grant: The refresh token is invalid',
+        expect(error).toMatchObject({ reason: 'authentication_required', code: 424 });
+    });
+
+    it.each([
+        () => Response.json({ error: 'invalid_grant' }, { status: 503 }),
+        () => Response.json({ error: 'invalid_grant' }, { status: 429 }),
+        () => Response.json({ error: 'invalid_grant' }, { status: 408 }),
+        () =>
+            Response.json(
+                { error: 'unknown', error_description: 'invalid_grant' },
+                { status: 400 },
+            ),
+        () => Response.json([{ error: 'invalid_grant' }], { status: 400 }),
+        () => new Response('<html>invalid_grant</html>', { status: 403 }),
+        () => new Response('{', { status: 200 }),
+        () => Response.json({ refresh_token: REFRESH_TOKEN }),
+    ])('keeps unrecognized, malformed and unavailable responses unexpected', async (response) => {
+        const fetchMock = mockTokenEndpoint(response());
+        const context = createContext();
+        const error = await getRejection(
+            getOAuthToken(
+                {
+                    access_token: ACCESS_TOKEN,
+                    refresh_token: REFRESH_TOKEN,
+                    expires_at: expiredAt(),
+                },
+                OAUTH_CONFIG,
+                context,
+            ),
         );
+
+        expect(error).not.toBeInstanceOf(IntegrationError);
+        expect(fetchMock).toHaveBeenCalledTimes(1);
+        expect(context.api.integrations.updateIntegrationInstallation).not.toHaveBeenCalled();
         expectNoSecrets(`${error.message}\n${logged.join('\n')}`);
     });
 });

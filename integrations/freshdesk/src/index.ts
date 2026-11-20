@@ -1,5 +1,6 @@
 import {
     createIntegration,
+    IntegrationError,
     FetchPublishScriptEventCallback,
     RuntimeContext,
     RuntimeEnvironment,
@@ -51,11 +52,7 @@ export const handleFetchEvent: FetchPublishScriptEventCallback = async (
     const widgetInput = environment.siteInstallation?.configuration?.widget_id;
     const widgetConfig = parseWidgetConfiguration(widgetInput);
     if (!widgetConfig) {
-        throw new Error(
-            `The Freshdesk widget configuration is invalid. Expected a widget ID or a full URL ending with /widgets/<widget_id>.js (ID: ${
-                'spaceId' in event ? event.spaceId : event.siteId
-            }).`,
-        );
+        throw new IntegrationError('configuration_required');
     }
 
     const scriptContent = (script as string)

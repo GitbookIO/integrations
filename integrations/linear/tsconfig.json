@@ -1,4 +1,7 @@
 {
     "extends": "@gitbook/tsconfig/integration.json",
-    "exclude": ["public/functions/**/*"]
+    "exclude": ["public/functions/**/*"],
+    "compilerOptions": {
+        "types": ["@cloudflare/workers-types", "bun"]
+    }
 }

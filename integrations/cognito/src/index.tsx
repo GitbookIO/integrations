@@ -12,7 +12,7 @@ import {
     RuntimeContext,
     RuntimeEnvironment,
     createComponent,
-    ExposableError,
+    IntegrationError,
 } from '@gitbook/runtime';
 
 const logger = Logger('cognito.visitor-auth');
@@ -465,7 +465,7 @@ export default createIntegration({
         const clientId = configuration.client_id;
 
         if (!clientId || !cognitoDomain) {
-            throw new ExposableError('Cognito configuration is missing');
+            throw new IntegrationError('configuration_required');
         }
 
         const location = event.location ? event.location : '';

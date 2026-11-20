@@ -1,4 +1,9 @@
-import { createIntegration, RuntimeContext, RuntimeEnvironment } from '@gitbook/runtime';
+import {
+    createIntegration,
+    IntegrationError,
+    RuntimeContext,
+    RuntimeEnvironment,
+} from '@gitbook/runtime';
 
 import { generateSegmentTrackEvent, hasTrackingConsent } from './events';
 
@@ -27,9 +32,7 @@ export default createIntegration<SegmentRuntimeContext>({
                 : 'https://api.segment.io/v1/track';
 
             if (!writeKey) {
-                throw new Error(
-                    `The Segment write key is missing from the Site (ID: ${event.siteId}) installation.`,
-                );
+                throw new IntegrationError('configuration_required');
             }
 
             const trackEvent = generateSegmentTrackEvent(event);
