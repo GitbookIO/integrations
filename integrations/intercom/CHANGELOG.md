@@ -1,5 +1,17 @@
 # @gitbook/integration-intercom
 
+## 0.7.0
+
+### Minor Changes
+
+- decc723: Add a "Show chat before cookie consent" option so sites can load the Intercom chat for visitors who have not accepted cookies.
+
+## 0.6.1
+
+### Patch Changes
+
+- 16c96f1: Rebuild all built-in integrations with the updated runtime’s support for recoverable errors and safe handling of integration authentication failures.
+
 ## 0.6.0
 
 ### Minor Changes
@@ -52,7 +64,7 @@
 ### Patch Changes
 
 - Updated dependencies [a04dfb8]
-    - @gitbook/api@0.58.0
+  - @gitbook/api@0.58.0
 
 ## 0.0.5
 
@@ -66,7 +78,7 @@
 
 - cebbcb6: Updating inject scripts integration to support sites installations
 - Updated dependencies [cebbcb6]
-    - @gitbook/runtime@0.14.1
+  - @gitbook/runtime@0.14.1
 
 ## 0.0.3
 
@@ -74,8 +86,8 @@
 
 - 7d76dfb: Update integrations to use latest runtime and api client with `User-Agent`
 - Updated dependencies [46c9686]
-    - @gitbook/runtime@0.11.0
-    - @gitbook/api@0.27.0
+  - @gitbook/runtime@0.11.0
+  - @gitbook/api@0.27.0
 
 ## 0.0.2
 
@@ -91,9 +103,9 @@
 - bd17ba3: Fixed documentation links
 - 704ae2b: Added the Plausible and Fathom integrations.
 
-    Also added some logic to load script with the `.raw.js` extension as text in the integrations. This should make sure
-    that script injection is as seamless to develop as the other parts of teh integration by allowing us to write code
-    in script file, then loading it as a script during the build process.
+  Also added some logic to load script with the `.raw.js` extension as text in the integrations. This should make sure
+  that script injection is as seamless to develop as the other parts of teh integration by allowing us to write code
+  in script file, then loading it as a script during the build process.
 
 - a8bb4db: Fixed the manifests to make sure they can be deployed without being blocked by other work
 - Updated dependencies [f0c07cb]
@@ -104,5 +116,5 @@
 - Updated dependencies [9fa2838]
 - Updated dependencies [ce12efa]
 - Updated dependencies [5df9eff]
-    - @gitbook/api@null
-    - @gitbook/runtime@null
+  - @gitbook/api@null
+  - @gitbook/runtime@null

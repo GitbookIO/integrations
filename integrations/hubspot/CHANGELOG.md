@@ -1,5 +1,11 @@
 # @gitbook/integration-hubspot
 
+## 2.1.1
+
+### Patch Changes
+
+- 16c96f1: Rebuild all built-in integrations with the updated runtime’s support for recoverable errors and safe handling of integration authentication failures.
+
 ## 2.1.0
 
 ### Minor Changes

@@ -1,5 +1,17 @@
 # @gitbook/integration-github
 
+## 0.2.8
+
+### Patch Changes
+
+- 7d9cafb: Preserve the existing GitHub Files connection when an OAuth token exchange fails, and omit expiry metadata for non-expiring tokens.
+
+## 0.2.7
+
+### Patch Changes
+
+- 16c96f1: Rebuild all built-in integrations with the updated runtime’s support for recoverable errors and safe handling of integration authentication failures.
+
 ## 0.2.6
 
 ### Patch Changes
