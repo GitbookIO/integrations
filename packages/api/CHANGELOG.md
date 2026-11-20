@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.212.0
+
+### Minor Changes
+
+- 2084c5a: Add `revokedAt` to personal API tokens, set when a token is revoked. Deprecate `revoked` field.
+
 ## 0.211.0
 
 ### Minor Changes

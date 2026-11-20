@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-front",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "private": true,
     "scripts": {
         "typecheck": "tsc --noEmit",
@@ -11,7 +11,7 @@
         "@gitbook/runtime": "*"
     },
     "devDependencies": {
-        "@gitbook/cli": "^0.25.0",
+        "@gitbook/cli": "^0.33.6",
         "@gitbook/tsconfig": "*",
         "@cloudflare/workers-types": "*"
     }

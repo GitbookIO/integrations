@@ -1,6 +1,6 @@
 {
     "name": "@gitbook/integration-crisp",
-    "version": "0.4.5",
+    "version": "0.4.6",
     "private": true,
     "dependencies": {
         "@gitbook/api": "*",
