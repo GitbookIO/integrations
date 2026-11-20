@@ -1,6 +1,7 @@
 {
     "extends": "@gitbook/tsconfig/integration.json",
     "compilerOptions": {
+        "jsxImportSource": "@gitbook/runtime",
         "types": ["@cloudflare/workers-types", "bun"]
     }
 }

@@ -1,20 +1,40 @@
-import { IntegrationError } from '@gitbook/runtime';
+import { IntegrationError, Logger, type RuntimeContext } from '@gitbook/runtime';
 
-export interface ArcadeOEmbed {
-    type: 'rich';
-    title: string;
-    width: number;
-    height: number;
+export const ARCADE_OEMBED_CACHE_MAX_AGE = 5 * 60;
+const OEMBED_REQUEST_TIMEOUT = 10_000;
+const logger = Logger('arcade');
+
+interface ArcadeOEmbedDimensions {
+    readonly width: number;
+    readonly height: number;
 }
 
 /**
- * Fetch the Arcade oembed data.
+ * Fetch validated Arcade oEmbed dimensions.
  */
-export async function fetchArcadeOEmbedData(flowId: string): Promise<ArcadeOEmbed> {
-    const url = new URL(`https://app.arcade.software/api/oembed`);
+export async function fetchArcadeOEmbedData(
+    flowId: string,
+    context: Pick<RuntimeContext, 'waitUntil'>,
+): Promise<ArcadeOEmbedDimensions> {
+    const url = new URL('https://app.arcade.software/api/oembed');
     url.searchParams.append('url', `https://app.arcade.software/share/${flowId}`);
+    const cacheKey = url.toString();
 
-    const response = await fetch(url.toString());
+    let cache: Cache | undefined;
+    try {
+        // Untrusted dispatch namespaces isolate Cache API entries by Worker.
+        cache = await caches.open('arcade-oembed');
+        const cached = await cache.match(cacheKey);
+        if (cached) {
+            return await readArcadeOEmbed(cached);
+        }
+    } catch {
+        logger.error('Failed to read oEmbed cache');
+    }
+
+    const response = await fetch(cacheKey, {
+        signal: AbortSignal.timeout(OEMBED_REQUEST_TIMEOUT),
+    });
 
     if (!response.ok) {
         if ([400, 404, 422].includes(response.status)) {
@@ -27,9 +47,21 @@ export async function fetchArcadeOEmbedData(flowId: string): Promise<ArcadeOEmbe
         throw new Error(`${response.status} ${response.statusText}`);
     }
 
-    const result = await response.json<ArcadeOEmbed>();
+    const dimensions = await readArcadeOEmbed(response);
+    if (cache) {
+        context.waitUntil(
+            cache
+                .put(
+                    cacheKey,
+                    Response.json(dimensions, {
+                        headers: { 'Cache-Control': `max-age=${ARCADE_OEMBED_CACHE_MAX_AGE}` },
+                    }),
+                )
+                .catch(() => logger.error('Failed to write oEmbed cache')),
+        );
+    }
 
-    return result;
+    return dimensions;
 }
 
 /**
@@ -51,4 +83,22 @@ export function extractArcadeFlowFromURL(input: string): {
 
     const language = url.searchParams.get('language') ?? undefined;
     return { flowId: parts[2], ...(language && { language }) };
+}
+
+async function readArcadeOEmbed(response: Response): Promise<ArcadeOEmbedDimensions> {
+    const result = await response.json<{ width?: unknown; height?: unknown } | null>();
+    const width = result?.width;
+    const height = result?.height;
+    if (
+        typeof width !== 'number' ||
+        !Number.isFinite(width) ||
+        width <= 0 ||
+        typeof height !== 'number' ||
+        !Number.isFinite(height) ||
+        height <= 0 ||
+        !Number.isFinite(width / height)
+    ) {
+        throw new Error('Invalid Arcade oEmbed dimensions');
+    }
+    return { width, height };
 }
