@@ -1,5 +1,11 @@
 # @gitbook/integration-arcade
 
+## 0.3.3
+
+### Patch Changes
+
+- 72f366d: Reuse successful Arcade oEmbed lookups for five minutes and bound slow upstream requests while refreshing demo dimensions and deleted-flow checks.
+
 ## 0.3.2
 
 ### Patch Changes
