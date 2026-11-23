@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.214.0
+
+### Minor Changes
+
+- faf3909: Add authored page keywords to document pages, change request page metadata and page change attributes.
+
 ## 0.213.0
 
 ### Minor Changes

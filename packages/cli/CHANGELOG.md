@@ -1,5 +1,13 @@
 # @gitbook/cli
 
+## 0.33.8
+
+### Patch Changes
+
+- faf3909: Add authored page keywords to document pages, change request page metadata and page change attributes.
+- Updated dependencies [faf3909]
+  - @gitbook/api@0.214.0
+
 ## 0.33.7
 
 ### Patch Changes
