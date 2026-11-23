@@ -1,7 +1,7 @@
 {
     "name": "@gitbook/cli",
     "description": "Manage GitBook docs, sites, and integrations from the command line",
-    "version": "0.33.6",
+    "version": "0.33.7",
     "dependencies": {
         "@gitbook/api": "*",
         "check-node-version": "^4.2.1",
