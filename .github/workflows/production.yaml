@@ -13,6 +13,7 @@ jobs:
         permissions:
             contents: read
         outputs:
+            integration-package: ${{ steps.integration-package.outputs.integrationPackage }}
             publish-digest: ${{ steps.digest.outputs.value }}
         steps:
             # The tag name comes from the release event: validate it before any use.
@@ -70,6 +71,9 @@ jobs:
     deploy-integration-to-production:
         name: Publish integrations to production
         needs: prepare-integrations-production
+        concurrency:
+            group: publish-production-${{ needs.prepare-integrations-production.outputs.integration-package }}
+            queue: max
         runs-on: ubuntu-latest
         environment: production
         permissions:
