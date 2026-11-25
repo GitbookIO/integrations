@@ -51,6 +51,15 @@ so an older tag skips the upload if Pages already serves assets from a newer com
 release waits for two approvals of the `production` environment: one for the Worker, then
 one for the Pages assets.
 
+Before switching workflows, put the staging Pages project in a separate Cloudflare account
+and verify its asset URLs and Functions. Set the repository variables `STAGING_PAGES_ACCOUNT_ID`
+and `PRODUCTION_PAGES_ACCOUNT_ID` to the accounts that own the respective projects.
+Issue one Pages Write token per account, restricted to that account alone. Store
+`STAGING_PAGES_API_TOKEN` in the `staging` GitHub environment and `PRODUCTION_PAGES_API_TOKEN`
+in the approval-protected `production` environment. Keep both token names exclusive to their
+environments. During the release pause, revoke the old shared Cloudflare token and remove the
+repository secret `CLOUDFLARE_PAGES_API_TOKEN` before resuming staging builds.
+
 Tags older than the integration's highest published version are refused, so re-running an earlier
 release does not roll an integration back. To undo a release, publish a higher version.
 

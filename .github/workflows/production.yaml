@@ -188,5 +188,5 @@ jobs:
               run: bash scripts/publish-prepared-pages.sh "$RUNNER_TEMP/pages"
               env:
                   CLOUDFLARE_PAGES_PROJECT: ${{ secrets.INTEGRATIONS_ASSETS_PROD_PROJECT }}
-                  CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-                  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
+                  CLOUDFLARE_ACCOUNT_ID: ${{ vars.PRODUCTION_PAGES_ACCOUNT_ID }}
+                  CLOUDFLARE_API_TOKEN: ${{ secrets.PRODUCTION_PAGES_API_TOKEN }}

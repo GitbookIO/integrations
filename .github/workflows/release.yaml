@@ -60,6 +60,15 @@ jobs:
         outputs:
             publish-digest: ${{ steps.digest.outputs.value }}
         steps:
+            - name: Check Pages account isolation
+              env:
+                  STAGING_ACCOUNT: ${{ vars.STAGING_PAGES_ACCOUNT_ID }}
+                  PRODUCTION_ACCOUNT: ${{ vars.PRODUCTION_PAGES_ACCOUNT_ID }}
+              run: |
+                  if [[ -z "$STAGING_ACCOUNT" || -z "$PRODUCTION_ACCOUNT" || "$STAGING_ACCOUNT" == "$PRODUCTION_ACCOUNT" ]]; then
+                      echo '::error::Configure distinct staging and production Pages accounts.'
+                      exit 1
+                  fi
             - name: Checkout
               uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
               with:
@@ -74,8 +83,8 @@ jobs:
               run: bun run publish-assets
               env:
                   CLOUDFLARE_PAGES_PROJECT: ${{ secrets.INTEGRATIONS_ASSETS_STAGING_PROJECT }}
-                  CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-                  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
+                  CLOUDFLARE_ACCOUNT_ID: ${{ vars.STAGING_PAGES_ACCOUNT_ID }}
+                  CLOUDFLARE_API_TOKEN: ${{ secrets.STAGING_PAGES_API_TOKEN }}
             - name: Build all integrations
               run: bun run build
             - name: Prepare publish requests
