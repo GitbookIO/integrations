@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.215.0
+
+### Minor Changes
+
+- 6af7038: Add heading-4 to type enum in DocumentBlockHeading
+
 ## 0.214.0
 
 ### Minor Changes
