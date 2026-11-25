@@ -1,5 +1,13 @@
 # @gitbook/cli
 
+## 0.33.9
+
+### Patch Changes
+
+- 6af7038: Add heading-4 to type enum in DocumentBlockHeading
+- Updated dependencies [6af7038]
+  - @gitbook/api@0.215.0
+
 ## 0.33.8
 
 ### Patch Changes
