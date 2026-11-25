@@ -42,6 +42,18 @@ You're also welcome to contribute updates or improvements to the packages living
 
 Package releases are driven by [changesets](https://github.com/changesets/changesets). Add one with `bun run changeset` (or write a `.changeset/*.md` file by hand) describing the change and the version bump for each affected package. Merges to `main` are then versioned and published automatically by the release workflow.
 
+The integrations in this repository are published only by these workflows: staging from `release.yaml` on each merge to `main`, production from `production.yaml` when an integration's release is published. They authenticate with the workflow's GitHub OIDC token, so `gitbook integration publish` from a laptop is refused for them, whatever token it uses.
+
+Production preparation builds the Worker, static assets, and Pages Functions without deployment
+credentials. The approved Worker publish checks the release version. A separate production job
+then verifies the prepared Pages files and uploads them. All integrations share that Pages project,
+so an older tag skips the upload if Pages already serves assets from a newer commit. Each production
+release waits for two approvals of the `production` environment: one for the Worker, then
+one for the Pages assets.
+
+Tags older than the integration's highest published version are refused, so re-running an earlier
+release does not roll an integration back. To undo a release, publish a higher version.
+
 ##### Bumping `@gitbook/api` also bumps `@gitbook/cli`
 
 The `gitbook` CLI generates its command tree from the GitBook OpenAPI spec at build time. When you bump `@gitbook/api`, add a `@gitbook/cli` changeset in the same PR so the CLI is regenerated and republished with the new spec. A single changeset file can bump both:
