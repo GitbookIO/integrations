@@ -228,6 +228,10 @@ const OVERRIDES: Record<string, { group: string[]; verb: string }> = {
     // leading-word rule mistakes for the verb.
     'GET /ads/sites': { group: ['ads', 'sites'], verb: 'list' },
     'PATCH /ads/sites/{siteId}': { group: ['ads', 'sites'], verb: 'update' },
+    'GET /spaces/{spaceId}/change-requests/{changeRequestId}/revert': {
+        group: ['spaces', 'change-requests'],
+        verb: 'get-revert',
+    },
 };
 
 // ─── Spec loading ─────────────────────────────────────────────────────────────
