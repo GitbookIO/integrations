@@ -51,6 +51,7 @@ It also hosts the default integrations provided by the GitBook team, organized b
 | [Piwik PRO Analytics](./integrations/piwik/)        | Inject Piwik PRO Tag Manager into your published GitBook documentation site.   |
 | [Plausible](./integrations/plausible/)              | Receive GitBook traffic insights directly in your Plausible dashboard.         |
 | [PostHog](./integrations/posthog/)                  | Plug your GitBook site to your PostHog installation.                           |
+| [Privatus Analytics](./integrations/privatus/)      | See who reads your docs with cookieless analytics that filters out bots.       |
 | [Reo.dev](./integrations/reo/)                      | Plug your GitBook site to your Reo.dev installation.                           |
 | [SalesViewer](./integrations/salesviewer/)          | Track and identify GitBook page visitors with SalesViewer analytics.           |
 | [Segment](./integrations/segment/)                  | Integrate your GitBook public documentation with your Segment pipeline.        |
