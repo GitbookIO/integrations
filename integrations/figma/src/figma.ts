@@ -34,14 +34,14 @@ interface FigmaAPIImages {
  * Extract the parameters from a Figma URL.
  */
 export function extractNodeFromURL(input: string): FileNodeId | undefined {
-    // https://www.figma.com/file/<id>/...
+    // https://www.figma.com/design/<id>/... (or the older /file/<id>/...)
     const url = new URL(input);
     if (url.hostname !== 'www.figma.com') {
         return;
     }
 
     const parts = url.pathname.split('/');
-    if (parts[1] !== 'file') {
+    if (parts[1] !== 'design' && parts[1] !== 'file') {
         return;
     }
 
