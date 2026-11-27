@@ -5,76 +5,188 @@ on:
         types: [published]
 
 jobs:
-    deploy-integration-to-production:
+    prepare-integrations-production:
         if: startsWith(github.event.release.tag_name, '@gitbook/integration-')
-        name: Deploy integration to production
+        name: Prepare integration for production
         runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        outputs:
+            integration-package: ${{ steps.integration-package.outputs.integrationPackage }}
+            pages-digest: ${{ steps.pages.outputs.digest }}
+            publish-digest: ${{ steps.digest.outputs.value }}
         steps:
+            # The tag name comes from the release event: validate it before any use.
             - name: Get integration package name
               id: integration-package
-              uses: actions/github-script@v7
-              with:
-                  script: |
-                      const tag = context.payload.release.tag_name;
-                      const integrationPackage = '@' + tag.split('@')[1];
-                      core.setOutput('integrationPackage', integrationPackage)
+              env:
+                  TAG_NAME: ${{ github.event.release.tag_name }}
+              run: |
+                  if [[ ! "$TAG_NAME" =~ ^(@gitbook/integration-[a-z0-9.-]+)@[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+                      echo "::error::Unexpected release tag: $TAG_NAME"
+                      exit 1
+                  fi
+                  echo "integrationPackage=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
 
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+              with:
+                  persist-credentials: false
             - name: Setup bun
-              uses: oven-sh/setup-bun@v2
+              uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
               with:
                   bun-version-file: 'package.json'
+            - name: Install dependencies
+              run: bun install --frozen-lockfile
+
+            - name: Prepare production Pages assets
+              id: pages
+              run: |
+                  bun run build-assets
+                  if [[ -d functions ]]; then
+                      bun --no-install wrangler pages functions build functions \
+                          --outdir "$RUNNER_TEMP/pages-worker" --output-routes-path dist/_routes.json
+                      cp "$RUNNER_TEMP/pages-worker/index.js" dist/_worker.js
+                  fi
+                  digest=$(bash scripts/pages-assets-digest.sh dist)
+                  echo "digest=$digest" >> "$GITHUB_OUTPUT"
+            - name: Upload prepared Pages assets
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+              with:
+                  name: integration-pages-production
+                  path: dist/
+                  if-no-files-found: error
+                  retention-days: 1
+
+            - name: Build integration dependencies
+              run: bunx turbo run build --filter="$INTEGRATION_PACKAGE"
+              env:
+                  INTEGRATION_PACKAGE: ${{ steps.integration-package.outputs.integrationPackage }}
+            - name: Prepare publish request
+              run: bun scripts/prepare-ci-publish.mjs production "$RUNNER_TEMP/publish"
+            - name: Record artifact digest
+              id: digest
+              shell: bash
+              run: |
+                  cd "$RUNNER_TEMP/publish"
+                  digest=$(sha256sum -- *.json | sha256sum)
+                  echo "value=${digest%% *}" >> "$GITHUB_OUTPUT"
+            - name: Upload publish requests
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+              with:
+                  name: integration-publish-production
+                  path: ${{ runner.temp }}/publish
+                  if-no-files-found: error
+                  retention-days: 1
+
+    deploy-integration-to-production:
+        name: Publish integrations to production
+        needs: prepare-integrations-production
+        concurrency:
+            group: publish-production-${{ needs.prepare-integrations-production.outputs.integration-package }}
+            queue: max
+        runs-on: ubuntu-latest
+        environment: production
+        permissions:
+            contents: read
+            id-token: write
+        steps:
+            - name: Checkout publishing code
+              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+              with:
+                  persist-credentials: false
+            - name: Set up Bun for the built-in YAML parser
+              uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+              with:
+                  bun-version-file: 'package.json'
+            - name: Download publish requests
+              uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+              with:
+                  name: integration-publish-production
+                  path: ${{ runner.temp }}/publish
+            - name: Verify artifact digest
+              shell: bash
+              run: |
+                  cd "$RUNNER_TEMP/publish"
+                  digest=$(sha256sum -- *.json | sha256sum)
+                  test "${digest%% *}" = "$EXPECTED_DIGEST"
+              env:
+                  EXPECTED_DIGEST: ${{ needs.prepare-integrations-production.outputs.publish-digest }}
+            - name: Check release targets against the protected checkout
+              run: bun --no-install scripts/publish-prepared-integrations.mjs production "$RUNNER_TEMP/publish" --check
             - name: Setup 1Password CLI
               uses: ./.github/composite/setup-1password-op
               with:
                   OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-            - name: Install dependencies
-              run: bun install --frozen-lockfile
-
-            # TODO: Remove this once we incorporate this in the publish API of the integration
-            - name: Publish all integrations assets to production
-              run: bun run publish-assets
+            - name: Publish prepared integrations
+              run: bun --no-install scripts/publish-prepared-integrations.mjs production "$RUNNER_TEMP/publish"
               env:
-                  CLOUDFLARE_PAGES_PROJECT: ${{ secrets.INTEGRATIONS_ASSETS_PROD_PROJECT }}
-                  CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-                  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
-
-            - name: Deploy integration
-              run: bun run publish-integrations -- --filter=${{ steps.integration-package.outputs.integrationPackage }}
-              env:
-                  GITBOOK_TOKEN: ${{ secrets.GITBOOK_PROD_API_TOKEN }}
-                  GITBOOK_ENDPOINT: https://api.gitbook.com
-                  GITBOOK_ORGANIZATION: gitbook
                   OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
                   # Proxy
-                  GITBOOK_PROXY_URL: ${{ secrets.PROXY_URL }}
-                  GITBOOK_PROXY_SECRET: ${{ secrets.PROXY_SECRET }}
-                  REFLAG_SECRET_KEY: ${{ secrets.REFLAG_SECRET_KEY }}
+                  PUBLISH_SECRET_GITBOOK_PROXY_URL: ${{ secrets.PROXY_URL }}
+                  PUBLISH_SECRET_GITBOOK_PROXY_SECRET: ${{ secrets.PROXY_SECRET }}
+                  PUBLISH_SECRET_REFLAG_SECRET_KEY: ${{ secrets.REFLAG_SECRET_KEY }}
                   # GitHub Files
-                  UNFURL_GITHUB_CLIENT_ID: ${{ secrets.UNFURL_GITHUB_CLIENT_ID }}
-                  UNFURL_GITHUB_CLIENT_SECRET: ${{ secrets.UNFURL_GITHUB_CLIENT_SECRET }}
+                  PUBLISH_SECRET_UNFURL_GITHUB_CLIENT_ID: ${{ secrets.UNFURL_GITHUB_CLIENT_ID }}
+                  PUBLISH_SECRET_UNFURL_GITHUB_CLIENT_SECRET: ${{ secrets.UNFURL_GITHUB_CLIENT_SECRET }}
                   # GitLab
-                  GITLAB_CLIENT_ID: ${{ secrets.GITLAB_CLIENT_ID }}
-                  GITLAB_CLIENT_SECRET: ${{ secrets.GITLAB_CLIENT_SECRET }}
+                  PUBLISH_SECRET_GITLAB_CLIENT_ID: ${{ secrets.GITLAB_CLIENT_ID }}
+                  PUBLISH_SECRET_GITLAB_CLIENT_SECRET: ${{ secrets.GITLAB_CLIENT_SECRET }}
                   # Discord
-                  DISCORD_CLIENT_ID: $ {{ secrets.DISCORD_CLIENT_ID }}
-                  DISCORD_CLIENT_SECRET: $ {{ secrets.DISCORD_CLIENT_SECRET }}
-                  DISCORD_BOT_TOKEN: $ {{ secrets.DISCORD_BOT_TOKEN }}
+                  PUBLISH_SECRET_DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
+                  PUBLISH_SECRET_DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
+                  PUBLISH_SECRET_DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
                   # Mailchimp
-                  MAILCHIMP_CLIENT_ID: ${{ secrets.MAILCHIMP_PROD_CLIENT_ID }}
-                  MAILCHIMP_CLIENT_SECRET: ${{ secrets.MAILCHIMP_PROD_CLIENT_SECRET }}
+                  PUBLISH_SECRET_MAILCHIMP_CLIENT_ID: ${{ secrets.MAILCHIMP_PROD_CLIENT_ID }}
+                  PUBLISH_SECRET_MAILCHIMP_CLIENT_SECRET: ${{ secrets.MAILCHIMP_PROD_CLIENT_SECRET }}
                   # Jira
-                  JIRA_CLIENT_ID: ${{ secrets.JIRA_PROD_CLIENT_ID }}
-                  JIRA_CLIENT_SECRET: ${{ secrets.JIRA_PROD_CLIENT_SECRET }}
+                  PUBLISH_SECRET_JIRA_CLIENT_ID: ${{ secrets.JIRA_PROD_CLIENT_ID }}
+                  PUBLISH_SECRET_JIRA_CLIENT_SECRET: ${{ secrets.JIRA_PROD_CLIENT_SECRET }}
                   # Linear
-                  LINEAR_CLIENT_ID: ${{ secrets.LINEAR_PROD_CLIENT_ID }}
-                  LINEAR_CLIENT_SECRET: ${{ secrets.LINEAR_PROD_CLIENT_SECRET }}
+                  PUBLISH_SECRET_LINEAR_CLIENT_ID: ${{ secrets.LINEAR_PROD_CLIENT_ID }}
+                  PUBLISH_SECRET_LINEAR_CLIENT_SECRET: ${{ secrets.LINEAR_PROD_CLIENT_SECRET }}
                   # Lucid
-                  LUCID_CLIENT_ID: ${{ secrets.LUCID_CLIENT_ID }}
-                  LUCID_CLIENT_SECRET: ${{ secrets.LUCID_CLIENT_SECRET }}
+                  PUBLISH_SECRET_LUCID_CLIENT_ID: ${{ secrets.LUCID_CLIENT_ID }}
+                  PUBLISH_SECRET_LUCID_CLIENT_SECRET: ${{ secrets.LUCID_CLIENT_SECRET }}
                   # GitHub Copilot
-                  GITHUBCOPILOT_APP_ID: ${{ secrets.GITHUBCOPILOT_PROD_APP_ID }}
-                  GITHUBCOPILOT_APP_URL: ${{ secrets.GITHUBCOPILOT_PROD_APP_URL }}
-                  GITHUBCOPILOT_CLIENT_ID: ${{ secrets.GITHUBCOPILOT_PROD_CLIENT_ID }}
-                  GITHUBCOPILOT_CLIENT_SECRET: ${{ secrets.GITHUBCOPILOT_PROD_CLIENT_SECRET }}
+                  PUBLISH_SECRET_GITHUBCOPILOT_APP_ID: ${{ secrets.GITHUBCOPILOT_PROD_APP_ID }}
+                  PUBLISH_SECRET_GITHUBCOPILOT_APP_URL: ${{ secrets.GITHUBCOPILOT_PROD_APP_URL }}
+                  PUBLISH_SECRET_GITHUBCOPILOT_CLIENT_ID: ${{ secrets.GITHUBCOPILOT_PROD_CLIENT_ID }}
+                  PUBLISH_SECRET_GITHUBCOPILOT_CLIENT_SECRET: ${{ secrets.GITHUBCOPILOT_PROD_CLIENT_SECRET }}
+
+    deploy-production-assets:
+        name: Publish prepared production Pages assets
+        needs: [prepare-integrations-production, deploy-integration-to-production]
+        runs-on: ubuntu-latest
+        environment: production
+        permissions:
+            contents: read
+        concurrency:
+            group: integration-pages-production
+            queue: max
+        steps:
+            - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+              with:
+                  fetch-depth: 0
+                  persist-credentials: false
+            - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+              with:
+                  bun-version-file: 'package.json'
+            - name: Install locked uploader without running dependency scripts
+              run: bun install --frozen-lockfile --ignore-scripts
+            - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+              with:
+                  name: integration-pages-production
+                  path: ${{ runner.temp }}/pages/dist
+            - name: Verify prepared assets
+              env:
+                  EXPECTED_DIGEST: ${{ needs.prepare-integrations-production.outputs.pages-digest }}
+              run: |
+                  digest=$(bash scripts/pages-assets-digest.sh "$RUNNER_TEMP/pages/dist")
+                  test "$digest" = "$EXPECTED_DIGEST"
+            - name: Deploy prepared assets
+              run: bash scripts/publish-prepared-pages.sh "$RUNNER_TEMP/pages"
+              env:
+                  CLOUDFLARE_PAGES_PROJECT: ${{ secrets.INTEGRATIONS_ASSETS_PROD_PROJECT }}
+                  CLOUDFLARE_ACCOUNT_ID: ${{ vars.PRODUCTION_PAGES_ACCOUNT_ID }}
+                  CLOUDFLARE_API_TOKEN: ${{ secrets.PRODUCTION_PAGES_API_TOKEN }}

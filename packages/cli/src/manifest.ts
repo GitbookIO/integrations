@@ -162,7 +162,10 @@ export async function resolveIntegrationManifestPath(inputPath: string): Promise
 /**
  * Read, parse and validate the spec file.
  */
-export async function readIntegrationManifest(filePath: string): Promise<IntegrationManifest> {
+export async function readIntegrationManifest(
+    filePath: string,
+    { resolveSecrets = true }: { resolveSecrets?: boolean } = {},
+): Promise<IntegrationManifest> {
     try {
         const content = await fs.promises.readFile(filePath, 'utf8');
         const doc = yaml.load(content);
@@ -174,7 +177,7 @@ export async function readIntegrationManifest(filePath: string): Promise<Integra
             manifest = { ...manifest, ...manifest.envs[env] };
         }
 
-        if (manifest.secrets) {
+        if (resolveSecrets && manifest.secrets) {
             manifest.secrets = interpolateSecrets(manifest.secrets);
         }
 
