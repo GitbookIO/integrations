@@ -1,5 +1,11 @@
 # @gitbook/api
 
+## 0.216.0
+
+### Minor Changes
+
+- dc26e4a: Add `canonicalUrl` to the external redirects of published content URL lookups: the public URL of the requested resource, which differs from the requested URL on sites served through a proxy.
+
 ## 0.215.0
 
 ### Minor Changes
